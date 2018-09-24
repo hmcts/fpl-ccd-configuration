@@ -1,0 +1,11 @@
+# IntelliJ IDEA files
+.idea/
+*.iml
+
+# node_modules
+node_modules/
+
+# output screenshots
+.output
+
+.DS_Store

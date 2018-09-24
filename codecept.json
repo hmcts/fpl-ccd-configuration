@@ -1,0 +1,24 @@
+{
+  "output": "./output",
+  "helpers": {
+    "Puppeteer": {
+      "url": "http://localhost:9876",
+      "show": true,
+      "chrome": {
+        "ignoreHTTPSErrors": true
+      }
+    }
+  },
+  "include": {
+    "I": "./e2e/pages/steps_file.js",
+    "loginPage": "./e2e/pages/loginPage.js"
+  },
+  "plugins": {
+    "screenshotOnFail": {
+      "enabled": true
+    }
+  },
+  "tests": "./e2e/*_test.js",
+  "timeout": 10000,
+  "name": "ccd-docker"
+}
