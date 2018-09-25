@@ -13,6 +13,11 @@
     "I": "./e2e/pages/steps_file.js",
     "loginPage": "./e2e/pages/loginPage.js"
   },
+  "mocha": {},
+  "bootstrap": null,
+  "teardown": null,
+  "hooks": [],
+  "gherkin": {},
   "plugins": {
     "screenshotOnFail": {
       "enabled": true
