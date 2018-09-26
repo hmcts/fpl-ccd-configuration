@@ -9,6 +9,12 @@ Family public law's implementation of the CCD template
 ##Prerequisites:
 Have [Docker](#www.docker.com) installed.
 
+Run command:
+```
+git submodule init
+git submodule update
+```
+
 Creating and starting containers:
 ```
 ./ccd compose up -d
