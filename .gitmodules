@@ -1,0 +1,3 @@
+[submodule "ccd-docker"]
+	path = ccd-docker
+	url = https://github.com/hmcts/ccd-docker

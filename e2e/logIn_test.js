@@ -1,9 +1,7 @@
-const config = require("./config.js");
-
 Feature('LogIn');
 
-Scenario('Login as Local Authority', (I, loginPage) => {
-    loginPage.signIn(config.localAuthorityEmail, config.localAuthorityPassword);
+Scenario('Login as Local Authority and create case', (I, loginPage, fixture) => {
+    loginPage.signIn(fixture.localAuthorityEmail, fixture.localAuthorityPassword);
     I.wait(10);
     I.click('Create new case');
     I.selectOption('jurisdiction', 'Public Law DRAFT');
