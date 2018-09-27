@@ -1,29 +1,39 @@
-{
-  "tests": "./e2e/*_test.js",
-  "output": "./output",
-  "helpers": {
-    "Puppeteer": {
-      "show": true,
-      "chrome": {
-        "ignoreHTTPSErrors": true
-      }
-    }
-  },
-  "include": {
-    "I": "./e2e/pages/steps_file.js",
-    "loginPage": "./e2e/pages/loginPage.js",
-    "fixture": "./e2e/fixture.js"
-  },
-  "mocha": {},
-  "bootstrap": null,
-  "teardown": null,
-  "hooks": [],
-  "gherkin": {},
-  "plugins": {
-    "screenshotOnFail": {
-      "enabled": true
-    }
-  },
-  "timeout": 10000,
-  "name": "ccd-docker"
-}
+const testConfig = require('test/config.js');
+
+exports.config = {
+    'tests': './paths/**/*.js',
+    'output': './output',
+    'helpers': {
+        'Puppeteer': {
+            'url': testConfig.TestFrontendUrl || 'https://www-ccd.nonprod.platform.hmcts.net/',
+            'waitForTimeout': 60000,
+            'waitForAction': 7000,
+            'getPageTimeout': 60000,
+            'show': true,
+            'waitForNavigation': 'networkidle0',
+            'chrome': {
+                'ignoreHTTPSErrors': true,
+                'ignore-certificate-errors': true,
+                args: [
+                    '--no-sandbox',
+                    '--proxy-server=proxyout.reform.hmcts.net:8080',
+                    '--proxy-bypass-list=*beta*LB.reform.hmcts.net'
+                ]
+            },
+        },
+        'PuppeteerHelper': {
+            'require': './helpers/PuppeteerHelper.js'
+        },
+    },
+    'include': {
+        'I': './pages/steps.js'
+    },
+    'mocha': {
+        'reporterOptions': {
+            'reportDir': process.env.E2E_OUTPUT_DIR || './output',
+            'reportName': 'index',
+            'inlineAssets': true
+        }
+    },
+    'name': 'Codecept Tests'
+};
