@@ -1,22 +1,24 @@
 {
-  "name": "fpl-ccd-configuration",
+  "name": "fml",
+  "description": "Family Law CCD Testing",
   "version": "0.0.1",
-  "description": "fpl ccd e2e tests",
+  "private": true,
   "engines": {
-    "node": ">=4.0"
+    "node": ">=8.9"
   },
-  "dependencies": {
-    "npm": "^6.4.1",
-    "puppeteer": "^1.8.0"
+  "scripts": {
+    "test-e2e": "NODE_PATH=. node ./node_modules/codeceptjs/bin/codecept.js run  -c ./test/end-to-end/ --steps --reporter mochawesome"
   },
+  "dependencies": {},
   "devDependencies": {
     "codeceptjs": "^1.4.2",
     "eslint": "4.1.1 ",
-    "eslint-plugin-mocha": "^4.12.1",
-    "selenium-standalone": "^6.15.3",
-    "webdriverio": "^4.12.0"
-  },
-  "scripts": {
-    "test": "mocha"
+    "eslint-plugin-mocha": "^4.8.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^2.5.3",
+    "mocha-jenkins-reporter": "^0.3.8",
+    "mochawesome": "^2.0.0",
+    "puppeteer": "^1.4.0"
   }
 }
+
