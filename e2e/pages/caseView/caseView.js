@@ -13,9 +13,9 @@ module.exports = {
     goButton: "Go",
 
     goToNewActions(actionSelected) {
-        I.wait(2);
+        I.waitForText('History', 2);
         I.selectOption(this.actionsDropdown, actionSelected);
         I.click(this.goButton);
-        I.wait(2);
+        I.waitForText(actionSelected);
     }
 };

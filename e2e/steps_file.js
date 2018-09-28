@@ -11,7 +11,7 @@ module.exports = function() {
         this.wait(3);
         this.click('Create new case');
         createCase.createNewCase();
-        this.wait(3);
+        this.waitForText('Initiate Case', 5);
         addEventDetails.submitCase(summary, description);
       }
   });

@@ -6,7 +6,7 @@ Before((I) => {
 });
 
 Scenario('See case tab overview', (I, caseViewPage) => {
-    I.wait(1);
+    I.waitForElement('.tabs-list-item');
     I.see(caseViewPage.tabs.ordersHearingTab);
 });
 
