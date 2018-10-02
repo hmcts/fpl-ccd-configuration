@@ -1,5 +1,5 @@
 module.exports = {
-	localAuthorityEmail: 'peter_la_portsmouth@yahoo.com',
+	localAuthorityEmail: 'local-authority@example.com',
 	localAuthorityPassword: 'password',
 	eventSummary: '',
 	eventDescription: '',
