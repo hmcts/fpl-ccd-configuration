@@ -11,7 +11,7 @@ module.exports = {
 
 		significantEvents: {
 			yes: '#international_SignificantEvents-Yes',
-			textField: '#international_SignificantEvents'
+			textField: '#international_SignificantEventsReason'
 		},
 
 		issues: {
@@ -19,8 +19,8 @@ module.exports = {
 		},
 
 		proceedings: {
-			yes: '#international_Proceedings',
-			textField: '#international_Proceedings'
+			yes: '#international_Proceedings-Yes',
+			textField: '#international_ProceedingsReason'
 		}
 	},
 

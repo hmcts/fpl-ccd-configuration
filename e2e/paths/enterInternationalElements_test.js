@@ -18,12 +18,12 @@ Scenario('test half form filled', (I, enterInternationalElementsPage) => {
 	enterInternationalElementsPage.halfFillForm();
 	I.see('Give reason');
 	I.continueAndSubmit(config.eventSummary, config.eventDescription);
-	I.see(`updated with event: ${config.applicationActions.selectHearing}`);
+	I.see(`updated with event: ${config.applicationActions.enterInternationalElement}`);
 });
 
 Scenario('test form is fully filled in', (I, enterInternationalElementsPage) => {
 	enterInternationalElementsPage.fillForm();
 	I.see('Give reason');
 	I.continueAndSubmit(config.eventSummary, config.eventDescription);
-	I.see(`updated with event: ${config.applicationActions.selectHearing}`);
+	I.see(`updated with event: ${config.applicationActions.enterInternationalElement}`);
 });
