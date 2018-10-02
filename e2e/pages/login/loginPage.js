@@ -3,10 +3,10 @@ const I = actor();
 module.exports = {
 
 	fields: {
-		username: "#username",
-		password: "#password",
+		username: '#username',
+		password: '#password',
 	},
-	submitButton: "Sign in",
+	submitButton: 'Sign in',
 
 	signIn(username, password) {
 		I.amOnPage('http://localhost:3451');

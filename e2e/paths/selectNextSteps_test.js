@@ -1,12 +1,13 @@
 const config = require('../config.js');
+
 Feature('Next Step Dropdown');
 
 Before((I) => {
 	I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
-	I.waitForElement('.tabs', 10);
 });
 
 Scenario('See case tab overview', (I, caseViewPage) => {
+	I.waitForElement('.tabs', 5);
 	I.see(caseViewPage.tabs.ordersHearingTab);
 });
 
@@ -79,7 +80,3 @@ Scenario(`Test ${config.applicationActions.uploadDocuments}`, (I, caseViewPage) 
 	caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
 	I.see(config.applicationActions.uploadDocuments);
 });
-
-
-
-

@@ -3,14 +3,13 @@ const I = actor();
 module.exports = {
 
 	tabs: {
-		ordersHearingTab: "Orders sought and hearing needed",
-		casePeopleTab: "People in the case",
-		legalOpinionTab: "Legal Opinion",
-		evidenceTab: "Evidence"
+		ordersHearingTab: 'Orders sought and hearing needed',
+		casePeopleTab: 'People in the case',
+		legalOpinionTab: 'Legal Opinion',
+		evidenceTab: 'Evidence'
 	},
-
-	actionsDropdown: ".ccd-dropdown",
-	goButton: "Go",
+	actionsDropdown: '.ccd-dropdown',
+	goButton: 'Go',
 
 	goToNewActions(actionSelected) {
 		I.waitForElement(this.actionsDropdown, 10);

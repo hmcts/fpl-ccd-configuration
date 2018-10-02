@@ -3,11 +3,11 @@ const I = actor();
 module.exports = {
 
 	fields: {
-		jurisdiction: "jurisdiction",
-		caseType: "case-type",
-		event: "event",
+		jurisdiction: 'jurisdiction',
+		caseType: 'case-type',
+		event: 'event',
 	},
-	startButton: "Start",
+	startButton: 'Start',
 
 	createNewCase() {
 		I.selectOption(this.fields.jurisdiction, 'Public Law DRAFT');
