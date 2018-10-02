@@ -7,7 +7,7 @@ Before((I) => {
 });
 
 Scenario('See case tab overview', (I, caseViewPage) => {
-	I.wait(3);
+	I.waitForElement('.tabs', 5);
 	I.see(caseViewPage.tabs.ordersHearingTab);
 });
 
@@ -80,7 +80,3 @@ Scenario(`Test ${config.applicationActions.uploadDocuments}`, (I, caseViewPage) 
 	caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
 	I.see(config.applicationActions.uploadDocuments);
 });
-
-
-
-
