@@ -12,7 +12,7 @@ module.exports = {
 	goButton: 'Go',
 
 	goToNewActions(actionSelected) {
-		I.waitForText('History', 2);
+		I.waitForElement(this.actionsDropdown, 10);
 		I.selectOption(this.actionsDropdown, actionSelected);
 		I.click(this.goButton);
 		I.waitForText(actionSelected);

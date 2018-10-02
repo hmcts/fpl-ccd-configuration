@@ -13,6 +13,13 @@ module.exports = function () {
 			createCase.createNewCase();
 			this.waitForElement('.check-your-answers');
 			addEventDetails.submitCase(summary, description);
+		},
+
+		continueAndSubmit(summary, description) {
+			this.click('Continue');
+			this.waitForText('Event summary', 10);
+			addEventDetails.submitCase(summary, description);
+			this.waitForText('updated', 10);
 		}
 	});
 };
