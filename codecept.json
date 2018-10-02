@@ -14,7 +14,8 @@
     "config": "./e2e/config.js",
     "createCasePage": "./e2e/pages/createCase/createCase.js",
     "addEventSummaryPage": "./e2e/pages/createCase/addEventSummary.js",
-    "caseViewPage": "./e2e/pages/caseView/caseView.js"
+    "caseViewPage": "./e2e/pages/caseView/caseView.js",
+    "selectHearingPage": "./e2e/pages/selectHearing/selectHearing.js"
   },
   "mocha": {},
   "bootstrap": null,

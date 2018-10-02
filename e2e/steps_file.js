@@ -4,15 +4,22 @@ const addEventDetails = require('./pages/createCase/addEventSummary');
 
 'use strict';
 
-module.exports = function() {
-  return actor({
-      logInAndCreateCase(username, password, summary, description) {
-        logIn.signIn(username, password);
-        this.wait(3);
-        this.click('Create new case');
-        createCase.createNewCase();
-        this.waitForText('Initiate Case', 5);
-        addEventDetails.submitCase(summary, description);
-      }
-  });
+module.exports = function () {
+	return actor({
+		logInAndCreateCase(username, password, summary, description) {
+			logIn.signIn(username, password);
+			this.wait(5);
+			this.click('Create new case');
+			createCase.createNewCase();
+			this.waitForText('Initiate Case', 10);
+			addEventDetails.submitCase(summary, description);
+		},
+
+		continueAndSubmit(summary, description) {
+			this.click('Continue');
+			this.waitForText('Event summary', 10);
+			addEventDetails.submitCase(summary, description);
+			this.waitForText('updated', 10);
+		}
+	});
 };
