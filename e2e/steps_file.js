@@ -8,10 +8,10 @@ module.exports = function () {
 	return actor({
 		logInAndCreateCase(username, password, summary, description) {
 			logIn.signIn(username, password);
-			this.wait(5);
+			this.wait(3);
 			this.click('Create new case');
 			createCase.createNewCase();
-			this.waitForText('Initiate Case', 10);
+			this.waitForElement('.check-your-answers');
 			addEventDetails.submitCase(summary, description);
 		},
 
