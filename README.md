@@ -27,7 +27,7 @@ sh addUsersAndRoles.sh
 
 Add the spreadsheet:
 ```
-./bin/ccd-import-definition.sh ~/fpl-ccd-configuration/FPL_CCD_DEFINITION_TEMPLATEx.xlsx
+./ccd-docker/bin/ccd-import-definition.sh FPL_CCD_DEFINITION_TEMPLATEx.xlsx
 ```
 
 Refer to [ccd-docker](https://github.com/hmcts/ccd-docker) for more information.

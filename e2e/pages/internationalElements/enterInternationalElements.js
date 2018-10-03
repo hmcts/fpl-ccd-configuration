@@ -3,7 +3,6 @@ const I = actor();
 module.exports = {
 
 	fields: {
-
 		possibleCarer: {
 			yes: '#international_PossibleCarer-Yes',
 			textField: '#international_PossibleCarerReason'

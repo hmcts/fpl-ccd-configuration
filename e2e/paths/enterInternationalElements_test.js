@@ -9,19 +9,19 @@ Before((I, caseViewPage) => {
 	I.waitForElement('ccd-case-edit-page', 10);
 });
 
-Scenario('test form save with no details entered', (I) => {
+Scenario('leaving fields empty in international elements of the c110a application', (I) => {
 	I.continueAndSubmit(config.eventSummary, config.eventDescription);
 	I.see(`updated with event: ${config.applicationActions.enterInternationalElement}`);
 });
 
-Scenario('test half form filled', (I, enterInternationalElementsPage) => {
+Scenario('completing half of the international elements section of the c110a application', (I, enterInternationalElementsPage) => {
 	enterInternationalElementsPage.halfFillForm();
 	I.see('Give reason');
 	I.continueAndSubmit(config.eventSummary, config.eventDescription);
 	I.see(`updated with event: ${config.applicationActions.enterInternationalElement}`);
 });
 
-Scenario('test form is fully filled in', (I, enterInternationalElementsPage) => {
+Scenario('completed international elements of the c110a application', (I, enterInternationalElementsPage) => {
 	enterInternationalElementsPage.fillForm();
 	I.see('Give reason');
 	I.continueAndSubmit(config.eventSummary, config.eventDescription);
