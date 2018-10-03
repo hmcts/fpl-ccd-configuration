@@ -14,7 +14,7 @@ Scenario('Leaving factors affecting parenting section blank in c110a', (I) => {
 	I.see(`updated with event: ${config.applicationActions.enterParentingFactors}`);
 });
 
-Scenario('There is an optional textArea when I answer yes to a question in factors affecting parenting section', (I, enterFactorsAffectingParentingPage) => {
+Scenario('Clicking yes to a question produces a textarea in factors affecting parenting section', (I, enterFactorsAffectingParentingPage) => {
 	enterFactorsAffectingParentingPage.enterYesForAlcoholOrDrugAbuse();
 	I.seeElement('textArea');
 });

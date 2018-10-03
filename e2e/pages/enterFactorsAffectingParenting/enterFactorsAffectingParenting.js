@@ -6,8 +6,6 @@ module.exports = {
 		alcoholOrDrugAbuse: {
 			yes: '#factorsParenting_alcoholDrugAbuse-Yes',
 			reason: '#factorsParenting_alcoholDrugAbuseReason'
-
-
 		},
 		domesticViolence: {
 			yes: '#factorsParenting_domesticViolence-Yes',

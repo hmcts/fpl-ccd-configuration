@@ -17,9 +17,9 @@ module.exports = function () {
 
 		continueAndSubmit(summary, description) {
 			this.click('Continue');
-			this.waitForText('Event summary', 10);
+			this.waitForElement('.check-your-answers', 5);
 			addEventDetails.submitCase(summary, description);
-			this.waitForText('updated', 10);
+			this.waitForElement('.tabs', 10);
 		}
 	});
 };
