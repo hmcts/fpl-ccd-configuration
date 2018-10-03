@@ -37,3 +37,7 @@ To ensure you have the correct dependencies run `npm i` in the command line
 
 ## Testing:
 To run e2e tests enter `codeceptjs run` in the command line
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
