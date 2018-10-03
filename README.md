@@ -40,3 +40,7 @@ To run code linting enter `yarn lint` in the command line.
 
 ## Testing:
 To run e2e tests enter `yarn test` in the command line.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
