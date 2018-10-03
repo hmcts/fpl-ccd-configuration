@@ -16,7 +16,8 @@
     "addEventSummaryPage": "./e2e/pages/createCase/addEventSummary.js",
     "caseViewPage": "./e2e/pages/caseView/caseView.js",
     "selectHearingPage": "./e2e/pages/selectHearing/selectHearing.js",
-    "enterGroundsPage": "./e2e/pages/enterGrounds/enterGrounds.js"
+    "enterGroundsPage": "./e2e/pages/enterGrounds/enterGrounds.js",
+    "enterFactorsAffectingParentingPage": "./e2e/pages/enterFactorsAffectingParenting/enterFactorsAffectingParenting.js"
   },
   "mocha": {},
   "bootstrap": null,
