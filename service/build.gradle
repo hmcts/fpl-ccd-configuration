@@ -149,7 +149,7 @@ dependencies {
 mainClassName = 'uk.gov.hmcts.reform.fpl.Application'
 
 bootJar {
-  archiveName = 'spring-boot-template.jar'
+  archiveName = 'service.jar'
 
   manifest {
     attributes('Implementation-Version': project.version.toString())

@@ -5,6 +5,7 @@ Family public law's implementation of the CCD template
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
 - [Testing](#testing)
+- [Service](#service)
 
 ## Prerequisites:
 Have [Docker](https://www.docker.com) installed.
@@ -37,3 +38,6 @@ To ensure you have the correct dependencies run `npm i` in the command line
 
 ## Testing:
 To run e2e tests enter `codeceptjs run` in the command line
+
+## Service:
+see [spring boot template](https://github.com/hmcts/spring-boot-template) for more information.

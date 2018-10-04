@@ -1,6 +1,9 @@
 # IntelliJ IDEA files
 .idea/
+/out
+*.iws
 *.iml
+*.ipr
 
 # node_modules
 node_modules/
@@ -10,3 +13,15 @@ output/
 
 .DS_Store
 ~*
+
+.gradle
+/build/
+!gradle/wrapper/gradle-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans

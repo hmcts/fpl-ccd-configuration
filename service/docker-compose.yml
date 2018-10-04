@@ -9,7 +9,7 @@ services:
         - https_proxy
         - no_proxy
     image: docker.artifactory.reform.hmcts.net/reform/spring-boot-template
-    container_name: spring-boot-template
+    container_name: fpl-service
     environment:
       # these environment variables are used by java-logging library
       - ROOT_APPENDER

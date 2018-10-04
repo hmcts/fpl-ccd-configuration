@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="8.10.1">
+<file name="/Users/kurt/Development/MOJ/spring-boot-template/src/main/java/uk/gov/hmcts/reform/fpl/Application.java">
+</file>
+<file name="/Users/kurt/Development/MOJ/spring-boot-template/src/main/java/uk/gov/hmcts/reform/fpl/config/SwaggerConfiguration.java">
+</file>
+<file name="/Users/kurt/Development/MOJ/spring-boot-template/src/main/java/uk/gov/hmcts/reform/fpl/controllers/RootController.java">
+</file>
+</checkstyle>
