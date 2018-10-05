@@ -1,4 +1,4 @@
-# fpl-ccd-configuration
+# fpl-service
 
  ## Building and deploying the application
  ### Building the application
@@ -45,9 +45,4 @@ by executing the following command:
  ```bash
 docker-compose rm
 ```
- It clears stopped containers correctly. Might consider removing clutter of images too, especially the ones fiddled with:
- ```bash
-docker images
- docker image rm <image-id>
-```
- There is no need to remove postgres and java or similar core images.
+
