@@ -40,4 +40,4 @@ To ensure you have the correct dependencies run `npm i` in the command line
 To run e2e tests enter `codeceptjs run` in the command line
 
 ## Service:
-see [spring boot template](https://github.com/hmcts/spring-boot-template) for more information.
+See [fpl-serivice](#service/README.md) for more information.
