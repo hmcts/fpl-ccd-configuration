@@ -79,7 +79,7 @@ pmd {
   ignoreFailures = true
   sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
   reportsDir = file("$project.buildDir/reports/pmd")
-  ruleSetFiles = files("config/pmd/ruleset.xml")
+  ruleSetFiles = files("../config/pmd/ruleset.xml")
 }
 
 jacocoTestReport {
