@@ -1,14 +1,14 @@
 version: '2.1'
 
 services:
-  spring-boot-template:
+  fpl-service:
     build:
       context: .
       args:
         - http_proxy
         - https_proxy
         - no_proxy
-    image: docker.artifactory.reform.hmcts.net/reform/spring-boot-template
+    image: docker.artifactory.reform.hmcts.net/fpl/fpl-service
     container_name: fpl-service
     environment:
       # these environment variables are used by java-logging library

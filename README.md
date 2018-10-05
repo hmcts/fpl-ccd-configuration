@@ -40,9 +40,10 @@ To ensure you have the correct dependencies run `yarn install` in the command li
 To run code linting enter `yarn lint` in the command line.
 
 ## Testing:
-To run e2e tests enter `codeceptjs run` in the command line
+To run e2e tests enter `yarn test` in the command line.
 
 ## Service:
-See [fpl-serivice](#service/README.md) for more information.
+See [fpl-serivice](service/README.md) for more information.
 
-To run e2e tests enter `yarn test` in the command line.
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details

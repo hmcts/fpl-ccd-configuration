@@ -1,6 +1,5 @@
 # fpl-ccd-configuration
 
-[![Build Status](https://travis-ci.org/hmcts/spring-boot-template.svg?branch=master)](https://travis-ci.org/hmcts/spring-boot-template)
  ## Building and deploying the application
  ### Building the application
  The project uses [Gradle](https://gradle.org) as a build tool. It already contains
@@ -18,7 +17,7 @@
  ```bash
   docker-compose build
 ```
- Run the distribution (created in `build/install/spring-boot-template` directory)
+ Run the distribution (created in `build/install/service` directory)
 by executing the following command:
  ```bash
   docker-compose up
@@ -52,5 +51,3 @@ docker images
  docker image rm <image-id>
 ```
  There is no need to remove postgres and java or similar core images.
- ## License
- This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
