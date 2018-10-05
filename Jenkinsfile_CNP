@@ -8,5 +8,5 @@ def product = "fpl"
 def component = "fpl-service"
 
 withPipeline(type, product, component) {
-  enableSlackNotifications('@damiand')
+  enableSlackNotifications('#fpl-tech')
 }
