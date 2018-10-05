@@ -15,7 +15,7 @@ output/
 ~*
 
 .gradle
-/build/
+service/build/
 !gradle/wrapper/gradle-wrapper.jar
 
 ### STS ###
