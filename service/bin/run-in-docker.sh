@@ -22,9 +22,6 @@ print_help() {
 GRADLE_CLEAN=false
 GRADLE_INSTALL=false
 
-# TODO custom environment variables application requires.
-# TODO also consider enlisting them in help string above ^
-# TODO sample: DB_PASSWORD   Defaults to 'dev'
 # environment variables
 #DB_PASSWORD=dev
 #S2S_URL=localhost
