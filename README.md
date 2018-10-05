@@ -34,10 +34,15 @@ Add the spreadsheet:
 Refer to [ccd-docker](https://github.com/hmcts/ccd-docker) for more information.
 
 ## Getting Started:
-To ensure you have the correct dependencies run `npm i` in the command line
+To ensure you have the correct dependencies run `yarn install` in the command line.
+
+## Code Style:
+To run code linting enter `yarn lint` in the command line.
 
 ## Testing:
 To run e2e tests enter `codeceptjs run` in the command line
 
 ## Service:
 See [fpl-serivice](#service/README.md) for more information.
+
+To run e2e tests enter `yarn test` in the command line.
