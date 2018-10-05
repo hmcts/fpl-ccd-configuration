@@ -1,0 +1,12 @@
+#!groovy
+
+@Library("Infrastructure")
+
+def type = "java"
+
+def product = "fpl"
+def component = "fpl-service"
+
+withPipeline(type, product, component) {
+  enableSlackNotifications('@damiand')
+}
