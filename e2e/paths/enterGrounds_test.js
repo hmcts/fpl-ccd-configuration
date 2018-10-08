@@ -9,7 +9,6 @@ Before((I) => {
 
 Scenario('Filling in grounds for application section of c110a', (I, caseViewPage, enterGroundsPage) => {
 	caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
-	I.waitForElement('ccd-case-edit-page', 5);
 	enterGroundsPage.enterThresholdCriteriaDetails();
 	I.waitForElement('.check-your-answers', 5);
 	addEventDetails.submitCase(config.eventSummary, config.eventDescription);

@@ -3,18 +3,18 @@ const I = actor();
 module.exports = {
 
 	documents: {
-		socialWorkChronology: '#uploadDocuments_chronology1_uploadDocuments_typeOfDocument',
-		socialWorkStatementAndGenogram: '#uploadDocuments_chronology2_uploadDocuments_typeOfDocument',
-		socialWorkAssessment: '#uploadDocuments_chronology3_uploadDocuments_typeOfDocument',
-		carePlan: '#uploadDocuments_chronology4_uploadDocuments_typeOfDocument',
+		socialWorkChronology: '#documents_socialWorkChronology_document_uploadDocuments_typeOfDocument',
+		socialWorkStatementAndGenogram: '#documents_socialWorkStatement_document_uploadDocuments_typeOfDocument',
+		socialWorkAssessment: '#documents_socialWorkAssessement_document_uploadDocuments_typeOfDocument',
+		carePlan: '#documents_socialWorkCarePlan_document_uploadDocuments_typeOfDocument',
 	},
 
 	fields: {
-		socialWorkChronologyStatus: '#uploadDocuments_chronology1_uploadDocuments_documentStatus',
-		socialWorkChronologyReason: '#uploadDocuments_chronology1_uploadDocuments_statusReason',
-		socialWorkStatementAndGenogramStatus: '#uploadDocuments_chronology2_uploadDocuments_documentStatus',
-		socialWorkAssessmentStatus: '#uploadDocuments_chronology3_uploadDocuments_documentStatus',
-		carePlanStatus: '#uploadDocuments_chronology4_uploadDocuments_documentStatus',
+		socialWorkChronologyStatus: '#documents_socialWorkChronology_document_uploadDocuments_documentStatus',
+		socialWorkChronologyReason: '#documents_socialWorkChronology_document_uploadDocuments_statusReason',
+		socialWorkStatementAndGenogramStatus: '#documents_socialWorkStatement_document_uploadDocuments_documentStatus',
+		socialWorkAssessmentStatus: '#documents_socialWorkAssessement_document_uploadDocuments_documentStatus',
+		carePlanStatus: '#documents_socialWorkCarePlan_document_uploadDocuments_documentStatus',
 
 	},
 
