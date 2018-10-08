@@ -7,6 +7,8 @@ module.exports = {
 		socialWorkStatementAndGenogram: '#documents_socialWorkStatement_document_uploadDocuments_typeOfDocument',
 		socialWorkAssessment: '#documents_socialWorkAssessement_document_uploadDocuments_typeOfDocument',
 		carePlan: '#documents_socialWorkCarePlan_document_uploadDocuments_typeOfDocument',
+		otherDocuments_1: '#documents_socialWorkOther_0_otherDocuments_typeOfDocument',
+		otherDocuments_2: '#documents_socialWorkOther_1_otherDocuments_typeOfDocument'
 	},
 
 	fields: {
@@ -15,6 +17,8 @@ module.exports = {
 		socialWorkStatementAndGenogramStatus: '#documents_socialWorkStatement_document_uploadDocuments_documentStatus',
 		socialWorkAssessmentStatus: '#documents_socialWorkAssessement_document_uploadDocuments_documentStatus',
 		carePlanStatus: '#documents_socialWorkCarePlan_document_uploadDocuments_documentStatus',
+		otherDocumentsTitle_1: '#documents_socialWorkOther_0_otherDocuments_documentTitle',
+		otherDocumentsTitle_2: '#documents_socialWorkOther_1_otherDocuments_documentTitle',
 
 	},
 
@@ -37,4 +41,13 @@ module.exports = {
 		I.attachFile(this.documents.carePlan, file);
 		I.selectOption(this.fields.carePlanStatus, 'Attached');
 	},
+
+	uploadAdditionalDocuments(file) {
+		I.click('Add new');
+		I.fillField(this.fields.otherDocumentsTitle_1, 'Document');
+		I.attachFile(this.documents.otherDocuments_1, file);
+		I.click('Add new');
+		I.fillField(this.fields.otherDocumentsTitle_2, 'Document');
+		I.attachFile(this.documents.otherDocuments_2, file);
+	}
 };
