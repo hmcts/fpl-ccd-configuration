@@ -5,6 +5,7 @@ Family public law's implementation of the CCD template
 - [Prerequisites](#prerequisites)
 - [Getting Started](#getting-started)
 - [Testing](#testing)
+- [Service](#service)
 
 ## Prerequisites:
 Have [Docker](https://www.docker.com) installed.
@@ -41,6 +42,8 @@ To run code linting enter `yarn lint` in the command line.
 ## Testing:
 To run e2e tests enter `yarn test` in the command line.
 
-## License
+## Service:
+See [fpl-service](service/README.md) for more information.
 
+## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
