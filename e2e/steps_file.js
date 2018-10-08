@@ -13,6 +13,7 @@ module.exports = function () {
 			createCase.createNewCase();
 			this.waitForElement('.check-your-answers');
 			addEventDetails.submitCase(summary, description);
+			this.waitForElement('.tabs', 10);
 		},
 
 		continueAndSubmit(summary, description) {
@@ -20,6 +21,10 @@ module.exports = function () {
 			this.waitForElement('.check-your-answers', 5);
 			addEventDetails.submitCase(summary, description);
 			this.waitForElement('.tabs', 10);
-		}
+		},
+
+		seeEventSubmissionConfirmation(event) {
+			this.see(`updated with event: ${event}`);
+		},
 	});
 };

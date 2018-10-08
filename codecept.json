@@ -18,7 +18,8 @@
     "selectHearingPage": "./e2e/pages/selectHearing/selectHearing.js",
     "enterGroundsPage": "./e2e/pages/enterGrounds/enterGrounds.js",
     "enterFactorsAffectingParentingPage": "./e2e/pages/enterFactorsAffectingParenting/enterFactorsAffectingParenting.js",
-    "enterInternationalElementsPage": "./e2e/pages/internationalElements/enterInternationalElements.js"
+    "enterInternationalElementsPage": "./e2e/pages/internationalElements/enterInternationalElements.js",
+    "uploadDocumentsPage": "./e2e/pages/uploadDocuments/uploadDocuments.js"
   },
   "mocha": {},
   "bootstrap": null,
