@@ -19,5 +19,5 @@ module.exports = {
 		attendingHearing: 'Attending hearing',
 		uploadDocuments: 'Annex documents',
 	},
-	testFile: 'mockFile'
+	testFile: './e2e/fixtures/mockFile'
 };

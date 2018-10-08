@@ -11,7 +11,9 @@ Before((I, caseViewPage) => {
 
 Scenario('Selecting to follow for a document produces a textarea', (I, uploadDocumentsPage) => {
 	I.selectOption(uploadDocumentsPage.fields.socialWorkChronologyStatus, 'To follow');
-	I.seeElement(uploadDocumentsPage.fields.socialWorkChronologyReason);
+	I.fillField(uploadDocumentsPage.fields.socialWorkChronologyReason, 'mock reason');
+	I.continueAndSubmit(config.eventSummary, config.eventDescription);
+	I.see(`updated with event: ${config.applicationActions.uploadDocuments}`);
 });
 
 Scenario('All documents are able to be uploaded', (I, uploadDocumentsPage) => {
