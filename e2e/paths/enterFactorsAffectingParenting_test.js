@@ -15,5 +15,5 @@ Scenario('Clicking yes to a question produces a textarea in factors affecting pa
 Scenario('Filling in factors affecting parenting sections of c110a', (I, enterFactorsAffectingParentingPage) => {
 	enterFactorsAffectingParentingPage.enterFactorsAffectingParenting();
 	I.continueAndSubmit(config.eventSummary, config.eventDescription);
-	I.see(`updated with event: ${config.applicationActions.enterParentingFactors}`);
+	I.seeEventSubmissionConfirmation(config.applicationActions.enterParentingFactors);
 });

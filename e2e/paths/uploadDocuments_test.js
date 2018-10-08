@@ -11,11 +11,14 @@ Scenario('Selecting to follow for a document produces a textarea', (I, uploadDoc
 	I.selectOption(uploadDocumentsPage.fields.socialWorkChronologyStatus, 'To follow');
 	I.fillField(uploadDocumentsPage.fields.socialWorkChronologyReason, 'mock reason');
 	I.continueAndSubmit(config.eventSummary, config.eventDescription);
-	I.see(`updated with event: ${config.applicationActions.uploadDocuments}`);
+	I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
 });
 
 Scenario('All documents are able to be uploaded', (I, uploadDocumentsPage) => {
-	uploadDocumentsPage.uploadDocuments(config.testFile);
+	uploadDocumentsPage.uploadSocialWorkChronology(config.testFile);
+	uploadDocumentsPage.uploadSocialWorkStatement(config.testFile);
+	uploadDocumentsPage.uploadSocialWorkAssessment(config.testFile);
+	uploadDocumentsPage.uploadCarePlan(config.testFile);
 	I.continueAndSubmit(config.eventSummary, config.eventDescription);
-	I.see(`updated with event: ${config.applicationActions.uploadDocuments}`);
+	I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
 });

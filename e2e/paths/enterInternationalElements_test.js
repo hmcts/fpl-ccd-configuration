@@ -11,12 +11,12 @@ Scenario('completing half of the international elements section of the c110a app
 	enterInternationalElementsPage.halfFillForm();
 	I.see('Give reason');
 	I.continueAndSubmit(config.eventSummary, config.eventDescription);
-	I.see(`updated with event: ${config.applicationActions.enterInternationalElement}`);
+	I.seeEventSubmissionConfirmation(config.applicationActions.enterInternationalElement);
 });
 
 Scenario('completed international elements of the c110a application', (I, enterInternationalElementsPage) => {
 	enterInternationalElementsPage.fillForm();
 	I.see('Give reason');
 	I.continueAndSubmit(config.eventSummary, config.eventDescription);
-	I.see(`updated with event: ${config.applicationActions.enterInternationalElement}`);
+	I.seeEventSubmissionConfirmation(config.applicationActions.enterInternationalElement);
 });

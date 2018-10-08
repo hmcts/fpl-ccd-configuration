@@ -18,14 +18,23 @@ module.exports = {
 
 	},
 
-	uploadDocuments(file) {
+	uploadSocialWorkChronology(file) {
 		I.attachFile(this.documents.socialWorkChronology, file);
 		I.selectOption(this.fields.socialWorkChronologyStatus, 'Attached');
+	},
+
+	uploadSocialWorkStatement(file) {
 		I.attachFile(this.documents.socialWorkStatementAndGenogram, file);
 		I.selectOption(this.fields.socialWorkStatementAndGenogramStatus, 'Attached');
+	},
+
+	uploadSocialWorkAssessment(file) {
 		I.attachFile(this.documents.socialWorkAssessment, file);
 		I.selectOption(this.fields.socialWorkAssessmentStatus, 'Attached');
+	},
+
+	uploadCarePlan(file) {
 		I.attachFile(this.documents.carePlan, file);
 		I.selectOption(this.fields.carePlanStatus, 'Attached');
-	}
+	},
 };

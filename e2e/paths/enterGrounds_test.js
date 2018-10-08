@@ -12,6 +12,5 @@ Scenario('Filling in grounds for application section of c110a', (I, caseViewPage
 	enterGroundsPage.enterThresholdCriteriaDetails();
 	I.waitForElement('.check-your-answers', 5);
 	addEventDetails.submitCase(config.eventSummary, config.eventDescription);
-	I.waitForElement('.tabs', 5);
-	I.see(`updated with event: ${config.applicationActions.enterGrounds}`);
+	I.seeEventSubmissionConfirmation(config.applicationActions.enterGrounds);
 });

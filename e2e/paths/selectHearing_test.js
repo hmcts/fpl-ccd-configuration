@@ -11,12 +11,12 @@ Scenario('completing half the fields in the Select hearing section of the c110a 
 	selectHearingPage.halfFillForm();
 	I.see('Give reason');
 	I.continueAndSubmit(config.eventSummary, config.eventDescription);
-	I.see(`updated with event: ${config.applicationActions.selectHearing}`);
+	I.seeEventSubmissionConfirmation(config.applicationActions.selectHearing);
 });
 
 Scenario('completing the Select hearing section of the c110a application', (I, selectHearingPage) => {
 	selectHearingPage.fillForm();
 	I.see('Give reason');
 	I.continueAndSubmit(config.eventSummary, config.eventDescription);
-	I.see(`updated with event: ${config.applicationActions.selectHearing}`);
+	I.seeEventSubmissionConfirmation(config.applicationActions.selectHearing);
 });
