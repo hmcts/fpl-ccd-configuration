@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-Feature('enter children in application');
+Feature('Enter children in application');
 
 Before((I, caseViewPage) => {
 	I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);

@@ -34,10 +34,5 @@
   },
   "tests": "./e2e/paths/*_test.js",
   "timeout": 10000,
-  "name": "ccd-docker",
-  "multiple": {
-    "parallel": {
-      "chunks": 2
-    }
-  }
+  "name": "ccd-docker"
 }

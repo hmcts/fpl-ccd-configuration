@@ -3,8 +3,6 @@ let activeChild = 'firstChild';
 
 module.exports = {
 
-	enteredInformation: 'test',
-
 	fields: (childNo) => {
 		return {
 			fullName: `#children_${childNo}_enterChildren_childName`,
@@ -28,10 +26,7 @@ module.exports = {
 			adoptionNo: `#children_${childNo}_enterChildren_adoption-No`,
 			mothersName: `#children_${childNo}_enterChildren_mothersName`,
 			fathersName: `#children_${childNo}_enterChildren_fathersName`,
-			fatherResponsibleDropdown: {
-				selector: `#children_${childNo}_enterChildren_fathersResponsibility`,
-				option: `Yes`
-			},
+			fatherResponsibleDropdown: `#children_${childNo}_enterChildren_fathersResponsibility`,
 			socialWorkerName: `#children_${childNo}_enterChildren_socialWorkerName`,
 			socialWorkerTel: `#children_${childNo}_enterChildren_socialWorkerTel`,
 			additionalNeedsNo: `#children_${childNo}_enterChildren_additionalNeeds-No`,
@@ -53,8 +48,7 @@ module.exports = {
 		I.fillField(this.fields(activeChild).DOB.month, month);
 		I.fillField(this.fields(activeChild).DOB.year, year);
 		I.selectOption(this.fields(activeChild).genderDropdown, gender);
-	}
-	,
+	},
 
 	defineChildSituation(day, month, year, situation = 'Living with respondents', address = '35 London Lane') {
 		I.selectOption(this.fields(activeChild).situationDropdown.selector, situation);
@@ -62,49 +56,40 @@ module.exports = {
 		I.fillField(this.fields(activeChild).situationDropdown.dateStartedStaying.month, month);
 		I.fillField(this.fields(activeChild).situationDropdown.dateStartedStaying.year, year);
 		I.fillField(this.fields(activeChild).situationDropdown.addressOfChild, address);
-	}
-	,
+	},
 
 	enterKeyDatesAffectingHearing(keyDates = 'Tuesday the 11th') {
 		I.fillField(this.fields(activeChild).keyDates, keyDates);
-	}
-	,
+	},
 
 	enterSummaryOfCarePlan(carePlan = 'care plan summary') {
 		I.fillField(this.fields(activeChild).careAndContactPlan, carePlan);
-	}
-	,
+	},
 
 	defineAdoptionIntention() {
 		I.click(this.fields(activeChild).adoptionNo);
-	}
-	,
+	},
 
 	enterParentsDetails(fatherResponsible = 'Yes', motherName = 'Laura Smith', fatherName = 'David Smith') {
 		I.fillField(this.fields(activeChild).mothersName, motherName);
 		I.fillField(this.fields(activeChild).fathersName, fatherName);
-		I.selectOption(this.fields(activeChild).fatherResponsibleDropdown.selector, fatherResponsible);
-	}
-	,
+		I.selectOption(this.fields(activeChild).fatherResponsibleDropdown, fatherResponsible);
+	},
 
 	enterSocialWorkerDetails(socialWorkerName = 'James Jackson', socialWorkerTel = '01234567') {
 		I.fillField(this.fields(activeChild).socialWorkerName, socialWorkerName);
 		I.fillField(this.fields(activeChild).socialWorkerTel, socialWorkerTel);
-	}
-	,
+	},
 
 	defineChildAdditionalNeeds() {
 		I.click(this.fields(activeChild).additionalNeedsNo);
-	}
-	,
+	},
 
 	defineContactDetailsVisibility() {
 		I.click(this.fields(activeChild).contactHiddenNo);
-	}
-	,
+	},
 
 	defineAbilityToTakePartInProceedings() {
 		I.click(this.fields(activeChild).litigationNo);
 	}
-}
-;
+};
