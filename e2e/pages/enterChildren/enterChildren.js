@@ -11,8 +11,8 @@ module.exports = {
 				month: `#children_${childNo}_enterChildren_childDOB-month`,
 				year: `#children_${childNo}_enterChildren_childDOB-year`
 			},
-			genderDropdown: `#children_${childNo}_enterChildren_childGender`,
-			situationDropdown: {
+			gender: `#children_${childNo}_enterChildren_childGender`,
+			situation: {
 				selector: `#children_${childNo}_enterChildren_livingSituation`,
 				dateStartedStaying: {
 					day: `#children_${childNo}_enterChildren_situationDate-day`,
@@ -26,7 +26,7 @@ module.exports = {
 			adoptionNo: `#children_${childNo}_enterChildren_adoption-No`,
 			mothersName: `#children_${childNo}_enterChildren_mothersName`,
 			fathersName: `#children_${childNo}_enterChildren_fathersName`,
-			fatherResponsibleDropdown: `#children_${childNo}_enterChildren_fathersResponsibility`,
+			fatherResponsible: `#children_${childNo}_enterChildren_fathersResponsibility`,
 			socialWorkerName: `#children_${childNo}_enterChildren_socialWorkerName`,
 			socialWorkerTel: `#children_${childNo}_enterChildren_socialWorkerTel`,
 			additionalNeedsNo: `#children_${childNo}_enterChildren_additionalNeeds-No`,
@@ -37,6 +37,10 @@ module.exports = {
 	addChildButton: 'Add new',
 
 	addChild() {
+		if (activeChild === 'additionalChildren_0') {
+			throw new Error('Adding more children is not supported in the test');
+		}
+
 		I.click(this.addChildButton);
 		activeChild = 'additionalChildren_0';
 	},
@@ -47,15 +51,15 @@ module.exports = {
 		I.fillField(this.fields(activeChild).DOB.day, day);
 		I.fillField(this.fields(activeChild).DOB.month, month);
 		I.fillField(this.fields(activeChild).DOB.year, year);
-		I.selectOption(this.fields(activeChild).genderDropdown, gender);
+		I.selectOption(this.fields(activeChild).gender, gender);
 	},
 
 	defineChildSituation(day, month, year, situation = 'Living with respondents', address = '35 London Lane') {
-		I.selectOption(this.fields(activeChild).situationDropdown.selector, situation);
-		I.fillField(this.fields(activeChild).situationDropdown.dateStartedStaying.day, day);
-		I.fillField(this.fields(activeChild).situationDropdown.dateStartedStaying.month, month);
-		I.fillField(this.fields(activeChild).situationDropdown.dateStartedStaying.year, year);
-		I.fillField(this.fields(activeChild).situationDropdown.addressOfChild, address);
+		I.selectOption(this.fields(activeChild).situation.selector, situation);
+		I.fillField(this.fields(activeChild).situation.dateStartedStaying.day, day);
+		I.fillField(this.fields(activeChild).situation.dateStartedStaying.month, month);
+		I.fillField(this.fields(activeChild).situation.dateStartedStaying.year, year);
+		I.fillField(this.fields(activeChild).situation.addressOfChild, address);
 	},
 
 	enterKeyDatesAffectingHearing(keyDates = 'Tuesday the 11th') {
@@ -73,7 +77,7 @@ module.exports = {
 	enterParentsDetails(fatherResponsible = 'Yes', motherName = 'Laura Smith', fatherName = 'David Smith') {
 		I.fillField(this.fields(activeChild).mothersName, motherName);
 		I.fillField(this.fields(activeChild).fathersName, fatherName);
-		I.selectOption(this.fields(activeChild).fatherResponsibleDropdown, fatherResponsible);
+		I.selectOption(this.fields(activeChild).fatherResponsible, fatherResponsible);
 	},
 
 	enterSocialWorkerDetails(socialWorkerName = 'James Jackson', socialWorkerTel = '01234567') {
