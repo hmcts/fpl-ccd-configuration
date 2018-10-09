@@ -19,6 +19,7 @@ Scenario('All documents are able to be uploaded', (I, uploadDocumentsPage) => {
 	uploadDocumentsPage.uploadSocialWorkStatement(config.testFile);
 	uploadDocumentsPage.uploadSocialWorkAssessment(config.testFile);
 	uploadDocumentsPage.uploadCarePlan(config.testFile);
+	uploadDocumentsPage.uploadAdditionalDocuments(config.testFile);
 	I.continueAndSubmit(config.eventSummary, config.eventDescription);
 	I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
 });

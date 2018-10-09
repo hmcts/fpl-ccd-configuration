@@ -18,13 +18,13 @@ module.exports = function () {
 
 		continueAndSubmit(summary, description) {
 			this.click('Continue');
-			this.waitForElement('.check-your-answers', 5);
+			this.waitForElement('.check-your-answers', 10);
 			addEventDetails.submitCase(summary, description);
 			this.waitForElement('.tabs', 10);
 		},
 
 		seeEventSubmissionConfirmation(event) {
 			this.see(`updated with event: ${event}`);
-		},
+		}
 	});
 };
