@@ -19,7 +19,8 @@
     "enterGroundsPage": "./e2e/pages/enterGrounds/enterGrounds.js",
     "enterFactorsAffectingParentingPage": "./e2e/pages/enterFactorsAffectingParenting/enterFactorsAffectingParenting.js",
     "enterInternationalElementsPage": "./e2e/pages/internationalElements/enterInternationalElements.js",
-    "enterChildrenPage": "./e2e/pages/enterChildren/enterChildren.js"
+    "enterChildrenPage": "./e2e/pages/enterChildren/enterChildren.js",
+    "uploadDocumentsPage": "./e2e/pages/uploadDocuments/uploadDocuments.js"
   },
   "mocha": {},
   "bootstrap": null,

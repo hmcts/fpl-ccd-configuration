@@ -7,6 +7,7 @@ plugins {
   id 'org.springframework.boot' version '2.0.3.RELEASE'
   id 'org.owasp.dependencycheck' version '3.2.1'
   id 'com.github.ben-manes.versions' version '0.20.0'
+  id 'org.sonarqube' version '2.6.2'
 }
 
 group = 'uk.gov.hmcts.reform'
@@ -60,6 +61,7 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
   // set your environment variables here
   // environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
+check.dependsOn integration
 
 task smoke(type: Test) {
   description = "Runs Smoke Tests"
@@ -79,7 +81,7 @@ pmd {
   ignoreFailures = true
   sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
   reportsDir = file("$project.buildDir/reports/pmd")
-  ruleSetFiles = files("config/pmd/ruleset.xml")
+  ruleSetFiles = files("../config/pmd/ruleset.xml")
 }
 
 jacocoTestReport {
@@ -110,6 +112,13 @@ dependencyCheck {
   // range of 0-10 fails the build, anything greater and it doesn't fail the build
   failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'true' ? 0 : 11
   suppressionFile = 'config/owasp/suppressions.xml'
+  outputDirectory = 'build/reports'
+}
+
+sonarqube {
+  properties {
+    property "sonar.projectName", "FPL :: Service"
+  }
 }
 
 repositories {
