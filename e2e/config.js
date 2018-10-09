@@ -17,6 +17,7 @@ module.exports = {
 		enterOtherProceedings: 'Enter other proceedings',
 		enterAllocationProposal: 'Enter allocation proposal',
 		attendingHearing: 'Attending hearing',
-		uploadDocuments: 'Upload documents',
+		uploadDocuments: 'Annex documents',
 	},
+	testFile: './e2e/fixtures/mockFile'
 };
