@@ -4,5 +4,5 @@ module.exports = {
 	telephoneNumber: '00000000000',
 	email: 'solicitor@email.com',
 	dx: '160010 Kingsway 7 ',
-	reference: '#reference',
+	reference: 'reference',
 };

@@ -1,31 +1,28 @@
-const applicant = require('../../fixtures/applicant.js');
-const solicitor = require('../../fixtures/solicitor.js');
-
 const I = actor();
 
 module.exports = {
 
 	fields: {
 		applicant: {
-			name: '#enterApplicant_name',
-			nameOfPersonToContact: '#enterApplicant_personToContact',
-			jobTitle: '#enterApplicant_jobTitle',
-			address: '#enterApplicant_address',
-			mobileNumber: '#enterApplicant_mobile',
-			telephoneNumber: '#enterApplicant_telephone',
-			email: '#enterApplicant_email',
+			name: '#enterApplicant_applicant_applicant_name',
+			nameOfPersonToContact: '#enterApplicant_applicant_applicant_personToContact',
+			jobTitle: '#enterApplicant_applicant_applicant_jobTitle',
+			address: '#enterApplicant_applicant_applicant_address',
+			mobileNumber: '#enterApplicant_applicant_applicant_mobile',
+			telephoneNumber: '#enterApplicant_applicant_applicant_telephone',
+			email: '#enterApplicant_applicant_applicant_email'
 		},
 		solicitor: {
-			name: '#enterApplicant_solicitorName',
-			mobileNumber: '#enterApplicant_solicitorMobile',
-			telephoneNumber: '#enterApplicant_solicitorTelephone',
-			email: '#enterApplicant_solicitorEmail',
-			dx: '#enterApplicant_solicitorDx',
-			reference: '#enterApplicant_solicitorReference',
+			name: '#enterApplicant_solicitor_solicitor_name',
+			mobileNumber: '#enterApplicant_solicitor_solicitor_mobile',
+			telephoneNumber: '#enterApplicant_solicitor_solicitor_telephone',
+			email: '#enterApplicant_solicitor_solicitor_email',
+			dx: '#enterApplicant_solicitor_solicitor_dx',
+			reference: '#enterApplicant_solicitor_solicitor_reference'
 		}
 	},
 
-	enterApplicantDetails() {
+	enterApplicantDetails(applicant) {
 		I.fillField(this.fields.applicant.name, applicant.name);
 		I.fillField(this.fields.applicant.nameOfPersonToContact, applicant.nameOfPersonToContact);
 		I.fillField(this.fields.applicant.jobTitle, applicant.jobTitle);
@@ -35,7 +32,7 @@ module.exports = {
 		I.fillField(this.fields.applicant.email, applicant.email);
 	},
 
-	enterSolicitorDetails() {
+	enterSolicitorDetails(solicitor) {
 		I.fillField(this.fields.solicitor.name, solicitor.name);
 		I.fillField(this.fields.solicitor.mobileNumber, solicitor.mobileNumber);
 		I.fillField(this.fields.solicitor.telephoneNumber, solicitor.telephoneNumber);
