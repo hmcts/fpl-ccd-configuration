@@ -5,15 +5,15 @@ module.exports = {
 
 	fields: {
 		physicalHarm: {
-			yes: '#riskHarm_enterRisk_physicalHarmQuestion-Yes',
-			pastHarm: locate('input').withAttr({id: 'riskHarm_enterRisk_physicalHarmMultiSelect-Past harm'}),
+			yes: '#risks_physicalHarm-Yes',
+			pastHarm: locate('input').withAttr({id: 'risks_physicalHarmOccurrences-Past harm'}),
 		},
-		emotionalHarmNo: '#riskHarm_enterRisk_emotionalHarmQuestion-No',
-		sexualAbuseNo: '#riskHarm_enterRisk_sexualAbuseQuestion-No',
+		emotionalHarmNo: '#risks_emotionalHarm-No',
+		sexualAbuseNo: '#risks_sexualAbuse-No',
 		neglect: {
-			yes: '#riskHarm_enterRisk_neglectQuestion-Yes',
-			pastHarm: locate('input').withAttr({id: 'riskHarm_enterRisk_neglectMultiSelect-Past harm'}),
-			futureHarm: locate('input').withAttr({id: 'riskHarm_enterRisk_neglectMultiSelect-Future risk of harm'})
+			yes: '#risks_neglect-Yes',
+			pastHarm: locate('input').withAttr({id: 'risks_neglectOccurrences-Past harm'}),
+			futureHarm: locate('input').withAttr({id: 'risks_neglectOccurrences-Future risk of harm'})
 		}
 	},
 
