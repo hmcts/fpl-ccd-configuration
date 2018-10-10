@@ -1,0 +1,7 @@
+# exclude all by default
+
+*
+
+# exceptions from `exclude all` rule
+
+!service/build/libs/*.jar
