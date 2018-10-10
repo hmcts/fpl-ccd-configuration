@@ -20,7 +20,8 @@
     "enterFactorsAffectingParentingPage": "./e2e/pages/enterFactorsAffectingParenting/enterFactorsAffectingParenting.js",
     "enterInternationalElementsPage": "./e2e/pages/internationalElements/enterInternationalElements.js",
     "enterChildrenPage": "./e2e/pages/enterChildren/enterChildren.js",
-    "uploadDocumentsPage": "./e2e/pages/uploadDocuments/uploadDocuments.js"
+    "uploadDocumentsPage": "./e2e/pages/uploadDocuments/uploadDocuments.js",
+    "enterRiskAndHarmToChildPage": "./e2e/pages/enterRiskAndHarmToChild/enterRiskAndHarmToChild.js"
   },
   "mocha": {},
   "bootstrap": null,
