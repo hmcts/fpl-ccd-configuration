@@ -12,7 +12,7 @@
   },
   "scripts": {
     "lint": "eslint .",
-    "test": "codeceptjs run --steps"
+    "test": "codeceptjs run-multiple parallel"
   },
   "license": "MIT"
 }

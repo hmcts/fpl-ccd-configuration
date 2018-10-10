@@ -1,5 +1,10 @@
 exports.config = {
   output: "./output",
+  multiple: {
+    parallel: {
+      chunks: 3
+    }
+  },
   helpers: {
     Puppeteer: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
