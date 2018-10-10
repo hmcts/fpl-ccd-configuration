@@ -38,5 +38,5 @@ module.exports = {
 		I.fillField(this.fields.children, otherProceedingData.children);
 		I.fillField(this.fields.guardian, otherProceedingData.guardian);
 		I.click(this.fields.sameGuardianNeeded.yes);
-	}
+	},
 };

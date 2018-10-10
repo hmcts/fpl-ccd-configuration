@@ -25,6 +25,6 @@ module.exports = function () {
 
 		seeEventSubmissionConfirmation(event) {
 			this.see(`updated with event: ${event}`);
-		}
+		},
 	});
 };
