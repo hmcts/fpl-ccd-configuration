@@ -4,21 +4,21 @@ module.exports = {
 
 	fields: {
 		applicant: {
-			name: '#enterApplicant_applicant_applicant_name',
-			nameOfPersonToContact: '#enterApplicant_applicant_applicant_personToContact',
-			jobTitle: '#enterApplicant_applicant_applicant_jobTitle',
-			address: '#enterApplicant_applicant_applicant_address',
-			mobileNumber: '#enterApplicant_applicant_applicant_mobile',
-			telephoneNumber: '#enterApplicant_applicant_applicant_telephone',
-			email: '#enterApplicant_applicant_applicant_email'
+			name: '#enterApplicant_applicant_name',
+			nameOfPersonToContact: '#enterApplicant_applicant_personToContact',
+			jobTitle: '#enterApplicant_applicant_jobTitle',
+			address: '#enterApplicant_applicant_address',
+			mobileNumber: '#enterApplicant_applicant_mobile',
+			telephoneNumber: '#enterApplicant_applicant_telephone',
+			email: '#enterApplicant_applicant_email'
 		},
 		solicitor: {
-			name: '#enterApplicant_solicitor_solicitor_name',
-			mobileNumber: '#enterApplicant_solicitor_solicitor_mobile',
-			telephoneNumber: '#enterApplicant_solicitor_solicitor_telephone',
-			email: '#enterApplicant_solicitor_solicitor_email',
-			dx: '#enterApplicant_solicitor_solicitor_dx',
-			reference: '#enterApplicant_solicitor_solicitor_reference'
+			name: '#enterApplicant_solicitor_name',
+			mobileNumber: '#enterApplicant_solicitor_mobile',
+			telephoneNumber: '#enterApplicant_solicitor_telephone',
+			email: '#enterApplicant_solicitor_email',
+			dx: '#enterApplicant_solicitor_dx',
+			reference: '#enterApplicant_solicitor_reference'
 		}
 	},
 
