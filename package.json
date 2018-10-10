@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "FPL CCD e2e tests",
   "devDependencies": {
-    "codeceptjs": "^1.4.2",
+    "codeceptjs": "^1.4.3",
     "eslint": "5.6.1 ",
     "eslint-plugin-codeceptjs": "^0.4.0",
     "puppeteer": "^1.9.0",
