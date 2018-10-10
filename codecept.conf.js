@@ -1,8 +1,10 @@
+/*global process*/
+
 exports.config = {
   output: "./output",
   multiple: {
     parallel: {
-      chunks: 3
+      chunks: parseInt(process.env.PARALLEL_CHUNKS || '3')
     }
   },
   helpers: {
