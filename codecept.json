@@ -6,6 +6,9 @@
       "chrome": {
         "ignoreHTTPSErrors": true
       }
+    },
+    "MyHelpers": {
+      "require": "./e2e/helpers/browserback_helper.js"
     }
   },
   "include": {
@@ -23,7 +26,8 @@
     "uploadDocumentsPage": "./e2e/pages/uploadDocuments/uploadDocuments.js",
     "enterApplicantPage": "./e2e/pages/enterApplicant/enterApplicant.js",
     "enterChildrenPage": "./e2e/pages/enterChildren/enterChildren.js",
-    "enterOtherProceedingsPage": "./e2e/pages/enterOtherProceedings/enterOtherProceedings.js"
+    "enterOtherProceedingsPage": "./e2e/pages/enterOtherProceedings/enterOtherProceedings.js",
+    "enterAllocationProposalPage": "./e2e/pages/enterAllocationProposal/enterAllocationProposal.js"
   },
   "mocha": {},
   "bootstrap": null,
