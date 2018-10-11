@@ -10,7 +10,8 @@ module.exports = {
 
   signIn(username, password) {
     I.amOnPage('http://localhost:3451');
-    I.waitForElement(this.submitButton, 5);I.fillField(this.fields.username, username);
+    I.waitForElement(this.submitButton, 5);
+    I.fillField(this.fields.username, username);
     I.fillField(this.fields.password, password);
     I.click(this.submitButton);
   },
