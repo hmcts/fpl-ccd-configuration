@@ -4,20 +4,20 @@ module.exports = {
 
   fields: {
     interpreter: {
-      yes: '#attendHearing_interpreter-Yes',
-      details: '#attendHearing_interpreterDetails'
+      yes: '#hearingPreferences_interpreter-Yes',
+      details: '#hearingPreferences_interpreterDetails',
     },
-    intermediaryNo: '#attendHearing_intermediary-No',
-    litigationCapacityNo: '#attendHearing_litigation-No',
+    intermediaryNo: '#hearingPreferences_intermediary-No',
+    litigationCapacityNo: '#hearingPreferences_litigation-No',
     learningDisability: {
-      yes: '#attendHearing_learningDisability-Yes',
-      details: '#attendHearing_learningDisabilityDetails'
+      yes: '#hearingPreferences_learningDisability-Yes',
+      details: '#hearingPreferences_learningDisabilityDetails',
     },
-    welshNo: '#attendHearing_welsh-No',
+    welshNo: '#hearingPreferences_welsh-No',
     security: {
-      yes: '#attendHearing_security-Yes',
-      details: '#attendHearing_securityDetails'
-    }
+      yes: '#hearingPreferences_extraSecurityMeasures-Yes',
+      details: '#hearingPreferences_extraSecurityMeasuresDetails',
+    },
   },
 
   enterInterpreter(details = 'French translator') {
@@ -45,5 +45,5 @@ module.exports = {
   enterSecurity(details = 'Separate waiting rooms') {
     I.click(this.fields.security.yes);
     I.fillField(this.fields.security.details, details);
-  }
+  },
 };
