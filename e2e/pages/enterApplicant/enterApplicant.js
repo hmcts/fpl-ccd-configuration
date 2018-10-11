@@ -10,7 +10,7 @@ module.exports = {
 			address: '#enterApplicant_applicant_address',
 			mobileNumber: '#enterApplicant_applicant_mobile',
 			telephoneNumber: '#enterApplicant_applicant_telephone',
-			email: '#enterApplicant_applicant_email'
+			email: '#enterApplicant_applicant_email',
 		},
 		solicitor: {
 			name: '#enterApplicant_solicitor_name',
@@ -18,8 +18,8 @@ module.exports = {
 			telephoneNumber: '#enterApplicant_solicitor_telephone',
 			email: '#enterApplicant_solicitor_email',
 			dx: '#enterApplicant_solicitor_dx',
-			reference: '#enterApplicant_solicitor_reference'
-		}
+			reference: '#enterApplicant_solicitor_reference',
+		},
 	},
 
 	enterApplicantDetails(applicant) {
@@ -39,5 +39,5 @@ module.exports = {
 		I.fillField(this.fields.solicitor.email, solicitor.email);
 		I.fillField(this.fields.solicitor.dx, solicitor.dx);
 		I.fillField(this.fields.solicitor.reference, solicitor.reference);
-	}
+	},
 };
