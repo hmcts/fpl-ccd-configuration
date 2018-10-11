@@ -8,7 +8,7 @@ module.exports = {
     socialWorkAssessment: '#documents_socialWorkAssessement_document_uploadDocuments_typeOfDocument',
     carePlan: '#documents_socialWorkCarePlan_document_uploadDocuments_typeOfDocument',
     otherDocuments_1: '#documents_socialWorkOther_0_otherDocuments_typeOfDocument',
-    otherDocuments_2: '#documents_socialWorkOther_1_otherDocuments_typeOfDocument'
+    otherDocuments_2: '#documents_socialWorkOther_1_otherDocuments_typeOfDocument',
   },
 
   fields: {
@@ -49,5 +49,5 @@ module.exports = {
     I.click('Add new');
     I.fillField(this.fields.otherDocumentsTitle_2, 'Document');
     I.attachFile(this.documents.otherDocuments_2, file);
-  }
+  },
 };

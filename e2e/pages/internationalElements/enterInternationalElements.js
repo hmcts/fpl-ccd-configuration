@@ -5,12 +5,12 @@ module.exports = {
   fields: {
     possibleCarer: {
       yes: '#international_PossibleCarer-Yes',
-      textField: '#international_PossibleCarerReason'
+      textField: '#international_PossibleCarerReason',
     },
 
     significantEvents: {
       yes: '#international_SignificantEvents-Yes',
-      textField: '#international_SignificantEventsReason'
+      textField: '#international_SignificantEventsReason',
     },
 
     issues: {
@@ -19,8 +19,8 @@ module.exports = {
 
     proceedings: {
       yes: '#international_Proceedings-Yes',
-      textField: '#international_ProceedingsReason'
-    }
+      textField: '#international_ProceedingsReason',
+    },
   },
 
   halfFillForm() {
@@ -38,5 +38,5 @@ module.exports = {
     I.click(this.fields.issues.no);
     I.click(this.fields.proceedings.yes);
     I.fillField(this.fields.proceedings.textField, 'test');
-  }
+  },
 };

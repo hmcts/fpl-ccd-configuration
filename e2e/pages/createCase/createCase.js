@@ -14,5 +14,5 @@ module.exports = {
     I.selectOption(this.fields.caseType, 'Shared_Storage_DRAFT_v0.3');
     I.selectOption(this.fields.event, 'Initiate Case');
     I.click(this.startButton);
-  }
+  },
 };
