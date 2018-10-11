@@ -12,20 +12,20 @@ module.exports = {
 
 		hearingType: {
 			dropdown: '#hearing_Type',
-			contestedICO: 'Contested interim care order'
+			contestedICO: 'Contested interim care order',
 		},
 
 		noticeWithoutHearing: {
-			yes: '#hearing_WithoutNotice-Yes'
+			yes: '#hearing_WithoutNotice-Yes',
 		},
 
 		reducedNoticeHearing: {
-			no: '#hearing_ReducedNotice-No'
+			no: '#hearing_ReducedNotice-No',
 		},
 
 		respondentsAware: {
-			yes: '#hearing_RespondentsAware-Yes'
-		}
+			yes: '#hearing_RespondentsAware-Yes',
+		},
 	},
 
 	halfFillForm() {
@@ -40,5 +40,5 @@ module.exports = {
 		I.click(this.fields.noticeWithoutHearing.yes);
 		I.click(this.fields.reducedNoticeHearing.no);
 		I.click(this.fields.respondentsAware.yes);
-	}
+	},
 };

@@ -6,7 +6,7 @@ module.exports = {
 		ordersHearingTab: 'Orders sought and hearing needed',
 		casePeopleTab: 'People in the case',
 		legalOpinionTab: 'Legal Opinion',
-		evidenceTab: 'Evidence'
+		evidenceTab: 'Evidence',
 	},
 	actionsDropdown: '.ccd-dropdown',
 	goButton: 'Go',
@@ -16,5 +16,5 @@ module.exports = {
 		I.selectOption(this.actionsDropdown, actionSelected);
 		I.click(this.goButton);
 		I.waitForElement('ccd-case-edit-page', 10);
-	}
-}
+	},
+};

@@ -5,16 +5,16 @@ module.exports = {
 	fields: {
 		alcoholOrDrugAbuse: {
 			yes: '#factorsParenting_alcoholDrugAbuse-Yes',
-			reason: '#factorsParenting_alcoholDrugAbuseReason'
+			reason: '#factorsParenting_alcoholDrugAbuseReason',
 		},
 		domesticViolence: {
 			yes: '#factorsParenting_domesticViolence-Yes',
-			reason: '#factorsParenting_domesticViolenceReason'
+			reason: '#factorsParenting_domesticViolenceReason',
 
 		},
 		anythingElse: {
 			yes: '#factorsParenting_anythingElse-Yes',
-			reason: '#factorsParenting_anythingElseReason'
+			reason: '#factorsParenting_anythingElseReason',
 		},
 	},
 
@@ -29,5 +29,5 @@ module.exports = {
 		I.fillField(this.fields.domesticViolence.reason, 'mock reason');
 		I.click(this.fields.anythingElse.yes);
 		I.fillField(this.fields.anythingElse.reason, 'mock reason');
-	}
+	},
 };

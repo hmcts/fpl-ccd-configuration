@@ -1,3 +1,4 @@
+/*global locate*/
 
 const I = actor();
 
@@ -13,8 +14,8 @@ module.exports = {
 		neglect: {
 			yes: '#risks_neglect-Yes',
 			pastHarm: locate('input').withAttr({id: 'risks_neglectOccurrences-Past harm'}),
-			futureHarm: locate('input').withAttr({id: 'risks_neglectOccurrences-Future risk of harm'})
-		}
+			futureHarm: locate('input').withAttr({id: 'risks_neglectOccurrences-Future risk of harm'}),
+		},
 	},
 
 	completePhyiscalHarm() {
@@ -34,5 +35,5 @@ module.exports = {
 		I.click(this.fields.neglect.yes);
 		I.checkOption(this.fields.neglect.pastHarm);
 		I.checkOption(this.fields.neglect.futureHarm);
-	}
+	},
 };

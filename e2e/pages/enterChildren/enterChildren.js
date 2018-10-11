@@ -9,7 +9,7 @@ module.exports = {
 			DOB: {
 				day: `#children_${childNo}_enterChildren_childDOB-day`,
 				month: `#children_${childNo}_enterChildren_childDOB-month`,
-				year: `#children_${childNo}_enterChildren_childDOB-year`
+				year: `#children_${childNo}_enterChildren_childDOB-year`,
 			},
 			gender: `#children_${childNo}_enterChildren_childGender`,
 			situation: {
@@ -17,7 +17,7 @@ module.exports = {
 				dateStartedStaying: {
 					day: `#children_${childNo}_enterChildren_situationDate-day`,
 					month: `#children_${childNo}_enterChildren_situationDate-month`,
-					year: `#children_${childNo}_enterChildren_situationDate-year`
+					year: `#children_${childNo}_enterChildren_situationDate-year`,
 				},
 				addressOfChild: `#children_${childNo}_enterChildren_situationAddress`,
 			},
@@ -32,7 +32,7 @@ module.exports = {
 			additionalNeedsNo: `#children_${childNo}_enterChildren_additionalNeeds-No`,
 			contactHiddenNo: `#children_${childNo}_enterChildren_detailsHidden-No`,
 			litigationNo: `#children_${childNo}_enterChildren_litigationIssues-No`,
-		}
+		};
 	},
 	addChildButton: 'Add new',
 
@@ -95,5 +95,5 @@ module.exports = {
 
 	defineAbilityToTakePartInProceedings() {
 		I.click(this.fields(activeChild).litigationNo);
-	}
+	},
 };
