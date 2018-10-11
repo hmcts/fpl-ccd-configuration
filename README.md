@@ -40,7 +40,23 @@ To ensure you have the correct dependencies run `yarn install` in the command li
 To run code linting enter `yarn lint` in the command line.
 
 ## Testing:
+E2E tests are configured to run in parallel in 3 headless browsers by default.
+
 To run e2e tests enter `yarn test` in the command line.
+
+### Optional configuration
+
+To run all tests only in one browser please set `PARALLEL_CHUNKS` environment variable to `1`.
+
+```$bash
+PARALLEL_CHUNKS=1 yarn test
+```
+
+To show tests in browser window as they run please set `SHOW_BROWSER_WINDOW` environment variable to `true`.
+
+```$bash
+SHOW_BROWSER_WINDOW=true yarn test
+```
 
 ## Service:
 See [fpl-service](service/README.md) for more information.
