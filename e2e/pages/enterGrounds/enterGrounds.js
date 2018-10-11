@@ -10,7 +10,6 @@ module.exports = {
     thresholdDetails: '#grounds_thresholdDetails',
   },
 
-
   enterThresholdCriteriaDetails() {
     I.checkOption(this.fields.thresholdReason.notReceivingCare);
     I.fillField(this.fields.thresholdDetails, 'mock threshold details');
