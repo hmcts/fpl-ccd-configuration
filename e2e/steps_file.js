@@ -26,5 +26,10 @@ module.exports = function () {
     seeEventSubmissionConfirmation(event) {
       this.see(`updated with event: ${event}`);
     },
+
+    clickHyperlink(link, urlNavigatedTo) {
+      this.click(link);
+      this.seeCurrentUrlEquals(urlNavigatedTo);
+    },
   });
 };
