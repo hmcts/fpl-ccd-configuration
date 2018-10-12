@@ -21,7 +21,7 @@ Scenario('completing the attending hearing section of the c110a application', (I
   attendingHearingPage.enterLitigationIssues();
   attendingHearingPage.enterLearningDisability();
   attendingHearingPage.enterWelshProceedings();
-  attendingHearingPage.enterSecurity();
+  attendingHearingPage.enterExtraSecurityMeasures();
   I.continueAndSubmit(config.eventSummary, config.eventDescription);
   I.seeEventSubmissionConfirmation(config.applicationActions.attendingHearing);
 });

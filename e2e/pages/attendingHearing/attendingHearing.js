@@ -42,7 +42,7 @@ module.exports = {
     I.click(this.fields.welshNo);
   },
 
-  enterSecurity(details = 'Separate waiting rooms') {
+  enterExtraSecurityMeasures(details = 'Separate waiting rooms') {
     I.click(this.fields.security.yes);
     I.fillField(this.fields.security.details, details);
   },

@@ -12,8 +12,11 @@ exports.config = {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: false,
       chrome: {
-        ignoreHTTPSErrors: true,
+        ignoreHTTPSErrors: true
       },
+    },
+    MyHelpers: {
+      require: './e2e/helpers/browserback_helper.js',
     },
   },
   include: {
@@ -33,6 +36,7 @@ exports.config = {
     enterChildrenPage: './e2e/pages/enterChildren/enterChildren.js',
     enterOtherProceedingsPage: './e2e/pages/enterOtherProceedings/enterOtherProceedings.js',
     attendingHearingPage: './e2e/pages/attendingHearing/attendingHearing.js',
+    enterAllocationProposalPage: './e2e/pages/enterAllocationProposal/enterAllocationProposal.js',
   },
   plugins: {
     screenshotOnFail: {
