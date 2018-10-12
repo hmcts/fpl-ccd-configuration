@@ -12,7 +12,7 @@ module.exports = {
     enterOthers: 'Enter others who need notice',
     enterGrounds: 'Enter grounds for application',
     enterRisk: 'Enter risk & harm to children',
-    enterParentingFactors: 'Factors affecting parenting',
+    enterFactorsAffectingParenting: 'Factors affecting parenting',
     enterInternationalElement: 'Enter international element',
     enterOtherProceedings: 'Enter other proceedings',
     enterAllocationProposal: 'Enter allocation proposal',

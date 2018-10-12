@@ -3,22 +3,22 @@ const I = actor();
 module.exports = {
 
   documents: {
-    socialWorkChronology: '#documents_socialWorkChronology_document_uploadDocuments_typeOfDocument',
-    socialWorkStatementAndGenogram: '#documents_socialWorkStatement_document_uploadDocuments_typeOfDocument',
-    socialWorkAssessment: '#documents_socialWorkAssessement_document_uploadDocuments_typeOfDocument',
-    carePlan: '#documents_socialWorkCarePlan_document_uploadDocuments_typeOfDocument',
-    otherDocuments_1: '#documents_socialWorkOther_0_otherDocuments_typeOfDocument',
-    otherDocuments_2: '#documents_socialWorkOther_1_otherDocuments_typeOfDocument',
+    socialWorkChronology: '#documents_socialWorkChronology_document_typeOfDocument',
+    socialWorkStatementAndGenogram: '#documents_socialWorkStatement_document_typeOfDocument',
+    socialWorkAssessment: '#documents_socialWorkAssessement_document_typeOfDocument',
+    carePlan: '#documents_socialWorkCarePlan_document_typeOfDocument',
+    otherDocuments_1: '#documents_socialWorkOther_0_typeOfDocument',
+    otherDocuments_2: '#documents_socialWorkOther_1_typeOfDocument',
   },
 
   fields: {
-    socialWorkChronologyStatus: '#documents_socialWorkChronology_document_uploadDocuments_documentStatus',
-    socialWorkChronologyReason: '#documents_socialWorkChronology_document_uploadDocuments_statusReason',
-    socialWorkStatementAndGenogramStatus: '#documents_socialWorkStatement_document_uploadDocuments_documentStatus',
-    socialWorkAssessmentStatus: '#documents_socialWorkAssessement_document_uploadDocuments_documentStatus',
-    carePlanStatus: '#documents_socialWorkCarePlan_document_uploadDocuments_documentStatus',
-    otherDocumentsTitle_1: '#documents_socialWorkOther_0_otherDocuments_documentTitle',
-    otherDocumentsTitle_2: '#documents_socialWorkOther_1_otherDocuments_documentTitle',
+    socialWorkChronologyStatus: '#documents_socialWorkChronology_document_documentStatus',
+    socialWorkChronologyReason: '#documents_socialWorkChronology_document_statusReason',
+    socialWorkStatementAndGenogramStatus: '#documents_socialWorkStatement_document_documentStatus',
+    socialWorkAssessmentStatus: '#documents_socialWorkAssessement_document_documentStatus',
+    carePlanStatus: '#documents_socialWorkCarePlan_document_documentStatus',
+    otherDocumentsTitle_1: '#documents_socialWorkOther_0_typeOfDocument',
+    otherDocumentsTitle_2: '#documents_socialWorkOther_1_typeOfDocument',
 
   },
 
