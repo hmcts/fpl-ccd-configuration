@@ -18,16 +18,18 @@ module.exports = {
     },
   },
 
-  enterYesForAlcoholOrDrugAbuse() {
-    I.click(this.fields.alcoholOrDrugAbuse.yes);
-  },
-
-  enterFactorsAffectingParenting() {
+  completeAlcoholOrDrugAbuse() {
     I.click(this.fields.alcoholOrDrugAbuse.yes);
     I.fillField(this.fields.alcoholOrDrugAbuse.reason, 'mock reason');
+  },
+
+  completeDomesticViolence() {
     I.click(this.fields.domesticViolence.yes);
     I.fillField(this.fields.domesticViolence.reason, 'mock reason');
+  },
+
+  completeAnythingElse() {
     I.click(this.fields.anythingElse.yes);
     I.fillField(this.fields.anythingElse.reason, 'mock reason');
-  },
+  }
 };
