@@ -14,7 +14,7 @@ withPipeline(type, product, component) {
   enableDeployToAKS()
   // enableSlackNotifications('#fpl-tech')
 
-  after('aksDeploy') {
+  after('aksdeploy') {
     echo params
     echo env
 
