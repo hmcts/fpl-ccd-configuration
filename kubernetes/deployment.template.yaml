@@ -193,13 +193,13 @@ spec:
       containers:
         - image: ${IMAGE_NAME}
           name: ${SERVICE_NAME}
-#          resources:
-#            requests:
-#              memory: 512Mi
-#              cpu: 200m
-#            limits:
-#              memory: 1024Mi
-#              cpu: 400m
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 2500m
           ports:
             - containerPort: 4000
               name: http
@@ -274,13 +274,13 @@ spec:
           envFrom:
             - configMapRef:
                 name: service-auth-provider-api
-#          resources:
-#            requests:
-#              memory: 256Mi
-#              cpu: 200m
-#            limits:
-#              memory: 1024Mi
-#              cpu: 400m
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 2500m
           ports:
             - containerPort: 8489
               name: http
@@ -333,13 +333,13 @@ spec:
           envFrom:
             - configMapRef:
                 name: idam-authentication-web
-#          resources:
-#            requests:
-#              memory: 256Mi
-#              cpu: 200m
-#            limits:
-#              memory: 256Mi
-#              cpu: 1000m
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 200m
+            limits:
+              memory: 256Mi
+              cpu: 500m
           ports:
             - containerPort: 8000
               name: http
@@ -414,13 +414,13 @@ spec:
           envFrom:
             - configMapRef:
                 name: idam-api
-#          resources:
-#            requests:
-#              memory: 256Mi
-#              cpu: 200m
-#            limits:
-#              memory: 1024Mi
-#              cpu: 2000m
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 2500m
           ports:
             - containerPort: 8080
               name: http
@@ -473,13 +473,13 @@ spec:
           envFrom:
             - configMapRef:
                 name: ccd-case-management-web
-#          resources:
-#            requests:
-#              memory: 256Mi
-#              cpu: 200m
-#            limits:
-#              memory: 256Mi
-#              cpu: 400m
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 200m
+            limits:
+              memory: 256Mi
+              cpu: 500m
           ports:
             - containerPort: 3451
               name: http
@@ -554,13 +554,13 @@ spec:
           envFrom:
             - configMapRef:
                 name: ccd-api-gateway
-#          resources:
-#            requests:
-#              memory: 256Mi
-#              cpu: 200m
-#            limits:
-#              memory: 1024Mi
-#              cpu: 400m
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 200m
+            limits:
+              memory: 256Mi
+              cpu: 500m
           ports:
             - containerPort: 3453
               name: http
@@ -635,13 +635,13 @@ spec:
           envFrom:
             - configMapRef:
                 name: ccd-user-profile-api
-#          resources:
-#            requests:
-#              memory: 256Mi
-#              cpu: 200m
-#            limits:
-#              memory: 1024Mi
-#              cpu: 2500m
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 2500m
           ports:
             - containerPort: 4453
               name: http
@@ -694,13 +694,13 @@ spec:
           envFrom:
             - configMapRef:
                 name: ccd-definition-store-api
-#          resources:
-#            requests:
-#              memory: 256Mi
-#              cpu: 200m
-#            limits:
-#              memory: 1024Mi
-#              cpu: 2500m
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 2500m
           ports:
             - containerPort: 4451
               name: http
@@ -753,13 +753,13 @@ spec:
           envFrom:
             - configMapRef:
                 name: ccd-data-store-api
-#          resources:
-#            requests:
-#              memory: 256Mi
-#              cpu: 200m
-#            limits:
-#              memory: 1024Mi
-#              cpu: 2500m
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 2500m
           ports:
             - containerPort: 4452
               name: http
@@ -809,13 +809,13 @@ spec:
       containers:
         - image: hmcts.azurecr.io/hmcts/ccd-postgres:10.5-alpine
           name: shared-database
-#          resources:
-#            requests:
-#              memory: 256Mi
-#              cpu: 200m
-#            limits:
-#              memory: 1024Mi
-#              cpu: 1000m
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: 200m
+            limits:
+              memory: 64Mi
+              cpu: 400m
           ports:
             - containerPort: 5432
               name: postgres
@@ -862,13 +862,13 @@ spec:
       containers:
         - image: mailhog/mailhog:latest
           name: smtp-server
-#          resources:
-#            requests:
-#              memory: 16Mi
-#              cpu: 100m
-#            limits:
-#              memory: 32Mi
-#              cpu: 200m
+          resources:
+            requests:
+              memory: 16Mi
+              cpu: 100m
+            limits:
+              memory: 32Mi
+              cpu: 200m
           ports:
             - containerPort: 1025
               name: smtp-server
