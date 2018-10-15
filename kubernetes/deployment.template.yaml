@@ -69,7 +69,7 @@ data:
   SPRING_MAIL_HOST: 'smtp-server'
   NOTIFY: 'false'
   IDAM_API_OAUTH2_CLIENT_CLIENT_SECRETS_CCD_GATEWAY: '123456'
-  IDAM_CCD_WHITELIST: 'https://ccd-case-management-web.${SERVICE_FQDN}/oauth2redirect'
+  IDAM_CCD_WHITELIST: 'https://ccd-case-management-web-${SERVICE_FQDN}/oauth2redirect'
   REFORM_ENVIRONMENT: 'kubernetes'
   IDAM_TESTING_SUPPORT_ENABLED: 'true'
 
@@ -84,10 +84,10 @@ metadata:
   name: ccd-case-management-web
   namespace: ${NAMESPACE}
 data:
-  IDAM_LOGIN_URL: 'https://idam-authentication-web.${SERVICE_FQDN}/login'
-  CCD_GW_OAUTH2_URL: 'https://ccd-api-gateway.${SERVICE_FQDN}/oauth2'
-  CCD_API_URL: 'https://ccd-api-gateway.${SERVICE_FQDN}/aggregated'
-  CCD_DATA_URL: 'https://ccd-api-gateway.${SERVICE_FQDN}/data'
+  IDAM_LOGIN_URL: 'https://idam-authentication-web-${SERVICE_FQDN}/login'
+  CCD_GW_OAUTH2_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/oauth2'
+  CCD_API_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/aggregated'
+  CCD_DATA_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/data'
 
 ---
 
@@ -110,7 +110,7 @@ data:
   PROXY_AGGREGATED: 'http://ccd-data-store-api'
   PROXY_DATA: 'http://ccd-data-store-api'
   PROXY_DEFINITION_IMPORT: 'http://ccd-definition-store-api'
-  CORS_ORIGIN_WHITELIST: 'https://ccd-case-management-web.${SERVICE_FQDN}'
+  CORS_ORIGIN_WHITELIST: 'https://ccd-case-management-web-${SERVICE_FQDN}'
 
 ---
 
