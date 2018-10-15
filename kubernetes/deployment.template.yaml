@@ -254,10 +254,10 @@ spec:
                 name: service-auth-provider-api
           resources:
             requests:
-              memory: 256Mi
+              memory: 512Mi
               cpu: 200m
             limits:
-              memory: 512Mi
+              memory: 1024Mi
               cpu: 1000m
           ports:
             - containerPort: 8489
@@ -372,10 +372,10 @@ spec:
                 name: idam-api
           resources:
             requests:
-              memory: 256Mi
+              memory: 512Mi
               cpu: 200m
             limits:
-              memory: 512Mi
+              memory: 1024Mi
               cpu: 1000m
           ports:
             - containerPort: 8080
@@ -549,10 +549,10 @@ spec:
                 name: ccd-user-profile-api
           resources:
             requests:
-              memory: 256Mi
+              memory: 512Mi
               cpu: 200m
             limits:
-              memory: 512Mi
+              memory: 1024Mi
               cpu: 1000m
           ports:
             - containerPort: 4453
@@ -608,10 +608,10 @@ spec:
                 name: ccd-definition-store-api
           resources:
             requests:
-              memory: 256Mi
+              memory: 512Mi
               cpu: 200m
             limits:
-              memory: 512Mi
+              memory: 1024Mi
               cpu: 1000m
           ports:
             - containerPort: 4451
@@ -667,10 +667,10 @@ spec:
                 name: ccd-data-store-api
           resources:
             requests:
-              memory: 256Mi
+              memory: 512Mi
               cpu: 200m
             limits:
-              memory: 512Mi
+              memory: 1024Mi
               cpu: 1000m
           ports:
             - containerPort: 4452
