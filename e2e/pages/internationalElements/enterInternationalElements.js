@@ -4,22 +4,22 @@ module.exports = {
 
   fields: {
     possibleCarer: {
-      yes: '#international_PossibleCarer-Yes',
-      textField: '#international_PossibleCarerReason',
+      yes: '#internationalElements_possibleCarer-Yes',
+      textField: '#internationalElements_possibleCarerReason',
     },
 
     significantEvents: {
-      yes: '#international_SignificantEvents-Yes',
-      textField: '#international_SignificantEventsReason',
+      yes: '#internationalElements_significantEvents-Yes',
+      textField: '#internationalElements_significantEventsReason',
     },
 
     issues: {
-      no: '#international_Issues-No',
+      no: '#internationalElements_issues-No',
     },
 
     proceedings: {
-      yes: '#international_Proceedings-Yes',
-      textField: '#international_ProceedingsReason',
+      yes: '#internationalElements_proceedings-Yes',
+      textField: '#internationalElements_proceedingsReason',
     },
   },
 
