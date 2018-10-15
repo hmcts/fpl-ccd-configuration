@@ -48,7 +48,7 @@ data:
 ---
 
 #
-# IDAM-API CONFIG
+# IDAM-API :: Config
 #
 apiVersion: v1
 kind: ConfigMap
@@ -229,28 +229,6 @@ spec:
 ---
 
 #
-# Ingress
-#
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: ${SERVICE_NAME}
-  namespace: ${NAMESPACE}
-  annotations:
-    kubernetes.io/ingress.class: traefik
-spec:
-  rules:
-    - host: ${SERVICE_FQDN}
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: ${SERVICE_NAME}
-              servicePort: 80
-
----
-
-#
 # SERVICE-AUTH-PROVIDER-API :: Deployment
 #
 apiVersion: apps/v1
@@ -365,28 +343,6 @@ spec:
       targetPort: 8000
   selector:
     app: idam-authentication-web
-
----
-
-#
-# IDAM-AUTHENTICATION-WEB :: Ingress
-#
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: idam-authentication-web
-  namespace: ${NAMESPACE}
-  annotations:
-    kubernetes.io/ingress.class: traefik
-spec:
-  rules:
-    - host: idam-authentication-web.service.core-compute-preview.internal
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: idam-authentication-web
-              servicePort: 80
 
 ---
 
@@ -509,28 +465,6 @@ spec:
 ---
 
 #
-# CCD-CASE-MANAGEMENT-WEB :: Ingress
-#
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: ccd-case-management-web
-  namespace: ${NAMESPACE}
-  annotations:
-    kubernetes.io/ingress.class: traefik
-spec:
-  rules:
-    - host: ccd-case-management-web.service.core-compute-preview.internal
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: ccd-case-management-web
-              servicePort: 80
-
----
-
-#
 # CCD-API-GATEWAY :: Deployment
 #
 apiVersion: apps/v1
@@ -586,28 +520,6 @@ spec:
       targetPort: 3453
   selector:
     app: ccd-api-gateway
-
----
-
-#
-# CCD-API-GATEWAY :: Ingress
-#
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  name: ccd-api-gateway
-  namespace: ${NAMESPACE}
-  annotations:
-    kubernetes.io/ingress.class: traefik
-spec:
-  rules:
-    - host: ccd-api-gateway.service.core-compute-preview.internal
-      http:
-        paths:
-          - path: /
-            backend:
-              serviceName: ccd-api-gateway
-              servicePort: 80
 
 ---
 
@@ -891,3 +803,91 @@ spec:
     - port: 1025
   selector:
     app: smtp-server
+
+---
+
+#
+# Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${SERVICE_NAME}
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: ${SERVICE_FQDN}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ${SERVICE_NAME}
+              servicePort: 80
+
+---
+
+#
+# IDAM-AUTHENTICATION-WEB :: Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: idam-authentication-web
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: idam-authentication-web.service.core-compute-preview.internal
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: idam-authentication-web
+              servicePort: 80
+
+---
+
+#
+# CCD-CASE-MANAGEMENT-WEB :: Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ccd-case-management-web
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: ccd-case-management-web.service.core-compute-preview.internal
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ccd-case-management-web
+              servicePort: 80
+
+---
+
+#
+# CCD-API-GATEWAY :: Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ccd-api-gateway
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: ccd-api-gateway.service.core-compute-preview.internal
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ccd-api-gateway
+              servicePort: 80
