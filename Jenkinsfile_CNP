@@ -2,6 +2,8 @@
 
 @Library("Infrastructure")
 
+import uk.gov.hmcts.contino.Kubectl
+
 def type = "java"
 
 def product = "fpl"
@@ -11,4 +13,19 @@ withPipeline(type, product, component) {
   enableDockerBuild()
   enableDeployToAKS()
   // enableSlackNotifications('#fpl-tech')
+
+  after('aksDeploy') {
+    echo params
+    echo env
+
+    def subscription = params.subscription
+    def aksServiceName = 'fpl-fpl-service-pr-41'
+
+    def kubectl = new Kubectl(this, subscription, aksServiceName)
+    def ingressIP = kubectl.getServiceLoadbalancerIP("traefik", "kube-system")
+
+    echo ingressIP
+
+    // registerConsulDns(subscription, aksServiceName, ingressIP)
+  }
 }

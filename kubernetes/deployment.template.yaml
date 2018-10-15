@@ -4,6 +4,13 @@
 #   - SERVICE_NAME: product-component-branch
 #   - IMAGE_NAME:   registry-name/hmcts/product-component:branch
 #
+# To keep this large file easier to maintain the following order of object declarations is imposed:
+#
+# 1. Namespace
+# 2. ConfigMaps
+# 3. Deployments & Services
+# 4. Ingresses
+#
 
 ---
 
@@ -840,7 +847,7 @@ metadata:
     kubernetes.io/ingress.class: traefik
 spec:
   rules:
-    - host: idam-authentication-web.${SERVICE_FQDN}
+    - host: idam-authentication-web-${SERVICE_FQDN}
       http:
         paths:
           - path: /
@@ -862,7 +869,7 @@ metadata:
     kubernetes.io/ingress.class: traefik
 spec:
   rules:
-    - host: ccd-case-management-web.${SERVICE_FQDN}
+    - host: ccd-case-management-web-${SERVICE_FQDN}
       http:
         paths:
           - path: /
@@ -884,7 +891,7 @@ metadata:
     kubernetes.io/ingress.class: traefik
 spec:
   rules:
-    - host: ccd-api-gateway.${SERVICE_FQDN}
+    - host: ccd-api-gateway-${SERVICE_FQDN}
       http:
         paths:
           - path: /
