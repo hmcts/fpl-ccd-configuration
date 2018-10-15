@@ -195,11 +195,11 @@ spec:
           name: ${SERVICE_NAME}
           resources:
             requests:
-              memory: 512Mi
+              memory: 256Mi
               cpu: 200m
             limits:
-              memory: 1024Mi
-              cpu: 2500m
+              memory: 512Mi
+              cpu: 1000m
           ports:
             - containerPort: 4000
               name: http
@@ -279,8 +279,8 @@ spec:
               memory: 256Mi
               cpu: 200m
             limits:
-              memory: 1024Mi
-              cpu: 2500m
+              memory: 512Mi
+              cpu: 1000m
           ports:
             - containerPort: 8489
               name: http
@@ -416,11 +416,11 @@ spec:
                 name: idam-api
           resources:
             requests:
-              memory: 512Mi
+              memory: 256Mi
               cpu: 200m
             limits:
-              memory: 1024Mi
-              cpu: 2500m
+              memory: 512Mi
+              cpu: 1000m
           ports:
             - containerPort: 8080
               name: http
@@ -637,11 +637,11 @@ spec:
                 name: ccd-user-profile-api
           resources:
             requests:
-              memory: 512Mi
+              memory: 256Mi
               cpu: 200m
             limits:
-              memory: 1024Mi
-              cpu: 2500m
+              memory: 512Mi
+              cpu: 1000m
           ports:
             - containerPort: 4453
               name: http
@@ -699,8 +699,8 @@ spec:
               memory: 256Mi
               cpu: 200m
             limits:
-              memory: 1024Mi
-              cpu: 2500m
+              memory: 512Mi
+              cpu: 1000m
           ports:
             - containerPort: 4451
               name: http
@@ -758,8 +758,8 @@ spec:
               memory: 256Mi
               cpu: 200m
             limits:
-              memory: 1024Mi
-              cpu: 2500m
+              memory: 512Mi
+              cpu: 1000m
           ports:
             - containerPort: 4452
               name: http
