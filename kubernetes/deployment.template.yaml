@@ -63,6 +63,7 @@ metadata:
   name: idam-api
   namespace: ${NAMESPACE}
 data:
+  JAVA_OPTS: '-Xms128m -Xmx768m -XX:MaxMetaspaceSize=128m'
   SPRING_DATASOURCE_URL: 'jdbc:postgresql://shared-database/idam'
   SPRING_DATASOURCE_USERNAME: 'idam'
   SPRING_DATASOURCE_PASSWORD: 'idam'
