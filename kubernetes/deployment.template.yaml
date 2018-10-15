@@ -18,6 +18,161 @@ metadata:
 ---
 
 #
+# SERVICE-AUTH-PROVIDER-API :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-auth-provider-api
+  namespace: ${NAMESPACE}
+data:
+  MICROSERVICEKEYS_CCD_GW: 'AABBCCDDEEFFGGHH'
+  MICROSERVICEKEYS_CCD_DATA: 'AABBCCDDEEFFGGHH'
+  MICROSERVICEKEYS_CCD_DEFINITION: 'AABBCCDDEEFFGGHH'
+  TESTING_SUPPORT_ENABLED: 'true'
+
+---
+
+#
+# IDAM-AUTHENTICATION-WEB :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: idam-authentication-web
+  namespace: ${NAMESPACE}
+data:
+  NODE_ENV: 'preview'
+  IDAM_API_URL: 'http://idam-api'
+
+---
+
+#
+# IDAM-API CONFIG
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: idam-api
+  namespace: ${NAMESPACE}
+data:
+  SPRING_DATASOURCE_URL: 'jdbc:postgresql://shared-database/idam'
+  SPRING_DATASOURCE_USERNAME: 'idam'
+  SPRING_DATASOURCE_PASSWORD: 'idam'
+  SPRING_MAIL_HOST: 'smtp-server'
+  NOTIFY: 'false'
+  IDAM_API_OAUTH2_CLIENT_CLIENT_SECRETS_CCD_GATEWAY: '123456'
+  IDAM_CCD_WHITELIST: 'https://ccd-case-management-web.service.core-compute-preview.internal/oauth2redirect'
+  REFORM_ENVIRONMENT: 'kubernetes'
+  IDAM_TESTING_SUPPORT_ENABLED: 'true'
+
+---
+
+#
+# CCD-CASE-MANAGEMENT-WEB :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ccd-case-management-web
+  namespace: ${NAMESPACE}
+data:
+  IDAM_LOGIN_URL: 'https://idam-authentication-web.service.core-compute-preview.internal/login'
+  CCD_GW_OAUTH2_URL: 'https://ccd-api-gateway.service.core-compute-preview.internal/oauth2'
+  CCD_API_URL: 'https://ccd-api-gateway.service.core-compute-preview.internal/aggregated'
+  CCD_DATA_URL: 'https://ccd-api-gateway.service.core-compute-preview.internal/data'
+
+---
+
+#
+# CCD-API-GATEWAY :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ccd-api-gateway
+  namespace: ${NAMESPACE}
+data:
+  IDAM_BASE_URL: 'http://idam-api'
+  IDAM_OAUTH2_TOKEN_ENDPOINT: 'http://idam-api/oauth2/token'
+  IDAM_OAUTH2_LOGOUT_ENDPOINT: 'http://idam-api/session/:token'
+  IDAM_OAUTH2_CLIENT_SECRET: '123456'
+  IDAM_S2S_URL: 'http://service-auth-provider-api'
+  IDAM_SERVICE_NAME: 'ccd_gw'
+  IDAM_SERVICE_KEY: 'AABBCCDDEEFFGGHH'
+  PROXY_AGGREGATED: 'http://ccd-data-store-api'
+  PROXY_DATA: 'http://ccd-data-store-api'
+  PROXY_DEFINITION_IMPORT: 'http://ccd-definition-store-api'
+  CORS_ORIGIN_WHITELIST: 'https://ccd-case-management-web.service.core-compute-preview.internal'
+
+---
+
+#
+# CCD-USER-PROFILE-API :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ccd-user-profile-api
+  namespace: ${NAMESPACE}
+data:
+  SPRING_DATASOURCE_URL: 'jdbc:postgresql://shared-database/ccd_user_profile'
+  SPRING_DATASOURCE_USERNAME: 'ccd_user_profile'
+  SPRING_DATASOURCE_PASSWORD: 'ccd_user_profile'
+  USER_PROFILE_S2S_AUTHORISED_SERVICES: 'ccd_data,ccd_definition'
+  IDAM_S2S_URL: 'http://service-auth-provider-api'
+  REFORM_ENVIRONMENT: 'kubernetes'
+  APPINSIGHTS_INSTRUMENTATIONKEY: 'fake-key'
+
+---
+
+#
+# CCD-DEFINITION-STORE-API :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ccd-definition-store-api
+  namespace: ${NAMESPACE}
+data:
+  SPRING_DATASOURCE_URL: 'jdbc:postgresql://shared-database/ccd_definition_store'
+  SPRING_DATASOURCE_USERNAME: 'ccd_definition_store'
+  SPRING_DATASOURCE_PASSWORD: 'ccd_definition_store'
+  DEFINITION_STORE_IDAM_KEY: 'AABBCCDDEEFFGGHH'
+  DEFINITION_STORE_S2S_AUTHORISED_SERVICES: 'ccd_data,ccd_gw'
+  USER_PROFILE_HOST: 'http://ccd-user-profile-api'
+  IDAM_USER_URL: 'http://idam-api'
+  IDAM_S2S_URL: 'http://service-auth-provider-api'
+  REFORM_ENVIRONMENT: 'kubernetes'
+  APPINSIGHTS_INSTRUMENTATIONKEY: 'fake-key'
+
+---
+
+#
+# CCD-DATA-STORE-API :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ccd-data-store-api
+  namespace: ${NAMESPACE}
+data:
+  SPRING_DATASOURCE_URL: 'jdbc:postgresql://shared-database/ccd_data_store?stringtype=unspecified'
+  SPRING_DATASOURCE_USERNAME: 'ccd_data_store'
+  SPRING_DATASOURCE_PASSWORD: 'ccd_data_store'
+  DATA_STORE_IDAM_KEY: 'AABBCCDDEEFFGGHH'
+  DATA_STORE_TOKEN_SECRET: 'AABBCCDDEEFFGGHH'
+  DATA_STORE_S2S_AUTHORISED_SERVICES: 'ccd_gw'
+  DEFINITION_STORE_HOST: 'http://ccd-definition-store-api'
+  USER_PROFILE_HOST: 'http://ccd-user-profile-api'
+  IDAM_USER_URL: 'http://idam-api'
+  IDAM_S2S_URL: 'http://service-auth-provider-api'
+  REFORM_ENVIRONMENT: 'kubernetes'
+  APPINSIGHTS_INSTRUMENTATIONKEY: 'fake-key'
+
+---
+
+#
 # Deployment
 #
 apiVersion: apps/v1
@@ -96,22 +251,6 @@ spec:
 ---
 
 #
-# SERVICE-AUTH-PROVIDER-API :: Config
-#
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: service-auth-provider-api
-  namespace: ${NAMESPACE}
-data:
-  MICROSERVICEKEYS_CCD_GW: 'AABBCCDDEEFFGGHH'
-  MICROSERVICEKEYS_CCD_DATA: 'AABBCCDDEEFFGGHH'
-  MICROSERVICEKEYS_CCD_DEFINITION: 'AABBCCDDEEFFGGHH'
-  TESTING_SUPPORT_ENABLED: 'true'
-
----
-
-#
 # SERVICE-AUTH-PROVIDER-API :: Deployment
 #
 apiVersion: apps/v1
@@ -167,20 +306,6 @@ spec:
       targetPort: 8489
   selector:
     app: service-auth-provider-api
-
----
-
-#
-# IDAM-AUTHENTICATION-WEB :: Config
-#
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: idam-authentication-web
-  namespace: ${NAMESPACE}
-data:
-  NODE_ENV: 'preview'
-  IDAM_API_URL: 'http://idam-api'
 
 ---
 
@@ -266,27 +391,6 @@ spec:
 ---
 
 #
-# IDAM-API CONFIG
-#
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: idam-api
-  namespace: ${NAMESPACE}
-data:
-  SPRING_DATASOURCE_URL: 'jdbc:postgresql://shared-database/idam'
-  SPRING_DATASOURCE_USERNAME: 'idam'
-  SPRING_DATASOURCE_PASSWORD: 'idam'
-  SPRING_MAIL_HOST: 'smtp-server'
-  NOTIFY: 'false'
-  IDAM_API_OAUTH2_CLIENT_CLIENT_SECRETS_CCD_GATEWAY: '123456'
-  IDAM_CCD_WHITELIST: 'https://ccd-case-management-web.service.core-compute-preview.internal/oauth2redirect'
-  REFORM_ENVIRONMENT: 'kubernetes'
-  IDAM_TESTING_SUPPORT_ENABLED: 'true'
-
----
-
-#
 # IDAM-API :: Deployment
 #
 apiVersion: apps/v1
@@ -321,6 +425,7 @@ spec:
             - containerPort: 8080
               name: http
           imagePullPolicy: IfNotPresent
+
 ---
 
 #
@@ -341,22 +446,6 @@ spec:
       targetPort: 8080
   selector:
     app: idam-api
-
----
-
-#
-# CCD-CASE-MANAGEMENT-WEB :: Config
-#
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ccd-case-management-web
-  namespace: ${NAMESPACE}
-data:
-  IDAM_LOGIN_URL: 'https://idam-authentication-web.service.core-compute-preview.internal/login'
-  CCD_GW_OAUTH2_URL: 'https://ccd-api-gateway.service.core-compute-preview.internal/oauth2'
-  CCD_API_URL: 'https://ccd-api-gateway.service.core-compute-preview.internal/aggregated'
-  CCD_DATA_URL: 'https://ccd-api-gateway.service.core-compute-preview.internal/data'
 
 ---
 
@@ -442,29 +531,6 @@ spec:
 ---
 
 #
-# CCD-API-GATEWAY :: Config
-#
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ccd-api-gateway
-  namespace: ${NAMESPACE}
-data:
-  IDAM_BASE_URL: 'http://idam-api'
-  IDAM_OAUTH2_TOKEN_ENDPOINT: 'http://idam-api/oauth2/token'
-  IDAM_OAUTH2_LOGOUT_ENDPOINT: 'http://idam-api/session/:token'
-  IDAM_OAUTH2_CLIENT_SECRET: '123456'
-  IDAM_S2S_URL: 'http://service-auth-provider-api'
-  IDAM_SERVICE_NAME: 'ccd_gw'
-  IDAM_SERVICE_KEY: 'AABBCCDDEEFFGGHH'
-  PROXY_AGGREGATED: 'http://ccd-data-store-api'
-  PROXY_DATA: 'http://ccd-data-store-api'
-  PROXY_DEFINITION_IMPORT: 'http://ccd-definition-store-api'
-  CORS_ORIGIN_WHITELIST: 'https://ccd-case-management-web.service.core-compute-preview.internal'
-
----
-
-#
 # CCD-API-GATEWAY :: Deployment
 #
 apiVersion: apps/v1
@@ -546,25 +612,6 @@ spec:
 ---
 
 #
-# CCD-USER-PROFILE-API :: Config
-#
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ccd-user-profile-api
-  namespace: ${NAMESPACE}
-data:
-  SPRING_DATASOURCE_URL: 'jdbc:postgresql://shared-database/ccd_user_profile'
-  SPRING_DATASOURCE_USERNAME: 'ccd_user_profile'
-  SPRING_DATASOURCE_PASSWORD: 'ccd_user_profile'
-  USER_PROFILE_S2S_AUTHORISED_SERVICES: 'ccd_data,ccd_definition'
-  IDAM_S2S_URL: 'http://service-auth-provider-api'
-  REFORM_ENVIRONMENT: 'kubernetes'
-  APPINSIGHTS_INSTRUMENTATIONKEY: 'fake-key'
-
----
-
-#
 # CCD-USER-PROFILE-API :: Deployment
 #
 apiVersion: apps/v1
@@ -624,28 +671,6 @@ spec:
 ---
 
 #
-# CCD-DEFINITION-STORE-API :: Config
-#
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ccd-definition-store-api
-  namespace: ${NAMESPACE}
-data:
-  SPRING_DATASOURCE_URL: 'jdbc:postgresql://shared-database/ccd_definition_store'
-  SPRING_DATASOURCE_USERNAME: 'ccd_definition_store'
-  SPRING_DATASOURCE_PASSWORD: 'ccd_definition_store'
-  DEFINITION_STORE_IDAM_KEY: 'AABBCCDDEEFFGGHH'
-  DEFINITION_STORE_S2S_AUTHORISED_SERVICES: 'ccd_data,ccd_gw'
-  USER_PROFILE_HOST: 'http://ccd-user-profile-api'
-  IDAM_USER_URL: 'http://idam-api'
-  IDAM_S2S_URL: 'http://service-auth-provider-api'
-  REFORM_ENVIRONMENT: 'kubernetes'
-  APPINSIGHTS_INSTRUMENTATIONKEY: 'fake-key'
-
----
-
-#
 # CCD-DEFINITION-STORE-API :: Deployment
 #
 apiVersion: apps/v1
@@ -701,30 +726,6 @@ spec:
       targetPort: 4451
   selector:
     app: ccd-definition-store-api
-
----
-
-#
-# CCD-DATA-STORE-API :: Config
-#
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ccd-data-store-api
-  namespace: ${NAMESPACE}
-data:
-  SPRING_DATASOURCE_URL: 'jdbc:postgresql://shared-database/ccd_data_store?stringtype=unspecified'
-  SPRING_DATASOURCE_USERNAME: 'ccd_data_store'
-  SPRING_DATASOURCE_PASSWORD: 'ccd_data_store'
-  DATA_STORE_IDAM_KEY: 'AABBCCDDEEFFGGHH'
-  DATA_STORE_TOKEN_SECRET: 'AABBCCDDEEFFGGHH'
-  DATA_STORE_S2S_AUTHORISED_SERVICES: 'ccd_gw'
-  DEFINITION_STORE_HOST: 'http://ccd-definition-store-api'
-  USER_PROFILE_HOST: 'http://ccd-user-profile-api'
-  IDAM_USER_URL: 'http://idam-api'
-  IDAM_S2S_URL: 'http://service-auth-provider-api'
-  REFORM_ENVIRONMENT: 'kubernetes'
-  APPINSIGHTS_INSTRUMENTATIONKEY: 'fake-key'
 
 ---
 
