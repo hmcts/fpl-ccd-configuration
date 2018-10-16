@@ -31,5 +31,15 @@ module.exports = function () {
       this.click(link);
       this.seeCurrentUrlEquals(urlNavigatedTo);
     },
+
+    seeDocument(title, name, status, reason = '') {
+      this.see(title);
+      this.see(status);
+      if (reason !== '') {
+        this.see(reason);
+      } else {
+        this.see(name);
+      }
+    }
   });
 };

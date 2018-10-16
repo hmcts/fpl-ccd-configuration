@@ -5,7 +5,7 @@ module.exports = {
   documents: {
     socialWorkChronology: '#documents_socialWorkChronology_document_typeOfDocument',
     socialWorkStatementAndGenogram: '#documents_socialWorkStatement_document_typeOfDocument',
-    socialWorkAssessment: '#documents_socialWorkAssessement_document_typeOfDocument',
+    socialWorkAssessment: '#documents_socialWorkAssessment_document_typeOfDocument',
     carePlan: '#documents_socialWorkCarePlan_document_typeOfDocument',
     otherDocuments_1: '#documents_socialWorkOther_0_typeOfDocument',
     otherDocuments_2: '#documents_socialWorkOther_1_typeOfDocument',
@@ -15,16 +15,10 @@ module.exports = {
     socialWorkChronologyStatus: '#documents_socialWorkChronology_document_documentStatus',
     socialWorkChronologyReason: '#documents_socialWorkChronology_document_statusReason',
     socialWorkStatementAndGenogramStatus: '#documents_socialWorkStatement_document_documentStatus',
-    socialWorkAssessmentStatus: '#documents_socialWorkAssessement_document_documentStatus',
+    socialWorkAssessmentStatus: '#documents_socialWorkAssessment_document_documentStatus',
     carePlanStatus: '#documents_socialWorkCarePlan_document_documentStatus',
     otherDocumentsTitle_1: '#documents_socialWorkOther_0_typeOfDocument',
     otherDocumentsTitle_2: '#documents_socialWorkOther_1_typeOfDocument',
-
-  },
-
-  uploadSocialWorkChronology(file) {
-    I.attachFile(this.documents.socialWorkChronology, file);
-    I.selectOption(this.fields.socialWorkChronologyStatus, 'Attached');
   },
 
   uploadSocialWorkStatement(file) {
@@ -50,4 +44,9 @@ module.exports = {
     I.fillField(this.fields.otherDocumentsTitle_2, 'Document');
     I.attachFile(this.documents.otherDocuments_2, file);
   },
+
+  socialWorkChronologyToFollow() {
+    I.selectOption(this.fields.socialWorkChronologyStatus, 'To follow');
+    I.fillField(this.fields.socialWorkChronologyReason, 'mock reason');
+  }
 };
