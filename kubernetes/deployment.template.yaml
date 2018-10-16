@@ -89,6 +89,7 @@ data:
   CCD_GW_OAUTH2_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/oauth2'
   CCD_API_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/aggregated'
   CCD_DATA_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/data'
+  DM_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/documents'
 
 ---
 
@@ -111,6 +112,7 @@ data:
   PROXY_AGGREGATED: 'http://ccd-data-store-api'
   PROXY_DATA: 'http://ccd-data-store-api'
   PROXY_DEFINITION_IMPORT: 'http://ccd-definition-store-api'
+  PROXY_DOCUMENT_MANAGEMENT: 'http://dm-store'
   CORS_ORIGIN_WHITELIST: 'https://ccd-case-management-web-${SERVICE_FQDN}'
 
 ---
@@ -175,8 +177,41 @@ data:
   USER_PROFILE_HOST: 'http://ccd-user-profile-api'
   IDAM_USER_URL: 'http://idam-api'
   IDAM_S2S_URL: 'http://service-auth-provider-api'
+  CCD_DM_DOMAIN: 'https://ccd-api-gateway-${SERVICE_FQDN}'
   REFORM_ENVIRONMENT: 'kubernetes'
   APPINSIGHTS_INSTRUMENTATIONKEY: 'fake-key'
+
+---
+
+#
+# DM-STORE :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dm-store
+  namespace: ${NAMESPACE}
+data:
+  SPRING_DATASOURCE_URL: 'jdbc:postgresql://shared-database/evidence'
+  SPRING_DATASOURCE_USERNAME: 'evidence'
+  SPRING_DATASOURCE_PASSWORD: 'evidence'
+  IDAM_USER_BASE_URI: 'http://idam-api'
+  IDAM_S2S_BASE_URI: 'http://service-auth-provider-api'
+  S2S_NAMES_WHITELIST: 'ccd_gw,cmc,ccd_data'
+  ENABLE_DELETE: 'true'
+  ENABLE_IDAM_HEALTH_CHECK: 'false'
+  ENABLE_METADATA_SEARCH: 'true'
+  ENABLE_DOCUMENT_AND_METADATA_UPLOAD: 'false'
+  ENABLE_FOLDER_API: 'true'
+  ENABLE_TTL: 'true'
+  ENABLE_THUMBNAIL: 'true'
+  DM_MULTIPART_WHITELIST: 'image/jpeg,application/pdf,image/tiff,image/png,image/bmp,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.spreadsheetml.template,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.presentationml.template,application/vnd.openxmlformats-officedocument.presentationml.slideshow'
+  DM_MULTIPART_WHITELIST_EXT: '.jpg,.jpeg,.bmp,.tif,.tiff,.png,.pdf,.txt,.doc,.dot,.docx,.dotx,.xls,.xlt,.xla,.xlsx,.xltx,.xlsb,.ppt,.pot,.pps,.ppa,.pptx,.potx,.ppsx'
+  MAX_FILE_SIZE: '500MB'
+  MAX_ACTIVE_DB_CONNECTIONS: '10'
+  ENDPOINTS_HEALTH_SENSITIVE: 'false'
+  ENDPOINTS_INFO_SENSITIVE: 'false'
+  REFORM_ENVIRONMENT: 'kubernetes'
 
 ---
 
@@ -705,6 +740,65 @@ spec:
       targetPort: 4452
   selector:
     app: ccd-data-store-api
+
+---
+
+#
+# DM-STORE :: Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dm-store
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dm-store
+  template:
+    metadata:
+      labels:
+        app: dm-store
+    spec:
+      containers:
+        - image: hmcts.azurecr.io/hmcts/dm-store:latest
+          name: dm-store
+          envFrom:
+            - configMapRef:
+                name: dm-store
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 1000m
+          ports:
+            - containerPort: 4603
+              name: http
+          imagePullPolicy: IfNotPresent
+
+---
+
+#
+# DM-STORE :: Service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: dm-store
+  namespace: ${NAMESPACE}
+  labels:
+    app: dm-store
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 4603
+  selector:
+    app: dm-store
 
 ---
 
