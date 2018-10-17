@@ -25,14 +25,14 @@ exports.config = {
     Puppeteer: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       waitForTimeout: 60000,
-      restart: false,
+      restart: true,
       chrome: {
         ignoreHTTPSErrors: true,
         args: proxyServer ? [
           `--proxy-server=${proxyServer}`,
         ] : [],
       },
-      windowSize: "1280x960",
+      windowSize: '1280x960',
     },
     MyHelpers: {
       require: './e2e/helpers/browserback_helper.js',
