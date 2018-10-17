@@ -22,9 +22,11 @@ withPipeline(type, product, component) {
 
     def ingressIP = kubectl.getServiceLoadbalancerIP("traefik", "kube-system")
 
+    registerConsulDns(subscription, "service-auth-provider-api-${aksServiceName}", ingressIP)
     registerConsulDns(subscription, "idam-authentication-web-${aksServiceName}", ingressIP)
     registerConsulDns(subscription, "idam-api-${aksServiceName}", ingressIP)
     registerConsulDns(subscription, "ccd-case-management-web-${aksServiceName}", ingressIP)
     registerConsulDns(subscription, "ccd-api-gateway-${aksServiceName}", ingressIP)
+    registerConsulDns(subscription, "ccd-definition-store-api-${aksServiceName}", ingressIP)
   }
 }

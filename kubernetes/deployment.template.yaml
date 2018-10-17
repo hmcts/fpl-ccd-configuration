@@ -931,6 +931,28 @@ spec:
 ---
 
 #
+# SERVICE-AUTH-PROVIDER-API :: Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: service-auth-provider-api
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: service-auth-provider-api-${SERVICE_FQDN}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: service-auth-provider-api
+              servicePort: 80
+
+---
+
+#
 # IDAM-AUTHENTICATION-WEB :: Ingress
 #
 apiVersion: extensions/v1beta1
@@ -1014,4 +1036,26 @@ spec:
           - path: /
             backend:
               serviceName: ccd-api-gateway
+              servicePort: 80
+
+---
+
+#
+# CCD-DEFINITION-STORE-API :: Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ccd-definition-store-api
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: ccd-definition-store-api-${SERVICE_FQDN}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ccd-definition-store-api
               servicePort: 80
