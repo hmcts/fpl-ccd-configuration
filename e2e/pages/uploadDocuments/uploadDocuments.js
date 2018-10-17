@@ -45,7 +45,7 @@ module.exports = {
     I.attachFile(this.documents.otherDocuments_2, file);
   },
 
-  socialWorkChronologyToFollow() {
+  selectSocialWorkChronologyToFollow() {
     I.selectOption(this.fields.socialWorkChronologyStatus, 'To follow');
     I.fillField(this.fields.socialWorkChronologyReason, 'mock reason');
   }
