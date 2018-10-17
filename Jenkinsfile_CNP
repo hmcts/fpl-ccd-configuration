@@ -32,11 +32,12 @@ withPipeline(type, product, component) {
 
   after('smoketest:aks') {
     def aksServiceName = "${product}-${component}-${env.BRANCH_NAME}".toLowerCase()
+    def aksDomain = "${(env.SUBSCRIPTION_NAME in ['nonprod', 'prod']) ? 'service.core-compute-preview.internal' : 'service.core-compute-saat.internal'}"
 
     sh """
-      IDAM_API_BASE_URL=https://idam-api-${aksServiceName} \
-      SERVICE_AUTH_PROVIDER_API_BASE_URL=https://service-auth-provider-api-${aksServiceName} \
-      CCD_DEFINITION_STORE_API_BASE_URL=https://ccd-definition-store-api-${aksServiceName} \
+      IDAM_API_BASE_URL=https://idam-api-${aksServiceName}.${aksDomain} \
+      SERVICE_AUTH_PROVIDER_API_BASE_URL=https://service-auth-provider-api-${aksServiceName}.${aksDomain} \
+      CCD_DEFINITION_STORE_API_BASE_URL=https://ccd-definition-store-api-${aksServiceName}.${aksDomain} \
       ./kubernetes/configurer/configure-ccd.sh
     """
   }
