@@ -953,6 +953,28 @@ spec:
 ---
 
 #
+# IDAM-API :: Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: idam-api
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: idam-api-${SERVICE_FQDN}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: idam-api
+              servicePort: 80
+
+---
+
+#
 # CCD-CASE-MANAGEMENT-WEB :: Ingress
 #
 apiVersion: extensions/v1beta1
