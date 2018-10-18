@@ -33,10 +33,11 @@ exports.config = {
     enterRiskAndHarmToChildPage: './e2e/pages/enterRiskAndHarmToChild/enterRiskAndHarmToChild.js',
     uploadDocumentsPage: './e2e/pages/uploadDocuments/uploadDocuments.js',
     enterApplicantPage: './e2e/pages/enterApplicant/enterApplicant.js',
-    enterChildrenPage: './e2e/pages/enterChildren/enterChildren.js',
+    enterChildrenPage: './e2e/pages/enterRelationshipToChild/enterRelationshipToChild.js',
     enterOtherProceedingsPage: './e2e/pages/enterOtherProceedings/enterOtherProceedings.js',
     attendingHearingPage: './e2e/pages/attendingHearing/attendingHearing.js',
     enterAllocationProposalPage: './e2e/pages/enterAllocationProposal/enterAllocationProposal.js',
+    enterOthersPage: './e2e/pages/enterOthers/enterOthers.js',
   },
   plugins: {
     screenshotOnFail: {
