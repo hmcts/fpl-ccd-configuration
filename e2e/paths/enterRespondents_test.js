@@ -1,0 +1,29 @@
+const config = require('../config.js');
+const respondent = require('../fixtures/respondent.js');
+
+Feature('Enter respondents');
+
+Before((I, caseViewPage) => {
+  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
+  caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
+});
+
+Scenario('Entering information for respondent and submitting', (I, enterRespondentsPage) => {
+  enterRespondentsPage.enterRespondent('firstRespondent', respondent);
+  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
+});
+
+Scenario('Entering all information for first respondent and an additional respondent', (I, enterRespondentsPage) => {
+  enterRespondentsPage.enterRespondent('firstRespondent', respondent);
+  enterRespondentsPage.enterRelationshipToChild('firstRespondent', 'mock reason');
+  enterRespondentsPage.enterContactDetailsHidden('firstRespondent', 'Yes', 'mock reason');
+  enterRespondentsPage.enterAbilityToTakePartInProceedings('firstRespondent', 'No');
+  I.click(enterRespondentsPage.addOtherRespondent);
+  enterRespondentsPage.enterRespondent('additional_0', respondent);
+  enterRespondentsPage.enterRelationshipToChild('additional_0', 'mock reason');
+  enterRespondentsPage.enterContactDetailsHidden('additional_0', 'Yes', 'mock reason');
+  enterRespondentsPage.enterAbilityToTakePartInProceedings('additional_0', 'No');
+  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
+});
