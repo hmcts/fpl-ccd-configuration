@@ -2,14 +2,14 @@ const I = actor();
 
 module.exports = {
   fields: {
-    ordersAndDirectionsCheckGroup: {
+    ordersAndDirections: {
       careOrder: 'Care order',
       supervisionOrder:'Supervision order',
       educationSupervisionOrder: 'Education supervision order',
       emergencyProtectionOrder: 'Emergency protection order',
       other: 'Other',
     },
-    directionIntermOrdersTextarea: '#orders_ordersAndDetailsReason',
+    directionIntermOrders: '#orders_ordersAndDetailsReason',
   },
 
   fillTextArea(testString = 'Test string') {
@@ -17,14 +17,14 @@ module.exports = {
   },
   
   SelectCareOrderOnly() {
-    I.checkOption(this.fields.ordersAndDirectionsCheckGroup.careOrder);
+    I.checkOption(this.fields.ordersAndDirections.careOrder);
   },
 
   SelectAllOrdersAndDirections() {
     this.SelectCareOrderOnly();
-    I.checkOption(this.fields.ordersAndDirectionsCheckGroup.supervisionOrder);
-    I.checkOption(this.fields.ordersAndDirectionsCheckGroup.educationSupervisionOrder);
-    I.checkOption(this.fields.ordersAndDirectionsCheckGroup.emergencyProtectionOrder);
-    I.checkOption(this.fields.ordersAndDirectionsCheckGroup.other);
+    I.checkOption(this.fields.ordersAndDirections.supervisionOrder);
+    I.checkOption(this.fields.ordersAndDirections.educationSupervisionOrder);
+    I.checkOption(this.fields.ordersAndDirections.emergencyProtectionOrder);
+    I.checkOption(this.fields.ordersAndDirections.other);
   },
 };
