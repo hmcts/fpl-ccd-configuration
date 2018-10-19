@@ -37,6 +37,7 @@ exports.config = {
     enterOtherProceedingsPage: './e2e/pages/enterOtherProceedings/enterOtherProceedings.js',
     attendingHearingPage: './e2e/pages/attendingHearing/attendingHearing.js',
     enterAllocationProposalPage: './e2e/pages/enterAllocationProposal/enterAllocationProposal.js',
+    enterOthersPage: './e2e/pages/enterOthers/enterOthers.js',
   },
   plugins: {
     screenshotOnFail: {
