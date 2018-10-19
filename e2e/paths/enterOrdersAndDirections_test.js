@@ -7,7 +7,7 @@ Before((I, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.selectOrders);
 });
 
-Scenario('Select care order case order', 
+Scenario('Select care order', 
 (I, ordersNeededPage) => {
   ordersNeededPage.SelectCareOrderOnly();
   I.continueAndSubmit(config.eventSummary, config.eventDescription);
