@@ -20,6 +20,6 @@ module.exports = {
   },
 
   selectTab(tab) {
-    I.click(this.tabs[tab]);
+    I.click(tab);
   },
 };

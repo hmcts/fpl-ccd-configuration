@@ -5,7 +5,7 @@ module.exports = {
     month: '01',
     year: '1980',
   },
-  gender: 'male',
+  gender: 'Male',
   placeOfBirth: 'London',
   address: 'London Lane, London, SE1 1AA',
   telephone: '00000 000000',

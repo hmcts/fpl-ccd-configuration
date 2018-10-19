@@ -5,34 +5,34 @@ module.exports = {
   fields: (id) => {
     return {
       respondent: {
-        name: `#respondent_${id}_name`,
+        name: `#respondents_${id}_name`,
         dob: {
-          day: `#respondent_${id}_dob-day`,
-          month: `#respondent_${id}_dob-month`,
-          year: `#respondent_${id}_dob-year`,
+          day: `#respondents_${id}_dob-day`,
+          month: `#respondents_${id}_dob-month`,
+          year: `#respondents_${id}_dob-year`,
         },
-        gender: `#respondent_${id}_gender`,
-        genderIdentify: `#respondent_${id}_genderIdentify`,
-        placeOfBirth: `#respondent_${id}_placeOfBirth`,
-        address: `#respondent_${id}_address`,
-        telephone: `#respondent_${id}_telephone`,
-        relationshipToChild: `#respondent_${id}_relationshipToChild`,
+        gender: `#respondents_${id}_gender`,
+        genderIdentify: `#respondents_${id}_genderIdentify`,
+        placeOfBirth: `#respondents_${id}_placeOfBirth`,
+        address: `#respondents_${id}_address`,
+        telephone: `#respondents_${id}_telephone`,
+        relationshipToChild: `#respondents_${id}_relationshipToChild`,
       },
       contactDetailsHidden: (option) => {
         return {
-          option: `#respondent_${id}_contactDetailsHidden-${option}`,
-          reason: `#respondent_${id}_contactDetailsHiddenReason`,
+          option: `#respondents_${id}_contactDetailsHidden-${option}`,
+          reason: `#respondents_${id}_contactDetailsHiddenReason`,
         };
       },
-      abilityToTakePartInProceedings: (option) => {
+      litigationIssues: (option) => {
         return {
-          option: `#respondent_${id}_abilityToTakePartInProceedings-${option}`,
-          reason: `#respondent_${id}_abilityToTakePartInProceedingsReason`,
+          option: `#respondents_${id}_litigationIssues-${option}`,
+          reason: `#respondents_${id}_litigationIssuesReason`,
         };
       },
     };
   },
-  addOtherRespondent: 'Add new',
+  addRespondent: 'Add new',
 
   enterRespondent(id, respondent) {
     I.fillField(this.fields(id).respondent.name, respondent.name);
@@ -59,10 +59,10 @@ module.exports = {
     }
   },
 
-  enterAbilityToTakePartInProceedings(id, option, reason = '') {
-    I.click(this.fields(id).abilityToTakePartInProceedings(option).option);
+  enterLitigationIssues(id, option, reason = '') {
+    I.click(this.fields(id).litigationIssues(option).option);
     if (option === 'Yes') {
-      I.fillField(this.fields(id).abilityToTakePartInProceedings(option).reason, reason);
+      I.fillField(this.fields(id).litigationIssues(option).reason, reason);
     }
   },
 };
