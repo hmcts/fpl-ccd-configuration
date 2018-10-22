@@ -9,11 +9,11 @@ module.exports = {
       emergencyProtectionOrder: 'Emergency protection order',
       other: 'Other',
     },
-    directionAndInterm: '#orders_directionsAndInterim',
+    directionAndInterim: '#orders_directionsAndInterim',
   },
 
   fillTextArea(testString = 'Test string') {
-    I.fillField(this.fields.directionAndInterm, testString);
+    I.fillField(this.fields.directionAndInterim, testString);
   },
   
   checkCareOrder() {
