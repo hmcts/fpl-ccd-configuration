@@ -26,12 +26,15 @@ Add users and roles:
 sh addUsersAndRoles.sh
 ```
 
-Add the spreadsheet:
-```
-./ccd-docker/bin/ccd-import-definition.sh FPL_CCD_DEFINITION_TEMPLATEx.xlsx
+Load CCD definition:
+
+CCD definition is stored in JSON format. To load it into CCD instance please run: 
+
+```bash
+$ ./bin/import-ccd-definition.sh
 ```
 
-Refer to [ccd-docker](https://github.com/hmcts/ccd-docker) for more information.
+Note: Above script will export JSON content into XLSX file and upload it into instance of CCD definition store.
 
 ## Getting Started:
 To ensure you have the correct dependencies run `yarn install` in the command line.
