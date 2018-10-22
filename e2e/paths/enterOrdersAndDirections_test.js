@@ -7,14 +7,14 @@ Before((I, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.selectOrders);
 });
 
-Scenario('Select care order', (I, ordersNeededPage) => {
-  ordersNeededPage.selectCareOrderOnly();
+Scenario('Select the care order case order and continue', (I, ordersNeededPage) => {
+  ordersNeededPage.checkCareOrder();
   I.continueAndSubmit(config.eventSummary, config.eventDescription);
   I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
 });
 
-Scenario('Apply for all case orders and add directions and interim orders', (I, ordersNeededPage) => {
-  ordersNeededPage.selectAllOrdersAndDirections();
+Scenario('Select all case orders and fill in directions & interim information', (I, ordersNeededPage) => {
+  ordersNeededPage.checkAllOrdersAndDirections();
   ordersNeededPage.fillTextArea();
   I.continueAndSubmit(config.eventSummary, config.eventDescription);
   I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);

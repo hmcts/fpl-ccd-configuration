@@ -16,12 +16,12 @@ module.exports = {
     I.fillField(this.fields.directionAndInterm, testString);
   },
   
-  selectCareOrderOnly() {
+  checkCareOrder() {
     I.checkOption(this.fields.ordersAndDirections.careOrder);
   },
 
-  selectAllOrdersAndDirections() {
-    this.selectCareOrderOnly();
+  checkAllOrdersAndDirections() {
+    this.checkCareOrder();
     I.checkOption(this.fields.ordersAndDirections.supervisionOrder);
     I.checkOption(this.fields.ordersAndDirections.educationSupervisionOrder);
     I.checkOption(this.fields.ordersAndDirections.emergencyProtectionOrder);
