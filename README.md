@@ -22,8 +22,9 @@ Creating and starting containers:
 ```
 
 Add users and roles:
-```
-sh addUsersAndRoles.sh
+
+```bash
+$ ./bin/add-users-and-roles.sh
 ```
 
 Load CCD definition:
