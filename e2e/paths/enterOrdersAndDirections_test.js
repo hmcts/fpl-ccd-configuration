@@ -15,7 +15,7 @@ Scenario('Select the care order case order and continue', (I, ordersNeededPage) 
 
 Scenario('Select all case orders and fill in directions & interim information', (I, ordersNeededPage) => {
   ordersNeededPage.checkAllOrdersAndDirections();
-  ordersNeededPage.fillTextArea();
+  ordersNeededPage.enterDirectionAndInterim();
   I.continueAndSubmit(config.eventSummary, config.eventDescription);
   I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
 });

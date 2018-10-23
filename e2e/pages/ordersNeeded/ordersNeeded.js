@@ -12,7 +12,7 @@ module.exports = {
     directionAndInterim: '#orders_directionsAndInterim',
   },
 
-  fillTextArea(testString = 'Test string') {
+  enterDirectionAndInterim(testString = 'Test string') {
     I.fillField(this.fields.directionAndInterim, testString);
   },
   
