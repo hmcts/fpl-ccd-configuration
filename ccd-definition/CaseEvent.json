@@ -145,7 +145,7 @@
     "LiveFrom": 42748,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "attendingHearing",
-    "Name": "Attending hearing",
+    "Name": "Attending the court",
     "Description": "Enter extra support needed for anyone to take part in hearing",
     "DisplayOrder": 13,
     "PreConditionState(s)": "*",

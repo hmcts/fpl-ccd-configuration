@@ -93,14 +93,14 @@
   {
     "LiveFrom": 42737,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "documents_socialWorkAssessement_question",
+    "CaseFieldID": "documents_socialWorkAssessment_question",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "R"
   },
   {
     "LiveFrom": 42737,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "documents_socialWorkAssessement_document",
+    "CaseFieldID": "documents_socialWorkAssessment_document",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
