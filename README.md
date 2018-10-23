@@ -8,7 +8,10 @@ Family public law's implementation of the CCD template
 - [Service](#service)
 
 ## Prerequisites:
-Have [Docker](https://www.docker.com) installed.
+
+- [Docker](https://www.docker.com)
+- [realpath-osx](https://github.com/harto/realpath-osx) (Mac OS only)
+
 
 Run command:
 ```
