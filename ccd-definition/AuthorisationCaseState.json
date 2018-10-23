@@ -2,15 +2,15 @@
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseStateID": "1_Initiation",
+    "CaseStateID": "Open",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseStateID": "2_Submitted",
+    "CaseStateID": "Submitted",
     "UserRole": "caseworker-publiclaw-localAuthority",
-    "CRUD": "R"
+    "CRUD": "CRU"
   }
 ]

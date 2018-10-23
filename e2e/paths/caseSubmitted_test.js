@@ -1,7 +1,5 @@
 const config = require('../config.js');
 
-//Temporary placeholder tests.
-
 Feature('Submit Case');
 
 Before((I, caseViewPage) => {
