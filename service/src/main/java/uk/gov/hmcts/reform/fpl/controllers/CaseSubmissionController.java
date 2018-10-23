@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.fpl.templates.DocumentTemplates;
 import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
-import javax.validation.constraints.NotNull;
+
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 
 
 @RestController
@@ -22,7 +23,7 @@ public class CaseSubmissionController {
     @PostMapping
     public ResponseEntity submittedCase(@RequestBody @NotNull Map<String,
         Object> caseData) {
-        byte[] template = documentTemplates.getHTMLTemplate();
+        byte[] template = documentTemplates.getHtmlTemplate();
         byte[] pdfDocument = converter.convert(template, caseData);
         return new ResponseEntity(HttpStatus.OK);
     }

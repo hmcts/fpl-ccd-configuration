@@ -33,8 +33,7 @@ public class CaseSubmissionControllerTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        assertThat(response.getResponse().getContentAsString().equals
-            (HttpStatus.OK));
+        assertThat(response.getResponse().getContentAsString().equals(HttpStatus.OK));
     }
 
     @Test
@@ -44,8 +43,7 @@ public class CaseSubmissionControllerTest {
             .andExpect(status().is4xxClientError())
             .andReturn();
 
-        assertThat(response.getResponse().getContentAsString().equals
-            (HttpStatus.BAD_REQUEST));
+        assertThat(response.getResponse().getContentAsString().equals(HttpStatus.BAD_REQUEST));
     }
 
     @Test
@@ -58,7 +56,6 @@ public class CaseSubmissionControllerTest {
             .andExpect(status().is4xxClientError())
             .andReturn();
 
-        assertThat(response.getResponse().getContentAsString().equals
-            (HttpStatus.BAD_REQUEST));
+        assertThat(response.getResponse().getContentAsString().equals(HttpStatus.BAD_REQUEST));
     }
 }

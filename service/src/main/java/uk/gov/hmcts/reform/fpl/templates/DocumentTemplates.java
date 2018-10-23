@@ -7,7 +7,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 @Component
 public class DocumentTemplates {
 
-    public byte[] getHTMLTemplate() {
+    public byte[] getHtmlTemplate() {
         return readBytes("HTMLTemplate.html");
     }
 
