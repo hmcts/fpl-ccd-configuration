@@ -1,0 +1,10 @@
+[
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "1_Initiation",
+    "Name": "Open",
+    "Description": "Initial case state – create title as a minimum; add documents, etc.",
+    "DisplayOrder": 1
+  }
+]
