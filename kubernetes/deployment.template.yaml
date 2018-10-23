@@ -246,7 +246,7 @@ spec:
           ports:
             - containerPort: 4000
               name: http
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
 ---
 
@@ -305,7 +305,7 @@ spec:
           ports:
             - containerPort: 8489
               name: http
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
 ---
 
@@ -364,7 +364,7 @@ spec:
           ports:
             - containerPort: 8000
               name: http
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
 ---
 
@@ -423,7 +423,7 @@ spec:
           ports:
             - containerPort: 8080
               name: http
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
 ---
 
@@ -482,7 +482,7 @@ spec:
           ports:
             - containerPort: 3451
               name: http
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
 ---
 
@@ -541,7 +541,7 @@ spec:
           ports:
             - containerPort: 3453
               name: http
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
 ---
 
@@ -600,7 +600,7 @@ spec:
           ports:
             - containerPort: 4453
               name: http
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
 ---
 
@@ -659,7 +659,7 @@ spec:
           ports:
             - containerPort: 4451
               name: http
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
 ---
 
@@ -718,7 +718,7 @@ spec:
           ports:
             - containerPort: 4452
               name: http
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
 ---
 
@@ -777,7 +777,7 @@ spec:
           ports:
             - containerPort: 4603
               name: http
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
 ---
 
@@ -833,7 +833,7 @@ spec:
           ports:
             - containerPort: 5432
               name: postgres
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
 ---
 
@@ -886,7 +886,7 @@ spec:
           ports:
             - containerPort: 1025
               name: smtp-server
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
 ---
 
