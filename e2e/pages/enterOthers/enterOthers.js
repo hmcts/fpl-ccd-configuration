@@ -7,7 +7,7 @@ module.exports = {
     DOB: {
       day: '#others_firstOther_DOB-day',
       month: '#others_firstOther_DOB-month',
-      year: '#others_firstOther_DOB-year'
+      year: '#others_firstOther_DOB-year',
     },
     gender: '#others_firstOther_gender',
     birthPlace: '#others_firstOther_birthPlace',
@@ -18,14 +18,14 @@ module.exports = {
       return {
         option: `#others_firstOther_detailsHidden-${option}`,
         reason: '#others_firstOther_detailsHiddenReason',
-      }
+      };
     },
     litigationIssues: (option) => {
       return {
         option: `#others_firstOther_litigationIssues-${option}`,
-        reason: '#others_firstOther_litigationIssuesReason'
-      }
-    }
+        reason: '#others_firstOther_litigationIssuesReason',
+      };
+    },
   },
 
   addOther: 'Add new',
@@ -42,7 +42,7 @@ module.exports = {
   },
 
   enterRelationshipToChild(childInformation) {
-    I.fillField(this.fields.relationshipToChild, childInformation)
+    I.fillField(this.fields.relationshipToChild, childInformation);
   },
 
   enterContactDetailsHidden(option) {
@@ -57,5 +57,5 @@ module.exports = {
     if (option === 'Yes') {
       I.fillField(this.fields.litigationIssues(option).reason, 'mock reason');
     }
-  }
+  },
 };

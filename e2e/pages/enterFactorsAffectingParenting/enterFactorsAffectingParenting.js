@@ -31,5 +31,5 @@ module.exports = {
   completeAnythingElse() {
     I.click(this.fields.anythingElse.yes);
     I.fillField(this.fields.anythingElse.reason, 'mock reason');
-  }
+  },
 };
