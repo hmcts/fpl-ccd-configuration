@@ -1,0 +1,9 @@
+[
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "caseLocalAuthority",
+    "Label": "Local authority",
+    "DisplayOrder": 1
+  }
+]

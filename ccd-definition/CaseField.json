@@ -1,0 +1,261 @@
+[
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "caseTitle",
+    "Label": "Case Title :",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "caseLocalAuthority",
+    "Label": "Local Authority :",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "AuthorityFixedList",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "caseIDReference",
+    "Label": "Case ID",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42795,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "grounds",
+    "Label": "-",
+    "FieldType": "Grounds",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 43070,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "hearing",
+    "Label": "-",
+    "FieldType": "Hearing",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 43078,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "internationalElements",
+    "Label": "-",
+    "FieldType": "InternationalElements",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "factorsParenting",
+    "Label": "-",
+    "FieldType": "FactorsParenting",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "uploadDocuments_paragraph_1",
+    "Label": "You must upload these documents if possible. Give the reason and date you expect to provide it if you don’t have a document yet.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "uploadDocuments_paragraph_2",
+    "Label": "If you have a Social Work Evidence Template (SWET), add it under ‘Other documents’.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "documents_socialWorkChronology_question",
+    "Label": "# 1. Social work chronology",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "documents_socialWorkChronology_document",
+    "Label": "-",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "documents_socialWorkStatement_question",
+    "Label": "# 2. Social work statement and genogram",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "documents_socialWorkStatement_document",
+    "Label": "-",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "documents_socialWorkAssessement_question",
+    "Label": "# 3. Social work assessment",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "documents_socialWorkAssessement_document",
+    "Label": "-",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "documents_socialWorkCarePlan_question",
+    "Label": "# 4. Care plan",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "documents_socialWorkCarePlan_document",
+    "Label": "-",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "documents_socialWorkOther_border_top",
+    "Label": "-------------------------------------------------------------------------------------------------------------",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "documents_socialWorkOther",
+    "Label": "Additional documents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "OtherDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "documents_socialWorkOther_border_bottom",
+    "Label": "-------------------------------------------------------------------------------------------------------------",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "children_firstChild",
+    "Label": "-",
+    "FieldType": "Children",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "children_additionalChildren",
+    "Label": "Additional Child",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Children",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "enterApplicant_applicant",
+    "Label": "-",
+    "FieldType": "Applicant",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "enterApplicant_solicitor",
+    "Label": "-",
+    "FieldType": "Solicitor",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "risks",
+    "Label": "-",
+    "FieldType": "RiskAndHarm",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "proceeding",
+    "Label": "-",
+    "FieldType": "Proceeding",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "hearingPreferences",
+    "Label": "-",
+    "FieldType": "HearingPreferences",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "allocationProposal_label",
+    "Label": "This should be completed by a solicitor with good knowledge of the case. Use the [President's Guidance](https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) and [schedule](https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) on allocation and gatekeeping to make your recommendation.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "allocationProposal",
+    "Label": "-",
+    "FieldType": "AllocationProposal",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "others",
+    "Label": "Other",
+    "FieldType": "Person",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "respondent_label",
+    "Label": "## Respondent 1",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "respondents",
+    "Label": "Respondents",
+    "FieldType": "Respondent",
+    "SecurityClassification": "Public"
+  }
+]

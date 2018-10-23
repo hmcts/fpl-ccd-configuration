@@ -1,0 +1,42 @@
+[
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "OrdersHearingTab",
+    "TabLabel": "Orders sought and hearing needed",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "caseIDReference",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": 43102,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 2,
+    "CaseFieldID": "caseIDReference",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": 43103,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "LegalOpinionTab",
+    "TabLabel": "Legal Opinion",
+    "TabDisplayOrder": 3,
+    "CaseFieldID": "caseIDReference",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": 43104,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "EvidenceTab",
+    "TabLabel": "Evidence",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "caseIDReference",
+    "TabFieldDisplayOrder": 1
+  }
+]

@@ -1,0 +1,226 @@
+[
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "caseTitle",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "caseLocalAuthority",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "caseIDReference",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "grounds",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "hearing",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "internationalElements",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "factorsParenting",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42737,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "uploadDocuments_paragraph_1",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": 42737,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "uploadDocuments_paragraph_2",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": 42737,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "documents_socialWorkChronology_question",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": 42737,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "documents_socialWorkChronology_document",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42737,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "documents_socialWorkStatement_question",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": 42737,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "documents_socialWorkStatement_document",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42737,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "documents_socialWorkAssessement_question",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": 42737,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "documents_socialWorkAssessement_document",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42737,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "documents_socialWorkCarePlan_question",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": 42737,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "documents_socialWorkCarePlan_document",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "documents_socialWorkOther_border_top",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "documents_socialWorkOther",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "documents_socialWorkOther_border_bottom",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "children_firstChild",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "children_additionalChildren",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "enterApplicant_applicant",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "enterApplicant_solicitor",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "risks",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "proceeding",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "hearingPreferences",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42737,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "allocationProposal_label",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": 42738,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "allocationProposal",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42738,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "others",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "respondent_label",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "respondents",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  }
+]
