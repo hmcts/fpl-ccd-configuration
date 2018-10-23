@@ -195,8 +195,9 @@
     "Description": "Review and submit application",
     "DisplayOrder": 17,
     "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PostConditionState": "2_Submitted",
     "SecurityClassification": "Public",
-    "ShowSummary": "N"
+    "ShowSummary": "N",
+    "ShowEventNotes": "N"
   }
 ]
