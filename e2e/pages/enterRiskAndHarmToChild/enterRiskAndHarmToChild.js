@@ -1,4 +1,4 @@
-/*global locate*/
+/* global locate */
 
 const I = actor();
 
