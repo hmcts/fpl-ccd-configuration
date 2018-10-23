@@ -10,7 +10,7 @@
     "TabFieldDisplayOrder": 1
   },
   {
-    "LiveFrom": 43102,
+    "LiveFrom": 43101,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
@@ -20,7 +20,7 @@
     "TabFieldDisplayOrder": 1
   },
   {
-    "LiveFrom": 43103,
+    "LiveFrom": 43101,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
@@ -30,7 +30,7 @@
     "TabFieldDisplayOrder": 1
   },
   {
-    "LiveFrom": 43104,
+    "LiveFrom": 43101,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "EvidenceTab",
@@ -38,5 +38,55 @@
     "TabDisplayOrder": 4,
     "CaseFieldID": "caseIDReference",
     "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "EvidenceTab",
+    "TabLabel": "Evidence",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "documents_socialWorkChronology_document",
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "EvidenceTab",
+    "TabLabel": "Evidence",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "documents_socialWorkStatement_document",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "EvidenceTab",
+    "TabLabel": "Evidence",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "documents_socialWorkAssessment_document",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "EvidenceTab",
+    "TabLabel": "Evidence",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "documents_socialWorkCarePlan_document",
+    "TabFieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "EvidenceTab",
+    "TabLabel": "Evidence",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "documents_socialWorkOther",
+    "TabFieldDisplayOrder": 6
   }
 ]
