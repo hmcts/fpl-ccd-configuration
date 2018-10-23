@@ -1,0 +1,9 @@
+[
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseStateID": "1_Initiation",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  }
+]

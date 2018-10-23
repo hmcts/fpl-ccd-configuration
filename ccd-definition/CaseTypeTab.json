@@ -1,0 +1,92 @@
+[
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "OrdersHearingTab",
+    "TabLabel": "Orders sought and hearing needed",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "caseIDReference",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 2,
+    "CaseFieldID": "caseIDReference",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "LegalOpinionTab",
+    "TabLabel": "Legal Opinion",
+    "TabDisplayOrder": 3,
+    "CaseFieldID": "caseIDReference",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "EvidenceTab",
+    "TabLabel": "Evidence",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "caseIDReference",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "EvidenceTab",
+    "TabLabel": "Evidence",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "documents_socialWorkChronology_document",
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "EvidenceTab",
+    "TabLabel": "Evidence",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "documents_socialWorkStatement_document",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "EvidenceTab",
+    "TabLabel": "Evidence",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "documents_socialWorkAssessment_document",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "EvidenceTab",
+    "TabLabel": "Evidence",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "documents_socialWorkCarePlan_document",
+    "TabFieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "EvidenceTab",
+    "TabLabel": "Evidence",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "documents_socialWorkOther",
+    "TabFieldDisplayOrder": 6
+  }
+]

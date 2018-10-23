@@ -1,4 +1,4 @@
-/*global process*/
+/* global process */
 
 exports.config = {
   output: './output',
