@@ -39,6 +39,7 @@ exports.config = {
     enterAllocationProposalPage: './e2e/pages/enterAllocationProposal/enterAllocationProposal.js',
     enterRespondentsPage: './e2e/pages/enterRespondents/enterRespondents.js',
     enterOthersPage: './e2e/pages/enterOthers/enterOthers.js',
+    ordersNeededPage: './e2e/pages/ordersNeeded/ordersNeeded.js',
   },
   plugins: {
     screenshotOnFail: {
