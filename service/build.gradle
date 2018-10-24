@@ -118,6 +118,8 @@ dependencyCheck {
 sonarqube {
   properties {
     property "sonar.projectName", "FPL :: Service"
+    property "sonar.jacoco.reportPath", file("${project.buildDir}/jacoco/test.exec")
+    property "sonar.jacoco.itReportPath", file("${project.buildDir}/jacoco/integration.exec")
   }
 }
 
