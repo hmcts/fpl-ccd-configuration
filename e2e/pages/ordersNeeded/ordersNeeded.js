@@ -21,7 +21,7 @@ module.exports = {
   },
 
   checkEducationSupervisionOrder() {
-    I.checkOption(this.fields.orderType.supervisionOrder);    
+    I.checkOption(this.fields.orderType.educationSupervisionOrder);    
   },
 
   checkEmergencyProtectionOrder() {
