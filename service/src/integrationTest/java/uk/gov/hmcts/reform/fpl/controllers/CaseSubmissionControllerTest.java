@@ -22,7 +22,6 @@ public class CaseSubmissionControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-
     @Test
     public void shouldReturnSuccessfulResponseWithValidCaseData() throws
         Exception {
