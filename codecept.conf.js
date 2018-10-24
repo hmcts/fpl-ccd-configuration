@@ -27,7 +27,7 @@ exports.config = {
       waitForTimeout: 60000,
       restart: true,
       waitForNavigation: 'networkidle0',
-      waitForTimeout: 15000,
+      waitForTimeout: 10000,
       chrome: {
         ignoreHTTPSErrors: true,
         args: proxyServer ? [
@@ -64,6 +64,9 @@ exports.config = {
   },
   plugins: {
     screenshotOnFail: {
+      enabled: true,
+    },
+    autoDelay: {
       enabled: true,
     },
   },
