@@ -63,10 +63,15 @@ exports.config = {
     ordersNeededPage: './e2e/pages/ordersNeeded/ordersNeeded.js',
   },
   plugins: {
-    screenshotOnFail: {
+    autoDelay: {
+      enabled: true,
+      delayBefore: 50,
+      delayAfter: 150,
+    },
+    retryFailedStep: {
       enabled: true,
     },
-    autoDelay: {
+    screenshotOnFail: {
       enabled: true,
     },
   },
