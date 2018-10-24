@@ -18,6 +18,7 @@ output/
 .gradle
 !gradle/wrapper/gradle-wrapper.jar
 build/
+service/out
 
 ### STS ###
 .apt_generated
