@@ -8,9 +8,6 @@ cache:
   directories:
     - node_modules
 
-before_install:
-  - yarn --version
-  - yarn check --integrity
-
 script:
+  - yarn check --integrity
   - yarn lint
