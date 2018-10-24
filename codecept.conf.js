@@ -26,6 +26,8 @@ exports.config = {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       waitForTimeout: 60000,
       restart: true,
+      waitForNavigation: 'networkidle0',
+      waitForTimeout: 15000,
       chrome: {
         ignoreHTTPSErrors: true,
         args: proxyServer ? [
