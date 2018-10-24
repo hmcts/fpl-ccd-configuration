@@ -6,7 +6,7 @@ module.exports = {
     timeFrame: {
       dropdown: {id: 'hearing_timeFrame'},
       sameDay: 'Same day',
-      reason: '#hearing_reason'
+      reason: '#hearing_reason',
     },
 
     hearingType: {
@@ -24,7 +24,7 @@ module.exports = {
 
     respondentsAware: {
       yes: '#hearing_respondentsAware-Yes',
-    }
+    },
   },
 
   enterTimeFrame(reason = 'test reason') {
@@ -46,5 +46,5 @@ module.exports = {
 
   enterRespondentsAware() {
     I.click(this.fields.respondentsAware.yes);
-  }
+  },
 };

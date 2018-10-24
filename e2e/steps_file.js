@@ -41,7 +41,10 @@ module.exports = function () {
         this.see(name);
       }
     },
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> ebbb694271c328f8e91c184830132c965eac77b2
   });
 };

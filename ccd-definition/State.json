@@ -1,0 +1,18 @@
+[
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "Open",
+    "Name": "Open",
+    "Description": "Initial case state – create title as a minimum; add documents, etc.",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "Submitted",
+    "Name": "Submitted",
+    "Description": "Submitted case state - LA can no longer edit",
+    "DisplayOrder": 2
+  }
+]

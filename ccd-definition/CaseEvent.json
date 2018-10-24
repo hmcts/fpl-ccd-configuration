@@ -1,0 +1,203 @@
+[
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "initiateCase",
+    "Name": "Initiate Case",
+    "Description": "Create a new case – add a title",
+    "DisplayOrder": 1,
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42737,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "ordersNeeded",
+    "Name": "Select orders & directions",
+    "Description": "Selecting the orders needed for application",
+    "DisplayOrder": 2,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42738,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "hearingNeeded",
+    "Name": "Select hearing",
+    "Description": "Selecting the hearing needed for application",
+    "DisplayOrder": 3,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42739,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "enterChildren",
+    "Name": "Enter children in the case",
+    "Description": "Entering the children for the case",
+    "DisplayOrder": 4,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42740,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "enterRespondents",
+    "Name": "Enter respondents in the case",
+    "Description": "Entering the respondents for the case",
+    "DisplayOrder": 5,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42741,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "enterApplicant",
+    "Name": "Enter applicant in the case",
+    "Description": "Entering the applicant for the case",
+    "DisplayOrder": 6,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42742,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "enterOthers",
+    "Name": "Enter others who need notice",
+    "Description": "Entering others for the case",
+    "DisplayOrder": 7,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42743,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "enterGrounds",
+    "Name": "Enter grounds for application",
+    "Description": "Entering the grounds for the application",
+    "DisplayOrder": 8,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42744,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "enterRiskHarm",
+    "Name": "Enter risk & harm to children",
+    "Description": "Entering opinion on risk and harm to children",
+    "DisplayOrder": 9,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42745,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "enterParentingFactors",
+    "Name": "Factors affecting parenting",
+    "Description": "Entering the factors affecting parenting",
+    "DisplayOrder": 10,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42746,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "enterInternationalElement",
+    "Name": "Enter international element",
+    "Description": "Entering the international element",
+    "DisplayOrder": 11,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42747,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "otherProceedings",
+    "Name": "Enter other proceedings",
+    "Description": "Entering other proceedings and allocation proposals",
+    "DisplayOrder": 12,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42748,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "otherProposal",
+    "Name": "Enter allocation proposal",
+    "Description": "Entering other proceedings and allocation proposals",
+    "DisplayOrder": 13,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42748,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "attendingHearing",
+    "Name": "Attending the court",
+    "Description": "Enter extra support needed for anyone to take part in hearing",
+    "DisplayOrder": 13,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42749,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "uploadDocuments",
+    "Name": "Annex documents",
+    "Description": "Upload documents",
+    "DisplayOrder": 14,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "amendCaseTitle",
+    "Name": "Amend case title",
+    "Description": "Amend case title",
+    "DisplayOrder": 15,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N"
+  },
+  {
+    "LiveFrom": 42737,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "addCaseIDReference",
+    "Name": "Add case ID",
+    "Description": "Add case ID",
+    "DisplayOrder": 16,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N"
+  },
+  {
+    "LiveFrom": 42795,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "reviewAnswers",
+    "Name": "Review and submit application",
+    "Description": "Review and submit application",
+    "DisplayOrder": 17,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Submitted",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N"
+  }
+]

@@ -48,5 +48,5 @@ module.exports = {
   selectSocialWorkChronologyToFollow() {
     I.selectOption(this.fields.socialWorkChronologyStatus, 'To follow');
     I.fillField(this.fields.socialWorkChronologyReason, 'mock reason');
-  }
+  },
 };
