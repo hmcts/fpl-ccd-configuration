@@ -13,7 +13,7 @@ if [[ ! -e ${definition_output_file} ]]; then
    touch ${definition_output_file}
 fi
 
-docker run -it --rm --name json2xlsx \
+docker run --rm --name json2xlsx \
   -v ${definition_input_dir}:/tmp/${definition_input_dir_name} \
   -v ${definition_output_file}:/tmp/${definition_output_file_name} \
   docker.artifactory.reform.hmcts.net/ccd/ccd-definition-processor:latest \
