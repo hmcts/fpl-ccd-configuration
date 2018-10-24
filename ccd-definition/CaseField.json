@@ -257,5 +257,13 @@
     "Label": "Respondents",
     "FieldType": "Respondent",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "orders",
+    "Label": "-",
+    "FieldType": "Orders",
+    "SecurityClassification": "Public"
   }
 ]
