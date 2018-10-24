@@ -4,6 +4,6 @@
     "UserIDAMId": "local-authority@example.com",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "Shared_Storage_DRAFTType",
-    "WorkBasketDefaultState": "1_Initiation"
+    "WorkBasketDefaultState": "Open"
   }
 ]

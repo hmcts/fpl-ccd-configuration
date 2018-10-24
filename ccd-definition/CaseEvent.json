@@ -6,7 +6,7 @@
     "Name": "Initiate Case",
     "Description": "Create a new case – add a title",
     "DisplayOrder": 1,
-    "PostConditionState": "1_Initiation",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
   {
@@ -16,8 +16,8 @@
     "Name": "Select orders & directions",
     "Description": "Selecting the orders needed for application",
     "DisplayOrder": 2,
-    "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
   {
@@ -27,8 +27,8 @@
     "Name": "Select hearing",
     "Description": "Selecting the hearing needed for application",
     "DisplayOrder": 3,
-    "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
   {
@@ -38,8 +38,8 @@
     "Name": "Enter children in the case",
     "Description": "Entering the children for the case",
     "DisplayOrder": 4,
-    "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
   {
@@ -49,8 +49,8 @@
     "Name": "Enter respondents in the case",
     "Description": "Entering the respondents for the case",
     "DisplayOrder": 5,
-    "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
   {
@@ -60,8 +60,8 @@
     "Name": "Enter applicant in the case",
     "Description": "Entering the applicant for the case",
     "DisplayOrder": 6,
-    "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
   {
@@ -71,8 +71,8 @@
     "Name": "Enter others who need notice",
     "Description": "Entering others for the case",
     "DisplayOrder": 7,
-    "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
   {
@@ -82,8 +82,8 @@
     "Name": "Enter grounds for application",
     "Description": "Entering the grounds for the application",
     "DisplayOrder": 8,
-    "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
   {
@@ -93,8 +93,8 @@
     "Name": "Enter risk & harm to children",
     "Description": "Entering opinion on risk and harm to children",
     "DisplayOrder": 9,
-    "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
   {
@@ -104,8 +104,8 @@
     "Name": "Factors affecting parenting",
     "Description": "Entering the factors affecting parenting",
     "DisplayOrder": 10,
-    "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
   {
@@ -115,8 +115,8 @@
     "Name": "Enter international element",
     "Description": "Entering the international element",
     "DisplayOrder": 11,
-    "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
   {
@@ -126,8 +126,8 @@
     "Name": "Enter other proceedings",
     "Description": "Entering other proceedings and allocation proposals",
     "DisplayOrder": 12,
-    "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
   {
@@ -137,8 +137,8 @@
     "Name": "Enter allocation proposal",
     "Description": "Entering other proceedings and allocation proposals",
     "DisplayOrder": 13,
-    "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
   {
@@ -148,8 +148,8 @@
     "Name": "Attending the court",
     "Description": "Enter extra support needed for anyone to take part in hearing",
     "DisplayOrder": 13,
-    "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
   {
@@ -159,8 +159,8 @@
     "Name": "Annex documents",
     "Description": "Upload documents",
     "DisplayOrder": 14,
-    "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
   {
@@ -170,8 +170,8 @@
     "Name": "Amend case title",
     "Description": "Amend case title",
     "DisplayOrder": 15,
-    "PreConditionState(s)": "1_Initiation",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public",
     "ShowSummary": "N"
   },
@@ -182,8 +182,8 @@
     "Name": "Add case ID",
     "Description": "Add case ID",
     "DisplayOrder": 16,
-    "PreConditionState(s)": "1_Initiation",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
     "SecurityClassification": "Public",
     "ShowSummary": "N"
   },
@@ -194,9 +194,10 @@
     "Name": "Review and submit application",
     "Description": "Review and submit application",
     "DisplayOrder": 17,
-    "PreConditionState(s)": "*",
-    "PostConditionState": "1_Initiation",
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
-    "ShowSummary": "N"
+    "ShowSummary": "N",
+    "ShowEventNotes": "N"
   }
 ]
