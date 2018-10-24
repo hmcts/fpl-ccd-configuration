@@ -12,7 +12,7 @@
     "webdriverio": "^4.14.0"
   },
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint e2e",
     "test": "codeceptjs run-multiple parallel"
   },
   "husky": {
