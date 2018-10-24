@@ -3,15 +3,15 @@ const I = actor();
 module.exports = {
   fields: {
     orderType: {
-      careOrder: 'Care order',
-      supervisionOrder:'Supervision order',
-      educationSupervisionOrder: 'Education supervision order',
-      emergencyProtectionOrder: 'Emergency protection order',
-      other: 'Other',
+      careOrder: {css: 'input[id="orders_orderType-Care order"]'},
+      supervisionOrder: {css: 'input[id="orders_orderType-Supervision order"]'},
+      educationSupervisionOrder: {css: 'input[id="orders_orderType-Education supervision order"]'},
+      emergencyProtectionOrder: {css: 'input[id="orders_orderType-Emergency protection order"]'},
+      other: '#orders_orderType-Other',
     },
     directionAndInterim: '#orders_directionsAndInterim',
   },
-  
+
   checkCareOrder() {
     I.checkOption(this.fields.orderType.careOrder);
   },
@@ -32,7 +32,7 @@ module.exports = {
     I.checkOption(this.fields.orderType.other);    
   },
 
-  enterDirectionAndInterim(testString = 'Test string') {
+  enterDirectionAndInterim(testString = 'Test direction and interim') {
     I.fillField(this.fields.directionAndInterim, testString);
   },
 };

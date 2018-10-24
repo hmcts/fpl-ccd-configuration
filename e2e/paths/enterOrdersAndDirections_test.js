@@ -7,13 +7,14 @@ Before((I, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.selectOrders);
 });
 
-Scenario('Select the care order case order and continue', (I, ordersNeededPage) => {
+Scenario('Select the care order case order and continue', (I, caseViewPage, ordersNeededPage) => {
   ordersNeededPage.checkCareOrder();
   I.continueAndSubmit(config.eventSummary, config.eventDescription);
-  I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
+  caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
+  I.seeAnswerInTab('Orders & Directions', 'Which orders and directions do you want to apply for?', 'Care order');
 });
 
-Scenario('Select all case orders and fill in directions & interim information', (I, ordersNeededPage) => {
+Scenario('Select all case orders and fill in directions & interim information', (I, caseViewPage, ordersNeededPage) => {
   ordersNeededPage.checkCareOrder();
   ordersNeededPage.checkSupervisionOrder();
   ordersNeededPage.checkEducationSupervisionOrder();
@@ -21,5 +22,7 @@ Scenario('Select all case orders and fill in directions & interim information', 
   ordersNeededPage.checkOtherOrder();
   ordersNeededPage.enterDirectionAndInterim();
   I.continueAndSubmit(config.eventSummary, config.eventDescription);
-  I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
+  caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
+  I.seeAnswerInTab('Orders & Directions', 'Which orders and directions do you want to apply for?', ['Care order', 'Supervision order', 'Education supervision order', 'Other order under part 4 of the Children Act 1989']);
+  I.seeAnswerInTab('Orders & Directions', 'Directions and interim orders, if needed', 'Test direction and interim');
 });
