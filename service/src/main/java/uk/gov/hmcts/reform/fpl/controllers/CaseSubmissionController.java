@@ -20,8 +20,9 @@ import javax.validation.constraints.NotNull;
 public class CaseSubmissionController {
 
     private final HTMLToPDFConverter converter = new HTMLToPDFConverter();
+
     @Autowired
-    private final DocumentTemplates documentTemplates = new DocumentTemplates();
+    private DocumentTemplates documentTemplates;
 
     @PostMapping
     public ResponseEntity submittedCase(@RequestBody @NotNull Map<String,
