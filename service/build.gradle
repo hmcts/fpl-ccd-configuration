@@ -171,10 +171,3 @@ bootJar {
     attributes('Implementation-Version': project.version.toString())
   }
 }
-sourceSets {
-  main {
-    resources {
-      srcDirs "src/main/resources/"
-    }
-  }
-}
