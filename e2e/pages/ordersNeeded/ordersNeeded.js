@@ -11,20 +11,28 @@ module.exports = {
     },
     directionAndInterim: '#orders_directionsAndInterim',
   },
-
-  enterDirectionAndInterim(testString = 'Test string') {
-    I.fillField(this.fields.directionAndInterim, testString);
-  },
   
   checkCareOrder() {
     I.checkOption(this.fields.ordersAndDirections.careOrder);
   },
 
-  checkAllOrdersAndDirections() {
-    this.checkCareOrder();
-    I.checkOption(this.fields.ordersAndDirections.supervisionOrder);
-    I.checkOption(this.fields.ordersAndDirections.educationSupervisionOrder);
-    I.checkOption(this.fields.ordersAndDirections.emergencyProtectionOrder);
-    I.checkOption(this.fields.ordersAndDirections.other);
+  checkSupervisionOrder() {
+    I.checkOption(this.fields.ordersAndDirections.supervisionOrder);    
+  },
+
+  checkEducationSupervisionOrder() {
+    I.checkOption(this.fields.ordersAndDirections.supervisionOrder);    
+  },
+
+  checkEmergencyProtectionOrder() {
+    I.checkOption(this.fields.ordersAndDirections.emergencyProtectionOrder);    
+  },
+
+  checkOtherOrder() {
+    I.checkOption(this.fields.ordersAndDirections.other);    
+  },
+
+  enterDirectionAndInterim(testString = 'Test string') {
+    I.fillField(this.fields.directionAndInterim, testString);
   },
 };
