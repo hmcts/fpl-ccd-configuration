@@ -1248,9 +1248,9 @@
   {
     "LiveFrom": 42736,
     "ID": "Orders",
-    "ListElementCode": "ordersAndDetails",
+    "ListElementCode": "orderType",
     "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "OrdersList",
+    "FieldTypeParameter": "OrderType",
     "ElementLabel": "Which orders and directions do you want to apply for?",
     "SecurityClassification": "Public"    
   },

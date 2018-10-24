@@ -2,7 +2,7 @@ const I = actor();
 
 module.exports = {
   fields: {
-    ordersAndDirections: {
+    orderType: {
       careOrder: 'Care order',
       supervisionOrder:'Supervision order',
       educationSupervisionOrder: 'Education supervision order',
@@ -13,23 +13,23 @@ module.exports = {
   },
   
   checkCareOrder() {
-    I.checkOption(this.fields.ordersAndDirections.careOrder);
+    I.checkOption(this.fields.orderType.careOrder);
   },
 
   checkSupervisionOrder() {
-    I.checkOption(this.fields.ordersAndDirections.supervisionOrder);    
+    I.checkOption(this.fields.orderType.supervisionOrder);    
   },
 
   checkEducationSupervisionOrder() {
-    I.checkOption(this.fields.ordersAndDirections.supervisionOrder);    
+    I.checkOption(this.fields.orderType.supervisionOrder);    
   },
 
   checkEmergencyProtectionOrder() {
-    I.checkOption(this.fields.ordersAndDirections.emergencyProtectionOrder);    
+    I.checkOption(this.fields.orderType.emergencyProtectionOrder);    
   },
 
   checkOtherOrder() {
-    I.checkOption(this.fields.ordersAndDirections.other);    
+    I.checkOption(this.fields.orderType.other);    
   },
 
   enterDirectionAndInterim(testString = 'Test string') {
