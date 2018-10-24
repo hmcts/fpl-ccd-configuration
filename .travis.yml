@@ -5,6 +5,7 @@ node_js:
 
 git:
   depth: 1
+  submodules: false
 
 cache:
   yarn: true
