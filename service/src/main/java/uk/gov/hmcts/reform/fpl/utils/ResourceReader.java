@@ -11,11 +11,13 @@ public class ResourceReader {
     }
 
     public static byte[] readBytes(String resourcePath) {
-        try (InputStream inputStream = ResourceReader.class
-            .getClassLoader().getResourceAsStream(resourcePath)) {
+        try (InputStream inputStream = ResourceReader.class.getClassLoader().getResourceAsStream(resourcePath)) {
+            if (inputStream == null) {
+                throw new IllegalArgumentException("Resource does not exist");
+            }
             return IOUtils.toByteArray(inputStream);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
+        } catch (IOException ex) {
+            throw new IllegalArgumentException(ex);
         }
     }
 }
