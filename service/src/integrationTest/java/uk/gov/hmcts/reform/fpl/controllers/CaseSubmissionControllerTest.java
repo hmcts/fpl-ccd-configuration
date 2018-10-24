@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 
 @RunWith(SpringRunner.class)
@@ -28,7 +29,7 @@ public class CaseSubmissionControllerTest {
         MvcResult response = mockMvc
             .perform(post("/callback/case-submission")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"caseId\":\"2313\"}"))
+                .content(readBytes("fixtures/case.json")))
             .andExpect(status().isOk())
             .andReturn();
 
