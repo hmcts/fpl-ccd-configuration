@@ -49,11 +49,6 @@ tasks.withType(JavaCompile) {
   options.compilerArgs << "-Xlint:unchecked" << "-Werror"
 }
 
-task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
-  testClassesDirs = sourceSets.functionalTest.output.classesDirs
-  classpath = sourceSets.functionalTest.runtimeClasspath
-}
-
 task integration(type: Test, description: 'Runs the integration tests.', group: 'Verification') {
   testClassesDirs = sourceSets.integrationTest.output.classesDirs
   classpath = sourceSets.integrationTest.runtimeClasspath
@@ -63,10 +58,13 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 }
 check.dependsOn integration
 
-task smoke(type: Test) {
-  description = "Runs Smoke Tests"
-  testClassesDirs = sourceSets.smokeTest.output.classesDirs
-  classpath = sourceSets.smokeTest.runtimeClasspath
+task smoke(type: Exec, description: 'Runs the smoke tests.') {
+  commandLine '/usr/bin/curl', '--silent', '--insecure', '--fail', environment.get('URL') + '/health'
+}
+
+task functional(type: Exec, description: 'Runs the functional tests.', group: 'Verification') {
+  commandLine '/usr/local/bin/yarn', '--silent', 'install'
+  commandLine '/usr/local/bin/yarn', '--silent', 'test', '-g', 'Submit Case'
 }
 
 checkstyle {
