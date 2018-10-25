@@ -3,11 +3,11 @@ const I = actor();
 module.exports = {
   fields: {
     orderType: {
-      careOrder: {css: 'input[id="orders_orderType-Care order"]'},
-      supervisionOrder: {css: 'input[id="orders_orderType-Supervision order"]'},
-      educationSupervisionOrder: {css: 'input[id="orders_orderType-Education supervision order"]'},
-      emergencyProtectionOrder: {css: 'input[id="orders_orderType-Emergency protection order"]'},
-      other: '#orders_orderType-Other',
+      careOrder: 'Care order',
+      supervisionOrder: 'Supervision order',
+      educationSupervisionOrder: 'Education supervision order',
+      emergencyProtectionOrder: 'Emergency protection order',
+      other: 'Other',
     },
     directionAndInterim: '#orders_directionsAndInterim',
   },

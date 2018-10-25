@@ -1,3 +1,4 @@
+/* global locate */
 const logIn = require('./pages/login/loginPage');
 const createCase = require('./pages/createCase/createCase');
 const addEventDetails = require('./pages/createCase/addEventSummary');
@@ -57,7 +58,7 @@ module.exports = function () {
         });
       } else {
         this.seeElement(questionRow.withChild('td').withText(answer));        
-      };
+      }
     },
   });
 };
