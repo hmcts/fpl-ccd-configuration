@@ -34,7 +34,7 @@ withPipeline(type, product, component) {
     def aksServiceName = "${product}-${component}-${env.BRANCH_NAME}".toLowerCase()
     def aksDomain = "${(env.SUBSCRIPTION_NAME in ['nonprod', 'prod']) ? 'service.core-compute-preview.internal' : 'service.core-compute-saat.internal'}"
 
-    env.URL=https://ccd-case-management-web-${aksServiceName}.${aksDomain}
+    env.URL="https://ccd-case-management-web-${aksServiceName}.${aksDomain}"
   }
 
   after('smoketest:aks') {
@@ -53,6 +53,6 @@ withPipeline(type, product, component) {
     def aksServiceName = "${product}-${component}-${env.BRANCH_NAME}".toLowerCase()
     def aksDomain = "${(env.SUBSCRIPTION_NAME in ['nonprod', 'prod']) ? 'service.core-compute-preview.internal' : 'service.core-compute-saat.internal'}"
 
-    env.URL=https://ccd-case-management-web-${aksServiceName}.${aksDomain}
+    env.URL="https://ccd-case-management-web-${aksServiceName}.${aksDomain}"
   }
 }
