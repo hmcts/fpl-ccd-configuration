@@ -63,11 +63,11 @@ task smoke(type: Exec, description: 'Runs the smoke tests.') {
 }
 
 task functionalInstall(type: Exec, description: 'Installs E2E dependencies.') {
-  commandLine '/usr/local/bin/yarn', '--mutex', 'network', '--silent', 'install'
+  commandLine '/usr/bin/yarn', '--mutex', 'network', '--silent', 'install'
 }
 
 task functionalRun(type: Exec, description: 'Runs E2E tests.') {
-  commandLine '/usr/local/bin/yarn', '--silent', 'test'
+  commandLine '/usr/bin/yarn', '--silent', 'test'
 }
 
 task functional(type: Exec, description: 'Runs the functional tests.') {

@@ -14,11 +14,6 @@ withPipeline(type, product, component) {
   enableDeployToAKS()
   // enableSlackNotifications('#fpl-tech')
 
-  before('checkout') {
-    sh "echo $PATH"
-    sh "whereis yarn"
-  }
-
   after('aksdeploy') {
     def subscription = env.SUBSCRIPTION_NAME
     def aksServiceName = "${product}-${component}-${env.BRANCH_NAME}".toLowerCase()
