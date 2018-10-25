@@ -28,7 +28,7 @@
     "LiveFrom": 42795,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "grounds",
-    "Label": "-",
+    "Label": "Grounds",
     "FieldType": "Grounds",
     "SecurityClassification": "Public"
   },
@@ -44,7 +44,7 @@
     "LiveFrom": 43078,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "internationalElements",
-    "Label": "-",
+    "Label": "International elements",
     "FieldType": "InternationalElements",
     "SecurityClassification": "Public"
   },
@@ -52,7 +52,7 @@
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "factorsParenting",
-    "Label": "-",
+    "Label": "Factors affecting parenting",
     "FieldType": "FactorsParenting",
     "SecurityClassification": "Public"
   },
@@ -198,7 +198,7 @@
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "risks",
-    "Label": "-",
+    "Label": "Risks and harm to children",
     "FieldType": "RiskAndHarm",
     "SecurityClassification": "Public"
   },
@@ -206,7 +206,7 @@
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "proceeding",
-    "Label": "-",
+    "Label": "Other proceedings",
     "FieldType": "Proceeding",
     "SecurityClassification": "Public"
   },
@@ -214,7 +214,7 @@
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "hearingPreferences",
-    "Label": "-",
+    "Label": "Attending the court",
     "FieldType": "HearingPreferences",
     "SecurityClassification": "Public"
   },
