@@ -1,3 +1,4 @@
+/* global locate */
 const logIn = require('./pages/login/loginPage');
 const createCase = require('./pages/createCase/createCase');
 const addEventDetails = require('./pages/createCase/addEventSummary');
@@ -39,6 +40,24 @@ module.exports = function () {
         this.see(reason);
       } else {
         this.see(name);
+      }
+    },
+
+    seeAnswerInTab(complexTypeHeading, question, answer) {
+      const complexType = locate('div')
+        .withAttr({class: 'complex-panel'})
+        .withChild('dl')
+        .withChild('dt')
+        .withChild('span')
+        .withText(complexTypeHeading);
+      const questionRow = complexType.withChild('table').withChild('tbody').withChild('tr');
+      this.seeElement(questionRow.withChild('th').withText(question));
+      if (Array.isArray(answer)) {
+        answer.forEach(ans => {
+          this.seeElement(questionRow.withChild('td').withText(ans));       
+        });
+      } else {
+        this.seeElement(questionRow.withChild('td').withText(answer));        
       }
     },
   });
