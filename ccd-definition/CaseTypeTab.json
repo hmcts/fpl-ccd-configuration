@@ -34,7 +34,7 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
-    "TabLabel": "Legal Opinion",
+    "TabLabel": "Legal opinion",
     "TabDisplayOrder": 3,
     "CaseFieldID": "caseIDReference",
     "TabFieldDisplayOrder": 1
@@ -44,7 +44,7 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
-    "TabLabel": "Legal Opinion",
+    "TabLabel": "Legal opinion",
     "TabDisplayOrder": 3,
     "CaseFieldID": "grounds",
     "TabFieldDisplayOrder": 2
@@ -54,7 +54,7 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
-    "TabLabel": "Legal Opinion",
+    "TabLabel": "Legal opinion",
     "TabDisplayOrder": 3,
     "CaseFieldID": "risks",
     "TabFieldDisplayOrder": 3
@@ -64,7 +64,7 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
-    "TabLabel": "Legal Opinion",
+    "TabLabel": "Legal opinion",
     "TabDisplayOrder": 3,
     "CaseFieldID": "factorsParenting",
     "TabFieldDisplayOrder": 4
@@ -74,9 +74,9 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
-    "TabLabel": "Legal Opinion",
+    "TabLabel": "Legal opinion",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "internationalElements",
+    "CaseFieldID": "internationalElement",
     "TabFieldDisplayOrder": 5
   },
   {
@@ -84,7 +84,7 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
-    "TabLabel": "Legal Opinion",
+    "TabLabel": "Legal opinion",
     "TabDisplayOrder": 3,
     "CaseFieldID": "proceeding",
     "TabFieldDisplayOrder": 6
@@ -94,7 +94,7 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
-    "TabLabel": "Legal Opinion",
+    "TabLabel": "Legal opinion",
     "TabDisplayOrder": 3,
     "CaseFieldID": "allocationProposal",
     "TabFieldDisplayOrder": 7
@@ -104,7 +104,7 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
-    "TabLabel": "Legal Opinion",
+    "TabLabel": "Legal opinion",
     "TabDisplayOrder": 3,
     "CaseFieldID": "hearingPreferences",
     "TabFieldDisplayOrder": 8

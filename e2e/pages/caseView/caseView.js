@@ -6,7 +6,7 @@ module.exports = {
   tabs: {
     ordersHearing: 'Orders and hearing',
     casePeople: 'People in the case',
-    legalOpinion: 'Legal Opinion',
+    legalOpinion: 'Legal opinion',
     evidence: 'Evidence',
   },
   actionsDropdown: '.ccd-dropdown',

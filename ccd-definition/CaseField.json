@@ -43,9 +43,9 @@
   {
     "LiveFrom": 43078,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "internationalElements",
-    "Label": "International elements",
-    "FieldType": "InternationalElements",
+    "ID": "internationalElement",
+    "Label": "International element",
+    "FieldType": "InternationalElement",
     "SecurityClassification": "Public"
   },
   {
