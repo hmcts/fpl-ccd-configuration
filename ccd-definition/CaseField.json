@@ -262,7 +262,7 @@
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "orders",
-    "Label": "Orders & Directions",
+    "Label": "Orders and Directions",
     "FieldType": "Orders",
     "SecurityClassification": "Public"
   }
