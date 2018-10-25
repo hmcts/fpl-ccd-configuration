@@ -61,7 +61,6 @@ declare class Helper {
   /** Hook executed after all tests are executed */
   _finishTest(suite: () => void): void
   /**Access another configured helper: this.helpers['AnotherHelper'] */
-  // @ts-ignore
   get helpers(): any
   /** Print debug message to console (outputs only in debug mode) */
   debug(msg: string): void
@@ -279,6 +278,7 @@ declare namespace CodeceptJS {
     seeEventSubmissionConfirmation(event: string) : void,
     clickHyperlink(link: string, urlNavigatedTo: string) : void,
     seeDocument(title: string, name: string, status: string, reason?: string) : void,
+    seeAnswerInTab(questionNo: string, complexTypeHeading: string, question: string, answer: string) : void,
     say(msg: string) : void,
     retryStep(opts: string) : void,
 

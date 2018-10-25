@@ -4,9 +4,9 @@ module.exports = {
 
   file: 'mockFile.txt',
   tabs: {
-    ordersHearing: 'Orders sought and hearing needed',
+    ordersHearing: 'Orders and hearing',
     casePeople: 'People in the case',
-    legalOpinion: 'Legal Opinion',
+    legalOpinion: 'Legal opinion',
     evidence: 'Evidence',
   },
   actionsDropdown: '.ccd-dropdown',

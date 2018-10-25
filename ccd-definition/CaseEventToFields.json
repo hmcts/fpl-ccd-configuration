@@ -49,7 +49,7 @@
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterInternationalElement",
-    "CaseFieldID": "internationalElements",
+    "CaseFieldID": "internationalElement",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL",
     "PageID": 1,

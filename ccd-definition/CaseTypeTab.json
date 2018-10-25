@@ -4,10 +4,20 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "OrdersHearingTab",
-    "TabLabel": "Orders sought and hearing needed",
+    "TabLabel": "Orders and hearing",
     "TabDisplayOrder": 1,
-    "CaseFieldID": "caseIDReference",
+    "CaseFieldID": "orders",
     "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "OrdersHearingTab",
+    "TabLabel": "Orders and hearing",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "hearing",
+    "TabFieldDisplayOrder": 2
   },
   {
     "LiveFrom": 43101,
@@ -24,10 +34,80 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
-    "TabLabel": "Legal Opinion",
+    "TabLabel": "Legal opinion",
     "TabDisplayOrder": 3,
     "CaseFieldID": "caseIDReference",
     "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "LegalOpinionTab",
+    "TabLabel": "Legal opinion",
+    "TabDisplayOrder": 3,
+    "CaseFieldID": "grounds",
+    "TabFieldDisplayOrder": 2
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "LegalOpinionTab",
+    "TabLabel": "Legal opinion",
+    "TabDisplayOrder": 3,
+    "CaseFieldID": "risks",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "LegalOpinionTab",
+    "TabLabel": "Legal opinion",
+    "TabDisplayOrder": 3,
+    "CaseFieldID": "factorsParenting",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "LegalOpinionTab",
+    "TabLabel": "Legal opinion",
+    "TabDisplayOrder": 3,
+    "CaseFieldID": "internationalElement",
+    "TabFieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "LegalOpinionTab",
+    "TabLabel": "Legal opinion",
+    "TabDisplayOrder": 3,
+    "CaseFieldID": "proceeding",
+    "TabFieldDisplayOrder": 6
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "LegalOpinionTab",
+    "TabLabel": "Legal opinion",
+    "TabDisplayOrder": 3,
+    "CaseFieldID": "allocationProposal",
+    "TabFieldDisplayOrder": 7
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "LegalOpinionTab",
+    "TabLabel": "Legal opinion",
+    "TabDisplayOrder": 3,
+    "CaseFieldID": "hearingPreferences",
+    "TabFieldDisplayOrder": 8
   },
   {
     "LiveFrom": 43101,

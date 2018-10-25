@@ -10,10 +10,12 @@ exports.config = {
   helpers: {
     Puppeteer: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
+      waitForTimeout: 60000,
       restart: false,
       chrome: {
         ignoreHTTPSErrors: true,
       },
+      windowSize: "1280x960",
     },
     MyHelpers: {
       require: './e2e/helpers/browserback_helper.js',
