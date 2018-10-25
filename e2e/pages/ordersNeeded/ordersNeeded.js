@@ -1,13 +1,15 @@
+/* global locate */
+
 const I = actor();
 
 module.exports = {
   fields: {
     orderType: {
-      careOrder: 'Care order',
-      supervisionOrder: 'Supervision order',
-      educationSupervisionOrder: 'Education supervision order',
-      emergencyProtectionOrder: 'Emergency protection order',
-      other: 'Other',
+      careOrder: locate('input').withAttr({id: 'orders_orderType-Care order'}),
+      supervisionOrder: locate('input').withAttr({id: 'orders_orderType-Supervision order'}),
+      educationSupervisionOrder: locate('input').withAttr({id: 'orders_orderType-Education supervision order'}),
+      emergencyProtectionOrder: locate('input').withAttr({id: 'orders_orderType-Emergency protection order'}),
+      other: locate('input').withAttr({id: 'orders_orderType-Other'}),
     },
     directionAndInterim: '#orders_directionsAndInterim',
   },
