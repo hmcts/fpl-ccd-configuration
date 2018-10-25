@@ -14,6 +14,7 @@ exports.config = {
       chrome: {
         ignoreHTTPSErrors: true,
       },
+      windowSize: "1280x960",
     },
     MyHelpers: {
       require: './e2e/helpers/browserback_helper.js',
@@ -39,7 +40,6 @@ exports.config = {
     enterAllocationProposalPage: './e2e/pages/enterAllocationProposal/enterAllocationProposal.js',
     enterRespondentsPage: './e2e/pages/enterRespondents/enterRespondents.js',
     enterOthersPage: './e2e/pages/enterOthers/enterOthers.js',
-    legalOpinionStep: './e2e/steps/legalOpinion.js',
   },
   plugins: {
     screenshotOnFail: {

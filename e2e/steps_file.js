@@ -41,10 +41,24 @@ module.exports = function () {
         this.see(name);
       }
     },
-<<<<<<< HEAD
 
-
-=======
->>>>>>> ebbb694271c328f8e91c184830132c965eac77b2
+    seeAnswerInTab(questionNo, complexTypeHeading, question, answer) {
+      const complexType = locate('div')
+        .withAttr({class: 'complex-panel'})
+        .withChild('dl')
+        .withChild('dt')
+        .withChild('span')
+        .withText(complexTypeHeading);
+      let questionRow = locate(complexType).withChild('table').withChild('tbody').find('tr');
+      questionRow = locate(questionRow[questionNo]).withChild('th').withChild('span').withText(question);
+      this.seeElement(questionRow.withChild('th').withText(question));
+      if (Array.isArray(answer)) {
+        answer.forEach(ans => {
+          this.seeElement(questionRow.withChild('td').withText(ans));
+        });
+      } else {
+        this.seeElement(questionRow.withChild('td').withText(answer));
+      }
+    }
   });
 };
