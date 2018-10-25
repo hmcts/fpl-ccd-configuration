@@ -44,4 +44,8 @@ withPipeline(type, product, component) {
       ./kubernetes/configurer/configure-ccd.sh
     """
   }
+
+  after('functionalTest:aks') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
 }
