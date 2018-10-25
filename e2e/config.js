@@ -18,7 +18,7 @@ module.exports = {
     enterAllocationProposal: 'Enter allocation proposal',
     attendingHearing: 'Attending the court',
     uploadDocuments: 'Annex documents',
-    submitCase: 'Review and submit application',
+    submitCase: 'Submit application',
   },
   testFile: './e2e/fixtures/mockFile.txt',
   presidentsGuidanceUrl: 'https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf',

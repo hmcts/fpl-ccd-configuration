@@ -118,11 +118,16 @@ dependencyCheck {
 sonarqube {
   properties {
     property "sonar.projectName", "FPL :: Service"
+    property "sonar.jacoco.reportPath", file("${project.buildDir}/jacoco/test.exec")
+    property "sonar.jacoco.itReportPath", file("${project.buildDir}/jacoco/integration.exec")
   }
 }
 
 repositories {
   jcenter()
+  maven {
+    url  "https://dl.bintray.com/hmcts/hmcts-maven"
+  }
 }
 
 // it is important to specify logback classic and core packages explicitly as libraries like spring boot
@@ -144,6 +149,10 @@ dependencies {
 
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformLogging
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.0.2.RELEASE'
+
+  compile group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
+
+  compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
 
