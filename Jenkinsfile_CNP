@@ -28,14 +28,10 @@ withPipeline(type, product, component) {
     registerConsulDns(subscription, "ccd-case-management-web-${aksServiceName}", ingressIP)
     registerConsulDns(subscription, "ccd-api-gateway-${aksServiceName}", ingressIP)
     registerConsulDns(subscription, "ccd-definition-store-api-${aksServiceName}", ingressIP)
-  }
-
-  before('smoketest:aks') {
-    def aksServiceName = "${product}-${component}-${env.BRANCH_NAME}".toLowerCase()
-    def aksDomain = "${(env.SUBSCRIPTION_NAME in ['nonprod', 'prod']) ? 'service.core-compute-preview.internal' : 'service.core-compute-saat.internal'}"
 
     env.URL="https://ccd-case-management-web-${aksServiceName}.${aksDomain}"
   }
+
 
   after('smoketest:aks') {
     def aksServiceName = "${product}-${component}-${env.BRANCH_NAME}".toLowerCase()
@@ -47,12 +43,5 @@ withPipeline(type, product, component) {
       CCD_DEFINITION_STORE_API_BASE_URL=https://ccd-definition-store-api-${aksServiceName}.${aksDomain} \
       ./kubernetes/configurer/configure-ccd.sh
     """
-  }
-
-  before('functionalTest:aks') {
-    def aksServiceName = "${product}-${component}-${env.BRANCH_NAME}".toLowerCase()
-    def aksDomain = "${(env.SUBSCRIPTION_NAME in ['nonprod', 'prod']) ? 'service.core-compute-preview.internal' : 'service.core-compute-saat.internal'}"
-
-    env.URL="https://ccd-case-management-web-${aksServiceName}.${aksDomain}"
   }
 }
