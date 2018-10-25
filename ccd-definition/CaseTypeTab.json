@@ -4,10 +4,20 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "OrdersHearingTab",
-    "TabLabel": "Orders sought and hearing needed",
+    "TabLabel": "Orders and hearing",
     "TabDisplayOrder": 1,
-    "CaseFieldID": "caseIDReference",
+    "CaseFieldID": "orders",
     "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "OrdersHearingTab",
+    "TabLabel": "Orders and hearing",
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "hearing",
+    "TabFieldDisplayOrder": 2
   },
   {
     "LiveFrom": 43101,

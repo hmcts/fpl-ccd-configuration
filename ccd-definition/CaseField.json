@@ -36,7 +36,7 @@
     "LiveFrom": 43070,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "hearing",
-    "Label": "-",
+    "Label": "Hearing",
     "FieldType": "Hearing",
     "SecurityClassification": "Public"
   },
@@ -262,7 +262,7 @@
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "orders",
-    "Label": "-",
+    "Label": "Orders and Directions",
     "FieldType": "Orders",
     "SecurityClassification": "Public"
   }
