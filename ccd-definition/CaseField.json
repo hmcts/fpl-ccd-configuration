@@ -165,7 +165,7 @@
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "children_firstChild",
-    "Label": "-",
+    "Label": "Children",
     "FieldType": "Children",
     "SecurityClassification": "Public"
   },
@@ -182,7 +182,7 @@
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "enterApplicant_applicant",
-    "Label": "-",
+    "Label": "Applicant",
     "FieldType": "Applicant",
     "SecurityClassification": "Public"
   },
@@ -190,7 +190,7 @@
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "enterApplicant_solicitor",
-    "Label": "-",
+    "Label": "Solicitor",
     "FieldType": "Solicitor",
     "SecurityClassification": "Public"
   },
@@ -238,7 +238,7 @@
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "others",
-    "Label": "Other",
+    "Label": "Others who should be given notice",
     "FieldType": "Person",
     "SecurityClassification": "Public"
   },
