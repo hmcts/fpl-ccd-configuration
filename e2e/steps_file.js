@@ -43,21 +43,22 @@ module.exports = function () {
       }
     },
 
-    seeAnswerInTab(complexTypeHeading, question, answer) {
+    seeAnswerInTab(questionNo, complexTypeHeading, question, answer) {
       const complexType = locate('div')
         .withAttr({class: 'complex-panel'})
         .withChild('dl')
         .withChild('dt')
         .withChild('span')
         .withText(complexTypeHeading);
-      const questionRow = complexType.withChild('table').withChild('tbody').withChild('tr');
+      let questionRow = locate(complexType).withChild('table').withChild('tbody').find('tr');
+      questionRow = locate(questionRow[questionNo]).withChild('th').withChild('span').withText(question);
       this.seeElement(questionRow.withChild('th').withText(question));
       if (Array.isArray(answer)) {
         answer.forEach(ans => {
-          this.seeElement(questionRow.withChild('td').withText(ans));       
+          this.seeElement(questionRow.withChild('td').withText(ans));
         });
       } else {
-        this.seeElement(questionRow.withChild('td').withText(answer));        
+        this.seeElement(questionRow.withChild('td').withText(answer));
       }
     },
   });
