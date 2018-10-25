@@ -63,8 +63,12 @@ task smoke(type: Exec, description: 'Runs the smoke tests.') {
 }
 
 task functional(type: Exec, description: 'Runs the functional tests.', group: 'Verification') {
-  commandLine '/usr/local/bin/yarn', '--silent', 'install'
-  commandLine '/usr/local/bin/yarn', '--silent', 'test', '-g', 'Submit Case'
+  exec {
+    commandLine '/usr/local/bin/yarn', '--silent', 'install'
+  }
+  exec {
+    commandLine '/usr/local/bin/yarn', '--silent', 'test'
+  }
 }
 
 checkstyle {
