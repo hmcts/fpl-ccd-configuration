@@ -1,5 +1,4 @@
 version: '2.1'
-
 services:
   fpl-service:
     build:
@@ -25,3 +24,10 @@ services:
       - LOGBACK_REQUIRE_ERROR_CODE=false
     ports:
       - $SERVER_PORT:$SERVER_PORT
+    networks:
+      - default
+      - ccd
+networks:
+  ccd:
+    external:
+      name: compose_default

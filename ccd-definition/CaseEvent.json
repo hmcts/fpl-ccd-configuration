@@ -198,6 +198,7 @@
     "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
-    "ShowEventNotes": "N"
+    "ShowEventNotes": "N",
+    "CallBackURLSubmittedEvent": "http://fpl-service:4000/callback/case-submission"
   }
 ]
