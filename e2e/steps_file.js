@@ -14,14 +14,14 @@ module.exports = function () {
       createCase.createNewCase();
       this.waitForElement('.check-your-answers');
       addEventDetails.submitCase(summary, description);
-      this.waitForElement('.tabs', 10);
+      this.waitForElement('.tabs');
     },
 
     continueAndSubmit(summary, description) {
       this.click('Continue');
-      this.waitForElement('.check-your-answers', 10);
+      this.waitForElement('.check-your-answers');
       addEventDetails.submitCase(summary, description);
-      this.waitForElement('.tabs', 10);
+      this.waitForElement('.tabs');
     },
 
     seeEventSubmissionConfirmation(event) {

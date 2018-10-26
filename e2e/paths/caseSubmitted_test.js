@@ -11,7 +11,7 @@ Before((I, caseViewPage) => {
 
 Scenario('Submitting case', (I, caseViewPage) => {
   I.click('Submit');
-  I.waitForElement('.tabs', 10);
+  I.waitForElement('.tabs');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   I.dontSee(caseViewPage.actionsDropdown);
 });
