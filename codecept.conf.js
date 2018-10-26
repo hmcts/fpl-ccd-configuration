@@ -15,6 +15,7 @@ exports.config = {
       chrome: {
         ignoreHTTPSErrors: true,
       },
+      windowSize: "1280x960",
     },
     MyHelpers: {
       require: './e2e/helpers/browserback_helper.js',

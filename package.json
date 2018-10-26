@@ -13,6 +13,7 @@
   },
   "scripts": {
     "lint": "eslint e2e",
+    "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
     "test": "codeceptjs run-multiple parallel"
   },
   "husky": {
