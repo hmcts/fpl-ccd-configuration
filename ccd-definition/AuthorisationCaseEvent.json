@@ -117,12 +117,5 @@
     "CaseEventID": "reviewAnswers",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": 42736,
-    "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseEventID": "amendCaseTitle",
-    "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
   }
 ]

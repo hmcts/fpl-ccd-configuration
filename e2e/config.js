@@ -1,6 +1,8 @@
 module.exports = {
   localAuthorityEmail: 'local-authority@example.com',
   localAuthorityPassword: 'password',
+  hmctsAdminEmail: 'hmcts-admin@example.com',
+  hmctsAdminPassword: 'password',
   eventSummary: '',
   eventDescription: '',
   applicationActions: {

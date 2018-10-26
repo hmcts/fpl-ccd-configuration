@@ -235,7 +235,7 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "caseTitle",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": " CRU"
+    "CRUD": " R"
   },
   {
     "LiveFrom": 42736,

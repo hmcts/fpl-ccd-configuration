@@ -8,7 +8,7 @@
   },
   {
     "LiveFrom": 42736,
-    "UserIDAMId": "hmcts-admin@gov.uk",
+    "UserIDAMId": "hmcts-admin@example.com",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "Shared_Storage_DRAFTType",
     "WorkBasketDefaultState": "Submitted"
