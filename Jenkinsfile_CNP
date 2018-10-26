@@ -12,7 +12,7 @@ def component = "fpl-service"
 withPipeline(type, product, component) {
   enableDockerBuild()
   enableDeployToAKS()
-  // enableSlackNotifications('#fpl-tech')
+  enableSlackNotifications('#fpl-tech')
 
   after('aksdeploy') {
     def subscription = env.SUBSCRIPTION_NAME
