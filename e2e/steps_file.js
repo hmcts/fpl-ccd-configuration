@@ -9,18 +9,19 @@ module.exports = function () {
   return actor({
     logInAndCreateCase(username, password, summary, description) {
       logIn.signIn(username, password);
+      this.waitForNavigation();
       this.click('Create new case');
       createCase.createNewCase();
       this.waitForElement('.check-your-answers');
       addEventDetails.submitCase(summary, description);
-      this.waitForElement('.tabs', 10);
+      this.waitForElement('.tabs');
     },
 
     continueAndSubmit(summary, description) {
       this.click('Continue');
-      this.waitForElement('.check-your-answers', 10);
+      this.waitForElement('.check-your-answers');
       addEventDetails.submitCase(summary, description);
-      this.waitForElement('.tabs', 10);
+      this.waitForElement('.tabs');
     },
 
     seeEventSubmissionConfirmation(event) {
@@ -42,14 +43,15 @@ module.exports = function () {
       }
     },
 
-    seeAnswerInTab(complexTypeHeading, question, answer) {
+    seeAnswerInTab(questionNo, complexTypeHeading, question, answer) {
       const complexType = locate('div')
         .withAttr({class: 'complex-panel'})
         .withChild('dl')
         .withChild('dt')
         .withChild('span')
         .withText(complexTypeHeading);
-      const questionRow = complexType.withChild('table').withChild('tbody').withChild('tr');
+      let questionRow = locate(complexType).withChild('table').withChild('tbody').find('tr');
+      questionRow = locate(questionRow[questionNo]).withChild('th').withChild('span').withText(question);
       this.seeElement(questionRow.withChild('th').withText(question));
       if (Array.isArray(answer)) {
         answer.forEach(ans => {

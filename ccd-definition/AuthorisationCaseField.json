@@ -37,7 +37,7 @@
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "internationalElements",
+    "CaseFieldID": "internationalElement",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },

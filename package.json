@@ -7,12 +7,11 @@
     "eslint": "5.7.0 ",
     "eslint-plugin-codeceptjs": "^0.4.0",
     "husky": "^1.1.2",
-    "puppeteer": "^1.9.0",
-    "selenium-standalone": "^6.15.3",
-    "webdriverio": "^4.14.0"
+    "puppeteer": "^1.9.0"
   },
   "scripts": {
     "lint": "eslint e2e",
+    "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
     "test": "codeceptjs run-multiple parallel"
   },
   "husky": {

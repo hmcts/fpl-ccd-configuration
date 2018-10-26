@@ -6,18 +6,17 @@ module.exports = {
   tabs: {
     ordersHearing: 'Orders and hearing',
     casePeople: 'People in the case',
-    legalOpinion: 'Legal Opinion',
+    legalOpinion: 'Legal opinion',
     evidence: 'Evidence',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
 
   goToNewActions(actionSelected) {
-    I.waitForElement(this.actionsDropdown, 10);
+    I.waitForElement(this.actionsDropdown);
     I.selectOption(this.actionsDropdown, actionSelected);
     I.click(this.goButton);
-    I.waitForElement('ccd-case-event-trigger', 10);
-  },
+    I.waitForElement('ccd-case-event-trigger');
 
   selectTab(tab) {
     I.click(tab);
