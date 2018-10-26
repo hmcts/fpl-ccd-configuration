@@ -4,10 +4,10 @@ locals {
   ase_name               = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
 }
 
-module "fpl-service" {
+module "case-service" {
   source              = "git@github.com:hmcts/moj-module-webapp?ref=master"
   product             = "${var.product}-${var.component}"
-  location            = "${var.location_app}"
+  location            = "${var.location}"
   env                 = "${var.env}"
   ilbIp               = "${var.ilbIp}"
   resource_group_name = "${azurerm_resource_group.rg.name}"

@@ -5,7 +5,7 @@
 def type = "java"
 
 def product = "fpl"
-def component = "fpl-service"
+def component = "case-service"
 
 withPipeline(type, product, component) {
   enableDockerBuild()

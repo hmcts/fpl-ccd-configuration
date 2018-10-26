@@ -6,7 +6,7 @@ variable "component" {
   type = "string"
 }
 
-variable "location_app" {
+variable "location" {
   type    = "string"
   default = "UK South"
 }
