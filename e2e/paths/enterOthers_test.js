@@ -1,7 +1,7 @@
 const config = require('../config.js');
 const other = require('../fixtures/others.js');
 
-Feature('Enter others who should be given notice');
+Feature('Enter others who should be given notice').retry(2);
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);

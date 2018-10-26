@@ -9,19 +9,19 @@ module.exports = function () {
   return actor({
     logInAndCreateCase(username, password, summary, description) {
       logIn.signIn(username, password);
-      this.wait(3);
+      this.waitForNavigation();
       this.click('Create new case');
       createCase.createNewCase();
       this.waitForElement('.check-your-answers');
       addEventDetails.submitCase(summary, description);
-      this.waitForElement('.tabs', 10);
+      this.waitForElement('.tabs');
     },
 
     continueAndSubmit(summary, description) {
       this.click('Continue');
-      this.waitForElement('.check-your-answers', 10);
+      this.waitForElement('.check-your-answers');
       addEventDetails.submitCase(summary, description);
-      this.waitForElement('.tabs', 10);
+      this.waitForElement('.tabs');
     },
 
     seeEventSubmissionConfirmation(event) {

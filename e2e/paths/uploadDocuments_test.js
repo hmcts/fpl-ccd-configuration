@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-Feature('Upload Documents');
+Feature('Upload Documents').retry(2);
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
