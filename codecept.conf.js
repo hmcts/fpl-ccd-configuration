@@ -10,12 +10,13 @@ exports.config = {
   helpers: {
     Puppeteer: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
-      waitForTimeout: 60000,
-      restart: false,
+      restart: true,
+      waitForNavigation: 'networkidle0',
+      waitForTimeout: 30000,
       chrome: {
         ignoreHTTPSErrors: true,
       },
-      windowSize: "1280x960",
+      windowSize: '1280x960',
     },
     MyHelpers: {
       require: './e2e/helpers/browserback_helper.js',
@@ -44,10 +45,16 @@ exports.config = {
     ordersNeededPage: './e2e/pages/ordersNeeded/ordersNeeded.js',
   },
   plugins: {
+    autoDelay: {
+      enabled: true,
+    },
+    retryFailedStep: {
+      enabled: true,
+    },
     screenshotOnFail: {
       enabled: true,
     },
   },
   tests: './e2e/paths/*_test.js',
-  timeout: 10000,
+  timeout: 30000,
 };

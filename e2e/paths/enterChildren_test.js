@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-Feature('Enter children in application');
+Feature('Enter children in application').retry(2);
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);

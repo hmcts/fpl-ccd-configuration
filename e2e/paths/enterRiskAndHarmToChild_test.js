@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-Feature('Enter risk and harm to child');
+Feature('Enter risk and harm to child').retry(2);
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
