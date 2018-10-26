@@ -24,10 +24,9 @@ exports.config = {
   helpers: {
     Puppeteer: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
-      waitForTimeout: 60000,
       restart: true,
       waitForNavigation: 'networkidle0',
-      waitForTimeout: 10000,
+      waitForTimeout: 30000,
       chrome: {
         ignoreHTTPSErrors: true,
         args: proxyServer ? [
@@ -74,5 +73,5 @@ exports.config = {
     },
   },
   tests: './e2e/paths/*_test.js',
-  timeout: 10000,
+  timeout: 30000,
 };
