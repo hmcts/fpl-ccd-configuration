@@ -34,10 +34,7 @@ withPipeline(type, product, component) {
     env.SERVICE_AUTH_PROVIDER_API_BASE_URL="https://service-auth-provider-api-${aksServiceName}.${aksDomain}"
     env.CCD_DEFINITION_STORE_API_BASE_URL="https://ccd-definition-store-api-${aksServiceName}.${aksDomain}"
     env.URL="https://ccd-case-management-web-${aksServiceName}.${aksDomain}"
-
-    env.LA_USER_PASSWORD='Password12'
   }
-
 
   after('smoketest:aks') {
     sh """
@@ -45,16 +42,11 @@ withPipeline(type, product, component) {
     """
   }
 
-  before('functionalTest:aks') {
-    sh """
-      echo 'FPL'
-    """
-    sh """
-      env
-    """
+  before('functionalTest:preview') {
+    env.LA_USER_PASSWORD='Password12'
   }
 
-  after('functionalTest:aks') {
+  after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 }
