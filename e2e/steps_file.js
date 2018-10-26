@@ -9,7 +9,6 @@ module.exports = function () {
   return actor({
     logInAndCreateCase(username, password, summary, description) {
       logIn.signIn(username, password);
-      this.wait(3);
       this.click('Create new case');
       createCase.createNewCase();
       this.waitForElement('.check-your-answers');
@@ -54,11 +53,16 @@ module.exports = function () {
       this.seeElement(questionRow.withChild('th').withText(question));
       if (Array.isArray(answer)) {
         answer.forEach(ans => {
-          this.seeElement(questionRow.withChild('td').withText(ans));       
+          this.seeElement(questionRow.withChild('td').withText(ans));
         });
       } else {
-        this.seeElement(questionRow.withChild('td').withText(answer));        
+        this.seeElement(questionRow.withChild('td').withText(answer));
       }
+    },
+
+    signOut() {
+      this.clearCookie();
+      this.refreshPage();
     },
   });
 };

@@ -281,6 +281,7 @@ declare namespace CodeceptJS {
     seeDocument(title: string, name: string, status: string, reason?: string) : void,
     say(msg: string) : void,
     retryStep(opts: string) : void,
+    signOut() : void,
 
   }
 

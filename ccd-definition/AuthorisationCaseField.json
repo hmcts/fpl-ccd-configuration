@@ -49,70 +49,70 @@
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "uploadDocuments_paragraph_1",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "uploadDocuments_paragraph_2",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkChronology_question",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkChronology_document",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkStatement_question",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkStatement_document",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkAssessment_question",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkAssessment_document",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkCarePlan_question",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkCarePlan_document",
     "UserRole": "caseworker-publiclaw-localAuthority",
@@ -189,21 +189,21 @@
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "allocationProposal_label",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42738,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "allocationProposal",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42738,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "others",
     "UserRole": "caseworker-publiclaw-localAuthority",
@@ -280,70 +280,70 @@
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "uploadDocuments_paragraph_1",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "uploadDocuments_paragraph_2",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkChronology_question",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkChronology_document",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkStatement_question",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkStatement_document",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkAssessment_question",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkAssessment_document",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkCarePlan_question",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkCarePlan_document",
     "UserRole": "caseworker-publiclaw-courtadmin",
@@ -420,21 +420,21 @@
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "allocationProposal_label",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42738,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "allocationProposal",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42738,
+    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "others",
     "UserRole": "caseworker-publiclaw-courtadmin",
