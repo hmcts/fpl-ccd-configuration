@@ -43,6 +43,6 @@ Scenario('completing the attending hearing section of the c110a application',
       ' difficulty');
     I.seeAnswerInTab(7, 'Attending the court', 'Do you need Welsh proceedings', 'No');
     I.seeAnswerInTab(8, 'Attending the court', 'Any security needed?', 'Yes');
-    I.seeAnswerInTab(8, 'Attending the court', 'Give details', 'Separate' +
+    I.seeAnswerInTab(9, 'Attending the court', 'Give details', 'Separate' +
       ' waiting rooms');
   });

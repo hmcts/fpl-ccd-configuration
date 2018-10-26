@@ -28,7 +28,7 @@
     "LiveFrom": 42795,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "grounds",
-    "Label": "Grounds",
+    "Label": "Grounds for application",
     "FieldType": "Grounds",
     "SecurityClassification": "Public"
   },
@@ -164,18 +164,9 @@
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "children_firstChild",
+    "ID": "children",
     "Label": "Children",
     "FieldType": "Children",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": 42736,
-    "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "children_additionalChildren",
-    "Label": "Additional Child",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Children",
     "SecurityClassification": "Public"
   },
   {
@@ -230,7 +221,7 @@
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "allocationProposal",
-    "Label": "-",
+    "Label": "Allocation proposal",
     "FieldType": "AllocationProposal",
     "SecurityClassification": "Public"
   },

@@ -44,21 +44,17 @@ module.exports = function () {
     },
 
     seeAnswerInTab(questionNo, complexTypeHeading, question, answer) {
-      const complexType = locate('div')
-        .withAttr({class: 'complex-panel'})
-        .withChild('dl')
-        .withChild('dt')
-        .withChild('span')
-        .withText(complexTypeHeading);
-      let questionRow = locate(complexType).withChild('table').withChild('tbody').find('tr');
-      questionRow = locate(questionRow[questionNo]).withChild('th').withChild('span').withText(question);
-      this.seeElement(questionRow.withChild('th').withText(question));
+      const complexType = locate(`.//span[text() = \'${complexTypeHeading}\']`);
+      let questionRow = locate(`${complexType}/../../../table/tbody/tr[${questionNo}]`);
+      this.seeElement(locate(`${questionRow}/th/span`).withText(question));
       if (Array.isArray(answer)) {
+        let ansIndex = 1;
         answer.forEach(ans => {
-          this.seeElement(questionRow.withChild('td').withText(ans));
+          this.seeElement(locate(`${questionRow}/td/span//tr[${ansIndex}]`).withText(ans));
+          ansIndex ++;
         });
       } else {
-        this.seeElement(questionRow.withChild('td').withText(answer));
+        this.seeElement(locate(`${questionRow}/td/span`).withText(answer));
       }
     },
   });

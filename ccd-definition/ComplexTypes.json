@@ -44,7 +44,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "childName",
     "FieldType": "Text",
     "ElementLabel": "Child's full name",
@@ -52,7 +52,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "childDOB",
     "FieldType": "Date",
     "ElementLabel": "Date of birth",
@@ -61,7 +61,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "childGender",
     "FieldType": "FixedList",
     "FieldTypeParameter": "ChildGenderList",
@@ -70,7 +70,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "childGenderIdentification",
     "FieldType": "Text",
     "ElementLabel": "What gender do they identify with?",
@@ -79,7 +79,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "livingSituation",
     "FieldType": "FixedList",
     "FieldTypeParameter": "LivingSituationList",
@@ -88,7 +88,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "situationDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Details",
@@ -97,7 +97,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "situationDate",
     "FieldType": "Date",
     "ElementLabel": "What date did they start staying here?",
@@ -107,7 +107,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "situationAddress",
     "FieldType": "TextArea",
     "ElementLabel": "Address where child is staying",
@@ -116,7 +116,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "keyDates",
     "FieldType": "TextArea",
     "ElementLabel": "Key dates for this child",
@@ -125,7 +125,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "careAndContact",
     "FieldType": "TextArea",
     "ElementLabel": "Brief summary of care and contact plan",
@@ -134,7 +134,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "adoption",
     "FieldType": "YesOrNo",
     "ElementLabel": "Are you considering adoption at this stage?",
@@ -142,7 +142,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "placementOrderApplication",
     "FieldType": "YesOrNo",
     "ElementLabel": "Are you submitting an application for a placement order?",
@@ -151,7 +151,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "placementCourt",
     "FieldType": "TextArea",
     "ElementLabel": "Which court are you applying to?",
@@ -160,7 +160,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "mothersName",
     "FieldType": "Text",
     "ElementLabel": "Mother's full name",
@@ -168,7 +168,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "fathersName",
     "FieldType": "Text",
     "ElementLabel": "Father's full name",
@@ -176,7 +176,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "fathersResponsibility",
     "FieldType": "FixedList",
     "FieldTypeParameter": "FathersResponsibilityList",
@@ -185,7 +185,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "socialWorkerName",
     "FieldType": "Text",
     "ElementLabel": "Name of social worker",
@@ -193,7 +193,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "socialWorkerTel",
     "FieldType": "Text",
     "ElementLabel": "Social worker's telephone number",
@@ -201,7 +201,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "additionalNeeds",
     "FieldType": "YesOrNo",
     "ElementLabel": "Does the child have any additional needs?",
@@ -210,7 +210,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "additionalNeedsDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
@@ -219,7 +219,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "detailsHidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need contact details hidden from other parties?",
@@ -227,7 +227,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "detailsHiddenReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
@@ -236,7 +236,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "proceedingsLabel",
     "FieldType": "Label",
     "ElementLabel": "## Ability to take part in proceedings",
@@ -244,7 +244,7 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "litigationIssues",
     "FieldType": "YesOrNo",
     "ElementLabel": "Does this child have any issues with litigation capacity?",
@@ -252,11 +252,28 @@
   },
   {
     "LiveFrom": 42736,
-    "ID": "Children",
+    "ID": "ChildrenType",
     "ListElementCode": "litigationIssuesReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give details, including referrals to or assessments by the Adult Learning Disability team or other health service, including outcomes",
     "FieldShowCondition": "litigationIssues=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "ID": "Children",
+    "ListElementCode": "firstChild",
+    "FieldType": "ChildrenType",
+    "ElementLabel": "Child 1",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "ID": "Children",
+    "ListElementCode": "additionalChildren",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ChildrenType",
+    "ElementLabel": "Additional children",
     "SecurityClassification": "Public"
   },
   {
