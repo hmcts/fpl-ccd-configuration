@@ -48,7 +48,6 @@ module.exports = {
   enterChildDetails(name, day, month, year, gender = 'Boy') {
     I.fillField(this.fields(activeChild).fullName, name);
     I.fillField(this.fields(activeChild).DOB.day, day);
-    I.fillField(this.fields(activeChild).DOB.day, day);
     I.fillField(this.fields(activeChild).DOB.month, month);
     I.fillField(this.fields(activeChild).DOB.year, year);
     I.selectOption(this.fields(activeChild).gender, gender);

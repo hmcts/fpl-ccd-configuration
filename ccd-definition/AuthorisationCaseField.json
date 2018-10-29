@@ -142,28 +142,21 @@
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "children_firstChild",
+    "CaseFieldID": "children",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "children_additionalChildren",
+    "CaseFieldID": "applicant",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "enterApplicant_applicant",
-    "UserRole": "caseworker-publiclaw-localAuthority",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": 42736,
-    "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "enterApplicant_solicitor",
+    "CaseFieldID": "solicitor",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
