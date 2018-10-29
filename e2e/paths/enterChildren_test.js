@@ -1,4 +1,3 @@
-
 const config = require('../config.js');
 
 Feature('Enter children in application').retry(2);
