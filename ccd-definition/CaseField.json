@@ -28,7 +28,7 @@
     "LiveFrom": 42795,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "grounds",
-    "Label": "Grounds",
+    "Label": "Grounds for application",
     "FieldType": "Grounds",
     "SecurityClassification": "Public"
   },
@@ -164,33 +164,24 @@
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "children_firstChild",
-    "Label": "-",
+    "ID": "children",
+    "Label": "Children",
     "FieldType": "Children",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "children_additionalChildren",
-    "Label": "Additional Child",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Children",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": 42736,
-    "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "enterApplicant_applicant",
-    "Label": "-",
+    "ID": "applicant",
+    "Label": "Applicant",
     "FieldType": "Applicant",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "enterApplicant_solicitor",
-    "Label": "-",
+    "ID": "solicitor",
+    "Label": "Solicitor",
     "FieldType": "Solicitor",
     "SecurityClassification": "Public"
   },
@@ -230,7 +221,7 @@
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "allocationProposal",
-    "Label": "-",
+    "Label": "Allocation proposal",
     "FieldType": "AllocationProposal",
     "SecurityClassification": "Public"
   },
@@ -238,7 +229,7 @@
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "others",
-    "Label": "Other",
+    "Label": "Others who should be given notice",
     "FieldType": "Person",
     "SecurityClassification": "Public"
   },

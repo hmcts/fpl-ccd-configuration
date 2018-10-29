@@ -1,61 +1,73 @@
 const I = actor();
+let activeOther = 'firstOther';
 
 module.exports = {
 
-  fields: {
-    name: '#others_firstOther_name',
-    DOB: {
-      day: '#others_firstOther_DOB-day',
-      month: '#others_firstOther_DOB-month',
-      year: '#others_firstOther_DOB-year',
-    },
-    gender: '#others_firstOther_gender',
-    birthPlace: '#others_firstOther_birthPlace',
-    address: '#others_firstOther_address',
-    telephoneNumber: '#others_firstOther_telephone',
-    relationshipToChild: '#others_firstOther_childInformation',
-    detailsHidden: (option) => {
-      return {
-        option: `#others_firstOther_detailsHidden-${option}`,
-        reason: '#others_firstOther_detailsHiddenReason',
-      };
-    },
-    litigationIssues: (option) => {
-      return {
-        option: `#others_firstOther_litigationIssues-${option}`,
-        reason: '#others_firstOther_litigationIssuesReason',
-      };
-    },
+  fields: (otherNo) => {
+    return {
+      name: `#others_${otherNo}_name`,
+      DOB: {
+        day: `#others_${otherNo}_DOB-day`,
+        month: `#others_${otherNo}_DOB-month`,
+        year: `#others_${otherNo}_DOB-year`,
+      },
+      gender: `#others_${otherNo}_gender`,
+      birthPlace: `#others_${otherNo}_birthPlace`,
+      address: `#others_${otherNo}_address`,
+      telephoneNumber: `#others_${otherNo}_telephone`,
+      relationshipToChild: `#others_${otherNo}_childInformation`,
+      detailsHidden: (option) => {
+        return {
+          option: `#others_${otherNo}_detailsHidden-${option}`,
+          reason: `#others_${otherNo}_detailsHiddenReason`,
+        };
+      },
+      litigationIssues: (option) => {
+        return {
+          option: `#others_${otherNo}_litigationIssues-${option}`,
+          reason: `#others_${otherNo}_litigationIssuesReason`,
+        };
+      },
+    };
   },
 
-  addOther: 'Add new',
+  addOtherButton: 'Add new',
+
+  addOther() {
+    if (activeOther === 'additionalOthers_0') {
+      throw new Error('Adding additional others is not supported in the test');
+    }
+
+    I.click(this.addOtherButton);
+    activeOther = 'additionalOthers_0';
+  },
 
   enterOtherDetails(other) {
-    I.fillField(this.fields.name, other.name);
-    I.fillField(this.fields.DOB.day, other.DOB.day);
-    I.fillField(this.fields.DOB.month, other.DOB.month);
-    I.fillField(this.fields.DOB.year, other.DOB.year);
-    I.selectOption(this.fields.gender, other.gender);
-    I.fillField(this.fields.birthPlace, other.birthPlace);
-    I.fillField(this.fields.address, other.address);
-    I.fillField(this.fields.telephoneNumber, other.telephoneNumber);
+    I.fillField(this.fields(activeOther).name, other.name);
+    I.fillField(this.fields(activeOther).DOB.day, other.DOB.day);
+    I.fillField(this.fields(activeOther).DOB.month, other.DOB.month);
+    I.fillField(this.fields(activeOther).DOB.year, other.DOB.year);
+    I.selectOption(this.fields(activeOther).gender, other.gender);
+    I.fillField(this.fields(activeOther).birthPlace, other.birthPlace);
+    I.fillField(this.fields(activeOther).address, other.address);
+    I.fillField(this.fields(activeOther).telephoneNumber, other.telephoneNumber);
   },
 
   enterRelationshipToChild(childInformation) {
-    I.fillField(this.fields.relationshipToChild, childInformation);
+    I.fillField(this.fields(activeOther).relationshipToChild, childInformation);
   },
 
   enterContactDetailsHidden(option) {
-    I.click(this.fields.detailsHidden(option).option);
+    I.click(this.fields(activeOther).detailsHidden(option).option);
     if (option === 'Yes') {
-      I.fillField(this.fields.detailsHidden(option).reason, 'mock reason');
+      I.fillField(this.fields(activeOther).detailsHidden(option).reason, 'mock reason');
     }
   },
 
   enterLitigationIssues(option) {
-    I.click(this.fields.litigationIssues(option).option);
+    I.click(this.fields(activeOther).litigationIssues(option).option);
     if (option === 'Yes') {
-      I.fillField(this.fields.litigationIssues(option).reason, 'mock reason');
+      I.fillField(this.fields(activeOther).litigationIssues(option).reason, 'mock reason');
     }
   },
 };
