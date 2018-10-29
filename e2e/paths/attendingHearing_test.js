@@ -34,15 +34,12 @@ Scenario('completing the attending hearing section of the c110a application',
     I.seeEventSubmissionConfirmation(config.applicationActions.attendingHearing);
     caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
     I.seeAnswerInTab(1, 'Attending the court', 'Any Interpreter required?', 'Yes');
-    I.seeAnswerInTab(2, 'Attending the court', 'Give details', 'French' +
-      ' translator');
+    I.seeAnswerInTab(2, 'Attending the court', 'Give details', 'French translator');
     I.seeAnswerInTab(3, 'Attending the court', 'Any intermediary required?', 'No');
     I.seeAnswerInTab(4, 'Attending the court', 'Litigation capacity issues', 'No');
     I.seeAnswerInTab(5, 'Attending the court', 'Learning disability issues', 'Yes');
-    I.seeAnswerInTab(6, 'Attending the court', 'Give details', 'learning' +
-      ' difficulty');
+    I.seeAnswerInTab(6, 'Attending the court', 'Give details', 'learning difficulty');
     I.seeAnswerInTab(7, 'Attending the court', 'Do you need Welsh proceedings', 'No');
     I.seeAnswerInTab(8, 'Attending the court', 'Any security needed?', 'Yes');
-    I.seeAnswerInTab(9, 'Attending the court', 'Give details', 'Separate' +
-      ' waiting rooms');
+    I.seeAnswerInTab(9, 'Attending the court', 'Give details', 'Separate waiting rooms');
   });

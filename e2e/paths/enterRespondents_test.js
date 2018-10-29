@@ -13,12 +13,6 @@ Scenario('Entering information for respondent and submitting', (I, enterResponde
   I.continueAndSubmit(config.eventSummary, config.eventDescription);
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  I.seeAnswerInTab(1, 'Respondent 1', 'Full name', 'Joe Bloggs');
-  I.seeAnswerInTab(2, 'Respondent 1', 'Date of birth', '1 Jan 1980');
-  I.seeAnswerInTab(3, 'Respondent 1', 'Gender', 'Male');
-  I.seeAnswerInTab(4, 'Respondent 1', 'Place of birth', 'London');
-  I.seeAnswerInTab(5, 'Respondent 1', 'Current address', 'London Lane, London, SE1 1AA');
-  I.seeAnswerInTab(6, 'Respondent 1', 'Telephone number', '00000 000000');
 });
 
 Scenario('Entering all information for first respondent and an additional respondent', (I, enterRespondentsPage, caseViewPage) => {

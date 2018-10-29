@@ -14,13 +14,6 @@ Scenario('Filling in the information for the applicant and submitting', (I, ente
   I.continueAndSubmit(config.eventSummary, config.eventDescription);
   I.seeEventSubmissionConfirmation(config.applicationActions.enterApplicants);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  I.seeAnswerInTab(1, 'Applicant', 'Name of applicant', 'John Smith');
-  I.seeAnswerInTab(2, 'Applicant', 'Name of person to contact', 'Jonathon Walker');
-  I.seeAnswerInTab(3, 'Applicant', 'Job title', 'Legal adviser');
-  I.seeAnswerInTab(4, 'Applicant', 'Address', '1 London Way, London, SE1 11A');
-  I.seeAnswerInTab(5, 'Applicant', 'Mobile number', '7000000000');
-  I.seeAnswerInTab(6, 'Applicant', 'Telephone number', '00000000000');
-  I.seeAnswerInTab(7, 'Applicant', 'Email', 'applicant@email.com');
 });
 
 Scenario('Filling in the full section for enter applicants', (I, enterApplicantPage, caseViewPage) => {
