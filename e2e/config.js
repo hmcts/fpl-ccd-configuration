@@ -2,9 +2,9 @@
 
 module.exports = {
   localAuthorityEmail: 'local-authority@example.com',
-  localAuthorityPassword: process.env.LA_USER_PASSWORD || 'password',
+  localAuthorityPassword: process.env.LA_USER_PASSWORD || 'Password12',
   hmctsAdminEmail: 'hmcts-admin@example.com',
-  hmctsAdminPassword: process.env.CA_USER_PASSWORD || 'password',
+  hmctsAdminPassword: process.env.CA_USER_PASSWORD || 'Password12',
   eventSummary: '',
   eventDescription: '',
   applicationActions: {

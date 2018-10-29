@@ -9,7 +9,6 @@ module.exports = function () {
   return actor({
     logInAndCreateCase(username, password, summary, description) {
       logIn.signIn(username, password);
-      this.waitForNavigation();
       this.click('Create new case');
       createCase.createNewCase();
       this.waitForElement('.check-your-answers');
