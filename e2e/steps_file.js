@@ -14,7 +14,6 @@ module.exports = function () {
       createCase.createNewCase();
       this.waitForElement('.check-your-answers');
       addEventDetails.submitCase(summary, description);
-      this.waitForElement('.tabs');
     },
 
     continueAndSubmit(summary, description) {
@@ -64,7 +63,6 @@ module.exports = function () {
 
     signOut() {
       this.clearCookie();
-      this.refreshPage();
     },
   });
 };

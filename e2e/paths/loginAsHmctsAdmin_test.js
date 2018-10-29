@@ -1,14 +1,14 @@
 const config = require('../config.js');
 let caseId;
 
-Feature('Login as hmcts admin');
+Feature('Login as hmcts admin').retry(2);
 
 Before(async (I, caseViewPage) => {
   I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
   caseId = await I.grabTextFrom('h2');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   I.click('.button[type=submit]');
-  I.waitForElement('.tabs', 10);
+  I.waitForElement('.tabs');
   I.signOut();
 });
 
