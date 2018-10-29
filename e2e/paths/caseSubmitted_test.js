@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-Feature('Submit Case');
+Feature('Submit Case').retry(2);
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
@@ -11,7 +11,7 @@ Before((I, caseViewPage) => {
 
 Scenario('Submitting case', (I, caseViewPage) => {
   I.click('Submit');
-  I.waitForElement('.tabs', 10);
+  I.waitForElement('.tabs');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   I.dontSee(caseViewPage.actionsDropdown);
 });

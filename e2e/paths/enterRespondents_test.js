@@ -1,7 +1,7 @@
 const config = require('../config.js');
 const respondent = require('../fixtures/respondent.js');
 
-Feature('Enter respondents');
+Feature('Enter respondents').retry(2);
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
