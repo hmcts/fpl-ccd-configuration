@@ -62,16 +62,16 @@ task smoke(type: Exec, description: 'Runs the smoke tests.') {
   commandLine '/usr/bin/curl', '--silent', '--insecure', '--fail', environment.get('URL') + '/health'
 }
 
-task functionalInstall(type: Exec, description: 'Installs E2E dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--silent', 'install'
-}
-
-task functionalRun(type: Exec, description: 'Runs E2E tests.') {
-  commandLine '/usr/bin/yarn', '--silent', 'test'
-}
+//task functionalInstall(type: Exec, description: 'Installs E2E dependencies.') {
+//  commandLine '/usr/bin/yarn', '--mutex', 'network', '--silent', 'install'
+//}
+//
+//task functionalRun(type: Exec, description: 'Runs E2E tests.') {
+//  commandLine '/usr/bin/yarn', '--silent', 'test'
+//}
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(functionalInstall, functionalRun)
+//  dependsOn(functionalInstall, functionalRun)
 }
 
 checkstyle {
