@@ -172,7 +172,7 @@
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "enterApplicant_applicant",
+    "ID": "applicant",
     "Label": "Applicant",
     "FieldType": "Applicant",
     "SecurityClassification": "Public"
@@ -180,7 +180,7 @@
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "enterApplicant_solicitor",
+    "ID": "solicitor",
     "Label": "Solicitor",
     "FieldType": "Solicitor",
     "SecurityClassification": "Public"

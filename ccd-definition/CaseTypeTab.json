@@ -46,7 +46,7 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 2,
-    "CaseFieldID": "enterApplicant_applicant",
+    "CaseFieldID": "applicant",
     "TabFieldDisplayOrder": 4
   },
   {
@@ -56,7 +56,7 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 2,
-    "CaseFieldID": "enterApplicant_solicitor",
+    "CaseFieldID": "solicitor",
     "TabFieldDisplayOrder": 5
   },
   {
