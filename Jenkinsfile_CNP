@@ -2,6 +2,8 @@
 
 @Library("Infrastructure")
 
+import uk.gov.hmcts.contino.Kubectl
+
 def type = "java"
 
 def product = "fpl"
@@ -9,5 +11,43 @@ def component = "fpl-service"
 
 withPipeline(type, product, component) {
   enableDockerBuild()
+  enableDeployToAKS()
   enableSlackNotifications('#fpl-tech')
+
+  after('aksdeploy') {
+    def subscription = env.SUBSCRIPTION_NAME
+    def aksServiceName = "${product}-${component}-${env.BRANCH_NAME}".toLowerCase()
+    def aksDomain = "${(env.SUBSCRIPTION_NAME in ['nonprod', 'prod']) ? 'service.core-compute-preview.internal' : 'service.core-compute-saat.internal'}"
+
+    def kubectl = new Kubectl(this, subscription, aksServiceName)
+
+    def ingressIP = kubectl.getServiceLoadbalancerIP("traefik", "kube-system")
+
+    registerConsulDns(subscription, "service-auth-provider-api-${aksServiceName}", ingressIP)
+    registerConsulDns(subscription, "idam-authentication-web-${aksServiceName}", ingressIP)
+    registerConsulDns(subscription, "idam-api-${aksServiceName}", ingressIP)
+    registerConsulDns(subscription, "ccd-case-management-web-${aksServiceName}", ingressIP)
+    registerConsulDns(subscription, "ccd-api-gateway-${aksServiceName}", ingressIP)
+    registerConsulDns(subscription, "ccd-definition-store-api-${aksServiceName}", ingressIP)
+
+    env.IDAM_API_BASE_URL="https://idam-api-${aksServiceName}.${aksDomain}"
+    env.SERVICE_AUTH_PROVIDER_API_BASE_URL="https://service-auth-provider-api-${aksServiceName}.${aksDomain}"
+    env.CCD_DEFINITION_STORE_API_BASE_URL="https://ccd-definition-store-api-${aksServiceName}.${aksDomain}"
+    env.URL="https://ccd-case-management-web-${aksServiceName}.${aksDomain}"
+  }
+
+  after('smoketest:aks') {
+    sh """
+      ./kubernetes/configurer/configure-ccd.sh
+    """
+  }
+
+  before('functionalTest:preview') {
+    env.LA_USER_PASSWORD='Password12'
+    env.CA_USER_PASSWORD='Password12'
+  }
+
+  after('functionalTest:preview') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
 }

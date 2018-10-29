@@ -1,8 +1,10 @@
+/*global process*/
+
 module.exports = {
   localAuthorityEmail: 'local-authority@example.com',
-  localAuthorityPassword: 'password',
+  localAuthorityPassword: process.env.LA_USER_PASSWORD || 'password',
   hmctsAdminEmail: 'hmcts-admin@example.com',
-  hmctsAdminPassword: 'password',
+  hmctsAdminPassword: process.env.CA_USER_PASSWORD || 'password',
   eventSummary: '',
   eventDescription: '',
   applicationActions: {
