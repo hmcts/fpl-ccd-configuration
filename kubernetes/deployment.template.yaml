@@ -1,0 +1,1061 @@
+# The following variables are derived as follows by the pipeline. DO NOT CHANGE:
+#
+#   - NAMESPACE:    product
+#   - SERVICE_NAME: product-component-branch
+#   - IMAGE_NAME:   registry-name/hmcts/product-component:branch
+#
+# To keep this large file easier to maintain the following order of object declarations is imposed:
+#
+# 1. Namespace
+# 2. ConfigMaps
+# 3. Deployments & Services
+# 4. Ingresses
+#
+
+---
+
+#
+# Namespace
+#
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ${NAMESPACE}
+
+---
+
+#
+# SERVICE-AUTH-PROVIDER-API :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-auth-provider-api
+  namespace: ${NAMESPACE}
+data:
+  MICROSERVICEKEYS_CCD_GW: 'AABBCCDDEEFFGGHH'
+  MICROSERVICEKEYS_CCD_DATA: 'AABBCCDDEEFFGGHH'
+  MICROSERVICEKEYS_CCD_DEFINITION: 'AABBCCDDEEFFGGHH'
+  TESTING_SUPPORT_ENABLED: 'true'
+
+---
+
+#
+# IDAM-AUTHENTICATION-WEB :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: idam-authentication-web
+  namespace: ${NAMESPACE}
+data:
+  NODE_ENV: 'preview'
+  IDAM_API_URL: 'http://idam-api'
+
+---
+
+#
+# IDAM-API :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: idam-api
+  namespace: ${NAMESPACE}
+data:
+  JAVA_OPTS: '-Xms128m -Xmx768m -XX:MaxMetaspaceSize=128m'
+  SPRING_DATASOURCE_URL: 'jdbc:postgresql://shared-database/idam'
+  SPRING_DATASOURCE_USERNAME: 'idam'
+  SPRING_DATASOURCE_PASSWORD: 'idam'
+  SPRING_MAIL_HOST: 'smtp-server'
+  NOTIFY: 'false'
+  IDAM_API_OAUTH2_CLIENT_CLIENT_SECRETS_CCD_GATEWAY: '123456'
+  IDAM_CCD_WHITELIST: 'https://ccd-case-management-web-${SERVICE_FQDN}/oauth2redirect'
+  REFORM_ENVIRONMENT: 'kubernetes'
+  IDAM_TESTING_SUPPORT_ENABLED: 'true'
+
+---
+
+#
+# CCD-CASE-MANAGEMENT-WEB :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ccd-case-management-web
+  namespace: ${NAMESPACE}
+data:
+  IDAM_LOGIN_URL: 'https://idam-authentication-web-${SERVICE_FQDN}/login'
+  CCD_GW_OAUTH2_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/oauth2'
+  CCD_API_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/aggregated'
+  CCD_DATA_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/data'
+  DM_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/documents'
+
+---
+
+#
+# CCD-API-GATEWAY :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ccd-api-gateway
+  namespace: ${NAMESPACE}
+data:
+  IDAM_BASE_URL: 'http://idam-api'
+  IDAM_OAUTH2_TOKEN_ENDPOINT: 'http://idam-api/oauth2/token'
+  IDAM_OAUTH2_LOGOUT_ENDPOINT: 'http://idam-api/session/:token'
+  IDAM_OAUTH2_CLIENT_SECRET: '123456'
+  IDAM_S2S_URL: 'http://service-auth-provider-api'
+  IDAM_SERVICE_NAME: 'ccd_gw'
+  IDAM_SERVICE_KEY: 'AABBCCDDEEFFGGHH'
+  PROXY_AGGREGATED: 'http://ccd-data-store-api'
+  PROXY_DATA: 'http://ccd-data-store-api'
+  PROXY_DEFINITION_IMPORT: 'http://ccd-definition-store-api'
+  PROXY_DOCUMENT_MANAGEMENT: 'http://dm-store'
+  CORS_ORIGIN_WHITELIST: 'https://ccd-case-management-web-${SERVICE_FQDN}'
+
+---
+
+#
+# CCD-USER-PROFILE-API :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ccd-user-profile-api
+  namespace: ${NAMESPACE}
+data:
+  SPRING_DATASOURCE_URL: 'jdbc:postgresql://shared-database/ccd_user_profile'
+  SPRING_DATASOURCE_USERNAME: 'ccd_user_profile'
+  SPRING_DATASOURCE_PASSWORD: 'ccd_user_profile'
+  USER_PROFILE_S2S_AUTHORISED_SERVICES: 'ccd_data,ccd_definition'
+  IDAM_S2S_URL: 'http://service-auth-provider-api'
+  REFORM_ENVIRONMENT: 'kubernetes'
+  APPINSIGHTS_INSTRUMENTATIONKEY: 'fake-key'
+
+---
+
+#
+# CCD-DEFINITION-STORE-API :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ccd-definition-store-api
+  namespace: ${NAMESPACE}
+data:
+  SPRING_DATASOURCE_URL: 'jdbc:postgresql://shared-database/ccd_definition_store'
+  SPRING_DATASOURCE_USERNAME: 'ccd_definition_store'
+  SPRING_DATASOURCE_PASSWORD: 'ccd_definition_store'
+  DEFINITION_STORE_IDAM_KEY: 'AABBCCDDEEFFGGHH'
+  DEFINITION_STORE_S2S_AUTHORISED_SERVICES: 'ccd_data,ccd_gw'
+  USER_PROFILE_HOST: 'http://ccd-user-profile-api'
+  IDAM_USER_URL: 'http://idam-api'
+  IDAM_S2S_URL: 'http://service-auth-provider-api'
+  REFORM_ENVIRONMENT: 'kubernetes'
+  APPINSIGHTS_INSTRUMENTATIONKEY: 'fake-key'
+
+---
+
+#
+# CCD-DATA-STORE-API :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ccd-data-store-api
+  namespace: ${NAMESPACE}
+data:
+  SPRING_DATASOURCE_URL: 'jdbc:postgresql://shared-database/ccd_data_store?stringtype=unspecified'
+  SPRING_DATASOURCE_USERNAME: 'ccd_data_store'
+  SPRING_DATASOURCE_PASSWORD: 'ccd_data_store'
+  DATA_STORE_IDAM_KEY: 'AABBCCDDEEFFGGHH'
+  DATA_STORE_TOKEN_SECRET: 'AABBCCDDEEFFGGHH'
+  DATA_STORE_S2S_AUTHORISED_SERVICES: 'ccd_gw'
+  DEFINITION_STORE_HOST: 'http://ccd-definition-store-api'
+  USER_PROFILE_HOST: 'http://ccd-user-profile-api'
+  IDAM_USER_URL: 'http://idam-api'
+  IDAM_S2S_URL: 'http://service-auth-provider-api'
+  CCD_DM_DOMAIN: 'https://ccd-api-gateway-${SERVICE_FQDN}'
+  REFORM_ENVIRONMENT: 'kubernetes'
+  APPINSIGHTS_INSTRUMENTATIONKEY: 'fake-key'
+
+---
+
+#
+# DM-STORE :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dm-store
+  namespace: ${NAMESPACE}
+data:
+  SPRING_DATASOURCE_URL: 'jdbc:postgresql://shared-database/evidence'
+  SPRING_DATASOURCE_USERNAME: 'evidence'
+  SPRING_DATASOURCE_PASSWORD: 'evidence'
+  IDAM_USER_BASE_URI: 'http://idam-api'
+  IDAM_S2S_BASE_URI: 'http://service-auth-provider-api'
+  S2S_NAMES_WHITELIST: 'ccd_gw,cmc,ccd_data'
+  ENABLE_DELETE: 'true'
+  ENABLE_IDAM_HEALTH_CHECK: 'false'
+  ENABLE_METADATA_SEARCH: 'true'
+  ENABLE_DOCUMENT_AND_METADATA_UPLOAD: 'false'
+  ENABLE_FOLDER_API: 'true'
+  ENABLE_TTL: 'true'
+  ENABLE_THUMBNAIL: 'true'
+  DM_MULTIPART_WHITELIST: 'image/jpeg,application/pdf,image/tiff,image/png,image/bmp,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.spreadsheetml.template,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.presentationml.template,application/vnd.openxmlformats-officedocument.presentationml.slideshow'
+  DM_MULTIPART_WHITELIST_EXT: '.jpg,.jpeg,.bmp,.tif,.tiff,.png,.pdf,.txt,.doc,.dot,.docx,.dotx,.xls,.xlt,.xla,.xlsx,.xltx,.xlsb,.ppt,.pot,.pps,.ppa,.pptx,.potx,.ppsx'
+  MAX_FILE_SIZE: '500MB'
+  MAX_ACTIVE_DB_CONNECTIONS: '10'
+  ENDPOINTS_HEALTH_SENSITIVE: 'false'
+  ENDPOINTS_INFO_SENSITIVE: 'false'
+  REFORM_ENVIRONMENT: 'kubernetes'
+
+---
+
+#
+# Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${SERVICE_NAME}
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ${SERVICE_NAME}
+  template:
+    metadata:
+      labels:
+        app: ${SERVICE_NAME}
+    spec:
+      containers:
+        - image: ${IMAGE_NAME}
+          name: ${SERVICE_NAME}
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 200m
+            limits:
+              memory: 512Mi
+              cpu: 1000m
+          ports:
+            - containerPort: 4000
+              name: http
+          imagePullPolicy: Always
+
+---
+
+#
+# Service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${SERVICE_NAME}
+  namespace: ${NAMESPACE}
+  labels:
+    app: ${SERVICE_NAME}
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 4000
+  selector:
+    app: ${SERVICE_NAME}
+
+---
+
+#
+# SERVICE-AUTH-PROVIDER-API :: Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-auth-provider-api
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-auth-provider-api
+  template:
+    metadata:
+      labels:
+        app: service-auth-provider-api
+    spec:
+      containers:
+        - image: hmcts.azurecr.io/hmcts/rpe-service-auth-provider:latest
+          name: service-auth-provider-api
+          envFrom:
+            - configMapRef:
+                name: service-auth-provider-api
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 1000m
+          ports:
+            - containerPort: 8489
+              name: http
+          imagePullPolicy: Always
+
+---
+
+#
+# SERVICE-AUTH-PROVIDER-API :: Service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-auth-provider-api
+  namespace: ${NAMESPACE}
+  labels:
+    app: service-auth-provider-api
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8489
+  selector:
+    app: service-auth-provider-api
+
+---
+
+#
+# IDAM-AUTHENTICATION-WEB :: Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: idam-authentication-web
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: idam-authentication-web
+  template:
+    metadata:
+      labels:
+        app: idam-authentication-web
+    spec:
+      containers:
+        - image: docker.artifactory.reform.hmcts.net/auth/authentication-web:latest
+          name: idam-authentication-web
+          envFrom:
+            - configMapRef:
+                name: idam-authentication-web
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 200m
+            limits:
+              memory: 256Mi
+              cpu: 500m
+          ports:
+            - containerPort: 8000
+              name: http
+          imagePullPolicy: Always
+
+---
+
+#
+# IDAM-AUTHENTICATION-WEB :: Service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: idam-authentication-web
+  namespace: ${NAMESPACE}
+  labels:
+    app: idam-authentication-web
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8000
+  selector:
+    app: idam-authentication-web
+
+---
+
+#
+# IDAM-API :: Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: idam-api
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: idam-api
+  template:
+    metadata:
+      labels:
+        app: idam-api
+    spec:
+      containers:
+        - image: docker.artifactory.reform.hmcts.net/auth/idam-api:latest
+          name: idam-api
+          envFrom:
+            - configMapRef:
+                name: idam-api
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 1000m
+          ports:
+            - containerPort: 8080
+              name: http
+          imagePullPolicy: Always
+
+---
+
+#
+# IDAM-API :: Service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: idam-api
+  namespace: ${NAMESPACE}
+  labels:
+    app: idam-api
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+  selector:
+    app: idam-api
+
+---
+
+#
+# CCD-CASE-MANAGEMENT-WEB :: Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ccd-case-management-web
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ccd-case-management-web
+  template:
+    metadata:
+      labels:
+        app: ccd-case-management-web
+    spec:
+      containers:
+        - image: hmcts.azurecr.io/hmcts/ccd-case-management-web:latest
+          name: ccd-case-management-web
+          envFrom:
+            - configMapRef:
+                name: ccd-case-management-web
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 200m
+            limits:
+              memory: 256Mi
+              cpu: 500m
+          ports:
+            - containerPort: 3451
+              name: http
+          imagePullPolicy: Always
+
+---
+
+#
+# CCD-CASE-MANAGEMENT-WEB :: Service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: ccd-case-management-web
+  namespace: ${NAMESPACE}
+  labels:
+    app: ccd-case-management-web
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 3451
+  selector:
+    app: ccd-case-management-web
+
+---
+
+#
+# CCD-API-GATEWAY :: Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ccd-api-gateway
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ccd-api-gateway
+  template:
+    metadata:
+      labels:
+        app: ccd-api-gateway
+    spec:
+      containers:
+        - image: hmcts.azurecr.io/hmcts/ccd-api-gateway-web:latest
+          name: ccd-api-gateway
+          envFrom:
+            - configMapRef:
+                name: ccd-api-gateway
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 200m
+            limits:
+              memory: 256Mi
+              cpu: 500m
+          ports:
+            - containerPort: 3453
+              name: http
+          imagePullPolicy: Always
+
+---
+
+#
+# CCD-API-GATEWAY :: Service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: ccd-api-gateway
+  namespace: ${NAMESPACE}
+  labels:
+    app: ccd-api-gateway
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 3453
+  selector:
+    app: ccd-api-gateway
+
+---
+
+#
+# CCD-USER-PROFILE-API :: Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ccd-user-profile-api
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ccd-user-profile-api
+  template:
+    metadata:
+      labels:
+        app: ccd-user-profile-api
+    spec:
+      containers:
+        - image: hmcts.azurecr.io/hmcts/ccd-user-profile-api:latest
+          name: ccd-user-profile-api
+          envFrom:
+            - configMapRef:
+                name: ccd-user-profile-api
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 1000m
+          ports:
+            - containerPort: 4453
+              name: http
+          imagePullPolicy: Always
+
+---
+
+#
+# CCD-USER-PROFILE-API :: Service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: ccd-user-profile-api
+  namespace: ${NAMESPACE}
+  labels:
+    app: ccd-user-profile-api
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 4453
+  selector:
+    app: ccd-user-profile-api
+
+---
+
+#
+# CCD-DEFINITION-STORE-API :: Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ccd-definition-store-api
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ccd-definition-store-api
+  template:
+    metadata:
+      labels:
+        app: ccd-definition-store-api
+    spec:
+      containers:
+        - image: hmcts.azurecr.io/hmcts/ccd-definition-store-api:latest
+          name: ccd-definition-store-api
+          envFrom:
+            - configMapRef:
+                name: ccd-definition-store-api
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 1000m
+          ports:
+            - containerPort: 4451
+              name: http
+          imagePullPolicy: Always
+
+---
+
+#
+# CCD-DEFINITION-STORE-API :: Service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: ccd-definition-store-api
+  namespace: ${NAMESPACE}
+  labels:
+    app: ccd-definition-store-api
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 4451
+  selector:
+    app: ccd-definition-store-api
+
+---
+
+#
+# CCD-DATA-STORE-API :: Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ccd-data-store-api
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ccd-data-store-api
+  template:
+    metadata:
+      labels:
+        app: ccd-data-store-api
+    spec:
+      containers:
+        - image: hmcts.azurecr.io/hmcts/ccd-data-store-api:latest
+          name: ccd-data-store-api
+          envFrom:
+            - configMapRef:
+                name: ccd-data-store-api
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 1000m
+          ports:
+            - containerPort: 4452
+              name: http
+          imagePullPolicy: Always
+
+---
+
+#
+# CCD-DATA-STORE-API :: Service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: ccd-data-store-api
+  namespace: ${NAMESPACE}
+  labels:
+    app: ccd-data-store-api
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 4452
+  selector:
+    app: ccd-data-store-api
+
+---
+
+#
+# DM-STORE :: Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dm-store
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dm-store
+  template:
+    metadata:
+      labels:
+        app: dm-store
+    spec:
+      containers:
+        - image: hmcts.azurecr.io/hmcts/dm-store:latest
+          name: dm-store
+          envFrom:
+            - configMapRef:
+                name: dm-store
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 200m
+            limits:
+              memory: 1024Mi
+              cpu: 1000m
+          ports:
+            - containerPort: 4603
+              name: http
+          imagePullPolicy: Always
+
+---
+
+#
+# DM-STORE :: Service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: dm-store
+  namespace: ${NAMESPACE}
+  labels:
+    app: dm-store
+spec:
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 4603
+  selector:
+    app: dm-store
+
+---
+
+#
+# SHARED-DATABASE :: Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shared-database
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shared-database
+  template:
+    metadata:
+      labels:
+        app: shared-database
+    spec:
+      containers:
+        - image: hmcts.azurecr.io/hmcts/ccd-postgres:10.5-alpine
+          name: shared-database
+          resources:
+            requests:
+              memory: 64Mi
+              cpu: 200m
+            limits:
+              memory: 128Mi
+              cpu: 1000m
+          ports:
+            - containerPort: 5432
+              name: postgres
+          imagePullPolicy: Always
+
+---
+
+#
+# SHARED-DATABASE :: Service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: shared-database
+  namespace: ${NAMESPACE}
+  labels:
+    app: shared-database
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: shared-database
+
+---
+
+#
+# SMTP-SERVER :: Deployment
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smtp-server
+  namespace: ${NAMESPACE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smtp-server
+  template:
+    metadata:
+      labels:
+        app: smtp-server
+    spec:
+      containers:
+        - image: mailhog/mailhog:latest
+          name: smtp-server
+          resources:
+            requests:
+              memory: 16Mi
+              cpu: 100m
+            limits:
+              memory: 32Mi
+              cpu: 200m
+          ports:
+            - containerPort: 1025
+              name: smtp-server
+          imagePullPolicy: Always
+
+---
+
+#
+# SMTP-SERVER SERVICE
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: smtp-server
+  namespace: ${NAMESPACE}
+  labels:
+    app: smtp-server
+spec:
+  ports:
+    - port: 1025
+  selector:
+    app: smtp-server
+
+---
+
+#
+# Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${SERVICE_NAME}
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: ${SERVICE_FQDN}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ${SERVICE_NAME}
+              servicePort: 80
+
+---
+
+#
+# SERVICE-AUTH-PROVIDER-API :: Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: service-auth-provider-api
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: service-auth-provider-api-${SERVICE_FQDN}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: service-auth-provider-api
+              servicePort: 80
+
+---
+
+#
+# IDAM-AUTHENTICATION-WEB :: Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: idam-authentication-web
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: idam-authentication-web-${SERVICE_FQDN}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: idam-authentication-web
+              servicePort: 80
+
+---
+
+#
+# IDAM-API :: Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: idam-api
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: idam-api-${SERVICE_FQDN}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: idam-api
+              servicePort: 80
+
+---
+
+#
+# CCD-CASE-MANAGEMENT-WEB :: Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ccd-case-management-web
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: ccd-case-management-web-${SERVICE_FQDN}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ccd-case-management-web
+              servicePort: 80
+
+---
+
+#
+# CCD-API-GATEWAY :: Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ccd-api-gateway
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: ccd-api-gateway-${SERVICE_FQDN}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ccd-api-gateway
+              servicePort: 80
+
+---
+
+#
+# CCD-DEFINITION-STORE-API :: Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ccd-definition-store-api
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: ccd-definition-store-api-${SERVICE_FQDN}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ccd-definition-store-api
+              servicePort: 80
