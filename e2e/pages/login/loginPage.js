@@ -1,3 +1,5 @@
+/*global process*/
+
 const I = actor();
 
 module.exports = {
@@ -9,7 +11,7 @@ module.exports = {
   submitButton: 'input[value="Sign in"]',
 
   signIn(username, password) {
-    I.amOnPage('http://localhost:3451');
+    I.amOnPage(process.env.URL || 'http://localhost:3451');
     I.waitForElement(this.submitButton, 5);
     I.fillField(this.fields.username, username);
     I.fillField(this.fields.password, password);

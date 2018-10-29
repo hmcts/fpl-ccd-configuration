@@ -1,6 +1,8 @@
+/*global process*/
+
 module.exports = {
   localAuthorityEmail: 'local-authority@example.com',
-  localAuthorityPassword: 'password',
+  localAuthorityPassword: process.env.LA_USER_PASSWORD || 'password',
   eventSummary: '',
   eventDescription: '',
   applicationActions: {
