@@ -13,10 +13,10 @@ module.exports = {
   goButton: 'Go',
 
   goToNewActions(actionSelected) {
-    I.waitForElement(this.actionsDropdown, 10);
+    I.waitForElement(this.actionsDropdown);
     I.selectOption(this.actionsDropdown, actionSelected);
     I.click(this.goButton);
-    I.waitForElement('ccd-case-edit-page', 10);
+    I.waitForElement('ccd-case-edit-page');
   },
 
   selectTab(tab) {

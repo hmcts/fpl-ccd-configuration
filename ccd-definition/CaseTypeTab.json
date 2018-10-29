@@ -26,8 +26,48 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 2,
-    "CaseFieldID": "caseIDReference",
+    "CaseFieldID": "children",
     "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 2,
+    "CaseFieldID": "respondents",
+    "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 2,
+    "CaseFieldID": "applicant",
+    "TabFieldDisplayOrder": 4
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 2,
+    "CaseFieldID": "solicitor",
+    "TabFieldDisplayOrder": 5
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 2,
+    "CaseFieldID": "others",
+    "TabFieldDisplayOrder": 6
   },
   {
     "LiveFrom": 43101,

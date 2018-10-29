@@ -9,19 +9,19 @@ module.exports = function () {
   return actor({
     logInAndCreateCase(username, password, summary, description) {
       logIn.signIn(username, password);
-      this.wait(3);
+      this.waitForNavigation();
       this.click('Create new case');
       createCase.createNewCase();
       this.waitForElement('.check-your-answers');
       addEventDetails.submitCase(summary, description);
-      this.waitForElement('.tabs', 10);
+      this.waitForElement('.tabs');
     },
 
     continueAndSubmit(summary, description) {
       this.click('Continue');
-      this.waitForElement('.check-your-answers', 10);
+      this.waitForElement('.check-your-answers');
       addEventDetails.submitCase(summary, description);
-      this.waitForElement('.tabs', 10);
+      this.waitForElement('.tabs');
     },
 
     seeEventSubmissionConfirmation(event) {
@@ -44,21 +44,17 @@ module.exports = function () {
     },
 
     seeAnswerInTab(questionNo, complexTypeHeading, question, answer) {
-      const complexType = locate('div')
-        .withAttr({class: 'complex-panel'})
-        .withChild('dl')
-        .withChild('dt')
-        .withChild('span')
-        .withText(complexTypeHeading);
-      let questionRow = locate(complexType).withChild('table').withChild('tbody').find('tr');
-      questionRow = locate(questionRow[questionNo]).withChild('th').withChild('span').withText(question);
-      this.seeElement(questionRow.withChild('th').withText(question));
+      const complexType = locate(`.//span[text() = '${complexTypeHeading}']`);
+      const questionRow = locate(`${complexType}/../../../table/tbody/tr[${questionNo}]`);
+      this.seeElement(locate(`${questionRow}/th/span`).withText(question));
       if (Array.isArray(answer)) {
+        let ansIndex = 1;
         answer.forEach(ans => {
-          this.seeElement(questionRow.withChild('td').withText(ans));
+          this.seeElement(locate(`${questionRow}/td/span//tr[${ansIndex}]`).withText(ans));
+          ansIndex++;
         });
       } else {
-        this.seeElement(questionRow.withChild('td').withText(answer));
+        this.seeElement(locate(`${questionRow}/td/span`).withText(answer));
       }
     },
   });
