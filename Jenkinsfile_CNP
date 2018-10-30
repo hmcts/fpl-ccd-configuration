@@ -46,6 +46,10 @@ withPipeline(type, product, component) {
     """
   }
 
+  after('smoketest:preview-staging') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
+
   after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }

@@ -31,9 +31,9 @@ exports.config = {
       waitForTimeout: 30000,
       chrome: {
         ignoreHTTPSErrors: true,
-        args: proxyServer ? [
+        args: [
           `--proxy-server=http://proxyout.reform.hmcts.net:8080`,
-        ] : [],
+        ],
       },
       windowSize: '1280x960',
     },
