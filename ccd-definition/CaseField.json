@@ -260,8 +260,8 @@
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "familyManCaseID",
-    "Label": "Case ID",
+    "ID": "familyManCaseNumber",
+    "Label": "FamilyMan case number",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   }

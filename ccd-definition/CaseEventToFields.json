@@ -346,7 +346,7 @@
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "addFamilyManCaseNumber",
-    "CaseFieldID": "familyManCaseID",
+    "CaseFieldID": "familyManCaseNumber",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL",
     "PageID": 1,

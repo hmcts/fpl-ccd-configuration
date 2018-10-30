@@ -9,7 +9,7 @@
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "familyManCaseID",
+    "CaseFieldID": "familyManCaseNumber",
     "Label": "FamilyMan",
     "DisplayOrder": 2
   },
