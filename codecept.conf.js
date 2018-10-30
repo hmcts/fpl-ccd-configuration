@@ -77,7 +77,18 @@ exports.config = {
   timeout: 30000,
   mocha: {
     reporterOptions: {
-      mochaFile: 'test-results/result.xml',
+      'codeceptjs-cli-reporter': {
+        stdout: '-',
+        options: {
+          steps: true,
+        },
+      },
+      'mocha-junit-reporter': {
+        stdout: '-',
+        options: {
+          mochaFile: 'test-results/result.xml',
+        },
+      },
     },
   },
 };
