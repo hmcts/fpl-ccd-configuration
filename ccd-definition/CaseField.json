@@ -256,5 +256,13 @@
     "Label": "Orders and Directions",
     "FieldType": "Orders",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "familyManCaseID",
+    "Label": "Case ID",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
   }
 ]

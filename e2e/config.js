@@ -2,7 +2,7 @@
 
 module.exports = {
   localAuthorityEmail: 'local-authority@example.com',
-  localAuthorityPassword: process.env.LA_USER_PASSWORD || 'Password12',
+  localAuthorityPassword: process.env.LA_USER_PASSWORD || 'password',
   hmctsAdminEmail: 'hmcts-admin@example.com',
   hmctsAdminPassword: process.env.CA_USER_PASSWORD || 'Password12',
   eventSummary: '',
@@ -24,6 +24,7 @@ module.exports = {
     uploadDocuments: 'Annex documents',
     submitCase: 'Submit application',
   },
+  addFamilyManCaseNumber: 'Add case ID',
   testFile: './e2e/fixtures/mockFile.txt',
   presidentsGuidanceUrl: 'https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf',
   scheduleUrl: 'https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf',

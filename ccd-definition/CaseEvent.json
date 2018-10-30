@@ -200,5 +200,16 @@
     "ShowSummary": "N",
     "ShowEventNotes": "N",
     "CallBackURLSubmittedEvent": "http://fpl-service:4000/callback/case-submission"
+  },
+  {
+    "LiveFrom": 42737,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "addFamilyManCaseNumber",
+    "Name": "Add case ID",
+    "Description": "Add case ID",
+    "DisplayOrder": 18,
+    "PreConditionState(s)": "Submitted",
+    "PostConditionState": "Submitted",
+    "SecurityClassification": "Public"
   }
 ]

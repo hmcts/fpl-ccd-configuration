@@ -446,5 +446,12 @@
     "CaseFieldID": "orders",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
+  }, 
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "familyManCaseID",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
   }
 ]
