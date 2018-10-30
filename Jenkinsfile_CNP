@@ -11,7 +11,7 @@ def component = "case-service"
 
 withPipeline(type, product, component) {
   enableDockerBuild()
-  enableDeployToAKS()
+  // enableDeployToAKS()
   enableSlackNotifications('#fpl-tech')
 
   after('aksdeploy') {
