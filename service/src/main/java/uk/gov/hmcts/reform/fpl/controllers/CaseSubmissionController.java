@@ -17,8 +17,10 @@ import uk.gov.hmcts.reform.document.domain.UploadResponse;
 import uk.gov.hmcts.reform.document.utils.InMemoryMultipartFile;
 import uk.gov.hmcts.reform.fpl.templates.DocumentTemplates;
 import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
-import javax.validation.constraints.NotNull;
+
 import java.util.Map;
+
+import javax.validation.constraints.NotNull;
 
 import static com.google.common.collect.Lists.newArrayList;
 
@@ -54,7 +56,8 @@ public class CaseSubmissionController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    private Document uploadDocument(String userId, String authorization, String serviceAuthorization, byte[] pdfDocument) {
+    private Document uploadDocument(String userId, String authorization,
+                                    String serviceAuthorization, byte[] pdfDocument) {
         MultipartFile file = new InMemoryMultipartFile("files",
             "Test.pdf",
             MediaType.APPLICATION_PDF_VALUE, pdfDocument);
