@@ -133,6 +133,9 @@ repositories {
   maven {
     url  "https://dl.bintray.com/hmcts/hmcts-maven"
   }
+  maven {
+    url  "http://repo.spring.io/milestone"
+  }
 }
 
 // it is important to specify logback classic and core packages explicitly as libraries like spring boot
@@ -156,6 +159,7 @@ dependencies {
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.0.2.RELEASE'
 
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
+  compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.0'
 
   compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
