@@ -117,5 +117,12 @@
     "CaseEventID": "reviewAnswers",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseEventID": "PDF",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
   }
 ]
