@@ -36,14 +36,14 @@ withPipeline(type, product, component) {
     env.URL="https://ccd-case-management-web-${aksServiceName}.${aksDomain}"
   }
 
+  after('deploy:preview') {
+    env.URL="https://ccd-case-management-web-aat.service.core-compute-aat.internal"
+  }
+
   before('smoketest:aks') {
     sh """
       ./kubernetes/configurer/configure-ccd.sh
     """
-  }
-
-  after('deploy:preview') {
-    env.URL="https://ccd-case-management-web-aat.service.core-compute-aat.internal"
   }
 
   after('functionalTest:preview') {

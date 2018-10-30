@@ -4,6 +4,5 @@ Feature('Smoke tests @smoke-tests').retry(2);
 
 Scenario('Sign in as local authority', (I, loginPage) => {
   loginPage.signIn(config.localAuthorityEmail, config.localAuthorityPassword);
-  I.waitForNavigation();
   I.see('Create new case');
 });
