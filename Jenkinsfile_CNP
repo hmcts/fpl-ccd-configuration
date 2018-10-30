@@ -42,6 +42,10 @@ withPipeline(type, product, component) {
     """
   }
 
+  before('smoketest:preview') {
+    env.URL="https://ccd-case-management-web-aat.service.core-compute-aat.internal"
+  }
+
   before('functionalTest:preview') {
     env.LA_USER_PASSWORD='Password12'
   }
