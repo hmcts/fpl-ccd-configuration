@@ -14,7 +14,7 @@ if (process.env.http_proxy || process.env.https_proxy) {
   }
 }
 
-console.log(process.env.http_proxy, process.env.https_proxy, proxyServer)
+console.log(process.env)
 
 exports.config = {
   output: './output',
