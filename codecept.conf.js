@@ -14,6 +14,8 @@ if (process.env.http_proxy || process.env.https_proxy) {
   }
 }
 
+console.log(process.env.http_proxy, process.env.https_proxy, proxyServer)
+
 exports.config = {
   output: './output',
   multiple: {
@@ -30,7 +32,7 @@ exports.config = {
       chrome: {
         ignoreHTTPSErrors: true,
         args: proxyServer ? [
-          `--proxy-server=${proxyServer}`,
+          `--proxy-server=http://proxyout.reform.hmcts.net:8080`,
         ] : [],
       },
       windowSize: '1280x960',
