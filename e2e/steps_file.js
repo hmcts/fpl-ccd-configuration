@@ -9,12 +9,10 @@ module.exports = function () {
   return actor({
     logInAndCreateCase(username, password, summary, description) {
       logIn.signIn(username, password);
-      this.waitForNavigation();
       this.click('Create new case');
       createCase.createNewCase();
       this.waitForElement('.check-your-answers');
       addEventDetails.submitCase(summary, description);
-      this.waitForElement('.tabs');
     },
 
     continueAndSubmit(summary, description) {
@@ -56,6 +54,11 @@ module.exports = function () {
       } else {
         this.seeElement(locate(`${questionRow}/td/span`).withText(answer));
       }
+    },
+
+    signOut() {
+      this.clearCookie();
+      this.refreshPage();
     },
   });
 };

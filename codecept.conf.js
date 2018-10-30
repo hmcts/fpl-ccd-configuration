@@ -43,6 +43,7 @@ exports.config = {
     config: './e2e/config.js',
     I: './e2e/steps_file.js',
     loginPage: './e2e/pages/login/loginPage.js',
+    caseListPage: './e2e/pages/caseList/caseList.js',
     createCasePage: './e2e/pages/createCase/createCase.js',
     addEventSummaryPage: './e2e/pages/createCase/addEventSummary.js',
     caseViewPage: './e2e/pages/caseView/caseView.js',
