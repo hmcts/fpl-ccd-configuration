@@ -8,9 +8,10 @@ module.exports = {
   },
   submitButton: 'Submit',
 
-  submitCase(summary, description) {
+  submitCase(summary = '', description = '') {
     I.fillField(this.fields.summary, summary);
     I.fillField(this.fields.description, description);
     I.click(this.submitButton);
+    I.waitForElement('.tabs');
   },
 };

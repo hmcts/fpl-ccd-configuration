@@ -46,10 +46,6 @@ withPipeline(type, product, component) {
     env.URL="https://ccd-case-management-web-aat.service.core-compute-aat.internal"
   }
 
-  before('functionalTest:preview') {
-    env.LA_USER_PASSWORD='Password12'
-  }
-
   after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }

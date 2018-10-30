@@ -5,5 +5,12 @@
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "Shared_Storage_DRAFTType",
     "WorkBasketDefaultState": "Open"
+  },
+  {
+    "LiveFrom": 42736,
+    "UserIDAMId": "hmcts-admin@example.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "Shared_Storage_DRAFTType",
+    "WorkBasketDefaultState": "Submitted"
   }
 ]

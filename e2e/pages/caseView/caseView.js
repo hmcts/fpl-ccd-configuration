@@ -16,7 +16,7 @@ module.exports = {
     I.waitForElement(this.actionsDropdown);
     I.selectOption(this.actionsDropdown, actionSelected);
     I.click(this.goButton);
-    I.waitForElement('ccd-case-edit-page');
+    I.waitForElement('ccd-case-event-trigger');
   },
 
   selectTab(tab) {

@@ -12,5 +12,12 @@
     "CaseStateID": "Submitted",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseStateID": "Submitted",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
   }
 ]
