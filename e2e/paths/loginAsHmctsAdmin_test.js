@@ -1,3 +1,5 @@
+/* global xScenario */
+
 const config = require('../config.js');
 let caseId;
 
@@ -12,7 +14,7 @@ Before(async (I, caseViewPage) => {
   I.signOut();
 });
 
-Scenario('HMCTS admin can login and select a submitted case', (I, loginPage, caseListPage) => {
+xScenario('HMCTS admin can login and select a submitted case', (I, loginPage, caseListPage) => {
   loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   caseListPage.openExistingCase(caseId);
   I.see(caseId);
