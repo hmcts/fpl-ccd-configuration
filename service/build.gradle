@@ -58,20 +58,24 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 }
 check.dependsOn integration
 
-task smoke(type: Exec, description: 'Runs the smoke tests.') {
-  commandLine '/usr/bin/curl', '--silent', '--insecure', '--fail', environment.get('URL') + '/health'
+task dependencyInstall(type: Exec, description: 'Installs Yarn dependencies.') {
+  commandLine '/usr/bin/yarn', '--mutex', 'network', '--silent', 'install'
 }
 
-//task functionalInstall(type: Exec, description: 'Installs E2E dependencies.') {
-//  commandLine '/usr/bin/yarn', '--mutex', 'network', '--silent', 'install'
-//}
-//
-//task functionalRun(type: Exec, description: 'Runs E2E tests.') {
-//  commandLine '/usr/bin/yarn', '--silent', 'test'
-//}
+task smokeRun(type: Exec, description: 'Runs smoke tests.') {
+  commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
+}
+
+task functionalRun(type: Exec, description: 'Runs E2E tests.') {
+  commandLine '/usr/bin/yarn', '--silent', 'test'
+}
+
+task smoke(description: 'Runs the smoke tests.') {
+  dependsOn(dependencyInstall, smokeRun)  
+}
 
 task functional(description: 'Runs the functional tests.') {
-//  dependsOn(functionalInstall, functionalRun)
+//  dependsOn(dependencyInstall, functionalRun)
 }
 
 checkstyle {

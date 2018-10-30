@@ -74,4 +74,9 @@ exports.config = {
   },
   tests: './e2e/paths/*_test.js',
   timeout: 30000,
+  mocha: {
+    reporterOptions: {
+      mochaFile: 'test-results/result.xml',
+    },
+  },
 };
