@@ -1,19 +1,5 @@
 /* global process */
 
-
-let proxyServer = undefined;
-
-if (process.env.http_proxy || process.env.https_proxy) {
-  const urlUtils = require('url');
-
-  if (process.env.http_proxy) {
-    proxyServer = `${urlUtils.parse(process.env.http_proxy).host}`;
-  }
-  if (process.env.https_proxy) {
-    proxyServer = `${urlUtils.parse(process.env.https_proxy).host}`;
-  }
-}
-
 exports.config = {
   output: './output',
   multiple: {
@@ -29,8 +15,8 @@ exports.config = {
       waitForTimeout: 30000,
       chrome: {
         ignoreHTTPSErrors: true,
-        args: proxyServer ? [
-          `--proxy-server=${proxyServer}`,
+        args: process.env.PROXY_SERVER ? [
+          `--proxy-server=${process.env.PROXY_SERVER}`,
         ] : [],
       },
       windowSize: '1280x960',
