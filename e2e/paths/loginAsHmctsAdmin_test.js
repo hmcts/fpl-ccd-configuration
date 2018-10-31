@@ -1,7 +1,9 @@
+/* global xScenario */
+
 const config = require('../config.js');
 let caseId;
 
-Feature('Login as hmcts admin');
+Feature('Login as hmcts admin').retry(2);
 
 Before(async (I, caseViewPage) => {
   I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
@@ -12,7 +14,7 @@ Before(async (I, caseViewPage) => {
   I.signOut();
 });
 
-Scenario('HMCTS admin can login and add a FamilyMan case number to a submitted case', (I, caseViewPage, loginPage, caseListPage, enterFamilyManPage) => {
+xScenario('HMCTS admin can login and add a FamilyMan case number to a submitted case', (I, caseViewPage, loginPage, caseListPage, enterFamilyManPage) => {
   loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   caseListPage.openExistingCase(caseId);
   I.see(caseId);

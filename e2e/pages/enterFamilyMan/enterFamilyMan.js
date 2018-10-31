@@ -1,8 +1,10 @@
 const I = actor();
 
 module.exports = {
-
-  caseIdField: '#familyManCaseNumber',
+    
+  fields: {
+    caseId: '#familyManCaseNumber',
+  },
 
   enterCaseID(caseId = 'mock case ID') {
     I.fillField(this.caseIdField, caseId);
