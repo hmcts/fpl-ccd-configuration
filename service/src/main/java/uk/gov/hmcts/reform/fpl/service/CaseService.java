@@ -65,8 +65,10 @@ public class CaseService {
         Map<String, Object> data = Maps.newHashMap();
 
         Map<String, Object> documentData = Maps.newHashMap();
-        documentData.put("document_url", document.links.self.href);
-        documentData.put("document_binary_url", document.links.binary.href);
+        documentData.put("document_url", document.links.self.href.replace
+            ("dm-store:8080", "localhost:3453"));
+        documentData.put("document_binary_url", document.links.binary.href.replace
+            ("dm-store:8080", "localhost:3453"));
         documentData.put("document_filename", document.originalDocumentName);
         data.put("submittedForm", documentData);
 

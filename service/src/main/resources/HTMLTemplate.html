@@ -1,9 +1,33 @@
+<!--
+{
+   "hearing":{
+      "type":"Contested interim care order",
+      "timeFrame":"Within 2 days",
+      "reason2Days":"TEst",
+      "reducedNotice":"No",
+      "withoutNotice":"No",
+      "type_GiveReason":"test",
+      "respondentsAware":"No"
+   }
+}
+-->
+
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <title>CASE</title>
 </head>
 <body>
-Case data: {{ case_details.id }}
+<p>CASE ID: {{ case_details.id }}</p>
+<hr />
+<h2>Hearing</h2>
+<p>When do you need a hearing?: {{ case_details.case_data.hearing.timeFrame }}</p>
+<p>Give reason and proposed dates: {{ case_details.case_data.hearing.reason2Days }}</p>
+<p>What type of hearing do you need?: {{ case_details.case_data.hearing.type }}</p>
+<p>Give reason: {{ case_details.case_data.hearing.type_GiveReason }}</p>
+<p>Do you need a without notice hearing?: {{ case_details.case_data.hearing.withoutNotice }}</p>
+<p>Do you need a hearing with reduced notice?: {{ case_details.case_data.hearing.reducedNotice }}</p>
+<p>Are respondents aware of proceedings?: {{ case_details.case_data.hearing.respondentsAware }}</p>
+<hr />
 </body>
 </html>
