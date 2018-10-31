@@ -11,6 +11,7 @@ services:
     container_name: fpl-service
     environment:
       - DOCUMENT_MANAGEMENT_URL=http://dm-store:8080
+      - CORE_CASE_DATA_API_URL=http://ccd-data-store-api:4452
       # these environment variables are used by java-logging library
       - ROOT_APPENDER
       - JSON_CONSOLE_PRETTY_PRINT

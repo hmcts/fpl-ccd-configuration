@@ -208,7 +208,7 @@
     "Name": "View attached PDF",
     "Description": "Submit application",
     "DisplayOrder": 1,
-    "PreConditionState(s)": "Submitted",
+    "PreConditionState(s)": "*",
     "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
     "ShowSummary": "N",

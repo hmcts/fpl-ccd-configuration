@@ -208,5 +208,15 @@
     "TabDisplayOrder": 4,
     "CaseFieldID": "documents_socialWorkOther",
     "TabFieldDisplayOrder": 6
+  },
+  {
+    "LiveFrom": 43101,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "EvidenceTab",
+    "TabLabel": "Evidence",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "submittedForm",
+    "TabFieldDisplayOrder": 7
   }
 ]
