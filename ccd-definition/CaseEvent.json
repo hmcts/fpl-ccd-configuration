@@ -207,7 +207,7 @@
     "ID": "addFamilyManCaseNumber",
     "Name": "Add case number",
     "Description": "Add case number",
-    "DisplayOrder": 18,
+    "DisplayOrder": 1,
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Submitted",
     "SecurityClassification": "Public"

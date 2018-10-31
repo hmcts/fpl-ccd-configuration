@@ -7,6 +7,6 @@ module.exports = {
   },
 
   enterCaseID(caseId = 'mock case ID') {
-    I.fillField(this.caseIdField, caseId);
+    I.fillField(this.fields.caseId, caseId);
   },
 };
