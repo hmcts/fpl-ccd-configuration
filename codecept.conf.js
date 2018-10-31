@@ -14,8 +14,6 @@ if (process.env.http_proxy || process.env.https_proxy) {
   }
 }
 
-console.log(process.env)
-
 exports.config = {
   output: './output',
   multiple: {
@@ -31,9 +29,9 @@ exports.config = {
       waitForTimeout: 30000,
       chrome: {
         ignoreHTTPSErrors: true,
-        args: [
-          `--proxy-server=http://proxyout.reform.hmcts.net:8080`,
-        ],
+        args: proxyServer ? [
+          `--proxy-server=${proxyServer}`,
+        ] : [],
       },
       windowSize: '1280x960',
     },

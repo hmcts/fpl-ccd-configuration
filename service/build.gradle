@@ -75,7 +75,7 @@ task smoke(description: 'Runs the smoke tests.') {
 }
 
 task functional(description: 'Runs the functional tests.') {
-//  dependsOn(dependencyInstall, functionalRun)
+  dependsOn(dependencyInstall, functionalRun)
 }
 
 checkstyle {
