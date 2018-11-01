@@ -1040,7 +1040,7 @@
     "ListElementCode": "childInformation",
     "FieldType": "TextArea",
     "ElementLabel": "What is this person’s relationship to the child or children in this case?",
-    "HintText": "Include:\r\n the name of the child or children\r\n this person’s relationship to them\r\n whether this person has parental responsibility",
+    "HintText": "Include: the name of the child or children, this person’s relationship to them and whether this person has parental responsibility",
     "SecurityClassification": "Public"
   },
   {
