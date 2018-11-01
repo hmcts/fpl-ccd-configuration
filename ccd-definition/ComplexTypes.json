@@ -1233,7 +1233,7 @@
     "ID": "RespondentType",
     "ListElementCode": "litigationIssuesReason",
     "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
+    "ElementLabel": "Give details, including referrals to or assessments by the Adult Learning Disability team or other health service, including outcomes",
     "FieldShowCondition": "litigationIssues=\"Yes\"",
     "SecurityClassification": "Public"
   },
