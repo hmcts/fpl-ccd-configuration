@@ -2,7 +2,7 @@
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseEventID": "initiateCase",
+    "CaseEventID": "openCase",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },

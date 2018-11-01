@@ -1090,7 +1090,7 @@
     "ID": "Person",
     "ListElementCode": "firstOther",
     "FieldType": "Others",
-    "ElementLabel": "Other",
+    "ElementLabel": "Person",
     "SecurityClassification": "Public"
   },
   {
@@ -1099,7 +1099,7 @@
     "ListElementCode": "additionalOthers",
     "FieldType": "Collection",
     "FieldTypeParameter": "Others",
-    "ElementLabel": "Additional others",
+    "ElementLabel": "Other persons",
     "SecurityClassification": "Public"
   },
   {
