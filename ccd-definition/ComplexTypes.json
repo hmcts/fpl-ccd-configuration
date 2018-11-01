@@ -1200,7 +1200,7 @@
     "ID": "RespondentType",
     "ListElementCode": "contactDetailsHidden",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Do you need contact details hidden from other parties?",
+    "ElementLabel": "Do you need contact details hidden from anyone?",
     "SecurityClassification": "Public"
   },
   {
