@@ -24,6 +24,7 @@ module.exports = {
     uploadDocuments: 'Annex documents',
     submitCase: 'Submit application',
   },
+  addFamilyManCaseNumber: 'Add case number',
   testFile: './e2e/fixtures/mockFile.txt',
   presidentsGuidanceUrl: 'https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf',
   scheduleUrl: 'https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf',
