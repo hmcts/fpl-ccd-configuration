@@ -228,6 +228,14 @@
   {
     "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "others_label",
+    "Label": "## Other 1",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": 42736,
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "others",
     "Label": "Others who should be given notice",
     "FieldType": "Person",
