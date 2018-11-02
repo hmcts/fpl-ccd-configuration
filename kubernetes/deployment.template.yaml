@@ -247,6 +247,9 @@ spec:
             - containerPort: 4000
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -306,6 +309,9 @@ spec:
             - containerPort: 8489
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -365,6 +371,9 @@ spec:
             - containerPort: 8000
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -424,6 +433,9 @@ spec:
             - containerPort: 8080
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -483,6 +495,9 @@ spec:
             - containerPort: 3451
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -542,6 +557,9 @@ spec:
             - containerPort: 3453
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -601,6 +619,9 @@ spec:
             - containerPort: 4453
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -660,6 +681,9 @@ spec:
             - containerPort: 4451
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -719,6 +743,9 @@ spec:
             - containerPort: 4452
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -778,6 +805,9 @@ spec:
             - containerPort: 4603
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -834,6 +864,9 @@ spec:
             - containerPort: 5432
               name: postgres
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -887,6 +920,9 @@ spec:
             - containerPort: 1025
               name: smtp-server
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
