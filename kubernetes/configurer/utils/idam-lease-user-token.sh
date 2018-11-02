@@ -5,7 +5,7 @@ set -e
 id=${1}
 role=${2}
 
-curl -k --fail --show-error --silent -X POST \
+curl -k --fail --silent -w "%{url_effective}: %{http_code} response received in %{time_total}s\n" -X POST \
   ${IDAM_API_BASE_URL}/testing-support/lease \
   -Fid=${id} \
   -Frole=${role}
