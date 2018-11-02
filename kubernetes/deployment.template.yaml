@@ -247,6 +247,9 @@ spec:
             - containerPort: 4000
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -306,6 +309,9 @@ spec:
             - containerPort: 8489
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -365,6 +371,9 @@ spec:
             - containerPort: 8000
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -407,9 +416,6 @@ spec:
       labels:
         app: idam-api
     spec:
-      dnsConfig:
-        options:
-          - name: single-request-reopen
       containers:
         - image: docker.artifactory.reform.hmcts.net/auth/idam-api:latest
           name: idam-api
@@ -427,6 +433,9 @@ spec:
             - containerPort: 8080
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -486,6 +495,9 @@ spec:
             - containerPort: 3451
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -528,9 +540,6 @@ spec:
       labels:
         app: ccd-api-gateway
     spec:
-      dnsConfig:
-        options:
-          - name: single-request-reopen
       containers:
         - image: hmcts.azurecr.io/hmcts/ccd-api-gateway-web:latest
           name: ccd-api-gateway
@@ -548,6 +557,9 @@ spec:
             - containerPort: 3453
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -607,6 +619,9 @@ spec:
             - containerPort: 4453
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -666,6 +681,9 @@ spec:
             - containerPort: 4451
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -725,6 +743,9 @@ spec:
             - containerPort: 4452
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -784,6 +805,9 @@ spec:
             - containerPort: 4603
               name: http
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -840,6 +864,9 @@ spec:
             - containerPort: 5432
               name: postgres
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
@@ -893,6 +920,9 @@ spec:
             - containerPort: 1025
               name: smtp-server
           imagePullPolicy: Always
+      dnsConfig:
+        options:
+          - name: single-request-reopen
 
 ---
 
