@@ -12,7 +12,7 @@ module.exports = {
   createNewCase() {
     I.selectOption(this.fields.jurisdiction, 'Public Law DRAFT');
     I.selectOption(this.fields.caseType, 'Shared_Storage_DRAFT_v0.3');
-    I.selectOption(this.fields.event, 'Initiate Case');
+    I.selectOption(this.fields.event, 'Open case');
     I.click(this.startButton);
   },
 };
