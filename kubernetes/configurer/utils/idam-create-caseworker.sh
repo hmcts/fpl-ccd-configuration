@@ -14,7 +14,7 @@ for role in ${roles[@]}; do
   rolesJson=${rolesJson}'{"code":"'${role}'"}'
 done
 
-curl -k --fail --show-error -X POST \
+curl -k --fail --show-error --silent -X POST \
   ${IDAM_API_BASE_URL}/testing-support/accounts \
   -H "Content-Type: application/json" \
   -d '{
