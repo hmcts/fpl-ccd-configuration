@@ -5,9 +5,9 @@ set -e
 email=${1}
 rolesStr=${2}
 
-searchResponseStatusCode=$(curl -k --silent --output /dev/null --write-out "%{http_code}" ${IDAM_API_BASE_URL}/users?email=${email})
+searchResponse=$(curl -k --silent --show-error --output /dev/null --write-out "%{http_code}" ${IDAM_API_BASE_URL}/users?email=${email})
 
-if [ ${searchResponseStatusCode} -eq 200 ]; then
+if [ ${searchResponse} -eq 200 ]; then
   exit 0
 fi
 
@@ -20,7 +20,7 @@ for role in ${roles[@]}; do
   rolesJson=${rolesJson}'{"code":"'${role}'"}'
 done
 
-curl -k --fail --silent --write-out "%{url_effective}: %{http_code} response received in %{time_total}s\n" -X POST \
+curl -k --fail --show-error --silent -X POST \
   ${IDAM_API_BASE_URL}/testing-support/accounts \
   -H "Content-Type: application/json" \
   -d '{
