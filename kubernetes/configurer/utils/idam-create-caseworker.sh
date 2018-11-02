@@ -5,6 +5,12 @@ set -e
 email=${1}
 rolesStr=${2}
 
+searchResponseStatusCode=$(curl -k --silent --output /dev/null --write-out "%{http_code}" ${IDAM_API_BASE_URL}/users?email=${email})
+
+if [ ${searchResponseStatusCode} -eq 200 ]; then
+  exit 0
+fi
+
 IFS=',' read -ra roles <<< ${rolesStr}
 
 for role in ${roles[@]}; do
