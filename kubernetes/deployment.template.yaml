@@ -407,6 +407,9 @@ spec:
       labels:
         app: idam-api
     spec:
+      dnsConfig:
+        options:
+          - name: single-request-reopen
       containers:
         - image: docker.artifactory.reform.hmcts.net/auth/idam-api:latest
           name: idam-api
@@ -525,6 +528,9 @@ spec:
       labels:
         app: ccd-api-gateway
     spec:
+      dnsConfig:
+        options:
+          - name: single-request-reopen
       containers:
         - image: hmcts.azurecr.io/hmcts/ccd-api-gateway-web:latest
           name: ccd-api-gateway
