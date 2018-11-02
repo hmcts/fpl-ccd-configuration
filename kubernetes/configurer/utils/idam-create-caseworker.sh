@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+set -e
 
 email=${1}
 rolesStr=${2}
@@ -12,7 +14,7 @@ for role in ${roles[@]}; do
   rolesJson=${rolesJson}'{"code":"'${role}'"}'
 done
 
-curl -k --silent -X POST \
+curl -k --fail --show-error -X POST \
   ${IDAM_API_BASE_URL}/testing-support/accounts \
   -H "Content-Type: application/json" \
   -d '{
