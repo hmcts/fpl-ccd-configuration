@@ -223,8 +223,9 @@ spec:
         app: ${SERVICE_NAME}
     spec:
       containers:
-        - image: ${IMAGE_NAME}
-          name: ${SERVICE_NAME}
+        - name: ${SERVICE_NAME}
+          image: ${IMAGE_NAME}
+          imagePullPolicy: Always
           resources:
             requests:
               memory: 256Mi
@@ -235,7 +236,6 @@ spec:
           ports:
             - containerPort: 4000
               name: http
-          imagePullPolicy: Always
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -282,8 +282,9 @@ spec:
         app: service-auth-provider-api
     spec:
       containers:
-        - image: hmcts.azurecr.io/hmcts/rpe-service-auth-provider:latest
-          name: service-auth-provider-api
+        - name: service-auth-provider-api
+          image: hmcts.azurecr.io/hmcts/rpe-service-auth-provider:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: service-auth-provider-api
@@ -297,7 +298,6 @@ spec:
           ports:
             - containerPort: 8489
               name: http
-          imagePullPolicy: Always
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -344,8 +344,9 @@ spec:
         app: idam-authentication-web
     spec:
       containers:
-        - image: docker.artifactory.reform.hmcts.net/auth/authentication-web:latest
-          name: idam-authentication-web
+        - name: idam-authentication-web
+          image: docker.artifactory.reform.hmcts.net/auth/authentication-web:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: idam-authentication-web
@@ -359,7 +360,6 @@ spec:
           ports:
             - containerPort: 8000
               name: http
-          imagePullPolicy: Always
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -406,8 +406,9 @@ spec:
         app: idam-api
     spec:
       containers:
-        - image: docker.artifactory.reform.hmcts.net/auth/idam-api:latest
-          name: idam-api
+        - name: idam-api
+          image: docker.artifactory.reform.hmcts.net/auth/idam-api:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: idam-api
@@ -421,7 +422,6 @@ spec:
           ports:
             - containerPort: 8080
               name: http
-          imagePullPolicy: Always
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -468,8 +468,9 @@ spec:
         app: ccd-case-management-web
     spec:
       containers:
-        - image: hmcts.azurecr.io/hmcts/ccd-case-management-web:latest
-          name: ccd-case-management-web
+        - name: ccd-case-management-web
+          image: hmcts.azurecr.io/hmcts/ccd-case-management-web:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: ccd-case-management-web
@@ -483,7 +484,6 @@ spec:
           ports:
             - containerPort: 3451
               name: http
-          imagePullPolicy: Always
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -530,8 +530,9 @@ spec:
         app: ccd-api-gateway
     spec:
       containers:
-        - image: hmcts.azurecr.io/hmcts/ccd-api-gateway-web:latest
-          name: ccd-api-gateway
+        - name: ccd-api-gateway
+          image: hmcts.azurecr.io/hmcts/ccd-api-gateway-web:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: ccd-api-gateway
@@ -545,7 +546,6 @@ spec:
           ports:
             - containerPort: 3453
               name: http
-          imagePullPolicy: Always
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -592,8 +592,9 @@ spec:
         app: ccd-user-profile-api
     spec:
       containers:
-        - image: hmcts.azurecr.io/hmcts/ccd-user-profile-api:latest
-          name: ccd-user-profile-api
+        - name: ccd-user-profile-api
+          image: hmcts.azurecr.io/hmcts/ccd-user-profile-api:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: ccd-user-profile-api
@@ -607,7 +608,6 @@ spec:
           ports:
             - containerPort: 4453
               name: http
-          imagePullPolicy: Always
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -654,8 +654,9 @@ spec:
         app: ccd-definition-store-api
     spec:
       containers:
-        - image: hmcts.azurecr.io/hmcts/ccd-definition-store-api:latest
-          name: ccd-definition-store-api
+        - name: ccd-definition-store-api
+          image: hmcts.azurecr.io/hmcts/ccd-definition-store-api:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: ccd-definition-store-api
@@ -669,7 +670,6 @@ spec:
           ports:
             - containerPort: 4451
               name: http
-          imagePullPolicy: Always
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -716,8 +716,9 @@ spec:
         app: ccd-data-store-api
     spec:
       containers:
-        - image: hmcts.azurecr.io/hmcts/ccd-data-store-api:latest
-          name: ccd-data-store-api
+        - name: ccd-data-store-api
+          image: hmcts.azurecr.io/hmcts/ccd-data-store-api:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: ccd-data-store-api
@@ -731,7 +732,6 @@ spec:
           ports:
             - containerPort: 4452
               name: http
-          imagePullPolicy: Always
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -778,8 +778,9 @@ spec:
         app: dm-store
     spec:
       containers:
-        - image: hmcts.azurecr.io/hmcts/dm-store:latest
-          name: dm-store
+        - name: dm-store
+          image: hmcts.azurecr.io/hmcts/dm-store:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: dm-store
@@ -793,7 +794,6 @@ spec:
           ports:
             - containerPort: 4603
               name: http
-          imagePullPolicy: Always
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -840,8 +840,9 @@ spec:
         app: shared-database
     spec:
       containers:
-        - image: hmcts.azurecr.io/hmcts/ccd-postgres:10.5-alpine
-          name: shared-database
+        - name: shared-database
+          image: hmcts.azurecr.io/hmcts/ccd-postgres:10.5-alpine
+          imagePullPolicy: Always
           resources:
             requests:
               memory: 64Mi
@@ -852,7 +853,6 @@ spec:
           ports:
             - containerPort: 5432
               name: postgres
-          imagePullPolicy: Always
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -896,8 +896,9 @@ spec:
         app: smtp-server
     spec:
       containers:
-        - image: mailhog/mailhog:latest
-          name: smtp-server
+        - name: smtp-server
+          image: mailhog/mailhog:latest
+          imagePullPolicy: Always
           resources:
             requests:
               memory: 16Mi
@@ -908,7 +909,6 @@ spec:
           ports:
             - containerPort: 1025
               name: smtp-server
-          imagePullPolicy: Always
       dnsConfig:
         options:
           - name: single-request-reopen
