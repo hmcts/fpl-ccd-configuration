@@ -236,6 +236,12 @@ spec:
           ports:
             - containerPort: 4000
               name: http
+          livenessProbe:
+            httpGet:
+              port: 4000
+              path: /health
+            initialDelaySeconds: 90
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -298,6 +304,12 @@ spec:
           ports:
             - containerPort: 8489
               name: http
+          livenessProbe:
+            httpGet:
+              port: 8489
+              path: /health
+            initialDelaySeconds: 90
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -360,6 +372,11 @@ spec:
           ports:
             - containerPort: 8000
               name: http
+          livenessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 60
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -422,6 +439,12 @@ spec:
           ports:
             - containerPort: 8080
               name: http
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /health
+            initialDelaySeconds: 90
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -484,6 +507,12 @@ spec:
           ports:
             - containerPort: 3451
               name: http
+          livenessProbe:
+            httpGet:
+              port: 3451
+              path: /health
+            initialDelaySeconds: 60
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -546,6 +575,12 @@ spec:
           ports:
             - containerPort: 3453
               name: http
+          livenessProbe:
+            httpGet:
+              port: 3453
+              path: /health
+            initialDelaySeconds: 60
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -608,6 +643,12 @@ spec:
           ports:
             - containerPort: 4453
               name: http
+          livenessProbe:
+            httpGet:
+              port: 4453
+              path: /health
+            initialDelaySeconds: 90
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -670,6 +711,12 @@ spec:
           ports:
             - containerPort: 4451
               name: http
+          livenessProbe:
+            httpGet:
+              port: 4451
+              path: /health
+            initialDelaySeconds: 90
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -732,6 +779,12 @@ spec:
           ports:
             - containerPort: 4452
               name: http
+          livenessProbe:
+            httpGet:
+              port: 4452
+              path: /health
+            initialDelaySeconds: 90
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -794,6 +847,12 @@ spec:
           ports:
             - containerPort: 4603
               name: http
+          livenessProbe:
+            httpGet:
+              port: 4603
+              path: /health
+            initialDelaySeconds: 90
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -853,6 +912,10 @@ spec:
           ports:
             - containerPort: 5432
               name: postgres
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 10
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -909,6 +972,10 @@ spec:
           ports:
             - containerPort: 1025
               name: smtp-server
+          livenessProbe:
+            tcpSocket:
+              port: 1025
+            initialDelaySeconds: 10
       dnsConfig:
         options:
           - name: single-request-reopen
