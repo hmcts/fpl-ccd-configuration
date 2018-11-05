@@ -1,6 +1,6 @@
 [
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "caseTitle",
     "Label": "Case Title :",
@@ -8,7 +8,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "caseLocalAuthority",
     "Label": "Local Authority :",
@@ -17,7 +17,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "caseIDReference",
     "Label": "Case ID",
@@ -49,7 +49,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "factorsParenting",
     "Label": "Factors affecting parenting",
@@ -57,7 +57,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "uploadDocuments_paragraph_1",
     "Label": "You must upload these documents if possible. Give the reason and date you expect to provide it if you don’t have a document yet.",
@@ -65,7 +65,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "uploadDocuments_paragraph_2",
     "Label": "If you have a Social Work Evidence Template (SWET), add it under ‘Other documents’.",
@@ -73,7 +73,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkChronology_question",
     "Label": "# 1. Social work chronology",
@@ -81,7 +81,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkChronology_document",
     "Label": "Social work chronology",
@@ -89,7 +89,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkStatement_question",
     "Label": "# 2. Social work statement and genogram",
@@ -97,7 +97,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkStatement_document",
     "Label": "Social work statement and genogram",
@@ -105,7 +105,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkAssessment_question",
     "Label": "# 3. Social work assessment",
@@ -113,7 +113,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkAssessment_document",
     "Label": "Social work assessment",
@@ -121,7 +121,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkCarePlan_question",
     "Label": "# 4. Care plan",
@@ -129,7 +129,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkCarePlan_document",
     "Label": "Care plan",
@@ -137,7 +137,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkOther_border_top",
     "Label": "-------------------------------------------------------------------------------------------------------------",
@@ -145,7 +145,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkOther",
     "Label": "Additional documents",
@@ -154,7 +154,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkOther_border_bottom",
     "Label": "-------------------------------------------------------------------------------------------------------------",
@@ -162,7 +162,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "children",
     "Label": "Children",
@@ -170,7 +170,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "applicant",
     "Label": "Applicant",
@@ -178,7 +178,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "solicitor",
     "Label": "Solicitor",
@@ -186,7 +186,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "risks",
     "Label": "Risks and harm to children",
@@ -194,7 +194,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "proceeding",
     "Label": "Other proceedings",
@@ -202,7 +202,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "hearingPreferences",
     "Label": "Attending the court",
@@ -210,7 +210,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "allocationProposal_label",
     "Label": "This should be completed by a solicitor with good knowledge of the case. Use the [President's Guidance](https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) and [schedule](https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) on allocation and gatekeeping to make your recommendation.",
@@ -218,7 +218,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "allocationProposal",
     "Label": "Allocation proposal",
@@ -226,7 +226,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "others_label",
     "Label": "## Other 1",
@@ -234,7 +234,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "others",
     "Label": "Others who should be given notice",
@@ -242,7 +242,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "respondent_label",
     "Label": "## Respondent 1",
@@ -250,7 +250,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "respondents",
     "Label": "Respondents",
@@ -258,7 +258,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "orders",
     "Label": "Orders and Directions",
@@ -266,7 +266,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "familyManCaseNumber",
     "Label": "FamilyMan case number",
