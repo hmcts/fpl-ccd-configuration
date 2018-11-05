@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 dir=$(dirname ${0})
 root_dir=$(realpath ${dir}/../../..)
 
