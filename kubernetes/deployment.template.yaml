@@ -198,7 +198,6 @@ data:
   IDAM_USER_BASE_URI: 'http://idam-api'
   IDAM_S2S_BASE_URI: 'http://service-auth-provider-api'
   S2S_NAMES_WHITELIST: 'ccd_gw,cmc,ccd_data'
-  ENABLE_IDAM_HEALTH_CHECK: 'true'
   MAX_ACTIVE_DB_CONNECTIONS: '10'
   REFORM_ENVIRONMENT: 'kubernetes'
 
