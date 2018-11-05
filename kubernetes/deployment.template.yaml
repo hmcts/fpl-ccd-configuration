@@ -240,7 +240,7 @@ spec:
             httpGet:
               port: 4000
               path: /health
-            initialDelaySeconds: 90
+            initialDelaySeconds: 120
             periodSeconds: 20
       dnsConfig:
         options:
@@ -308,7 +308,7 @@ spec:
             httpGet:
               port: 8489
               path: /health
-            initialDelaySeconds: 90
+            initialDelaySeconds: 120
             periodSeconds: 20
       dnsConfig:
         options:
@@ -422,6 +422,10 @@ spec:
       labels:
         app: idam-api
     spec:
+      initContainers:
+        - name: wait-for-database
+          image: postgres:10.5-alpine
+          command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
       containers:
         - name: idam-api
           image: docker.artifactory.reform.hmcts.net/auth/idam-api:latest
@@ -443,7 +447,7 @@ spec:
             httpGet:
               port: 8080
               path: /health
-            initialDelaySeconds: 90
+            initialDelaySeconds: 120
             periodSeconds: 20
       dnsConfig:
         options:
@@ -626,6 +630,10 @@ spec:
       labels:
         app: ccd-user-profile-api
     spec:
+      initContainers:
+        - name: wait-for-database
+          image: postgres:10.5-alpine
+          command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
       containers:
         - name: ccd-user-profile-api
           image: hmcts.azurecr.io/hmcts/ccd-user-profile-api:latest
@@ -647,7 +655,7 @@ spec:
             httpGet:
               port: 4453
               path: /health
-            initialDelaySeconds: 90
+            initialDelaySeconds: 120
             periodSeconds: 20
       dnsConfig:
         options:
@@ -694,6 +702,10 @@ spec:
       labels:
         app: ccd-definition-store-api
     spec:
+      initContainers:
+        - name: wait-for-database
+          image: postgres:10.5-alpine
+          command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
       containers:
         - name: ccd-definition-store-api
           image: hmcts.azurecr.io/hmcts/ccd-definition-store-api:latest
@@ -715,7 +727,7 @@ spec:
             httpGet:
               port: 4451
               path: /health
-            initialDelaySeconds: 90
+            initialDelaySeconds: 120
             periodSeconds: 20
       dnsConfig:
         options:
@@ -762,6 +774,10 @@ spec:
       labels:
         app: ccd-data-store-api
     spec:
+      initContainers:
+        - name: wait-for-database
+          image: postgres:10.5-alpine
+          command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
       containers:
         - name: ccd-data-store-api
           image: hmcts.azurecr.io/hmcts/ccd-data-store-api:latest
@@ -783,7 +799,7 @@ spec:
             httpGet:
               port: 4452
               path: /health
-            initialDelaySeconds: 90
+            initialDelaySeconds: 120
             periodSeconds: 20
       dnsConfig:
         options:
@@ -830,6 +846,10 @@ spec:
       labels:
         app: dm-store
     spec:
+      initContainers:
+        - name: wait-for-database
+          image: postgres:10.5-alpine
+          command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
       containers:
         - name: dm-store
           image: hmcts.azurecr.io/hmcts/dm-store:latest
@@ -851,7 +871,7 @@ spec:
             httpGet:
               port: 4603
               path: /health
-            initialDelaySeconds: 90
+            initialDelaySeconds: 120
             periodSeconds: 20
       dnsConfig:
         options:
