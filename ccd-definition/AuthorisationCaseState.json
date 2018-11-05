@@ -1,20 +1,20 @@
 [
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseStateID": "Open",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseStateID": "Submitted",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseStateID": "Submitted",
     "UserRole": "caseworker-publiclaw-courtadmin",
