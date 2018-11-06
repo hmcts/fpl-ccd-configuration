@@ -6,16 +6,16 @@ module.exports = {
     jurisdiction: 'jurisdiction',
     caseType: 'case-type',
     event: 'event',
-    enterCaseName: {
-      caseName: '#caseName',
-    },
+  },
+  enterCaseNamePage: {
+    caseName: '#caseName',
   },
   testCaseName: 'Barnet Council v Smith',
   continueButton: 'Continue',  
   startButton: 'Start',
 
   enterCaseName() {
-    I.fillField(this.fields.enterCaseName.caseName, this.testCaseName);
+    I.fillField(this.enterCaseNamePage.caseName, this.testCaseName);
   },
 
   createNewCase() {
