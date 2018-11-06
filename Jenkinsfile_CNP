@@ -34,7 +34,9 @@ withPipeline(type, product, component) {
     env.SERVICE_AUTH_PROVIDER_API_BASE_URL="https://service-auth-provider-api-${aksServiceName}.${aksDomain}"
     env.CCD_DEFINITION_STORE_API_BASE_URL="https://ccd-definition-store-api-${aksServiceName}.${aksDomain}"
     env.URL="https://ccd-case-management-web-${aksServiceName}.${aksDomain}"
+  }
 
+  after('smoketest:aks') {
     sh """
       ./kubernetes/configurer/configure-ccd.sh
     """
