@@ -6,7 +6,7 @@ max_health_check_attempts=30
 
 function checkHealth {
   for service_base_url in ${SERVICE_AUTH_PROVIDER_API_BASE_URL} ${IDAM_API_BASE_URL} ${CCD_DEFINITION_STORE_API_BASE_URL}; do
-    curl --fail --silent --output /dev/null --head ${service_base_url}/health
+    curl -k --fail --silent --output /dev/null --head ${service_base_url}/health
     if [ $? -ne 0 ]; then
       exit 1
     fi
