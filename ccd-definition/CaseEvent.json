@@ -193,7 +193,7 @@
     "ID": "submitApplication",
     "Name": "Submit application",
     "Description": "Submit application",
-    "DisplayOrder": 18,
+    "DisplayOrder": 17,
     "PreConditionState(s)": "Open",
     "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
