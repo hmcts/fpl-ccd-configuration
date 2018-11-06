@@ -4,7 +4,7 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "caseName",
     "Label": "Case Name",
-    "HintText": "Include the Local Authority name and respondent’s last name. For example, Barnet Council v Smith",    
+    "HintText": "Include the Local Authority name and respondent’s last name. For example, Endley Council v Smith/Bloggs/Jones",    
     "FieldType": "Text",
     "SecurityClassification": "Public"
   },
