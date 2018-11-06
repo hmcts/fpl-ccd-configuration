@@ -10,7 +10,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "ordersNeeded",
     "Name": "Select orders & directions",
@@ -21,7 +21,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42738,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "hearingNeeded",
     "Name": "Select hearing",
@@ -32,7 +32,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42739,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "enterChildren",
     "Name": "Enter children in the case",
@@ -43,7 +43,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42740,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "enterRespondents",
     "Name": "Enter respondents in the case",
@@ -54,7 +54,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42741,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "enterApplicant",
     "Name": "Enter applicant in the case",
@@ -65,7 +65,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42742,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "enterOthers",
     "Name": "Enter others who need notice",
@@ -76,7 +76,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42743,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "enterGrounds",
     "Name": "Enter grounds for application",
@@ -87,7 +87,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42744,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "enterRiskHarm",
     "Name": "Enter risk & harm to children",
@@ -98,7 +98,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42745,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "enterParentingFactors",
     "Name": "Factors affecting parenting",
@@ -109,7 +109,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42746,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "enterInternationalElement",
     "Name": "Enter international element",
@@ -120,7 +120,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42747,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "otherProceedings",
     "Name": "Enter other proceedings",
@@ -131,7 +131,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42748,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "otherProposal",
     "Name": "Enter allocation proposal",
@@ -142,7 +142,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42748,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "attendingHearing",
     "Name": "Attending the court",
@@ -153,7 +153,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42749,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "uploadDocuments",
     "Name": "Annex documents",
@@ -176,7 +176,7 @@
     "ShowSummary": "N"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "addCaseIDReference",
     "Name": "Add case ID",
@@ -188,7 +188,7 @@
     "ShowSummary": "N"
   },
   {
-    "LiveFrom": 42795,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "submitApplication",
     "Name": "Submit application",
@@ -202,7 +202,7 @@
     "CallBackURLSubmittedEvent": "http://fpl-service:4000/callback/case-submission"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "addFamilyManCaseNumber",
     "Name": "Add case number",

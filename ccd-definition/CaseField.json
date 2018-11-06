@@ -25,7 +25,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42795,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "grounds",
     "Label": "Grounds for application",
@@ -33,7 +33,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 43070,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "hearing",
     "Label": "Hearing",
@@ -41,7 +41,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 43078,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "internationalElement",
     "Label": "International element",
