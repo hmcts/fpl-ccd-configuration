@@ -127,10 +127,8 @@ sonarqube {
     property "sonar.jacoco.reportPath", file("${project.buildDir}/jacoco/test.exec")
     property "sonar.jacoco.itReportPath", file("${project.buildDir}/jacoco/integration.exec")
     property "sonar.host.url", "https://sonar.reform.hmcts.net/"
-    //property "sonar.host.url", "http://localhost:9000/"
     property "sonar.pitest.mode", "reuseReport"
-    //property "sonar.pitest.reportsDirectory", "target/pit-reports"
-    property "sonar.pitest.reportsDirectory", "build/reports/pitest"
+    property "sonar.pitest.reportsDirectory", "/build/reports/pitest"
   }
 }
 
