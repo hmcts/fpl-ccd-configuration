@@ -4,7 +4,7 @@
   "description": "FPL CCD e2e tests",
   "devDependencies": {
     "babel-eslint": "^10.0.1",
-    "codeceptjs": "^1.4.4",
+    "codeceptjs": "^1.4.5",
     "eslint": "5.8.0 ",
     "eslint-plugin-codeceptjs": "^0.4.0",
     "husky": "^1.1.3",
