@@ -843,7 +843,7 @@
     "ID": "Hearing",
     "ListElementCode": "respondentsAwareReason",
     "FieldType": "TextArea",
-    "ElementLabel": "Give respondents' views on proceedings",
+    "ElementLabel": "Give respondent's views on proceedings",
     "FieldShowCondition": "respondentsAware=\"Yes\"",
     "SecurityClassification": "Public"
   },
