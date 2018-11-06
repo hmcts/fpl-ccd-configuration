@@ -236,9 +236,8 @@ spec:
             - containerPort: 4000
               name: http
           livenessProbe:
-            httpGet:
+            tcpSocket:
               port: 4000
-              path: /health
             initialDelaySeconds: 120
             periodSeconds: 20
       dnsConfig:
@@ -304,9 +303,8 @@ spec:
             - containerPort: 8489
               name: http
           livenessProbe:
-            httpGet:
+            tcpSocket:
               port: 8489
-              path: /health
             initialDelaySeconds: 120
             periodSeconds: 20
       dnsConfig:
@@ -443,9 +441,8 @@ spec:
             - containerPort: 8080
               name: http
           livenessProbe:
-            httpGet:
+            tcpSocket:
               port: 8080
-              path: /health
             initialDelaySeconds: 120
             periodSeconds: 20
       dnsConfig:
@@ -511,9 +508,8 @@ spec:
             - containerPort: 3451
               name: http
           livenessProbe:
-            httpGet:
+            tcpSocket:
               port: 3451
-              path: /health
             initialDelaySeconds: 60
             periodSeconds: 20
       dnsConfig:
@@ -579,9 +575,8 @@ spec:
             - containerPort: 3453
               name: http
           livenessProbe:
-            httpGet:
+            tcpSocket:
               port: 3453
-              path: /health
             initialDelaySeconds: 60
             periodSeconds: 20
       dnsConfig:
@@ -651,9 +646,8 @@ spec:
             - containerPort: 4453
               name: http
           livenessProbe:
-            httpGet:
+            tcpSocket:
               port: 4453
-              path: /health
             initialDelaySeconds: 120
             periodSeconds: 20
       dnsConfig:
@@ -723,9 +717,8 @@ spec:
             - containerPort: 4451
               name: http
           livenessProbe:
-            httpGet:
+            tcpSocket:
               port: 4451
-              path: /health
             initialDelaySeconds: 120
             periodSeconds: 20
       dnsConfig:
@@ -795,9 +788,8 @@ spec:
             - containerPort: 4452
               name: http
           livenessProbe:
-            httpGet:
+            tcpSocket:
               port: 4452
-              path: /health
             initialDelaySeconds: 120
             periodSeconds: 20
       dnsConfig:
@@ -867,9 +859,8 @@ spec:
             - containerPort: 4603
               name: http
           livenessProbe:
-            httpGet:
+            tcpSocket:
               port: 4603
-              path: /health
             initialDelaySeconds: 120
             periodSeconds: 20
       dnsConfig:
