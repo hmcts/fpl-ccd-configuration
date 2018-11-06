@@ -42,10 +42,6 @@ withPipeline(type, product, component) {
     """
   }
 
-  before('functionalTest:preview') {
-    env.LA_USER_PASSWORD='Password12'
-  }
-
   after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }

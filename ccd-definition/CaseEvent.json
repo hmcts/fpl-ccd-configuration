@@ -190,7 +190,7 @@
   {
     "LiveFrom": 42795,
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "reviewAnswers",
+    "ID": "submitApplication",
     "Name": "Submit application",
     "Description": "Submit application",
     "DisplayOrder": 17,
