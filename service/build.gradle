@@ -126,13 +126,10 @@ sonarqube {
     property "sonar.projectName", "FPL :: Service"
     property "sonar.jacoco.reportPath", file("${project.buildDir}/jacoco/test.exec")
     property "sonar.jacoco.itReportPath", file("${project.buildDir}/jacoco/integration.exec")
-    property "sonar.host.url", "https://sonar.reform.hmcts.net/"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "/build/reports/pitest"
   }
 }
-
-
 
 repositories {
   jcenter()
