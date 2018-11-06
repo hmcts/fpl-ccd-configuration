@@ -7,8 +7,8 @@ module.exports = {
     caseType: 'case-type',
     event: 'event',
     enterCaseName: {
-      caseName: '#caseName'
-    }
+      caseName: '#caseName',
+    },
   },
   testCaseName: 'Barnet Council v Smith',
   continueButton: 'Continue',  
