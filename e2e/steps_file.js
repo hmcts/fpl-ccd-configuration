@@ -1,4 +1,6 @@
 /* global locate */
+const config = require('./config');
+
 const logIn = require('./pages/login/loginPage');
 const createCase = require('./pages/createCase/createCase');
 const addEventDetails = require('./pages/createCase/addEventSummary');
@@ -10,6 +12,7 @@ module.exports = function () {
     logInAndCreateCase(username, password, summary, description) {
       logIn.signIn(username, password);
       this.click('Create new case');
+      this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       createCase.createNewCase();
       this.waitForElement('.check-your-answers');
       addEventDetails.submitCase(summary, description);
