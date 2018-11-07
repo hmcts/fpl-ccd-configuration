@@ -2,10 +2,12 @@
 
 set -e
 
+service_base_urls=${@}
+
 max_health_check_attempts=30
 
 function checkHealth {
-  for service_base_url in ${@}; do
+  for service_base_url in ${service_base_urls}; do
     curl -k --fail --silent --output /dev/null --head ${service_base_url}/health
     if [ $? -ne 0 ]; then
       exit 1
