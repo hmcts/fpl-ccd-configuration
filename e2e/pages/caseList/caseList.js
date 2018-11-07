@@ -1,10 +1,11 @@
 /*global locate*/
+const config = require('../../config');
 
 const I = actor();
 
 module.exports = {
   openExistingCase(caseId) {
-    const href = `/case/PUBLICLAW/Shared_Storage_DRAFTType/${caseId.replace(/\D/g, '')}`;
+    const href = `/case/${config.definition.jurisdiction}/${config.definition.caseType}/${caseId.replace(/\D/g, '')}`;
     const caseLink = locate('a').withAttr({href: href});
     I.click(caseLink);
   },

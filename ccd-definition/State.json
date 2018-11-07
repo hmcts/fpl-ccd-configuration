@@ -1,6 +1,6 @@
 [
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "Open",
     "Name": "Open",
@@ -8,7 +8,7 @@
     "DisplayOrder": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "Submitted",
     "Name": "Submitted",

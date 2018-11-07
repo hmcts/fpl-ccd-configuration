@@ -1,6 +1,17 @@
 [
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseEventID": "openCase",
+    "CaseFieldID": "caseName",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "addCaseIDReference",
     "CaseFieldID": "caseIDReference",
@@ -12,19 +23,18 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseEventID": "amendCaseTitle",
-    "CaseFieldID": "caseTitle",
+    "CaseEventID": "changeCaseName",
+    "CaseFieldID": "caseName",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL",
     "PageID": 1,
-    "PageLabel": "Amend case title",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterGrounds",
     "CaseFieldID": "grounds",
@@ -35,7 +45,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "hearingNeeded",
     "CaseFieldID": "hearing",
@@ -46,7 +56,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterInternationalElement",
     "CaseFieldID": "internationalElement",
@@ -57,7 +67,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterParentingFactors",
     "CaseFieldID": "factorsParenting",
@@ -68,7 +78,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "uploadDocuments",
     "CaseFieldID": "uploadDocuments_paragraph_1",
@@ -79,7 +89,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "uploadDocuments",
     "CaseFieldID": "uploadDocuments_paragraph_2",
@@ -90,7 +100,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "uploadDocuments",
     "CaseFieldID": "documents_socialWorkChronology_question",
@@ -101,7 +111,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "uploadDocuments",
     "CaseFieldID": "documents_socialWorkChronology_document",
@@ -112,7 +122,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "uploadDocuments",
     "CaseFieldID": "documents_socialWorkStatement_question",
@@ -123,7 +133,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "uploadDocuments",
     "CaseFieldID": "documents_socialWorkStatement_document",
@@ -134,7 +144,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "uploadDocuments",
     "CaseFieldID": "documents_socialWorkAssessment_question",
@@ -145,7 +155,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "uploadDocuments",
     "CaseFieldID": "documents_socialWorkAssessment_document",
@@ -156,7 +166,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "uploadDocuments",
     "CaseFieldID": "documents_socialWorkCarePlan_question",
@@ -167,7 +177,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "uploadDocuments",
     "CaseFieldID": "documents_socialWorkCarePlan_document",
@@ -178,7 +188,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "uploadDocuments",
     "CaseFieldID": "documents_socialWorkOther_border_top",
@@ -189,7 +199,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "uploadDocuments",
     "CaseFieldID": "documents_socialWorkOther",
@@ -200,7 +210,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "uploadDocuments",
     "CaseFieldID": "documents_socialWorkOther_border_bottom",
@@ -211,7 +221,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children",
@@ -222,7 +232,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterApplicant",
     "CaseFieldID": "applicant",
@@ -233,7 +243,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterApplicant",
     "CaseFieldID": "solicitor",
@@ -244,7 +254,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterRiskHarm",
     "CaseFieldID": "risks",
@@ -255,7 +265,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "otherProceedings",
     "CaseFieldID": "proceeding",
@@ -266,7 +276,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "attendingHearing",
     "CaseFieldID": "hearingPreferences",
@@ -277,7 +287,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "otherProposal",
     "CaseFieldID": "allocationProposal_label",
@@ -288,7 +298,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "otherProposal",
     "CaseFieldID": "allocationProposal",
@@ -299,7 +309,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterOthers",
     "CaseFieldID": "others_label",
@@ -310,7 +320,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterOthers",
     "CaseFieldID": "others",
@@ -321,7 +331,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondent_label",
@@ -332,7 +342,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterRespondents",
     "CaseFieldID": "respondents",
@@ -343,7 +353,7 @@
     "PageColumnNumber": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "ordersNeeded",
     "CaseFieldID": "orders",
@@ -354,7 +364,7 @@
     "PageColumnNumber": 1
   }, 
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "addFamilyManCaseNumber",
     "CaseFieldID": "familyManCaseNumber",

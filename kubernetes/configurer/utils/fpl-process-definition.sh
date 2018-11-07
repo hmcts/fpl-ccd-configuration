@@ -18,5 +18,5 @@ fi
 docker run --rm --name json2xlsx \
   -v ${definition_input_dir}:/tmp/${definition_input_dir_name} \
   -v ${definition_output_file}:/tmp/${definition_output_file_name} \
-  docker.artifactory.reform.hmcts.net/ccd/ccd-definition-processor:latest \
+  docker.artifactory.reform.hmcts.net/ccd/ccd-definition-processor:a7ff546 \
   json2xlsx -D /tmp/${definition_input_dir_name} -o /tmp/${definition_output_file_name}
