@@ -2,8 +2,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "caseTitle",
-    "Label": "Case title",
+    "CaseFieldID": "caseName",
+    "Label": "Case name",
     "DisplayOrder": 1
   },
   {

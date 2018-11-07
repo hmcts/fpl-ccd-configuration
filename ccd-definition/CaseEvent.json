@@ -166,9 +166,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "amendCaseTitle",
-    "Name": "Case name",
-    "Description": "Amend case title",
+    "ID": "changeCaseName",
+    "Name": "Change case name",
+    "Description": "Change case name",
     "DisplayOrder": 15,
     "PreConditionState(s)": "Open",
     "PostConditionState": "Open",

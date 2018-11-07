@@ -22,6 +22,7 @@ module.exports = {
     enterAllocationProposal: 'Allocation proposal',
     attendingHearing: 'Attending the hearing',
     uploadDocuments: 'Documents',
+    changeCaseName: 'Change case name',    
     submitCase: 'Submit application',
   },
   addFamilyManCaseNumber: 'Add case number',

@@ -2,6 +2,17 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseEventID": "openCase",
+    "CaseFieldID": "caseName",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "addCaseIDReference",
     "CaseFieldID": "caseIDReference",
     "PageFieldDisplayOrder": 1,
@@ -14,12 +25,11 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseEventID": "amendCaseTitle",
-    "CaseFieldID": "caseTitle",
+    "CaseEventID": "changeCaseName",
+    "CaseFieldID": "caseName",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL",
     "PageID": 1,
-    "PageLabel": "Amend case title",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1
   },

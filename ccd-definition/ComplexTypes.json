@@ -843,7 +843,7 @@
     "ID": "Hearing",
     "ListElementCode": "respondentsAwareReason",
     "FieldType": "TextArea",
-    "ElementLabel": "Give respondents' views on proceedings",
+    "ElementLabel": "Give respondent's views on proceedings",
     "FieldShowCondition": "respondentsAware=\"Yes\"",
     "SecurityClassification": "Public"
   },
@@ -1246,7 +1246,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": "01/01/2017",
     "ID": "Respondent",
     "ListElementCode": "firstRespondent",
     "FieldType": "RespondentType",
