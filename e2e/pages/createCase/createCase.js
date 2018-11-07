@@ -10,12 +10,11 @@ module.exports = {
   enterCaseNamePage: {
     caseName: '#caseName',
   },
-  testCaseName: 'Barnet Council v Smith',
-  continueButton: 'Continue',  
   startButton: 'Start',
+  continueButton: 'Continue',  
 
-  enterCaseName() {
-    I.fillField(this.enterCaseNamePage.caseName, this.testCaseName);
+  enterCaseName(caseName = 'Barnet Council v Smith') {
+    I.fillField(this.enterCaseNamePage.caseName, caseName);
   },
 
   createNewCase() {

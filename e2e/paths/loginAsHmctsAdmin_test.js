@@ -23,8 +23,3 @@ xScenario('HMCTS admin can login and add a FamilyMan case number to a submitted 
   I.continueAndSubmit(config.eventSummary, config.eventDescription);
   I.seeEventSubmissionConfirmation(config.addFamilyManCaseNumber);
 });
-
-xScenario('HMCTS admin can login and see case name', (I, loginPage, createCasePage) => {
-  loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
-  I.see(createCasePage.testCaseName);
-});
