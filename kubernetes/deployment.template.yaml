@@ -238,7 +238,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 4000
-            initialDelaySeconds: 120
+            initialDelaySeconds: 140
             periodSeconds: 20
       dnsConfig:
         options:
@@ -305,7 +305,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 8489
-            initialDelaySeconds: 120
+            initialDelaySeconds: 140
             periodSeconds: 20
       dnsConfig:
         options:
@@ -372,7 +372,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 8000
-            initialDelaySeconds: 60
+            initialDelaySeconds: 70
             periodSeconds: 20
       dnsConfig:
         options:
@@ -443,7 +443,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 8080
-            initialDelaySeconds: 120
+            initialDelaySeconds: 140
             periodSeconds: 20
       dnsConfig:
         options:
@@ -510,7 +510,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 3451
-            initialDelaySeconds: 60
+            initialDelaySeconds: 70
             periodSeconds: 20
       dnsConfig:
         options:
@@ -577,7 +577,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 3453
-            initialDelaySeconds: 60
+            initialDelaySeconds: 70
             periodSeconds: 20
       dnsConfig:
         options:
@@ -648,7 +648,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 4453
-            initialDelaySeconds: 120
+            initialDelaySeconds: 140
             periodSeconds: 20
       dnsConfig:
         options:
@@ -719,7 +719,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 4451
-            initialDelaySeconds: 120
+            initialDelaySeconds: 140
             periodSeconds: 20
       dnsConfig:
         options:
@@ -790,7 +790,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 4452
-            initialDelaySeconds: 120
+            initialDelaySeconds: 140
             periodSeconds: 20
       dnsConfig:
         options:
@@ -861,7 +861,7 @@ spec:
           livenessProbe:
             tcpSocket:
               port: 4603
-            initialDelaySeconds: 120
+            initialDelaySeconds: 140
             periodSeconds: 20
       dnsConfig:
         options:
