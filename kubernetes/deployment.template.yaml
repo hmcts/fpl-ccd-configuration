@@ -1162,6 +1162,8 @@ spec:
               serviceName: ccd-definition-store-api
               servicePort: 80
 
+---
+
 #
 # CCD-USER_PROFILE-API :: Ingress
 #
