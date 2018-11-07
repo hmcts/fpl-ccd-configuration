@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
@@ -47,11 +48,12 @@ public class CaseService {
     private DocumentUploadClientApi documentUploadClient;
     @Autowired
     private CoreCaseDataApi coreCaseDataApi;
+    @Autowired
+    private AuthTokenGenerator authTokenGenerator;
 
     /**
      *
      * @param authorization
-     * @param serviceAuthorization
      * @param userId
      * @param request
      * @throws JSONException
@@ -64,7 +66,6 @@ public class CaseService {
     @SuppressWarnings("unchecked")
     public void handleCaseSubmission(
         String authorization,
-        String serviceAuthorization,
         String userId,
         CallbackRequest request) throws JSONException, IOException {
         byte[] template = documentTemplates.getHtmlTemplate();
@@ -75,14 +76,14 @@ public class CaseService {
         System.out.println("map = " + map);
         byte[] pdfDocument = converter.convert(template, map);
 
-        Document document = uploadDocument(userId, authorization, serviceAuthorization, pdfDocument, getFileName(request.getCaseDetails()));
+        Document document = uploadDocument(userId, authorization, authTokenGenerator.generate(), pdfDocument, getFileName(request.getCaseDetails()));
 
         System.out.println("binary = " + document.links.binary.href);
         System.out.println("self = " + document.links.self.href);
 
         String caseId = request.getCaseDetails().getId().toString();
 
-        StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(authorization, serviceAuthorization, userId, JURISDICTION_ID,
+        StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(authorization, authTokenGenerator.generate(), userId, JURISDICTION_ID,
             CASE_TYPE, caseId,"PDF");
 
         System.out.println("startEventResponse = " + startEventResponse);
@@ -107,7 +108,7 @@ public class CaseService {
             .build();
 
         CaseDetails caseDetails = coreCaseDataApi.submitEventForCaseWorker(authorization,
-            serviceAuthorization, userId, JURISDICTION_ID, CASE_TYPE, caseId, false, body);
+            authTokenGenerator.generate(), userId, JURISDICTION_ID, CASE_TYPE, caseId, false, body);
     }
 
     private Document uploadDocument(String userId, String authorization,

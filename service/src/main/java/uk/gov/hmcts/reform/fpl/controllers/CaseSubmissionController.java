@@ -27,17 +27,14 @@ public class CaseSubmissionController {
 
     @PostMapping
     public ResponseEntity submittedCase(
-        @RequestHeader(value = "serviceauthorization") String serviceAuthorization,
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody @NotNull CallbackRequest caseData) throws JSONException, IOException {
-        System.out.println("Service authorization: " + serviceAuthorization);
         System.out.println("Authorization: " + authorization);
         System.out.println("User Id: " + userId);
         System.out.println("Case data: " + caseData);
 
-        caseService.handleCaseSubmission(authorization, serviceAuthorization,
-            userId, caseData);
+        caseService.handleCaseSubmission(authorization, userId, caseData);
 
         return new ResponseEntity(HttpStatus.OK);
     }
