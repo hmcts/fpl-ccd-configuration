@@ -2,22 +2,22 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "caseName",
-    "Label": "Case name",
+    "CaseFieldID": "caseIDReference",
+    "Label": "Case reference",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "familyManCaseNumber",
-    "Label": "FamilyMan",
+    "CaseFieldID": "caseName",
+    "Label": "Case name",
     "DisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "caseIDReference",
-    "Label": "Case ID",
+    "CaseFieldID": "familyManCaseNumber",
+    "Label": "FamilyMan case number",
     "DisplayOrder": 3
   },
   {
