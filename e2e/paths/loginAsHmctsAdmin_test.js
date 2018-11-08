@@ -14,8 +14,12 @@ Before(async (I, caseViewPage) => {
   I.signOut();
 });
 
-xScenario('HMCTS admin can login and select a submitted case', (I, loginPage, caseListPage) => {
+xScenario('HMCTS admin can login and add a FamilyMan case number to a submitted case', (I, caseViewPage, loginPage, caseListPage, enterFamilyManPage) => {
   loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   caseListPage.openExistingCase(caseId);
   I.see(caseId);
+  caseViewPage.goToNewActions(config.addFamilyManCaseNumber);
+  enterFamilyManPage.enterCaseID();
+  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.seeEventSubmissionConfirmation(config.addFamilyManCaseNumber);
 });

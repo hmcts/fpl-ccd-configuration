@@ -1,252 +1,252 @@
 [
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "TimeFrameList",
     "ListElementCode": "Same day",
     "ListElement": "Same day"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "TimeFrameList",
     "ListElementCode": "Within 2 days",
     "ListElement": "Within 2 days"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "TimeFrameList",
     "ListElementCode": "Within 7 days",
     "ListElement": "Within 7 days"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "TimeFrameList",
     "ListElementCode": "Within 12 days",
     "ListElement": "Within 12 days"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "TimeFrameList",
     "ListElementCode": "Within 18 days",
     "ListElement": "Within 18 days"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "Swansea",
     "ListElement": "Swansea Local Authority"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "GroundsList",
     "ListElementCode": "noCare",
     "ListElement": "Not receiving care that would be reasonably expected from a parent"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "GroundsList",
     "ListElementCode": "beyondControl",
     "ListElement": "Beyond parental control"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "HearingTypeFixedList",
     "ListElementCode": "Contested interim care order",
     "ListElement": "Contested interim care order"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "HearingTypeFixedList",
     "ListElementCode": "Urgent preliminary case management heari",
     "ListElement": "Urgent preliminary case management hearing"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "HearingTypeFixedList",
     "ListElementCode": "Standard case management hearing",
     "ListElement": "Standard case management hearing"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "attachedToFollowOption",
     "ListElementCode": "Attached",
     "ListElement": "Attached"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "attachedToFollowOption",
     "ListElementCode": "To follow",
     "ListElement": "To follow"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "ChildGenderList",
     "ListElementCode": "Boy",
     "ListElement": "Boy"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "ChildGenderList",
     "ListElementCode": "Girl",
     "ListElement": "Girl"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "ChildGenderList",
     "ListElementCode": "They identify in another way",
     "ListElement": "They identify in another way"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "LivingSituationList",
     "ListElementCode": "Living with respondents",
     "ListElement": "Living with respondents"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "LivingSituationList",
     "ListElementCode": "Living with other family or friends",
     "ListElement": "Living with other family or friends"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "LivingSituationList",
     "ListElementCode": "Removed by Police, powers ending soon",
     "ListElement": "Removed by Police, powers ending soon"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "LivingSituationList",
     "ListElementCode": "Voluntarily in section 20 care order",
     "ListElement": "Voluntarily in section 20 care order"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "LivingSituationList",
     "ListElementCode": "In hospital and soon to be discharged",
     "ListElement": "In hospital and soon to be discharged"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "LivingSituationList",
     "ListElementCode": "Other",
     "ListElement": "Other"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "FathersResponsibilityList",
     "ListElementCode": "Yes",
     "ListElement": "Yes"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "FathersResponsibilityList",
     "ListElementCode": "No",
     "ListElement": "No"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "FathersResponsibilityList",
     "ListElementCode": "Don't know",
     "ListElement": "Don't know"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "PastOrFutureHarmSelect",
     "ListElementCode": "Past harm",
     "ListElement": "Past harm"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "PastOrFutureHarmSelect",
     "ListElementCode": "Future risk of harm",
     "ListElement": "Future risk of harm"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "ProceedingStatus",
     "ListElementCode": "Ongoing",
     "ListElement": "Ongoing"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "ProceedingStatus",
     "ListElementCode": "Previous",
     "ListElement": "Previous"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "AllocationProposalList",
     "ListElementCode": "Lay justices",
     "ListElement": "Lay justices"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "AllocationProposalList",
     "ListElementCode": "District judge",
     "ListElement": "District judge"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "AllocationProposalList",
     "ListElementCode": "Circuit judge",
     "ListElement": "Circuit judge"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "AllocationProposalList",
     "ListElementCode": "Section 9 circuit judge",
     "ListElement": "Section 9 circuit judge"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "AllocationProposalList",
     "ListElementCode": "High Court judge",
     "ListElement": "High Court judge"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "GenderList",
     "ListElementCode": "Male",
     "ListElement": "Male"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "GenderList",
     "ListElementCode": "Female",
     "ListElement": "Female"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "GenderList",
     "ListElementCode": "They identify in another way",
     "ListElement": "They identify in another way"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "OrderType",
     "ListElementCode": "Care order",
     "ListElement": "Care order"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "OrderType",
     "ListElementCode": "Supervision order",
     "ListElement": "Supervision order"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "OrderType",
     "ListElementCode": "Education supervision order",
     "ListElement": "Education supervision order"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "OrderType",
     "ListElementCode": "Emergency protection order",
     "ListElement": "Emergency protection order"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "OrderType",
     "ListElementCode": "Other",
     "ListElement": "Other order under part 4 of the Children Act 1989"

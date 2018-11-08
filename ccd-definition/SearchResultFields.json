@@ -1,27 +1,27 @@
 [
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "caseTitle",
-    "Label": "Case title",
+    "CaseFieldID": "caseName",
+    "Label": "Case name",
     "DisplayOrder": 1
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "caseIDReference",
     "Label": "Case ID",
     "DisplayOrder": 2
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "caseLocalAuthority",
     "Label": "Local authority",
     "DisplayOrder": 3
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "[CREATED_DATE]",
     "Label": "Case creation date",

@@ -63,6 +63,7 @@ task dependencyInstall(type: Exec, description: 'Installs Yarn dependencies.') {
 }
 
 task smokeRun(type: Exec, description: 'Runs smoke tests.') {
+  // commandLine '../kubernetes/configurer/utils/wait-for.sh', environment.get('URL')
   commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
 }
 
