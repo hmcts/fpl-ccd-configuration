@@ -59,7 +59,7 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 check.dependsOn integration
 
 task smoke(type: Exec, description: 'Runs the smoke tests.') {
-  commandLine '/usr/bin/curl', '--silent', '--insecure', '--fail', environment.get('URL') + '/health'
+  commandLine '../kubernetes/configurer/utils/wait-for.sh', environment.get('URL')
 }
 
 task functionalInstall(type: Exec, description: 'Installs E2E dependencies.') {
