@@ -36,7 +36,7 @@ Scenario('Entering all information for first respondent and an additional respon
   I.seeAnswerInTab(6, 'Respondent 1', 'Telephone number', '00000 000000');
   I.seeAnswerInTab(7, 'Respondent 1', 'What is the respondent’s relationship to the child or children in this case?',
     'mock reason');
-  I.seeAnswerInTab(8, 'Respondent 1', 'Do you need contact details hidden from other parties?', 'Yes');
+  I.seeAnswerInTab(8, 'Respondent 1', 'Do you need contact details hidden from anyone?', 'Yes');
   I.seeAnswerInTab(9, 'Respondent 1', 'Give reason', 'mock reason');
   I.seeAnswerInTab(10, 'Respondent 1', 'Does this respondent have any issues with litigation capacity?', 'No');
   I.seeAnswerInTab(1, 'Additional respondents 1', 'Full name', 'Joe Bloggs');
@@ -47,7 +47,7 @@ Scenario('Entering all information for first respondent and an additional respon
   I.seeAnswerInTab(6, 'Additional respondents 1', 'Telephone number', '00000 000000');
   I.seeAnswerInTab(7, 'Additional respondents 1', 'What is the respondent’s relationship to the child or children in this case?',
     'mock reason');
-  I.seeAnswerInTab(8, 'Additional respondents 1', 'Do you need contact details hidden from other parties?', 'Yes');
+  I.seeAnswerInTab(8, 'Additional respondents 1', 'Do you need contact details hidden from anyone?', 'Yes');
   I.seeAnswerInTab(9, 'Additional respondents 1', 'Give reason', 'mock reason');
   I.seeAnswerInTab(10, 'Additional respondents 1', 'Does this respondent have any issues with litigation capacity?', 'No');
 });

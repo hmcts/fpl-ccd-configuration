@@ -1,135 +1,142 @@
 [
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseEventID": "initiateCase",
+    "CaseEventID": "openCase",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "ordersNeeded",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "hearingNeeded",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterChildren",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterRespondents",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterApplicant",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterOthers",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterGrounds",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterRiskHarm",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterParentingFactors",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterInternationalElement",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "otherProceedings",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "otherProposal",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "attendingHearing",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "uploadDocuments",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseEventID": "amendCaseTitle",
+    "CaseEventID": "changeCaseName",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "submitApplication",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "submitApplication",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "PDF",
     "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseEventID": "addFamilyManCaseNumber",
+    "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   }
 ]

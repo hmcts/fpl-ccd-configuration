@@ -29,14 +29,16 @@ withPipeline(type, product, component) {
     registerConsulDns(subscription, "ccd-case-management-web-${aksServiceName}", ingressIP)
     registerConsulDns(subscription, "ccd-api-gateway-${aksServiceName}", ingressIP)
     registerConsulDns(subscription, "ccd-definition-store-api-${aksServiceName}", ingressIP)
+    registerConsulDns(subscription, "ccd-user-profile-api-${aksServiceName}", ingressIP)
 
     env.IDAM_API_BASE_URL="https://idam-api-${aksServiceName}.${aksDomain}"
     env.SERVICE_AUTH_PROVIDER_API_BASE_URL="https://service-auth-provider-api-${aksServiceName}.${aksDomain}"
     env.CCD_DEFINITION_STORE_API_BASE_URL="https://ccd-definition-store-api-${aksServiceName}.${aksDomain}"
+    env.CCD_USER_PROFILE_API_BASE_URL="https://ccd-user-profile-api-${aksServiceName}.${aksDomain}"
     env.URL="https://ccd-case-management-web-${aksServiceName}.${aksDomain}"
   }
 
-  after('smoketest:aks') {
+  before('smoketest:aks') {
     sh """
       ./kubernetes/configurer/configure-ccd.sh
     """

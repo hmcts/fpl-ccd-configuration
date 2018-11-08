@@ -61,6 +61,8 @@ exports.config = {
     enterRespondentsPage: './e2e/pages/enterRespondents/enterRespondents.js',
     enterOthersPage: './e2e/pages/enterOthers/enterOthers.js',
     ordersNeededPage: './e2e/pages/ordersNeeded/ordersNeeded.js',
+    enterFamilyManPage: './e2e/pages/enterFamilyMan/enterFamilyMan.js',
+    changeCaseNamePage: './e2e/pages/changeCaseName/changeCaseName.js'
   },
   plugins: {
     autoDelay: {

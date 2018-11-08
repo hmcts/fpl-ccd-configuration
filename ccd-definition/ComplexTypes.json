@@ -1,6 +1,6 @@
 [
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "UploadDocument",
     "ListElementCode": "typeOfDocument",
     "FieldType": "Document",
@@ -8,7 +8,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "UploadDocument",
     "ListElementCode": "documentStatus",
     "FieldType": "FixedList",
@@ -17,7 +17,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "UploadDocument",
     "ListElementCode": "statusReason",
     "FieldType": "TextArea",
@@ -26,7 +26,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "OtherDocument",
     "ListElementCode": "documentTitle",
     "FieldType": "Text",
@@ -35,7 +35,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "OtherDocument",
     "ListElementCode": "typeOfDocument",
     "FieldType": "Document",
@@ -43,7 +43,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "childName",
     "FieldType": "Text",
@@ -51,7 +51,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "childDOB",
     "FieldType": "Date",
@@ -60,7 +60,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "childGender",
     "FieldType": "FixedList",
@@ -69,7 +69,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "childGenderIdentification",
     "FieldType": "Text",
@@ -78,7 +78,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "livingSituation",
     "FieldType": "FixedList",
@@ -87,7 +87,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "situationDetails",
     "FieldType": "TextArea",
@@ -96,7 +96,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "situationDate",
     "FieldType": "Date",
@@ -106,7 +106,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "situationAddress",
     "FieldType": "TextArea",
@@ -115,7 +115,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "keyDates",
     "FieldType": "TextArea",
@@ -124,7 +124,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "careAndContact",
     "FieldType": "TextArea",
@@ -133,7 +133,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "adoption",
     "FieldType": "YesOrNo",
@@ -141,7 +141,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "placementOrderApplication",
     "FieldType": "YesOrNo",
@@ -150,7 +150,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "placementCourt",
     "FieldType": "TextArea",
@@ -159,7 +159,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "mothersName",
     "FieldType": "Text",
@@ -167,7 +167,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "fathersName",
     "FieldType": "Text",
@@ -175,7 +175,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "fathersResponsibility",
     "FieldType": "FixedList",
@@ -184,7 +184,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "socialWorkerName",
     "FieldType": "Text",
@@ -192,7 +192,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "socialWorkerTel",
     "FieldType": "Text",
@@ -200,7 +200,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "additionalNeeds",
     "FieldType": "YesOrNo",
@@ -209,7 +209,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "additionalNeedsDetails",
     "FieldType": "TextArea",
@@ -218,7 +218,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "detailsHidden",
     "FieldType": "YesOrNo",
@@ -226,7 +226,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "detailsHiddenReason",
     "FieldType": "TextArea",
@@ -235,7 +235,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "proceedingsLabel",
     "FieldType": "Label",
@@ -243,7 +243,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "litigationIssues",
     "FieldType": "YesOrNo",
@@ -251,7 +251,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "litigationIssuesReason",
     "FieldType": "TextArea",
@@ -260,7 +260,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Children",
     "ListElementCode": "firstChild",
     "FieldType": "Child",
@@ -268,7 +268,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Children",
     "ListElementCode": "additionalChildren",
     "FieldType": "Collection",
@@ -277,7 +277,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Applicant",
     "ListElementCode": "applicantLabel",
     "FieldType": "Label",
@@ -285,7 +285,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Applicant",
     "ListElementCode": "name",
     "FieldType": "Text",
@@ -294,7 +294,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Applicant",
     "ListElementCode": "personToContact",
     "FieldType": "Text",
@@ -302,7 +302,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Applicant",
     "ListElementCode": "jobTitle",
     "FieldType": "Text",
@@ -311,7 +311,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Applicant",
     "ListElementCode": "address",
     "FieldType": "TextArea",
@@ -319,7 +319,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Applicant",
     "ListElementCode": "mobile",
     "FieldType": "Number",
@@ -328,7 +328,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Applicant",
     "ListElementCode": "telephone",
     "FieldType": "PhoneUK",
@@ -337,7 +337,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Applicant",
     "ListElementCode": "email",
     "FieldType": "Email",
@@ -346,7 +346,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Solicitor",
     "ListElementCode": "solicitorLabel",
     "FieldType": "Label",
@@ -354,7 +354,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Solicitor",
     "ListElementCode": "name",
     "FieldType": "Text",
@@ -363,7 +363,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Solicitor",
     "ListElementCode": "mobile",
     "FieldType": "Number",
@@ -372,7 +372,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Solicitor",
     "ListElementCode": "telephone",
     "FieldType": "PhoneUK",
@@ -381,7 +381,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Solicitor",
     "ListElementCode": "email",
     "FieldType": "Email",
@@ -390,7 +390,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Solicitor",
     "ListElementCode": "dx",
     "FieldType": "Text",
@@ -398,7 +398,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Solicitor",
     "ListElementCode": "reference",
     "FieldType": "Text",
@@ -406,7 +406,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RiskAndHarm",
     "ListElementCode": "evidenceQuestion",
     "FieldType": "Label",
@@ -414,7 +414,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RiskAndHarm",
     "ListElementCode": "physicalHarm",
     "FieldType": "YesOrNo",
@@ -422,7 +422,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RiskAndHarm",
     "ListElementCode": "physicalHarmOccurrences",
     "FieldType": "MultiSelectList",
@@ -432,7 +432,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RiskAndHarm",
     "ListElementCode": "emotionalHarm",
     "FieldType": "YesOrNo",
@@ -440,7 +440,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RiskAndHarm",
     "ListElementCode": "emotionalHarmOccurrences",
     "FieldType": "MultiSelectList",
@@ -450,7 +450,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RiskAndHarm",
     "ListElementCode": "sexualAbuse",
     "FieldType": "YesOrNo",
@@ -458,7 +458,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RiskAndHarm",
     "ListElementCode": "sexualAbuseOccurrences",
     "FieldType": "MultiSelectList",
@@ -468,7 +468,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RiskAndHarm",
     "ListElementCode": "neglect",
     "FieldType": "YesOrNo",
@@ -476,7 +476,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RiskAndHarm",
     "ListElementCode": "neglectOccurrences",
     "FieldType": "MultiSelectList",
@@ -486,7 +486,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "onGoingProceeding",
     "FieldType": "YesOrNo",
@@ -494,7 +494,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "proceedingStatus",
     "FieldType": "FixedList",
@@ -504,7 +504,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "caseNumber",
     "FieldType": "Text",
@@ -513,7 +513,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "started",
     "FieldType": "Text",
@@ -522,7 +522,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "ended",
     "FieldType": "Text",
@@ -531,7 +531,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "ordersMade",
     "FieldType": "Text",
@@ -540,7 +540,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "judge",
     "FieldType": "Text",
@@ -550,7 +550,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "children",
     "FieldType": "TextArea",
@@ -559,7 +559,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "guardian",
     "FieldType": "Text",
@@ -568,7 +568,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "sameGuardianNeeded",
     "FieldType": "YesOrNo",
@@ -577,7 +577,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "sameGuardianDetails",
     "FieldType": "TextArea",
@@ -586,7 +586,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
     "ListElementCode": "interpreter",
     "FieldType": "YesOrNo",
@@ -595,7 +595,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
     "ListElementCode": "interpreterDetails",
     "FieldType": "TextArea",
@@ -604,7 +604,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
     "ListElementCode": "intermediary",
     "FieldType": "YesOrNo",
@@ -613,7 +613,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
     "ListElementCode": "intermediaryDetails",
     "FieldType": "TextArea",
@@ -622,7 +622,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
     "ListElementCode": "litigation",
     "FieldType": "YesOrNo",
@@ -631,7 +631,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
     "ListElementCode": "litigationDetails",
     "FieldType": "TextArea",
@@ -640,7 +640,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
     "ListElementCode": "learningDisability",
     "FieldType": "YesOrNo",
@@ -649,7 +649,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
     "ListElementCode": "learningDisabilityDetails",
     "FieldType": "TextArea",
@@ -658,7 +658,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
     "ListElementCode": "welsh",
     "FieldType": "YesOrNo",
@@ -667,7 +667,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
     "ListElementCode": "welshDetails",
     "FieldType": "TextArea",
@@ -676,7 +676,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
     "ListElementCode": "extraSecurityMeasures",
     "FieldType": "YesOrNo",
@@ -685,7 +685,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
     "ListElementCode": "extraSecurityMeasuresDetails",
     "FieldType": "TextArea",
@@ -694,7 +694,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "AllocationProposal",
     "ListElementCode": "proposal",
     "FieldType": "FixedList",
@@ -703,7 +703,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "AllocationProposal",
     "ListElementCode": "proposalReason",
     "FieldType": "TextArea",
@@ -711,7 +711,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Grounds",
     "ListElementCode": "thresholdReason",
     "FieldType": "MultiSelectList",
@@ -721,7 +721,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Grounds",
     "ListElementCode": "thresholdDetails",
     "FieldType": "TextArea",
@@ -729,7 +729,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "timeFrame",
     "FieldType": "FixedList",
@@ -738,7 +738,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "reason",
     "FieldType": "TextArea",
@@ -748,7 +748,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "reason2Days",
     "FieldType": "TextArea",
@@ -758,7 +758,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "reason7Days",
     "FieldType": "TextArea",
@@ -768,7 +768,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "reason12Days",
     "FieldType": "TextArea",
@@ -778,7 +778,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "type",
     "FieldType": "FixedList",
@@ -787,7 +787,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "type_GiveReason",
     "FieldType": "TextArea",
@@ -796,7 +796,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "withoutNotice",
     "FieldType": "YesOrNo",
@@ -805,7 +805,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "withoutNoticeReason",
     "FieldType": "TextArea",
@@ -814,7 +814,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "reducedNotice",
     "FieldType": "YesOrNo",
@@ -822,7 +822,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "reducedNoticeReason",
     "FieldType": "TextArea",
@@ -831,7 +831,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "respondentsAware",
     "FieldType": "YesOrNo",
@@ -839,16 +839,16 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "respondentsAwareReason",
     "FieldType": "TextArea",
-    "ElementLabel": "Give respondents' views on proceedings",
+    "ElementLabel": "Give respondent's views on proceedings",
     "FieldShowCondition": "respondentsAware=\"Yes\"",
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "InternationalElement",
     "ListElementCode": "possibleCarer",
     "FieldType": "YesOrNo",
@@ -856,7 +856,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "InternationalElement",
     "ListElementCode": "possibleCarerReason",
     "FieldType": "TextArea",
@@ -865,7 +865,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "InternationalElement",
     "ListElementCode": "significantEvents",
     "FieldType": "YesOrNo",
@@ -873,7 +873,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "InternationalElement",
     "ListElementCode": "significantEventsReason",
     "FieldType": "TextArea",
@@ -882,7 +882,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "InternationalElement",
     "ListElementCode": "issues",
     "FieldType": "YesOrNo",
@@ -890,7 +890,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "InternationalElement",
     "ListElementCode": "issuesReason",
     "FieldType": "TextArea",
@@ -899,7 +899,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "InternationalElement",
     "ListElementCode": "proceedings",
     "FieldType": "YesOrNo",
@@ -907,7 +907,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "InternationalElement",
     "ListElementCode": "proceedingsReason",
     "FieldType": "TextArea",
@@ -916,7 +916,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "FactorsParenting",
     "ListElementCode": "pageHeader",
     "FieldType": "Label",
@@ -924,7 +924,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "FactorsParenting",
     "ListElementCode": "alcoholDrugAbuse",
     "FieldType": "YesOrNo",
@@ -932,7 +932,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "FactorsParenting",
     "ListElementCode": "alcoholDrugAbuseReason",
     "FieldType": "TextArea",
@@ -941,7 +941,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "FactorsParenting",
     "ListElementCode": "domesticViolence",
     "FieldType": "YesOrNo",
@@ -949,7 +949,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "FactorsParenting",
     "ListElementCode": "domesticViolenceReason",
     "FieldType": "TextArea",
@@ -958,7 +958,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "FactorsParenting",
     "ListElementCode": "anythingElse",
     "FieldType": "YesOrNo",
@@ -966,7 +966,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "FactorsParenting",
     "ListElementCode": "anythingElseReason",
     "FieldType": "TextArea",
@@ -975,7 +975,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "name",
     "FieldType": "Text",
@@ -983,7 +983,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "DOB",
     "FieldType": "Date",
@@ -992,7 +992,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "gender",
     "FieldType": "FixedList",
@@ -1001,7 +1001,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "genderIdentification",
     "FieldType": "Text",
@@ -1010,7 +1010,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "birthPlace",
     "FieldType": "Text",
@@ -1019,7 +1019,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "address",
     "FieldType": "TextArea",
@@ -1027,7 +1027,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "telephone",
     "FieldType": "Text",
@@ -1035,16 +1035,16 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "childInformation",
     "FieldType": "TextArea",
     "ElementLabel": "What is this person’s relationship to the child or children in this case?",
-    "HintText": "Include:\r\n the name of the child or children\r\n this person’s relationship to them\r\n whether this person has parental responsibility",
+    "HintText": "Include: the name of the child or children, this person’s relationship to them and whether this person has parental responsibility",
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "detailsHidden",
     "FieldType": "YesOrNo",
@@ -1052,7 +1052,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "detailsHiddenReason",
     "FieldType": "TextArea",
@@ -1061,7 +1061,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "proceedingsLabel",
     "FieldType": "Label",
@@ -1069,7 +1069,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "litigationIssues",
     "FieldType": "YesOrNo",
@@ -1077,7 +1077,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "litigationIssuesReason",
     "FieldType": "TextArea",
@@ -1086,24 +1086,24 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Person",
     "ListElementCode": "firstOther",
     "FieldType": "Others",
-    "ElementLabel": "Other",
+    "ElementLabel": "Person",
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Person",
     "ListElementCode": "additionalOthers",
     "FieldType": "Collection",
     "FieldTypeParameter": "Others",
-    "ElementLabel": "Additional others",
+    "ElementLabel": "Other person",
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "name",
     "FieldType": "Text",
@@ -1111,7 +1111,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "dob",
     "FieldType": "Date",
@@ -1120,7 +1120,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "gender",
     "FieldType": "FixedList",
@@ -1129,7 +1129,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "genderIdentify",
     "FieldType": "Text",
@@ -1138,7 +1138,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "placeOfBirth",
     "FieldType": "Text",
@@ -1147,7 +1147,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "address",
     "FieldType": "TextArea",
@@ -1155,7 +1155,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "telephone",
     "FieldType": "PhoneUK",
@@ -1163,7 +1163,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "respondent_border_1",
     "FieldType": "Label",
@@ -1171,7 +1171,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "relationshipLabel",
     "FieldType": "Label",
@@ -1179,7 +1179,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "relationshipToChild",
     "FieldType": "TextArea",
@@ -1188,7 +1188,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "respondent_border_2",
     "FieldType": "Label",
@@ -1196,15 +1196,15 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "contactDetailsHidden",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Do you need contact details hidden from other parties?",
+    "ElementLabel": "Do you need contact details hidden from anyone?",
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "contactDetailsHiddenReason",
     "FieldType": "TextArea",
@@ -1213,7 +1213,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "proceedingsLabel",
     "FieldType": "Label",
@@ -1221,7 +1221,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "litigationIssues",
     "FieldType": "YesOrNo",
@@ -1229,16 +1229,16 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "litigationIssuesReason",
     "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
+    "ElementLabel": "Give details, including referrals to or assessments by the Adult Learning Disability team or other health service, including outcomes",
     "FieldShowCondition": "litigationIssues=\"Yes\"",
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "respondent_border_3",
     "FieldType": "Label",
@@ -1246,7 +1246,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42737,
+    "LiveFrom": "01/01/2017",
     "ID": "Respondent",
     "ListElementCode": "firstRespondent",
     "FieldType": "RespondentType",
@@ -1254,7 +1254,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Respondent",
     "ListElementCode": "additional",
     "FieldType": "Collection",
@@ -1263,7 +1263,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Orders",
     "ListElementCode": "orderType",
     "FieldType": "MultiSelectList",
@@ -1272,7 +1272,7 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42736,
+    "LiveFrom": "01/01/2017",
     "ID": "Orders",
     "ListElementCode": "directionsAndInterim",
     "FieldType": "TextArea",
