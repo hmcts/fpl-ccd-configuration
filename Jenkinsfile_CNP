@@ -9,7 +9,21 @@ def type = "java"
 def product = "fpl"
 def component = "fpl-service"
 
+List<Map<String, Object>> secrets = [
+  secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN')
+]
+
+static Map<String, Object> secret(String secretName, String envVariable) {
+  [ $class: 'AzureKeyVaultSecret',
+    secretType: 'Secret',
+    name: secretName,
+    envVariable: envVariable
+  ]
+}
+
 withPipeline(type, product, component) {
+  setVaultName('fpl')
+  loadVaultSecrets(secrets)
   enableDockerBuild()
   enableDeployToAKS()
   enableSlackNotifications('#fpl-tech')
