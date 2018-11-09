@@ -46,7 +46,7 @@ module.exports = {
     }
     I.fillField(this.fields(id).respondent.placeOfBirth, respondent.placeOfBirth);
     within(this.fields(id).respondent.address, () => {
-      postcodeLookup.lookupPostcode(respondent);
+      postcodeLookup.lookupPostcode(respondent.address);
     });
     I.fillField(this.fields(id).respondent.telephone, respondent.telephone);
   },

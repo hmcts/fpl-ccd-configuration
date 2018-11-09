@@ -1,7 +1,7 @@
 const config = require('../config.js');
-const respondent = require('../fixtures/respondent.js');
+const respondents = require('../fixtures/respondents.js');
 
-Feature('Enter respondents');
+Feature('Enter respondents').retry(2);
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
@@ -9,19 +9,19 @@ Before((I, caseViewPage) => {
 });
 
 Scenario('Entering information for respondent and submitting', (I, enterRespondentsPage, caseViewPage) => {
-  enterRespondentsPage.enterRespondent('firstRespondent', respondent[0]);
+  enterRespondentsPage.enterRespondent('firstRespondent', respondents[0]);
   I.continueAndSubmit(config.eventSummary, config.eventDescription);
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
 
 Scenario('Entering all information for first respondent and an additional respondent', (I, enterRespondentsPage, caseViewPage) => {
-  enterRespondentsPage.enterRespondent('firstRespondent', respondent[0]);
+  enterRespondentsPage.enterRespondent('firstRespondent', respondents[0]);
   enterRespondentsPage.enterRelationshipToChild('firstRespondent', 'mock reason');
   enterRespondentsPage.enterContactDetailsHidden('firstRespondent', 'Yes', 'mock reason');
   enterRespondentsPage.enterLitigationIssues('firstRespondent', 'No');
   I.click(enterRespondentsPage.addRespondent);
-  enterRespondentsPage.enterRespondent('additional_0', respondent[1]);
+  enterRespondentsPage.enterRespondent('additional_0', respondents[1]);
   enterRespondentsPage.enterRelationshipToChild('additional_0', 'mock reason');
   enterRespondentsPage.enterContactDetailsHidden('additional_0', 'Yes', 'mock reason');
   enterRespondentsPage.enterLitigationIssues('additional_0', 'No');

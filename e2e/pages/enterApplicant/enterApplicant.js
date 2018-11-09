@@ -26,7 +26,7 @@ module.exports = {
     I.fillField(this.fields.applicant.name, applicant.name);
     I.fillField(this.fields.applicant.nameOfPersonToContact, applicant.nameOfPersonToContact);
     I.fillField(this.fields.applicant.jobTitle, applicant.jobTitle);
-    postcodeLookup.enterAddressManually(applicant);
+    postcodeLookup.enterAddressManually(applicant.address);
     I.fillField(this.fields.applicant.mobileNumber, applicant.mobileNumber);
     I.fillField(this.fields.applicant.telephoneNumber, applicant.telephoneNumber);
     I.fillField(this.fields.applicant.email, applicant.email);

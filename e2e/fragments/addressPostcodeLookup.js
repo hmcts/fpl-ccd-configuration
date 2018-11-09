@@ -17,17 +17,17 @@ module.exports = {
     postcodeZipcode: '#PostCode',
     country: '#Country',
   },
-  findAddress: 'Find address',
-  cantEnterPostcode: locate('span').withText('I can\'t enter a UK postcode'),
+  findAddressButton: 'Find address',
+  cantEnterPostcodeLink: locate('span').withText('I can\'t enter a UK postcode'),
   
-  lookupPostcode({address}) {
+  lookupPostcode(address) {
     I.fillField(this.fields.postcodeLookup, address.postcode);
-    I.click(this.findAddress);
+    I.click(this.findAddressButton);
     I.selectOption(this.fields.addressList, address.lookupOption);
   },
 
-  enterAddressManually({address}) {
-    I.click(this.cantEnterPostcode);
+  enterAddressManually(address) {
+    I.click(this.cantEnterPostcodeLink);
     I.fillField(this.fields.buildingAndStreet.addressLineOne, address.buildingAndStreet.addressLineOne);
     I.fillField(this.fields.buildingAndStreet.addressLineTwo, address.buildingAndStreet.addressLineTwo);
     I.fillField(this.fields.buildingAndStreet.addressLineThree, address.buildingAndStreet.addressLineThree);

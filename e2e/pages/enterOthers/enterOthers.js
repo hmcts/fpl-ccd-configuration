@@ -51,7 +51,7 @@ module.exports = {
     I.selectOption(this.fields(activeOther).gender, other.gender);
     I.fillField(this.fields(activeOther).birthPlace, other.birthPlace);
     within(this.fields(activeOther).address, () => {
-      postcodeLookup.lookupPostcode(other);
+      postcodeLookup.lookupPostcode(other.address);
     });
     I.fillField(this.fields(activeOther).telephoneNumber, other.telephoneNumber);
   },

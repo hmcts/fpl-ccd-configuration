@@ -1,5 +1,28 @@
 const config = require('../config.js');
-const child = require('../fixtures/child');
+const addresses = [
+  {
+    lookupOption: 'Flat 2, Caversham House 15-17, Church Road, Reading',    
+    buildingAndStreet: {
+      addressLineOne: 'Flat 2',
+      addressLineTwo: 'Caversham House 15-17',
+      addressLineThree: 'Church Road',
+    },
+    town: 'Reading',
+    postcode: 'RG4 7AA',
+    country: 'United Kingdom',
+  },
+  {
+    lookupOption: '1 Three Tuns Wynd, High Street, Stokesley, Middlesbrough',
+    buildingAndStreet: {
+      addressLineOne: '1 Three Tuns Wynd',
+      addressLineTwo: 'High Street',
+      addressLineThree: 'Stokesley',
+    },
+    town: 'Middlesbrough',
+    postcode: 'TS9 5DQ',
+    country: 'United Kingdom',
+  },
+];
 
 Feature('Enter children in application').retry(2);
 
@@ -9,43 +32,46 @@ Before((I, caseViewPage) => {
 });
 
 Scenario('completing half of the enter children in the c110a application', (I, enterChildrenPage, caseViewPage) => {
-  enterChildrenPage.enterChildDetails(child[0]);
-  enterChildrenPage.defineChildSituation(child[0]);
+  enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
+  enterChildrenPage.defineChildSituation('01', '11', '2017');
+  enterChildrenPage.enterAddress(addresses[0]);
   I.continueAndSubmit(config.eventSummary, config.eventDescription);
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
 
 Scenario('completing entering child information in the c110a application', (I, enterChildrenPage, caseViewPage) => {
-  enterChildrenPage.enterChildDetails(child[0]);
-  enterChildrenPage.defineChildSituation(child[0]);
-  enterChildrenPage.enterKeyDatesAffectingHearing(child[0]);
-  enterChildrenPage.enterSummaryOfCarePlan(child[0]);
+  enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
+  enterChildrenPage.defineChildSituation('01', '11', '2017');
+  enterChildrenPage.enterAddress(addresses[0]);  
+  enterChildrenPage.enterKeyDatesAffectingHearing();
+  enterChildrenPage.enterSummaryOfCarePlan();
   enterChildrenPage.defineAdoptionIntention();
-  enterChildrenPage.enterParentsDetails(child[0]);
-  enterChildrenPage.enterSocialWorkerDetails(child[0]);
+  enterChildrenPage.enterParentsDetails();
+  enterChildrenPage.enterSocialWorkerDetails();
   enterChildrenPage.defineChildAdditionalNeeds();
   enterChildrenPage.defineContactDetailsVisibility();
   enterChildrenPage.defineAbilityToTakePartInProceedings();
   enterChildrenPage.addChild();
-  enterChildrenPage.enterChildDetails(child[1]);
-  enterChildrenPage.defineChildSituation(child[1]);
-  enterChildrenPage.enterKeyDatesAffectingHearing(child[1]);
-  enterChildrenPage.enterSummaryOfCarePlan(child[1]);
+  enterChildrenPage.enterChildDetails('Susan', '01', '07', '2016');
+  enterChildrenPage.defineChildSituation('02', '11', '2017');
+  enterChildrenPage.enterAddress(addresses[1]);  
+  enterChildrenPage.enterKeyDatesAffectingHearing();
+  enterChildrenPage.enterSummaryOfCarePlan();
   enterChildrenPage.defineAdoptionIntention();
-  enterChildrenPage.enterParentsDetails(child[1]);
-  enterChildrenPage.enterSocialWorkerDetails(child[1]);
+  enterChildrenPage.enterParentsDetails();
+  enterChildrenPage.enterSocialWorkerDetails();
   enterChildrenPage.defineChildAdditionalNeeds();
   enterChildrenPage.defineContactDetailsVisibility();
   enterChildrenPage.defineAbilityToTakePartInProceedings();
   I.continueAndSubmit(config.eventSummary, config.eventDescription);
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-  I.seeAnswerInTab(1, 'Child 1', 'Child\'s full name', 'Aoife Watson');
-  I.seeAnswerInTab(2, 'Child 1', 'Date of birth', '1 Jan 2005');
-  I.seeAnswerInTab(3, 'Child 1', 'Gender', 'Girl');
+  I.seeAnswerInTab(1, 'Child 1', 'Child\'s full name', 'Timothy');
+  I.seeAnswerInTab(2, 'Child 1', 'Date of birth', '1 Aug 2015');
+  I.seeAnswerInTab(3, 'Child 1', 'Gender', 'Boy');
   I.seeAnswerInTab(4, 'Child 1', 'Describe child\'s situation', 'Living with respondents');
-  I.seeAnswerInTab(5, 'Child 1', 'What date did they start staying here?', '1 Jan 2005');
+  I.seeAnswerInTab(5, 'Child 1', 'What date did they start staying here?', '1 Nov 2017');
   I.seeAnswerInTab(1, 'Current address', 'Building and Street', 'Flat 2');
   I.seeAnswerInTab(2, 'Current address', '', 'Caversham House 15-17');
   I.seeAnswerInTab(3, 'Current address', '', 'Church Road');
@@ -58,16 +84,17 @@ Scenario('completing entering child information in the c110a application', (I, e
   I.seeAnswerInTab(10, 'Child 1', 'Mother\'s full name', 'Laura Smith');
   I.seeAnswerInTab(11, 'Child 1', 'Father\'s full name', 'David Smith');
   I.seeAnswerInTab(12, 'Child 1', 'Does the father have parental responsibility?', 'Yes');
-  I.seeAnswerInTab(13, 'Child 1', 'Name of social worker', 'Sarah Sally');
+  I.seeAnswerInTab(13, 'Child 1', 'Name of social worker', 'James Jackson');
   I.seeAnswerInTab(14, 'Child 1', 'Social worker\'s telephone number', '01234567');
   I.seeAnswerInTab(15, 'Child 1', 'Does the child have any additional needs?', 'No');
   I.seeAnswerInTab(16, 'Child 1', 'Do you need contact details hidden from other parties?', 'No');
   I.seeAnswerInTab(17, 'Child 1', 'Does this child have any issues with litigation capacity?', 'No');
-  I.seeAnswerInTab(1, 'Additional children 1', 'Child\'s full name', 'Harry Watson');
-  I.seeAnswerInTab(2, 'Additional children 1', 'Date of birth', '1 Jan 2006');
+
+  I.seeAnswerInTab(1, 'Additional children 1', 'Child\'s full name', 'Susan');
+  I.seeAnswerInTab(2, 'Additional children 1', 'Date of birth', '1 Jul 2016');
   I.seeAnswerInTab(3, 'Additional children 1', 'Gender', 'Boy');
   I.seeAnswerInTab(4, 'Additional children 1', 'Describe child\'s situation', 'Living with respondents');
-  I.seeAnswerInTab(5, 'Additional children 1', 'What date did they start staying here?', '1 Jan 2006');
+  I.seeAnswerInTab(5, 'Additional children 1', 'What date did they start staying here?', '2 Nov 2017');
   I.seeAnswerInTab(1, 'Current address', 'Building and Street', '1 Three Tuns Wynd');
   I.seeAnswerInTab(2, 'Current address', '', 'High Street');
   I.seeAnswerInTab(3, 'Current address', '', 'Stokesley');
