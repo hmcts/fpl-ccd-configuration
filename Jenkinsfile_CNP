@@ -28,6 +28,8 @@ withPipeline(type, product, component) {
   enableDeployToAKS()
   enableSlackNotifications('#fpl-tech')
 
+  env.POSTCODE_PLACEHOLDER = '${postcode}'
+
   after('aksdeploy') {
     def subscription = env.SUBSCRIPTION_NAME
     def aksServiceName = "${product}-${component}-${env.BRANCH_NAME}".toLowerCase()

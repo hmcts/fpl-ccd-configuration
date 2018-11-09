@@ -90,6 +90,7 @@ data:
   CCD_GW_OAUTH2_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/oauth2'
   CCD_API_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/aggregated'
   CCD_DATA_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/data'
+  POSTCODE_LOOKUP_URL: 'http://ccd-api-gateway-${SERVICE_FQDN}/addresses?postcode=${POSTCODE_PLACEHOLDER}'
   DM_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/documents'
 
 ---
