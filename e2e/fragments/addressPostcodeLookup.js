@@ -8,13 +8,13 @@ module.exports = {
     postcodeLookup: '#postcodeInput',
     addressList: '#addressList',
     buildingAndStreet: {
-      addressLineOne: '#AddressLine1',
-      addressLineTwo: '#AddressLine2',
-      addressLineThree: '#AddressLine3',
+      lineOne: '#AddressLine1',
+      lineTwo: '#AddressLine2',
+      lineThree: '#AddressLine3',
     },
     town: '#PostTown',
     county: '#County',
-    postcodeZipcode: '#PostCode',
+    postcode: '#PostCode',
     country: '#Country',
   },
   findAddressButton: 'Find address',
@@ -28,11 +28,11 @@ module.exports = {
 
   enterAddressManually(address) {
     I.click(this.cantEnterPostcodeLink);
-    I.fillField(this.fields.buildingAndStreet.addressLineOne, address.buildingAndStreet.addressLineOne);
-    I.fillField(this.fields.buildingAndStreet.addressLineTwo, address.buildingAndStreet.addressLineTwo);
-    I.fillField(this.fields.buildingAndStreet.addressLineThree, address.buildingAndStreet.addressLineThree);
+    I.fillField(this.fields.buildingAndStreet.lineOne, address.buildingAndStreet.lineOne);
+    I.fillField(this.fields.buildingAndStreet.lineTwo, address.buildingAndStreet.lineTwo);
+    I.fillField(this.fields.buildingAndStreet.lineThree, address.buildingAndStreet.lineThree);
     I.fillField(this.fields.town, address.town);
-    I.fillField(this.fields.postcodeZipcode, address.postcode);
+    I.fillField(this.fields.postcode, address.postcode);
     I.fillField(this.fields.country, address.country);
   },
 };

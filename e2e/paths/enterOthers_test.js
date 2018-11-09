@@ -1,5 +1,5 @@
 const config = require('../config.js');
-const other = require('../fixtures/others.js');
+const others = require('../fixtures/others.js');
 
 Feature('Enter others who should be given notice').retry(2);
 
@@ -9,19 +9,19 @@ Before((I, caseViewPage) => {
 });
 
 Scenario('Enter other\'s details in c110a application', (I, enterOthersPage, caseViewPage) => {
-  enterOthersPage.enterOtherDetails(other[0]);
+  enterOthersPage.enterOtherDetails(others[0]);
   I.continueAndSubmit(config.eventSummary, config.eventDescription);
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOthers);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
 
 Scenario('Complete entering others details in the c110a application', (I, enterOthersPage, caseViewPage) => {
-  enterOthersPage.enterOtherDetails(other[0]);
+  enterOthersPage.enterOtherDetails(others[0]);
   enterOthersPage.enterRelationshipToChild('Tim Smith');
   enterOthersPage.enterContactDetailsHidden('Yes');
   enterOthersPage.enterLitigationIssues('No');
   enterOthersPage.addOther();
-  enterOthersPage.enterOtherDetails(other[1]);
+  enterOthersPage.enterOtherDetails(others[1]);
   enterOthersPage.enterRelationshipToChild('Tim Smith');
   enterOthersPage.enterContactDetailsHidden('Yes');
   enterOthersPage.enterLitigationIssues('No');

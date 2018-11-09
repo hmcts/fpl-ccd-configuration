@@ -11,9 +11,9 @@ module.exports = [
     address: {
       lookupOption: 'Flat 2, Caversham House 15-17, Church Road, Reading',    
       buildingAndStreet: {
-        addressLineOne: 'Flat 2',
-        addressLineTwo: 'Caversham House 15-17',
-        addressLineThree: 'Church Road',
+        lineOne: 'Flat 2',
+        lineTwo: 'Caversham House 15-17',
+        lineThree: 'Church Road',
       },
       town: 'Reading',
       postcode: 'RG4 7AA',
@@ -33,9 +33,9 @@ module.exports = [
     address: {
       lookupOption: '1 Three Tuns Wynd, High Street, Stokesley, Middlesbrough',
       buildingAndStreet: {
-        addressLineOne: '1 Three Tuns Wynd',
-        addressLineTwo: 'High Street',
-        addressLineThree: 'Stokesley',
+        lineOne: '1 Three Tuns Wynd',
+        lineTwo: 'High Street',
+        lineThree: 'Stokesley',
       },
       town: 'Middlesbrough',
       postcode: 'TS9 5DQ',
