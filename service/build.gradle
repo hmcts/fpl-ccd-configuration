@@ -135,7 +135,7 @@ sonarqube {
 repositories {
   jcenter()
   maven {
-    url  "https://dl.bintray.com/hmcts/hmcts-maven"
+    url "https://dl.bintray.com/hmcts/hmcts-maven"
   }
 }
 
@@ -194,5 +194,5 @@ pitest {
   outputFormats = ['XML', 'HTML']
   timestampedReports = false
   mutationThreshold = 80
-  timeoutConstInMillis=30000
+  timeoutConstInMillis = 30000
 }
