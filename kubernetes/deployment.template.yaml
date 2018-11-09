@@ -110,6 +110,7 @@ data:
   IDAM_S2S_URL: 'http://service-auth-provider-api'
   IDAM_SERVICE_NAME: 'ccd_gw'
   IDAM_SERVICE_KEY: 'AABBCCDDEEFFGGHH'
+  ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
   PROXY_AGGREGATED: 'http://ccd-data-store-api'
   PROXY_DATA: 'http://ccd-data-store-api'
   PROXY_DEFINITION_IMPORT: 'http://ccd-definition-store-api'
