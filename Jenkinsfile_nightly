@@ -1,0 +1,22 @@
+#!groovy
+
+properties([
+  pipelineTriggers([cron('20 21 * * *')])
+])
+
+@Library("Infrastructure")
+
+def type = "java"
+
+def product = "fpl"
+def component = "fpl-service"
+
+withNightlyPipeline(type, product, component) {
+  enableMutationTest()
+
+  after('mutationTest') {
+    withSonarQubeEnv("SonarQube") {
+      sh "./gradlew --info sonarqube"
+    }
+  }
+}
