@@ -1,13 +1,13 @@
 module.exports = [
   {
-    name: 'John Smith',
+    name: 'Aoife Watson',
     DOB: {
       day: '01',
       month: '01',
-      year: '1985',
+      year: '2005',
     },
-    gender: 'Male',
-    birthPlace: 'Scotland',
+    gender: 'Girl',
+    situation: 'Living with respondents',
     address: {
       lookupOption: 'Flat 2, Caversham House 15-17, Church Road, Reading',    
       buildingAndStreet: {
@@ -19,17 +19,23 @@ module.exports = [
       postcode: 'RG4 7AA',
       country: 'United Kingdom',
     },
-    telephoneNumber: '07888288288',
+    keyDates: 'Tuesday the 11th',
+    carePlan: 'care plan summary',
+    fatherResponsible: 'Yes',
+    motherName: 'Laura Smith',
+    fatherName: 'David Smith',
+    socialWorkerName: 'Sarah Sally',
+    socialWorkerTel: '01234567',
   },
   {
-    name: 'Paul Wilsdon',
+    name: 'Harry Watson',
     DOB: {
       day: '01',
       month: '01',
-      year: '1984',
+      year: '2006',
     },
-    gender: 'Male',
-    birthPlace: 'Wales',
+    gender: 'Boy',
+    situation: 'Living with respondents',    
     address: {
       lookupOption: '1 Three Tuns Wynd, High Street, Stokesley, Middlesbrough',
       buildingAndStreet: {
@@ -41,6 +47,12 @@ module.exports = [
       postcode: 'TS9 5DQ',
       country: 'United Kingdom',
     },
-    telephoneNumber: '07888288288',
+    keyDates: 'Tuesday the 11th',
+    carePlan: 'care plan summary',
+    fatherResponsible: 'Yes',
+    motherName: 'Laura Smith',
+    fatherName: 'David Smith',
+    socialWorkerName: 'James Jackson',
+    socialWorkerTel: '01234567',
   },
 ];

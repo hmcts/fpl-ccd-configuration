@@ -1,5 +1,6 @@
 const I = actor();
 let activeChild = 'firstChild';
+const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
 
@@ -19,7 +20,7 @@ module.exports = {
           month: `#children_${childNo}_situationDate-month`,
           year: `#children_${childNo}_situationDate-year`,
         },
-        addressOfChild: `#children_${childNo}_situationAddress`,
+        addressOfChild: `#children_${childNo}_situationAddress_situationAddress`,
       },
       keyDates: `#children_${childNo}_keyDates`,
       careAndContactPlan: `#children_${childNo}_careAndContact`,
@@ -45,43 +46,45 @@ module.exports = {
     activeChild = 'additionalChildren_0';
   },
 
-  enterChildDetails(name, day, month, year, gender = 'Boy') {
-    I.fillField(this.fields(activeChild).fullName, name);
-    I.fillField(this.fields(activeChild).DOB.day, day);
-    I.fillField(this.fields(activeChild).DOB.month, month);
-    I.fillField(this.fields(activeChild).DOB.year, year);
-    I.selectOption(this.fields(activeChild).gender, gender);
+  enterChildDetails(child) {
+    I.fillField(this.fields(activeChild).fullName, child.name);
+    I.fillField(this.fields(activeChild).DOB.day, child['DOB'].day);
+    I.fillField(this.fields(activeChild).DOB.month, child['DOB'].month);
+    I.fillField(this.fields(activeChild).DOB.year, child['DOB'].year);
+    I.selectOption(this.fields(activeChild).gender, child.gender);
   },
 
-  defineChildSituation(day, month, year, situation = 'Living with respondents', address = '35 London Lane') {
-    I.selectOption(this.fields(activeChild).situation.selector, situation);
-    I.fillField(this.fields(activeChild).situation.dateStartedStaying.day, day);
-    I.fillField(this.fields(activeChild).situation.dateStartedStaying.month, month);
-    I.fillField(this.fields(activeChild).situation.dateStartedStaying.year, year);
-    I.fillField(this.fields(activeChild).situation.addressOfChild, address);
+  defineChildSituation(child) {
+    I.selectOption(this.fields(activeChild).situation.selector, child.situation);
+    I.fillField(this.fields(activeChild).situation.dateStartedStaying.day, child['DOB'].day);
+    I.fillField(this.fields(activeChild).situation.dateStartedStaying.month, child['DOB'].month);
+    I.fillField(this.fields(activeChild).situation.dateStartedStaying.year, child['DOB'].year);
+    within(this.fields(activeChild).situation.addressOfChild, () => {
+      postcodeLookup.lookupPostcode(child);
+    });
   },
 
-  enterKeyDatesAffectingHearing(keyDates = 'Tuesday the 11th') {
-    I.fillField(this.fields(activeChild).keyDates, keyDates);
+  enterKeyDatesAffectingHearing(child) {
+    I.fillField(this.fields(activeChild).keyDates, child.keyDates);
   },
 
-  enterSummaryOfCarePlan(carePlan = 'care plan summary') {
-    I.fillField(this.fields(activeChild).careAndContactPlan, carePlan);
+  enterSummaryOfCarePlan(child) {
+    I.fillField(this.fields(activeChild).careAndContactPlan, child.carePlan);
   },
 
   defineAdoptionIntention() {
     I.click(this.fields(activeChild).adoptionNo);
   },
 
-  enterParentsDetails(fatherResponsible = 'Yes', motherName = 'Laura Smith', fatherName = 'David Smith') {
-    I.fillField(this.fields(activeChild).mothersName, motherName);
-    I.fillField(this.fields(activeChild).fathersName, fatherName);
-    I.selectOption(this.fields(activeChild).fatherResponsible, fatherResponsible);
+  enterParentsDetails(child) {
+    I.fillField(this.fields(activeChild).mothersName, child.motherName);
+    I.fillField(this.fields(activeChild).fathersName, child.fatherName);
+    I.selectOption(this.fields(activeChild).fatherResponsible, child.fatherResponsible);
   },
 
-  enterSocialWorkerDetails(socialWorkerName = 'James Jackson', socialWorkerTel = '01234567') {
-    I.fillField(this.fields(activeChild).socialWorkerName, socialWorkerName);
-    I.fillField(this.fields(activeChild).socialWorkerTel, socialWorkerTel);
+  enterSocialWorkerDetails(child) {
+    I.fillField(this.fields(activeChild).socialWorkerName, child.socialWorkerName);
+    I.fillField(this.fields(activeChild).socialWorkerTel, child.socialWorkerTel);
   },
 
   defineChildAdditionalNeeds() {

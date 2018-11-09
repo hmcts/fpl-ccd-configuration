@@ -1,4 +1,5 @@
 const I = actor();
+const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
 
@@ -14,7 +15,7 @@ module.exports = {
         gender: `#respondents_${id}_gender`,
         genderIdentify: `#respondents_${id}_genderIdentify`,
         placeOfBirth: `#respondents_${id}_placeOfBirth`,
-        address: `#respondents_${id}_address`,
+        address: `#respondents_${id}_address_address`,
         telephone: `#respondents_${id}_telephone`,
         relationshipToChild: `#respondents_${id}_relationshipToChild`,
       },
@@ -44,7 +45,9 @@ module.exports = {
       I.fillField(this.fields(id).respondent.genderIdentify, '');
     }
     I.fillField(this.fields(id).respondent.placeOfBirth, respondent.placeOfBirth);
-    I.fillField(this.fields(id).respondent.address, respondent.address);
+    within(this.fields(id).respondent.address, () => {
+      postcodeLookup.lookupPostcode(respondent);
+    });
     I.fillField(this.fields(id).respondent.telephone, respondent.telephone);
   },
 
