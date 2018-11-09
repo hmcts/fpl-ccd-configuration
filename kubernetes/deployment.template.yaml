@@ -86,6 +86,7 @@ metadata:
   namespace: ${NAMESPACE}
 data:
   IDAM_LOGIN_URL: 'https://idam-authentication-web-${SERVICE_FQDN}/login'
+  CCD_GW_LOGOUT_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/logout'
   CCD_GW_OAUTH2_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/oauth2'
   CCD_API_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/aggregated'
   CCD_DATA_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/data'
@@ -198,19 +199,7 @@ data:
   IDAM_USER_BASE_URI: 'http://idam-api'
   IDAM_S2S_BASE_URI: 'http://service-auth-provider-api'
   S2S_NAMES_WHITELIST: 'ccd_gw,cmc,ccd_data'
-  ENABLE_DELETE: 'true'
-  ENABLE_IDAM_HEALTH_CHECK: 'false'
-  ENABLE_METADATA_SEARCH: 'true'
-  ENABLE_DOCUMENT_AND_METADATA_UPLOAD: 'false'
-  ENABLE_FOLDER_API: 'true'
-  ENABLE_TTL: 'true'
-  ENABLE_THUMBNAIL: 'true'
-  DM_MULTIPART_WHITELIST: 'image/jpeg,application/pdf,image/tiff,image/png,image/bmp,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.wordprocessingml.template,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.spreadsheetml.template,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.presentationml.template,application/vnd.openxmlformats-officedocument.presentationml.slideshow'
-  DM_MULTIPART_WHITELIST_EXT: '.jpg,.jpeg,.bmp,.tif,.tiff,.png,.pdf,.txt,.doc,.dot,.docx,.dotx,.xls,.xlt,.xla,.xlsx,.xltx,.xlsb,.ppt,.pot,.pps,.ppa,.pptx,.potx,.ppsx'
-  MAX_FILE_SIZE: '500MB'
   MAX_ACTIVE_DB_CONNECTIONS: '10'
-  ENDPOINTS_HEALTH_SENSITIVE: 'false'
-  ENDPOINTS_INFO_SENSITIVE: 'false'
   REFORM_ENVIRONMENT: 'kubernetes'
 
 ---
@@ -234,8 +223,9 @@ spec:
         app: ${SERVICE_NAME}
     spec:
       containers:
-        - image: ${IMAGE_NAME}
-          name: ${SERVICE_NAME}
+        - name: ${SERVICE_NAME}
+          image: ${IMAGE_NAME}
+          imagePullPolicy: Always
           resources:
             requests:
               memory: 256Mi
@@ -246,7 +236,11 @@ spec:
           ports:
             - containerPort: 4000
               name: http
-          imagePullPolicy: Always
+          livenessProbe:
+            tcpSocket:
+              port: 4000
+            initialDelaySeconds: 140
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -293,8 +287,9 @@ spec:
         app: service-auth-provider-api
     spec:
       containers:
-        - image: hmcts.azurecr.io/hmcts/rpe-service-auth-provider:latest
-          name: service-auth-provider-api
+        - name: service-auth-provider-api
+          image: hmcts.azurecr.io/hmcts/rpe-service-auth-provider:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: service-auth-provider-api
@@ -308,7 +303,11 @@ spec:
           ports:
             - containerPort: 8489
               name: http
-          imagePullPolicy: Always
+          livenessProbe:
+            tcpSocket:
+              port: 8489
+            initialDelaySeconds: 140
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -355,8 +354,9 @@ spec:
         app: idam-authentication-web
     spec:
       containers:
-        - image: docker.artifactory.reform.hmcts.net/auth/authentication-web:latest
-          name: idam-authentication-web
+        - name: idam-authentication-web
+          image: docker.artifactory.reform.hmcts.net/auth/authentication-web:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: idam-authentication-web
@@ -370,7 +370,11 @@ spec:
           ports:
             - containerPort: 8000
               name: http
-          imagePullPolicy: Always
+          livenessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 70
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -416,9 +420,14 @@ spec:
       labels:
         app: idam-api
     spec:
+      initContainers:
+        - name: wait-for-database
+          image: postgres:10.5-alpine
+          command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
       containers:
-        - image: docker.artifactory.reform.hmcts.net/auth/idam-api:latest
-          name: idam-api
+        - name: idam-api
+          image: docker.artifactory.reform.hmcts.net/auth/idam-api:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: idam-api
@@ -432,7 +441,11 @@ spec:
           ports:
             - containerPort: 8080
               name: http
-          imagePullPolicy: Always
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 140
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -479,8 +492,9 @@ spec:
         app: ccd-case-management-web
     spec:
       containers:
-        - image: hmcts.azurecr.io/hmcts/ccd-case-management-web:latest
-          name: ccd-case-management-web
+        - name: ccd-case-management-web
+          image: hmcts.azurecr.io/hmcts/ccd-case-management-web:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: ccd-case-management-web
@@ -494,7 +508,11 @@ spec:
           ports:
             - containerPort: 3451
               name: http
-          imagePullPolicy: Always
+          livenessProbe:
+            tcpSocket:
+              port: 3451
+            initialDelaySeconds: 70
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -541,8 +559,9 @@ spec:
         app: ccd-api-gateway
     spec:
       containers:
-        - image: hmcts.azurecr.io/hmcts/ccd-api-gateway-web:latest
-          name: ccd-api-gateway
+        - name: ccd-api-gateway
+          image: hmcts.azurecr.io/hmcts/ccd-api-gateway-web:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: ccd-api-gateway
@@ -556,7 +575,11 @@ spec:
           ports:
             - containerPort: 3453
               name: http
-          imagePullPolicy: Always
+          livenessProbe:
+            tcpSocket:
+              port: 3453
+            initialDelaySeconds: 70
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -602,9 +625,14 @@ spec:
       labels:
         app: ccd-user-profile-api
     spec:
+      initContainers:
+        - name: wait-for-database
+          image: postgres:10.5-alpine
+          command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
       containers:
-        - image: hmcts.azurecr.io/hmcts/ccd-user-profile-api:latest
-          name: ccd-user-profile-api
+        - name: ccd-user-profile-api
+          image: hmcts.azurecr.io/hmcts/ccd-user-profile-api:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: ccd-user-profile-api
@@ -618,7 +646,11 @@ spec:
           ports:
             - containerPort: 4453
               name: http
-          imagePullPolicy: Always
+          livenessProbe:
+            tcpSocket:
+              port: 4453
+            initialDelaySeconds: 140
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -664,9 +696,14 @@ spec:
       labels:
         app: ccd-definition-store-api
     spec:
+      initContainers:
+        - name: wait-for-database
+          image: postgres:10.5-alpine
+          command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
       containers:
-        - image: hmcts.azurecr.io/hmcts/ccd-definition-store-api:latest
-          name: ccd-definition-store-api
+        - name: ccd-definition-store-api
+          image: hmcts.azurecr.io/hmcts/ccd-definition-store-api:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: ccd-definition-store-api
@@ -680,7 +717,11 @@ spec:
           ports:
             - containerPort: 4451
               name: http
-          imagePullPolicy: Always
+          livenessProbe:
+            tcpSocket:
+              port: 4451
+            initialDelaySeconds: 140
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -726,9 +767,14 @@ spec:
       labels:
         app: ccd-data-store-api
     spec:
+      initContainers:
+        - name: wait-for-database
+          image: postgres:10.5-alpine
+          command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
       containers:
-        - image: hmcts.azurecr.io/hmcts/ccd-data-store-api:latest
-          name: ccd-data-store-api
+        - name: ccd-data-store-api
+          image: hmcts.azurecr.io/hmcts/ccd-data-store-api:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: ccd-data-store-api
@@ -742,7 +788,11 @@ spec:
           ports:
             - containerPort: 4452
               name: http
-          imagePullPolicy: Always
+          livenessProbe:
+            tcpSocket:
+              port: 4452
+            initialDelaySeconds: 140
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -788,9 +838,14 @@ spec:
       labels:
         app: dm-store
     spec:
+      initContainers:
+        - name: wait-for-database
+          image: postgres:10.5-alpine
+          command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
       containers:
-        - image: hmcts.azurecr.io/hmcts/dm-store:latest
-          name: dm-store
+        - name: dm-store
+          image: hmcts.azurecr.io/hmcts/dm-store:latest
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: dm-store
@@ -804,7 +859,11 @@ spec:
           ports:
             - containerPort: 4603
               name: http
-          imagePullPolicy: Always
+          livenessProbe:
+            tcpSocket:
+              port: 4603
+            initialDelaySeconds: 140
+            periodSeconds: 20
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -851,8 +910,9 @@ spec:
         app: shared-database
     spec:
       containers:
-        - image: hmcts.azurecr.io/hmcts/ccd-postgres:10.5-alpine
-          name: shared-database
+        - name: shared-database
+          image: hmcts.azurecr.io/hmcts/ccd-postgres:10.5-alpine
+          imagePullPolicy: Always
           resources:
             requests:
               memory: 64Mi
@@ -863,7 +923,10 @@ spec:
           ports:
             - containerPort: 5432
               name: postgres
-          imagePullPolicy: Always
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 10
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -907,8 +970,9 @@ spec:
         app: smtp-server
     spec:
       containers:
-        - image: mailhog/mailhog:latest
-          name: smtp-server
+        - name: smtp-server
+          image: mailhog/mailhog:latest
+          imagePullPolicy: Always
           resources:
             requests:
               memory: 16Mi
@@ -919,7 +983,10 @@ spec:
           ports:
             - containerPort: 1025
               name: smtp-server
-          imagePullPolicy: Always
+          livenessProbe:
+            tcpSocket:
+              port: 1025
+            initialDelaySeconds: 10
       dnsConfig:
         options:
           - name: single-request-reopen
@@ -1094,4 +1161,26 @@ spec:
           - path: /
             backend:
               serviceName: ccd-definition-store-api
+              servicePort: 80
+
+---
+
+#
+# CCD-USER_PROFILE-API :: Ingress
+#
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ccd-user-profile-api
+  namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+    - host: ccd-user-profile-api-${SERVICE_FQDN}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ccd-user-profile-api
               servicePort: 80

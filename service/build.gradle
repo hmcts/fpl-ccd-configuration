@@ -10,6 +10,8 @@ plugins {
   id 'org.sonarqube' version '2.6.2'
 }
 
+apply plugin: 'info.solidsoft.pitest'
+
 group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
 
@@ -59,7 +61,7 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 check.dependsOn integration
 
 task smoke(type: Exec, description: 'Runs the smoke tests.') {
-  commandLine '/usr/bin/curl', '--silent', '--insecure', '--fail', environment.get('URL') + '/health'
+  commandLine '../kubernetes/configurer/utils/wait-for.sh', environment.get('URL')
 }
 
 task functionalInstall(type: Exec, description: 'Installs E2E dependencies.') {
@@ -125,13 +127,15 @@ sonarqube {
     property "sonar.projectName", "FPL :: Service"
     property "sonar.jacoco.reportPath", file("${project.buildDir}/jacoco/test.exec")
     property "sonar.jacoco.itReportPath", file("${project.buildDir}/jacoco/integration.exec")
+    property "sonar.pitest.mode", "reuseReport"
+    property "sonar.pitest.reportsDirectory", "build/reports/pitest"
   }
 }
 
 repositories {
   jcenter()
   maven {
-    url  "https://dl.bintray.com/hmcts/hmcts-maven"
+    url "https://dl.bintray.com/hmcts/hmcts-maven"
   }
 }
 
@@ -177,4 +181,18 @@ bootJar {
   manifest {
     attributes('Implementation-Version': project.version.toString())
   }
+}
+
+pitest {
+  pitestVersion = '1.4.3'
+  targetClasses = ['uk.gov.hmcts.reform.fpl.*']
+  testSourceSets = [sourceSets.test, sourceSets.integrationTest]
+  threads = 10
+  enableDefaultIncrementalAnalysis = true
+  historyInputLocation = 'build/reports/pitest/history'
+  historyOutputLocation = 'build/reports/pitest/history'
+  outputFormats = ['XML', 'HTML']
+  timestampedReports = false
+  mutationThreshold = 80
+  timeoutConstInMillis = 30000
 }
