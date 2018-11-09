@@ -2,8 +2,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "caseTitle",
-    "Label": "Case Title :",
+    "ID": "caseName",
+    "Label": "Case Name",
+    "HintText": "Include the Local Authority name and respondent’s last name. For example, Endley Council v Smith/Tate/Jones",    
     "FieldType": "Text",
     "SecurityClassification": "Public"
   },
@@ -25,23 +26,23 @@
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 42795,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "grounds",
-    "Label": "Grounds for application",
+    "Label": "Grounds for the application",
     "FieldType": "Grounds",
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 43070,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "hearing",
-    "Label": "Hearing",
+    "Label": "Hearing needed",
     "FieldType": "Hearing",
     "SecurityClassification": "Public"
   },
   {
-    "LiveFrom": 43078,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "internationalElement",
     "Label": "International element",
@@ -205,7 +206,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "hearingPreferences",
-    "Label": "Attending the court",
+    "Label": "Attending the hearing",
     "FieldType": "HearingPreferences",
     "SecurityClassification": "Public"
   },
@@ -237,7 +238,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "others",
-    "Label": "Others who should be given notice",
+    "Label": "Others to be given notice",
     "FieldType": "Person",
     "SecurityClassification": "Public"
   },
@@ -261,7 +262,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "orders",
-    "Label": "Orders and Directions",
+    "Label": "Orders and directions needed",
     "FieldType": "Orders",
     "SecurityClassification": "Public"
   },

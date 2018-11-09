@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseEventID": "initiateCase",
+    "CaseEventID": "openCase",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
@@ -107,7 +107,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseEventID": "amendCaseTitle",
+    "CaseEventID": "changeCaseName",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },
