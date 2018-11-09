@@ -9,12 +9,9 @@ properties([
 def type = "java"
 
 def product = "fpl"
-
 def component = "fpl-service"
 
-
 withNightlyPipeline(type, product, component) {
-
     enableMutationTest()
 
     after('mutationTest') {

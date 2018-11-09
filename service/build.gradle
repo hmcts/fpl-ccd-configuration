@@ -128,7 +128,7 @@ sonarqube {
     property "sonar.jacoco.reportPath", file("${project.buildDir}/jacoco/test.exec")
     property "sonar.jacoco.itReportPath", file("${project.buildDir}/jacoco/integration.exec")
     property "sonar.pitest.mode", "reuseReport"
-    property "sonar.pitest.reportsDirectory", "/build/reports/pitest"
+    property "sonar.pitest.reportsDirectory", "build/reports/pitest"
   }
 }
 
@@ -162,7 +162,6 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
 
   compile group: 'commons-io', name: 'commons-io', version: '2.6'
-//  compile group:'org.codehaus.sonar-plugins', name:'sonar-pitest-plugin', version: '0.5'
 
   testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
 
