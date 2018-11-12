@@ -204,9 +204,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "PDF",
-    "Name": "View attached PDF",
-    "Description": "Submit application",
+    "ID": "attachSubmittedFormPDF",
+    "Name": "Attach submitted form PDF",
+    "Description": "Submit form is generated as a PDF",
     "DisplayOrder": 1,
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Submitted",

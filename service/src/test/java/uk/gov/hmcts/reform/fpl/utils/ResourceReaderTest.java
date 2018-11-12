@@ -8,8 +8,8 @@ public class ResourceReaderTest {
 
     @Test
     public void shouldReturnBytesIfResourceExists() {
-        byte[] bytes = ResourceReader.readBytes("sample-resource.txt");
-        assertThat(bytes).isEqualTo("Sample content\n".getBytes());
+        byte[] bytes = ResourceReader.readBytes("responses/success.json");
+        assertThat(bytes).contains("documentVersions\n".getBytes());
     }
 
     @Test(expected = IllegalArgumentException.class)

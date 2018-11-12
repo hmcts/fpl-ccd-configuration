@@ -152,9 +152,9 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot
 
-  compile 'org.json:json:20171018'
+  compile group: 'org.json', name: 'json', version: '20180813'
 
-  compile group: 'com.google.guava', name: 'guava', version: '23.5-jre'
+  compile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
 
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger

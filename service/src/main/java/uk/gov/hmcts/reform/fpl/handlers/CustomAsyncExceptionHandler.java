@@ -1,19 +1,19 @@
-package uk.gov.hmcts.reform.fpl.utils;
+package uk.gov.hmcts.reform.fpl.handlers;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
+
 import java.lang.reflect.Method;
 
 public class CustomAsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
 
+    Logger logger = LoggerFactory.getLogger(getClass());
+
     @Override
     public void handleUncaughtException(
         Throwable throwable, Method method, Object... obj) {
-
-        System.out.println("Exception message - " + throwable.getMessage());
-        System.out.println("Method name - " + method.getName());
-        for (Object param : obj) {
-            System.out.println("Parameter value - " + param);
-        }
+        logger.error("Exception message - " + throwable.getMessage());
     }
 
 }

@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.CaseService;
-import javax.validation.constraints.NotNull;
+
 import java.io.IOException;
-import java.util.Map;
+import javax.validation.constraints.NotNull;
 
 @Api
 @RestController
@@ -25,17 +26,16 @@ public class CaseSubmissionController {
     @Autowired
     private CaseService caseService;
 
+    @Autowired
+    private ApplicationEventPublisher applicationEventPublisher;
+
     @PostMapping
     public ResponseEntity submittedCase(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
-        @RequestBody @NotNull CallbackRequest caseData) throws JSONException, IOException {
-        System.out.println("Authorization: " + authorization);
-        System.out.println("User Id: " + userId);
-        System.out.println("Case data: " + caseData);
+        @RequestBody @NotNull CallbackRequest callbackRequest) throws JSONException, IOException {
 
-        caseService.handleCaseSubmission(authorization, userId, caseData);
-
+        applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
         return new ResponseEntity(HttpStatus.OK);
     }
 }

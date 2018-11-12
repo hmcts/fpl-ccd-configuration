@@ -128,7 +128,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseEventID": "PDF",
+    "CaseEventID": "attachSubmittedFormPDF",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"
   },

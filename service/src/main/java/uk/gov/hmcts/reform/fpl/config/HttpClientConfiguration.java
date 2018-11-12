@@ -13,11 +13,6 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 public class HttpClientConfiguration {
 
-    //@Bean
-    //public Client getFeignHttpClient() {
-    //    return new ApacheHttpClient(getHttpClient());
-    //}
-
     @Bean
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();

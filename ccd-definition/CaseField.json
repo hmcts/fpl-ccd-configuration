@@ -4,7 +4,7 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "caseName",
     "Label": "Case Name",
-    "HintText": "Include the Local Authority name and respondent’s last name. For example, Endley Council v Smith/Tate/Jones",    
+    "HintText": "Include the Local Authority name and respondent’s last name. For example, Endley Council v Smith/Tate/Jones",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   },
@@ -270,7 +270,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "submittedForm",
-    "Label": "PDF",
+    "Label": "Attached PDF",
     "FieldType": "Document",
     "SecurityClassification": "Public"
   },
