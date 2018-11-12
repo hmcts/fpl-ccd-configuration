@@ -25,7 +25,12 @@ Scenario('Filling in the full section for enter applicants', (I, enterApplicantP
   I.seeAnswerInTab(1, 'Applicant', 'Name of applicant', 'John Smith');
   I.seeAnswerInTab(2, 'Applicant', 'Name of person to contact', 'Jonathon Walker');
   I.seeAnswerInTab(3, 'Applicant', 'Job title', 'Legal adviser');
-  I.seeAnswerInTab(4, 'Applicant', 'Address', '1 London Way, London, SE1 11A');
+  I.seeAnswerInTab(1, 'Address', 'Building and Street', 'Flat 2');
+  I.seeAnswerInTab(2, 'Address', '', 'Caversham House 15-17');
+  I.seeAnswerInTab(3, 'Address', '', 'Church Road');
+  I.seeAnswerInTab(4, 'Address', 'Town or City', 'Reading');
+  I.seeAnswerInTab(5, 'Address', 'Postcode/Zipcode', 'RG4 7AA');
+  I.seeAnswerInTab(6, 'Address', 'Country', 'United Kingdom');
   I.seeAnswerInTab(5, 'Applicant', 'Mobile number', '7000000000');
   I.seeAnswerInTab(6, 'Applicant', 'Telephone number', '00000000000');
   I.seeAnswerInTab(7, 'Applicant', 'Email', 'applicant@email.com');
