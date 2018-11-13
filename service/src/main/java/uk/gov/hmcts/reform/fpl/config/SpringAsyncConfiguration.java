@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.handlers.CustomAsyncExceptionHandler;
 
 @Configuration
 public class SpringAsyncConfiguration implements AsyncConfigurer {
+
     @Override
     public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
         return new CustomAsyncExceptionHandler();
