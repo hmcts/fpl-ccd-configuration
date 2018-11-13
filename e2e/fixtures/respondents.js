@@ -1,13 +1,13 @@
 module.exports = [
   {
-    name: 'John Smith',
-    DOB: {
+    name: 'Joe Bloggs',
+    dob: {
       day: '01',
       month: '01',
-      year: '1985',
+      year: '1980',
     },
     gender: 'Male',
-    birthPlace: 'Scotland',
+    placeOfBirth: 'London',
     address: {
       lookupOption: 'Flat 2, Caversham House 15-17, Church Road, Reading',    
       buildingAndStreet: {
@@ -19,17 +19,17 @@ module.exports = [
       postcode: 'RG4 7AA',
       country: 'United Kingdom',
     },
-    telephoneNumber: '07888288288',
+    telephone: '00000 000000',
   },
   {
-    name: 'Paul Wilsdon',
-    DOB: {
+    name: 'Wayne Best',
+    dob: {
       day: '01',
       month: '01',
-      year: '1984',
+      year: '1955',
     },
     gender: 'Male',
-    birthPlace: 'Wales',
+    placeOfBirth: 'London',
     address: {
       lookupOption: '1 Three Tuns Wynd, High Street, Stokesley, Middlesbrough',
       buildingAndStreet: {
@@ -41,6 +41,6 @@ module.exports = [
       postcode: 'TS9 5DQ',
       country: 'United Kingdom',
     },
-    telephoneNumber: '07888288288',
+    telephone: '00000 000000',
   },
 ];

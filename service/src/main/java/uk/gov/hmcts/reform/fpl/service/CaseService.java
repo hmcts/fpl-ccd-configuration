@@ -57,6 +57,8 @@ public class CaseService {
         String userId = event.getUserId();
         String authorization = event.getAuthorization();
 
+        System.out.println("request = " + request);
+
         byte[] pdfDocument = documentGeneratorService.documentGenerator(request.getCaseDetails());
 
         Document document = uploadDocumentService.uploadDocument(userId, authorization,
@@ -97,7 +99,7 @@ public class CaseService {
 
     private String getFileName(CaseDetails caseDetails) {
         try {
-            String title = Strings.nullToEmpty(caseDetails.getData().get("caseTitle").toString().trim());
+            String title = Strings.nullToEmpty(caseDetails.getData().get("caseName").toString().trim());
             return title.replaceAll("\\s", "_") + ".pdf";
         } catch (NullPointerException e) {
             return caseDetails.getId().toString() + ".pdf";
