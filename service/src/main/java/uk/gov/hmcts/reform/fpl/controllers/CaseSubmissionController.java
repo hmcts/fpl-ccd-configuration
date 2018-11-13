@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
-import uk.gov.hmcts.reform.fpl.service.CaseService;
 
-import java.io.IOException;
 import javax.validation.constraints.NotNull;
 
 @Api
@@ -24,16 +22,13 @@ import javax.validation.constraints.NotNull;
 public class CaseSubmissionController {
 
     @Autowired
-    private CaseService caseService;
-
-    @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
     @PostMapping
-    public ResponseEntity submittedCase(
+    public ResponseEntity handleCaseSubmission(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
-        @RequestBody @NotNull CallbackRequest callbackRequest) throws JSONException, IOException {
+        @RequestBody @NotNull CallbackRequest callbackRequest) throws JSONException {
 
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
         return new ResponseEntity(HttpStatus.OK);
