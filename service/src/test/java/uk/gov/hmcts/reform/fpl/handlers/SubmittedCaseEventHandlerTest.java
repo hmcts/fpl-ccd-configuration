@@ -1,6 +1,5 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -8,14 +7,14 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
-import uk.gov.hmcts.reform.fpl.handlers.SubmittedCaseEventHandler;
+import uk.gov.hmcts.reform.fpl.handlers.SubmittedCaseEventHandler.SubmittedFormFilenameHelper;
+import uk.gov.hmcts.reform.fpl.service.CaseRepository;
+import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
@@ -26,7 +25,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @RunWith(SpringRunner.class)
 public class SubmittedCaseEventHandlerTest {
 
-    private static final String AUTH_TOKEN = "Bearer token";
+    private static final String AUTHORIZATION_TOKEN = "Bearer token";
+    private static final String USER_ID = "1";
 
     @Mock
     private DocumentGeneratorService documentGeneratorService;
@@ -36,38 +36,32 @@ public class SubmittedCaseEventHandlerTest {
     private CaseRepository caseRepository;
 
     @InjectMocks
-    private SubmittedCaseEventHandler submittedCaseEventHandler = new SubmittedCaseEventHandler();
-    private Method getFileName;
+    private SubmittedCaseEventHandler submittedCaseEventHandler;
+
     private SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(
-        callbackRequest(), "Bearer token", "1"
+        callbackRequest(), AUTHORIZATION_TOKEN, USER_ID
     );
 
     public SubmittedCaseEventHandlerTest() throws IOException {
         // NO-OP
     }
 
-    @Before
-    public void setup() throws NoSuchMethodException {
-        getFileName = submittedCaseEventHandler.getClass().getDeclaredMethod("buildFileName", CaseDetails.class);
-        getFileName.setAccessible(true);
-    }
-
     @Test
-    public void testGetFileNameReturnsCaseReferenceWhenNoTitleIsProvided()
-        throws IOException, InvocationTargetException, IllegalAccessException {
+    public void fileNameShouldContainCaseReferenceWhenNoCaseNameIsProvided() throws IOException {
         CaseDetails caseDetails = emptyCaseDetails();
-        String fileName = (String) getFileName.invoke(submittedCaseEventHandler, caseDetails);
 
-        assertThat("File name should match the caseID of 123", fileName, is("123.pdf"));
+        String fileName = SubmittedFormFilenameHelper.buildFileName(caseDetails);
+
+        assertThat(fileName).isEqualTo("123.pdf");
     }
 
     @Test
-    public void testGetFileNameReturnsCaseTitleWhenProvided()
-        throws IOException, InvocationTargetException, IllegalAccessException {
+    public void fileNameShouldContainCaseTitleWhenProvided() throws IOException {
         CaseDetails caseDetails = populatedCaseDetails();
-        String fileName = (String) getFileName.invoke(submittedCaseEventHandler, caseDetails);
 
-        assertThat("File name should match the file name of test", fileName, is("test.pdf"));
+        String fileName = SubmittedFormFilenameHelper.buildFileName(caseDetails);
+
+        assertThat(fileName).isEqualTo("test.pdf");
     }
 
     @Test

@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.service.CaseRepository;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
+import static uk.gov.hmcts.reform.fpl.handlers.SubmittedCaseEventHandler.SubmittedFormFilenameHelper.buildFileName;
+
 /**
  * Handler of case submission event.
  */
@@ -44,12 +46,20 @@ public class SubmittedCaseEventHandler {
         caseRepository.setSubmittedFormPDF(authorization, userId, caseDetails.getId().toString(), document);
     }
 
-    private String buildFileName(CaseDetails caseDetails) {
-        try {
-            String title = Strings.nullToEmpty(caseDetails.getData().get("caseName").toString().trim());
-            return title.replaceAll("\\s", "_") + ".pdf";
-        } catch (NullPointerException e) {
-            return caseDetails.getId().toString() + ".pdf";
+    static class SubmittedFormFilenameHelper {
+
+        private SubmittedFormFilenameHelper() {
+            // NO-OP
+        }
+
+        static String buildFileName(CaseDetails caseDetails) {
+            String caseName = Strings.nullToEmpty((String) caseDetails.getData().get("caseName")).trim();
+
+            if (!Strings.isNullOrEmpty(caseName)) {
+                return caseName.replaceAll("\\s", "_") + ".pdf";
+            }
+
+            return Long.toString(caseDetails.getId()) + ".pdf";
         }
     }
 
