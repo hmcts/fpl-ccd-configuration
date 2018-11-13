@@ -8,12 +8,11 @@ import java.lang.reflect.Method;
 
 public class CustomAsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
 
-    Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
-    public void handleUncaughtException(
-        Throwable throwable, Method method, Object... obj) {
-        logger.error("Exception message - " + throwable.getMessage());
+    public void handleUncaughtException(Throwable throwable, Method method, Object... obj) {
+        logger.error("Unexpected error occurred during async execution: " + throwable.getMessage(), throwable);
     }
 
 }
