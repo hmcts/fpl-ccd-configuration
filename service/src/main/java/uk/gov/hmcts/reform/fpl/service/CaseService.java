@@ -57,8 +57,6 @@ public class CaseService {
         String userId = event.getUserId();
         String authorization = event.getAuthorization();
 
-        System.out.println("request = " + request);
-
         byte[] pdfDocument = documentGeneratorService.documentGenerator(request.getCaseDetails());
 
         Document document = uploadDocumentService.uploadDocument(userId, authorization,

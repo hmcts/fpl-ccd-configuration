@@ -1,0 +1,11 @@
+{
+  "case_details": {
+    "id": 54321,
+    "case_data": {
+      "caseName": "testName"
+    }
+  },
+  "case_details_before": {},
+  "eventId": {}
+
+}
