@@ -15,8 +15,8 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static uk.gov.hmcts.reform.fpl.utils.ResourceLoader.successfulDocumentManagementUploadResponse;
-import static uk.gov.hmcts.reform.fpl.utils.ResourceLoader.unsuccessfulDocumentManagementUploadResponse;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.successfulDocumentUploadResponse;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.unsuccessfulDocumentUploadResponse;
 
 @RunWith(SpringRunner.class)
 public class UploadDocumentServiceTest {
@@ -32,17 +32,17 @@ public class UploadDocumentServiceTest {
     @Test
     public void testSuccessfulResponseReturnsDocument() throws IOException {
         given(documentUploadClient.upload(eq(AUTHORIZATION_TOKEN), any(), any(), any()))
-            .willReturn(successfulDocumentManagementUploadResponse());
+            .willReturn(successfulDocumentUploadResponse());
 
         assertThat("Method should provide document on success",
             Document.class.isInstance(uploadDocumentService.uploadDocument("1",
-            AUTHORIZATION_TOKEN, "1", new byte[]{1, 2, 3, 4}, "test")));
+                AUTHORIZATION_TOKEN, "1", new byte[]{1, 2, 3, 4}, "test")));
     }
 
     @Test(expected = RuntimeException.class)
     public void testUnsuccessfulResponseThrowsRuntimeException() throws IOException {
         given(documentUploadClient.upload(eq(AUTHORIZATION_TOKEN), any(), any(), any()))
-            .willReturn(unsuccessfulDocumentManagementUploadResponse());
+            .willReturn(unsuccessfulDocumentUploadResponse());
         uploadDocumentService.uploadDocument("1", AUTHORIZATION_TOKEN, "1",
             new byte[]{1, 2, 3, 4}, "test");
     }
@@ -50,7 +50,7 @@ public class UploadDocumentServiceTest {
     @Test
     public void testUnsuccessfulResponseThrowsErrorMessage() throws IOException {
         given(documentUploadClient.upload(eq(AUTHORIZATION_TOKEN), any(), any(), any()))
-            .willReturn(unsuccessfulDocumentManagementUploadResponse());
+            .willReturn(unsuccessfulDocumentUploadResponse());
         String messsage = null;
         try {
             uploadDocumentService.uploadDocument("1", AUTHORIZATION_TOKEN, "1",

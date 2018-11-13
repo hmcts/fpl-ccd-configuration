@@ -10,8 +10,8 @@ import uk.gov.hmcts.reform.pdf.generator.exception.MalformedTemplateException;
 import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.ResourceLoader.emptyCaseDetails;
-import static uk.gov.hmcts.reform.fpl.utils.ResourceLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @RunWith(SpringRunner.class)
 public class DocumentGeneratorServiceTest {

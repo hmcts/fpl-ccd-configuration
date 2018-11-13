@@ -1,7 +1,7 @@
 {
   "size": 72552,
   "mimeType": "application/pdf",
-  "originalDocumentName": "000LR002.pdf",
+  "originalDocumentName": "file.pdf",
   "createdBy": "15",
   "lastModifiedBy": "15",
   "modifiedOn": "2017-11-01T10:23:55.120+0000",
@@ -10,10 +10,10 @@
   "roles": null,
   "_links": {
     "self": {
-      "href": "http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4"
+      "href": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4"
     },
     "binary": {
-      "href": "http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"
+      "href": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"
     }
   }
 }
