@@ -20,8 +20,12 @@ import javax.validation.constraints.NotNull;
 @RequestMapping("/callback/case-submission")
 public class CaseSubmissionController {
 
+    private final ApplicationEventPublisher applicationEventPublisher;
+
     @Autowired
-    private ApplicationEventPublisher applicationEventPublisher;
+    public CaseSubmissionController(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
 
     @PostMapping
     public ResponseEntity handleCaseSubmission(

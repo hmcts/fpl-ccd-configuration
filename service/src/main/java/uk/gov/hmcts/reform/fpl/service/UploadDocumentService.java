@@ -19,10 +19,14 @@ public class UploadDocumentService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final AuthTokenGenerator authTokenGenerator;
+    private final DocumentUploadClientApi documentUploadClient;
+
     @Autowired
-    private AuthTokenGenerator authTokenGenerator;
-    @Autowired
-    private DocumentUploadClientApi documentUploadClient;
+    public UploadDocumentService(AuthTokenGenerator authTokenGenerator, DocumentUploadClientApi documentUploadClient) {
+        this.authTokenGenerator = authTokenGenerator;
+        this.documentUploadClient = documentUploadClient;
+    }
 
     public Document uploadPDF(String userId, String authorization, byte[] pdf, String fileName) {
         MultipartFile file = new InMemoryMultipartFile("files", fileName, MediaType.APPLICATION_PDF_VALUE, pdf);

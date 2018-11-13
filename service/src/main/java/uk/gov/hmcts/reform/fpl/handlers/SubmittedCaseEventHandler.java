@@ -20,12 +20,18 @@ import static uk.gov.hmcts.reform.fpl.handlers.SubmittedCaseEventHandler.Submitt
 @Component
 public class SubmittedCaseEventHandler {
 
+    private final DocumentGeneratorService documentGeneratorService;
+    private final UploadDocumentService uploadDocumentService;
+    private final CaseRepository caseRepository;
+
     @Autowired
-    private DocumentGeneratorService documentGeneratorService;
-    @Autowired
-    private UploadDocumentService uploadDocumentService;
-    @Autowired
-    private CaseRepository caseRepository;
+    public SubmittedCaseEventHandler(DocumentGeneratorService documentGeneratorService,
+                                     UploadDocumentService uploadDocumentService,
+                                     CaseRepository caseRepository) {
+        this.documentGeneratorService = documentGeneratorService;
+        this.uploadDocumentService = uploadDocumentService;
+        this.caseRepository = caseRepository;
+    }
 
     /**
      * Generates PDF, uploads it into document store and updates case with reference to the document.

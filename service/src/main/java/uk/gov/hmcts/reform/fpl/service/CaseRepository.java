@@ -22,10 +22,14 @@ public class CaseRepository {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final AuthTokenGenerator authTokenGenerator;
+    private final CoreCaseDataApi coreCaseDataApi;
+
     @Autowired
-    private AuthTokenGenerator authTokenGenerator;
-    @Autowired
-    private CoreCaseDataApi coreCaseDataApi;
+    public CaseRepository(AuthTokenGenerator authTokenGenerator, CoreCaseDataApi coreCaseDataApi) {
+        this.authTokenGenerator = authTokenGenerator;
+        this.coreCaseDataApi = coreCaseDataApi;
+    }
 
     public void setSubmittedFormPDF(String authorization, String userId, String caseId, Document document) {
         String event = "attachSubmittedFormPDF";
