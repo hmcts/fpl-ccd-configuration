@@ -24,7 +24,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest
-@AutoConfigureMockMvc
 public class CaseSubmissionControllerTest {
 
     @MockBean
