@@ -30,8 +30,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 public class CaseRepositoryTest {
 
     private static final String USER_ID = "1";
-    private static final String AUTHORIZATION_TOKEN = "Bearer token";
-    private static final String SERVICE_AUTHORIZATION_TOKEN = "Bearer service token";
+    private static final String AUTH_TOKEN = "Bearer token";
+    private static final String SERVICE_AUTH_TOKEN = "Bearer service token";
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
@@ -52,14 +52,14 @@ public class CaseRepositoryTest {
         Document document = document();
 
         given(authTokenGenerator.generate())
-            .willReturn(SERVICE_AUTHORIZATION_TOKEN);
-        given(coreCaseDataApi.startEventForCaseWorker(AUTHORIZATION_TOKEN, SERVICE_AUTHORIZATION_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, caseId, event))
+            .willReturn(SERVICE_AUTH_TOKEN);
+        given(coreCaseDataApi.startEventForCaseWorker(AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, caseId, event))
             .willReturn(StartEventResponse.builder().eventId(event).token("event-token:0").build());
 
-        caseRepository.setSubmittedFormPDF(AUTHORIZATION_TOKEN, USER_ID, caseId, document);
+        caseRepository.setSubmittedFormPDF(AUTH_TOKEN, USER_ID, caseId, document);
 
-        verify(coreCaseDataApi).startEventForCaseWorker(AUTHORIZATION_TOKEN, SERVICE_AUTHORIZATION_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, caseId, event);
-        verify(coreCaseDataApi).submitEventForCaseWorker(eq(AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION_TOKEN), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(caseId), eq(true), caseDataContentArgumentCaptor.capture());
+        verify(coreCaseDataApi).startEventForCaseWorker(AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, caseId, event);
+        verify(coreCaseDataApi).submitEventForCaseWorker(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(caseId), eq(true), caseDataContentArgumentCaptor.capture());
 
         CaseDataContent caseDataContent = caseDataContentArgumentCaptor.getValue();
         assertThat(caseDataContent.getEvent().getId()).isEqualTo(event);

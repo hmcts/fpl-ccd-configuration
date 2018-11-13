@@ -25,8 +25,8 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.unsucc
 public class UploadDocumentServiceTest {
 
     private static final String USER_ID = "1";
-    private static final String AUTHORIZATION_TOKEN = "Bearer token";
-    private static final String SERVICE_AUTHORIZATION_TOKEN = "Bearer service token";
+    private static final String AUTH_TOKEN = "Bearer token";
+    private static final String SERVICE_AUTH_TOKEN = "Bearer service token";
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
@@ -38,36 +38,36 @@ public class UploadDocumentServiceTest {
 
     @Before
     public void setup() {
-        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTHORIZATION_TOKEN);
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
 
     @Test
     public void shouldReturnFirstUploadedDocument() throws IOException {
         UploadResponse request = successfulDocumentUploadResponse();
-        given(documentUploadClient.upload(eq(AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION_TOKEN), eq(USER_ID), any()))
+        given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
             .willReturn(request);
 
-        Document document = uploadDocumentService.uploadPDF(USER_ID, AUTHORIZATION_TOKEN, new byte[0], "file");
+        Document document = uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, new byte[0], "file");
 
         Assertions.assertThat(document).isEqualTo(request.getEmbedded().getDocuments().get(0));
     }
 
     @Test
     public void shouldThrowExceptionIfServerResponseContainsNoDocuments() throws IOException {
-        given(documentUploadClient.upload(eq(AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION_TOKEN), eq(USER_ID), any()))
+        given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
             .willReturn(unsuccessfulDocumentUploadResponse());
 
-        assertThatThrownBy(() -> uploadDocumentService.uploadPDF(USER_ID, AUTHORIZATION_TOKEN, new byte[0], "file"))
+        assertThatThrownBy(() -> uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, new byte[0], "file"))
             .isInstanceOf(RuntimeException.class)
             .hasMessage("Document upload failed due to empty result");
     }
 
     @Test
     public void shouldRethrowExceptionIfServerCallThrownException() {
-        given(documentUploadClient.upload(eq(AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION_TOKEN), eq(USER_ID), any()))
+        given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
             .willThrow(new RuntimeException("Something bad happened"));
 
-        assertThatThrownBy(() -> uploadDocumentService.uploadPDF(USER_ID, AUTHORIZATION_TOKEN, new byte[0], "file"))
+        assertThatThrownBy(() -> uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, new byte[0], "file"))
             .isInstanceOf(Exception.class)
             .hasMessage("Something bad happened");
     }

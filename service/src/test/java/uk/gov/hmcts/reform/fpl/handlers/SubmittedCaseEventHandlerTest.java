@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @RunWith(SpringRunner.class)
 public class SubmittedCaseEventHandlerTest {
 
-    private static final String AUTHORIZATION_TOKEN = "Bearer token";
+    private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
 
     @Mock
@@ -68,12 +68,12 @@ public class SubmittedCaseEventHandlerTest {
 
         given(documentGeneratorService.generateSubmittedFormPDF(request.getCaseDetails()))
             .willReturn(pdf);
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTHORIZATION_TOKEN, pdf, fileName))
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, fileName))
             .willReturn(document);
 
-        submittedCaseEventHandler.handleCaseSubmission(new SubmittedCaseEvent(request, AUTHORIZATION_TOKEN, USER_ID));
+        submittedCaseEventHandler.handleCaseSubmission(new SubmittedCaseEvent(request, AUTH_TOKEN, USER_ID));
 
-        verify(caseRepository).setSubmittedFormPDF(AUTHORIZATION_TOKEN, USER_ID,
+        verify(caseRepository).setSubmittedFormPDF(AUTH_TOKEN, USER_ID,
             Long.toString(request.getCaseDetails().getId()), document);
     }
 
