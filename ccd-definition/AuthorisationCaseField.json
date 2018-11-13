@@ -233,26 +233,19 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "submittedForm",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "caseName",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": " R"
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "submittedForm",
-    "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": 42736,
-    "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "submittedForm",
-    "UserRole": "caseworker-publiclaw-localAuthority",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": 42736,
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "caseLocalAuthority",
     "UserRole": "caseworker-publiclaw-courtadmin",
@@ -474,7 +467,14 @@
     "CaseFieldID": "orders",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
-  }, 
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "submittedForm",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
+  },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
