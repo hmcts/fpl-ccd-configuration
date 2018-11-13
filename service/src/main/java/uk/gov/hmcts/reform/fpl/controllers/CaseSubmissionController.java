@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
-import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
@@ -28,9 +27,10 @@ public class CaseSubmissionController {
     public ResponseEntity handleCaseSubmission(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
-        @RequestBody @NotNull CallbackRequest callbackRequest) throws JSONException {
+        @RequestBody @NotNull CallbackRequest callbackRequest) {
 
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
+
         return new ResponseEntity(HttpStatus.OK);
     }
 }
