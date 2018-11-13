@@ -121,16 +121,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseEventID": "submitApplication",
-    "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
+    "CaseEventID": "attachSubmittedFormPDF",
+    "UserRole": "caseworker-publiclaw-localAuthority",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseEventID": "attachSubmittedFormPDF",
-    "UserRole": "caseworker-publiclaw-localAuthority",
-    "CRUD": "CRU"
+    "CaseEventID": "submitApplication",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",

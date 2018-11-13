@@ -210,7 +210,7 @@
     "TabFieldDisplayOrder": 6
   },
   {
-    "LiveFrom": 43101,
+    "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "Channel": "CaseWorker",
     "TabID": "EvidenceTab",

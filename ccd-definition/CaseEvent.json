@@ -206,7 +206,7 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "attachSubmittedFormPDF",
     "Name": "Attach submitted form PDF",
-    "Description": "Submit form is generated as a PDF",
+    "Description": "Attach submitted form PDF",
     "DisplayOrder": 1,
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Submitted",
