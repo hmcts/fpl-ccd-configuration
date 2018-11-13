@@ -15,18 +15,19 @@ public class DocumentGeneratorService {
 
     private final HTMLToPDFConverter converter = new HTMLToPDFConverter();
     private final DocumentTemplates documentTemplates;
+    private final ObjectMapper mapper;
 
     @Autowired
-    public DocumentGeneratorService(DocumentTemplates documentTemplates) {
+    public DocumentGeneratorService(DocumentTemplates documentTemplates, ObjectMapper mapper) {
         this.documentTemplates = documentTemplates;
+        this.mapper = mapper;
     }
 
-    public byte[] documentGenerator(CaseDetails caseDetails) {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> map = mapper.convertValue(caseDetails, Map.class);
+    public byte[] generateSubmittedFormPDF(CaseDetails caseDetails) {
+        Map<String, Object> context = mapper.convertValue(caseDetails, Map.class);
 
         byte[] template = documentTemplates.getHtmlTemplate();
 
-        return converter.convert(template, map);
+        return converter.convert(template, context);
     }
 }

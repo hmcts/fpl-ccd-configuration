@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -16,14 +17,16 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 @RunWith(SpringRunner.class)
 public class DocumentGeneratorServiceTest {
 
-    private DocumentGeneratorService documentGeneratorService = new DocumentGeneratorService(new DocumentTemplates());
+    private DocumentGeneratorService documentGeneratorService = new DocumentGeneratorService(
+        new DocumentTemplates(), new ObjectMapper()
+    );
 
     @Test
     public void testEmptyCaseDetailsSuccessfullyReturnsByteArray() throws IOException {
         CaseDetails caseDetails = emptyCaseDetails();
 
         assertThat("Byte array is still returned if the caseDetails is empty",
-            byte[].class.isInstance(documentGeneratorService.documentGenerator(caseDetails)));
+            byte[].class.isInstance(documentGeneratorService.generateSubmittedFormPDF(caseDetails)));
     }
 
     @Test
@@ -31,11 +34,11 @@ public class DocumentGeneratorServiceTest {
         CaseDetails caseDetails = populatedCaseDetails();
 
         assertThat("Byte array is returned on populated submission",
-            byte[].class.isInstance(documentGeneratorService.documentGenerator(caseDetails)));
+            byte[].class.isInstance(documentGeneratorService.generateSubmittedFormPDF(caseDetails)));
     }
 
     @Test(expected = MalformedTemplateException.class)
     public void testNullCaseDetailsProvidesMalformedTemplate() {
-        documentGeneratorService.documentGenerator(null);
+        documentGeneratorService.generateSubmittedFormPDF(null);
     }
 }

@@ -19,18 +19,18 @@ import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
- * handle case submission to take in submitted event and add pdf to CCD.
+ * Handler of case submission event.
  */
 @Component
-public class CaseService {
+public class SubmittedCaseEventHandler {
 
     public static final String JURISDICTION_ID = "PUBLICLAW";
     public static final String CASE_TYPE = "Shared_Storage_DRAFTType";
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private CoreCaseDataApi coreCaseDataApi;
@@ -41,23 +41,20 @@ public class CaseService {
     @Autowired
     private DocumentGeneratorService documentGeneratorService;
 
-    Logger logger = LoggerFactory.getLogger(getClass());
-
     /**
-     * Uses pdf to upload to ccd.
+     * Generates PDF, uploads it into document store and updates case with reference to the document.
      *
      * @param event case submitted event.
      * @throws JSONException JSON exception.
-     * @throws IOException   Takes in an event of type SubmittedCase.
      */
     @Async
     @EventListener
-    public void handleCaseSubmission(SubmittedCaseEvent event) throws JSONException, IOException {
+    public void handleCaseSubmission(SubmittedCaseEvent event) throws JSONException {
         CallbackRequest request = event.getCallbackRequest();
         String userId = event.getUserId();
         String authorization = event.getAuthorization();
 
-        byte[] pdfDocument = documentGeneratorService.documentGenerator(request.getCaseDetails());
+        byte[] pdfDocument = documentGeneratorService.generateSubmittedFormPDF(request.getCaseDetails());
 
         Document document = uploadDocumentService.uploadDocument(userId, authorization,
             authTokenGenerator.generate(), pdfDocument, getFileName(request.getCaseDetails()));

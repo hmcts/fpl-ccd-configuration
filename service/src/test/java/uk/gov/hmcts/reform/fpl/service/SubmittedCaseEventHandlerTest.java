@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.successfulSt
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @RunWith(SpringRunner.class)
-public class CaseServiceTest {
+public class SubmittedCaseEventHandlerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
 
@@ -41,19 +41,20 @@ public class CaseServiceTest {
     private CoreCaseDataApi coreCaseDataApi;
 
     @InjectMocks
-    private CaseService caseService = new CaseService();
+    private SubmittedCaseEventHandler submittedCaseEventHandler = new SubmittedCaseEventHandler();
     private Method getFileName;
     private SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(
         callbackRequest(), "Bearer token", "1"
     );
 
-    public CaseServiceTest() throws IOException {
+    public SubmittedCaseEventHandlerTest() throws IOException {
+        // NO-OP
     }
 
 
     @Before
     public void setup() throws NoSuchMethodException {
-        getFileName = caseService.getClass().getDeclaredMethod("getFileName", CaseDetails.class);
+        getFileName = submittedCaseEventHandler.getClass().getDeclaredMethod("getFileName", CaseDetails.class);
         getFileName.setAccessible(true);
     }
 
@@ -61,7 +62,7 @@ public class CaseServiceTest {
     public void testGetFileNameReturnsCaseReferenceWhenNoTitleIsProvided()
         throws IOException, InvocationTargetException, IllegalAccessException {
         CaseDetails caseDetails = emptyCaseDetails();
-        String fileName = (String) getFileName.invoke(caseService, caseDetails);
+        String fileName = (String) getFileName.invoke(submittedCaseEventHandler, caseDetails);
 
         assertThat("File name should match the caseID of 123", fileName, is("123.pdf"));
     }
@@ -70,7 +71,7 @@ public class CaseServiceTest {
     public void testGetFileNameReturnsCaseTitleWhenProvided()
         throws IOException, InvocationTargetException, IllegalAccessException {
         CaseDetails caseDetails = populatedCaseDetails();
-        String fileName = (String) getFileName.invoke(caseService, caseDetails);
+        String fileName = (String) getFileName.invoke(submittedCaseEventHandler, caseDetails);
 
         assertThat("File name should match the file name of test", fileName, is("test.pdf"));
     }
@@ -78,12 +79,12 @@ public class CaseServiceTest {
     @Test
     public void testHandleCaseSubmissionProcessesSubmittedCaseEventSuccessfully() throws IOException {
         mockSuccessfully();
-        caseService.handleCaseSubmission(submittedCaseEvent);
+        submittedCaseEventHandler.handleCaseSubmission(submittedCaseEvent);
     }
 
 
     public void mockSuccessfully() throws IOException {
-        given(documentGeneratorService.documentGenerator(any())).willReturn(new byte[]{1, 2, 3});
+        given(documentGeneratorService.generateSubmittedFormPDF(any())).willReturn(new byte[]{1, 2, 3});
         given(uploadDocumentService.uploadDocument(any(), any(), eq(AUTH_TOKEN),
             any(), any())).willReturn(document());
         given(authTokenGenerator.generate()).willReturn(AUTH_TOKEN);
