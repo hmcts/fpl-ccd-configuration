@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.config;
 
-//import feign.Client;
-//import feign.httpclient.ApacheHttpClient;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
