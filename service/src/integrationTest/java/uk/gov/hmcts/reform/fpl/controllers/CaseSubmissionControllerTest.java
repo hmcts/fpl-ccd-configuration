@@ -40,40 +40,32 @@ public class CaseSubmissionControllerTest {
     @Test
     public void shouldReturnSuccessfulResponseWithValidCaseData() throws
         Exception {
-        MvcResult response = mockMvc
+
+        mockMvc
             .perform(post("/callback/case-submission")
                 .header("authorization", "Bearer token")
                 .header("user-id", "123")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(readBytes("fixtures/case.json")))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        assertThat(response.getResponse().getContentAsString().equals(HttpStatus.OK));
+            .andExpect(status().isOk());
     }
 
     @Test
     public void shouldReturnUnsuccessfulResponseWithNoData() throws Exception {
-        MvcResult response = mockMvc
+        mockMvc
             .perform(post("/callback/case-submission"))
-            .andExpect(status().is4xxClientError())
-            .andReturn();
-
-        assertThat(response.getResponse().getContentAsString().equals(HttpStatus.BAD_REQUEST));
+            .andExpect(status().is4xxClientError());
     }
 
     @Test
     public void shouldReturnUnsuccessfulResponseWithMalformedData() throws
         Exception {
-        MvcResult response = mockMvc
+        mockMvc
             .perform(post("/callback/case-submission")
                 .header("authorization", "Bearer token")
                 .header("user-id", "123")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("Mock"))
-            .andExpect(status().is4xxClientError())
-            .andReturn();
-
-        assertThat(response.getResponse().getContentAsString().equals(HttpStatus.BAD_REQUEST));
+            .andExpect(status().is4xxClientError());
     }
 }
