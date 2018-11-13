@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.events;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
 public class SubmittedCaseEvent {
+
     private final CallbackRequest callbackRequest;
     private final String authorization;
     private final String userId;

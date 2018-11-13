@@ -24,8 +24,8 @@ public class UploadDocumentService {
     @Autowired
     private DocumentUploadClientApi documentUploadClient;
 
-    public Document upload(String userId, String authorization, byte[] pdfDocument, String fileName) {
-        MultipartFile file = new InMemoryMultipartFile("files", fileName, MediaType.APPLICATION_PDF_VALUE, pdfDocument);
+    public Document uploadPDF(String userId, String authorization, byte[] pdf, String fileName) {
+        MultipartFile file = new InMemoryMultipartFile("files", fileName, MediaType.APPLICATION_PDF_VALUE, pdf);
 
         UploadResponse response = documentUploadClient.upload(authorization,
             authTokenGenerator.generate(), userId, newArrayList(file));

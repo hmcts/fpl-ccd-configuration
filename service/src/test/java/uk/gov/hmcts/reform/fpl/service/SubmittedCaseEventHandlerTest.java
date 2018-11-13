@@ -79,6 +79,6 @@ public class SubmittedCaseEventHandlerTest {
 
     public void mockSuccessfully() throws IOException {
         given(documentGeneratorService.generateSubmittedFormPDF(any())).willReturn(new byte[]{1, 2, 3});
-        given(uploadDocumentService.upload(any(), any(), any(), any())).willReturn(document());
+        given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document());
     }
 }

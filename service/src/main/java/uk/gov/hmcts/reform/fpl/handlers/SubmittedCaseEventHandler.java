@@ -39,7 +39,7 @@ public class SubmittedCaseEventHandler {
 
         byte[] pdf = documentGeneratorService.generateSubmittedFormPDF(caseDetails);
 
-        Document document = uploadDocumentService.upload(userId, authorization, pdf, buildFileName(caseDetails));
+        Document document = uploadDocumentService.uploadPDF(userId, authorization, pdf, buildFileName(caseDetails));
 
         caseRepository.setSubmittedFormPDF(authorization, userId, caseDetails.getId().toString(), document);
     }

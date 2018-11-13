@@ -48,7 +48,7 @@ public class UploadDocumentServiceTest {
         given(documentUploadClient.upload(eq(AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION_TOKEN), eq(USER_ID), any()))
             .willReturn(request);
 
-        Document document = uploadDocumentService.upload(USER_ID, AUTHORIZATION_TOKEN, new byte[0], "file");
+        Document document = uploadDocumentService.uploadPDF(USER_ID, AUTHORIZATION_TOKEN, new byte[0], "file");
 
         Assertions.assertThat(document).isEqualTo(request.getEmbedded().getDocuments().get(0));
     }
@@ -58,7 +58,7 @@ public class UploadDocumentServiceTest {
         given(documentUploadClient.upload(eq(AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION_TOKEN), eq(USER_ID), any()))
             .willReturn(unsuccessfulDocumentUploadResponse());
 
-        assertThatThrownBy(() -> uploadDocumentService.upload(USER_ID, AUTHORIZATION_TOKEN, new byte[0], "file"))
+        assertThatThrownBy(() -> uploadDocumentService.uploadPDF(USER_ID, AUTHORIZATION_TOKEN, new byte[0], "file"))
             .isInstanceOf(RuntimeException.class)
             .hasMessage("Document upload failed due to empty result");
     }
