@@ -5,7 +5,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.handlers.SubmittedCaseEventHandler.SubmittedFormFilenameHelper;
 import uk.gov.hmcts.reform.fpl.service.CaseRepository;
@@ -15,8 +17,8 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
@@ -38,14 +40,6 @@ public class SubmittedCaseEventHandlerTest {
     @InjectMocks
     private SubmittedCaseEventHandler submittedCaseEventHandler;
 
-    private SubmittedCaseEvent submittedCaseEvent = new SubmittedCaseEvent(
-        callbackRequest(), AUTHORIZATION_TOKEN, USER_ID
-    );
-
-    public SubmittedCaseEventHandlerTest() throws IOException {
-        // NO-OP
-    }
-
     @Test
     public void fileNameShouldContainCaseReferenceWhenNoCaseNameIsProvided() throws IOException {
         CaseDetails caseDetails = emptyCaseDetails();
@@ -65,14 +59,22 @@ public class SubmittedCaseEventHandlerTest {
     }
 
     @Test
-    public void testHandleCaseSubmissionProcessesSubmittedCaseEventSuccessfully() throws IOException {
-        mockSuccessfully();
-        submittedCaseEventHandler.handleCaseSubmission(submittedCaseEvent);
+    public void shouldUpdateCaseWithReferenceToUploadedSubmittedFormPDF() throws IOException {
+        CallbackRequest request = callbackRequest();
+
+        byte[] pdf = {1, 2, 3, 4};
+        String fileName = request.getCaseDetails().getData().get("caseName") + ".pdf";
+        Document document = document();
+
+        given(documentGeneratorService.generateSubmittedFormPDF(request.getCaseDetails()))
+            .willReturn(pdf);
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTHORIZATION_TOKEN, pdf, fileName))
+            .willReturn(document);
+
+        submittedCaseEventHandler.handleCaseSubmission(new SubmittedCaseEvent(request, AUTHORIZATION_TOKEN, USER_ID));
+
+        verify(caseRepository).setSubmittedFormPDF(AUTHORIZATION_TOKEN, USER_ID,
+            Long.toString(request.getCaseDetails().getId()), document);
     }
 
-
-    public void mockSuccessfully() throws IOException {
-        given(documentGeneratorService.generateSubmittedFormPDF(any())).willReturn(new byte[]{1, 2, 3});
-        given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document());
-    }
 }
