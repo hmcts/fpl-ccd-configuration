@@ -17,8 +17,8 @@ import java.util.Map;
 @Service
 public class CaseRepository {
 
-    private static final String JURISDICTION = "PUBLICLAW";
-    private static final String CASE_TYPE = "Shared_Storage_DRAFTType";
+    static final String JURISDICTION = "PUBLICLAW";
+    static final String CASE_TYPE = "Shared_Storage_DRAFTType";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -50,7 +50,7 @@ public class CaseRepository {
             .build();
 
         coreCaseDataApi.submitEventForCaseWorker(authorization, authTokenGenerator.generate(), userId,
-            JURISDICTION, CASE_TYPE, caseId, false, body);
+            JURISDICTION, CASE_TYPE, caseId, true, body);
 
         logger.debug("Event {} on case {} completed", event, caseId);
     }
