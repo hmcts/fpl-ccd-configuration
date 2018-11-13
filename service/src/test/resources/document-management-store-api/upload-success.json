@@ -13,10 +13,10 @@
         "roles": null,
         "_links": {
           "self": {
-            "href": "http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4"
+            "href": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4"
           },
           "binary": {
-            "href": "http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"
+            "href": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary"
           }
         },
         "_embedded": {
@@ -31,13 +31,13 @@
                   "createdOn": "2017-11-01T10:23:55.271+0000",
                   "_links": {
                     "document": {
-                      "href": "http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4"
+                      "href": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4"
                     },
                     "self": {
-                      "href": "http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/versions/bd3b0ecc-714a-46c0-9db7-275c42986af5"
+                      "href": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/versions/bd3b0ecc-714a-46c0-9db7-275c42986af5"
                     },
                     "binary": {
-                      "href": "http://localhost:8085/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/versions/bd3b0ecc-714a-46c0-9db7-275c42986af5/binary"
+                      "href": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/versions/bd3b0ecc-714a-46c0-9db7-275c42986af5/binary"
                     }
                   }
                 }
@@ -58,10 +58,10 @@
         "roles": null,
         "_links": {
           "self": {
-            "href": "http://localhost:8085/documents/5cc80e35-cdb8-4933-967e-54cef53d4a57"
+            "href": "http://localhost/documents/5cc80e35-cdb8-4933-967e-54cef53d4a57"
           },
           "binary": {
-            "href": "http://localhost:8085/documents/5cc80e35-cdb8-4933-967e-54cef53d4a57/binary"
+            "href": "http://localhost/documents/5cc80e35-cdb8-4933-967e-54cef53d4a57/binary"
           }
         },
         "_embedded": {
@@ -76,13 +76,13 @@
                   "createdOn": "2017-11-01T10:23:55.364+0000",
                   "_links": {
                     "document": {
-                      "href": "http://localhost:8085/documents/5cc80e35-cdb8-4933-967e-54cef53d4a57"
+                      "href": "http://localhost/documents/5cc80e35-cdb8-4933-967e-54cef53d4a57"
                     },
                     "self": {
-                      "href": "http://localhost:8085/documents/5cc80e35-cdb8-4933-967e-54cef53d4a57/versions/50f70cb0-03c1-47bd-b93c-bcf6287cba13"
+                      "href": "http://localhost/documents/5cc80e35-cdb8-4933-967e-54cef53d4a57/versions/50f70cb0-03c1-47bd-b93c-bcf6287cba13"
                     },
                     "binary": {
-                      "href": "http://localhost:8085/documents/5cc80e35-cdb8-4933-967e-54cef53d4a57/versions/50f70cb0-03c1-47bd-b93c-bcf6287cba13/binary"
+                      "href": "http://localhost/documents/5cc80e35-cdb8-4933-967e-54cef53d4a57/versions/50f70cb0-03c1-47bd-b93c-bcf6287cba13/binary"
                     }
                   }
                 }

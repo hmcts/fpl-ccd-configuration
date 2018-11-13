@@ -8,7 +8,7 @@ public class ResourceReaderTest {
 
     @Test
     public void shouldReturnBytesIfResourceExists() {
-        byte[] bytes = ResourceReader.readBytes("responses/success.json");
+        byte[] bytes = ResourceReader.readBytes("document-management-store-api/upload-success.json");
         assertThat(bytes).contains("documentVersions\n".getBytes());
     }
 

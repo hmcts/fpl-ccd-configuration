@@ -8,28 +8,29 @@ import java.io.IOException;
 
 public class ResourceLoader {
 
+    private static final ObjectMapper mapper = new ObjectMapper();
+
     private ResourceLoader() {
+        // NO-OP
     }
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-
     public static UploadResponse successfulDocumentManagementUploadResponse() throws IOException {
-        String response = new ResourceReader().read("responses/success.json");
-        return objectMapper.readValue(response, UploadResponse.class);
+        String response = ResourceReader.readString("document-management-store-api/upload-success.json");
+        return mapper.readValue(response, UploadResponse.class);
     }
 
     public static UploadResponse unsuccessfulDocumentManagementUploadResponse() throws IOException {
-        String response = new ResourceReader().read("responses/failure.json");
-        return objectMapper.readValue(response, UploadResponse.class);
+        String response = ResourceReader.readString("document-management-store-api/upload-failure.json");
+        return mapper.readValue(response, UploadResponse.class);
     }
 
     public static CaseDetails emptyCaseDetails() throws IOException {
-        String response = new ResourceReader().read("caseDetails/emptyCaseDetails.json");
-        return objectMapper.readValue(response, CaseDetails.class);
+        String response = ResourceReader.readString("ccd-case-data-api/empty-case-details.json");
+        return mapper.readValue(response, CaseDetails.class);
     }
 
     public static CaseDetails populatedCaseDetails() throws IOException {
-        String response = new ResourceReader().read("caseDetails/populatedCaseDetails.json");
-        return objectMapper.readValue(response, CaseDetails.class);
+        String response = ResourceReader.readString("ccd-case-data-api/populated-case-details.json");
+        return mapper.readValue(response, CaseDetails.class);
     }
 }
