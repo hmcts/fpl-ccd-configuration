@@ -108,9 +108,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Child",
-    "ListElementCode": "situationAddress",
-    "FieldType": "TextArea",
-    "ElementLabel": "Address where child is staying",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Current address",
     "FieldShowCondition": "livingSituation=\"*\"",
     "SecurityClassification": "Public"
   },
@@ -314,7 +314,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "Applicant",
     "ListElementCode": "address",
-    "FieldType": "TextArea",
+    "FieldType": "AddressUK",
     "ElementLabel": "Address",
     "SecurityClassification": "Public"
   },
@@ -1022,7 +1022,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "address",
-    "FieldType": "TextArea",
+    "FieldType": "AddressUK",
     "ElementLabel": "Current address",
     "SecurityClassification": "Public"
   },
@@ -1150,7 +1150,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "address",
-    "FieldType": "TextArea",
+    "FieldType": "AddressUK",
     "ElementLabel": "Current address",
     "SecurityClassification": "Public"
   },

@@ -90,6 +90,7 @@ data:
   CCD_GW_OAUTH2_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/oauth2'
   CCD_API_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/aggregated'
   CCD_DATA_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/data'
+  POSTCODE_LOOKUP_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/addresses?postcode=${POSTCODE_PLACEHOLDER}'
   DM_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/documents'
 
 ---
@@ -110,6 +111,7 @@ data:
   IDAM_S2S_URL: 'http://service-auth-provider-api'
   IDAM_SERVICE_NAME: 'ccd_gw'
   IDAM_SERVICE_KEY: 'AABBCCDDEEFFGGHH'
+  ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
   PROXY_AGGREGATED: 'http://ccd-data-store-api'
   PROXY_DATA: 'http://ccd-data-store-api'
   PROXY_DEFINITION_IMPORT: 'http://ccd-definition-store-api'
@@ -915,10 +917,10 @@ spec:
           imagePullPolicy: Always
           resources:
             requests:
-              memory: 64Mi
+              memory: 128Mi
               cpu: 200m
             limits:
-              memory: 128Mi
+              memory: 256Mi
               cpu: 1000m
           ports:
             - containerPort: 5432
