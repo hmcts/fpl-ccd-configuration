@@ -42,9 +42,8 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    public void testSuccessfulResponseReturnsDocument() throws IOException {
+    public void shouldReturnFirstUploadedDocument() throws IOException {
         UploadResponse request = successfulDocumentUploadResponse();
-
         given(documentUploadClient.upload(eq(AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION_TOKEN), eq(USER_ID), any()))
             .willReturn(request);
 
@@ -54,12 +53,22 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    public void testUnsuccessfulResponseThrowsRuntimeException() throws IOException {
+    public void shouldThrowExceptionIfServerResponseContainsNoDocuments() throws IOException {
         given(documentUploadClient.upload(eq(AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION_TOKEN), eq(USER_ID), any()))
             .willReturn(unsuccessfulDocumentUploadResponse());
 
         assertThatThrownBy(() -> uploadDocumentService.uploadPDF(USER_ID, AUTHORIZATION_TOKEN, new byte[0], "file"))
             .isInstanceOf(RuntimeException.class)
             .hasMessage("Document upload failed due to empty result");
+    }
+
+    @Test
+    public void shouldRethrowExceptionIfServerCallThrownException() {
+        given(documentUploadClient.upload(eq(AUTHORIZATION_TOKEN), eq(SERVICE_AUTHORIZATION_TOKEN), eq(USER_ID), any()))
+            .willThrow(new RuntimeException("Something bad happened"));
+
+        assertThatThrownBy(() -> uploadDocumentService.uploadPDF(USER_ID, AUTHORIZATION_TOKEN, new byte[0], "file"))
+            .isInstanceOf(Exception.class)
+            .hasMessage("Something bad happened");
     }
 }
