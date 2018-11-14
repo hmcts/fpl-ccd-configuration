@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -10,7 +12,7 @@ import uk.gov.hmcts.reform.pdf.generator.exception.MalformedTemplateException;
 
 import java.io.IOException;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
@@ -25,20 +27,28 @@ public class DocumentGeneratorServiceTest {
     public void testEmptyCaseDetailsSuccessfullyReturnsByteArray() throws IOException {
         CaseDetails caseDetails = emptyCaseDetails();
 
-        assertThat("Byte array is still returned if the caseDetails is empty",
-            byte[].class.isInstance(documentGeneratorService.generateSubmittedFormPDF(caseDetails)));
+        String content = textContentOf(documentGeneratorService.generateSubmittedFormPDF(caseDetails));
+
+        assertThat(content).contains("Case ID: 123");
     }
 
     @Test
     public void testPopulatedCaseDetailsSuccessfullyReturnsByteArray() throws IOException {
         CaseDetails caseDetails = populatedCaseDetails();
 
-        assertThat("Byte array is returned on populated submission",
-            byte[].class.isInstance(documentGeneratorService.generateSubmittedFormPDF(caseDetails)));
+        String content = textContentOf(documentGeneratorService.generateSubmittedFormPDF(caseDetails));
+
+        assertThat(content).contains("Case ID: 12345");
     }
 
     @Test(expected = MalformedTemplateException.class)
     public void testNullCaseDetailsProvidesMalformedTemplate() {
         documentGeneratorService.generateSubmittedFormPDF(null);
+    }
+
+    private static String textContentOf(byte[] bytes) throws IOException {
+        try (PDDocument document = PDDocument.load(bytes)) {
+            return new PDFTextStripper().getText(document);
+        }
     }
 }
