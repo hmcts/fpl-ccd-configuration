@@ -8,49 +8,63 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.service.CaseRepository;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
-
 
 @RunWith(SpringRunner.class)
 @WebMvcTest
 public class CaseSubmissionControllerTest {
 
+    private static final String AUTH_TOKEN = "Bearer token";
+    private static final String USER_ID = "1";
+
     @MockBean
-    private CoreCaseDataApi coreCaseDataApi;
-    @MockBean
-    private AuthTokenGenerator authTokenGenerator;
+    private DocumentGeneratorService documentGeneratorService;
     @MockBean
     private UploadDocumentService uploadDocumentService;
     @MockBean
-    private DocumentGeneratorService documentGeneratorService;
+    private CaseRepository caseRepository;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void shouldReturnSuccessfulResponseWithValidCaseData() throws
-        Exception {
+    public void shouldReturnSuccessfulResponseWithValidCaseData() throws Exception {
+        byte[] pdf = {1, 2, 3, 4, 5};
+        Document document = document();
+
+        given(documentGeneratorService.generateSubmittedFormPDF(any()))
+            .willReturn(pdf);
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "2313.pdf"))
+            .willReturn(document);
 
         mockMvc
             .perform(post("/callback/case-submission")
-                .header("authorization", "Bearer token")
-                .header("user-id", "123")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(readBytes("fixtures/case.json")))
             .andExpect(status().isOk());
+
+        verify(caseRepository).setSubmittedFormPDF(AUTH_TOKEN, USER_ID, "2313", document);
     }
 
     @Test
     public void shouldReturnUnsuccessfulResponseWithNoData() throws Exception {
         mockMvc
-            .perform(post("/callback/case-submission"))
+            .perform(post("/callback/case-submission")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID))
             .andExpect(status().is4xxClientError());
     }
 
@@ -59,8 +73,8 @@ public class CaseSubmissionControllerTest {
         Exception {
         mockMvc
             .perform(post("/callback/case-submission")
-                .header("authorization", "Bearer token")
-                .header("user-id", "123")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("Mock"))
             .andExpect(status().is4xxClientError());
