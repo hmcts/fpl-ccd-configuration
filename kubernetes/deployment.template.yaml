@@ -198,7 +198,7 @@ data:
   USER_PROFILE_HOST: 'http://ccd-user-profile-api'
   IDAM_USER_URL: 'http://idam-api'
   IDAM_S2S_URL: 'http://service-auth-provider-api'
-  CCD_DM_DOMAIN: 'http://dm-store'
+  CCD_DM_DOMAIN: 'https?://(?:ccd-api-gateway|dm-store).*'
   REFORM_ENVIRONMENT: 'kubernetes'
   APPINSIGHTS_INSTRUMENTATIONKEY: 'fake-key'
 
