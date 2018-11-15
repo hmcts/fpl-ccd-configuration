@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.service.CaseRepository.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
-public class CaseRepositoryTest {
+class CaseRepositoryTest {
 
     private static final String USER_ID = "1";
     private static final String AUTH_TOKEN = "Bearer token";
@@ -46,7 +46,7 @@ public class CaseRepositoryTest {
 
     @Test
     @SuppressWarnings({"unchecked", "LineLength"})
-    public void shouldSetSubmittedFormPDF() throws IOException {
+    void shouldSetSubmittedFormPDF() throws IOException {
         String caseId = "12345";
         String event = "attachSubmittedFormPDF";
         Document document = document();

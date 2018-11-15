@@ -18,14 +18,14 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDet
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
-public class DocumentGeneratorServiceTest {
+class DocumentGeneratorServiceTest {
 
     private DocumentGeneratorService documentGeneratorService = new DocumentGeneratorService(
         new DocumentTemplates(), new ObjectMapper()
     );
 
     @Test
-    public void testEmptyCaseDetailsSuccessfullyReturnsByteArray() throws IOException {
+    void testEmptyCaseDetailsSuccessfullyReturnsByteArray() throws IOException {
         CaseDetails caseDetails = emptyCaseDetails();
 
         String content = textContentOf(documentGeneratorService.generateSubmittedFormPDF(caseDetails));
@@ -34,7 +34,7 @@ public class DocumentGeneratorServiceTest {
     }
 
     @Test
-    public void testPopulatedCaseDetailsSuccessfullyReturnsByteArray() throws IOException {
+    void testPopulatedCaseDetailsSuccessfullyReturnsByteArray() throws IOException {
         CaseDetails caseDetails = populatedCaseDetails();
 
         String content = textContentOf(documentGeneratorService.generateSubmittedFormPDF(caseDetails));
@@ -43,7 +43,7 @@ public class DocumentGeneratorServiceTest {
     }
 
     @Test
-    public void testNullCaseDetailsProvidesMalformedTemplate() {
+    void testNullCaseDetailsProvidesMalformedTemplate() {
         assertThatThrownBy(() -> documentGeneratorService.generateSubmittedFormPDF(null))
             .isInstanceOf(MalformedTemplateException.class);
     }

@@ -16,13 +16,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @WebMvcTest
 @OverrideAutoConfiguration(enabled = true)
-public class RootControllerTest {
+class RootControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void should_welcome_upon_root_request_with_200_response_code() throws Exception {
+    void shouldWelcomeUponRootRequestWith200ResponseCode() throws Exception {
         MvcResult response = mockMvc
             .perform(get("/"))
             .andExpect(status().isOk())

@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
-public class SubmittedCaseEventHandlerTest {
+class SubmittedCaseEventHandlerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
@@ -41,7 +41,7 @@ public class SubmittedCaseEventHandlerTest {
     private SubmittedCaseEventHandler submittedCaseEventHandler;
 
     @Test
-    public void fileNameShouldContainCaseReferenceWhenNoCaseNameIsProvided() throws IOException {
+    void fileNameShouldContainCaseReferenceWhenNoCaseNameIsProvided() throws IOException {
         CaseDetails caseDetails = emptyCaseDetails();
 
         String fileName = SubmittedFormFilenameHelper.buildFileName(caseDetails);
@@ -50,7 +50,7 @@ public class SubmittedCaseEventHandlerTest {
     }
 
     @Test
-    public void fileNameShouldContainCaseTitleWhenProvided() throws IOException {
+    void fileNameShouldContainCaseTitleWhenProvided() throws IOException {
         CaseDetails caseDetails = populatedCaseDetails();
 
         String fileName = SubmittedFormFilenameHelper.buildFileName(caseDetails);
@@ -59,7 +59,7 @@ public class SubmittedCaseEventHandlerTest {
     }
 
     @Test
-    public void shouldUpdateCaseWithReferenceToUploadedSubmittedFormPDF() throws IOException {
+    void shouldUpdateCaseWithReferenceToUploadedSubmittedFormPDF() throws IOException {
         CallbackRequest request = callbackRequest();
 
         byte[] pdf = {1, 2, 3, 4};

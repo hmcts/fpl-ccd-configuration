@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.succes
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.unsuccessfulDocumentUploadResponse;
 
 @ExtendWith(SpringExtension.class)
-public class UploadDocumentServiceTest {
+class UploadDocumentServiceTest {
 
     private static final String USER_ID = "1";
     private static final String AUTH_TOKEN = "Bearer token";
@@ -37,12 +37,12 @@ public class UploadDocumentServiceTest {
     private UploadDocumentService uploadDocumentService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
     }
 
     @Test
-    public void shouldReturnFirstUploadedDocument() throws IOException {
+    void shouldReturnFirstUploadedDocument() throws IOException {
         UploadResponse request = successfulDocumentUploadResponse();
         given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
             .willReturn(request);
@@ -53,7 +53,7 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    public void shouldThrowExceptionIfServerResponseContainsNoDocuments() throws IOException {
+    void shouldThrowExceptionIfServerResponseContainsNoDocuments() throws IOException {
         given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
             .willReturn(unsuccessfulDocumentUploadResponse());
 
@@ -63,7 +63,7 @@ public class UploadDocumentServiceTest {
     }
 
     @Test
-    public void shouldRethrowExceptionIfServerCallThrownException() {
+    void shouldRethrowExceptionIfServerCallThrownException() {
         given(documentUploadClient.upload(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), any()))
             .willThrow(new RuntimeException("Something bad happened"));
 
