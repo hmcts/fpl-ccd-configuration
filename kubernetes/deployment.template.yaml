@@ -25,6 +25,22 @@ metadata:
 ---
 
 #
+# FPL :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${SERVICE_NAME}
+  namespace: ${NAMESPACE}
+data:
+  DOCUMENT_MANAGEMENT_URL: "http://dm-store"
+  CORE_CASE_DATA_API_URL: "http://ccd-data-store-api"
+  IDAM_S2S_AUTH_URL: "http://service-auth-provider-api"
+  IDAM_S2S_AUTH_TOTP_SECRET: "AABBCCDDEEFFGGHH"
+
+---
+
+#
 # SERVICE-AUTH-PROVIDER-API :: Config
 #
 apiVersion: v1
@@ -228,6 +244,9 @@ spec:
         - name: ${SERVICE_NAME}
           image: ${IMAGE_NAME}
           imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: ${SERVICE_NAME}
           resources:
             requests:
               memory: 256Mi
