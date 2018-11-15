@@ -9,10 +9,26 @@ def type = "java"
 def product = "fpl"
 def component = "fpl-service"
 
+List<Map<String, Object>> secrets = [
+  secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN')
+]
+
+static Map<String, Object> secret(String secretName, String envVariable) {
+  [ $class: 'AzureKeyVaultSecret',
+    secretType: 'Secret',
+    name: secretName,
+    envVariable: envVariable
+  ]
+}
+
 withPipeline(type, product, component) {
+  setVaultName('fpl')
+  loadVaultSecrets(secrets)
   enableDockerBuild()
   enableDeployToAKS()
   enableSlackNotifications('#fpl-tech')
+
+  env.POSTCODE_PLACEHOLDER = '${postcode}'
 
   after('aksdeploy') {
     def subscription = env.SUBSCRIPTION_NAME
@@ -30,6 +46,8 @@ withPipeline(type, product, component) {
     registerConsulDns(subscription, "ccd-api-gateway-${aksServiceName}", ingressIP)
     registerConsulDns(subscription, "ccd-definition-store-api-${aksServiceName}", ingressIP)
     registerConsulDns(subscription, "ccd-user-profile-api-${aksServiceName}", ingressIP)
+
+    env.CCD_DEF_CASE_SERVICE_BASE_URL="http://${aksServiceName}"
 
     env.IDAM_API_BASE_URL="https://idam-api-${aksServiceName}.${aksDomain}"
     env.SERVICE_AUTH_PROVIDER_API_BASE_URL="https://service-auth-provider-api-${aksServiceName}.${aksDomain}"

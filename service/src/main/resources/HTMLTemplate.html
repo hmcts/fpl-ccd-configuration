@@ -1,9 +1,141 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <title>CASE</title>
 </head>
 <body>
-Case data: {{ case_details.id }}
+Case ID: {{ id }}
+{% if case_data.caseTitle != null %}
+<br/>
+Case Title: {{ case_data.caseTitle }}
+{% endif %}
+<hr/>
+<h2>Orders and hearing</h2>
+<div>
+  {% if case_data.orders is not empty %}
+    {% if case_data.orders.orderType != null %}
+    <strong>Which orders and directions do you want to apply for? </strong>
+    {% for type in case_data.orders.orderType %}
+    {{ type }} <br/>
+    {% endfor %}
+    <br/>
+    {% endif %}
+
+    {% if case_data.orders.directionsAndInterim != null %}
+    <strong>Directions and interim orders, if needed: </strong>
+    {{ case_data.orders.directionsAndInterim }}
+    <br/>
+    {% endif %}
+  {% endif %}
+
+  {% if case_data.hearing is not empty %}
+    {% if case_data.hearing.timeFrame != null %}
+    <strong>When do you need a hearing?</strong>{{ case_data.hearing.timeFrame }}
+    <br/>
+    {% endif %}
+    {% if case_data.hearing.reason is not empty %}
+    <strong>Give reason</strong> {{ case_data.hearing.reason }}
+    <br/>
+    {% endif %}
+    {% if case_data.hearing.reason2Days is not empty  %}
+    <strong>Give reason</strong> {{ case_data.hearing.reason2Days }}
+    <br/>
+    {% endif %}
+    {% if case_data.hearing.reason7Days is not empty  %}
+    <strong>Give reason</strong> {{ case_data.hearing.reason7Days }}
+    <br/>
+    {% endif %}
+    {% if case_data.hearing.reason12Days is not empty  %}
+    <strong>Give reason</strong> {{ case_data.hearing.reason12Days }}
+    <br/>
+    {% endif %}
+    {% if case_data.hearing.type != null %}
+    <strong>What type of hearing do you need?</strong> {{ case_data.hearing.type }}
+    <br/>
+    {% endif %}
+    {% if case_data.hearing.type != null %}
+    <strong>Give reason</strong> {{ case_data.hearing.type_GiveReason }}
+    <br/>
+    {% endif %}
+  {% endif %}
+</div>
+<h2>People in the case</h2>
+<h3>Children</h3>
+<div>
+  {% if case_data.children is not empty %}
+    <b>Child 1</b><br/>
+    {% if case_data.children.firstChild.childName is not empty %}
+    <strong>Name</strong> {{ case_data.children.firstChild.childName }}<br/>
+    {% endif %}
+    {% if case_data.children.firstChild.childDOB is not empty %}
+    <strong>DOB</strong> {{ case_data.children.firstChild.childDOB | date("dd-MMMM-yyyy", existingFormat="yyyy-MM-dd") }}
+    {% endif %}
+    <br/>
+    {% if case_data.children.additionalChildren is not empty %}
+      {% for child in case_data.children.additionalChildren %}
+        <b>Additional child {{ loop.index + 1 }}</b> <br/>
+        <strong>Name</strong> {{ child.value.childName }}<br/>
+      {% endfor %}
+    {% endif %}
+  {% endif %}
+</div>
+<h3>Respondents</h3>
+<div>
+  {% if case_data.respondents is not empty %}
+    <b>Respondent 1</b><br/>
+    {% if case_data.respondents.firstRespondent.name is not empty %}
+    <strong>Full name</strong> {{ case_data.respondents.firstRespondent.name }} <br/>
+    {% endif %}
+    {% if case_data.respondents.additional is not empty %}
+      {% for respondent in case_data.respondents.additional %}
+        <b>Additional respondent {{ loop.index + 1 }}</b> <br/>
+        <strong>Name</strong> {{ respondent.value.name }}
+      {% endfor %}
+    {% endif %}
+  {% endif %}
+</div>
+<h3>Applicant</h3>
+<div>
+  {% if case_data.applicant is not empty %}
+    {% if case_data.applicant.name is not empty %}
+      <strong>Name</strong> {{ case_data.applicant.name }}
+    {% endif %}
+  {% endif %}
+</div>
+<h3>Solicitor</h3><br/>
+<div>
+  {% if case_data.solicitor is not empty %}
+    {% if case_data.solicitor.name is not empty %}
+      <strong>Name</strong> {{ case_data.solicitor.name }}<br/>
+    {% endif %}
+  {% endif %}
+</div>
+<h3>Others who need notice</h3>
+<div>
+  {% if case_data.others is not empty %}
+    <b>Other 1</b> <br/>
+    {% if case_data.others.firstOther.name is not empty %}
+      <strong>Name</strong> {{ case_data.others.firstOther.name }} <br/>
+    {% endif %}
+    {% if case_data.others.additionalOthers is not empty %}
+      {% for other in case_data.others.additionalOthers %}
+        <b>Additional other {{ loop.index + 1 }}</b> <br/>
+        <strong>Name</strong> {{ other.value.name}}<br/>
+      {% endfor %}
+    {% endif %}
+  {% endif %}
+</div>
+<h2>Legal opinion</h2> <br/>
+<h3>Grounds for application</h3> <br/>
+<div>
+  {% if case_data.grounds is not empty %}
+    {% if case_data.grounds.thresholdReason is not empty %}
+      <strong>Threshold reason</strong>
+      {% for threshold in case_data.grounds.thresholdReason %}
+        {{ threshold }}<br/>
+      {% endfor %}
+    {% endif %}
+  {% endif %}
+</div>
+<hr/>
 </body>
 </html>

@@ -10,3 +10,7 @@ management:
 spring:
   application:
     name: fpl-service
+
+idam:
+  s2s-auth:
+    microservice: fpl_case_service

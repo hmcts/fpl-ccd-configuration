@@ -1,4 +1,5 @@
 const I = actor();
+const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 let activeChild = 'firstChild';
 
 module.exports = {
@@ -19,7 +20,7 @@ module.exports = {
           month: `#children_${childNo}_situationDate-month`,
           year: `#children_${childNo}_situationDate-year`,
         },
-        addressOfChild: `#children_${childNo}_situationAddress`,
+        addressOfChild: `#children_${childNo}_address_address`,
       },
       keyDates: `#children_${childNo}_keyDates`,
       careAndContactPlan: `#children_${childNo}_careAndContact`,
@@ -53,12 +54,17 @@ module.exports = {
     I.selectOption(this.fields(activeChild).gender, gender);
   },
 
-  defineChildSituation(day, month, year, situation = 'Living with respondents', address = '35 London Lane') {
+  defineChildSituation(day, month, year, situation = 'Living with respondents') {
     I.selectOption(this.fields(activeChild).situation.selector, situation);
     I.fillField(this.fields(activeChild).situation.dateStartedStaying.day, day);
     I.fillField(this.fields(activeChild).situation.dateStartedStaying.month, month);
     I.fillField(this.fields(activeChild).situation.dateStartedStaying.year, year);
-    I.fillField(this.fields(activeChild).situation.addressOfChild, address);
+  },
+
+  enterAddress(address) {
+    within(this.fields(activeChild).situation.addressOfChild, () => {
+      postcodeLookup.lookupPostcode(address);
+    });
   },
 
   enterKeyDatesAffectingHearing(keyDates = 'Tuesday the 11th') {

@@ -8,13 +8,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ResourceReaderTest {
 
     @Test
-    public void shouldReturnBytesIfResourceExists() {
-        byte[] bytes = ResourceReader.readBytes("sample-resource.txt");
-        assertThat(bytes).isEqualTo("Sample content\n".getBytes());
+    public void shouldReturnStringIfResourceExists() {
+        String content = ResourceReader.readString("sample-resource.txt");
+        assertThat(content).contains("Sample content");
     }
 
     @Test
-    public void shouldThrowExceptionIfResourceDoesNotExist() throws Exception {
+    public void shouldThrowExceptionWhileReadingStringIfResourceDoesNotExist() {
+        Assertions.assertThrows(Exception.class, () -> {
+            ResourceReader.readString("non-existing-resource.txt");
+        });
+    }
+
+    @Test
+    public void shouldReturnBytesIfResourceExists() {
+        byte[] content = ResourceReader.readBytes("sample-resource.txt");
+        assertThat(content).contains("Sample content".getBytes());
+    }
+
+    @Test
+    public void shouldThrowExceptionWhileReadingBytesIfResourceDoesNotExist() {
         Assertions.assertThrows(Exception.class, () -> {
             ResourceReader.readBytes("non-existing-resource.txt");
         });
