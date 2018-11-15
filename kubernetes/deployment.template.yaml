@@ -109,6 +109,7 @@ data:
   CCD_DATA_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/data'
   POSTCODE_LOOKUP_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/addresses?postcode=${POSTCODE_PLACEHOLDER}'
   DM_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/documents'
+  DM_URL_REMOTE: 'http://dm-store/documents'
 
 ---
 
@@ -197,7 +198,7 @@ data:
   USER_PROFILE_HOST: 'http://ccd-user-profile-api'
   IDAM_USER_URL: 'http://idam-api'
   IDAM_S2S_URL: 'http://service-auth-provider-api'
-  CCD_DM_DOMAIN: 'https://ccd-api-gateway-${SERVICE_FQDN}'
+  CCD_DM_DOMAIN: 'http://dm-store'
   REFORM_ENVIRONMENT: 'kubernetes'
   APPINSIGHTS_INSTRUMENTATIONKEY: 'fake-key'
 
