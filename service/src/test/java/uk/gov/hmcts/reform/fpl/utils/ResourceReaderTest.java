@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class ResourceReaderTest {
 
@@ -15,9 +15,8 @@ public class ResourceReaderTest {
 
     @Test
     public void shouldThrowExceptionWhileReadingStringIfResourceDoesNotExist() {
-        Assertions.assertThrows(Exception.class, () -> {
-            ResourceReader.readString("non-existing-resource.txt");
-        });
+        assertThatThrownBy(() -> ResourceReader.readString("non-existing-resource.txt"))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -28,8 +27,7 @@ public class ResourceReaderTest {
 
     @Test
     public void shouldThrowExceptionWhileReadingBytesIfResourceDoesNotExist() {
-        Assertions.assertThrows(Exception.class, () -> {
-            ResourceReader.readBytes("non-existing-resource.txt");
-        });
+        assertThatThrownBy(() -> ResourceReader.readBytes("non-existing-resource.txt"))
+            .isInstanceOf(IllegalArgumentException.class);
     }
 }

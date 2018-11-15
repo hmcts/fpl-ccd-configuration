@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -14,6 +13,7 @@ import uk.gov.hmcts.reform.pdf.generator.exception.MalformedTemplateException;
 import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
@@ -44,9 +44,8 @@ public class DocumentGeneratorServiceTest {
 
     @Test
     public void testNullCaseDetailsProvidesMalformedTemplate() {
-        Assertions.assertThrows(MalformedTemplateException.class, () -> {
-            documentGeneratorService.generateSubmittedFormPDF(null);
-        });
+        assertThatThrownBy(() -> documentGeneratorService.generateSubmittedFormPDF(null))
+            .isInstanceOf(MalformedTemplateException.class);
     }
 
     private static String textContentOf(byte[] bytes) throws IOException {
