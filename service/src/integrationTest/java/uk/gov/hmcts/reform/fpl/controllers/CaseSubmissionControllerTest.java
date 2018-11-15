@@ -56,6 +56,7 @@ public class CaseSubmissionControllerTest {
                 .content(readBytes("fixtures/case.json")))
             .andExpect(status().isOk());
 
+        Thread.sleep(3000);
         verify(caseRepository).setSubmittedFormPDF(AUTH_TOKEN, USER_ID, "2313", document);
     }
 
