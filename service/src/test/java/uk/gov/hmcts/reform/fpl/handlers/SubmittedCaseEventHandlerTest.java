@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -24,8 +24,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDet
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
-@RunWith(SpringRunner.class)
-public class SubmittedCaseEventHandlerTest {
+@ExtendWith(SpringExtension.class)
+class SubmittedCaseEventHandlerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
@@ -41,7 +41,7 @@ public class SubmittedCaseEventHandlerTest {
     private SubmittedCaseEventHandler submittedCaseEventHandler;
 
     @Test
-    public void fileNameShouldContainCaseReferenceWhenNoCaseNameIsProvided() throws IOException {
+    void fileNameShouldContainCaseReferenceWhenNoCaseNameIsProvided() throws IOException {
         CaseDetails caseDetails = emptyCaseDetails();
 
         String fileName = SubmittedFormFilenameHelper.buildFileName(caseDetails);
@@ -50,7 +50,7 @@ public class SubmittedCaseEventHandlerTest {
     }
 
     @Test
-    public void fileNameShouldContainCaseTitleWhenProvided() throws IOException {
+    void fileNameShouldContainCaseTitleWhenProvided() throws IOException {
         CaseDetails caseDetails = populatedCaseDetails();
 
         String fileName = SubmittedFormFilenameHelper.buildFileName(caseDetails);
@@ -59,7 +59,7 @@ public class SubmittedCaseEventHandlerTest {
     }
 
     @Test
-    public void shouldUpdateCaseWithReferenceToUploadedSubmittedFormPDF() throws IOException {
+    void shouldUpdateCaseWithReferenceToUploadedSubmittedFormPDF() throws IOException {
         CallbackRequest request = callbackRequest();
 
         byte[] pdf = {1, 2, 3, 4};
