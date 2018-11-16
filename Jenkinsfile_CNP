@@ -47,18 +47,18 @@ withPipeline(type, product, component) {
     registerConsulDns(subscription, "ccd-definition-store-api-${aksServiceName}", ingressIP)
     registerConsulDns(subscription, "ccd-user-profile-api-${aksServiceName}", ingressIP)
 
-    env.CCD_DEF_CASE_SERVICE_BASE_URL="http://${aksServiceName}"
+    env.CCD_DEF_CASE_SERVICE_BASE_URL = "http://${aksServiceName}"
 
-    env.IDAM_API_BASE_URL="https://idam-api-${aksServiceName}.${aksDomain}"
-    env.SERVICE_AUTH_PROVIDER_API_BASE_URL="https://service-auth-provider-api-${aksServiceName}.${aksDomain}"
-    env.CCD_DEFINITION_STORE_API_BASE_URL="https://ccd-definition-store-api-${aksServiceName}.${aksDomain}"
-    env.CCD_USER_PROFILE_API_BASE_URL="https://ccd-user-profile-api-${aksServiceName}.${aksDomain}"
-    env.URL="https://ccd-case-management-web-${aksServiceName}.${aksDomain}"
+    env.IDAM_API_BASE_URL = "https://idam-api-${aksServiceName}.${aksDomain}"
+    env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "https://service-auth-provider-api-${aksServiceName}.${aksDomain}"
+    env.CCD_DEFINITION_STORE_API_BASE_URL = "https://ccd-definition-store-api-${aksServiceName}.${aksDomain}"
+    env.CCD_USER_PROFILE_API_BASE_URL = "https://ccd-user-profile-api-${aksServiceName}.${aksDomain}"
+    env.URL = "https://ccd-case-management-web-${aksServiceName}.${aksDomain}"
   }
 
   after('deploy:preview') {
-    env.PROXY_SERVER="proxyout.reform.hmcts.net:8080"
-    env.URL="https://ccd-case-management-web-aat.service.core-compute-aat.internal"
+    env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
+    env.URL = "https://ccd-case-management-web-aat.service.core-compute-aat.internal"
   }
 
   before('smoketest:aks') {
