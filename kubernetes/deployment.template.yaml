@@ -25,6 +25,22 @@ metadata:
 ---
 
 #
+# FPL :: Config
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${SERVICE_NAME}
+  namespace: ${NAMESPACE}
+data:
+  DOCUMENT_MANAGEMENT_URL: "http://dm-store"
+  CORE_CASE_DATA_API_URL: "http://ccd-data-store-api"
+  IDAM_S2S_AUTH_URL: "http://service-auth-provider-api"
+  IDAM_S2S_AUTH_TOTP_SECRET: "AABBCCDDEEFFGGHH"
+
+---
+
+#
 # SERVICE-AUTH-PROVIDER-API :: Config
 #
 apiVersion: v1
@@ -36,6 +52,7 @@ data:
   MICROSERVICEKEYS_CCD_GW: 'AABBCCDDEEFFGGHH'
   MICROSERVICEKEYS_CCD_DATA: 'AABBCCDDEEFFGGHH'
   MICROSERVICEKEYS_CCD_DEFINITION: 'AABBCCDDEEFFGGHH'
+  MICROSERVICEKEYS_FPL_CASE_SERVICE: 'AABBCCDDEEFFGGHH'
   TESTING_SUPPORT_ENABLED: 'true'
 
 ---
@@ -92,6 +109,7 @@ data:
   CCD_DATA_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/data'
   POSTCODE_LOOKUP_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/addresses?postcode=${POSTCODE_PLACEHOLDER}'
   DM_URL: 'https://ccd-api-gateway-${SERVICE_FQDN}/documents'
+  DM_URL_REMOTE: 'http://dm-store/documents'
 
 ---
 
@@ -175,12 +193,12 @@ data:
   SPRING_DATASOURCE_PASSWORD: 'ccd_data_store'
   DATA_STORE_IDAM_KEY: 'AABBCCDDEEFFGGHH'
   DATA_STORE_TOKEN_SECRET: 'AABBCCDDEEFFGGHH'
-  DATA_STORE_S2S_AUTHORISED_SERVICES: 'ccd_gw'
+  DATA_STORE_S2S_AUTHORISED_SERVICES: 'ccd_gw,fpl_case_service'
   DEFINITION_STORE_HOST: 'http://ccd-definition-store-api'
   USER_PROFILE_HOST: 'http://ccd-user-profile-api'
   IDAM_USER_URL: 'http://idam-api'
   IDAM_S2S_URL: 'http://service-auth-provider-api'
-  CCD_DM_DOMAIN: 'https://ccd-api-gateway-${SERVICE_FQDN}'
+  CCD_DM_DOMAIN: 'https?://(?:ccd-api-gateway|dm-store).*'
   REFORM_ENVIRONMENT: 'kubernetes'
   APPINSIGHTS_INSTRUMENTATIONKEY: 'fake-key'
 
@@ -200,7 +218,7 @@ data:
   SPRING_DATASOURCE_PASSWORD: 'evidence'
   IDAM_USER_BASE_URI: 'http://idam-api'
   IDAM_S2S_BASE_URI: 'http://service-auth-provider-api'
-  S2S_NAMES_WHITELIST: 'ccd_gw,cmc,ccd_data'
+  S2S_NAMES_WHITELIST: 'ccd_gw,ccd_data,fpl_case_service'
   MAX_ACTIVE_DB_CONNECTIONS: '10'
   REFORM_ENVIRONMENT: 'kubernetes'
 
@@ -228,6 +246,9 @@ spec:
         - name: ${SERVICE_NAME}
           image: ${IMAGE_NAME}
           imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: ${SERVICE_NAME}
           resources:
             requests:
               memory: 256Mi

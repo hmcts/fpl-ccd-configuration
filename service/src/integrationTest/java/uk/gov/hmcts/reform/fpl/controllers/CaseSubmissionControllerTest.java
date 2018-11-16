@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.service.CaseRepository;
@@ -21,9 +21,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @WebMvcTest
-public class CaseSubmissionControllerTest {
+class CaseSubmissionControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
@@ -39,7 +39,7 @@ public class CaseSubmissionControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    public void shouldReturnSuccessfulResponseWithValidCaseData() throws Exception {
+    void shouldReturnSuccessfulResponseWithValidCaseData() throws Exception {
         byte[] pdf = {1, 2, 3, 4, 5};
         Document document = document();
 
@@ -61,7 +61,7 @@ public class CaseSubmissionControllerTest {
     }
 
     @Test
-    public void shouldReturnUnsuccessfulResponseWithNoData() throws Exception {
+    void shouldReturnUnsuccessfulResponseWithNoData() throws Exception {
         mockMvc
             .perform(post("/callback/case-submission")
                 .header("authorization", AUTH_TOKEN)
@@ -70,8 +70,7 @@ public class CaseSubmissionControllerTest {
     }
 
     @Test
-    public void shouldReturnUnsuccessfulResponseWithMalformedData() throws
-        Exception {
+    void shouldReturnUnsuccessfulResponseWithMalformedData() throws Exception {
         mockMvc
             .perform(post("/callback/case-submission")
                 .header("authorization", AUTH_TOKEN)

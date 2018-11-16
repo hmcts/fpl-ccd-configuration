@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
