@@ -7,7 +7,23 @@
     "Description": "Create a new case – add a title",
     "DisplayOrder": 1,
     "PostConditionState": "Open",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
+    "CallBackURLSubmittedEvent": "http://fpl-service:4000/callback/case-initiation"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "addLocalAuthority",
+    "Name": "Add Local Authority",
+    "Description": "Add Local Authority",
+    "DisplayOrder": 1,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N"
   },
   {
     "LiveFrom": "01/01/2017",
