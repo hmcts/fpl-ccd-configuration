@@ -24,7 +24,7 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 withPipeline(type, product, component) {
   setVaultName('fpl')
   loadVaultSecrets(secrets)
-  enableDockerBuild()
+  // enableDockerBuild()
   // enableDeployToAKS()
   enableSlackNotifications('#fpl-tech')
 
