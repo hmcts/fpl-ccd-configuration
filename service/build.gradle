@@ -198,6 +198,14 @@ bootJar {
   }
 }
 
+test {
+  useJUnitPlatform()
+}
+
+integration {
+  useJUnitPlatform()
+}
+
 pitest {
   pitestVersion = '1.4.3'
   testPlugin = 'junit5'
