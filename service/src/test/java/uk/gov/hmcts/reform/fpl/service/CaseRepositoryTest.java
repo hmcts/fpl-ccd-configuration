@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.assertj.core.api.Condition;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
@@ -26,8 +26,8 @@ import static uk.gov.hmcts.reform.fpl.service.CaseRepository.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.service.CaseRepository.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
-@RunWith(SpringRunner.class)
-public class CaseRepositoryTest {
+@ExtendWith(SpringExtension.class)
+class CaseRepositoryTest {
 
     private static final String USER_ID = "1";
     private static final String AUTH_TOKEN = "Bearer token";
@@ -46,7 +46,7 @@ public class CaseRepositoryTest {
 
     @Test
     @SuppressWarnings({"unchecked", "LineLength"})
-    public void shouldSetSubmittedFormPDF() throws IOException {
+    void shouldSetSubmittedFormPDF() throws IOException {
         String caseId = "12345";
         String event = "attachSubmittedFormPDF";
         Document document = document();

@@ -173,7 +173,11 @@ dependencies {
 
   compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
-  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
+  testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot) {
+    exclude group: 'junit', module: 'junit'
+  }
+  testCompile group: 'org.junit.jupiter', name :'junit-jupiter-api', version: '5.3.1'
+  testRuntime group: 'org.junit.jupiter', name :'junit-jupiter-engine', version:'5.3.1'
   testCompile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.12'
 
   integrationTestCompile sourceSets.main.runtimeClasspath
@@ -194,8 +198,17 @@ bootJar {
   }
 }
 
+test {
+  useJUnitPlatform()
+}
+
+integration {
+  useJUnitPlatform()
+}
+
 pitest {
   pitestVersion = '1.4.3'
+  testPlugin = 'junit5'
   targetClasses = ['uk.gov.hmcts.reform.fpl.*']
   testSourceSets = [sourceSets.test, sourceSets.integrationTest]
   threads = 10
