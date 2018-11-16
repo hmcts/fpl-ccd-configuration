@@ -6,7 +6,7 @@ locals {
   local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "aat" : "saat" : var.env}"
   local_ase = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "core-compute-aat" : "core-compute-saat" : local.ase_name}"
 
-  vault_name = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "${var.product}-aat" : "${var.product}-saat" : "${var.product}-${var.env}"}"
+  vault_name = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "${var.raw_product}-aat" : "${var.raw_product}-saat" : "${var.raw_product}-${var.env}"}"
 
   # URLs
   IDAM_S2S_AUTH_URL = "http://rpe-service-auth-provider-${local.local_env}.service.${local.local_ase}.internal"
