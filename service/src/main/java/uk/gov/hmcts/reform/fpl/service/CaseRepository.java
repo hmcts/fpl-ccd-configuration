@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
@@ -66,19 +66,29 @@ public class CaseRepository {
             .build();
     }
 
-    public void setCaseLocalAuthority(String authorization, String userId, CallbackRequest callbackRequest, String caseLocalAuthority) {
+    /**
+     * Adds caseLocalAuthority to CCD case data.
+     *
+     * @param authorization the authorization from the CCD callback.
+     * @param userId the userId from the CCD callback.
+     * @param caseDetails the current CCD case details.
+     * @param caseLocalAuthority the value to be added to CCD case details.
+     */
+    public void setCaseLocalAuthority(
+        String authorization,
+        String userId,
+        CaseDetails caseDetails,
+        String caseLocalAuthority) {
+
         String event = "addLocalAuthority";
-
-        String caseId = callbackRequest.getCaseDetails().getId().toString();
-
-        System.out.println("serviceAuth = [" + authTokenGenerator.generate() + "]");
+        String caseId = caseDetails.getId().toString();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(authorization,
             authTokenGenerator.generate(), userId, JURISDICTION, CASE_TYPE, caseId, event);
 
         logger.debug("Event {} on case {} started with token {}", event, caseId, startEventResponse.getToken());
 
-        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
+        Map<String, Object> data = caseDetails.getData();
         data.put("caseLocalAuthority", caseLocalAuthority);
 
         CaseDataContent body = CaseDataContent.builder()
@@ -90,9 +100,6 @@ public class CaseRepository {
                 .build())
             .data(data)
             .build();
-
-        System.out.println("body = " + body);
-        System.out.println("data = " + data);
 
         coreCaseDataApi.submitEventForCaseWorker(authorization, authTokenGenerator.generate(), userId,
             JURISDICTION, CASE_TYPE, caseId, true, body);

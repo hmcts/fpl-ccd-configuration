@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 @ExtendWith(SpringExtension.class)
 @WebMvcTest
+@OverrideAutoConfiguration(enabled = true)
 class CaseSubmissionControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";

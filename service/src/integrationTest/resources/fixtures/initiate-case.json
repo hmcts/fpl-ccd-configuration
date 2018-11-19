@@ -1,11 +1,8 @@
 {
   "case_details": {
-    "id": 12345,
+    "id": "12345",
     "case_data": {
       "caseName": "test"
     }
-  },
-  "case_details_before": {},
-  "eventId": {}
-
+  }
 }
