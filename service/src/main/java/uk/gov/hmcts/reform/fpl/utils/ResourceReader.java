@@ -8,6 +8,11 @@ import java.io.InputStream;
 public class ResourceReader {
 
     private ResourceReader() {
+        // NO-OP
+    }
+
+    public static String readString(String resourcePath) {
+        return new String(ResourceReader.readBytes(resourcePath));
     }
 
     public static byte[] readBytes(String resourcePath) {

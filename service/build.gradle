@@ -137,6 +137,9 @@ repositories {
   maven {
     url "https://dl.bintray.com/hmcts/hmcts-maven"
   }
+  maven {
+    url  "http://repo.spring.io/milestone"
+  }
 }
 
 // it is important to specify logback classic and core packages explicitly as libraries like spring boot
@@ -153,6 +156,10 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: versions.springBoot
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-json', version: versions.springBoot
 
+  compile group: 'org.json', name: 'json', version: '20180813'
+
+  compile group: 'com.google.guava', name: 'guava', version: '27.0-jre'
+
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
@@ -160,10 +167,18 @@ dependencies {
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.0.2.RELEASE'
 
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
+  compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.1'
+  compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.4.1'
+  compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '1.0.4'
 
   compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
-  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
+  testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot) {
+    exclude group: 'junit', module: 'junit'
+  }
+  testCompile group: 'org.junit.jupiter', name :'junit-jupiter-api', version: '5.3.1'
+  testRuntime group: 'org.junit.jupiter', name :'junit-jupiter-engine', version:'5.3.1'
+  testCompile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.12'
 
   integrationTestCompile sourceSets.main.runtimeClasspath
   integrationTestCompile sourceSets.test.runtimeClasspath
@@ -183,8 +198,17 @@ bootJar {
   }
 }
 
+test {
+  useJUnitPlatform()
+}
+
+integration {
+  useJUnitPlatform()
+}
+
 pitest {
   pitestVersion = '1.4.3'
+  testPlugin = 'junit5'
   targetClasses = ['uk.gov.hmcts.reform.fpl.*']
   testSourceSets = [sourceSets.test, sourceSets.integrationTest]
   threads = 10
