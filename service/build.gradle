@@ -168,8 +168,6 @@ dependencies {
 
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
 
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot
-
   compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '0.0.2'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.1'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.4.1'
