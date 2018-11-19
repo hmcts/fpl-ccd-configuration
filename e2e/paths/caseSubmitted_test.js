@@ -10,11 +10,8 @@ Before((I, caseViewPage) => {
   I.waitForElement('.tabs');
 });
 
-Scenario('Check add local authority event occurred', (I) => {
-  I.see('Add Local Authority');
-});
-
 Scenario('Submitting case', (I, caseViewPage) => {
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
+  I.see('Add Local Authority');
   I.dontSee(caseViewPage.actionsDropdown);
 });
