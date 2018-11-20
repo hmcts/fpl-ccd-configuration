@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
+import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.handlers.SubmittedCaseEventHandler.SubmittedFormFilenameHelper;
 import uk.gov.hmcts.reform.fpl.service.CaseRepository;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
@@ -71,7 +72,7 @@ class SubmittedCaseEventHandlerTest {
         given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, fileName))
             .willReturn(document);
 
-        submittedCaseEventHandler.handleCaseSubmission(new CallbackEvent(request, AUTH_TOKEN, USER_ID));
+        submittedCaseEventHandler.handleCaseSubmission(new SubmittedCaseEvent(request, AUTH_TOKEN, USER_ID));
 
         verify(caseRepository).setSubmittedFormPDF(AUTH_TOKEN, USER_ID,
             Long.toString(request.getCaseDetails().getId()), document);
