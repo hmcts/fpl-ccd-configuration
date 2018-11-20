@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.fpl.events.InitiateCaseEvent;
+import uk.gov.hmcts.reform.fpl.events.InitiatedCaseEvent;
 
 import javax.validation.constraints.NotNull;
 
@@ -33,7 +33,7 @@ public class CaseInitiationController {
         @RequestHeader(value = "user-id") String userId,
         @RequestBody @NotNull CallbackRequest callbackRequest) {
 
-        applicationEventPublisher.publishEvent(new InitiateCaseEvent(callbackRequest, authorization, userId));
+        applicationEventPublisher.publishEvent(new InitiatedCaseEvent(callbackRequest, authorization, userId));
 
         return new ResponseEntity(HttpStatus.OK);
     }

@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.fpl.events.InitiateCaseEvent;
+import uk.gov.hmcts.reform.fpl.events.InitiatedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.CaseRepository;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 
@@ -28,7 +28,7 @@ class InitiateCaseEventHandlerTest {
     private CaseRepository caseRepository;
 
     @InjectMocks
-    private InitiateCaseEventHandler initiateCaseEventHandler;
+    private InitiatedCaseEventHandler initiateCaseEventHandler;
 
     @Test
     void shouldUpdateCaseWithLocalAuthority() throws IOException {
@@ -38,7 +38,7 @@ class InitiateCaseEventHandlerTest {
 
         given(userService.extractUserDomainName(AUTH_TOKEN)).willReturn(domain);
 
-        initiateCaseEventHandler.handleCaseInitiation(new InitiateCaseEvent(request, AUTH_TOKEN, USER_ID));
+        initiateCaseEventHandler.handleCaseInitiation(new InitiatedCaseEvent(request, AUTH_TOKEN, USER_ID));
 
         verify(caseRepository).setCaseLocalAuthority(AUTH_TOKEN, USER_ID, caseId, domain);
     }

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.fpl.events.InitiateCaseEvent;
+import uk.gov.hmcts.reform.fpl.events.InitiatedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.CaseRepository;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 
@@ -13,14 +13,14 @@ import uk.gov.hmcts.reform.fpl.service.UserService;
  * Handles the case initiation event.
  */
 @Component
-public class InitiateCaseEventHandler {
+public class InitiatedCaseEventHandler {
 
     private final UserService userService;
     private final CaseRepository caseRepository;
 
     @Autowired
-    public InitiateCaseEventHandler(UserService userService,
-                                    CaseRepository caseRepository) {
+    public InitiatedCaseEventHandler(UserService userService,
+                                     CaseRepository caseRepository) {
         this.userService = userService;
         this.caseRepository = caseRepository;
     }
@@ -32,7 +32,7 @@ public class InitiateCaseEventHandler {
      */
     @Async
     @EventListener
-    public void handleCaseInitiation(InitiateCaseEvent event) {
+    public void handleCaseInitiation(InitiatedCaseEvent event) {
         String userId = event.getUserId();
         String authorization = event.getAuthorization();
         String caseId = event.getCallbackRequest().getCaseDetails().getId().toString();
