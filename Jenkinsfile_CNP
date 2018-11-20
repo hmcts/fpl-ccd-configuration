@@ -67,6 +67,12 @@ withPipeline(type, product, component) {
     """
   }
 
+  before('smoketest:preview-staging') {
+    sh """
+      ./kubernetes/configurer/configure-ccd.sh
+    """
+  }
+
   after('smoketest:preview-staging') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
