@@ -9,13 +9,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseEventID": "addLocalAuthority",
-    "UserRole": "caseworker-publiclaw-localAuthority",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "ordersNeeded",
     "UserRole": "caseworker-publiclaw-localAuthority",
     "CRUD": "CRU"

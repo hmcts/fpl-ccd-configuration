@@ -75,28 +75,4 @@ class CaseRepositoryTest {
                 }
             });
     }
-
-    @Test
-    @SuppressWarnings({"unchecked", "LineLength"})
-    void shouldSetLocalAuthority() throws IOException {
-        String caseId = "12345";
-        String event = "addLocalAuthority";
-        String caseLocalAuthority = "Local Authority Test";
-
-        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
-        given(coreCaseDataApi.startEventForCaseWorker(AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, caseId, event))
-            .willReturn(StartEventResponse.builder().eventId(event).token("event-token:0").build());
-
-        caseRepository.setCaseLocalAuthority(AUTH_TOKEN, USER_ID, caseId, caseLocalAuthority);
-
-        verify(coreCaseDataApi).startEventForCaseWorker(AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, caseId, event);
-        verify(coreCaseDataApi).submitEventForCaseWorker(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(caseId), eq(true), caseDataContentArgumentCaptor.capture());
-
-        CaseDataContent caseDataContent = caseDataContentArgumentCaptor.getValue();
-
-        assertThat(caseDataContent.getEvent().getId()).isEqualTo(event);
-        assertThat(caseDataContent.getEventToken()).isEqualTo("event-token:0");
-        assertThat((Map<String, String>) caseDataContent.getData())
-            .containsKey("caseLocalAuthority").containsValue(caseLocalAuthority);
-    }
 }

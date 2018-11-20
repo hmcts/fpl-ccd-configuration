@@ -9,11 +9,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.fpl.service.CaseRepository;
+import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.fpl.service.UserService;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
@@ -24,52 +24,27 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 class CaseInitiationControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
-    private static final String USER_ID = "1";
 
     @MockBean
     private UserService userService;
-    @MockBean
-    private CaseRepository caseRepository;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    void shouldReturnSuccessfulResponseWithValidCaseData() throws Exception {
-        String domain = "example";
-        final String caseId = "12345";
+    void shouldAddCaseLocalAuthorityToCaseData() throws Exception {
+        String caseLocalAuthority = "example";
 
-        given(userService.extractUserDomainName(AUTH_TOKEN)).willReturn(domain);
+        given(userService.extractUserDomainName(AUTH_TOKEN)).willReturn(caseLocalAuthority);
 
-        mockMvc
+        MvcResult response = mockMvc
             .perform(post("/callback/case-initiation")
                 .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(readBytes("core-case-data-store-api/callback-request.json")))
-            .andExpect(status().isOk());
+                .content(readBytes("core-case-data-store-api/empty-case-details.json")))
+            .andExpect(status().isOk())
+            .andReturn();
 
-        Thread.sleep(3000);
-        verify(caseRepository).setCaseLocalAuthority(AUTH_TOKEN, USER_ID, caseId, domain);
-    }
-
-    @Test
-    void shouldReturnUnsuccessfulResponseWithNoData() throws Exception {
-        mockMvc
-            .perform(post("/callback/case-initiation")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID))
-            .andExpect(status().is4xxClientError());
-    }
-
-    @Test
-    void shouldReturnUnsuccessfulResponseWithMalformedData() throws Exception {
-        mockMvc
-            .perform(post("/callback/case-initiation")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("Wrong Data"))
-            .andExpect(status().is4xxClientError());
+        assertThat(response.getResponse().getContentAsString()).contains(caseLocalAuthority);
     }
 }
