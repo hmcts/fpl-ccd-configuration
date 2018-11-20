@@ -6,12 +6,12 @@ Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
   I.selectOption(caseViewPage.actionsDropdown, config.applicationActions.submitCase);
   I.click(caseViewPage.goButton);
-  I.click('Submit');
-  I.waitForElement('.tabs');
 });
 
+
 Scenario('Submitting case', (I, caseViewPage) => {
+  I.click('Submit');
+  I.waitForElement('.tabs');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
-  I.see('Add Local Authority');
   I.dontSee(caseViewPage.actionsDropdown);
 });
