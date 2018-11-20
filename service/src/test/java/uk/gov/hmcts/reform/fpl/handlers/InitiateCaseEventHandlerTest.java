@@ -15,7 +15,6 @@ import java.io.IOException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
 class InitiateCaseEventHandlerTest {
@@ -35,11 +34,12 @@ class InitiateCaseEventHandlerTest {
     void shouldUpdateCaseWithLocalAuthority() throws IOException {
         CallbackRequest request = callbackRequest();
         String domain = "example";
+        String caseId = "12345";
 
-        given(userService.getUserDetails(AUTH_TOKEN)).willReturn(domain);
+        given(userService.extractUserDomainName(AUTH_TOKEN)).willReturn(domain);
 
         initiateCaseEventHandler.handleCaseInitiation(new InitiateCaseEvent(request, AUTH_TOKEN, USER_ID));
 
-        verify(caseRepository).setCaseLocalAuthority(AUTH_TOKEN, USER_ID, populatedCaseDetails(), domain);
+        verify(caseRepository).setCaseLocalAuthority(AUTH_TOKEN, USER_ID, caseId, domain);
     }
 }

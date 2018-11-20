@@ -71,25 +71,21 @@ public class CaseRepository {
      *
      * @param authorization the authorization from the CCD callback.
      * @param userId the userId from the CCD callback.
-     * @param caseDetails the current CCD case details.
+     * @param caseId the current ID of the case.
      * @param caseLocalAuthority the value to be added to CCD case details.
      */
     public void setCaseLocalAuthority(
         String authorization,
         String userId,
-        CaseDetails caseDetails,
+        String caseId,
         String caseLocalAuthority) {
 
         String event = "addLocalAuthority";
-        String caseId = caseDetails.getId().toString();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(authorization,
             authTokenGenerator.generate(), userId, JURISDICTION, CASE_TYPE, caseId, event);
 
         logger.debug("Event {} on case {} started with token {}", event, caseId, startEventResponse.getToken());
-
-        Map<String, Object> data = caseDetails.getData();
-        data.put("caseLocalAuthority", caseLocalAuthority);
 
         CaseDataContent body = CaseDataContent.builder()
             .eventToken(startEventResponse.getToken())
@@ -98,12 +94,18 @@ public class CaseRepository {
                 .summary("Add Local Authority")
                 .description("Add Local Authority")
                 .build())
-            .data(data)
+            .data(prepareLocalAuthority(caseLocalAuthority))
             .build();
 
         coreCaseDataApi.submitEventForCaseWorker(authorization, authTokenGenerator.generate(), userId,
             JURISDICTION, CASE_TYPE, caseId, true, body);
 
         logger.debug("Event {} on case {} completed", event, caseId);
+    }
+
+    private Map<String, Object> prepareLocalAuthority(String caseLocalAuthority) {
+        return ImmutableMap.<String, Object>builder()
+            .put("caseLocalAuthority", caseLocalAuthority)
+            .build();
     }
 }

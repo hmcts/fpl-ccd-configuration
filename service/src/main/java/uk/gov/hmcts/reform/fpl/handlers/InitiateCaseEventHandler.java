@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.InitiateCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.CaseRepository;
 import uk.gov.hmcts.reform.fpl.service.UserService;
@@ -36,10 +35,10 @@ public class InitiateCaseEventHandler {
     public void handleCaseInitiation(InitiateCaseEvent event) {
         String userId = event.getUserId();
         String authorization = event.getAuthorization();
-        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
+        String caseId = event.getCallbackRequest().getCaseDetails().getId().toString();
 
-        String caseLocalAuthority = userService.getUserDetails(authorization);
+        String caseLocalAuthority = userService.extractUserDomainName(authorization);
 
-        caseRepository.setCaseLocalAuthority(authorization, userId, caseDetails, caseLocalAuthority);
+        caseRepository.setCaseLocalAuthority(authorization, userId, caseId, caseLocalAuthority);
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
 import uk.gov.hmcts.reform.fpl.service.CaseRepository;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -40,7 +40,7 @@ public class SubmittedCaseEventHandler {
      */
     @Async
     @EventListener
-    public void handleCaseSubmission(SubmittedCaseEvent event) {
+    public void handleCaseSubmission(CallbackEvent event) {
         String userId = event.getUserId();
         String authorization = event.getAuthorization();
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();

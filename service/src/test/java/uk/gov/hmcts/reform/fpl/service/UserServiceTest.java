@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -23,20 +22,20 @@ class UserServiceTest {
     private static final String AUTH_TOKEN = "Bearer token";
 
     @Mock
-    protected IdamApi idamApi;
+    private IdamApi idamApi;
 
     @InjectMocks
     private UserService userService;
 
     @ParameterizedTest
-    @ValueSource(strings = {"mock@example.gov.uk", "mock@example.com", "mock.mock@example.gov.uk"})
+    @SuppressWarnings({"LineLength"})
+    @ValueSource(strings = {"mock@example.gov.uk", "mock@example.com", "mock.mock@example.gov.uk", "mock@ExAmPlE.gov.uk"})
     void shouldReturnDomainForSuccessfulIdamCall(String email) {
         String expectedDomain = "example";
-        List<String> roles = new ArrayList<>();
         given(idamApi.retrieveUserDetails(AUTH_TOKEN)).willReturn(
-            new UserDetails("1", email, "Mock", "Mock", roles));
+            new UserDetails("1", email, "Mock", "Mock", new ArrayList<>()));
 
-        String domain = userService.getUserDetails(AUTH_TOKEN);
+        String domain = userService.extractUserDomainName(AUTH_TOKEN);
 
         Assertions.assertThat(domain).isEqualTo(expectedDomain);
     }
@@ -46,8 +45,7 @@ class UserServiceTest {
         given(idamApi.retrieveUserDetails(AUTH_TOKEN)).willThrow(
             new RuntimeException("user does not exist"));
 
-
-        assertThatThrownBy(() -> userService.getUserDetails(AUTH_TOKEN))
+        assertThatThrownBy(() -> userService.extractUserDomainName(AUTH_TOKEN))
             .isInstanceOf(RuntimeException.class)
             .hasMessage("user does not exist");
     }

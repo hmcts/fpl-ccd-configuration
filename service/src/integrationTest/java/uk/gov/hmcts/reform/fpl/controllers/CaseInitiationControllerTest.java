@@ -16,7 +16,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 @ExtendWith(SpringExtension.class)
@@ -38,19 +37,20 @@ class CaseInitiationControllerTest {
     @Test
     void shouldReturnSuccessfulResponseWithValidCaseData() throws Exception {
         String domain = "example";
+        final String caseId = "12345";
 
-        given(userService.getUserDetails(AUTH_TOKEN)).willReturn(domain);
+        given(userService.extractUserDomainName(AUTH_TOKEN)).willReturn(domain);
 
         mockMvc
             .perform(post("/callback/case-initiation")
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(readBytes("fixtures/initiate-case.json")))
+                .content(readBytes("core-case-data-store-api/callback-request.json")))
             .andExpect(status().isOk());
 
         Thread.sleep(3000);
-        verify(caseRepository).setCaseLocalAuthority(AUTH_TOKEN, USER_ID, populatedCaseDetails(), domain);
+        verify(caseRepository).setCaseLocalAuthority(AUTH_TOKEN, USER_ID, caseId, domain);
     }
 
     @Test

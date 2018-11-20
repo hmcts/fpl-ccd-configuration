@@ -11,7 +11,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.document.domain.Document;
 
@@ -25,7 +24,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.service.CaseRepository.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.service.CaseRepository.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
@@ -65,9 +63,6 @@ class CaseRepositoryTest {
 
         CaseDataContent caseDataContent = caseDataContentArgumentCaptor.getValue();
 
-        System.out.println("caseDataContent = " + caseDataContent.getData());
-
-
         assertThat(caseDataContent.getEvent().getId()).isEqualTo(event);
         assertThat(caseDataContent.getEventToken()).isEqualTo("event-token:0");
         assertThat((Map<String, Map<String, String>>) caseDataContent.getData())
@@ -85,7 +80,6 @@ class CaseRepositoryTest {
     @SuppressWarnings({"unchecked", "LineLength"})
     void shouldSetLocalAuthority() throws IOException {
         String caseId = "12345";
-        CaseDetails caseDetails = populatedCaseDetails();
         String event = "addLocalAuthority";
         String caseLocalAuthority = "Local Authority Test";
 
@@ -93,7 +87,7 @@ class CaseRepositoryTest {
         given(coreCaseDataApi.startEventForCaseWorker(AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, caseId, event))
             .willReturn(StartEventResponse.builder().eventId(event).token("event-token:0").build());
 
-        caseRepository.setCaseLocalAuthority(AUTH_TOKEN, USER_ID, caseDetails, caseLocalAuthority);
+        caseRepository.setCaseLocalAuthority(AUTH_TOKEN, USER_ID, caseId, caseLocalAuthority);
 
         verify(coreCaseDataApi).startEventForCaseWorker(AUTH_TOKEN, SERVICE_AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, caseId, event);
         verify(coreCaseDataApi).submitEventForCaseWorker(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(caseId), eq(true), caseDataContentArgumentCaptor.capture());
