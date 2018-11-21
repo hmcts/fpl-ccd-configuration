@@ -15,8 +15,8 @@
   "scripts": {
     "lint": "eslint e2e",
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
-    "test": "codeceptjs run-multiple parallel",
-    "test:smoke": "codeceptjs run --reporter mocha-multi -g @smoke-tests"
+    "test": "codeceptjs run-multiple parallel --invert --grep @smoke-tests",
+    "test:smoke": "codeceptjs run --reporter mocha-multi --grep @smoke-tests"
   },
   "husky": {
     "hooks": {
