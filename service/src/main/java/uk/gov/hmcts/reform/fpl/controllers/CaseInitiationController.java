@@ -24,7 +24,7 @@ public class CaseInitiationController {
     @PostMapping
     public ResponseEntity createdCase(@RequestHeader(value = "authorization") String authorization) {
 
-        String caseLocalAuthority = userService.extractUserDomainName(authorization);
+        String caseLocalAuthority = userService.getLocalAuthorityCode(authorization);
 
         AboutToStartOrSubmitCallbackResponse body = AboutToStartOrSubmitCallbackResponse.builder()
             .data(prepareLocalAuthority(caseLocalAuthority))

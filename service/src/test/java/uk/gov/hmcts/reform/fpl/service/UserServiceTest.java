@@ -8,10 +8,13 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityLookupConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -24,20 +27,28 @@ class UserServiceTest {
     @Mock
     private IdamApi idamApi;
 
+    @Mock
+    private LocalAuthorityLookupConfiguration localAuthorityLookupConfiguration;
+
     @InjectMocks
     private UserService userService;
 
     @ParameterizedTest
     @SuppressWarnings({"LineLength"})
-    @ValueSource(strings = {"mock@example.gov.uk", "mock@example.com", "mock.mock@example.gov.uk", "mock@ExAmPlE.gov.uk"})
+    @ValueSource(strings = {"mock@example.gov.uk", "mock.mock@example.gov.uk", "mock@ExAmPlE.gov.uk"})
     void shouldReturnDomainForSuccessfulIdamCall(String email) {
-        String expectedDomain = "example";
+        final String expectedLaCode = "EX";
+        Map<String, String> localAuthorities = new HashMap<>();
+        localAuthorities.put("example.gov.uk", "EX");
+
+        given(localAuthorityLookupConfiguration.getLookupTable()).willReturn(localAuthorities);
+
         given(idamApi.retrieveUserDetails(AUTH_TOKEN)).willReturn(
             new UserDetails("1", email, "Mock", "Mock", new ArrayList<>()));
 
-        String domain = userService.extractUserDomainName(AUTH_TOKEN);
+        String domain = userService.getLocalAuthorityCode(AUTH_TOKEN);
 
-        Assertions.assertThat(domain).isEqualTo(expectedDomain);
+        Assertions.assertThat(domain).isEqualTo(expectedLaCode);
     }
 
     @Test
@@ -45,7 +56,7 @@ class UserServiceTest {
         given(idamApi.retrieveUserDetails(AUTH_TOKEN)).willThrow(
             new RuntimeException("user does not exist"));
 
-        assertThatThrownBy(() -> userService.extractUserDomainName(AUTH_TOKEN))
+        assertThatThrownBy(() -> userService.getLocalAuthorityCode(AUTH_TOKEN))
             .isInstanceOf(RuntimeException.class)
             .hasMessage("user does not exist");
     }

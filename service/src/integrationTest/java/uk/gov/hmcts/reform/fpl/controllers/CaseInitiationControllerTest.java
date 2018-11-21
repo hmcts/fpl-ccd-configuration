@@ -10,7 +10,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.idam.client.IdamApi;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -25,17 +26,18 @@ class CaseInitiationControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
 
-    @MockBean
-    private UserService userService;
-
     @Autowired
     private MockMvc mockMvc;
 
+    @MockBean
+    private IdamApi idamApi;
+
     @Test
     void shouldAddCaseLocalAuthorityToCaseData() throws Exception {
-        String caseLocalAuthority = "example";
+        String caseLocalAuthority = "EX";
 
-        given(userService.extractUserDomainName(AUTH_TOKEN)).willReturn(caseLocalAuthority);
+        given(idamApi.retrieveUserDetails(AUTH_TOKEN))
+            .willReturn(new UserDetails(null, "user@example.gov.uk", null, null, null));
 
         MvcResult response = mockMvc
             .perform(post("/callback/case-initiation")

@@ -15,6 +15,7 @@ services:
       - CORE_CASE_DATA_API_URL=http://ccd-data-store-api:4452
       - IDAM_S2S_AUTH_URL=http://service-auth-provider-api:8080
       - IDAM_S2S_AUTH_TOTP_SECRET=AABBCCDDEEFFGGHH
+      - FPL_LOCAL_AUTHORITY_MAPPING=example.com=>example
       # these environment variables are used by java-logging library
       - ROOT_APPENDER
       - JSON_CONSOLE_PRETTY_PRINT

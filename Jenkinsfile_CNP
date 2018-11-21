@@ -10,7 +10,8 @@ def product = "fpl"
 def component = "fpl-service"
 
 List<Map<String, Object>> secrets = [
-  secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN')
+  secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN'),
+  secret('local-authority-name-mapping', 'FPL_LOCAL_AUTHORITY_MAPPING')
 ]
 
 static Map<String, Object> secret(String secretName, String envVariable) {
