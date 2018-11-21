@@ -18,5 +18,3 @@ Scenario('Submitting case', (I, caseViewPage) => {
   I.reloadPage();
   I.see('Barnet_Council_v_Smith.pdf');
 });
-
-
