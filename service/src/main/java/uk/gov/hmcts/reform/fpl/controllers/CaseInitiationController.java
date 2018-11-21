@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.fpl.service.UserService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityNameService;
 
 import java.util.Map;
 
@@ -18,8 +18,12 @@ import java.util.Map;
 @RequestMapping("/callback/case-initiation")
 public class CaseInitiationController {
 
+    private final LocalAuthorityNameService userService;
+
     @Autowired
-    private UserService userService;
+    public CaseInitiationController(LocalAuthorityNameService userService) {
+        this.userService = userService;
+    }
 
     @PostMapping
     public ResponseEntity createdCase(@RequestHeader(value = "authorization") String authorization) {

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,8 @@ class CaseInitiationControllerTest {
 
     @Test
     void shouldAddCaseLocalAuthorityToCaseData() throws Exception {
-        String caseLocalAuthority = "EX";
+        JSONObject caseLocalAuthority = new JSONObject();
+        caseLocalAuthority.put("caseLocalAuthority", "EX");
 
         given(idamApi.retrieveUserDetails(AUTH_TOKEN))
             .willReturn(new UserDetails(null, "user@example.gov.uk", null, null, null));
@@ -47,6 +49,6 @@ class CaseInitiationControllerTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        assertThat(response.getResponse().getContentAsString()).contains(caseLocalAuthority);
+        assertThat(response.getResponse().getContentAsString()).contains(caseLocalAuthority.toString());
     }
 }
