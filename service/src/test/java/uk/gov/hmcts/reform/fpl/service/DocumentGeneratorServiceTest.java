@@ -30,7 +30,7 @@ class DocumentGeneratorServiceTest {
 
         String content = textContentOf(documentGeneratorService.generateSubmittedFormPDF(caseDetails));
 
-        assertThat(content).contains("Case ID: 123");
+        assertThat(content).contains("123" + "Case number");
     }
 
     @Test

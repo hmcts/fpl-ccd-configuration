@@ -268,7 +268,7 @@
     <div class="data-list__row">
       <dt class="data-list__title">Respondents' view on proceedings</dt>
       <dd class="data-list__definition">
-        {% if case_data.respondentsAwareReason != null and case_data.hearing.respondentsAwareReason != null %}
+        {% if case_data.hearing != null and case_data.hearing.respondentsAwareReason != null %}
           {{case_data.hearing.respondentsAwareReason}}
         {% else %}
           -
@@ -748,7 +748,6 @@
     {% endfor %}
   {% endif %}
 
-
   <h3 class="heading heading--three">Respondent
     {% if case_data.respondents != null
     and case_data.respondents.additional != null %}
@@ -1060,7 +1059,7 @@
       <dt class="data-list__title">Address</dt>
       <dd class="data-list__definition">
         {% if case_data.applicant != null and
-          case_data.applicant.address != null  %}
+          case_data.applicant.address != null %}
           {% if case_data.applicant.address.AddressLine1 != null %}
             <span class="address-line">{{case_data.applicant.address.AddressLine1}}</span>
           {% endif %}
@@ -1100,7 +1099,7 @@
     </div>
     <div class="data-list__row">
       <dt class="data-list__title">Telephone number</dt>
-      <dd class="data-list__definition">{{case_data.applicant.telephone}}
+      <dd class="data-list__definition">
         {% if case_data.applicant != null and
         case_data.applicant.telephone != null %}
           {{case_data.applicant.telephone}}
@@ -1133,7 +1132,7 @@
     </div>
     <div class="data-list__row">
       <dt class="data-list__title">Solicitor's mobile number</dt>
-      <dd class="data-list__definition">{{case_data.solicitor.mobile}}
+      <dd class="data-list__definition">
         {% if case_data.solicitor != null and
         case_data.solicitor.mobile != null %}
           {{case_data.solicitor.mobile}}
@@ -1193,7 +1192,7 @@
     <div class="data-list__row">
       <dt class="data-list__title">Threshold is met as the child is suffering or is likely to suffer significant harm because they are</dt>
       <dd class="data-list__definition">
-        {% if case_data.grounds.thresholdReason != null %}
+        {% if case_data.grounds != null and case_data.grounds.thresholdReason != null %}
           {% for reason in case_data.grounds.thresholdReason %}
             <span class="u-block">{{reason}}</span>
           {% endfor %}
@@ -1423,7 +1422,7 @@
     </div>
   </dl>
 
-  {% if case_data.proceeding.onGoingProceeding != null and
+  {% if case_data.proceeding != null and case_data.proceeding.onGoingProceeding != null and
   case_data.proceeding.onGoingProceeding == "Yes" %}
     <h3 class="heading heading--three">Other proceedings</h3>
     <dl class="data-list">
