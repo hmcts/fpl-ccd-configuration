@@ -744,7 +744,6 @@
     {% endfor %}
   {% endif %}
 
-
   <h3>Respondent
     {% if case_data.respondents != null
     and case_data.respondents.additional != null %}
@@ -1056,7 +1055,7 @@
       <dt class="data-list__title">Address</dt>
       <dd class="data-list__definition">
         {% if case_data.applicant != null and
-          case_data.applicant.address != null  %}
+          case_data.applicant.address != null %}
           {% if case_data.applicant.address.AddressLine1 != null %}
             <span class="address-line">{{case_data.applicant.address.AddressLine1}}</span>
           {% endif %}
@@ -1096,7 +1095,7 @@
     </div>
     <div class="data-list__row">
       <dt class="data-list__title">Telephone number</dt>
-      <dd class="data-list__definition">{{case_data.applicant.telephone}}
+      <dd class="data-list__definition">
         {% if case_data.applicant != null and
         case_data.applicant.telephone != null %}
           {{case_data.applicant.telephone}}
@@ -1129,7 +1128,7 @@
     </div>
     <div class="data-list__row">
       <dt class="data-list__title">Solicitor's mobile number</dt>
-      <dd class="data-list__definition">{{case_data.solicitor.mobile}}
+      <dd class="data-list__definition">
         {% if case_data.solicitor != null and
         case_data.solicitor.mobile != null %}
           {{case_data.solicitor.mobile}}
