@@ -264,7 +264,7 @@
     <div class="data-list__row">
       <dt class="data-list__title">Respondents' view on proceedings</dt>
       <dd class="data-list__definition">
-        {% if case_data.respondentsAwareReason != null and case_data.hearing.respondentsAwareReason != null %}
+        {% if case_data.hearing != null and case_data.hearing.respondentsAwareReason != null %}
           {{case_data.hearing.respondentsAwareReason}}
         {% else %}
           -
@@ -1189,7 +1189,7 @@
     <div class="data-list__row">
       <dt class="data-list__title">Threshold is met as the child is suffering or is likely to suffer significant harm because they are</dt>
       <dd class="data-list__definition">
-        {% if case_data.grounds.thresholdReason != null %}
+        {% if case_data.grounds != null and case_data.grounds.thresholdReason != null %}
           {% for reason in case_data.grounds.thresholdReason %}
             <span class="u-block">{{reason}}</span>
           {% endfor %}
@@ -1419,7 +1419,7 @@
     </div>
   </dl>
 
-  {% if case_data.proceeding.onGoingProceeding != null and
+  {% if case_data.proceeding != null and case_data.proceeding.onGoingProceeding != null and
   case_data.proceeding.onGoingProceeding == "Yes" %}
     <h3>Other proceedings</h3>
     <dl class="data-list">
