@@ -6,6 +6,8 @@ export SERVICE_AUTH_PROVIDER_API_BASE_URL=http://localhost:4502
 export IDAM_API_BASE_URL=http://localhost:4501
 export CCD_DEFINITION_STORE_API_BASE_URL=http://localhost:4451
 
+export S2S_SECRET=AAAAAAAAAAAAAAAC
+
 dir=$(dirname ${0})
 
 ${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh local-authority@example.com caseworker,caseworker-publiclaw,caseworker-publiclaw-localAuthority
