@@ -323,10 +323,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codeceptjs@^1.4.5:
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-1.4.5.tgz#244c231b0f755314c7bcfd4c6bd8637e837086e7"
-  integrity sha512-HyPfifgk17oYiAaqgpEn34KxkRlV7PIZsHtX7vNqgCtRs8lXMhTbGFc0WkJt6avI3ydK0wydT++Z2mCibfXLow==
+codeceptjs@^1.4.6:
+  version "1.4.6"
+  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-1.4.6.tgz#8652949c275a76ef4c8dc95c663f946223d8d122"
+  integrity sha512-duBU5/octSUcbfAZQBemfzeNBQHPlYpkuYh0tlkMvlAoAGm57uIo4v14ZnvrjQFijXfgpzsSXpcg0hHLnSSPIw==
   dependencies:
     allure-js-commons "^1.3.2"
     chalk "^1.1.3"
@@ -886,10 +886,10 @@ https-proxy-agent@^2.2.1:
     agent-base "^4.1.0"
     debug "^3.1.0"
 
-husky@^1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/husky/-/husky-1.1.4.tgz#92f61383527d2571e9586234e5864356bfaceaa9"
-  integrity sha512-cZjGpS7qsaBSo3fOMUuR7erQloX3l5XzL1v/RkIqU6zrQImDdU70z5Re9fGDp7+kbYlM2EtS4aYMlahBeiCUGw==
+husky@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/husky/-/husky-1.2.0.tgz#d631dda1e4a9ee8ba69a10b0c51a0e2c66e711e5"
+  integrity sha512-/ib3+iycykXC0tYIxsyqierikVa9DA2DrT32UEirqNEFVqOj1bFMTgP3jAz8HM7FgC/C8pc/BTUa9MV2GEkZaA==
   dependencies:
     cosmiconfig "^5.0.6"
     execa "^1.0.0"
