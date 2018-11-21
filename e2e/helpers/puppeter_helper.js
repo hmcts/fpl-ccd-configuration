@@ -7,8 +7,8 @@ module.exports = class MyHelpers extends Helper {
     return page.goBack();
   }
 
-  refreshThePage() {
+  reloadPage() {
     const page = this.helpers['Puppeteer'].page;
-    return page.reload('Yes');
+    return page.reload();
   }
 };

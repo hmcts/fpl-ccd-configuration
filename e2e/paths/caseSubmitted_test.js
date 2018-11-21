@@ -15,7 +15,7 @@ Scenario('Submitting case', (I, caseViewPage) => {
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   I.dontSee(caseViewPage.actionsDropdown);
   caseViewPage.selectTab(caseViewPage.tabs.evidence);
-  I.refreshThePage();
+  I.reloadPage();
   I.see('Barnet_Council_v_Smith.pdf');
 });
 
