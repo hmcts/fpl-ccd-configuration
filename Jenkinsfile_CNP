@@ -64,7 +64,7 @@ withPipeline(type, product, component) {
 
     env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
 
-    env.CCD_DEF_CASE_SERVICE_BASE_URL=http://pr-71-fpl-case-service-preview-staging.service.core-compute-preview.internal
+    env.CCD_DEF_CASE_SERVICE_BASE_URL = "http://pr-71-fpl-case-service-preview-staging.service.core-compute-preview.internal"
 
     env.IDAM_API_BASE_URL = "https://preprod-idamapi.reform.hmcts.net:3511"
     env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
