@@ -60,25 +60,28 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 }
 check.dependsOn integration
 
-task dependencyInstall(type: Exec, description: 'Installs Yarn dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--silent', 'install'
+task installDependencies(type: Exec, description: 'Installs Yarn dependencies.') {
+  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'install'
 }
 
-task smokeRun(type: Exec, description: 'Runs smoke tests.') {
-  // commandLine '../kubernetes/configurer/utils/wait-for.sh', environment.get('URL')
+task awaitApplicationReadiness(type: Exec, description: 'Awaits until application is ready.') {
+  commandLine '../kubernetes/configurer/utils/wait-for.sh', environment.get('URL')
+}
+
+task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
   commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
 }
 
-task functionalRun(type: Exec, description: 'Runs E2E tests.') {
-  commandLine '/usr/bin/yarn', '--silent', 'test'
+task runFunctionalTest(type: Exec, description: 'Runs E2E tests.') {
+  commandLine '/usr/bin/yarn', '--silent', 'test:functional'
 }
 
 task smoke(description: 'Runs the smoke tests.') {
-  dependsOn(dependencyInstall, smokeRun)  
+  dependsOn(installDependencies, awaitApplicationReadiness, runSmokeTests)
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(dependencyInstall, functionalRun)
+  dependsOn(installDependencies, awaitApplicationReadiness, runFunctionalTest)
 }
 
 checkstyle {
