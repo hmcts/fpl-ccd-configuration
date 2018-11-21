@@ -4,14 +4,14 @@
   <style>
     body {
       font-family: sans-serif;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     .badge {
       display: inline-block;
       border-radius: 5px;
       padding: 2px 5px;
-      font-size: 16px;
+      font-size: 14px;
       margin-bottom: 5px;
     }
 
@@ -26,22 +26,30 @@
     }
 
     .heading--one {
-      font-size: 21px;
-      font-weight: 800;
-    }
-
-
-    .heading--five {
       font-size: 20px;
     }
 
+    .heading--two {
+      font-size: 18px;
+    }
+
+    .heading--three {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .heading--four {
+      font-size: 16px;
+    }
+
     .heading--constrain-50 {
-      max-width: 60%;
+      max-width: 55%;
     }
 
     .box {
       border: 1px solid #eee;
       border-width: 1px 0;
+      margin: 15px 0;
     }
 
     .box--grey {
@@ -50,7 +58,7 @@
 
     .data-list__row {
       display: block;
-      padding: 5px 0 10px 0;
+      padding: 5px 0;
       border-bottom: 1px solid #c1c2c4;
     }
 
@@ -91,10 +99,6 @@
       margin-top: 5px;
     }
 
-    .u-margin-bot-25 {
-      margin-bottom: 25px;
-    }
-
     .address-line:after {
       content: ',';
     }
@@ -103,12 +107,12 @@
 </head>
 <body>
 <header>
-  <h1 class="heading heading--one u-margin-bot-25">
+  <h1 class="heading heading--one">
     <span class="badge badge--blue">C110A</span>
     <span class="heading heading--large heading--constrain-50">Application for a care or supervision order and other orders under Part 4 of the Children Act 1989 or an emergency protection order under section 44 of the Children Act 1989</span>
   </h1>
   <div class="box box--grey">
-    <p class="heading heading--five u-margin-top-5">For court use</p>
+    <p class="heading heading--four u-margin-top-5">For court use</p>
       <dl class="data-list">
         <div class="data-list__row data-list__row--no-border">
           <dt class="data-list__title">The family court sitting at</dt>
@@ -163,7 +167,7 @@
   </div>
 </header>
 <main>
-  <h2>
+  <h2 class="heading heading--two">
     {% if case_data.applicant == null or case_data.applicant.name == null %}
       Application
     {% else %}
@@ -171,7 +175,7 @@
     {% endif %}
     submitted on todo
   </h2>
-  <h3>Orders</h3>
+  <h3 class="heading heading--three">Orders</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Orders needed</dt>
@@ -197,7 +201,7 @@
     </div>
   </dl>
 
-  <h3>Hearing needed</h3>
+  <h3 class="heading heading--three">Hearing needed</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Hearing date requested</dt>
@@ -273,7 +277,7 @@
     </div>
   </dl>
 
-  <h3>Allocation proposal</h3>
+  <h3 class="heading heading--three">Allocation proposal</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Proposal by applicant</dt>
@@ -297,7 +301,7 @@
     </div>
   </dl>
 
-  <h3>Child
+  <h3 class="heading heading--three">Child
     {% if case_data.children != null and
     case_data.children.additionalChildren != null %}
       1
@@ -540,7 +544,7 @@
 
     {% for child in case_data.children.additionalChildren %}
       {% if child != null and child.value != null %}
-        <h3>Child {{counter}}</h3>
+        <h3 class="heading heading--three">Child {{counter}}</h3>
         <dl class="data-list">
           <div class="data-list__row">
             <dt class="data-list__title">Name</dt>
@@ -745,7 +749,7 @@
   {% endif %}
 
 
-  <h3>Respondent
+  <h3 class="heading heading--three">Respondent
     {% if case_data.respondents != null
     and case_data.respondents.additional != null %}
       1
@@ -902,7 +906,7 @@
 
     {% for respondent in case_data.respondents.additional %}
       {% if respondent != null and respondent.value != null %}
-      <h3>Respondent {{counter}}</h3>
+      <h3 class="heading heading--three">Respondent {{counter}}</h3>
       <dl class="data-list">
         <div class="data-list__row">
           <dt class="data-list__title">Name</dt>
@@ -1017,7 +1021,7 @@
     {% endfor %}
   {% endif %}
 
-  <h3>Applicant</h3>
+  <h3 class="heading heading--three">Applicant</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Name</dt>
@@ -1184,7 +1188,7 @@
     </div>
   </dl>
 
-  <h3>Grounds for the application</h3>
+  <h3 class="heading heading--three">Grounds for the application</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Threshold is met as the child is suffering or is likely to suffer significant harm because they are</dt>
@@ -1200,7 +1204,7 @@
     </div>
   </dl>
 
-  <h3>Threshold evidence</h3>
+  <h3 class="heading heading--three">Threshold evidence</h3>
   <p>
     {% if case_data.grounds != null and
     case_data.grounds.thresholdDetails != null %}
@@ -1210,7 +1214,7 @@
     {% endif %}
   </p>
 
-  <h3>Risk and harm to children</h3>
+  <h3 class="heading heading--three">Risk and harm to children</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Physical harm including non-accidental injury</dt>
@@ -1294,7 +1298,7 @@
     </div>
   </dl>
 
-  <h3>Factors affecting parenting</h3>
+  <h3 class="heading heading--three">Factors affecting parenting</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Alcohol and drugs</dt>
@@ -1343,7 +1347,7 @@
     </div>
   </dl>
 
-  <h3>International element</h3>
+  <h3 class="heading heading--three">International element</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Suitable carer outside the UK</dt>
@@ -1421,7 +1425,7 @@
 
   {% if case_data.proceeding.onGoingProceeding != null and
   case_data.proceeding.onGoingProceeding == "Yes" %}
-    <h3>Other proceedings</h3>
+    <h3 class="heading heading--three">Other proceedings</h3>
     <dl class="data-list">
       <div class="data-list__row">
         <dt class="data-list__title">Ongoing or previous proceedings</dt>
@@ -1509,24 +1513,67 @@
     </dl>
   {% endif %}
 
-  <h3>Annex Documents (todo)</h3>
+  <h3 class="heading heading--three">Annex Documents</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Social work chronology</dt>
       <dd class="data-list__definition">
+        {% if case_data.documents_socialWorkChronology_document != null
+        and case_data.documents_socialWorkChronology_document.documentStatus != null %}
+          {{case_data.documents_socialWorkChronology_document.documentStatus}}
+          {% if case_data.documents_socialWorkChronology_document.documentStatus != 'Attached'
+          and case_data.documents_socialWorkChronology_document.statusReason != null %}
+            <span class="u-block">{{case_data.documents_socialWorkChronology_document.statusReason}}</span>
+          {% endif %}
+        {% else %}
+          -
+        {% endif %}
       </dd>
     </div>
     <div class="data-list__row">
       <dt class="data-list__title">Social work statement and genogram</dt>
-      <dd class="data-list__definition"></dd>
+      <dd class="data-list__definition">
+        {% if case_data.documents_socialWorkStatement_document != null
+        and case_data.documents_socialWorkStatement_document.documentStatus != null %}
+        {{case_data.documents_socialWorkStatement_document.documentStatus}}
+        {% if case_data.documents_socialWorkStatement_document.documentStatus != 'Attached'
+        and case_data.documents_socialWorkStatement_document.statusReason != null %}
+          <span class="u-block">{{case_data.documents_socialWorkStatement_document.statusReason}}</span>
+        {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
     </div>
     <div class="data-list__row">
       <dt class="data-list__title">Social work assessment</dt>
-      <dd class="data-list__definition"></dd>
+      <dd class="data-list__definition">
+        {% if case_data.documents_socialWorkAssessment_document != null
+        and case_data.documents_socialWorkAssessment_document.documentStatus != null %}
+          {{case_data.documents_socialWorkAssessment_document.documentStatus}}
+          {% if case_data.documents_socialWorkAssessment_document.documentStatus != 'Attached'
+          and case_data.documents_socialWorkAssessment_document.statusReason != null %}
+            <span class="u-block">{{case_data.documents_socialWorkAssessment_document.statusReason}}</span>
+          {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
     </div>
     <div class="data-list__row">
       <dt class="data-list__title">Care plan</dt>
-      <dd class="data-list__definition"></dd>
+      <dd class="data-list__definition">
+        {% if case_data.documents_socialWorkCarePlan_document != null
+        and case_data.documents_socialWorkCarePlan_document.documentStatus != null %}
+          {{case_data.documents_socialWorkCarePlan_document.documentStatus}}
+          {% if case_data.documents_socialWorkCarePlan_document.documentStatus != 'Attached'
+          and case_data.documents_socialWorkCarePlan_document.statusReason != null %}
+            <span class="u-block">{{case_data.documents_socialWorkCarePlan_document.statusReason}}</span>
+          {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
     </div>
   </dl>
 </main>
