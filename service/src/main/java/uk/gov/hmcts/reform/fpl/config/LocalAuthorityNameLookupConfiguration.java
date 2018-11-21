@@ -10,13 +10,16 @@ import java.util.Map;
 @Configuration
 public class LocalAuthorityNameLookupConfiguration {
 
+    private static final String MAPPINGS_SEPARATOR = ";";
+    private static final String ENTRY_SEPARATOR = "=>";
+
     private Map<String, String> mapping;
 
     public LocalAuthorityNameLookupConfiguration(@Value("${fpl.local_authority_name.mapping}") String config) {
         ImmutableMap.Builder<String, String> localAuthorities = ImmutableMap.builder();
 
-        Arrays.stream(config.split(";")).forEach(mapping -> {
-            String[] localAuthorityData = mapping.split("=>");
+        Arrays.stream(config.split(MAPPINGS_SEPARATOR)).forEach(entry -> {
+            String[] localAuthorityData = entry.split(ENTRY_SEPARATOR);
             localAuthorities.put(localAuthorityData[0], localAuthorityData[1]);
         });
 

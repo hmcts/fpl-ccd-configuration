@@ -38,7 +38,7 @@ public class LocalAuthorityNameService {
     }
 
     private String extractEmailDomain(String email) {
-        int start = email.indexOf("@");
+        int start = email.indexOf('@');
         String tempState = email.toLowerCase().substring(start + 1);
 
         return lookUpCode(tempState);
