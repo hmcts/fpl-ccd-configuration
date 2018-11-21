@@ -6,4 +6,9 @@ module.exports = class MyHelpers extends Helper {
     const page = this.helpers['Puppeteer'].page;
     return page.goBack();
   }
+
+  refreshThePage() {
+    const page = this.helpers['Puppeteer'].page;
+    return page.reload('Yes');
+  }
 };

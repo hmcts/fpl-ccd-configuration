@@ -14,4 +14,10 @@ Scenario('Submitting case', (I, caseViewPage) => {
   I.waitForElement('.tabs');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   I.dontSee(caseViewPage.actionsDropdown);
+  caseViewPage.selectTab(caseViewPage.tabs.evidence);
+  I.refreshThePage();
+  I.seeElement('.case-viewer-label');
+  I.seeElement({css : 'ccd-read-document-field>a[href^="http"]'});
 });
+
+
