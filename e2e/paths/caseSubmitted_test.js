@@ -16,8 +16,7 @@ Scenario('Submitting case', (I, caseViewPage) => {
   I.dontSee(caseViewPage.actionsDropdown);
   caseViewPage.selectTab(caseViewPage.tabs.evidence);
   I.refreshThePage();
-  I.seeElement('.case-viewer-label');
-  I.seeElement({css : 'ccd-read-document-field>a[href^="http"]'});
+  I.see('Barnet_Council_v_Smith.pdf');
 });
 
 
