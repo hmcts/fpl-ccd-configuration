@@ -285,6 +285,7 @@ declare namespace CodeceptJS {
     seeAnswerInTab(questionNo: string, complexTypeHeading: string, question: string, answer: string) : void,
     say(msg: string) : void,
     retryStep(opts: string) : void,
+    reloadPage() : void,
     signOut() : void,
 
   }
