@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -eu
 
 export SERVICE_AUTH_PROVIDER_API_BASE_URL=http://localhost:4502
 export IDAM_API_BASE_URL=http://localhost:4501
