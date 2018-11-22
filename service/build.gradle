@@ -65,7 +65,7 @@ task installDependencies(type: Exec, description: 'Installs Yarn dependencies.')
 }
 
 task awaitApplicationReadiness(type: Exec, description: 'Awaits until application is ready.') {
-  commandLine '../kubernetes/configurer/utils/wait-for.sh', environment.get('URL')
+  commandLine '../kubernetes/configurer/utils/wait-for.sh', System.env.URL
 }
 
 task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
@@ -73,15 +73,21 @@ task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
 }
 
 task runFunctionalTest(type: Exec, description: 'Runs E2E tests.') {
+  onlyIf(new Spec<Task>() {
+    boolean isSatisfiedBy(Task task) {
+      String skipTestsEnvironmentVariable = System.env.SKIP_FUNCTIONAL_TESTS
+      return skipTestsEnvironmentVariable == null || skipTestsEnvironmentVariable == 'false'
+    }
+  })
   commandLine '/usr/bin/yarn', '--silent', 'test:functional'
 }
 
 task smoke(description: 'Runs the smoke tests.') {
-  dependsOn(installDependencies, awaitApplicationReadiness, runSmokeTests)
+  dependsOn(awaitApplicationReadiness, installDependencies, runSmokeTests)
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(installDependencies, awaitApplicationReadiness, runFunctionalTest)
+  dependsOn(awaitApplicationReadiness, installDependencies, runFunctionalTest)
 }
 
 checkstyle {

@@ -97,6 +97,10 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
+  before('functionalTest:preview') { // TODO: replace :preview with :aat
+    env.SKIP_FUNCTIONAL_TESTS = 'true'
+  }
+
   after('functionalTest:preview') { // TODO: replace :preview with :aat
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
