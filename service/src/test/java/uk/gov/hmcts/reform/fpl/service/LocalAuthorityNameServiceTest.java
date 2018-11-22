@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityDomainException;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -60,7 +61,7 @@ class LocalAuthorityNameServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenDomainNotFound() throws IllegalArgumentException {
+    void shouldThrowCustomExceptionWhenDomainNotFound() throws IllegalArgumentException {
         given(localAuthorityLookupConfiguration.getLookupTable()).willReturn(
             ImmutableMap.<String, String>builder().put("example.gov.uk", "EX").build()
         );
@@ -69,6 +70,6 @@ class LocalAuthorityNameServiceTest {
             new UserDetails(null, "notfound@email.com", null, null, null));
 
         assertThatThrownBy(() -> localAuthorityNameService.getLocalAuthorityCode(AUTH_TOKEN))
-            .isInstanceOf(IllegalArgumentException.class).hasMessage("email.com not found");
+            .isInstanceOf(UnknownLocalAuthorityDomainException.class).hasMessage("email.com not found");
     }
 }

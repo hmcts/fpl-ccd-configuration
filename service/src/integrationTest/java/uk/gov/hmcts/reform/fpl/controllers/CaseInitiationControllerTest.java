@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -26,6 +29,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 class CaseInitiationControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,5 +54,27 @@ class CaseInitiationControllerTest {
             .andReturn();
 
         assertThat(response.getResponse().getContentAsString()).contains(caseLocalAuthority.toString());
+    }
+
+    @Test
+    void shouldPopulateErrorsInResponseWhenDomainNameIsNotFound() throws Exception {
+        AboutToStartOrSubmitCallbackResponse expectedResponse = AboutToStartOrSubmitCallbackResponse.builder()
+            .errors(ImmutableList.<String>builder()
+                .add("The email address was not linked to a known Local Authority")
+                .build())
+            .build();
+
+        given(idamApi.retrieveUserDetails(AUTH_TOKEN))
+            .willReturn(new UserDetails(null, "user@email.gov.uk", null, null, null));
+
+        MvcResult response = mockMvc
+            .perform(post("/callback/case-initiation")
+                .header("authorization", AUTH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(readBytes("core-case-data-store-api/empty-case-details.json")))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(response.getResponse().getContentAsString()).isEqualTo(MAPPER.writeValueAsString(expectedResponse));
     }
 }

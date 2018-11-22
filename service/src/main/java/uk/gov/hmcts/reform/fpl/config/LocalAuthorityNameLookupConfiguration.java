@@ -12,8 +12,7 @@ public class LocalAuthorityNameLookupConfiguration {
 
     private static final String MAPPINGS_SEPARATOR = ";";
     private static final String ENTRY_SEPARATOR = "=>";
-
-    private Map<String, String> mapping;
+    private final Map<String, String> mapping;
 
     public LocalAuthorityNameLookupConfiguration(@Value("${fpl.local_authority_name.mapping}") String config) {
         ImmutableMap.Builder<String, String> localAuthorities = ImmutableMap.builder();
