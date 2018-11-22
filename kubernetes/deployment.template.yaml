@@ -37,6 +37,7 @@ data:
   CORE_CASE_DATA_API_URL: "http://ccd-data-store-api"
   IDAM_S2S_AUTH_URL: "http://service-auth-provider-api"
   IDAM_S2S_AUTH_TOTP_SECRET: "AABBCCDDEEFFGGHH"
+  IDAM_API_URL: "http://idam-api"
   FPL_LOCAL_AUTHORITY_NAME_MAPPING: "example.com=>example"
 
 ---
