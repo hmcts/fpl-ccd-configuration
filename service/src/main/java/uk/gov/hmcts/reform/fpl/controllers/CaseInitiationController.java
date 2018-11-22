@@ -18,17 +18,17 @@ import java.util.Map;
 @RequestMapping("/callback/case-initiation")
 public class CaseInitiationController {
 
-    private final LocalAuthorityNameService userService;
+    private final LocalAuthorityNameService localAuthorityNameService;
 
     @Autowired
-    public CaseInitiationController(LocalAuthorityNameService userService) {
-        this.userService = userService;
+    public CaseInitiationController(LocalAuthorityNameService localAuthorityNameService) {
+        this.localAuthorityNameService = localAuthorityNameService;
     }
 
     @PostMapping
     public ResponseEntity createdCase(@RequestHeader(value = "authorization") String authorization) {
 
-        String caseLocalAuthority = userService.getLocalAuthorityCode(authorization);
+        String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode(authorization);
 
         AboutToStartOrSubmitCallbackResponse body = AboutToStartOrSubmitCallbackResponse.builder()
             .data(prepareLocalAuthority(caseLocalAuthority))
