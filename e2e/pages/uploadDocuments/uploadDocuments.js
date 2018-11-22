@@ -17,8 +17,8 @@ module.exports = {
     socialWorkStatementAndGenogramStatus: '#documents_socialWorkStatement_document_documentStatus',
     socialWorkAssessmentStatus: '#documents_socialWorkAssessment_document_documentStatus',
     carePlanStatus: '#documents_socialWorkCarePlan_document_documentStatus',
-    otherDocumentsTitle_1: '#documents_socialWorkOther_0_typeOfDocument',
-    otherDocumentsTitle_2: '#documents_socialWorkOther_1_typeOfDocument',
+    otherDocumentsTitle_1: '#documents_socialWorkOther_0_documentTitle',
+    otherDocumentsTitle_2: '#documents_socialWorkOther_1_documentTitle',
   },
 
   uploadSocialWorkStatement(file) {
