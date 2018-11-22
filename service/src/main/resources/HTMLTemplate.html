@@ -5,6 +5,7 @@
     body {
       font-family: sans-serif;
       font-size: 13px;
+      color: #333;
     }
 
     .badge {
@@ -25,31 +26,32 @@
       display: block;
     }
 
+    .heading,
+    .data-list__title {
+      color: #000;
+    }
+
     .heading--one {
       font-size: 20px;
     }
 
     .heading--two {
       font-size: 18px;
+      margin-bottom: 0;
     }
 
     .heading--three {
       font-size: 16px;
-      margin-bottom: 5px;
     }
 
-    .heading--four {
-      font-size: 16px;
-    }
-
-    .heading--constrain-50 {
+    .heading--constrain {
       max-width: 55%;
     }
 
     .box {
       border: 1px solid #eee;
       border-width: 1px 0;
-      margin: 15px 0;
+      margin: 5px 0;
     }
 
     .box--grey {
@@ -62,14 +64,14 @@
       border-bottom: 1px solid #c1c2c4;
     }
 
-    .data-list__row--no-border {
-      border: none;
-    }
-
     .data-list__row::after {
       content: "";
       clear: both;
       display: table;
+    }
+
+    .data-list__row--no-border {
+      border: none;
     }
 
     .data-list__title,
@@ -91,28 +93,37 @@
       float: right;
     }
 
+    .u-comma-before {
+      float: left;
+    }
+
+    .u-comma-before + .u-comma-before:before {
+      content: ', ';
+    }
+
     .u-block {
       display: block;
+      width: 100%;
+      float: left;
     }
 
     .u-margin-top-5 {
       margin-top: 5px;
     }
 
-    .address-line:after {
-      content: ',';
+    .u-margin-bottom-10 {
+      margin-bottom: 10px;
     }
-
   </style>
 </head>
 <body>
 <header>
   <h1 class="heading heading--one">
     <span class="badge badge--blue">C110A</span>
-    <span class="heading heading--large heading--constrain-50">Application for a care or supervision order and other orders under Part 4 of the Children Act 1989 or an emergency protection order under section 44 of the Children Act 1989</span>
+    <span class="heading heading--constrain">Application for a care or supervision order and other orders under Part 4 of the Children Act 1989 or an emergency protection order under section 44 of the Children Act 1989</span>
   </h1>
   <div class="box box--grey">
-    <p class="heading heading--four u-margin-top-5">For court use</p>
+    <p class="heading heading--three u-margin-top-5">For court use</p>
       <dl class="data-list">
         <div class="data-list__row data-list__row--no-border">
           <dt class="data-list__title">The family court sitting at</dt>
@@ -120,7 +131,7 @@
         </div>
         <div class="data-list__row data-list__row--no-border">
           <dt class="data-list__title">Case number</dt>
-          <dd class="data-list__definition">{{id}}</dd>
+          <dd class="data-list__definition"></dd>
         </div>
         <div class="data-list__row data-list__row--no-border">
           <dt class="data-list__title">Date issued</dt>
@@ -145,8 +156,9 @@
           <dd class="data-list__definition">
             {% if case_data.respondents != null %}
               {% if case_data.respondents.firstRespondent != null %}
-                {{case_data.respondents.firstRespondent.name}}
-              {% elseif case_data.respondents.firstRespondent == null and case_data.respondents.additional != null %}
+                <span class="u-comma-before">{{case_data.respondents.firstRespondent.name}}</span>
+              {% elseif case_data.respondents.firstRespondent == null
+              and case_data.respondents.additional != null %}
                 // No op
               {% else %}
                 -
@@ -154,7 +166,7 @@
               {% if case_data.respondents.additional != null %}
                 {% for additionalRespondent in case_data.respondents.additional %}
                   {% if additionalRespondent.value.name != null %}
-                    {{additionalRespondent.value.name}}
+                    <span class="u-comma-before">{{additionalRespondent.value.name}}</span>
                   {% endif %}
                 {% endfor %}
               {% endif %}
@@ -167,15 +179,15 @@
   </div>
 </header>
 <main>
-  <h2 class="heading heading--two">
+  <h2 class="heading heading--two u-margin-bottom-10">
     {% if case_data.applicant == null or case_data.applicant.name == null %}
       Application
     {% else %}
       Application from {{case_data.applicant.name}}
     {% endif %}
-    submitted on todo
+    submitted on {{created_date}}
   </h2>
-  <h3 class="heading heading--three">Orders</h3>
+  <h3 class="heading heading--two">Orders</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Orders needed</dt>
@@ -201,7 +213,7 @@
     </div>
   </dl>
 
-  <h3 class="heading heading--three">Hearing needed</h3>
+  <h3 class="heading heading--two">Hearing needed</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Hearing date requested</dt>
@@ -277,7 +289,7 @@
     </div>
   </dl>
 
-  <h3 class="heading heading--three">Allocation proposal</h3>
+  <h3 class="heading heading--two">Allocation proposal</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Proposal by applicant</dt>
@@ -301,7 +313,7 @@
     </div>
   </dl>
 
-  <h3 class="heading heading--three">Child
+  <h3 class="heading heading--two">Child
     {% if case_data.children != null and
     case_data.children.additionalChildren != null %}
       1
@@ -357,22 +369,22 @@
           <span class="u-block">{{case_data.children.firstChild.livingSituation}}</span>
           {% if case_data.children.firstChild.address != null %}
             {% if case_data.children.firstChild.address.AddressLineOne != null %}
-              <span class="address-line">{{case_data.children.firstChild.address.AddressLineOne}}</span>
+              <span class="u-comma-before">{{case_data.children.firstChild.address.AddressLineOne}}</span>
             {% endif %}
             {% if case_data.children.firstChild.address.AddressLineTwo != null %}
-              <span class="address-line">{{case_data.children.firstChild.address.AddressLineTwo}}</span>
+              <span class="u-comma-before">{{case_data.children.firstChild.address.AddressLineTwo}}</span>
             {% endif %}
             {% if case_data.children.firstChild.address.AddressLineThree != null %}
-              <span class="address-line">{{case_data.children.firstChild.address.AddressLineThree}}</span>
+              <span class="u-comma-before">{{case_data.children.firstChild.address.AddressLineThree}}</span>
             {% endif %}
             {% if case_data.children.firstChild.address.PostTown != null %}
-              <span class="address-line">{{case_data.children.firstChild.address.PostTown}}</span>
+              <span class="u-comma-before">{{case_data.children.firstChild.address.PostTown}}</span>
             {% endif %}
             {% if case_data.children.firstChild.address.PostCode != null %}
-              <span class="address-line">{{case_data.children.firstChild.address.PostCode}}</span>
+              <span class="u-comma-before">{{case_data.children.firstChild.address.PostCode}}</span>
             {% endif %}
             {% if case_data.children.firstChild.address.Country != null %}
-              <span class="address-line">{{case_data.children.firstChild.address.Country}}</span>
+              <span class="u-comma-before">{{case_data.children.firstChild.address.Country}}</span>
             {% endif %}
           {% endif %}
           {% if case_data.children.firstChild.situationDate != null %}
@@ -396,6 +408,18 @@
         case_data.children.firstChild != null and
         case_data.children.firstChild.keyDates != null %}
           {{case_data.children.firstChild.keyDates}}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Care and contact plan</dt>
+      <dd class="data-list__definition">
+        {% if case_data.children != null and
+        case_data.children.firstChild != null and
+        case_data.children.firstChild.careAndContact != null %}
+          {{case_data.children.firstChild.careAndContact}}
         {% else %}
           -
         {% endif %}
@@ -441,7 +465,7 @@
       {% endif %}
     {% endif %}
     <div class="data-list__row">
-      <dt class="data-list__title">Mother's full name</dt>
+      <dt class="data-list__title">Mother's name</dt>
       <dd class="data-list__definition">
         {% if case_data.children != null and
         case_data.children.firstChild != null and
@@ -453,7 +477,7 @@
       </dd>
     </div>
     <div class="data-list__row">
-      <dt class="data-list__title">Father's full name</dt>
+      <dt class="data-list__title">Father's name</dt>
       <dd class="data-list__definition">
         {% if case_data.children != null and
         case_data.children.firstChild != null and
@@ -544,7 +568,7 @@
 
     {% for child in case_data.children.additionalChildren %}
       {% if child != null and child.value != null %}
-        <h3 class="heading heading--three">Child {{counter}}</h3>
+        <h3 class="heading heading--two">Child {{counter}}</h3>
         <dl class="data-list">
           <div class="data-list__row">
             <dt class="data-list__title">Name</dt>
@@ -587,22 +611,22 @@
                 <span class="u-block">{{child.value.livingSituation}}</span>
                 {% if child.value.address != null %}
                   {% if child.value.address.AddressLine1 != null %}
-                    <span class="address-line">{{child.value.address.AddressLine1}}</span>
+                    <span class="u-comma-before">{{child.value.address.AddressLine1}}</span>
                   {% endif %}
                   {% if child.value.address.AddressLine2 != null %}
-                    <span class="address-line">{{child.value.address.AddressLine2}}</span>
+                    <span class="u-comma-before">{{child.value.address.AddressLine2}}</span>
                   {% endif %}
                   {% if child.value.address.AddressLine3 != null %}
-                    <span class="address-line">{{child.value.address.AddressLine3}}</span>
+                    <span class="u-comma-before">{{child.value.address.AddressLine3}}</span>
                   {% endif %}
                   {% if child.value.address.PostTown != null %}
-                    <span class="address-line">{{child.value.address.PostTown}}</span>
+                    <span class="u-comma-before">{{child.value.address.PostTown}}</span>
                   {% endif %}
                   {% if child.value.address.PostCode != null %}
-                    <span class="address-line">{{child.value.address.PostCode}}</span>
+                    <span class="u-comma-before">{{child.value.address.PostCode}}</span>
                   {% endif %}
                   {% if child.value.address.Country != null %}
-                    <span class="address-line">{{child.value.address.Country}}</span>
+                    <span class="u-comma-before">{{child.value.address.Country}}</span>
                   {% endif %}
                 {% endif %}
                 {% if child.value.situationDate != null %}
@@ -624,6 +648,16 @@
             <dd class="data-list__definition">
               {% if child.value.keyDates != null %}
                 {{child.value.keyDates}}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Care and contact plan</dt>
+            <dd class="data-list__definition">
+              {% if child.value.careAndContact != null %}
+                {{child.value.careAndContact}}
               {% else %}
                 -
               {% endif %}
@@ -665,7 +699,7 @@
             {% endif %}
           {% endif %}
           <div class="data-list__row">
-            <dt class="data-list__title">Mother's full name</dt>
+            <dt class="data-list__title">Mother's name</dt>
             <dd class="data-list__definition">
               {% if child.value.mothersName != null %}
                 {{child.value.mothersName}}
@@ -675,7 +709,7 @@
             </dd>
           </div>
           <div class="data-list__row">
-            <dt class="data-list__title">Father's full name</dt>
+            <dt class="data-list__title">Father's name</dt>
             <dd class="data-list__definition">
               {% if child.value.fathersName %}
                 {{child.value.fathersName}}
@@ -748,7 +782,7 @@
     {% endfor %}
   {% endif %}
 
-  <h3 class="heading heading--three">Respondent
+  <h3 class="heading heading--two">Respondent
     {% if case_data.respondents != null
     and case_data.respondents.additional != null %}
       1
@@ -808,31 +842,31 @@
       </dd>
     </div>
     <div class="data-list__row">
-      <dt class="data-list__title">Address</dt>
+      <dt class="data-list__title">Current address</dt>
       <dd class="data-list__definition">
         {% if case_data.respondents != null and
         case_data.respondents.firstRespondent != null and
         case_data.respondents.firstRespondent.address != null %}
           {% if case_data.respondents.firstRespondent.address.AddressLine1 != null %}
-            <span class="address-line">{{case_data.respondents.firstRespondent.address.AddressLine1}}</span>
+            <span class="u-comma-before">{{case_data.respondents.firstRespondent.address.AddressLine1}}</span>
           {% endif %}
           {% if case_data.respondents.firstRespondent.address.AddressLine2 != null %}
-            <span class="address-line">{{case_data.respondents.firstRespondent.address.AddressLine2}}</span>
+            <span class="u-comma-before">{{case_data.respondents.firstRespondent.address.AddressLine2}}</span>
           {% endif %}
           {% if case_data.respondents.firstRespondent.address.AddressLine3 != null %}
-            <span class="address-line">{{case_data.respondents.firstRespondent.address.AddressLine3}}</span>
+            <span class="u-comma-before">{{case_data.respondents.firstRespondent.address.AddressLine3}}</span>
           {% endif %}
           {% if case_data.respondents.firstRespondent.address.PostTown != null %}
-            <span class="address-line">{{case_data.respondents.firstRespondent.address.PostTown}}</span>
+            <span class="u-comma-before">{{case_data.respondents.firstRespondent.address.PostTown}}</span>
           {% endif %}
           {% if case_data.respondents.firstRespondent.address.County != null %}
-            <span class="address-line">{{case_data.respondents.firstRespondent.address.County}}</span>
+            <span class="u-comma-before">{{case_data.respondents.firstRespondent.address.County}}</span>
           {% endif %}
           {% if case_data.respondents.firstRespondent.address.PostCode != null %}
-            <span class="address-line">{{case_data.respondents.firstRespondent.address.PostCode}}</span>
+            <span class="u-comma-before">{{case_data.respondents.firstRespondent.address.PostCode}}</span>
           {% endif %}
           {% if case_data.respondents.firstRespondent.address.Country != null %}
-            <span class="address-line">{{case_data.respondents.firstRespondent.address.Country}}</span>
+            <span class="u-comma-before">{{case_data.respondents.firstRespondent.address.Country}}</span>
           {% endif %}
         {% else %}
           -
@@ -864,6 +898,26 @@
       </dd>
     </div>
     <div class="data-list__row">
+      <dt class="data-list__title">Interpreter</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Spoken or written Welsh</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Intermediary</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Facilities or assistance for a disability</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Separate waiting room or other security measures</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
       <dt class="data-list__title">Litigation capacity issues</dt>
       <dd class="data-list__definition">
         {% if case_data.respondents != null and
@@ -877,6 +931,10 @@
           -
         {% endif %}
       </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Anything else to help take part in proceedings</dt>
+      <dd class="data-list__definition">-</dd>
     </div>
     <div class="data-list__row">
       <dt class="data-list__title">Confidential contact details</dt>
@@ -905,7 +963,7 @@
 
     {% for respondent in case_data.respondents.additional %}
       {% if respondent != null and respondent.value != null %}
-      <h3 class="heading heading--three">Respondent {{counter}}</h3>
+      <h3 class="heading heading--two">Respondent {{counter}}</h3>
       <dl class="data-list">
         <div class="data-list__row">
           <dt class="data-list__title">Name</dt>
@@ -956,25 +1014,25 @@
           <dd class="data-list__definition">
             {% if respondent.value.address != null %}
               {% if respondent.value.address.AddressLine1 != null %}
-                <span class="address-line">{{respondent.value.address.AddressLine1}}</span>
+                <span class="u-comma-before">{{respondent.value.address.AddressLine1}}</span>
               {% endif %}
               {% if respondent.value.address.AddressLine2 != null %}
-                <span class="address-line">{{respondent.value.address.AddressLine2}}</span>
+                <span class="u-comma-before">{{respondent.value.address.AddressLine2}}</span>
               {% endif %}
               {% if respondent.value.address.AddressLine3 != null %}
-                <span class="address-line">{{respondent.value.address.AddressLine3}}</span>
+                <span class="u-comma-before">{{respondent.value.address.AddressLine3}}</span>
               {% endif %}
               {% if respondent.value.address.PostTown != null %}
-                <span class="address-line">{{respondent.value.address.PostTown}}</span>
+                <span class="u-comma-before">{{respondent.value.address.PostTown}}</span>
               {% endif %}
               {% if respondent.value.address.County != null %}
-                <span class="address-line">{{respondent.value.address.County}}</span>
+                <span class="u-comma-before">{{respondent.value.address.County}}</span>
               {% endif %}
               {% if respondent.value.address != null %}
-                <span class="address-line">{{respondent.value.address.PostCode}}</span>
+                <span class="u-comma-before">{{respondent.value.address.PostCode}}</span>
               {% endif %}
               {% if respondent.value.address.Country != null %}
-                <span class="address-line">{{respondent.value.address.Country}}</span>
+                <span class="u-comma-before">{{respondent.value.address.Country}}</span>
               {% endif %}
             {% else %}
               -
@@ -1002,6 +1060,26 @@
           </dd>
         </div>
         <div class="data-list__row">
+          <dt class="data-list__title">Interpreter</dt>
+          <dd class="data-list__definition">-</dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Spoken or written Welsh</dt>
+          <dd class="data-list__definition">-</dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Intermediary</dt>
+          <dd class="data-list__definition">-</dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Facilities or assistance for a disability</dt>
+          <dd class="data-list__definition">-</dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Separate waiting room or other security measures</dt>
+          <dd class="data-list__definition">-</dd>
+        </div>
+        <div class="data-list__row">
           <dt class="data-list__title">Litigation capacity issues</dt>
           <dd class="data-list__definition">
             {% if respondent.value.litigationIssues != null %}
@@ -1014,13 +1092,30 @@
             {% endif %}
           </dd>
         </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Anything else to help take part in proceedings</dt>
+          <dd class="data-list__definition">-</dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Confidential contact details</dt>
+          <dd class="data-list__definition">
+            {% if respondent.value.contactDetailsHidden != null %}
+              <span class="u-block">{{respondent.value.contactDetailsHidden}}</span>
+            {% if case_data.respondents.firstRespondent.contactDetailsHiddenReason != null %}
+              <span class="u-block">{{respondent.value.contactDetailsHiddenReason}}</span>
+            {% endif %}
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
       </dl>
       {% endif %}
     {% set counter = counter + 1 %}
     {% endfor %}
   {% endif %}
 
-  <h3 class="heading heading--three">Applicant</h3>
+  <h3 class="heading heading--two">Applicant</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Name</dt>
@@ -1061,25 +1156,25 @@
         {% if case_data.applicant != null and
           case_data.applicant.address != null %}
           {% if case_data.applicant.address.AddressLine1 != null %}
-            <span class="address-line">{{case_data.applicant.address.AddressLine1}}</span>
+            <span class="u-comma-before">{{case_data.applicant.address.AddressLine1}}</span>
           {% endif %}
           {% if case_data.applicant.address.AddressLine2 != null %}
-            <span class="address-line">{{case_data.applicant.address.AddressLine2}}</span>
+            <span class="u-comma-before">{{case_data.applicant.address.AddressLine2}}</span>
           {% endif %}
           {% if case_data.applicant.address.AddressLine3 != null %}
-            <span class="address-line">{{case_data.applicant.address.AddressLine3}}</span>
+            <span class="u-comma-before">{{case_data.applicant.address.AddressLine3}}</span>
           {% endif %}
           {% if case_data.applicant.address.PostTown != null %}
-            <span class="address-line">{{case_data.applicant.address.PostTown}}</span>
+            <span class="u-comma-before">{{case_data.applicant.address.PostTown}}</span>
           {% endif %}
           {% if case_data.applicant.address.County != null %}
-            <span class="address-line">{{case_data.applicant.address.County}}</span>
+            <span class="u-comma-before">{{case_data.applicant.address.County}}</span>
           {% endif %}
           {% if case_data.applicant.address.PostCode != null %}
-            <span class="address-line">{{case_data.applicant.address.PostCode}}</span>
+            <span class="u-comma-before">{{case_data.applicant.address.PostCode}}</span>
           {% endif %}
           {% if case_data.applicant.address.Country != null %}
-            <span class="address-line">{{case_data.applicant.address.Country}}</span>
+            <span class="u-comma-before">{{case_data.applicant.address.Country}}</span>
           {% endif %}
         {% else %}
           -
@@ -1187,7 +1282,331 @@
     </div>
   </dl>
 
-  <h3 class="heading heading--three">Grounds for the application</h3>
+  <h3 class="heading heading--two">
+    Other
+    {% if case_data.others.additionalOthers != null %}
+     1
+    {% endif %}
+  </h3>
+  <dl class="data-list">
+    <div class="data-list__row">
+      <dt class="data-list__title">Name</dt>
+      <dd class="data-list__definition">
+        {% if case_data.others != null and
+        case_data.others.firstOther != null and
+        case_data.others.firstOther.name != null %}
+          {{case_data.others.firstOther.name}}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Date of birth</dt>
+      <dd class="data-list__definition">
+        {% if case_data.others != null and
+        case_data.others.firstOther != null and
+        case_data.others.firstOther.DOB != null %}
+          {{case_data.others.firstOther.DOB}}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Gender</dt>
+      <dd class="data-list__definition">
+        {% if case_data.others != null and
+        case_data.others.firstOther != null and
+        case_data.others.firstOther.gender != null %}
+          {{case_data.others.firstOther.gender}}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Place of birth</dt>
+      <dd class="data-list__definition">
+        {% if case_data.others != null and
+        case_data.others.firstOther != null and
+        case_data.others.firstOther.birthPlace != null %}
+          {{case_data.others.firstOther.birthPlace}}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Current address</dt>
+      <dd class="data-list__definition">
+        {% if case_data.others != null and
+        case_data.others.firstOther != null and
+        case_data.others.firstOther.address != null %}
+          {% if case_data.others.firstOther.address.AddressLine1 != null %}
+            <span class="u-comma-before">{{case_data.others.firstOther.address.AddressLine1}}</span>
+          {% endif %}
+          {% if case_data.others.firstOther.address.AddressLine2 != null %}
+            <span class="u-comma-before">{{case_data.others.firstOther.address.AddressLine2}}</span>
+          {% endif %}
+          {% if case_data.others.firstOther.address.AddressLine3 != null %}
+            <span class="u-comma-before">{{case_data.others.firstOther.address.AddressLine3}}</span>
+          {% endif %}
+          {% if case_data.others.firstOther.address.PostTown != null %}
+            <span class="u-comma-before">{{case_data.others.firstOther.address.PostTown}}</span>
+          {% endif %}
+          {% if case_data.others.firstOther.address.County != null %}
+            <span class="u-comma-before">{{case_data.others.firstOther.address.County}}</span>
+          {% endif %}
+          {% if case_data.others.firstOther.address.PostCode != null %}
+            <span class="u-comma-before">{{case_data.others.firstOther.address.PostCode}}</span>
+          {% endif %}
+          {% if case_data.others.firstOther.address.Country != null %}
+            <span class="u-comma-before">{{case_data.others.firstOther.address.Country}}</span>
+          {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Telephone number</dt>
+      <dd class="data-list__definition">
+        {% if case_data.others != null and
+        case_data.others.firstOther != null and
+        case_data.others.firstOther.telephone != null %}
+          {{case_data.others.firstOther.telephone}}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Relationship to the child or children</dt>
+      <dd class="data-list__definition">
+        {% if case_data.others != null and
+        case_data.others.firstOther != null and
+        case_data.others.firstOther.childInformation != null %}
+          {{case_data.others.firstOther.childInformation}}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Interpreter</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Spoken or written Welsh</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Intermediary</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Facilities or assistance for a disability</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Separate waiting room or other security measures</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Litigation capacity issues</dt>
+      <dd class="data-list__definition">
+        {% if case_data.others != null and
+        case_data.others.firstOther != null and
+        case_data.others.firstOther.litigationIssues != null %}
+          {{case_data.others.firstOther.litigationIssues}}
+          {% if case_data.others.firstOther.litigationIssuesReason != null %}
+            <span class="u-block">{{case_data.others.firstOther.litigationIssuesReason}}</span>
+          {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Anything else to help take part in the proceedings</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Confidential contact details</dt>
+      <dd class="data-list__definition">
+        {% if case_data.others != null and
+        case_data.others.firstOther != null and
+        case_data.others.firstOther.detailsHidden != null %}
+          {{case_data.others.firstOther.detailsHidden}}
+        {% if case_data.others.firstOther.detailsHiddenReason != null %}
+          <span class="u-block">{{case_data.others.firstOther.detailsHiddenReason}}</span>
+        {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+  </dl>
+
+  {% if case_data.others != null and
+  case_data.others.additionalOthers != null %}
+    {% if case_data.others != null and case_data.others.firstOther != null %}
+      {% set counter = 2 %}
+    {% else %}
+      {% set counter = 1 %}
+    {% endif %}
+    {% for other in case_data.others.additionalOthers %}
+      {% if other != null and other.value != null %}
+        <h3 class="heading heading--two">Other {{counter}}</h3>
+        <dl class="data-list">
+          <div class="data-list__row">
+            <dt class="data-list__title">Name</dt>
+            <dd class="data-list__definition">
+              {% if other.value != null and other.value.name != null %}
+                {{other.value.name}}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Date of birth</dt>
+            <dd class="data-list__definition">
+              {% if other.value != null and other.value.DOB != null %}
+                {{other.value.DOB}}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Gender</dt>
+            <dd class="data-list__definition">
+              {% if other.value != null and other.value.gender != null %}
+                {{other.value.gender}}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Place of birth</dt>
+            <dd class="data-list__definition">
+              {% if other.value != null and other.value.birthPlace != null %}
+                {{other.value.birthPlace}}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Current address</dt>
+            <dd class="data-list__definition">
+              {% if other.value != null and other.value.address != null %}
+                {% if other.value.address.AddressLine1 != null %}
+                  <span class="u-comma-before">{{other.value.address.AddressLine1}}</span>
+                {% endif %}
+                {% if other.value.address.AddressLine2 != null %}
+                  <span class="u-comma-before">{{other.value.address.AddressLine2}}</span>
+                {% endif %}
+                {% if other.value.address.AddressLine3 != null %}
+                  <span class="u-comma-before">{{other.value.address.AddressLine3}}</span>
+                {% endif %}
+                {% if other.value.address.PostTown != null %}
+                  <span class="u-comma-before">{{other.value.address.PostTown}}</span>
+                {% endif %}
+                {% if other.value.address.County != null %}
+                  <span class="u-comma-before">{{other.value.address.County}}</span>
+                {% endif %}
+                {% if other.value.address.PostCode != null %}
+                  <span class="u-comma-before">{{other.value.address.PostCode}}</span>
+                {% endif %}
+                {% if other.value.address.Country != null %}
+                  <span class="u-comma-before">{{other.value.address.Country}}</span>
+                {% endif %}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Telephone number</dt>
+            <dd class="data-list__definition">
+              {% if other.value != null and other.value.telephone != null %}
+                {{other.value.telephone}}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Relationship to the child</dt>
+            <dd class="data-list__definition">
+              {% if other.value != null and other.value.childInformation != null %}
+                {{other.value.childInformation}}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Interpreter</dt>
+            <dd class="data-list__definition">-</dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Spoken or written Welsh</dt>
+            <dd class="data-list__definition">-</dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Intermediary</dt>
+            <dd class="data-list__definition">-</dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Facilities or assistance for a disability</dt>
+            <dd class="data-list__definition">-</dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Separate waiting room or other security measures</dt>
+            <dd class="data-list__definition">-</dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Litigation capacity issues</dt>
+            <dd class="data-list__definition">
+              {% if other.value != null and other.value.litigationIssues != null %}
+                {{other.value.litigationIssues}}
+              {% if other.value.litigationIssuesReason != null %}
+                <span class="u-block">{{other.value.litigationIssuesReason}}</span>
+              {% endif %}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Anything else to help take part in the proceedings</dt>
+            <dd class="data-list__definition">-</dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Confidential contact details</dt>
+            <dd class="data-list__definition">
+              {% if other.value != null and other.value.detailsHidden != null %}
+                {{other.value.detailsHidden}}
+              {% if other.value.detailsHiddenReason != null %}
+                <span class="u-block">{{other.value.detailsHiddenReason}}</span>
+              {% endif %}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+        </dl>
+        {% endif %}
+      {% set counter = counter + 1 %}
+    {% endfor %}
+  {% endif %}
+
+  <h3 class="heading heading--two">Grounds for the application</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Threshold is met as the child is suffering or is likely to suffer significant harm because they are</dt>
@@ -1203,7 +1622,7 @@
     </div>
   </dl>
 
-  <h3 class="heading heading--three">Threshold evidence</h3>
+  <h3 class="heading heading--two">Threshold evidence</h3>
   <p>
     {% if case_data.grounds != null and
     case_data.grounds.thresholdDetails != null %}
@@ -1213,7 +1632,7 @@
     {% endif %}
   </p>
 
-  <h3 class="heading heading--three">Risk and harm to children</h3>
+  <h3 class="heading heading--two">Risk and harm to children</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Physical harm including non-accidental injury</dt>
@@ -1223,8 +1642,8 @@
           {% if case_data.risks.physicalHarm == 'Yes' %}
             Yes
             {% if case_data.risks.physicalHarmOccurrences != null %}
-              {% for occurence in case_data.risks.physicalHarmOccurrences %}
-                <span class="u-block">{{occurence}}</span>
+              {% for occurrence in case_data.risks.physicalHarmOccurrences %}
+                <span class="u-block">{{occurrence}}</span>
               {% endfor %}
             {% endif %}
           {% else %}
@@ -1243,8 +1662,8 @@
           {% if case_data.risks.emotionalHarm == 'Yes' %}
           Yes
             {% if case_data.risks.emotionalHarmOccurrences != null %}
-            {% for occurence in case_data.risks.emotionalHarmOccurrences %}
-              <span class="u-block">{{occurence}}</span>
+            {% for occurrence in case_data.risks.emotionalHarmOccurrences %}
+              <span class="u-block">{{occurrence}}</span>
             {% endfor %}
           {% endif %}
           {% else %}
@@ -1263,8 +1682,8 @@
           {% if case_data.risks.sexualAbuse == 'Yes' %}
           Yes
             {% if case_data.risks.sexualAbuseOccurrences != null %}
-              {% for occurence in case_data.risks.sexualAbuseOccurrences %}
-                <span class="u-block">{{occurence}}</span>
+              {% for occurrence in case_data.risks.sexualAbuseOccurrences %}
+                <span class="u-block">{{occurrence}}</span>
               {% endfor %}
             {% endif %}
             {% else %}
@@ -1283,8 +1702,8 @@
           {% if case_data.risks.neglect == 'Yes' %}
             Yes
             {% if case_data.risks.neglectOccurrences != null %}
-            {% for occurence in case_data.risks.neglectOccurrences %}
-            <span class="u-block">{{occurence}}</span>
+            {% for occurrence in case_data.risks.neglectOccurrences %}
+              <span class="u-block">{{occurrence}}</span>
             {% endfor %}
           {% endif %}
           {% else %}
@@ -1297,10 +1716,10 @@
     </div>
   </dl>
 
-  <h3 class="heading heading--three">Factors affecting parenting</h3>
+  <h3 class="heading heading--two">Factors affecting parenting</h3>
   <dl class="data-list">
     <div class="data-list__row">
-      <dt class="data-list__title">Alcohol and drugs</dt>
+      <dt class="data-list__title">Alcohol or drug abuse</dt>
       <dd class="data-list__definition">
         {% if case_data.factorsParenting != null
         and case_data.factorsParenting.alcoholDrugAbuse != null %}
@@ -1346,7 +1765,7 @@
     </div>
   </dl>
 
-  <h3 class="heading heading--three">International element</h3>
+  <h3 class="heading heading--two">International element</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Suitable carer outside the UK</dt>
@@ -1411,20 +1830,14 @@
     <div class="data-list__row">
       <dt class="data-list__title">Government or central authority in another country been involved</dt>
       <dd class="data-list__definition">
-        <span class="u-block">Todo</span>
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Other proceedings</dt>
-      <dd class="data-list__definition">
-        <span class="u-block">Todo</span>
+        <span class="u-block">-</span>
       </dd>
     </div>
   </dl>
 
   {% if case_data.proceeding != null and case_data.proceeding.onGoingProceeding != null and
   case_data.proceeding.onGoingProceeding == "Yes" %}
-    <h3 class="heading heading--three">Other proceedings</h3>
+    <h3 class="heading heading--two">Other proceedings</h3>
     <dl class="data-list">
       <div class="data-list__row">
         <dt class="data-list__title">Ongoing or previous proceedings</dt>
@@ -1512,7 +1925,7 @@
     </dl>
   {% endif %}
 
-  <h3 class="heading heading--three">Annex Documents</h3>
+  <h3 class="heading heading--two">Annex Documents</h3>
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Social work chronology</dt>

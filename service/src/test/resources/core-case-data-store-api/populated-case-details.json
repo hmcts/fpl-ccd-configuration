@@ -3,8 +3,8 @@
   "case_data": {
     "risks": {
       "neglect": "Yes",
-      "sexualAbuse": "No",
-      "physicalHarm": "No",
+      "sexualAbuse": "Yes",
+      "physicalHarm": "Yes",
       "emotionalHarm": "Yes",
       "neglectOccurrences": [
         "Past harm",
@@ -14,9 +14,7 @@
         "Past harm",
         "Future risk of harm"
       ],
-      "physicalHarmOccurrences": [
-        "Value"
-      ],
+      "physicalHarmOccurrences": [],
       "emotionalHarmOccurrences": [
         "Past harm",
         "Future risk of harm"
@@ -29,6 +27,55 @@
         "Supervision order"
       ],
       "directionsAndInterim": "test string"
+    },
+    "others": {
+      "firstOther": {
+        "DOB": "1933-02-02",
+        "name": "Tim Jones",
+        "gender": "Male",
+        "address": {
+          "County": "Armagh",
+          "Country": "Pear",
+          "PostCode": "BT66 7RR",
+          "PostTown": "Apple",
+          "AddressLine1": "69 Clanconnel Gardens, Waringstown",
+          "AddressLine2": "Peters",
+          "AddressLine3": "Orange"
+        },
+        "telephone": "07749972242",
+        "birthPlace": "Newey",
+        "detailsHidden": "Yes",
+        "childInformation": "Persons relationship",
+        "litigationIssues": "Yes",
+        "detailsHiddenReason": "Need contact details hidden",
+        "litigationIssuesReason": "Ability to take part in proceedings"
+      },
+      "additionalOthers": [
+        {
+          "id": "9b6f1878-933f-46b5-885c-fc19c2176d96",
+          "value": {
+            "DOB": "2002-05-02",
+            "name": "Carly Wilson",
+            "gender": "Female",
+            "address": {
+              "County": "Armagh",
+              "Country": "United Kingdom",
+              "PostCode": "BT66 7RR",
+              "PostTown": "Waringstown",
+              "AddressLine1": "69 Clanconnel Gardens, Waringstown",
+              "AddressLine2": "Waringstown",
+              "AddressLine3": "Waringstown"
+            },
+            "telephone": "07749972242",
+            "birthPlace": "NEWRY",
+            "detailsHidden": "Yes",
+            "childInformation": "Relationship",
+            "litigationIssues": "Yes",
+            "detailsHiddenReason": "Reason",
+            "litigationIssuesReason": "reason"
+          }
+        }
+      ]
     },
     "grounds": {
       "thresholdReason": [
@@ -52,19 +99,28 @@
     "caseName": "James v someone",
     "children": {
       "firstChild": {
+        "address": {
+          "County": "Armagh",
+          "Country": "United Kingdom",
+          "PostCode": "BT66 7RR",
+          "PostTown": "Waringstown",
+          "AddressLine1": "69 Clanconnel Gardens, Waringstown",
+          "AddressLine2": "Waringstown",
+          "AddressLine3": "Waringstown"
+        },
         "adoption": "Yes",
         "childDOB": null,
         "keyDates": "1st Sept 2001",
         "childName": "James Nelson",
-        "childGender": null,
+        "childGender": "Male",
         "fathersName": "James Nelson",
         "mothersName": "James Nelson",
         "detailsHidden": "Yes",
         "situationDate": "1933-02-02",
         "careAndContact": "fdfdfd",
         "placementCourt": "northern ireland parlm",
-        "additionalNeeds": "No",
-        "livingSituation": "Other",
+        "additionalNeeds": "Yes",
+        "livingSituation": "Living with respondents",
         "socialWorkerTel": "07749972242",
         "litigationIssues": "Yes",
         "socialWorkerName": "Suzie Brendan",
@@ -87,13 +143,13 @@
               "AddressLine2": null,
               "AddressLine3": null
             },
-            "adoption": "Yes",
+            "adoption": null,
             "childDOB": "2002-02-02",
             "keyDates": "fdfd",
             "childName": "Gillian Mclaughan",
             "childGender": "Girl",
             "fathersName": null,
-            "mothersName": "Jenny",
+            "mothersName": null,
             "detailsHidden": null,
             "situationDate": "1933-05-02",
             "careAndContact": null,
@@ -157,14 +213,14 @@
               "County": "Armagh",
               "Country": "United Kingdom",
               "PostCode": "BT66 7RR",
-              "PostTown": "waringstown",
+              "PostTown": "criagavon",
               "AddressLine1": "69 Clanconnel Gardens",
               "AddressLine2": null,
               "AddressLine3": "criagavon"
             },
             "telephone": "02892611016",
             "placeOfBirth": "Hillsborough",
-            "litigationIssues": "Yes",
+            "litigationIssues": "No",
             "relationshipToChild": "Uncle",
             "contactDetailsHidden": "No"
           }
@@ -179,7 +235,7 @@
           "Country": "United Kingdom",
           "PostCode": "BT66 7RR",
           "PostTown": "Waringstown",
-          "AddressLine1": "69 Clanconnel Gardens",
+          "AddressLine1": "69 Clanconnel Gardens, Waringstown, Waringstown",
           "AddressLine2": "Waringstown",
           "AddressLine3": null
         },
@@ -191,6 +247,11 @@
         "litigationIssuesReason": "not able to take part in proceedings",
         "contactDetailsHiddenReason": "hide contact details"
       }
+    },
+    "submittedForm": {
+      "document_url": "http://dm-store:8080/documents/53a93323-e671-4910-b576-75a2fc757790",
+      "document_filename": "James_v_someone.pdf",
+      "document_binary_url": "http://dm-store:8080/documents/53a93323-e671-4910-b576-75a2fc757790/binary"
     },
     "factorsParenting": {
       "anythingElse": "Yes",
