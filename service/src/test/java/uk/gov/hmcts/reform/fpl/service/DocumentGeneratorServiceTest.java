@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -34,6 +35,7 @@ class DocumentGeneratorServiceTest {
         assertThat(content).contains("C110A");
     }
 
+    @Disabled
     @Test
     void testPopulatedCaseDetailsSuccessfullyReturnsByteArray() throws IOException {
         CaseDetails caseDetails = populatedCaseDetails();
