@@ -40,7 +40,7 @@ module.exports = {
     I.fillField(this.fields(id).respondent.dob.day, respondent.dob.day);
     I.fillField(this.fields(id).respondent.dob.month, respondent.dob.month);
     I.fillField(this.fields(id).respondent.dob.year, respondent.dob.year);
-    I.fillField(this.fields(id).respondent.gender, respondent.gender);
+    I.selectOption(this.fields(id).respondent.gender, respondent.gender);
     if (respondent.gender === 'They identify in another way') {
       I.fillField(this.fields(id).respondent.genderIdentify, '');
     }
