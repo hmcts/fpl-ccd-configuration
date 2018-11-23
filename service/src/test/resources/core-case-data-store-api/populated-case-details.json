@@ -1,6 +1,112 @@
 {
   "id": 12345,
+  "jurisdiction": "PUBLICLAW",
+  "state": "Open",
+  "case_type_id": "Shared_Storage_DRAFTType",
+  "security_classification": "PUBLIC",
   "case_data": {
+    "respondents": {
+      "firstRespondent": {
+        "name": "",
+        "dob": null,
+        "gender": "",
+        "placeOfBirth": null,
+        "address": {
+          "AddressLine1": null,
+          "AddressLine2": null,
+          "AddressLine3": null,
+          "PostTown": null,
+          "County": null,
+          "PostCode": null,
+          "Country": null
+        },
+        "telephone": null,
+        "relationshipToChild": null,
+        "contactDetailsHidden": "",
+        "litigationIssues": ""
+      },
+      "additional": []
+    },
     "caseName": "test"
+  },
+  "data_classification": {
+    "respondents": {
+      "classification": "PUBLIC",
+      "value": {
+        "firstRespondent": {
+          "classification": "PUBLIC",
+          "value": {
+            "name": "PUBLIC",
+            "dob": "PUBLIC",
+            "gender": "PUBLIC",
+            "placeOfBirth": "PUBLIC",
+            "address": {
+              "classification": "PUBLIC",
+              "value": {
+                "AddressLine1": "PUBLIC",
+                "AddressLine2": "PUBLIC",
+                "AddressLine3": "PUBLIC",
+                "PostTown": "PUBLIC",
+                "County": "PUBLIC",
+                "PostCode": "PUBLIC",
+                "Country": "PUBLIC"
+              }
+            },
+            "telephone": "PUBLIC",
+            "relationshipToChild": "PUBLIC",
+            "contactDetailsHidden": "PUBLIC",
+            "litigationIssues": "PUBLIC"
+          }
+        },
+        "additional": {
+          "classification": "PUBLIC",
+          "value": []
+        }
+      }
+    },
+    "caseName": "PUBLIC"
+  },
+  "after_submit_callback_response": null,
+  "callback_response_status_code": null,
+  "callback_response_status": null,
+  "delete_draft_response_status_code": null,
+  "delete_draft_response_status": null,
+  "security_classifications": {
+    "respondents": {
+      "classification": "PUBLIC",
+      "value": {
+        "firstRespondent": {
+          "classification": "PUBLIC",
+          "value": {
+            "name": "PUBLIC",
+            "dob": "PUBLIC",
+            "gender": "PUBLIC",
+            "placeOfBirth": "PUBLIC",
+            "address": {
+              "classification": "PUBLIC",
+              "value": {
+                "AddressLine1": "PUBLIC",
+                "AddressLine2": "PUBLIC",
+                "AddressLine3": "PUBLIC",
+                "PostTown": "PUBLIC",
+                "County": "PUBLIC",
+                "PostCode": "PUBLIC",
+                "Country": "PUBLIC"
+              }
+            },
+            "telephone": "PUBLIC",
+            "relationshipToChild": "PUBLIC",
+            "contactDetailsHidden": "PUBLIC",
+            "litigationIssues": "PUBLIC"
+          }
+        },
+        "additional": {
+          "classification": "PUBLIC",
+          "value": []
+        }
+      }
+    },
+    "caseName": "PUBLIC"
   }
 }
+

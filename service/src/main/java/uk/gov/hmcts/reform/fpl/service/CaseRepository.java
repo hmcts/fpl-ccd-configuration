@@ -64,5 +64,4 @@ public class CaseRepository {
                 .build())
             .build();
     }
-
 }
