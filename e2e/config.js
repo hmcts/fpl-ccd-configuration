@@ -10,9 +10,6 @@ module.exports = {
     jurisdiction: 'PUBLICLAW',
     caseType: 'Shared_Storage_DRAFTType',
   },
-  // event dialog
-  eventSummary: '',
-  eventDescription: '',
   // actions
   applicationActions: {
     selectOrders: 'Orders and directions needed',
