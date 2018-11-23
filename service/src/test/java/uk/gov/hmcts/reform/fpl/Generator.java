@@ -11,6 +11,7 @@ import java.io.IOException;
 
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
+@SuppressWarnings("HideUtilityClassConstructor")
 public class Generator {
 
     public static void main(String[] args) throws IOException {
