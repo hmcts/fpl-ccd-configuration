@@ -38,7 +38,7 @@ data:
   IDAM_S2S_AUTH_URL: "http://service-auth-provider-api"
   IDAM_S2S_AUTH_TOTP_SECRET: "AABBCCDDEEFFGGHH"
   IDAM_API_URL: "http://idam-api"
-  FPL_LOCAL_AUTHORITY_NAME_MAPPING: "swansea.gov.uk=>swansea;hillingdon.gov.uk=>hillingdon"
+  FPL_LOCAL_AUTHORITY_NAME_MAPPING: "swansea.gov.uk=>SA;hillingdon.gov.uk=>HN"
 
 ---
 
