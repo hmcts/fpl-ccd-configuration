@@ -32,8 +32,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
-    "ListElementCode": "example",
-    "ListElement": "Example Local Authority"
+    "ListElementCode": "swansea",
+    "ListElement": "Swansea Local Authority"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "hillingdon",
+    "ListElement": "Hillingdon Local Authority"
   },
   {
     "LiveFrom": "01/01/2017",
