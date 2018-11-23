@@ -185,8 +185,9 @@
     {% else %}
       Application from {{case_data.applicant.name}}
     {% endif %}
-    submitted on {{created_date}}
+    submitted on {{ null | today | date("d MMMM yyyy") }}
   </h2>
+
   <h3 class="heading heading--two">Orders</h3>
   <dl class="data-list">
     <div class="data-list__row">
@@ -313,6 +314,75 @@
     </div>
   </dl>
 
+  <h3 class="heading heading--two">Attending the hearing</h3>
+  <dl class="data-list">
+    <div class="data-list__row">
+      <dt class="data-list__title">Interpreter</dt>
+      <dd class="data-list__definition">
+        {% if case_data.hearingPreferences != null and case_data.hearingPreferences.interpreter != null %}
+          {{case_data.hearingPreferences.interpreter}}
+          {% if case_data.hearingPreferences.interpreter == 'Yes' %}
+            <span class="u-block">{{case_data.hearingPreferences.interpreterDetails}}</span>
+          {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Spoken or written Welsh</dt>
+      <dd class="data-list__definition">
+        {% if case_data.hearingPreferences != null and case_data.hearingPreferences.welsh != null %}
+          {{case_data.hearingPreferences.welsh}}
+          {% if case_data.hearingPreferences.welsh == 'Yes' %}
+            <span class="u-block">{{case_data.hearingPreferences.welshDetails}}</span>
+          {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Intermediary</dt>
+      <dd class="data-list__definition">
+        {% if case_data.hearingPreferences != null and case_data.hearingPreferences.intermediary != null %}
+          {{case_data.hearingPreferences.intermediary}}
+          {% if case_data.hearingPreferences.intermediary == 'Yes' %}
+            <span class="u-block">{{case_data.hearingPreferences.intermediaryDetails}}</span>
+          {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Facilities or assistance for a disability</dt>
+      <dd class="data-list__definition">
+        {% if case_data.hearingPreferences != null and case_data.hearingPreferences.learningDisability != null %}
+          {{case_data.hearingPreferences.learningDisability}}
+          {% if case_data.hearingPreferences.learningDisability == 'Yes' %}
+            <span class="u-block">{{case_data.hearingPreferences.learningDisabilityDetails}}</span>
+          {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Separate waiting room or other security measures</dt>
+      <dd class="data-list__definition">
+        {% if case_data.hearingPreferences != null and case_data.hearingPreferences.extraSecurityMeasures != null %}
+          {{case_data.hearingPreferences.extraSecurityMeasures}}
+          {% if case_data.hearingPreferences.extraSecurityMeasures == 'Yes' %}
+            <span class="u-block">{{case_data.hearingPreferences.extraSecurityMeasuresDetails}}</span>
+          {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+  </dl>
+
   <h3 class="heading heading--two">Child
     {% if case_data.children != null and
     case_data.children.additionalChildren != null %}
@@ -334,7 +404,15 @@
     </div>
     <div class="data-list__row">
       <dt class="data-list__title">Age</dt>
-      <dd class="data-list__definition">todo</dd>
+      <dd class="data-list__definition">
+        {% if case_data.children != null and
+        case_data.children.firstChild != null and
+        case_data.children.firstChild.childDOB != null %}
+          {{case_data.children.firstChild.childDOB | age}}
+        {% else %}
+         -
+        {% endif %}
+      </dd>
     </div>
     <div class="data-list__row">
       <dt class="data-list__title">Date of birth</dt>
@@ -342,7 +420,7 @@
         {% if case_data.children != null and
         case_data.children.firstChild != null and
         case_data.children.firstChild.childDOB != null %}
-          {{case_data.children.firstChild.childDOB}}
+          {{case_data.children.firstChild.childDOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd")}}
         {% else %}
           -
         {% endif %}
@@ -354,7 +432,12 @@
         {% if case_data.children != null and
         case_data.children.firstChild != null and
         case_data.children.firstChild.childGender != null %}
-          {{case_data.children.firstChild.childGender}}
+          {% if case_data.children.firstChild.childGender == 'They identify in another way'
+          and case_data.children.firstChild.childGenderIdentification != null %}
+            {{case_data.children.firstChild.childGenderIdentification}}
+          {% else %}
+            {{case_data.children.firstChild.childGender}}
+          {% endif %}
         {% else %}
           -
         {% endif %}
@@ -368,14 +451,14 @@
         case_data.children.firstChild.livingSituation != null %}
           <span class="u-block">{{case_data.children.firstChild.livingSituation}}</span>
           {% if case_data.children.firstChild.address != null %}
-            {% if case_data.children.firstChild.address.AddressLineOne != null %}
-              <span class="u-comma-before">{{case_data.children.firstChild.address.AddressLineOne}}</span>
+            {% if case_data.children.firstChild.address.AddressLine1 != null %}
+              <span class="u-comma-before">{{case_data.children.firstChild.address.AddressLine1}}</span>
             {% endif %}
-            {% if case_data.children.firstChild.address.AddressLineTwo != null %}
-              <span class="u-comma-before">{{case_data.children.firstChild.address.AddressLineTwo}}</span>
+            {% if case_data.children.firstChild.address.AddressLine2 != null %}
+              <span class="u-comma-before">{{case_data.children.firstChild.address.AddressLine2}}</span>
             {% endif %}
-            {% if case_data.children.firstChild.address.AddressLineThree != null %}
-              <span class="u-comma-before">{{case_data.children.firstChild.address.AddressLineThree}}</span>
+            {% if case_data.children.firstChild.address.AddressLine3!= null %}
+              <span class="u-comma-before">{{case_data.children.firstChild.address.AddressLine3}}</span>
             {% endif %}
             {% if case_data.children.firstChild.address.PostTown != null %}
               <span class="u-comma-before">{{case_data.children.firstChild.address.PostTown}}</span>
@@ -389,11 +472,11 @@
           {% endif %}
           {% if case_data.children.firstChild.situationDate != null %}
             {% if case_data.children.firstChild.livingSituation == 'In hospital and soon to be discharged' %}
-              <span class="u-block">Discharge date: {{case_data.children.firstChild.situationDate}}</span>
+              <span class="u-block">Discharge date: {{case_data.children.firstChild.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd")}}</span>
             {% elseif case_data.children.firstChild.livingSituation == 'Removed by Police, powers end soon' %}
-              <span class="u-block">Date powers end: {{case_data.children.firstChild.situationDate}}</span>
+              <span class="u-block">Date powers end: {{case_data.children.firstChild.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd")}}</span>
             {% else %}
-              <span class="u-block">Date this began: {{case_data.children.firstChild.situationDate}}</span>
+              <span class="u-block">Date this began: {{case_data.children.firstChild.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd")}}</span>
             {% endif %}
           {% endif %}
         {% else %}
@@ -582,7 +665,13 @@
           </div>
           <div class="data-list__row">
             <dt class="data-list__title">Age</dt>
-            <dd class="data-list__definition">todo</dd>
+            <dd class="data-list__definition">
+              {% if child.value.childDOB != null %}
+                {{child.value.childDOB | age}}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
           </div>
           <div class="data-list__row">
             <dt class="data-list__title">Date of birth</dt>
@@ -598,7 +687,12 @@
             <dt class="data-list__title">Gender</dt>
             <dd class="data-list__definition">
               {% if child.value.childGender != null %}
-                {{child.value.childGender}}
+                {% if child.value.childGender == 'They identify in another way'
+                and child.value.childGenderIdentification != null %}
+                  {{child.value.childGenderIdentification}}
+                {% else %}
+                  {{child.value.childGender}}
+                {% endif %}
               {% else %}
                 -
               {% endif %}
@@ -631,11 +725,11 @@
                 {% endif %}
                 {% if child.value.situationDate != null %}
                   {% if child.value.livingSituation == 'In hospital and soon to be discharged' %}
-                    <span class="u-block">Discharge date: {{child.value.situationDate}}</span>
+                    <span class="u-block">Discharge date: {{child.value.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd")}}</span>
                   {% elseif child.value.livingSituation == 'Removed by Police, powers end soon' %}
-                    <span class="u-block">Date powers end: {{child.value.situationDate}}</span>
+                    <span class="u-block">Date powers end: {{child.value.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd")}}</span>
                   {% else %}
-                    <span class="u-block">Date this began: {{child.value.situationDate}}</span>
+                    <span class="u-block">Date this began: {{child.value.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd")}}</span>
                   {% endif %}
                 {% endif %}
               {% else %}
@@ -711,7 +805,7 @@
           <div class="data-list__row">
             <dt class="data-list__title">Father's name</dt>
             <dd class="data-list__definition">
-              {% if child.value.fathersName %}
+              {% if child.value.fathersName != null %}
                 {{child.value.fathersName}}
               {% else %}
                 -
@@ -803,7 +897,16 @@
     </div>
     <div class="data-list__row">
       <dt class="data-list__title">Age</dt>
-      <dd class="data-list__definition">Todo</dd>
+      <dd class="data-list__definition">
+        {% if case_data.respondents != null and
+        case_data.respondents.firstRespondent != null and
+        case_data.respondents.firstRespondent.dob != null %}
+          {{case_data.respondents.firstRespondent.dob | age}}
+        {% else %}
+         -
+        {% endif %}
+
+      </dd>
     </div>
     <div class="data-list__row">
       <dt class="data-list__title">Date of birth</dt>
@@ -811,7 +914,7 @@
         {% if case_data.respondents != null and
         case_data.respondents.firstRespondent != null and
         case_data.respondents.firstRespondent.dob != null %}
-          {{case_data.respondents.firstRespondent.dob}}
+          {{case_data.respondents.firstRespondent.dob | date("d MMMM yyyy", existingFormat="yyyy-MM-dd")}}
         {% else %}
           -
         {% endif %}
@@ -821,9 +924,14 @@
       <dt class="data-list__title">Gender</dt>
       <dd class="data-list__definition">
         {% if case_data.respondents != null and
-        case_data.respondents.firstRespondent != null and
-        case_data.respondents.firstRespondent.gender != null %}
-          {{case_data.respondents.firstRespondent.gender}}
+          case_data.respondents.firstRespondent != null and
+          case_data.respondents.firstRespondent.gender != null %}
+          {% if case_data.respondents.firstRespondent.gender == 'They identify in another way'
+          and case_data.respondents.firstRespondent.genderIdentify != null %}
+            {{case_data.respondents.firstRespondent.genderIdentify}}
+          {% else %}
+            {{case_data.respondents.firstRespondent.childGender}}
+          {% endif %}
         {% else %}
           -
         {% endif %}
@@ -960,7 +1068,6 @@
     {% else %}
       {% set counter = 1 %}
     {% endif %}
-
     {% for respondent in case_data.respondents.additional %}
       {% if respondent != null and respondent.value != null %}
       <h3 class="heading heading--two">Respondent {{counter}}</h3>
@@ -977,13 +1084,19 @@
         </div>
         <div class="data-list__row">
           <dt class="data-list__title">Age</dt>
-          <dd class="data-list__definition">Todo</dd>
+          <dd class="data-list__definition">
+            {% if respondent.value.dob != null %}
+              {{respondent.value.dob | age}}
+            {% else %}
+              -
+            {% endif %}
+          </dd>
         </div>
         <div class="data-list__row">
           <dt class="data-list__title">Date of birth</dt>
           <dd class="data-list__definition">
             {% if respondent.value.dob != null %}
-              {{respondent.value.dob}}
+              {{respondent.value.dob | date("d MMMM yyyy", existingFormat="yyyy-MM-dd")}}
             {% else %}
               -
             {% endif %}
@@ -993,7 +1106,12 @@
           <dt class="data-list__title">Gender</dt>
           <dd class="data-list__definition">
             {% if respondent.value.gender != null %}
-              {{respondent.value.gender}}
+              {% if respondent.value.gender == 'They identify in another way'
+              and respondent.value.genderIdentify != null %}
+                {{respondent.value.genderIdentify}}
+              {% else %}
+                {{respondent.value.gender}}
+              {% endif %}
             {% else %}
               -
             {% endif %}
@@ -1284,7 +1402,8 @@
 
   <h3 class="heading heading--two">
     Other
-    {% if case_data.others.additionalOthers != null %}
+    {% if case_data.others != null and
+    case_data.others.additionalOthers != null %}
      1
     {% endif %}
   </h3>
@@ -1307,7 +1426,7 @@
         {% if case_data.others != null and
         case_data.others.firstOther != null and
         case_data.others.firstOther.DOB != null %}
-          {{case_data.others.firstOther.DOB}}
+          {{case_data.others.firstOther.DOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd")}}
         {% else %}
           -
         {% endif %}
@@ -1319,7 +1438,12 @@
         {% if case_data.others != null and
         case_data.others.firstOther != null and
         case_data.others.firstOther.gender != null %}
-          {{case_data.others.firstOther.gender}}
+          {% if case_data.others.firstOther.gender == 'They identify in another way'
+          and case_data.others.firstOther.genderIdentification != null %}
+            {{case_data.others.firstOther.genderIdentification}}
+          {% else %}
+            {{case_data.others.firstOther.childGender}}
+          {% endif %}
         {% else %}
           -
         {% endif %}
@@ -1474,7 +1598,7 @@
             <dt class="data-list__title">Date of birth</dt>
             <dd class="data-list__definition">
               {% if other.value != null and other.value.DOB != null %}
-                {{other.value.DOB}}
+                {{other.value.DOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd")}}
               {% else %}
                 -
               {% endif %}
@@ -1483,8 +1607,14 @@
           <div class="data-list__row">
             <dt class="data-list__title">Gender</dt>
             <dd class="data-list__definition">
-              {% if other.value != null and other.value.gender != null %}
-                {{other.value.gender}}
+              {% if other.value != null and
+              other.value.gender != null %}
+                {% if other.value.gender == 'They identify in another way'
+                and other.value.genderIdentification != null %}
+                  {{other.value.genderIdentification}}
+                {% else %}
+                  {{other.value.gender}}
+                {% endif %}
               {% else %}
                 -
               {% endif %}
@@ -1914,9 +2044,9 @@
         <dd class="data-list__definition">
           {% if case_data.proceeding.sameGuardianNeeded != null %}
             <span class="u-block">{{case_data.proceeding.sameGuardianNeeded}}</span>
-            {% if case_data.proceeding.sameGuardianNeeded == "Yes" and case_data.proceeding.sameGuardianDetails != null %}
+            {% if case_data.proceeding.sameGuardianNeeded == "No" and case_data.proceeding.sameGuardianDetails != null %}
               <span class="u-block">{{case_data.proceeding.sameGuardianDetails}}</span>
-          {% endif %}
+            {% endif %}
           {% else %}
             -
           {% endif %}

@@ -14,7 +14,10 @@
         "Past harm",
         "Future risk of harm"
       ],
-      "physicalHarmOccurrences": [],
+      "physicalHarmOccurrences": [
+        "Past harm",
+        "Future risk of harm"
+      ],
       "emotionalHarmOccurrences": [
         "Past harm",
         "Future risk of harm"
@@ -22,57 +25,56 @@
     },
     "orders": {
       "orderType": [
-        "Care order",
-        "Education supervision order",
-        "Supervision order"
+        "Emergency protection order"
       ],
-      "directionsAndInterim": "test string"
+      "directionsAndInterim": "Information on the whereabouts of the child"
     },
     "others": {
       "firstOther": {
-        "DOB": "1933-02-02",
-        "name": "Tim Jones",
-        "gender": "Male",
+        "DOB": "1999-02-02",
+        "name": "Jason Lavery",
+        "gender": "They identify in another way",
         "address": {
           "County": "Armagh",
-          "Country": "Pear",
-          "PostCode": "BT66 7RR",
-          "PostTown": "Apple",
-          "AddressLine1": "69 Clanconnel Gardens, Waringstown",
-          "AddressLine2": "Peters",
-          "AddressLine3": "Orange"
+          "Country": "United Kingdom",
+          "PostCode": "BT43 343",
+          "PostTown": "Belfast",
+          "AddressLine1": "1 Belfast Road",
+          "AddressLine2": null,
+          "AddressLine3": null
         },
-        "telephone": "07749972242",
-        "birthPlace": "Newey",
+        "telephone": "07749972245",
+        "birthPlace": "Belfast",
         "detailsHidden": "Yes",
-        "childInformation": "Persons relationship",
+        "childInformation": "Cousin",
         "litigationIssues": "Yes",
-        "detailsHiddenReason": "Need contact details hidden",
-        "litigationIssuesReason": "Ability to take part in proceedings"
+        "detailsHiddenReason": "Others one hide contacts",
+        "genderIdentification": "Unknown",
+        "litigationIssuesReason": "Others one inability to take part in proceedings"
       },
       "additionalOthers": [
         {
-          "id": "9b6f1878-933f-46b5-885c-fc19c2176d96",
+          "id": "34c97e1a-eed9-499b-9693-e92496a1f54d",
           "value": {
-            "DOB": "2002-05-02",
-            "name": "Carly Wilson",
-            "gender": "Female",
+            "DOB": "2000-02-02",
+            "name": "Other two",
+            "gender": "Male",
             "address": {
-              "County": "Armagh",
+              "County": "Cork",
               "Country": "United Kingdom",
-              "PostCode": "BT66 7RR",
-              "PostTown": "Waringstown",
-              "AddressLine1": "69 Clanconnel Gardens, Waringstown",
-              "AddressLine2": "Waringstown",
+              "PostCode": "BTTT TTT",
+              "PostTown": "Newcastle",
+              "AddressLine1": "1 Newcastle street",
+              "AddressLine2": null,
               "AddressLine3": "Waringstown"
             },
-            "telephone": "07749972242",
-            "birthPlace": "NEWRY",
+            "telephone": "07749972241",
+            "birthPlace": "Lisburn",
             "detailsHidden": "Yes",
-            "childInformation": "Relationship",
+            "childInformation": "Friend of family",
             "litigationIssues": "Yes",
-            "detailsHiddenReason": "Reason",
-            "litigationIssuesReason": "reason"
+            "detailsHiddenReason": "Other two hide from parties",
+            "litigationIssuesReason": "Other two inability to take part in proceedings"
           }
         }
       ]
@@ -82,243 +84,263 @@
         "noCare",
         "beyondControl"
       ],
-      "thresholdDetails": "fdfdfdfd"
+      "thresholdDetails": "grounds for application criteria"
     },
     "hearing": {
       "type": "Contested interim care order",
-      "reason": "date of hearing test comment",
+      "reason": "Baby will be discharged from hospital on 21 June 2018",
       "timeFrame": "Same day",
       "reducedNotice": "Yes",
       "withoutNotice": "Yes",
-      "type_GiveReason": "reason of hearing test comment",
+      "type_GiveReason": "Standard case management hearing",
       "respondentsAware": "Yes",
-      "reducedNoticeReason": "Need a hearing without reduced notice",
-      "withoutNoticeReason": "Need a hearing without a hearing notice",
-      "respondentsAwareReason": "Respondent is aware of aware of proceedings"
+      "reducedNoticeReason": "Baby needs to be discharged from the hospital",
+      "withoutNoticeReason": "Notice without hearing needed",
+      "respondentsAwareReason": "They seek to care for baby in mother and baby unit"
     },
-    "caseName": "James v someone",
+    "caseName": "test PDF case",
     "children": {
       "firstChild": {
         "address": {
-          "County": "Armagh",
-          "Country": "United Kingdom",
-          "PostCode": "BT66 7RR",
-          "PostTown": "Waringstown",
-          "AddressLine1": "69 Clanconnel Gardens, Waringstown",
-          "AddressLine2": "Waringstown",
-          "AddressLine3": "Waringstown"
+          "County": null,
+          "Country": null,
+          "PostCode": "SE22 6SB",
+          "PostTown": null,
+          "AddressLine1": "Bentley hosptial",
+          "AddressLine2": "22 Wesley Drive",
+          "AddressLine3": null
         },
         "adoption": "Yes",
-        "childDOB": null,
-        "keyDates": "1st Sept 2001",
-        "childName": "James Nelson",
-        "childGender": "Male",
-        "fathersName": "James Nelson",
-        "mothersName": "James Nelson",
+        "childDOB": "2018-06-15",
+        "keyDates": "child starting primary school or taking GCSEs",
+        "childName": "Tom Reeves",
+        "childGender": "They identify in another way",
+        "fathersName": "Rob Reeves",
+        "mothersName": "Isbella Reeves",
         "detailsHidden": "Yes",
-        "situationDate": "1933-02-02",
-        "careAndContact": "fdfdfd",
-        "placementCourt": "northern ireland parlm",
+        "situationDate": "2018-11-08",
+        "careAndContact": "Place baby in local authority foster care",
+        "placementCourt": "Central London County Court",
         "additionalNeeds": "Yes",
         "livingSituation": "Living with respondents",
-        "socialWorkerTel": "07749972242",
+        "socialWorkerTel": "0123456789",
         "litigationIssues": "Yes",
-        "socialWorkerName": "Suzie Brendan",
-        "detailsHiddenReason": "Other parties",
+        "socialWorkerName": "Helen Green",
+        "detailsHiddenReason": "History of domestic violence with relatives",
         "fathersResponsibility": "Yes",
-        "additionalNeedsDetails": "Additonal needs",
-        "litigationIssuesReason": "Ability to take part in proceedings",
+        "additionalNeedsDetails": "Autism",
+        "litigationIssuesReason": "Autism",
+        "childGenderIdentification": "Boy",
         "placementOrderApplication": "Yes"
       },
       "additionalChildren": [
         {
-          "id": "bd6d5618-220c-42d7-857f-e2857320721d",
+          "id": "3b0b9640-2894-41eb-bef2-a031d18c8453",
           "value": {
             "address": {
               "County": null,
-              "Country": null,
-              "PostCode": null,
-              "PostTown": null,
-              "AddressLine1": null,
-              "AddressLine2": null,
+              "Country": "BT66 7RR",
+              "PostCode": "MK10 1SA",
+              "PostTown": "Milton Keynes",
+              "AddressLine1": "Carnegie House",
+              "AddressLine2": "Central Milton Keynes",
               "AddressLine3": null
             },
-            "adoption": null,
+            "adoption": "Yes",
             "childDOB": "2002-02-02",
-            "keyDates": "fdfd",
-            "childName": "Gillian Mclaughan",
+            "keyDates": "test child two key date",
+            "childName": "Sarah Reeves",
             "childGender": "Girl",
-            "fathersName": null,
-            "mothersName": null,
-            "detailsHidden": null,
-            "situationDate": "1933-05-02",
-            "careAndContact": null,
-            "additionalNeeds": null,
+            "fathersName": "Scott Simpson",
+            "mothersName": "Sarah Simpson",
+            "detailsHidden": "Yes",
+            "situationDate": "2002-02-02",
+            "careAndContact": "test child two care and contact plan",
+            "placementCourt": "test child two court",
+            "additionalNeeds": "Yes",
             "livingSituation": "Living with respondents",
-            "socialWorkerTel": null,
-            "litigationIssues": null,
-            "socialWorkerName": null,
-            "fathersResponsibility": null
+            "socialWorkerTel": "07749972242",
+            "litigationIssues": "Yes",
+            "socialWorkerName": "Paul Wilsdon",
+            "detailsHiddenReason": "test child two contact details hidden reason",
+            "fathersResponsibility": "Yes",
+            "additionalNeedsDetails": "learning disabilities",
+            "litigationIssuesReason": "test child two ability to take part in proceedings",
+            "placementOrderApplication": "Yes"
           }
         }
       ]
     },
     "applicant": {
-      "name": "David Robinson",
-      "email": "j.nelson@kainos.com",
-      "mobile": "7749972242",
+      "name": "London Borough of Southwark",
+      "email": "jane@smith.com",
+      "mobile": "2020202020",
       "address": {
-        "County": "Armagh",
-        "Country": "United Kingdom",
-        "PostCode": "BT66 7RR",
-        "PostTown": "Waringstown",
-        "AddressLine1": "69 Clanconnel Gardens, Waringstown",
-        "AddressLine2": "Waringstown",
+        "County": null,
+        "Country": null,
+        "PostCode": "SE1 2QH",
+        "PostTown": "London",
+        "AddressLine1": "160 Tooley St",
+        "AddressLine2": null,
         "AddressLine3": null
       },
-      "jobTitle": "UX designer",
-      "telephone": null,
-      "personToContact": "David Jones"
+      "jobTitle": "Legal adviser",
+      "telephone": "02120202020",
+      "personToContact": "Jane Smith"
     },
     "solicitor": {
-      "dx": "12345",
-      "name": "James Nelson",
-      "email": "j.nelson@kainos.com",
-      "mobile": "7749972242",
+      "dx": "106 Southwark &",
+      "name": "Brian Banks",
+      "email": "brian@banks.com",
+      "mobile": "7665545327",
       "reference": "12345",
-      "telephone": "07749972242"
+      "telephone": "020 2772 5772"
     },
     "proceeding": {
-      "ended": "Tommorow",
-      "judge": "Tim Proctor",
-      "started": "Today",
-      "children": "dsdsdsd",
-      "guardian": "david nelson",
+      "ended": "02-02-2006",
+      "judge": "William Peters",
+      "started": "02-02-2002",
+      "children": "children subject to proceedings",
+      "guardian": "Mark Watson",
       "caseNumber": "12345",
-      "ordersMade": "N/A",
+      "ordersMade": "Supervision order",
       "proceedingStatus": "Ongoing",
       "onGoingProceeding": "Yes",
       "sameGuardianNeeded": "No",
-      "sameGuardianDetails": "reason"
+      "sameGuardianDetails": "Some guardian not needed"
     },
     "respondents": {
       "additional": [
         {
-          "id": "f91ef8dd-6de6-4f05-ab88-5e49b71f00c7",
+          "id": "a5e57424-9b5c-4722-be7e-9d9d9111c2b0",
           "value": {
-            "dob": "2002-02-02",
-            "name": "David Watson",
-            "gender": "Female",
+            "dob": "1933-04-02",
+            "name": "James Smith",
+            "gender": "Male",
             "address": {
-              "County": "Armagh",
+              "County": "Down",
               "Country": "United Kingdom",
-              "PostCode": "BT66 7RR",
-              "PostTown": "criagavon",
-              "AddressLine1": "69 Clanconnel Gardens",
+              "PostCode": "BT26 6RJ",
+              "PostTown": "Lurgan",
+              "AddressLine1": "42 Transa Way",
               "AddressLine2": null,
-              "AddressLine3": "criagavon"
+              "AddressLine3": "Hillsborough"
             },
             "telephone": "02892611016",
-            "placeOfBirth": "Hillsborough",
-            "litigationIssues": "No",
-            "relationshipToChild": "Uncle",
-            "contactDetailsHidden": "No"
+            "placeOfBirth": "Newry",
+            "litigationIssues": "Yes",
+            "relationshipToChild": "Brother",
+            "contactDetailsHidden": "Yes",
+            "litigationIssuesReason": "respondent two litigation capacity reason",
+            "contactDetailsHiddenReason": "respondent two hidden contact details reason"
           }
         }
       ],
       "firstRespondent": {
-        "dob": "1922-05-02",
-        "name": "Tim Jones",
-        "gender": "Male",
+        "dob": "1944-05-02",
+        "name": "Paul Smith",
+        "gender": "They identify in another way",
         "address": {
           "County": "Armagh",
-          "Country": "United Kingdom",
+          "Country": null,
           "PostCode": "BT66 7RR",
-          "PostTown": "Waringstown",
-          "AddressLine1": "69 Clanconnel Gardens, Waringstown, Waringstown",
+          "PostTown": "Craigavon",
+          "AddressLine1": "69 Clanconnel Gardens",
           "AddressLine2": "Waringstown",
           "AddressLine3": null
         },
-        "telephone": "07749972242",
-        "placeOfBirth": "Waringstown",
+        "telephone": "07712345678",
+        "placeOfBirth": "London",
+        "genderIdentify": "Unknown",
         "litigationIssues": "Yes",
-        "relationshipToChild": "friendly with parents",
+        "relationshipToChild": "Uncle",
         "contactDetailsHidden": "Yes",
-        "litigationIssuesReason": "not able to take part in proceedings",
-        "contactDetailsHiddenReason": "hide contact details"
+        "litigationIssuesReason": "respondent one test litigation capacity",
+        "contactDetailsHiddenReason": "Hide from all"
       }
     },
-    "submittedForm": {
-      "document_url": "http://dm-store:8080/documents/53a93323-e671-4910-b576-75a2fc757790",
-      "document_filename": "James_v_someone.pdf",
-      "document_binary_url": "http://dm-store:8080/documents/53a93323-e671-4910-b576-75a2fc757790/binary"
-    },
     "factorsParenting": {
-      "anythingElse": "Yes",
+      "anythingElse": "No",
       "alcoholDrugAbuse": "Yes",
       "domesticViolence": "Yes",
-      "anythingElseReason": "else",
-      "alcoholDrugAbuseReason": "alc busy",
-      "domesticViolenceReason": "domestic violience"
+      "alcoholDrugAbuseReason": "history of drug abuse",
+      "domesticViolenceReason": "history of domestic violence"
     },
     "allocationProposal": {
-      "proposal": "Lay justices",
-      "proposalReason": "fdfdfdfdfd"
+      "proposal": "Section 9 circuit judge",
+      "proposalReason": "allocation proposal reason"
+    },
+    "hearingPreferences": {
+      "welsh": "No",
+      "litigation": "Yes",
+      "interpreter": "Yes",
+      "intermediary": "Yes",
+      "welshDetails": "welsh proceedings",
+      "litigationDetails": "litigation",
+      "interpreterDetails": "interpreter required",
+      "learningDisability": "Yes",
+      "intermediaryDetails": "intermediary hearing required",
+      "extraSecurityMeasures": "Yes",
+      "learningDisabilityDetails": "learning disability",
+      "extraSecurityMeasuresDetails": "security needed"
     },
     "internationalElement": {
       "issues": "Yes",
       "proceedings": "Yes",
-      "issuesReason": "brussels 2 regulation",
+      "issuesReason": "Brussels 2 regulation",
       "possibleCarer": "Yes",
-      "proceedingsReason": "yes",
+      "proceedingsReason": "Outside of the UK",
       "significantEvents": "Yes",
-      "possibleCarerReason": "Someone in france",
-      "significantEventsReason": "nothing"
+      "possibleCarerReason": "Aunt outside UK",
+      "significantEventsReason": "Something happened in France"
     },
     "documents_socialWorkOther": [
       {
-        "id": "54da58a4-0ff0-426f-b166-bf8a0466121b",
+        "id": "76d8cc29-9085-4e22-a6f7-f86bfb77f020",
         "value": {
-          "documentTitle": "my_doc",
+          "documentTitle": "Additional document one",
           "typeOfDocument": {
-            "document_url": "http://dm-store:8080/documents/10ee9e80-2734-436f-b79d-0b71775a6474",
+            "document_url": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8",
             "document_filename": "form.pdf",
-            "document_binary_url": "http://dm-store:8080/documents/10ee9e80-2734-436f-b79d-0b71775a6474/binary"
+            "document_binary_url": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8/binary"
           }
         }
       }
     ],
     "documents_socialWorkCarePlan_document": {
-      "statusReason": "fdfdfdf",
+      "statusReason": "some text",
       "documentStatus": "To follow",
       "typeOfDocument": {
-        "document_url": "http://dm-store:8080/documents/9241dfb2-1cf7-4b15-a9be-d470fa6d4d04",
+        "document_url": "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55",
         "document_filename": "form.pdf",
-        "document_binary_url": "http://dm-store:8080/documents/9241dfb2-1cf7-4b15-a9be-d470fa6d4d04/binary"
+        "document_binary_url": "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary"
       }
     },
     "documents_socialWorkStatement_document": {
-      "documentStatus": "Attached",
+      "statusReason": "Social work statement and genogram text",
+      "documentStatus": "To follow",
       "typeOfDocument": {
-        "document_url": "http://dm-store:8080/documents/95d6c663-66b6-41b2-b20f-80bc5e2fa925",
+        "document_url": "http://dm-store:8080/documents/0d26676f-b8d8-410d-ad2d-40290e478127",
         "document_filename": "form.pdf",
-        "document_binary_url": "http://dm-store:8080/documents/95d6c663-66b6-41b2-b20f-80bc5e2fa925/binary"
+        "document_binary_url": "http://dm-store:8080/documents/0d26676f-b8d8-410d-ad2d-40290e478127/binary"
       }
     },
     "documents_socialWorkAssessment_document": {
-      "documentStatus": "Attached",
+      "statusReason": "Social work assessment text",
+      "documentStatus": "To follow",
       "typeOfDocument": {
-        "document_url": "http://dm-store:8080/documents/eaf81eb7-f9b0-4767-9716-7d067c0ea2d7",
+        "document_url": "http://dm-store:8080/documents/91434306-7283-46a1-9901-a64d30d1fb8e",
         "document_filename": "form.pdf",
-        "document_binary_url": "http://dm-store:8080/documents/eaf81eb7-f9b0-4767-9716-7d067c0ea2d7/binary"
+        "document_binary_url": "http://dm-store:8080/documents/91434306-7283-46a1-9901-a64d30d1fb8e/binary"
       }
     },
     "documents_socialWorkChronology_document": {
-      "documentStatus": "Attached",
+      "statusReason": "Social work chronology text",
+      "documentStatus": "To follow",
       "typeOfDocument": {
-        "document_url": "http://dm-store:8080/documents/f7eee7da-9e36-45c7-a3e9-e4419041390f",
-        "document_filename": "ccd-definition.xlsx",
-        "document_binary_url": "http://dm-store:8080/documents/f7eee7da-9e36-45c7-a3e9-e4419041390f/binary"
+        "document_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e",
+        "document_filename": "form.pdf",
+        "document_binary_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e/binary"
       }
     }
   },

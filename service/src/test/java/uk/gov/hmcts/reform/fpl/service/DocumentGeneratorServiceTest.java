@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.templates.DocumentTemplates;
+import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 import uk.gov.hmcts.reform.pdf.generator.exception.MalformedTemplateException;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ class DocumentGeneratorServiceTest {
 
         String content = textContentOf(documentGeneratorService.generateSubmittedFormPDF(caseDetails));
 
-        assertThat(content).contains("123" + "Case number");
+        assertThat(content).contains("C110A");
     }
 
     @Test
@@ -38,8 +39,10 @@ class DocumentGeneratorServiceTest {
         CaseDetails caseDetails = populatedCaseDetails();
 
         String content = textContentOf(documentGeneratorService.generateSubmittedFormPDF(caseDetails));
+        String expectedContent = ResourceReader.readString("submitted-form-pdf-content.txt");
+        System.out.println(content);
 
-        assertThat(content).contains("Case ID: 12345");
+        assertThat(content).isEqualToIgnoringWhitespace(expectedContent);
     }
 
     @Test
