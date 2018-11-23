@@ -1,7 +1,7 @@
 provider "azurerm" {}
 
 locals {
-  ase_name               = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
+  ase_name = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
 
   local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "aat" : "saat" : var.env}"
   local_ase = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "core-compute-aat" : "core-compute-saat" : local.ase_name}"
@@ -19,6 +19,11 @@ data "azurerm_key_vault" "key_vault" {
   resource_group_name = "${local.vault_name}"
 }
 
+data "azurerm_key_vault_secret" "s2s_secret" {
+  name = "fpl-case-service-s2s-secret"
+  vault_uri = "${data.azurerm_key_vault.key_vault.vault_uri}"
+}
+
 module "case-service" {
   source              = "git@github.com:hmcts/moj-module-webapp?ref=master"
   product             = "${var.product}-${var.component}"
@@ -31,7 +36,7 @@ module "case-service" {
 
   app_settings = {
     IDAM_S2S_AUTH_URL = "${local.IDAM_S2S_AUTH_URL}"
-    IDAM_S2S_AUTH_TOTP_SECRET = "AABBCCDDEEFFGGHH"
+    IDAM_S2S_AUTH_TOTP_SECRET = "${data.azurerm_key_vault_secret.s2s_secret.value}"
     DOCUMENT_MANAGEMENT_URL = "${local.DOCUMENT_MANAGEMENT_URL}"
     CORE_CASE_DATA_API_URL = "${local.CORE_CASE_DATA_API_URL}"
 
