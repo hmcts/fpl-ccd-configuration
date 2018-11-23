@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,6 +15,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -39,21 +42,28 @@ class CaseInitiationControllerTest {
 
     @Test
     void shouldAddCaseLocalAuthorityToCaseData() throws Exception {
-        JSONObject caseLocalAuthority = new JSONObject();
-        caseLocalAuthority.put("caseLocalAuthority", "EX");
+        JSONObject expectedData = new JSONObject();
+        expectedData.put("caseName", "title");
+        expectedData.put("caseLocalAuthority", "EX");
 
-        given(idamApi.retrieveUserDetails(AUTH_TOKEN))
-            .willReturn(new UserDetails(null, "user@example.gov.uk", null, null, null));
+        given(idamApi.retrieveUserDetails(AUTH_TOKEN)).willReturn(
+            new UserDetails(null, "user@example.gov.uk", null, null, null));
+
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .data(ImmutableMap.<String, Object>builder()
+                .put("caseName", "title")
+                .build()).build())
+            .build();
 
         MvcResult response = mockMvc
             .perform(post("/callback/case-initiation")
                 .header("authorization", AUTH_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(readBytes("core-case-data-store-api/empty-case-details.json")))
+                .content(MAPPER.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andReturn();
 
-        assertThat(response.getResponse().getContentAsString()).contains(caseLocalAuthority.toString());
+        assertThat(response.getResponse().getContentAsString()).contains(expectedData.toString());
     }
 
     @Test

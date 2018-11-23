@@ -1,14 +1,16 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityNameService;
 
 import java.util.Map;
@@ -26,20 +28,19 @@ public class CaseInitiationController {
     }
 
     @PostMapping
-    public ResponseEntity createdCase(@RequestHeader(value = "authorization") String authorization) {
-
+    public ResponseEntity createdCase(
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestBody CallbackRequest callbackrequest) {
         String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode(authorization);
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+
+        Map<String, Object> data = caseDetails.getData();
+        data.put("caseLocalAuthority", caseLocalAuthority);
 
         AboutToStartOrSubmitCallbackResponse body = AboutToStartOrSubmitCallbackResponse.builder()
-            .data(prepareLocalAuthority(caseLocalAuthority))
+            .data(data)
             .build();
 
         return ResponseEntity.ok(body);
-    }
-
-    private Map<String, Object> prepareLocalAuthority(String caseLocalAuthority) {
-        return ImmutableMap.<String, Object>builder()
-            .put("caseLocalAuthority", caseLocalAuthority)
-            .build();
     }
 }
