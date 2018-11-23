@@ -3,14 +3,14 @@ const config = require('../config.js');
 Feature('EnterFactorsAffectingParenting').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
+  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.enterFactorsAffectingParenting);
 });
 
 Scenario('Complete half the factors affecting parenting section of the c110a' +
   ' application', (I, enterFactorsAffectingParentingPage, caseViewPage) => {
   enterFactorsAffectingParentingPage.completeAlcoholOrDrugAbuse();
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterFactorsAffectingParenting);
   caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
   I.seeAnswerInTab(1, 'Factors affecting parenting', 'Alcohol or drug abuse', 'Yes');
@@ -21,7 +21,7 @@ Scenario('Filling in factors affecting parenting sections of c110a', (I, enterFa
   enterFactorsAffectingParentingPage.completeAlcoholOrDrugAbuse();
   enterFactorsAffectingParentingPage.completeDomesticViolence();
   enterFactorsAffectingParentingPage.completeAnythingElse();
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterFactorsAffectingParenting);
   caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
   I.seeAnswerInTab(1, 'Factors affecting parenting', 'Alcohol or drug abuse', 'Yes');

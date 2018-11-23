@@ -9,19 +9,19 @@ const addEventDetails = require('./pages/createCase/addEventSummary');
 
 module.exports = function () {
   return actor({
-    logInAndCreateCase(username, password, summary, description) {
+    logInAndCreateCase(username, password) {
       logIn.signIn(username, password);
       this.click('Create new case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       createCase.createNewCase();
       this.waitForElement('.check-your-answers');
-      addEventDetails.submitCase(summary, description);
+      addEventDetails.submitCase();
     },
 
-    continueAndSubmit(summary, description) {
+    continueAndSubmit() {
       this.click('Continue');
       this.waitForElement('.check-your-answers');
-      addEventDetails.submitCase(summary, description);
+      addEventDetails.submitCase();
       this.waitForElement('.tabs');
     },
 

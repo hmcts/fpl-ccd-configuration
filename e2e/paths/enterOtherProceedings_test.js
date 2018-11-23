@@ -4,13 +4,13 @@ const otherProceedingData = require('../fixtures/otherProceedingData');
 Feature('Enter Other Proceedings').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
+  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.enterOtherProceedings);
 });
 
 Scenario('Select not aware of any ongoing or previous proceedings', (I, enterOtherProceedingsPage, caseViewPage) => {
   enterOtherProceedingsPage.selectNoForProceeding();
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOtherProceedings);
   caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
   I.seeAnswerInTab(1, 'Other proceedings', 'Are you aware of any ongoing or' +
@@ -21,7 +21,7 @@ Scenario('Select yes for ongoing or previous proceedings and fill in information
   (I, enterOtherProceedingsPage, caseViewPage) => {
     enterOtherProceedingsPage.selectYesForProceeding();
     enterOtherProceedingsPage.enterProceedingInformation(otherProceedingData);
-    I.continueAndSubmit(config.eventSummary, config.eventDescription);
+    I.continueAndSubmit();
     I.seeEventSubmissionConfirmation(config.applicationActions.enterOtherProceedings);
     caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
     I.seeAnswerInTab(1, 'Other proceedings', 'Are you aware of any ongoing or' +

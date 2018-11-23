@@ -3,14 +3,14 @@ const config = require('../config.js');
 Feature('Select hearing').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
+  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.selectHearing);
 });
 
 Scenario('completing half the fields in the Select hearing section of the c110a application', (I, caseViewPage, selectHearingPage) => {
   selectHearingPage.enterTimeFrame();
   selectHearingPage.enterHearingType();
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.selectHearing);
   caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
   I.seeAnswerInTab(1, 'Hearing needed', 'When do you need a hearing?', selectHearingPage.fields.timeFrame.sameDay);
@@ -24,7 +24,7 @@ Scenario('completing the Select hearing section of the c110a application', (I, c
   selectHearingPage.enterWithoutNoticeHearing();
   selectHearingPage.enterReducedHearing();
   selectHearingPage.enterRespondentsAware();
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.selectHearing);
   caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
   I.seeAnswerInTab(1, 'Hearing needed', 'When do you need a hearing?', selectHearingPage.fields.timeFrame.sameDay);
