@@ -76,5 +76,4 @@ class SubmittedCaseEventHandlerTest {
         verify(caseRepository).setSubmittedFormPDF(AUTH_TOKEN, USER_ID,
             Long.toString(request.getCaseDetails().getId()), document);
     }
-
 }

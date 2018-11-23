@@ -22,7 +22,7 @@ exports.config = {
       windowSize: '1280x960',
     },
     MyHelpers: {
-      require: './e2e/helpers/browserback_helper.js',
+      require: './e2e/helpers/puppeter_helper.js',
     },
   },
   include: {

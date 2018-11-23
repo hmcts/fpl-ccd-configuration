@@ -1,3 +1,5 @@
+variable "subscription" {}
+
 variable "product" {
   type    = "string"
 }
@@ -22,12 +24,14 @@ variable "env" {
 
 variable "ilbIp" {}
 
-variable "subscription" {}
-
 variable "capacity" {
   default = "1"
 }
 
 variable "common_tags" {
   type = "map"
+}
+
+variable "idam_api_url" {
+  type = "string"
 }

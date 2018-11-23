@@ -181,6 +181,7 @@ dependencies {
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.0.2.RELEASE'
 
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
+  compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '0.0.2'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.1'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.4.1'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '1.0.4'
@@ -191,6 +192,7 @@ dependencies {
     exclude group: 'junit', module: 'junit'
   }
   testCompile group: 'org.junit.jupiter', name :'junit-jupiter-api', version: '5.3.1'
+  testCompile group: 'org.junit.jupiter', name :'junit-jupiter-params', version: '5.3.1'
   testRuntime group: 'org.junit.jupiter', name :'junit-jupiter-engine', version:'5.3.1'
   testCompile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.12'
 
