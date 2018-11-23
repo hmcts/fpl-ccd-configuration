@@ -32,8 +32,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
-    "ListElementCode": "Swansea",
-    "ListElement": "Swansea Local Authority"
+    "ListElementCode": "example",
+    "ListElement": "Example Local Authority"
   },
   {
     "LiveFrom": "01/01/2017",
