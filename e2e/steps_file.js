@@ -11,7 +11,7 @@ module.exports = function () {
   return actor({
     logInAndCreateCase(username, password, summary, description) {
       logIn.signIn(username, password);
-      this.click('Create new case');
+      this.click('Create Case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       createCase.createNewCase();
       this.waitForElement('.check-your-answers');
