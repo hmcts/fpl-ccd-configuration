@@ -30,8 +30,8 @@ sourceSets {
 
   integrationTest {
     java {
-      compileClasspath += main.output
-      runtimeClasspath += main.output
+      compileClasspath += main.output + test.output
+      runtimeClasspath += main.output + test.output
       srcDir file('src/integrationTest/java')
     }
     resources.srcDir file('src/integrationTest/resources')
@@ -177,11 +177,15 @@ dependencies {
   testRuntime group: 'org.junit.jupiter', name :'junit-jupiter-engine', version:'5.3.1'
   testCompile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.12'
 
-  integrationTestCompile sourceSets.test.runtimeClasspath
+  integrationTestCompile configurations.testRuntime {
+//    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-actuator'
+    exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
+    exclude group: 'io.springfox'
+  }
 
-  functionalTestCompile sourceSets.main.runtimeClasspath
+  functionalTestCompile configurations.runtime
 
-  smokeTestCompile sourceSets.main.runtimeClasspath
+  smokeTestCompile configurations.runtime
 }
 
 mainClassName = 'uk.gov.hmcts.reform.fpl.Application'
