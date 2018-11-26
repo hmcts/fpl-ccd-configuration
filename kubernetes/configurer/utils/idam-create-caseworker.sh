@@ -7,14 +7,15 @@ rolesStr=${2}
 
 searchResponse=$(curl -k --silent --show-error --output /dev/null --write-out "%{http_code}" ${IDAM_API_BASE_URL}/users?email=${email})
 
-if [ ${searchResponse} -eq 200 ]; then
+if [[ ${searchResponse} -eq 200 ]]; then
   exit 0
 fi
 
 IFS=',' read -ra roles <<< ${rolesStr}
 
+rolesJson=''
 for role in ${roles[@]}; do
-  if [ ! -z ${rolesJson} ] ; then
+  if [[ ! -z ${rolesJson} ]] ; then
     rolesJson="${rolesJson},"
   fi
   rolesJson=${rolesJson}'{"code":"'${role}'"}'
