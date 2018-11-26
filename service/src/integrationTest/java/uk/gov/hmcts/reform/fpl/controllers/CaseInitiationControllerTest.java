@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -32,6 +33,10 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 class CaseInitiationControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
+//    private static final String SERVICE_AUTH_TOKEN = "Bearer service token";
+//    private static final String JURISDICTION = "PUBLICLAW";
+//    private static final String CASE_TYPE = "Shared_Storage_DRAFTType";
+    private static final String USER_ID = "1";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Autowired
@@ -39,6 +44,9 @@ class CaseInitiationControllerTest {
 
     @MockBean
     private IdamApi idamApi;
+
+    @MockBean
+    private CaseAccessApi caseAccessApi;
 
     @Test
     void shouldAddCaseLocalAuthorityToCaseData() throws Exception {
@@ -56,7 +64,7 @@ class CaseInitiationControllerTest {
             .build();
 
         MvcResult response = mockMvc
-            .perform(post("/callback/case-initiation")
+            .perform(post("/callback/case-initiation/about-to-submit")
                 .header("authorization", AUTH_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(MAPPER.writeValueAsString(request)))
@@ -78,7 +86,7 @@ class CaseInitiationControllerTest {
             .willReturn(new UserDetails(null, "user@email.gov.uk", null, null, null));
 
         MvcResult response = mockMvc
-            .perform(post("/callback/case-initiation")
+            .perform(post("/callback/case-initiation/about-to-submit")
                 .header("authorization", AUTH_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(readBytes("core-case-data-store-api/empty-case-details.json")))
@@ -86,5 +94,37 @@ class CaseInitiationControllerTest {
             .andReturn();
 
         assertThat(response.getResponse().getContentAsString()).isEqualTo(MAPPER.writeValueAsString(expectedResponse));
+    }
+
+    @Test
+    void shouldGrantUsersAccessToCase() throws Exception {
+        //        JSONObject expectedData = new JSONObject();
+        //        expectedData.put("caseName", "title");
+        //        expectedData.put("caseLocalAuthority", "EX");
+
+        //        given(caseAccessApi.grantAccessToCase(
+        //            AUTH_TOKEN, SERVICE_AUTH_TOKEN, "4", JURISDICTION, CASE_TYPE, "1",
+        //            new UserId("1")));
+
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .id(1L)
+            .data(ImmutableMap.<String, Object>builder()
+                .put("caseLocalAuthority", "example")
+                .build()).build())
+            .build();
+
+        MvcResult response = mockMvc
+            .perform(post("/callback/case-initiation/submitted")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(MAPPER.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        System.out.println("response = " + response);
+
+//        assertThat(caseAccessApi.grantAccessToCase())
+
     }
 }

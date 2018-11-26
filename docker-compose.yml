@@ -16,6 +16,7 @@ services:
       - IDAM_S2S_AUTH_URL=http://service-auth-provider-api:8080
       - IDAM_S2S_AUTH_TOTP_SECRET=AABBCCDDEEFFGGHH
       - FPL_LOCAL_AUTHORITY_NAME_MAPPING=example.com=>example
+      - FPL_LOCAL_AUTHORITY_USER_MAPPING=example=>1,2,3;example2=>4,5,6
       # these environment variables are used by java-logging library
       - ROOT_APPENDER
       - JSON_CONSOLE_PRETTY_PRINT
