@@ -16,7 +16,7 @@ class AgeFilterTest {
     private AgeFilter filter = new AgeFilter();
 
     @Test
-    void shouldThrowExpectionWhenInputIsNotADate() {
+    void shouldThrowExceptionWhenInputIsNotADate() {
         Assertions.assertThatThrownBy(() -> filter.apply("test", NO_ARGS))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Date is in an incorrect format");
