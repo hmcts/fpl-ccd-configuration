@@ -14,3 +14,12 @@ spring:
 idam:
   s2s-auth:
     microservice: fpl_case_service
+
+---
+
+spring:
+  profiles: integration-test
+
+management:
+  endpoints:
+    enabled-by-default: false
