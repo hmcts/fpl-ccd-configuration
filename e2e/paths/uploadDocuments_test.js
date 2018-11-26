@@ -3,13 +3,13 @@ const config = require('../config.js');
 Feature('Upload Documents').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
+  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
 });
 
 Scenario('Selecting social work chronology document to follow in the c110a application', (I, uploadDocumentsPage, caseViewPage) => {
   uploadDocumentsPage.selectSocialWorkChronologyToFollow();
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.evidence);
   I.seeDocument('Social work chronology', '', 'To follow', 'mock reason');
@@ -21,7 +21,7 @@ Scenario('Uploading all files in the c110a application', (I, uploadDocumentsPage
   uploadDocumentsPage.uploadSocialWorkAssessment(config.testFile);
   uploadDocumentsPage.uploadCarePlan(config.testFile);
   uploadDocumentsPage.uploadAdditionalDocuments(config.testFile);
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.evidence);
   I.seeDocument('Social work chronology', '', 'To follow', 'mock reason');

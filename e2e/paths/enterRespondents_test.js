@@ -4,13 +4,13 @@ const respondents = require('../fixtures/respondents.js');
 Feature('Enter respondents').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
+  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
 });
 
 Scenario('Entering information for respondent and submitting', (I, enterRespondentsPage, caseViewPage) => {
   enterRespondentsPage.enterRespondent('firstRespondent', respondents[0]);
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
@@ -25,7 +25,7 @@ Scenario('Entering all information for first respondent and an additional respon
   enterRespondentsPage.enterRelationshipToChild('additional_0', 'mock reason');
   enterRespondentsPage.enterContactDetailsHidden('additional_0', 'Yes', 'mock reason');
   enterRespondentsPage.enterLitigationIssues('additional_0', 'No');
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(1, 'Respondent 1', 'Full name', 'Joe Bloggs');
