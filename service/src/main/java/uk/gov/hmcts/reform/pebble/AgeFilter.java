@@ -5,13 +5,14 @@ import com.mitchellbosecke.pebble.extension.Filter;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 public class AgeFilter implements Filter {
     @Override
     public List<String> getArgumentNames() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

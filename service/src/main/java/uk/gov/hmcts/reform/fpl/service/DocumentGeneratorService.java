@@ -31,7 +31,6 @@ public class DocumentGeneratorService {
             .extension(new AbstractExtension() {
                 @Override
                 public Map<String, Filter> getFilters() {
-                    Map<String, Filter> filters = super.getFilters();
                     return ImmutableMap.<String, Filter>builder()
                         .put("today", new TodayFilter())
                         .put("age", new AgeFilter())
