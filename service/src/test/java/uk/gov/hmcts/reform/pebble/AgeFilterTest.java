@@ -9,6 +9,11 @@ import java.time.LocalDate;
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Filter calculates age based on provided date and returns it in string format.
+ *
+ * Note: At the moment only supported input format is ISO formatted string date.
+ */
 class AgeFilterTest {
 
     private static final ImmutableMap<String, Object> NO_ARGS = ImmutableMap.<String, Object>builder().build();
