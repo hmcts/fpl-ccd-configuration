@@ -157,7 +157,7 @@
             {% if case_data.respondents is not empty %}
               {% if case_data.respondents.firstRespondent is not empty %}
                 <span class="u-comma-before">{{ case_data.respondents.firstRespondent.name }}</span>
-              {% elseif case_data.respondents.firstRespondent == null
+              {% elseif case_data.respondents.firstRespondent is empty
               and case_data.respondents.additional is not empty %}
                 // No op
               {% else %}
@@ -180,7 +180,7 @@
 </header>
 <main>
   <h2 class="heading heading--two u-margin-bottom-10">
-    {% if case_data.applicant == null or case_data.applicant.name == null %}
+    {% if case_data.applicant is empty or case_data.applicant.name is empty %}
       Application
     {% else %}
       Application from {{ case_data.applicant.name }}
@@ -651,7 +651,7 @@
 
     {% for child in case_data.children.additionalChildren %}
       {% if child is not empty and child.value is not empty %}
-        <h3 class="heading heading--two">Child {{counter}}</h3>
+        <h3 class="heading heading--two">Child {{ counter }}</h3>
         <dl class="data-list">
           <div class="data-list__row">
             <dt class="data-list__title">Name</dt>

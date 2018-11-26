@@ -27,7 +27,7 @@ class DocumentGeneratorServiceTest {
     );
 
     @Test
-    void testEmptyCaseDetailsSuccessfullyReturnsByteArray() throws IOException {
+    void testEmptyCaseDetailsSuccessfullyReturnsByteArrayWithCaseID() throws IOException {
         CaseDetails caseDetails = emptyCaseDetails();
         String content = textContentOf(documentGeneratorService.generateSubmittedFormPDF(caseDetails));
 
