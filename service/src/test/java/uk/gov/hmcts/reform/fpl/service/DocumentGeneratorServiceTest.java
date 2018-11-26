@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.config.DocumentGeneratorConfiguration;
 import uk.gov.hmcts.reform.fpl.templates.DocumentTemplates;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 import uk.gov.hmcts.reform.pdf.generator.exception.MalformedTemplateException;
@@ -23,7 +24,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 class DocumentGeneratorServiceTest {
 
     private DocumentGeneratorService documentGeneratorService = new DocumentGeneratorService(
-        new DocumentTemplates(), new ObjectMapper()
+        new DocumentGeneratorConfiguration().getConverter(),
+        new DocumentTemplates(),
+        new ObjectMapper()
     );
 
     @Test
