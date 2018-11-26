@@ -32,7 +32,7 @@ class DocumentGeneratorServiceTest {
     );
 
     @Test
-    void testEmptyCaseDetailsSuccessfullyReturnsByteArrayWithCaseID() throws IOException {
+    void shouldGenerateSubmittedFormDocumentWhenCaseHasNoData() throws IOException {
         CaseDetails caseDetails = emptyCaseDetails();
         String content = textContentOf(documentGeneratorService.generateSubmittedFormPDF(caseDetails));
 
@@ -40,7 +40,7 @@ class DocumentGeneratorServiceTest {
     }
 
     @Test
-    void testPopulatedCaseDetailsSuccessfullyReturnsByteArray() throws IOException {
+    void shouldGenerateSubmittedFormDocumentWhenCaseIsFullyPopulated() throws IOException {
         CaseDetails caseDetails = populatedCaseDetails();
 
         String content = textContentOf(documentGeneratorService.generateSubmittedFormPDF(caseDetails));
@@ -55,7 +55,7 @@ class DocumentGeneratorServiceTest {
     }
 
     @Test
-    void testNullCaseDetailsProvidesMalformedTemplate() {
+    void shouldThrowExceptionWhenTemplateIsTemplateIsMalformed() {
         assertThatThrownBy(() -> documentGeneratorService.generateSubmittedFormPDF(null))
             .isInstanceOf(MalformedTemplateException.class);
     }
