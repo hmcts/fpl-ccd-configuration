@@ -38,13 +38,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GroundsList",
-    "ListElementCode": "Not receiving care that would be reasonably expected from a parent",
+    "ListElementCode": "noCare",
     "ListElement": "Not receiving care that would be reasonably expected from a parent"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "GroundsList",
-    "ListElementCode": "Beyond parental control",
+    "ListElementCode": "beyondControl",
     "ListElement": "Beyond parental control"
   },
   {

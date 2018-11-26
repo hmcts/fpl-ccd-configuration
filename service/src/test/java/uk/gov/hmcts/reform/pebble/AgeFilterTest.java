@@ -16,6 +16,13 @@ class AgeFilterTest {
     private AgeFilter filter = new AgeFilter();
 
     @Test
+    void shouldThrowExpectionWhenInputIsNotADate() {
+        Assertions.assertThatThrownBy(() -> filter.apply("test", NO_ARGS))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("Date is in an incorrect format");
+    }
+
+    @Test
     void shouldThrowExceptionWhenBornInTheFuture() {
         String futureDate = LocalDate.now().plusDays(1).format(ISO_LOCAL_DATE);
 

@@ -4,6 +4,7 @@ import com.mitchellbosecke.pebble.extension.Filter;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,12 @@ public class AgeFilter implements Filter {
 
     @Override
     public Object apply(Object input, Map<String, Object> args) {
+        try {
+            LocalDate.parse(input.toString());
+        } catch (DateTimeParseException exc) {
+            throw new IllegalArgumentException("Date is in an incorrect format");
+        }
+
         LocalDate today = LocalDate.now();
         LocalDate inputDate = LocalDate.parse(input.toString());
 

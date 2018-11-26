@@ -29,7 +29,6 @@ class DocumentGeneratorServiceTest {
     @Test
     void testEmptyCaseDetailsSuccessfullyReturnsByteArray() throws IOException {
         CaseDetails caseDetails = emptyCaseDetails();
-
         String content = textContentOf(documentGeneratorService.generateSubmittedFormPDF(caseDetails));
 
         assertThat(content).contains("C110A");
