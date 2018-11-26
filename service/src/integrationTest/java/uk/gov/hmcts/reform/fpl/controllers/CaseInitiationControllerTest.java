@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -32,9 +31,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 class CaseInitiationControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
-//    private static final String SERVICE_AUTH_TOKEN = "Bearer service token";
-//    private static final String JURISDICTION = "PUBLICLAW";
-//    private static final String CASE_TYPE = "Shared_Storage_DRAFTType";
     private static final String USER_ID = "1";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -43,9 +39,6 @@ class CaseInitiationControllerTest {
 
     @MockBean
     private IdamApi idamApi;
-
-    @MockBean
-    private CaseAccessApi caseAccessApi;
 
     @Test
     void shouldAddCaseLocalAuthorityToCaseData() throws Exception {
@@ -96,15 +89,7 @@ class CaseInitiationControllerTest {
     }
 
     @Test
-    void shouldGrantUsersAccessToCase() throws Exception {
-        //        JSONObject expectedData = new JSONObject();
-        //        expectedData.put("caseName", "title");
-        //        expectedData.put("caseLocalAuthority", "EX");
-
-        //        given(caseAccessApi.grantAccessToCase(
-        //            AUTH_TOKEN, SERVICE_AUTH_TOKEN, "4", JURISDICTION, CASE_TYPE, "1",
-        //            new UserId("1")));
-
+    void submittedEndpointShouldReturnOkResponse() throws Exception {
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .id(1L)
             .data(ImmutableMap.<String, Object>builder()
@@ -112,18 +97,12 @@ class CaseInitiationControllerTest {
                 .build()).build())
             .build();
 
-        MvcResult response = mockMvc
+        mockMvc
             .perform(post("/callback/case-initiation/submitted")
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(MAPPER.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        System.out.println("response = " + response);
-
-//        assertThat(caseAccessApi.grantAccessToCase())
-
+            .andExpect(status().isOk());
     }
 }
