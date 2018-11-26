@@ -68,5 +68,4 @@ public class SubmittedCaseEventHandler {
             return Long.toString(caseDetails.getId()) + ".pdf";
         }
     }
-
 }

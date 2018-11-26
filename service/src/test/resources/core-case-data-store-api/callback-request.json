@@ -1,8 +1,8 @@
 {
   "case_details": {
-    "id": 54321,
+    "id": 12345,
     "case_data": {
-      "caseName": "testName"
+      "caseName": "test"
     }
   },
   "case_details_before": {},
