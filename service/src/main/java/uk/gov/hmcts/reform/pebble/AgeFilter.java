@@ -1,26 +1,33 @@
 package uk.gov.hmcts.reform.pebble;
 
+import com.google.common.collect.ImmutableList;
 import com.mitchellbosecke.pebble.extension.Filter;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class AgeFilter implements Filter {
+
     @Override
     public List<String> getArgumentNames() {
-        return Collections.emptyList();
+        return ImmutableList.<String>builder().build();
     }
 
     @Override
     public Object apply(Object input, Map<String, Object> args) {
+        checkNotNull(input, "Input value is required");
+        checkArgument(input instanceof String, "Input value must be string formatted date");
+
         try {
             LocalDate.parse(input.toString());
         } catch (DateTimeParseException exc) {
-            throw new IllegalArgumentException("Date is in an incorrect format");
+            throw new IllegalArgumentException("Input date is in an incorrect format");
         }
 
         LocalDate today = LocalDate.now();
