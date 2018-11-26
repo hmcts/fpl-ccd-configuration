@@ -26,7 +26,7 @@ the Children Act 1989 or an
 emergency protection order under
 section 44 of the Children Act 1989
 For court use
-Application from London Borough of Southwark submitted on 23 November
+Application from London Borough of Southwark submitted on 26 November
 2018
 Orders
 Hearing needed
@@ -75,27 +75,6 @@ Interpreter
 Attending the hearing
 Child 1
 Child 2
-85 years oldAge
-James SmithName
-Hide from all
-YesConfidential contact details
--Anything else to help take part in proceedings
-respondent one test litigation capacity
-YesLitigation capacity issues
--Separate waiting room or other security measures
--Facilities or assistance for a disability
--Intermediary
--Spoken or written Welsh
--Interpreter
-UncleRelationship to the child or children
-07712345678Telephone number
-, BT66 7RR
-, Armagh, Craigavon, Waringstown69 Clanconnel GardensCurrent address
-LondonPlace of birth
-UnknownGender
-2 May 1944Date of birth
-74 years oldAge
-Paul SmithName
 test child two contact details hidden reason
 YesConfidential contact details
 learning disabilities
@@ -111,10 +90,87 @@ YesConsidering adoption
 test child two care and contact planCare and contact plan
 test child two key dateKey dates
 Date this began: 2 February 2002
+, BT66 7RR, MK10 1SA
+, Milton Keynes, Central Milton KeynesCarnegie House
+Living with respondentsChild's living situation
+GirlGender
+2002-02-02Date of birth
+16 years oldAge
+Sarah ReevesName
+test child two contact details hidden reason
+YesConfidential contact details
+learning disabilities
+YesAdditional needs
+07749972242Social worker's telephone number
+Paul WilsdonSocial worker's name
+YesFather has parental responsibility
+Scott SimpsonFather's name
+Sarah SimpsonMother's name
+test child two courtCourt applying for
+YesSubmitting application for a placement order
+YesConsidering adoption
+test child two care and contact planCare and contact plan
+test child two key dateKey dates
+Date this began: 2 February 2002
+Child 3
 Respondent 1
-Respondent 2
+respondent two hidden contact details reason
+YesConfidential contact details
+-Anything else to help take part in proceedings
+respondent two litigation capacity reason
+YesLitigation capacity issues
+-Separate waiting room or other security measures
+-Facilities or assistance for a disability
+-Intermediary
+-Spoken or written Welsh
+-Interpreter
+BrotherRelationship to the child or children
+02892611016Telephone number
 , United Kingdom
-, BT43 343, Armagh, Belfast1 Belfast RoadCurrent address
+, Down, BT26 6RJ, Lurgan, Hillsborough42 Transa WayAddress
+NewryPlace of birth
+MaleGender
+2 April 1933Date of birth
+85 years oldAge
+James SmithName
+Hide from all
+YesConfidential contact details
+-Anything else to help take part in proceedings
+respondent one test litigation capacity
+YesLitigation capacity issues
+-Separate waiting room or other security measures
+-Facilities or assistance for a disability
+-Intermediary
+-Spoken or written Welsh
+-Interpreter
+UncleRelationship to the child or children
+07712345678Telephone number
+, Armagh, BT66 7RR
+, Craigavon, Waringstown69 Clanconnel GardensCurrent address
+LondonPlace of birth
+UnknownGender
+2 May 1944Date of birth
+74 years oldAge
+Paul SmithName
+Respondent 2
+2 February 2000Date of birth
+Other twoName
+Yes
+Others one hide contacts
+Confidential contact details
+-Anything else to help take part in the proceedings
+Yes
+Others one inability to take part in proceedings
+Litigation capacity issues
+-Separate waiting room or other security measures
+-Facilities or assistance for a disability
+-Intermediary
+-Spoken or written Welsh
+-Interpreter
+CousinRelationship to the child or children
+07749972245Telephone number
+, United Kingdom
+, Armagh, BT43 343, Belfast1 Belfast RoadCurrent address
 BelfastPlace of birth
 UnknownGender
 2 February 1999Date of birth
@@ -132,86 +188,9 @@ jane@smith.comEmail address
 Legal adviserJob title
 Jane SmithContact name
 London Borough of SouthwarkName
-respondent two hidden contact details reason
-YesConfidential contact details
--Anything else to help take part in proceedings
-respondent two litigation capacity reason
-YesLitigation capacity issues
--Separate waiting room or other security measures
--Facilities or assistance for a disability
--Intermediary
--Spoken or written Welsh
--Interpreter
-BrotherRelationship to the child or children
-02892611016Telephone number
-, United Kingdom
-, BT26 6RJ, Down, Lurgan, Hillsborough42 Transa WayAddress
-NewryPlace of birth
-MaleGender
-2 April 1933Date of birth
 Applicant
 Other 1
-beyondControl
-noCareThreshold is met as the child is suffering or is likely to
-suffer significant harm because they are
-Yes
-Other two hide from parties
-Confidential contact details
--Anything else to help take part in the proceedings
-Yes
-Other two inability to take part in proceedings
-Litigation capacity issues
--Separate waiting room or other security measures
--Facilities or assistance for a disability
--Intermediary
--Spoken or written Welsh
--Interpreter
-Friend of familyRelationship to the child
-07749972241Telephone number
-, United Kingdom, BTTT TTT
-, Cork, Newcastle, Waringstown1 Newcastle streetCurrent address
-LisburnPlace of birth
-MaleGender
-2 February 2000Date of birth
-Other twoName
-Yes
-Others one hide contacts
-Confidential contact details
--Anything else to help take part in the proceedings
-Yes
-Others one inability to take part in proceedings
-Litigation capacity issues
--Separate waiting room or other security measures
--Facilities or assistance for a disability
--Intermediary
--Spoken or written Welsh
--Interpreter
-CousinRelationship to the child or children
-07749972245Telephone number
 Other 2
-Grounds for the application
-Threshold evidence
-grounds for application criteria
-Some guardian not needed
-NoSame guardian needed
-Mark WatsonGuardian
-William PetersJudge
-Supervision orderOrders made
-02-02-2006Ended
-02-02-2002Started
-12345Case number
-YesOngoing or previous proceedings
--Government or central authority in another country
-been involved
-Outside of the UK
-YesProceedings outside the UK
-Brussels 2 regulation
-YesIssues with jurisdiction
-Something happened in France
-YesSignificant events outside the UK
-Aunt outside UK
-YesSuitable carer outside the UK
-NoAnything else
 history of domestic violence
 YesDomestic violence
 history of drug abuse
@@ -232,10 +211,34 @@ Yes
 Future risk of harm
 Past harm
 Physical harm including non-accidental injury
+Beyond parental control.
+Not receiving care that would be reasonably expected
+from a parent.
+Threshold is met as the child is suffering or is likely to
+suffer significant harm because they are
+Yes
+Other two hide from parties
+Confidential contact details
+-Anything else to help take part in the proceedings
+Yes
+Other two inability to take part in proceedings
+Litigation capacity issues
+-Separate waiting room or other security measures
+-Facilities or assistance for a disability
+-Intermediary
+-Spoken or written Welsh
+-Interpreter
+Friend of familyRelationship to the child
+07749972241Telephone number
+, United Kingdom, Cork
+, BTTT TTT, Newcastle, Waringstown1 Newcastle streetCurrent address
+LisburnPlace of birth
+MaleGender
+Grounds for the application
+Threshold evidence
+grounds for application criteria
 Risk and harm to children
 Factors affecting parenting
-International element
-Other proceedings
 To follow
 some text
 Care plan
@@ -248,4 +251,26 @@ Social work statement and genogram
 To follow
 Social work chronology text
 Social work chronology
+Some guardian not needed
+NoSame guardian needed
+Mark WatsonGuardian
+William PetersJudge
+Supervision orderOrders made
+02-02-2006Ended
+02-02-2002Started
+12345Case number
+YesOngoing or previous proceedings
+-Government or central authority in another country
+been involved
+Outside of the UK
+YesProceedings outside the UK
+Brussels 2 regulation
+YesIssues with jurisdiction
+Something happened in France
+YesSignificant events outside the UK
+Aunt outside UK
+YesSuitable carer outside the UK
+NoAnything else
+International element
+Other proceedings
 Annex Documents

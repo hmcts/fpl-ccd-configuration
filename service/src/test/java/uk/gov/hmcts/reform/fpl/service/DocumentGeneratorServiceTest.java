@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -14,6 +13,9 @@ import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 import uk.gov.hmcts.reform.pdf.generator.exception.MalformedTemplateException;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -37,16 +39,19 @@ class DocumentGeneratorServiceTest {
         assertThat(content).contains("C110A");
     }
 
-    @Disabled
     @Test
     void testPopulatedCaseDetailsSuccessfullyReturnsByteArray() throws IOException {
         CaseDetails caseDetails = populatedCaseDetails();
 
         String content = textContentOf(documentGeneratorService.generateSubmittedFormPDF(caseDetails));
         String expectedContent = ResourceReader.readString("submitted-form-pdf-content.txt");
-        System.out.println(content);
 
-        assertThat(content).isEqualToIgnoringWhitespace(expectedContent);
+        assertThat(splitContentIntoTrimmedLines(content))
+            .containsExactlyInAnyOrderElementsOf(splitContentIntoTrimmedLines(expectedContent));
+    }
+
+    private List<String> splitContentIntoTrimmedLines(String content) {
+        return Arrays.stream(content.split("\n")).map(String::trim).collect(Collectors.toList());
     }
 
     @Test
