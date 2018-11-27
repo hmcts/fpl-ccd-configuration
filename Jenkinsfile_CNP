@@ -66,6 +66,7 @@ withPipeline(type, product, component) {
   }
 
   before('smoketest:aks') {
+    env.CCD_CONFIGURER_S2S_SECRET = 'AABBCCDDEEFFGGHH'
     env.CCD_DEF_CASE_SERVICE_BASE_URL = env.TEST_URL.replace('https', 'http')
 
     sh """
