@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -20,7 +21,10 @@ import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
@@ -39,6 +43,9 @@ class CaseInitiationControllerTest {
 
     @MockBean
     private IdamApi idamApi;
+
+    @MockBean
+    private CaseAccessApi caseAccessApi;
 
     @Test
     void shouldAddCaseLocalAuthorityToCaseData() throws Exception {
@@ -104,5 +111,9 @@ class CaseInitiationControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(MAPPER.writeValueAsString(request)))
             .andExpect(status().isOk());
+
+        verify(caseAccessApi, times(3)).grantAccessToCase(
+            any(), any(), any(), any(), any(), any(), any()
+        );
     }
 }

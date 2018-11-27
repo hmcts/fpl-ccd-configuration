@@ -58,3 +58,4 @@ class LocalAuthorityUserServiceTest {
             eq(AUTH_TOKEN),eq(SERVICE_AUTH_TOKEN), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID), any(UserId.class));
     }
 }
+
