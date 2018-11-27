@@ -6,6 +6,8 @@ role=${1}
 
 dir=$(dirname ${0})
 
+echo "> ${CCD_CONFIGURER_S2S_SECRET}"
+
 userToken=$(${dir}/idam-lease-user-token.sh 1 ccd-import)
 serviceToken=$(${dir}/idam-lease-service-token.sh ccd_gw $(docker run --rm toolbelt/oathtool --totp -b ${CCD_CONFIGURER_S2S_SECRET}))
 
