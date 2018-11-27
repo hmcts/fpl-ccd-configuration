@@ -60,20 +60,34 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 }
 check.dependsOn integration
 
-task smoke(type: Exec, description: 'Runs the smoke tests.') {
-  commandLine '../kubernetes/configurer/utils/wait-for.sh', environment.get('URL')
+task installDependencies(type: Exec, description: 'Installs Yarn dependencies.') {
+  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'install'
 }
 
-task functionalInstall(type: Exec, description: 'Installs E2E dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--silent', 'install'
+task awaitApplicationReadiness(type: Exec, description: 'Awaits until application is ready.') {
+  commandLine '../kubernetes/configurer/utils/wait-for.sh', System.env.URL
 }
 
-task functionalRun(type: Exec, description: 'Runs E2E tests.') {
-  commandLine '/usr/bin/yarn', '--silent', 'test'
+task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
+  commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
+}
+
+task runFunctionalTest(type: Exec, description: 'Runs E2E tests.') {
+  onlyIf(new Spec<Task>() {
+    boolean isSatisfiedBy(Task task) {
+      String skipTestsEnvironmentVariable = System.env.SKIP_FUNCTIONAL_TESTS
+      return skipTestsEnvironmentVariable == null || skipTestsEnvironmentVariable == 'false'
+    }
+  })
+  commandLine '/usr/bin/yarn', '--silent', 'test:functional'
+}
+
+task smoke(description: 'Runs the smoke tests.') {
+  dependsOn(awaitApplicationReadiness, installDependencies, runSmokeTests)
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(functionalInstall, functionalRun)
+  dependsOn(awaitApplicationReadiness, installDependencies, runFunctionalTest)
 }
 
 checkstyle {
@@ -119,7 +133,6 @@ dependencyCheck {
   // range of 0-10 fails the build, anything greater and it doesn't fail the build
   failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'true' ? 0 : 11
   suppressionFile = 'config/owasp/suppressions.xml'
-  outputDirectory = 'build/reports'
 }
 
 sonarqube {
@@ -145,7 +158,7 @@ repositories {
 // it is important to specify logback classic and core packages explicitly as libraries like spring boot
 // enforces it's own (older) version which is not recommended.
 def versions = [
-  reformLogging: '3.0.2',
+  reformLogging: '3.0.4',
   springBoot: springBoot.class.package.implementationVersion,
   springfoxSwagger: '2.9.2'
 ]
@@ -160,6 +173,8 @@ dependencies {
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
   compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformLogging
+  compile group: 'uk.gov.hmcts.reform', name: 'java-logging-appinsights', version: versions.reformLogging
+
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
   compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '0.0.2'
   compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.1'
