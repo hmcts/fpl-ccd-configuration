@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu -x
+set -eu
 
 role=${1}
 

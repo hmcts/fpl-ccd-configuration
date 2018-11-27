@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu -x
+set -eu
 
 id=${1}
 role=${2}
