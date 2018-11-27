@@ -13,7 +13,7 @@ Reason: Baby will be discharged from hospital on 21 June
 Same dayHearing date requested
 Information on the whereabouts of the childDirection and interim orders
 Emergency protection orderOrders needed
-, James SmithPaul SmithRespondents
+, Another, James SmithPaul SmithRespondents
 London Borough of SouthwarkApplicant
 Fee charged
 Date issued
@@ -31,8 +31,6 @@ Application from London Borough of Southwark submitted on 26 November
 Orders
 Hearing needed
 Allocation proposal
-, BT66 7RR, MK10 1SA
-, Milton Keynes, Central Milton KeynesCarnegie House
 Living with respondentsChild's living situation
 GirlGender
 2002-02-02Date of birth
@@ -53,7 +51,8 @@ YesConsidering adoption
 Place baby in local authority foster careCare and contact plan
 child starting primary school or taking GCSEsKey dates
 Date this began: 8 November 2018
-, SE22 6SB, 22 Wesley DriveBentley hosptial
+, Northern Ireland, SE22 6SB
+, BT11 1234, Wesley, 22 Wesley DriveAppartment 21
 Living with respondentsChild's living situation
 BoyGender
 15 June 2018Date of birth
@@ -68,13 +67,35 @@ Facilities or assistance for a disability
 Yes
 intermediary hearing required
 Intermediary
-NoSpoken or written Welsh
+Yes
+welsh proceedings
+Spoken or written Welsh
 Yes
 interpreter required
 Interpreter
 Attending the hearing
 Child 1
 Child 2
+James SmithName
+Hide from all
+YesConfidential contact details
+-Anything else to help take part in proceedings
+respondent one test litigation reason
+YesLitigation capacity issues
+-Separate waiting room or other security measures
+-Facilities or assistance for a disability
+-Intermediary
+-Spoken or written Welsh
+-Interpreter
+UncleRelationship to the child or children
+07712345678Telephone number
+, Isle of man, Gloucester, BT66 7RR, Craigavon
+, Waringstown, Clanconnel GardensThe GrangeCurrent address
+CrewePlace of birth
+MaleGender
+2 May 1944Date of birth
+74 years oldAge
+Paul SmithName
 test child two contact details hidden reason
 YesConfidential contact details
 learning disabilities
@@ -90,30 +111,27 @@ YesConsidering adoption
 test child two care and contact planCare and contact plan
 test child two key dateKey dates
 Date this began: 2 February 2002
-, BT66 7RR, MK10 1SA
+, BT66 7RR, MK10 1SA, MK
 , Milton Keynes, Central Milton KeynesCarnegie House
-Living with respondentsChild's living situation
-GirlGender
-2002-02-02Date of birth
-16 years oldAge
-Sarah ReevesName
-test child two contact details hidden reason
-YesConfidential contact details
-learning disabilities
-YesAdditional needs
-07749972242Social worker's telephone number
-Paul WilsdonSocial worker's name
-YesFather has parental responsibility
-Scott SimpsonFather's name
-Sarah SimpsonMother's name
-test child two courtCourt applying for
-YesSubmitting application for a placement order
-YesConsidering adoption
-test child two care and contact planCare and contact plan
-test child two key dateKey dates
-Date this began: 2 February 2002
-Child 3
 Respondent 1
+Respondent 2
+-Confidential contact details
+-Anything else to help take part in proceedings
+noLitigation capacity issues
+-Separate waiting room or other security measures
+-Facilities or assistance for a disability
+-Intermediary
+-Spoken or written Welsh
+-Interpreter
+-Relationship to the child or children
+0987654321Telephone number
+, UK, Croydon
+, BT22 2345, Surrey, Surrey road, Surrey streetFlat 90Address
+ReadingPlace of birth
+MaleGender
+2 April 1933Date of birth
+85 years oldAge
+AnotherName
 respondent two hidden contact details reason
 YesConfidential contact details
 -Anything else to help take part in proceedings
@@ -126,42 +144,22 @@ YesLitigation capacity issues
 -Interpreter
 BrotherRelationship to the child or children
 02892611016Telephone number
-, United Kingdom
-, Down, BT26 6RJ, Lurgan, Hillsborough42 Transa WayAddress
+, United Kingdom, Down
+, BT26 6RJ, Lurgan, Hillsborough, Transa WayUnit 12Address
 NewryPlace of birth
-MaleGender
+UnknownGender
 2 April 1933Date of birth
 85 years oldAge
-James SmithName
-Hide from all
-YesConfidential contact details
--Anything else to help take part in proceedings
-respondent one test litigation capacity
-YesLitigation capacity issues
--Separate waiting room or other security measures
--Facilities or assistance for a disability
--Intermediary
--Spoken or written Welsh
--Interpreter
-UncleRelationship to the child or children
-07712345678Telephone number
-, Armagh, BT66 7RR
-, Craigavon, Waringstown69 Clanconnel GardensCurrent address
-LondonPlace of birth
-UnknownGender
-2 May 1944Date of birth
-74 years oldAge
-Paul SmithName
-Respondent 2
+Respondent 3
+Applicant
+, Newcastle, Newcastle street, Newcastle roadFlat 29Current address
+LisburnPlace of birth
+MaleGender
 2 February 2000Date of birth
-Other twoName
-Yes
-Others one hide contacts
-Confidential contact details
+Peter LaveryName
+NoConfidential contact details
 -Anything else to help take part in the proceedings
-Yes
-Others one inability to take part in proceedings
-Litigation capacity issues
+NoLitigation capacity issues
 -Separate waiting room or other security measures
 -Facilities or assistance for a disability
 -Intermediary
@@ -169,9 +167,9 @@ Litigation capacity issues
 -Interpreter
 CousinRelationship to the child or children
 07749972245Telephone number
-, United Kingdom
-, Armagh, BT43 343, Belfast1 Belfast RoadCurrent address
-BelfastPlace of birth
+, N.Ire, Armagh, BT43 343
+, Portadown, Portadown road, Portadown streetFlat 13Current address
+ArmaghPlace of birth
 UnknownGender
 2 February 1999Date of birth
 Jason LaveryName
@@ -184,13 +182,14 @@ Brian BanksSolicitor's Name
 jane@smith.comEmail address
 02120202020Telephone number
 2020202020Mobile number
-, SE1 2QH, London160 Tooley StAddress
+, Ireland, Galway
+, SE1 2QH, Limerick, Tooley, Tooley road160 Tooley StAddress
 Legal adviserJob title
 Jane SmithContact name
 London Borough of SouthwarkName
-Applicant
 Other 1
 Other 2
+NoAnything else
 history of domestic violence
 YesDomestic violence
 history of drug abuse
@@ -230,10 +229,7 @@ Litigation capacity issues
 -Interpreter
 Friend of familyRelationship to the child
 07749972241Telephone number
-, United Kingdom, Cork
-, BTTT TTT, Newcastle, Waringstown1 Newcastle streetCurrent address
-LisburnPlace of birth
-MaleGender
+, Northern Ireland, Cork, BTTT TTT
 Grounds for the application
 Threshold evidence
 grounds for application criteria
@@ -270,7 +266,6 @@ Something happened in France
 YesSignificant events outside the UK
 Aunt outside UK
 YesSuitable carer outside the UK
-NoAnything else
 International element
 Other proceedings
 Annex Documents

@@ -40,37 +40,35 @@
         "gender": "They identify in another way",
         "address": {
           "County": "Armagh",
-          "Country": "United Kingdom",
+          "Country": "N.Ire",
           "PostCode": "BT43 343",
-          "PostTown": "Belfast",
-          "AddressLine1": "1 Belfast Road",
-          "AddressLine2": null,
-          "AddressLine3": null
+          "PostTown": "Portadown",
+          "AddressLine1": "Flat 13",
+          "AddressLine2": "Portadown street",
+          "AddressLine3": "Portadown road"
         },
         "telephone": "07749972245",
-        "birthPlace": "Belfast",
-        "detailsHidden": "Yes",
+        "birthPlace": "Armagh",
+        "detailsHidden": "No",
         "childInformation": "Cousin",
-        "litigationIssues": "Yes",
-        "detailsHiddenReason": "Others one hide contacts",
-        "genderIdentification": "Unknown",
-        "litigationIssuesReason": "Others one inability to take part in proceedings"
+        "litigationIssues": "No",
+        "genderIdentification": "Unknown"
       },
       "additionalOthers": [
         {
           "id": "34c97e1a-eed9-499b-9693-e92496a1f54d",
           "value": {
             "DOB": "2000-02-02",
-            "name": "Other two",
+            "name": "Peter Lavery",
             "gender": "Male",
             "address": {
               "County": "Cork",
-              "Country": "United Kingdom",
+              "Country": "Northern Ireland",
               "PostCode": "BTTT TTT",
               "PostTown": "Newcastle",
-              "AddressLine1": "1 Newcastle street",
-              "AddressLine2": null,
-              "AddressLine3": "Waringstown"
+              "AddressLine1": "Flat 29",
+              "AddressLine2": "Newcastle road",
+              "AddressLine3": "Newcastle street"
             },
             "telephone": "07749972241",
             "birthPlace": "Lisburn",
@@ -102,17 +100,17 @@
       "withoutNoticeReason": "Notice without hearing needed",
       "respondentsAwareReason": "They seek to care for baby in mother and baby unit"
     },
-    "caseName": "test PDF case",
+    "caseName": "test",
     "children": {
       "firstChild": {
         "address": {
-          "County": null,
-          "Country": null,
+          "County": "Omagh",
+          "Country": "Northern Ireland",
           "PostCode": "SE22 6SB",
-          "PostTown": null,
-          "AddressLine1": "Bentley hosptial",
+          "PostTown": "BT11 1234",
+          "AddressLine1": "Appartment 21",
           "AddressLine2": "22 Wesley Drive",
-          "AddressLine3": null
+          "AddressLine3": "Wesley"
         },
         "adoption": "Yes",
         "childDOB": "2018-06-15",
@@ -128,12 +126,11 @@
         "additionalNeeds": "Yes",
         "livingSituation": "Living with respondents",
         "socialWorkerTel": "0123456789",
-        "litigationIssues": "Yes",
+        "litigationIssues": "No",
         "socialWorkerName": "Helen Green",
         "detailsHiddenReason": "History of domestic violence with relatives",
         "fathersResponsibility": "Yes",
         "additionalNeedsDetails": "Autism",
-        "litigationIssuesReason": "Autism",
         "childGenderIdentification": "Boy",
         "placementOrderApplication": "Yes"
       },
@@ -142,48 +139,13 @@
           "id": "3b0b9640-2894-41eb-bef2-a031d18c8453",
           "value": {
             "address": {
-              "County": null,
+              "County": "London",
               "Country": "BT66 7RR",
               "PostCode": "MK10 1SA",
-              "PostTown": "Milton Keynes",
+              "PostTown": "MK",
               "AddressLine1": "Carnegie House",
               "AddressLine2": "Central Milton Keynes",
-              "AddressLine3": null
-            },
-            "adoption": "Yes",
-            "childDOB": "2002-02-02",
-            "keyDates": "test child two key date",
-            "childName": "Sarah Reeves",
-            "childGender": "Girl",
-            "fathersName": "Scott Simpson",
-            "mothersName": "Sarah Simpson",
-            "detailsHidden": "Yes",
-            "situationDate": "2002-02-02",
-            "careAndContact": "test child two care and contact plan",
-            "placementCourt": "test child two court",
-            "additionalNeeds": "Yes",
-            "livingSituation": "Living with respondents",
-            "socialWorkerTel": "07749972242",
-            "litigationIssues": "Yes",
-            "socialWorkerName": "Paul Wilsdon",
-            "detailsHiddenReason": "test child two contact details hidden reason",
-            "fathersResponsibility": "Yes",
-            "additionalNeedsDetails": "learning disabilities",
-            "litigationIssuesReason": "test child two ability to take part in proceedings",
-            "placementOrderApplication": "Yes"
-          }
-        },
-        {
-          "id": "3b0b9640-2894-41eb-bef2-a031d18c8456",
-          "value": {
-            "address": {
-              "County": null,
-              "Country": "BT66 7RR",
-              "PostCode": "MK10 1SA",
-              "PostTown": "Milton Keynes",
-              "AddressLine1": "Carnegie House",
-              "AddressLine2": "Central Milton Keynes",
-              "AddressLine3": null
+              "AddressLine3": "Milton Keynes"
             },
             "adoption": "Yes",
             "childDOB": "2002-02-02",
@@ -215,13 +177,13 @@
       "email": "jane@smith.com",
       "mobile": "2020202020",
       "address": {
-        "County": null,
-        "Country": null,
+        "County": "Galway",
+        "Country": "Ireland",
         "PostCode": "SE1 2QH",
-        "PostTown": "London",
+        "PostTown": "Limerick",
         "AddressLine1": "160 Tooley St",
-        "AddressLine2": null,
-        "AddressLine3": null
+        "AddressLine2": "Tooley road",
+        "AddressLine3": "Tooley"
       },
       "jobTitle": "Legal adviser",
       "telephone": "02120202020",
@@ -255,46 +217,66 @@
           "value": {
             "dob": "1933-04-02",
             "name": "James Smith",
-            "gender": "Male",
+            "gender": "They identify in another way",
             "address": {
               "County": "Down",
               "Country": "United Kingdom",
               "PostCode": "BT26 6RJ",
               "PostTown": "Lurgan",
-              "AddressLine1": "42 Transa Way",
-              "AddressLine2": null,
+              "AddressLine1": "Unit 12",
+              "AddressLine2": "Transa Way",
               "AddressLine3": "Hillsborough"
             },
             "telephone": "02892611016",
             "placeOfBirth": "Newry",
+            "genderIdentify": "Unknown",
             "litigationIssues": "Yes",
             "relationshipToChild": "Brother",
             "contactDetailsHidden": "Yes",
             "litigationIssuesReason": "respondent two litigation capacity reason",
             "contactDetailsHiddenReason": "respondent two hidden contact details reason"
           }
+        },
+        {
+          "id": "0a5d43cc-333a-4c03-adcf-c6e0d5fbb035",
+          "value": {
+            "dob": "1933-04-02",
+            "name": "Another",
+            "gender": "Male",
+            "address": {
+              "County": "Croydon",
+              "Country": "UK",
+              "PostCode": "BT22 2345",
+              "PostTown": "Surrey",
+              "AddressLine1": "Flat 90",
+              "AddressLine2": "Surrey street",
+              "AddressLine3": "Surrey road"
+            },
+            "telephone": "0987654321",
+            "placeOfBirth": "Reading",
+            "litigationIssues": "no"
+          }
         }
       ],
       "firstRespondent": {
         "dob": "1944-05-02",
         "name": "Paul Smith",
-        "gender": "They identify in another way",
+        "gender": "Male",
         "address": {
-          "County": "Armagh",
-          "Country": null,
+          "County": "Gloucester",
+          "Country": "Isle of man",
           "PostCode": "BT66 7RR",
           "PostTown": "Craigavon",
-          "AddressLine1": "69 Clanconnel Gardens",
-          "AddressLine2": "Waringstown",
-          "AddressLine3": null
+          "AddressLine1": "The Grange",
+          "AddressLine2": "Clanconnel Gardens",
+          "AddressLine3": "Waringstown"
         },
         "telephone": "07712345678",
-        "placeOfBirth": "London",
-        "genderIdentify": "Unknown",
+        "placeOfBirth": "Crewe",
         "litigationIssues": "Yes",
         "relationshipToChild": "Uncle",
         "contactDetailsHidden": "Yes",
-        "litigationIssuesReason": "respondent one test litigation capacity",
+        "litigationIssuesReason": "respondent one test litigation reason",
         "contactDetailsHiddenReason": "Hide from all"
       }
     },
@@ -310,7 +292,7 @@
       "proposalReason": "allocation proposal reason"
     },
     "hearingPreferences": {
-      "welsh": "No",
+      "welsh": "Yes",
       "litigation": "Yes",
       "interpreter": "Yes",
       "intermediary": "Yes",
@@ -381,7 +363,6 @@
         "document_filename": "form.pdf",
         "document_binary_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e/binary"
       }
-    },
-    "caseName": "test"
+    }
   }
 }

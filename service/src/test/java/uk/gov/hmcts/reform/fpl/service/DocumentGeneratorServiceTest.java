@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -35,7 +34,6 @@ class DocumentGeneratorServiceTest {
         assertThat(content).contains("C110A");
     }
 
-    @Disabled
     @Test
     void shouldGenerateSubmittedFormDocumentWhenCaseIsFullyPopulated() throws IOException {
         Clock clock = Clock.fixed(Instant.parse("2018-11-26T00:00:00Z"), ZoneId.systemDefault());
