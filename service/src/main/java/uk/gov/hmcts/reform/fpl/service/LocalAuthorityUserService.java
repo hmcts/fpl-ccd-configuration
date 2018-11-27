@@ -45,10 +45,6 @@ public class LocalAuthorityUserService {
     private List<String> lookUpCode(String localAuthorityCode) {
         Map<String, List<String>> lookupTable = localAuthorityUserLookupConfiguration.getLookupTable();
 
-//        if(lookupTable.get(localAuthorityCode) == null) {
-//            throw new
-//        }
-
         return lookupTable.get(localAuthorityCode);
     }
 }
