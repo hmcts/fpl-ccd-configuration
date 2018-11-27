@@ -26,8 +26,6 @@ public class LocalAuthorityUserLookupConfiguration {
             userIds.put(localAuthorityData[0], ids);
         });
         this.mapping = userIds.build();
-
-        System.out.println(mapping);
     }
 
     public Map<String, List<String>> getLookupTable() {
