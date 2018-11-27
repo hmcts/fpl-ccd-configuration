@@ -6,13 +6,15 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.DocumentGeneratorConfiguration;
 import uk.gov.hmcts.reform.fpl.templates.DocumentTemplates;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 import uk.gov.hmcts.reform.pdf.generator.exception.MalformedTemplateException;
 
 import java.io.IOException;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,25 +27,18 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 @ExtendWith(SpringExtension.class)
 class DocumentGeneratorServiceTest {
 
-    private DocumentGeneratorService documentGeneratorService = new DocumentGeneratorService(
-        new DocumentGeneratorConfiguration().getConverter(),
-        new DocumentTemplates(),
-        new ObjectMapper()
-    );
-
     @Test
     void shouldGenerateSubmittedFormDocumentWhenCaseHasNoData() throws IOException {
-        CaseDetails caseDetails = emptyCaseDetails();
-        String content = textContentOf(documentGeneratorService.generateSubmittedFormPDF(caseDetails));
+        String content = textContentOf(createServiceInstance().generateSubmittedFormPDF(emptyCaseDetails()));
 
         assertThat(content).contains("C110A");
     }
 
     @Test
     void shouldGenerateSubmittedFormDocumentWhenCaseIsFullyPopulated() throws IOException {
-        CaseDetails caseDetails = populatedCaseDetails();
+        Clock clock = Clock.fixed(Instant.parse("2018-11-26T00:00:00Z"), ZoneId.systemDefault());
 
-        String content = textContentOf(documentGeneratorService.generateSubmittedFormPDF(caseDetails));
+        String content = textContentOf(createServiceInstance(clock).generateSubmittedFormPDF(populatedCaseDetails()));
         String expectedContent = ResourceReader.readString("submitted-form-pdf-content.txt");
 
         assertThat(splitContentIntoTrimmedLines(content))
@@ -56,8 +51,20 @@ class DocumentGeneratorServiceTest {
 
     @Test
     void shouldThrowExceptionWhenTemplateIsTemplateIsMalformed() {
-        assertThatThrownBy(() -> documentGeneratorService.generateSubmittedFormPDF(null))
+        assertThatThrownBy(() -> createServiceInstance().generateSubmittedFormPDF(null))
             .isInstanceOf(MalformedTemplateException.class);
+    }
+
+    private DocumentGeneratorService createServiceInstance() {
+        return createServiceInstance(Clock.systemDefaultZone());
+    }
+
+    private DocumentGeneratorService createServiceInstance(Clock clock) {
+        return new DocumentGeneratorService(
+            new DocumentGeneratorConfiguration().getConverter(clock),
+            new DocumentTemplates(),
+            new ObjectMapper()
+        );
     }
 
     private static String textContentOf(byte[] bytes) throws IOException {

@@ -15,8 +15,7 @@ class TodayFilterTest {
 
     @Test
     void shouldReturnTodaysDate() {
-        Date today = new Date();
         Object date = filter.apply("", NO_ARGS);
-        assertThat(date).isEqualTo(today);
+        assertThat((Date) date).isToday();
     }
 }

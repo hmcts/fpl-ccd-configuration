@@ -14,21 +14,22 @@ import uk.gov.hmcts.reform.pdf.generator.XMLContentSanitizer;
 import uk.gov.hmcts.reform.pebble.AgeFilter;
 import uk.gov.hmcts.reform.pebble.TodayFilter;
 
+import java.time.Clock;
 import java.util.Map;
 
 @Configuration
 public class DocumentGeneratorConfiguration {
 
     @Bean
-    public HTMLToPDFConverter getConverter() {
+    public HTMLToPDFConverter getConverter(Clock clock) {
         return new HTMLToPDFConverter(
-            new HTMLTemplateProcessor(buildEngine()),
+            new HTMLTemplateProcessor(buildEngine(clock)),
             new PDFGenerator(),
             new XMLContentSanitizer()
         );
     }
 
-    private PebbleEngine buildEngine() {
+    private PebbleEngine buildEngine(Clock clock) {
         return new PebbleEngine.Builder()
             .loader(new StringLoader())
             .strictVariables(true)
@@ -37,8 +38,8 @@ public class DocumentGeneratorConfiguration {
                 @Override
                 public Map<String, Filter> getFilters() {
                     return ImmutableMap.<String, Filter>builder()
-                        .put("today", new TodayFilter())
-                        .put("age", new AgeFilter())
+                        .put("today", new TodayFilter(clock))
+                        .put("age", new AgeFilter(clock))
                         .build();
                 }
             })

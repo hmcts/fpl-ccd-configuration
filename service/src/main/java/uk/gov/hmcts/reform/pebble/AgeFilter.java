@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.pebble;
 import com.google.common.collect.ImmutableList;
 import com.mitchellbosecke.pebble.extension.Filter;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeParseException;
@@ -14,6 +15,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class AgeFilter implements Filter {
 
+    private final Clock clock;
+
+    public AgeFilter() {
+        this(Clock.systemDefaultZone());
+    }
+
+    public AgeFilter(Clock clock) {
+        this.clock = clock;
+    }
+
     @Override
     public List<String> getArgumentNames() {
         return ImmutableList.<String>builder().build();
@@ -24,14 +35,14 @@ public class AgeFilter implements Filter {
         checkNotNull(input, "Input value is required");
         checkArgument(input instanceof String, "Input value must be string formatted date");
 
+        LocalDate inputDate;
         try {
-            LocalDate.parse(input.toString());
+            inputDate = LocalDate.parse(input.toString());
         } catch (DateTimeParseException exc) {
             throw new IllegalArgumentException("Input date is in an incorrect format");
         }
 
-        LocalDate today = LocalDate.now();
-        LocalDate inputDate = LocalDate.parse(input.toString());
+        LocalDate today = LocalDate.now(clock);
 
         if (inputDate.isAfter(today)) {
             throw new IllegalArgumentException("Date cannot be in the future");
