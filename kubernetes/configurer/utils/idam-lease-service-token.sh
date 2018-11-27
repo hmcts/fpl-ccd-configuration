@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
+set -eu -x
 
 microservice=${1}
 oneTimePassword=${2}

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eu
+set -eu -x
 
 email=${1}
 rolesStr=${2}
