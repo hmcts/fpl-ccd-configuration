@@ -19,7 +19,7 @@ public class InitiatedCaseEventHandler {
 
     @Async
     @EventListener
-    public void handleCaseInitiation(InitiatedCaseEvent event) {
+    public void grantCaseAccessToAllLocalAuthorityUsers(InitiatedCaseEvent event) {
         String userId = event.getUserId();
         String authorization = event.getAuthorization();
         String caseId = event.getCallbackRequest().getCaseDetails().getId().toString();

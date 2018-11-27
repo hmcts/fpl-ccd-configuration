@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,7 +34,7 @@ public class CaseInitiationController {
     }
 
     @PostMapping("/about-to-submit")
-    public ResponseEntity createdCase(
+    public ResponseEntity handleAboutToSubmitEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestBody CallbackRequest callbackrequest) {
         String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode(authorization);
@@ -52,13 +51,11 @@ public class CaseInitiationController {
     }
 
     @PostMapping("/submitted")
-    public ResponseEntity handleCaseInitiation(
+    public void handleSubmittedEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
 
         applicationEventPublisher.publishEvent(new InitiatedCaseEvent(callbackRequest, authorization, userId));
-
-        return new ResponseEntity(HttpStatus.OK);
     }
 }

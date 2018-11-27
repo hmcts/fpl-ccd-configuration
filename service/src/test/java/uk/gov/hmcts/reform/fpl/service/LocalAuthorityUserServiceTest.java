@@ -11,12 +11,16 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.exceptions.NoAssociatedUsersException;
+import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -55,7 +59,50 @@ class LocalAuthorityUserServiceTest {
         localAuthorityUserService.grantUserAccess(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
 
         verify(caseAccessApi, times(1)).grantAccessToCase(
-            eq(AUTH_TOKEN),eq(SERVICE_AUTH_TOKEN), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID), any(UserId.class));
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID), any(UserId.class));
+    }
+
+    @Test
+    void shouldThrowCustomExceptionWhenLocalAuthorityCodeNotFound() throws IllegalArgumentException {
+        given(localAuthorityUserLookupConfiguration.getLookupTable()).willReturn(
+            ImmutableMap.<String, List<String>>builder()
+                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder().add(USER_TO_ADD).build())
+                .build()
+        );
+
+        assertThatThrownBy(() ->
+            localAuthorityUserService.grantUserAccess(AUTH_TOKEN, USER_ID, CASE_ID, "FT"))
+            .isInstanceOf(UnknownLocalAuthorityCodeException.class)
+            .hasMessage("The local authority: FT was not found");
+    }
+
+    @Test
+    void shouldThrowCustomExceptionWhenValidLocalAuthorityHasNoUsers() throws IllegalArgumentException {
+        given(localAuthorityUserLookupConfiguration.getLookupTable()).willReturn(
+            ImmutableMap.<String, List<String>>builder()
+                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder().build())
+                .build()
+        );
+
+        assertThatThrownBy(() ->
+            localAuthorityUserService.grantUserAccess(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY))
+            .isInstanceOf(NoAssociatedUsersException.class)
+            .hasMessage("No users found for the local authority: example");
+    }
+
+    @Test
+    void userCreatingCaseDoesNotCreateCall() {
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        given(localAuthorityUserLookupConfiguration.getLookupTable()).willReturn(
+            ImmutableMap.<String, List<String>>builder()
+                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder().add("1").build())
+                .build()
+        );
+
+        localAuthorityUserService.grantUserAccess(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
+
+        verify(caseAccessApi, never()).grantAccessToCase(
+            any(), any(), any(), any(), any(), any(), any()
+        );
     }
 }
-

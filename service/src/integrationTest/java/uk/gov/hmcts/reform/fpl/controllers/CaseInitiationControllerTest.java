@@ -102,7 +102,7 @@ class CaseInitiationControllerTest {
     }
 
     @Test
-    void submittedEndpointShouldReturnOkResponse() throws Exception {
+    void grantAccessShouldBeCalledOnceForEachUser() throws Exception {
         given(serviceAuthorisationApi.serviceToken(anyMap()))
             .willReturn(SERVICE_AUTH_TOKEN);
 
@@ -128,3 +128,4 @@ class CaseInitiationControllerTest {
         );
     }
 }
+
