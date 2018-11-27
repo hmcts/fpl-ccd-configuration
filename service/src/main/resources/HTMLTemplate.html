@@ -905,7 +905,6 @@
         {% else %}
          -
         {% endif %}
-
       </dd>
     </div>
     <div class="data-list__row">
@@ -930,7 +929,7 @@
           and case_data.respondents.firstRespondent.genderIdentify is not empty %}
             {{ case_data.respondents.firstRespondent.genderIdentify }}
           {% else %}
-            {{ case_data.respondents.firstRespondent.childGender }}
+            {{ case_data.respondents.firstRespondent.gender }}
           {% endif %}
         {% else %}
           -
@@ -1102,6 +1101,7 @@
             {% endif %}
           </dd>
         </div>
+
         <div class="data-list__row">
           <dt class="data-list__title">Gender</dt>
           <dd class="data-list__definition">
