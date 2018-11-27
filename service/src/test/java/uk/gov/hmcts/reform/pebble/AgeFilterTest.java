@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Filter calculates age based on provided date and returns it in string format.
  *
- * Note: At the moment only supported input format is ISO formatted string date.
+ * <p>Note: At the moment only supported input format is ISO formatted string date.
  */
 class AgeFilterTest {
 

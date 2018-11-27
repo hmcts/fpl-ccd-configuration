@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.config;
 
-import com.google.common.collect.ImmutableMap;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
@@ -16,6 +15,9 @@ import uk.gov.hmcts.reform.pebble.TodayFilter;
 
 import java.time.Clock;
 import java.util.Map;
+import java.util.stream.Stream;
+
+import static com.google.common.collect.ImmutableMap.toImmutableMap;
 
 @Configuration
 public class DocumentGeneratorConfiguration {
@@ -23,13 +25,13 @@ public class DocumentGeneratorConfiguration {
     @Bean
     public HTMLToPDFConverter getConverter(Clock clock) {
         return new HTMLToPDFConverter(
-            new HTMLTemplateProcessor(buildEngine(clock)),
+            new HTMLTemplateProcessor(buildEngine(new TodayFilter(clock), new AgeFilter(clock))),
             new PDFGenerator(),
             new XMLContentSanitizer()
         );
     }
 
-    private PebbleEngine buildEngine(Clock clock) {
+    private PebbleEngine buildEngine(Filter... filters) {
         return new PebbleEngine.Builder()
             .loader(new StringLoader())
             .strictVariables(true)
@@ -37,10 +39,13 @@ public class DocumentGeneratorConfiguration {
             .extension(new AbstractExtension() {
                 @Override
                 public Map<String, Filter> getFilters() {
-                    return ImmutableMap.<String, Filter>builder()
-                        .put("today", new TodayFilter(clock))
-                        .put("age", new AgeFilter(clock))
-                        .build();
+                    return Stream.of(filters)
+                        .collect(toImmutableMap(
+                            filter -> filter.getClass().getSimpleName()
+                                .replace("Filter", "")
+                                .toLowerCase(),
+                            filter -> filter)
+                        );
                 }
             })
             .build();

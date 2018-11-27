@@ -15,9 +15,9 @@ import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -46,7 +46,7 @@ class DocumentGeneratorServiceTest {
     }
 
     private List<String> splitContentIntoTrimmedLines(String content) {
-        return Arrays.stream(content.split("\n")).map(String::trim).collect(Collectors.toList());
+        return Stream.of(content.split("\n")).map(String::trim).collect(Collectors.toList());
     }
 
     @Test
