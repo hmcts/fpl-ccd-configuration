@@ -77,6 +77,14 @@ exports.config = {
           mochaFile: 'test-results/result.xml',
         },
       },
+      'mochawesome': {
+        stdout: './functional-output/console.log',
+        options: {
+          reportDir: './functional-output',
+          reportName: 'index',
+          inlineAssets: true
+        },
+      },
     },
   },
 };

@@ -8,8 +8,10 @@
     "eslint": "5.9.0 ",
     "eslint-plugin-codeceptjs": "^0.4.0",
     "husky": "^1.2.0",
+    "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.18.0",
     "mocha-multi": "^1.0.1",
+    "mochawesome": "^3.0.2",
     "puppeteer": "^1.10.0"
   },
   "scripts": {
