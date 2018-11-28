@@ -51,7 +51,8 @@ public class LocalAuthorityUserService {
         Map<String, List<String>> lookupTable = localAuthorityUserLookupConfiguration.getLookupTable();
 
         if (lookupTable.get(localAuthorityCode) == null) {
-            throw new UnknownLocalAuthorityCodeException("The local authority: " + localAuthorityCode + " was not found");
+            throw new UnknownLocalAuthorityCodeException(
+                "The local authority: " + localAuthorityCode + " was not found");
         }
 
         if (lookupTable.get(localAuthorityCode).isEmpty()) {

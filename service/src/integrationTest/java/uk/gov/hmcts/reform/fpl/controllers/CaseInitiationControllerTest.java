@@ -38,7 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 class CaseInitiationControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
-    private static final String USER_ID = "1";
+    private static final String USER_ID = "10";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Autowired
