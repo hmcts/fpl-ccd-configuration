@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
@@ -15,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+@EnableRetry
 @Service
 public class LocalAuthorityUserService {
 
@@ -35,6 +38,7 @@ public class LocalAuthorityUserService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
+    @Retryable()
     public void grantUserAccess(String authorization, String userId, String caseId, String caseLocalAuthority) {
         List<String> userIds = new LinkedList<>(findUserIds(caseLocalAuthority));
         userIds.remove(userId);
@@ -42,8 +46,19 @@ public class LocalAuthorityUserService {
         userIds.forEach((id) -> {
             logger.debug("Granting user {} access to case {}", id, caseId);
 
-            caseAccessApi.grantAccessToCase(
-                authorization, authTokenGenerator.generate(), userId, JURISDICTION, CASE_TYPE, caseId, new UserId(id));
+            try {
+                caseAccessApi.grantAccessToCase(
+                    authorization,
+                    authTokenGenerator.generate(),
+                    userId,
+                    JURISDICTION,
+                    CASE_TYPE,
+                    caseId,
+                    new UserId(id));
+
+            } catch (Exception e) {
+                logger.warn("Could not grant user {} access to case {}", id, caseId);
+            }
         });
     }
 

@@ -24,7 +24,9 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -39,6 +41,9 @@ class CaseInitiationControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "10";
+    private static final String JURISDICTION = "PUBLICLAW";
+    private static final String CASE_TYPE = "Shared_Storage_DRAFTType";
+    private static final String CASE_ID = "1";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Autowired
@@ -107,7 +112,7 @@ class CaseInitiationControllerTest {
             .willReturn(SERVICE_AUTH_TOKEN);
 
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
-            .id(1L)
+            .id(Long.valueOf(CASE_ID))
             .data(ImmutableMap.<String, Object>builder()
                 .put("caseLocalAuthority", "example")
                 .build()).build())
@@ -124,8 +129,38 @@ class CaseInitiationControllerTest {
         Thread.sleep(3000);
 
         verify(caseAccessApi, times(3)).grantAccessToCase(
+            eq(AUTH_TOKEN), any(), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID), any()
+        );
+    }
+
+    @Test
+    void shouldContinueAddingUsersAfterGrantAccessFailure() throws Exception {
+        given(serviceAuthorisationApi.serviceToken(anyMap()))
+            .willReturn(SERVICE_AUTH_TOKEN);
+
+        doThrow(RuntimeException.class).when(caseAccessApi).grantAccessToCase(
             any(), any(), any(), any(), any(), any(), any()
+        );
+
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .id(Long.valueOf(CASE_ID))
+            .data(ImmutableMap.<String, Object>builder()
+                .put("caseLocalAuthority", "example")
+                .build()).build())
+            .build();
+
+        mockMvc
+            .perform(post("/callback/case-initiation/submitted")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(MAPPER.writeValueAsString(request)))
+            .andExpect(status().isOk()).andReturn();
+
+        Thread.sleep(3000);
+
+        verify(caseAccessApi, times(3)).grantAccessToCase(
+            eq(AUTH_TOKEN), any(), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID), any()
         );
     }
 }
-

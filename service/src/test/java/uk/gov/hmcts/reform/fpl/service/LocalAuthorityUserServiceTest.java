@@ -91,7 +91,7 @@ class LocalAuthorityUserServiceTest {
     }
 
     @Test
-    void userCreatingCaseDoesNotCreateCall() {
+    void userCreatingCaseDoesNotMakeCallToGrantAccess() {
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
         given(localAuthorityUserLookupConfiguration.getLookupTable()).willReturn(
             ImmutableMap.<String, List<String>>builder()
