@@ -47,7 +47,6 @@ class LocalAuthorityUserServiceTest {
     private LocalAuthorityUserService localAuthorityUserService;
 
     @Test
-    @SuppressWarnings({"LineLength"})
     void shouldCallGrantAccessToCaseWithExpectedParams() {
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
         given(localAuthorityUserLookupConfiguration.getLookupTable()).willReturn(
@@ -59,7 +58,8 @@ class LocalAuthorityUserServiceTest {
         localAuthorityUserService.grantUserAccess(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
 
         verify(caseAccessApi, times(1)).grantAccessToCase(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID), any(UserId.class));
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), eq(JURISDICTION),
+            eq(CASE_TYPE), eq(CASE_ID), any(UserId.class));
     }
 
     @Test

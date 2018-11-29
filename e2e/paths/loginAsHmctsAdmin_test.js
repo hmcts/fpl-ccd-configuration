@@ -6,7 +6,7 @@ let caseId;
 Feature('Login as hmcts admin').retry(2);
 
 Before(async (I, caseViewPage) => {
-  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword);
+  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailKurt, config.localAuthorityPassword);
   caseId = await I.grabTextFrom('h2');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   I.click('.button[type=submit]');

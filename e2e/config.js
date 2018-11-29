@@ -2,7 +2,11 @@
 
 module.exports = {
   // users
-  localAuthorityEmail: 'kurt@swansea.gov.uk',
+  swanseaLocalAuthorityEmailKurt: 'kurt@swansea.gov.uk',
+  swanseaLocalAuthorityEmailDamian: 'damian@swansea.gov.uk',
+  swanseaLocalAuthorityEmailJames: 'james@swansea.gov.uk',
+  hillingdonLocalAuthorityEmailSam: 'sam@hillingdon.gov.uk',
+  hillingdonLocalAuthorityEmailSiva: 'siva@hillingdon.gov.uk',
   localAuthorityPassword: process.env.LA_USER_PASSWORD || 'Password12',
   hmctsAdminEmail: 'hmcts-admin@example.com',
   hmctsAdminPassword: process.env.CA_USER_PASSWORD || 'Password12',
