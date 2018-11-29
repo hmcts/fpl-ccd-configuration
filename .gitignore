@@ -9,8 +9,9 @@
 package-lock.json
 node_modules/
 
-# output screenshots
+# test output
 output/
+test-results/
 
 .DS_Store
 ~*

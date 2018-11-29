@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
-  <!-- nothing to suppress. yay -->
+  <suppress>
+    <notes><![CDATA[
+         Shadowed dependency from AppInsights-Core. Unfortunately, not propagating and applying an override for transitive dependencies.
+         Anyway, this is specific to deserialisation of AtomicDoubleArray and CompoundOrdering classes: https://github.com/google/guava/wiki/CVE-2018-10237
+        ]]></notes>
+    <gav regex="true">^com\.google\.guava:guava:.*$</gav>
+    <cve>CVE-2018-10237</cve>
+  </suppress>
 </suppressions>
