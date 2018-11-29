@@ -9,4 +9,9 @@ module.exports = {
     const caseLink = locate('a').withAttr({href: href});
     I.click(caseLink);
   },
+
+  changeStateFilter(desiredState) {
+    I.selectOption('#wb-case-state', desiredState);
+    I.click('Apply');
+  },
 };

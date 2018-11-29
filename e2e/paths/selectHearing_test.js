@@ -3,7 +3,7 @@ const config = require('../config.js');
 Feature('Select hearing').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword);
+  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailKurt, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.selectHearing);
 });
 

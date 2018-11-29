@@ -3,7 +3,7 @@ const config = require('../config.js');
 Feature('Enter attending hearing information into the application').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword);
+  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailKurt, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.attendingHearing);
 });
 
