@@ -40,17 +40,6 @@ data "azurerm_key_vault_secret" "local_authority_name_mapping" {
   vault_uri = "${data.azurerm_key_vault.key_vault.vault_uri}"
 }
 
-module "fpl-vault" {
-  source = "git@github.com:hmcts/cnp-module-key-vault.git?ref=master"
-  name = "fpl-${var.env}"
-  product = "${var.product}"
-  env = "${var.env}"
-  tenant_id = "${var.tenant_id}"
-  object_id = "${var.jenkins_AAD_objectId}"
-  resource_group_name = "${module.case-service.resource_group_name}"
-  product_group_object_id = "68839600-92da-4862-bb24-1259814d1384"
-}
-
 module "case-service" {
   source              = "git@github.com:hmcts/moj-module-webapp?ref=master"
   product             = "${var.product}-${var.component}"
@@ -72,4 +61,15 @@ module "case-service" {
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE  = false
   }
+}
+
+module "fpl-vault" {
+  source = "git@github.com:hmcts/cnp-module-key-vault.git?ref=master"
+  name = "fpl-${var.env}"
+  product = "${var.product}"
+  env = "${var.env}"
+  tenant_id = "${var.tenant_id}"
+  object_id = "${var.jenkins_AAD_objectId}"
+  resource_group_name = "${module.case-service.resource_group_name}"
+  product_group_object_id = "68839600-92da-4862-bb24-1259814d1384"
 }
