@@ -1,12 +1,12 @@
 #!groovy
 
-//properties([
-//  pipelineTriggers([cron('20 21 * * *')])
-//])
+properties([
+  pipelineTriggers([cron('20 21 * * *')])
+])
 
 @Library("Infrastructure")
 
-def type = "java"
+def type = "nodejs"
 
 def product = "fpl"
 def component = "fpl-service"
@@ -15,13 +15,13 @@ withNightlyPipeline(type, product, component) {
 
   env.TEST_URL = 'https://ccd-case-management-web-aat.service.core-compute-aat.internal'
 
-  enableMutationTest()
-
-  after('mutationTest') {
-    withSonarQubeEnv("SonarQube") {
-      sh "./gradlew --info sonarqube"
-    }
-  }
+//  enableMutationTest()
+//
+//  after('mutationTest') {
+//    withSonarQubeEnv("SonarQube") {
+//      sh "./gradlew --info sonarqube"
+//    }
+//  }
 
   enableFullFunctionalTest()
 
