@@ -138,5 +138,12 @@
     "CaseEventID": "addFamilyManCaseNumber",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseEventID": "submitApplication",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "R"
   }
 ]

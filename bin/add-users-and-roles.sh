@@ -16,5 +16,7 @@ ${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh james@swansea.go
 ${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh sam@hillingdon.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor
 ${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh siva@hillingdon.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor
 ${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh hmcts-admin@example.com caseworker,caseworker-publiclaw,caseworker-publiclaw-courtadmin
+${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh cafcass@example.com caseworker,caseworker-publiclaw,caseworker-publiclaw-cafcass
 ${dir}/../kubernetes/configurer/utils/ccd-add-role.sh caseworker-publiclaw-solicitor
 ${dir}/../kubernetes/configurer/utils/ccd-add-role.sh caseworker-publiclaw-courtadmin
+${dir}/../kubernetes/configurer/utils/ccd-add-role.sh caseworker-publiclaw-cafcass

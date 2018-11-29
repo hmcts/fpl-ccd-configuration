@@ -13,3 +13,9 @@ Scenario('Sign in as court admin', (I, loginPage) => {
   I.see('Create new case');
   I.signOut();
 });
+
+Scenario('Sign in as CAFCASS', (I, loginPage) => {
+  loginPage.signIn(config.cafcassEmail, config.cafcassPassword);
+  I.see('Create new case');
+  I.signOut();
+});
