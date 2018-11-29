@@ -43,7 +43,7 @@ public class LocalAuthorityUserService {
         List<String> userIds = new LinkedList<>(findUserIds(caseLocalAuthority));
         userIds.remove(userId);
 
-        userIds.forEach((id) -> {
+        userIds.forEach(id -> {
             logger.debug("Granting user {} access to case {}", id, caseId);
 
             try {
