@@ -4,7 +4,7 @@ const otherProceedingData = require('../fixtures/otherProceedingData');
 Feature('Enter Other Proceedings').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailKurt, config.localAuthorityPassword);
+  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.enterOtherProceedings);
 });
 

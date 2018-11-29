@@ -5,7 +5,7 @@ const config = require('../config.js');
 Feature('Enter Allocation Proposal').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailKurt, config.localAuthorityPassword);
+  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
 });
 

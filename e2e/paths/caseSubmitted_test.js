@@ -3,7 +3,7 @@ const config = require('../config.js');
 Feature('Submit Case').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailKurt, config.localAuthorityPassword);
+  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   I.selectOption(caseViewPage.actionsDropdown, config.applicationActions.submitCase);
   I.click(caseViewPage.goButton);
 });

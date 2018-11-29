@@ -5,7 +5,7 @@ const solicitor = require('../fixtures/solicitor.js');
 Feature('Enter applicant').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailKurt, config.localAuthorityPassword);
+  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.enterApplicants);
 });
 
