@@ -12,6 +12,9 @@ def product = "fpl"
 def component = "fpl-service"
 
 withNightlyPipeline(type, product, component) {
+
+  env.TEST_URL = 'https://ccd-case-management-web-aat.service.core-compute-aat.internal'
+
   enableMutationTest()
 
   after('mutationTest') {
@@ -19,4 +22,7 @@ withNightlyPipeline(type, product, component) {
       sh "./gradlew --info sonarqube"
     }
   }
+
+  enableFullFunctionalTest()
+
 }
