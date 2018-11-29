@@ -2,7 +2,7 @@ const config = require('../config.js');
 
 let caseId;
 
-Feature('Cases visible only to respective local authority and admin');
+Feature('Cases visible only to respective local authority and admin').retry(2);
 
 Before(async (I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailKurt, config.localAuthorityPassword);
@@ -10,7 +10,7 @@ Before(async (I, caseViewPage) => {
   caseId = caseId.toString().replace('#', '');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   I.click('Submit');
-  I.signOut();
+  I.click('Sign Out');
 });
 
 Scenario('Different user in the same local authority can see case created', (I, loginPage, caseListPage) => {
