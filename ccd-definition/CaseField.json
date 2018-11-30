@@ -281,5 +281,21 @@
     "Label": "FamilyMan case number",
     "FieldType": "Text",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "userFullName",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "submissionEligibility",
+    "Label": " ",
+    "FieldType": "SubmissionEligibility",
+    "SecurityClassification": "Public"
   }
 ]

@@ -1278,5 +1278,14 @@
     "FieldType": "TextArea",
     "ElementLabel": "Directions and interim orders, if needed",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SubmissionEligibility",
+    "ListElementCode": "SubmissionEligibilityConfirmation",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "SubmissionEligibilityConfirmation",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
   }
 ]

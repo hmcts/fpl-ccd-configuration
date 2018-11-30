@@ -10,10 +10,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import javax.validation.constraints.NotNull;
+import java.util.Map;
 
 @Api
 @RestController
@@ -21,13 +25,15 @@ import javax.validation.constraints.NotNull;
 public class CaseSubmissionController {
 
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final UserDetailsService userDetailsService;
 
     @Autowired
-    public CaseSubmissionController(ApplicationEventPublisher applicationEventPublisher) {
+    public CaseSubmissionController(ApplicationEventPublisher applicationEventPublisher, UserDetailsService userDetailsService) {
         this.applicationEventPublisher = applicationEventPublisher;
+        this.userDetailsService = userDetailsService;
     }
 
-    @PostMapping
+    @PostMapping("/submitted")
     public ResponseEntity handleCaseSubmission(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
@@ -36,5 +42,23 @@ public class CaseSubmissionController {
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
 
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @PostMapping("/about-to-start")
+    public ResponseEntity handleCaseStart(
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+
+        Map<String, Object> data = caseDetails.getData();
+        String userFullName = userDetailsService.getUserName(authorization);
+
+        data.put("fullName","I, " + userFullName + ", believe that the facts stated in this application are true");
+
+        AboutToStartOrSubmitCallbackResponse body = AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .build();
+
+        return ResponseEntity.ok(body);
     }
 }
