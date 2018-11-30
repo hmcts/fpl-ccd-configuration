@@ -1281,10 +1281,10 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "SubmissionEligibility",
-    "ListElementCode": "SubmissionEligibilityConfirmation",
+    "ID": "SubmissionConsent",
+    "ListElementCode": "submitApplicationConsent",
     "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "SubmissionEligibilityConfirmation",
+    "FieldTypeParameter": "submitApplicationConsent",
     "ElementLabel": " ",
     "SecurityClassification": "Public"
   }

@@ -39,6 +39,7 @@ class DocumentGeneratorServiceTest {
         Clock clock = Clock.fixed(Instant.parse("2018-11-26T00:00:00Z"), ZoneId.systemDefault());
 
         String content = textContentOf(createServiceInstance(clock).generateSubmittedFormPDF(populatedCaseDetails()));
+
         String expectedContent = ResourceReader.readString("submitted-form-pdf-content.txt");
 
         assertThat(splitContentIntoTrimmedLines(content))

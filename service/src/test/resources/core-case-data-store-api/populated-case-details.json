@@ -5,6 +5,7 @@
   "case_type_id": "Shared_Storage_DRAFTType",
   "security_classification": "PUBLIC",
   "case_data": {
+    "userFullName": "Emma Taylor",
     "risks": {
       "neglect": "Yes",
       "sexualAbuse": "Yes",

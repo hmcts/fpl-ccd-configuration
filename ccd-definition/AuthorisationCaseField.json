@@ -240,7 +240,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "submissionEligibility",
+    "CaseFieldID": "submissionConsent",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRU"
   },
@@ -499,7 +499,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "submissionEligibility",
+    "CaseFieldID": "submissionConsent",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
@@ -758,7 +758,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseFieldID": "submissionEligibility",
+    "CaseFieldID": "submissionConsent",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   },

@@ -97,6 +97,10 @@
       float: right;
     }
 
+    .consent {
+      font-size: 16px;
+    }
+
     .u-comma-before {
       float: left;
     }
@@ -2127,7 +2131,7 @@
     </div>
   </dl>
   {% if case_data.userFullName is not empty %}
-  <p>I, {{case_data.userFullName}}, believe that the facts stated in this application are true</p>
+  <p class="consent"><strong>I, {{ case_data.userFullName }}, believe that the facts stated in this application are true.</strong></p>
   {% endif %}
 </main>
 </body>

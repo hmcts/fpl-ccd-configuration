@@ -401,7 +401,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "submitApplication",
-    "CaseFieldID": "submissionEligibility",
+    "CaseFieldID": "submissionConsent",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
     "PageID": 1,

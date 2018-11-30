@@ -259,8 +259,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "SubmissionEligibilityConfirmation",
-    "ListElementCode": "eligibilityConfirmation",
-    "ListElement": "I agree"
+    "ID": "submitApplicationConsent",
+    "ListElementCode": "consent",
+    "ListElement": "I agree with this statement"
   }
 ]
