@@ -79,7 +79,7 @@ task runFunctionalTest(type: Exec, description: 'Runs E2E tests.') {
       return skipTestsEnvironmentVariable == null || skipTestsEnvironmentVariable == 'false'
     }
   })
-  commandLine '/usr/local/bin/yarn', '--silent', 'test:functional'
+  commandLine '/usr/bin/yarn', '--silent', 'test:functional'
 }
 
 task smoke(description: 'Runs the smoke tests.') {
