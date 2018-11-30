@@ -50,10 +50,10 @@ public class CaseSubmissionController {
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
-        Map<String, Object> data = caseDetails.getData();
-        String userFullName = userDetailsService.getUserName(authorization);
+        String label = "I, " + userDetailsService.getUserName(authorization) + ", believe that the facts stated in this application are true";
 
-        data.put("fullName","I, " + userFullName + ", believe that the facts stated in this application are true");
+        Map<String, Object> data = caseDetails.getData();
+        data.put("userFullName", label);
 
         AboutToStartOrSubmitCallbackResponse body = AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)

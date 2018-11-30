@@ -2126,6 +2126,9 @@
       </dd>
     </div>
   </dl>
+  {% if case_data.userFullName is not empty %}
+  <p>I, {{case_data.userFullName}}, believe that the facts stated in this application are true</p>
+  {% endif %}
 </main>
 </body>
 </html>

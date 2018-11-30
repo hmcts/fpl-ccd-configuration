@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
@@ -11,6 +12,9 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.CaseRepository;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+
+import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.handlers.SubmittedCaseEventHandler.SubmittedFormFilenameHelper.buildFileName;
 
@@ -23,14 +27,17 @@ public class SubmittedCaseEventHandler {
     private final DocumentGeneratorService documentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final CaseRepository caseRepository;
+    private final UserDetailsService userDetailsService;
 
     @Autowired
     public SubmittedCaseEventHandler(DocumentGeneratorService documentGeneratorService,
                                      UploadDocumentService uploadDocumentService,
-                                     CaseRepository caseRepository) {
+                                     CaseRepository caseRepository,
+                                     UserDetailsService userDetailsService) {
         this.documentGeneratorService = documentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
         this.caseRepository = caseRepository;
+        this.userDetailsService = userDetailsService;
     }
 
     /**
@@ -44,6 +51,11 @@ public class SubmittedCaseEventHandler {
         String userId = event.getUserId();
         String authorization = event.getAuthorization();
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
+
+        Map<String, Object> data = new ImmutableMap.Builder<String, Object>()
+            .put("userFullName", userDetailsService.getUserName(authorization))
+            .build();
+        caseDetails.setData(data);
 
         byte[] pdf = documentGeneratorService.generateSubmittedFormPDF(caseDetails);
 
