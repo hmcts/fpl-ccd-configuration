@@ -17,6 +17,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 @EnableRetry
 @Service
 public class LocalAuthorityUserService {
@@ -56,22 +58,24 @@ public class LocalAuthorityUserService {
                     caseId,
                     new UserId(id));
 
-            } catch (Exception e) {
-                logger.warn("Could not grant user {} access to case {}", id, caseId);
+            } catch (Exception ex) {
+                logger.warn("Could not grant user {} access to case {}", id, caseId, ex);
             }
         });
     }
 
     private List<String> findUserIds(String localAuthorityCode) {
+        checkNotNull(localAuthorityCode, "Case does not have local authority assigned");
+
         Map<String, List<String>> lookupTable = localAuthorityUserLookupConfiguration.getLookupTable();
 
         if (lookupTable.get(localAuthorityCode) == null) {
             throw new UnknownLocalAuthorityCodeException(
-                "The local authority: " + localAuthorityCode + " was not found");
+                "The local authority '" + localAuthorityCode + "' was not found");
         }
 
         if (lookupTable.get(localAuthorityCode).isEmpty()) {
-            throw new NoAssociatedUsersException("No users found for the local authority: " + localAuthorityCode);
+            throw new NoAssociatedUsersException("No users found for the local authority '" + localAuthorityCode + "'");
         }
 
         return lookupTable.get(localAuthorityCode);

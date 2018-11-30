@@ -31,7 +31,7 @@ class LocalAuthorityUserServiceTest {
     private static final String SERVICE_AUTH_TOKEN = "Bearer service token";
     private static final String JURISDICTION = "PUBLICLAW";
     private static final String CASE_TYPE = "Shared_Storage_DRAFTType";
-    private static final String USER_ID = "1";
+    private static final String CREATOR_USER_ID = "1";
     private static final String CASE_ID = "1";
     private static final String USER_TO_ADD = "5";
     private static final String LOCAL_AUTHORITY = "example";
@@ -51,58 +51,93 @@ class LocalAuthorityUserServiceTest {
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
         given(localAuthorityUserLookupConfiguration.getLookupTable()).willReturn(
             ImmutableMap.<String, List<String>>builder()
-                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder().add(USER_TO_ADD).build())
+                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder()
+                    .add(USER_TO_ADD)
+                    .build())
                 .build()
         );
 
-        localAuthorityUserService.grantUserAccess(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccess(AUTH_TOKEN, CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY);
 
         verify(caseAccessApi, times(1)).grantAccessToCase(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), eq(JURISDICTION),
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CREATOR_USER_ID), eq(JURISDICTION),
             eq(CASE_TYPE), eq(CASE_ID), any(UserId.class));
     }
 
     @Test
-    void shouldThrowCustomExceptionWhenLocalAuthorityCodeNotFound() throws IllegalArgumentException {
+    void shouldThrowNullPointerExceptionWhenLocalAuthorityCodeIsNull() throws IllegalArgumentException {
+        assertThatThrownBy(() ->
+            localAuthorityUserService.grantUserAccess(AUTH_TOKEN, CREATOR_USER_ID, CASE_ID, null))
+            .isInstanceOf(NullPointerException.class)
+            .hasMessage("Case does not have local authority assigned");
+    }
+
+    @Test
+    void shouldThrowCustomExceptionWhenLocalAuthorityCodeIsNotFound() throws IllegalArgumentException {
         given(localAuthorityUserLookupConfiguration.getLookupTable()).willReturn(
             ImmutableMap.<String, List<String>>builder()
-                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder().add(USER_TO_ADD).build())
+                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder()
+                    .add(USER_TO_ADD)
+                    .build())
                 .build()
         );
 
         assertThatThrownBy(() ->
-            localAuthorityUserService.grantUserAccess(AUTH_TOKEN, USER_ID, CASE_ID, "FT"))
+            localAuthorityUserService.grantUserAccess(AUTH_TOKEN, CREATOR_USER_ID, CASE_ID, "FT"))
             .isInstanceOf(UnknownLocalAuthorityCodeException.class)
-            .hasMessage("The local authority: FT was not found");
+            .hasMessage("The local authority 'FT' was not found");
     }
 
     @Test
     void shouldThrowCustomExceptionWhenValidLocalAuthorityHasNoUsers() throws IllegalArgumentException {
         given(localAuthorityUserLookupConfiguration.getLookupTable()).willReturn(
             ImmutableMap.<String, List<String>>builder()
-                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder().build())
+                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder()
+                    .build())
                 .build()
         );
 
         assertThatThrownBy(() ->
-            localAuthorityUserService.grantUserAccess(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY))
+            localAuthorityUserService.grantUserAccess(AUTH_TOKEN, CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY))
             .isInstanceOf(NoAssociatedUsersException.class)
-            .hasMessage("No users found for the local authority: example");
+            .hasMessage("No users found for the local authority 'example'");
     }
 
     @Test
-    void userCreatingCaseDoesNotMakeCallToGrantAccess() {
+    void shouldNotMakeCallToGrantAccessEndpointWhenUserCreatingCaseIsOnlyUserWithinLocalAuthority() {
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
         given(localAuthorityUserLookupConfiguration.getLookupTable()).willReturn(
             ImmutableMap.<String, List<String>>builder()
-                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder().add("1").build())
+                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder()
+                    .add(CREATOR_USER_ID)
+                    .build())
                 .build()
         );
 
-        localAuthorityUserService.grantUserAccess(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccess(AUTH_TOKEN, CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY);
 
         verify(caseAccessApi, never()).grantAccessToCase(
             any(), any(), any(), any(), any(), any(), any()
         );
+    }
+
+    @Test
+    void shouldMakeCallToGrantAccessEndpointOnlyToGrantAccessToRemainingUsersWithinLocalAuthority() {
+        String additionalUserId = "2";
+
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        given(localAuthorityUserLookupConfiguration.getLookupTable()).willReturn(
+            ImmutableMap.<String, List<String>>builder()
+                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder()
+                    .add(CREATOR_USER_ID, additionalUserId)
+                    .build())
+                .build()
+        );
+
+        localAuthorityUserService.grantUserAccess(AUTH_TOKEN, CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY);
+
+        verify(caseAccessApi, times(1)).grantAccessToCase(
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CREATOR_USER_ID), eq(JURISDICTION),
+            eq(CASE_TYPE), eq(CASE_ID), any(UserId.class));
     }
 }
