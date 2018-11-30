@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.exceptions.NoAssociatedUsersException;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -66,17 +65,16 @@ public class LocalAuthorityUserService {
     private List<String> findUserIds(String localAuthorityCode) {
         checkNotNull(localAuthorityCode, "Case does not have local authority assigned");
 
-        Map<String, List<String>> lookupTable = localAuthorityUserLookupConfiguration.getLookupTable();
+        List<String> userIds = localAuthorityUserLookupConfiguration.getLookupTable().get(localAuthorityCode);
 
-        if (lookupTable.get(localAuthorityCode) == null) {
-            throw new UnknownLocalAuthorityCodeException(
-                "The local authority '" + localAuthorityCode + "' was not found");
+        if (userIds == null) {
+            throw new UnknownLocalAuthorityCodeException("Local authority '" + localAuthorityCode + "' was not found");
         }
 
-        if (lookupTable.get(localAuthorityCode).isEmpty()) {
+        if (userIds.isEmpty()) {
             throw new NoAssociatedUsersException("No users found for the local authority '" + localAuthorityCode + "'");
         }
 
-        return lookupTable.get(localAuthorityCode);
+        return userIds;
     }
 }

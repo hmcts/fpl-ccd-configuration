@@ -85,7 +85,7 @@ class LocalAuthorityUserServiceTest {
         assertThatThrownBy(() ->
             localAuthorityUserService.grantUserAccess(AUTH_TOKEN, CREATOR_USER_ID, CASE_ID, "FT"))
             .isInstanceOf(UnknownLocalAuthorityCodeException.class)
-            .hasMessage("The local authority 'FT' was not found");
+            .hasMessage("Local authority 'FT' was not found");
     }
 
     @Test
