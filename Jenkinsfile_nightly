@@ -6,14 +6,13 @@ properties([
 
 @Library("Infrastructure")
 
-def type = "nodejs"
+def type = "java"
 
 def product = "fpl"
 def component = "fpl-service"
 
 withNightlyPipeline(type, product, component) {
 
-  //env.TEST_URL = 'https://ccd-case-management-web-aat.service.core-compute-aat.internal'
   env.URL = 'http://ccd-case-management-web-aat.service.core-compute-aat.internal';
   env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080";
 
@@ -25,6 +24,8 @@ withNightlyPipeline(type, product, component) {
 //    }
 //  }
 
-  enableFullFunctionalTest()
+  //to Run functional test
+  sh "./gradlew runFunctionalTest"
+  //enableFullFunctionalTest()
 
 }
