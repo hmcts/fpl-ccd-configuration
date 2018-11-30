@@ -13,9 +13,9 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.NoAssociatedUsersException;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -41,27 +41,26 @@ public class LocalAuthorityUserService {
     }
 
     @Retryable()
-    public void grantUserAccess(String authorization, String userId, String caseId, String caseLocalAuthority) {
-        List<String> userIds = new LinkedList<>(findUserIds(caseLocalAuthority));
-        userIds.remove(userId);
+    public void grantUserAccess(String authorization, String creatorUserId, String caseId, String caseLocalAuthority) {
+        findUserIds(caseLocalAuthority).stream()
+            .filter(userId -> !Objects.equals(userId, creatorUserId))
+            .forEach(userId -> {
+                logger.debug("Granting user {} access to case {}", userId, caseId);
 
-        userIds.forEach(id -> {
-            logger.debug("Granting user {} access to case {}", id, caseId);
+                try {
+                    caseAccessApi.grantAccessToCase(
+                        authorization,
+                        authTokenGenerator.generate(),
+                        creatorUserId,
+                        JURISDICTION,
+                        CASE_TYPE,
+                        caseId,
+                        new UserId(userId));
 
-            try {
-                caseAccessApi.grantAccessToCase(
-                    authorization,
-                    authTokenGenerator.generate(),
-                    userId,
-                    JURISDICTION,
-                    CASE_TYPE,
-                    caseId,
-                    new UserId(id));
-
-            } catch (Exception ex) {
-                logger.warn("Could not grant user {} access to case {}", id, caseId, ex);
-            }
-        });
+                } catch (Exception ex) {
+                    logger.warn("Could not grant user {} access to case {}", userId, caseId, ex);
+                }
+            });
     }
 
     private List<String> findUserIds(String localAuthorityCode) {
