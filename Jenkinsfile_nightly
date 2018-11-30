@@ -24,19 +24,8 @@ withNightlyPipeline(type, product, component) {
 //    }
 //  }
 
-  node () {
-    stage ("functionalTests"){
-      try {
-        sh '''
-            ./gradlew functional
-            '''
-      } catch (Exception err) {
-
-        echo "MESSAGE:" + err.getMessage()
-      }
-
   //to Run functional test
-  //sh "./gradlew functional"
+  sh "./gradlew functional"
   //enableFullFunctionalTest()
 
 }
