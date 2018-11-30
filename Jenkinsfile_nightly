@@ -25,7 +25,8 @@ withNightlyPipeline(type, product, component) {
 //  }
 
   //to Run functional test
-  sh "./gradlew functional"
+  //sh "./gradlew functional"
+  enableFunctionalTest()
   //enableFullFunctionalTest()
 
 }
