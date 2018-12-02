@@ -4,23 +4,34 @@ properties([
   pipelineTriggers([cron('20 21 * * *')])
 ])
 
+#!groovy
+
 @Library("Infrastructure")
 
 def type = "java"
 
 def product = "fpl"
-def component = "fpl-service"
+def component = "case-service"
 
 List<Map<String, Object>> secrets = [
   secret('ccd-configurer-s2s-secret', 'CCD_CONFIGURER_S2S_SECRET'),
   secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN')
 ]
 
+static Map<String, Object> secret(String secretName, String envVariable) {
+  [ $class: 'AzureKeyVaultSecret',
+    secretType: 'Secret',
+    name: secretName,
+    envVariable: envVariable
+  ]
+}
+
 withNightlyPipeline(type, product, component) {
   setVaultName('fpl')
   loadVaultSecrets(secrets)
   env.URL = 'http://ccd-case-management-web-aat.service.core-compute-aat.internal';
   env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080";
+  env.SKIP_FUNCTIONAL_TESTS = 'true'
 
 //  enableMutationTest()
 //
