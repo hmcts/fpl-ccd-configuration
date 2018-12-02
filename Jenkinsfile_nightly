@@ -31,7 +31,7 @@ withNightlyPipeline(type, product, component) {
 //  }
 
   //to Run functional test
-  node () {
+  after('build') {
     stage ("functionalTests"){
       sh '''./gradlew functional'''
     }
