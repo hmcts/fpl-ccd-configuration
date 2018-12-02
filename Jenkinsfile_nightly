@@ -11,8 +11,14 @@ def type = "java"
 def product = "fpl"
 def component = "fpl-service"
 
-withNightlyPipeline(type, product, component) {
+List<Map<String, Object>> secrets = [
+  secret('ccd-configurer-s2s-secret', 'CCD_CONFIGURER_S2S_SECRET'),
+  secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN')
+]
 
+withNightlyPipeline(type, product, component) {
+  setVaultName('fpl')
+  loadVaultSecrets(secrets)
   env.URL = 'http://ccd-case-management-web-aat.service.core-compute-aat.internal';
   env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080";
 
