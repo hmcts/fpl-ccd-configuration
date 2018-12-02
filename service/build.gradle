@@ -86,8 +86,12 @@ task smoke(description: 'Runs the smoke tests.') {
   dependsOn(awaitApplicationReadiness, installDependencies, runSmokeTests)
 }
 
+//task functional(description: 'Runs the functional tests.') {
+//  dependsOn(awaitApplicationReadiness, installDependencies, runFunctionalTest)
+//}
+
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(awaitApplicationReadiness, installDependencies, runFunctionalTest)
+  dependsOn(installDependencies, runFunctionalTest)
 }
 
 checkstyle {
