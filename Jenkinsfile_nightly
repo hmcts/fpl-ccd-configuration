@@ -40,7 +40,7 @@ withNightlyPipeline(type, product, component) {
 //  }
 
   //to Run functional test
-  after('mutationTest') {
+  after('DependencyCheckNightly') {
     stage ("functionalTests"){
       sh '''./gradlew functional'''
     }
