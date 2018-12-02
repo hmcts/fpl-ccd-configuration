@@ -29,7 +29,6 @@ withNightlyPipeline(type, product, component) {
   loadVaultSecrets(secrets)
   env.URL = 'http://ccd-case-management-web-aat.service.core-compute-aat.internal';
   env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080";
-  env.SKIP_FUNCTIONAL_TESTS = 'true'
 
 //  enableMutationTest()
 //
