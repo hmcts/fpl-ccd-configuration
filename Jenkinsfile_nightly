@@ -25,7 +25,7 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 }
 
 withNightlyPipeline(type, product, component) {
-  setVaultName('fpl')
+  setVaultName('fpl-aat')
   loadVaultSecrets(secrets)
   env.URL = 'http://ccd-case-management-web-aat.service.core-compute-aat.internal';
   env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080";
