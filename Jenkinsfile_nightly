@@ -4,8 +4,6 @@ properties([
   pipelineTriggers([cron('20 21 * * *')])
 ])
 
-#!groovy
-
 @Library("Infrastructure")
 
 def type = "java"
