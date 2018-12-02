@@ -22,6 +22,7 @@ module.exports = {
     I.selectOption(this.fields.caseType, 'Shared_Storage_DRAFT_v0.3');
     I.selectOption(this.fields.event, 'Open case');
     I.click(this.startButton);
+    I.waitForElement(this.enterCaseNamePage.caseName);
     this.enterCaseName();
     I.click(this.continueButton);
   },
