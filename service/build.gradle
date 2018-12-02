@@ -83,8 +83,13 @@ task runFunctionalTest(type: Exec, description: 'Runs E2E tests.') {
 }
 
 task smoke(description: 'Runs the smoke tests.') {
-  dependsOn(awaitApplicationReadiness, installDependencies, runSmokeTests)
+  dependsOn(installDependencies, runSmokeTests)
 }
+
+//task smoke(description: 'Runs the smoke tests.') {
+//  dependsOn(awaitApplicationReadiness, installDependencies, runSmokeTests)
+//}
+
 
 //task functional(description: 'Runs the functional tests.') {
 //  dependsOn(awaitApplicationReadiness, installDependencies, runFunctionalTest)
