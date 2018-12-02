@@ -12,7 +12,7 @@ exports.config = {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: true,
       waitForNavigation: 'networkidle0',
-      waitForTimeout: 35000,
+      waitForTimeout: 40000,
       waitForAction: 200,
       chrome: {
         ignoreHTTPSErrors: true,
