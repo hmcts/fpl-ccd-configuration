@@ -927,7 +927,7 @@ metadata:
   name: shared-database-data
   namespace: ${NAMESPACE}
 spec:
-  storageClassName: managed-premium
+  storageClassName: default
   accessModes:
     - ReadWriteOnce
   resources:
