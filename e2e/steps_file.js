@@ -1,9 +1,11 @@
-/* global locate */
+/* global locate, process */
 const config = require('./config');
 
 const logIn = require('./pages/login/loginPage');
 const createCase = require('./pages/createCase/createCase');
 const addEventDetails = require('./pages/createCase/addEventSummary');
+
+let baseUrl = process.env.URL || 'http://localhost:3451';
 
 'use strict';
 
@@ -61,6 +63,11 @@ module.exports = function () {
 
     signOut() {
       this.click('Sign Out');
+    },
+
+    navigateToCaseDetails(caseId) {
+      const href = `${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${caseId.replace(/\D/g, '')}`;
+      this.navigateToUrl(href);
     },
   });
 };
