@@ -929,7 +929,7 @@ metadata:
 spec:
   storageClassName: managed-premium
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 250Mi
