@@ -34,3 +34,9 @@ Scenario('HMCTS admin user can see the case', (I, loginPage) => {
   I.navigateToUrl(baseUrl + '/case/PUBLICLAW/Shared_Storage_DRAFTType/' + caseUrl);
   I.see(caseId);
 });
+
+Scenario('CAFCASS user can see the case', (I, loginPage) => {
+  loginPage.signIn(config.cafcassEmail, config.cafcassPassword);
+  I.navigateToUrl(baseUrl + '/case/PUBLICLAW/Shared_Storage_DRAFTType/' + caseUrl);
+  I.see(caseId);
+});
