@@ -918,6 +918,25 @@ spec:
 ---
 
 #
+# SHARED-DATABASE :: Volume
+#
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shared-database-data
+  namespace: ${NAMESPACE}
+spec:
+  storageClassName: managed-premium
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 250Mi
+
+---
+
+#
 # SHARED-DATABASE :: Deployment
 #
 apiVersion: apps/v1
@@ -946,6 +965,9 @@ spec:
             limits:
               memory: 256Mi
               cpu: 500m
+          volumeMounts:
+            - name: shared-database-data
+              mountPath: /var/lib/postgresql/data
           ports:
             - containerPort: 5432
               name: postgres
@@ -953,6 +975,10 @@ spec:
             tcpSocket:
               port: 5432
             initialDelaySeconds: 10
+      volumes:
+        - name: shared-database-data
+          persistentVolumeClaim:
+            claimName: shared-database-data
       dnsConfig:
         options:
           - name: single-request-reopen
