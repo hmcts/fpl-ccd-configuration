@@ -3,14 +3,14 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseStateID": "Open",
-    "UserRole": "caseworker-publiclaw-localAuthority",
+    "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseStateID": "Submitted",
-    "UserRole": "caseworker-publiclaw-localAuthority",
+    "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRU"
   },
   {
@@ -18,6 +18,13 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseStateID": "Submitted",
     "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseStateID": "Submitted",
+    "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   }
 ]

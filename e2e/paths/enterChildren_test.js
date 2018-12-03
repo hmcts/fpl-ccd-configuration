@@ -1,7 +1,7 @@
 const config = require('../config.js');
 const addresses = [
   {
-    lookupOption: 'Flat 2, Caversham House 15-17, Church Road, Reading',    
+    lookupOption: 'Flat 2, Caversham House 15-17, Church Road, Reading',
     buildingAndStreet: {
       lineOne: 'Flat 2',
       lineTwo: 'Caversham House 15-17',
@@ -27,7 +27,7 @@ const addresses = [
 Feature('Enter children in application').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
+  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.enterChildren);
 });
 
@@ -35,7 +35,7 @@ Scenario('completing half of the enter children in the c110a application', (I, e
   enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
   enterChildrenPage.defineChildSituation('01', '11', '2017');
   enterChildrenPage.enterAddress(addresses[0]);
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
@@ -43,7 +43,7 @@ Scenario('completing half of the enter children in the c110a application', (I, e
 Scenario('completing entering child information in the c110a application', (I, enterChildrenPage, caseViewPage) => {
   enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
   enterChildrenPage.defineChildSituation('01', '11', '2017');
-  enterChildrenPage.enterAddress(addresses[0]);  
+  enterChildrenPage.enterAddress(addresses[0]);
   enterChildrenPage.enterKeyDatesAffectingHearing();
   enterChildrenPage.enterSummaryOfCarePlan();
   enterChildrenPage.defineAdoptionIntention();
@@ -55,7 +55,7 @@ Scenario('completing entering child information in the c110a application', (I, e
   enterChildrenPage.addChild();
   enterChildrenPage.enterChildDetails('Susan', '01', '07', '2016');
   enterChildrenPage.defineChildSituation('02', '11', '2017');
-  enterChildrenPage.enterAddress(addresses[1]);  
+  enterChildrenPage.enterAddress(addresses[1]);
   enterChildrenPage.enterKeyDatesAffectingHearing();
   enterChildrenPage.enterSummaryOfCarePlan();
   enterChildrenPage.defineAdoptionIntention();
@@ -64,7 +64,7 @@ Scenario('completing entering child information in the c110a application', (I, e
   enterChildrenPage.defineChildAdditionalNeeds();
   enterChildrenPage.defineContactDetailsVisibility();
   enterChildrenPage.defineAbilityToTakePartInProceedings();
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(1, 'Child 1', 'Child\'s full name', 'Timothy');

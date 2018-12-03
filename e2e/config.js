@@ -2,17 +2,16 @@
 
 module.exports = {
   // users
-  localAuthorityEmail: 'local-authority@example.com',
+  localAuthorityEmail: 'kurt@swansea.gov.uk',
   localAuthorityPassword: process.env.LA_USER_PASSWORD || 'Password12',
   hmctsAdminEmail: 'hmcts-admin@example.com',
   hmctsAdminPassword: process.env.CA_USER_PASSWORD || 'Password12',
+  cafcassEmail: 'cafcass@example.com',
+  cafcassPassword: process.env.CAFCASS_USER_PASSWORD || 'Password12',
   definition: {
     jurisdiction: 'PUBLICLAW',
     caseType: 'Shared_Storage_DRAFTType',
   },
-  // event dialog
-  eventSummary: '',
-  eventDescription: '',
   // actions
   applicationActions: {
     selectOrders: 'Orders and directions needed',
@@ -29,7 +28,7 @@ module.exports = {
     enterAllocationProposal: 'Allocation proposal',
     attendingHearing: 'Attending the hearing',
     uploadDocuments: 'Documents',
-    changeCaseName: 'Change case name',    
+    changeCaseName: 'Change case name',
     submitCase: 'Submit application',
   },
   addFamilyManCaseNumber: 'Add case number',
