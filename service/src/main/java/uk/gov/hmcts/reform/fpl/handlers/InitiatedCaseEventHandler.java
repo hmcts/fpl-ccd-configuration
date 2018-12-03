@@ -22,9 +22,9 @@ public class InitiatedCaseEventHandler {
     public void grantCaseAccessToAllLocalAuthorityUsers(InitiatedCaseEvent event) {
         String userId = event.getUserId();
         String authorization = event.getAuthorization();
-        String caseId = event.getCallbackRequest().getCaseDetails().getId().toString();
-        String caseLocalAuthority = event.getCallbackRequest().getCaseDetails().getData()
-            .get("caseLocalAuthority").toString();
+        String caseId = Long.toString(event.getCallbackRequest().getCaseDetails().getId());
+        String caseLocalAuthority = (String) event.getCallbackRequest().getCaseDetails().getData()
+            .get("caseLocalAuthority");
 
         localAuthorityUserService.grantUserAccess(authorization, userId, caseId, caseLocalAuthority);
     }

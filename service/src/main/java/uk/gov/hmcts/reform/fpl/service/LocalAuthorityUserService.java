@@ -13,9 +13,10 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.NoAssociatedUsersException;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
 
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @EnableRetry
 @Service
@@ -39,41 +40,41 @@ public class LocalAuthorityUserService {
     }
 
     @Retryable()
-    public void grantUserAccess(String authorization, String userId, String caseId, String caseLocalAuthority) {
-        List<String> userIds = new LinkedList<>(findUserIds(caseLocalAuthority));
-        userIds.remove(userId);
+    public void grantUserAccess(String authorization, String creatorUserId, String caseId, String caseLocalAuthority) {
+        findUserIds(caseLocalAuthority).stream()
+            .filter(userId -> !Objects.equals(userId, creatorUserId))
+            .forEach(userId -> {
+                logger.debug("Granting user {} access to case {}", userId, caseId);
 
-        userIds.forEach(id -> {
-            logger.debug("Granting user {} access to case {}", id, caseId);
+                try {
+                    caseAccessApi.grantAccessToCase(
+                        authorization,
+                        authTokenGenerator.generate(),
+                        creatorUserId,
+                        JURISDICTION,
+                        CASE_TYPE,
+                        caseId,
+                        new UserId(userId));
 
-            try {
-                caseAccessApi.grantAccessToCase(
-                    authorization,
-                    authTokenGenerator.generate(),
-                    userId,
-                    JURISDICTION,
-                    CASE_TYPE,
-                    caseId,
-                    new UserId(id));
-
-            } catch (Exception e) {
-                logger.warn("Could not grant user {} access to case {}", id, caseId);
-            }
-        });
+                } catch (Exception ex) {
+                    logger.warn("Could not grant user {} access to case {}", userId, caseId, ex);
+                }
+            });
     }
 
     private List<String> findUserIds(String localAuthorityCode) {
-        Map<String, List<String>> lookupTable = localAuthorityUserLookupConfiguration.getLookupTable();
+        checkNotNull(localAuthorityCode, "Case does not have local authority assigned");
 
-        if (lookupTable.get(localAuthorityCode) == null) {
-            throw new UnknownLocalAuthorityCodeException(
-                "The local authority: " + localAuthorityCode + " was not found");
+        List<String> userIds = localAuthorityUserLookupConfiguration.getLookupTable().get(localAuthorityCode);
+
+        if (userIds == null) {
+            throw new UnknownLocalAuthorityCodeException("Local authority '" + localAuthorityCode + "' was not found");
         }
 
-        if (lookupTable.get(localAuthorityCode).isEmpty()) {
-            throw new NoAssociatedUsersException("No users found for the local authority: " + localAuthorityCode);
+        if (userIds.isEmpty()) {
+            throw new NoAssociatedUsersException("No users found for the local authority '" + localAuthorityCode + "'");
         }
 
-        return lookupTable.get(localAuthorityCode);
+        return userIds;
     }
 }
