@@ -927,7 +927,7 @@ metadata:
   name: shared-database-data
   namespace: ${NAMESPACE}
 spec:
-  storageClassName: default
+  storageClassName: managed-premium
   accessModes:
     - ReadWriteOnce
   resources:
@@ -968,13 +968,14 @@ spec:
           volumeMounts:
             - name: shared-database-data
               mountPath: /var/lib/postgresql/data
+              subPath: data
           ports:
             - containerPort: 5432
               name: postgres
           livenessProbe:
             tcpSocket:
               port: 5432
-            initialDelaySeconds: 10
+            initialDelaySeconds: 70
       volumes:
         - name: shared-database-data
           persistentVolumeClaim:
