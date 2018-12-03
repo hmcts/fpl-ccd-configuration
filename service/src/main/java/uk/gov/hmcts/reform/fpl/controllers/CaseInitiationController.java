@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.events.InitiatedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityNameService;
 
 import java.util.Map;
@@ -21,14 +23,18 @@ import java.util.Map;
 public class CaseInitiationController {
 
     private final LocalAuthorityNameService localAuthorityNameService;
+    private final ApplicationEventPublisher applicationEventPublisher;
+
 
     @Autowired
-    public CaseInitiationController(LocalAuthorityNameService localAuthorityNameService) {
+    public CaseInitiationController(LocalAuthorityNameService localAuthorityNameService,
+                                    ApplicationEventPublisher applicationEventPublisher) {
         this.localAuthorityNameService = localAuthorityNameService;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
-    @PostMapping
-    public ResponseEntity createdCase(
+    @PostMapping("/about-to-submit")
+    public ResponseEntity handleAboutToSubmitEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestBody CallbackRequest callbackrequest) {
         String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode(authorization);
@@ -42,5 +48,14 @@ public class CaseInitiationController {
             .build();
 
         return ResponseEntity.ok(body);
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestHeader(value = "user-id") String userId,
+        @RequestBody CallbackRequest callbackRequest) {
+
+        applicationEventPublisher.publishEvent(new InitiatedCaseEvent(callbackRequest, authorization, userId));
     }
 }
