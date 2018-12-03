@@ -60,8 +60,7 @@ module.exports = function () {
     },
 
     signOut() {
-      this.clearCookie();
-      this.refreshPage();
+      this.click('Sign Out');
     },
   });
 };

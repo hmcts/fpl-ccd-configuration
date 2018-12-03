@@ -14,7 +14,7 @@ Before(async (I, caseViewPage) => {
   caseUrl = caseId.toString().replace('#', '').replace(/-/g, '');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   I.click('Submit');
-  I.click('Sign Out');
+  I.signOut();
 });
 
 Scenario('Different user in the same local authority can see case created', async (I, loginPage) => {
