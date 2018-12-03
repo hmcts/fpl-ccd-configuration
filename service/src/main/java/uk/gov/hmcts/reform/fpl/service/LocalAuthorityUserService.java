@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.retry.annotation.EnableRetry;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
@@ -18,7 +16,6 @@ import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-@EnableRetry
 @Service
 public class LocalAuthorityUserService {
 
@@ -39,7 +36,6 @@ public class LocalAuthorityUserService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
-    @Retryable()
     public void grantUserAccess(String authorization, String creatorUserId, String caseId, String caseLocalAuthority) {
         findUserIds(caseLocalAuthority).stream()
             .filter(userId -> !Objects.equals(userId, creatorUserId))
