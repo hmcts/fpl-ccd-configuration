@@ -30,13 +30,13 @@ withNightlyPipeline(type, product, component) {
   env.URL = 'http://ccd-case-management-web-aat.service.core-compute-aat.internal';
   env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080";
 
-//  enableMutationTest()
-//
-//  after('mutationTest') {
-//    withSonarQubeEnv("SonarQube") {
-//      sh "./gradlew --info sonarqube"
-//    }
-//  }
+  enableMutationTest()
+
+  after('mutationTest') {
+    withSonarQubeEnv("SonarQube") {
+      sh "./gradlew --info sonarqube"
+    }
+  }
 
   //to Run functional test
   after('DependencyCheckNightly') {
