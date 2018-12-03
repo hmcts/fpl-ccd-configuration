@@ -16,5 +16,6 @@ Scenario('Submitting case', (I, caseViewPage) => {
   I.dontSee(caseViewPage.actionsDropdown);
   caseViewPage.selectTab(caseViewPage.tabs.evidence);
   I.reloadPage();
+  I.waitForElement({'css': caseViewPage.evidenceTabpdffile});
   I.see('Barnet_Council_v_Smith.pdf');
 });

@@ -11,6 +11,7 @@ module.exports = {
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
+  evidenceTabpdffile: 'ccd-read-document-field>a[href^="http"]',
 
   goToNewActions(actionSelected) {
     I.waitForElement(this.actionsDropdown);
