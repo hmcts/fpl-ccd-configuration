@@ -24,6 +24,11 @@ data "azurerm_key_vault_secret" "local_authority_name_mapping" {
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "local_authority_user_mapping" {
+  name = "local-authority-user-mapping"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
 module "key-vault" {
   source = "git@github.com:hmcts/cnp-module-key-vault.git?ref=master"
   name = "fpl-${var.env}"
@@ -52,6 +57,7 @@ module "case-service" {
     DOCUMENT_MANAGEMENT_URL = "${local.DOCUMENT_MANAGEMENT_URL}"
     CORE_CASE_DATA_API_URL = "${local.CORE_CASE_DATA_API_URL}"
     FPL_LOCAL_AUTHORITY_NAME_MAPPING = "${data.azurerm_key_vault_secret.local_authority_name_mapping.value}"
+    FPL_LOCAL_AUTHORITY_USER_MAPPING = "${data.azurerm_key_vault_secret.local_authority_user_mapping.value}"
 
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE  = false
