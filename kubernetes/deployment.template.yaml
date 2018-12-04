@@ -258,7 +258,7 @@ spec:
               cpu: 200m
             limits:
               memory: 512Mi
-              cpu: 1000m
+              cpu: 2000m
           ports:
             - containerPort: 4000
               name: http
@@ -325,7 +325,7 @@ spec:
               cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 1000m
+              cpu: 2000m
           ports:
             - containerPort: 8489
               name: http
@@ -463,7 +463,7 @@ spec:
               cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 1000m
+              cpu: 2000m
           ports:
             - containerPort: 8080
               name: http
@@ -668,7 +668,7 @@ spec:
               cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 1000m
+              cpu: 2000m
           ports:
             - containerPort: 4453
               name: http
@@ -739,7 +739,7 @@ spec:
               cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 1000m
+              cpu: 2000m
           ports:
             - containerPort: 4451
               name: http
@@ -810,7 +810,7 @@ spec:
               cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 1000m
+              cpu: 2000m
           ports:
             - containerPort: 4452
               name: http
@@ -881,7 +881,7 @@ spec:
               cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 1000m
+              cpu: 2000m
           ports:
             - containerPort: 4603
               name: http
