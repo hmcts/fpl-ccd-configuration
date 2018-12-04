@@ -8,8 +8,8 @@ Before((I, caseViewPage) => {
   I.click(caseViewPage.goButton);
 });
 
-
-Scenario('Submitting case', (I, caseViewPage) => {
+Scenario('Submitting case', (I, caseViewPage, submitApplicationPage) => {
+  submitApplicationPage.giveConsentAndContinue();
   I.click('Submit');
   I.waitForElement('.tabs');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
@@ -17,4 +17,8 @@ Scenario('Submitting case', (I, caseViewPage) => {
   caseViewPage.selectTab(caseViewPage.tabs.evidence);
   I.reloadPage();
   I.see('Barnet_Council_v_Smith.pdf');
+});
+
+Scenario('Authenticated user\'s fullname is displayed', I => {
+  I.see('I, Tester Tester, believe that the facts stated in this application are true.');
 });

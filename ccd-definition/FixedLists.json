@@ -259,8 +259,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "submitApplicationConsent",
-    "ListElementCode": "consent",
+    "ID": "Consent",
+    "ListElementCode": "agree",
     "ListElement": "I agree with this statement"
   }
 ]

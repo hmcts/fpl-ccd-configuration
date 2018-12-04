@@ -1282,9 +1282,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "SubmissionConsent",
-    "ListElementCode": "submitApplicationConsent",
+    "ListElementCode": "Consent",
     "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "submitApplicationConsent",
+    "FieldTypeParameter": "Consent",
     "ElementLabel": " ",
     "SecurityClassification": "Public"
   }
