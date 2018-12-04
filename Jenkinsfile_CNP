@@ -158,5 +158,14 @@ withPipeline(type, product, component) {
 
   after('functionalTest:preview') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+
+    publishHTML target: [
+      allowMissing         : true,
+      alwaysLinkToLastBuild: true,
+      keepAll              : true,
+      reportDir            : "output/parallel.*/",
+      reportFiles          : "mochawesome.html",
+      reportName           : "FPL E2E tests result"
+    ]
   }
 }

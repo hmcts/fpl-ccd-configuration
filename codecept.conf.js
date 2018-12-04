@@ -78,9 +78,9 @@ exports.config = {
         },
       },
       'mochawesome': {
-        stdout: './functional-output/console.log',
+        stdout: './output/console.log',
         options: {
-          reportDir: './functional-output',
+          reportDir: './output',
           reportName: 'index',
           inlineAssets: true
         },
