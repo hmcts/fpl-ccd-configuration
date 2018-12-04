@@ -28,7 +28,7 @@ withNightlyPipeline(type, product, component) {
     try {
       sh('./gradlew --no-daemon --info --rerun-tasks functional')
     } finally {
-      steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+      archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     }
   }
 }
