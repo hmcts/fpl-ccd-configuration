@@ -7,9 +7,8 @@ rolesStr=${2}
 surname=${3:-"Tester"}
 
 searchResponse=$(curl -k --silent --show-error --output /dev/null --write-out "%{http_code}" ${IDAM_API_BASE_URL}/users?email=${email})
-echo "idam-create-caseworker adding" ${email}
 if [[ ${searchResponse} -eq 200 ]]; then
-  echo "User already exists - Skipping"
+  echo "User ${email} already exists - skipping"
   exit 0
 fi
 
