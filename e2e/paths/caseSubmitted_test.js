@@ -9,7 +9,7 @@ Before((I, caseViewPage) => {
 });
 
 Scenario('Submitting case', (I, caseViewPage, submitApplicationPage) => {
-  submitApplicationPage.giveConsentAndContinue();
+  submitApplicationPage.giveConsent();
   I.click('Continue');  
   I.click('Submit');
   I.waitForElement('.tabs');
