@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -11,10 +12,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.service.CaseRepository;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
+import java.util.Map;
+
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,6 +34,8 @@ class CaseSubmissionControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
+    private static final String CASE_ID = "2313";
+    private static final String TEMPLATE_ID = "1b1be684-9b0a-4e58-8e51-f0c3c2dba37c";
 
     @MockBean
     private DocumentGeneratorService documentGeneratorService;
@@ -35,6 +43,8 @@ class CaseSubmissionControllerTest {
     private UploadDocumentService uploadDocumentService;
     @MockBean
     private CaseRepository caseRepository;
+    @MockBean
+    private NotificationService notificationService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -58,7 +68,7 @@ class CaseSubmissionControllerTest {
             .andExpect(status().isOk());
 
         Thread.sleep(3000);
-        verify(caseRepository).setSubmittedFormPDF(AUTH_TOKEN, USER_ID, "2313", document);
+        verify(caseRepository).setSubmittedFormPDF(AUTH_TOKEN, USER_ID, CASE_ID, document);
     }
 
     @Test
@@ -79,5 +89,30 @@ class CaseSubmissionControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("Mock"))
             .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void shouldCallNotify() throws Exception {
+        Map<String, String> expectedParameters = ImmutableMap.<String, String>builder()
+            .put("court", "")
+            .put("localAuthority", "")
+            .put("orders", "")
+            .put("directionsAndInterim", "")
+            .put("timeFrame", "")
+            .put("reference", CASE_ID)
+            .put("caseUrl", "")
+            .build();
+
+        mockMvc
+            .perform(post("/callback/case-submission")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(readBytes("fixtures/case.json")))
+            .andExpect(status().isOk());
+
+        verify(notificationService, times(1)).sendMail(
+            eq("user@example.com"), eq(TEMPLATE_ID), eq(expectedParameters), eq(CASE_ID)
+        );
     }
 }

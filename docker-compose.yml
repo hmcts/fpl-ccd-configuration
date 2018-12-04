@@ -17,6 +17,8 @@ services:
       - IDAM_S2S_AUTH_TOTP_SECRET=AABBCCDDEEFFGGHH
       - FPL_LOCAL_AUTHORITY_NAME_MAPPING=swansea.gov.uk=>SA;hillingdon.gov.uk=>HN
       - FPL_LOCAL_AUTHORITY_USER_MAPPING=SA=>25,26,27;HN=>28,29
+      - FPL_HMCTS_EMAIL_MAPPING=SA=>FamilyPublicLaw+sa@gmail.com;HN=>FamilyPublicLaw+hn@gmail.com
+      - NOTIFY_API_KEY
       # these environment variables are used by java-logging library
       - ROOT_APPENDER
       - JSON_CONSOLE_PRETTY_PRINT

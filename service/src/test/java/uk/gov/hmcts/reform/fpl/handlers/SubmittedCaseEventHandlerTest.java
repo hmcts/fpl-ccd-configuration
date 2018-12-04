@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
-import uk.gov.hmcts.reform.fpl.handlers.SubmittedCaseEventHandler.SubmittedFormFilenameHelper;
+import uk.gov.hmcts.reform.fpl.handlers.PdfGenerationHandler.SubmittedFormFilenameHelper;
 import uk.gov.hmcts.reform.fpl.service.CaseRepository;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -38,7 +38,7 @@ class SubmittedCaseEventHandlerTest {
     private CaseRepository caseRepository;
 
     @InjectMocks
-    private SubmittedCaseEventHandler submittedCaseEventHandler;
+    private PdfGenerationHandler submittedCaseEventHandler;
 
     @Test
     void fileNameShouldContainCaseReferenceWhenNoCaseNameIsProvided() throws IOException {
