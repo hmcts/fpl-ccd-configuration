@@ -255,10 +255,10 @@ spec:
           resources:
             requests:
               memory: 256Mi
-              cpu: 100m
+              cpu: 200m
             limits:
               memory: 512Mi
-              cpu: 500m
+              cpu: 1000m
           ports:
             - containerPort: 4000
               name: http
@@ -322,10 +322,10 @@ spec:
           resources:
             requests:
               memory: 512Mi
-              cpu: 100m
+              cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 500m
+              cpu: 1000m
           ports:
             - containerPort: 8489
               name: http
@@ -389,7 +389,7 @@ spec:
           resources:
             requests:
               memory: 64Mi
-              cpu: 100m
+              cpu: 200m
             limits:
               memory: 256Mi
               cpu: 500m
@@ -460,10 +460,10 @@ spec:
           resources:
             requests:
               memory: 512Mi
-              cpu: 100m
+              cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 500m
+              cpu: 1000m
           ports:
             - containerPort: 8080
               name: http
@@ -527,7 +527,7 @@ spec:
           resources:
             requests:
               memory: 64Mi
-              cpu: 100m
+              cpu: 200m
             limits:
               memory: 256Mi
               cpu: 500m
@@ -594,7 +594,7 @@ spec:
           resources:
             requests:
               memory: 64Mi
-              cpu: 100m
+              cpu: 200m
             limits:
               memory: 256Mi
               cpu: 500m
@@ -665,10 +665,10 @@ spec:
           resources:
             requests:
               memory: 512Mi
-              cpu: 100m
+              cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 500m
+              cpu: 1000m
           ports:
             - containerPort: 4453
               name: http
@@ -736,10 +736,10 @@ spec:
           resources:
             requests:
               memory: 512Mi
-              cpu: 100m
+              cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 500m
+              cpu: 1000m
           ports:
             - containerPort: 4451
               name: http
@@ -807,10 +807,10 @@ spec:
           resources:
             requests:
               memory: 512Mi
-              cpu: 100m
+              cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 500m
+              cpu: 1000m
           ports:
             - containerPort: 4452
               name: http
@@ -878,10 +878,10 @@ spec:
           resources:
             requests:
               memory: 512Mi
-              cpu: 100m
+              cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 500m
+              cpu: 1000m
           ports:
             - containerPort: 4603
               name: http
@@ -961,10 +961,10 @@ spec:
           resources:
             requests:
               memory: 128Mi
-              cpu: 100m
+              cpu: 200m
             limits:
               memory: 256Mi
-              cpu: 500m
+              cpu: 1000m
           volumeMounts:
             - name: shared-database-data
               mountPath: /var/lib/postgresql/data
