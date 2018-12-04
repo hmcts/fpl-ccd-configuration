@@ -277,6 +277,9 @@ declare namespace CodeceptJS {
     debug(msg: string) : void,
     debugSection(section: string, msg: string) : void,
     clickBrowserBack() : void,
+    reloadPage() : void,
+    navigateToUrl(url: string) : void,
+    navigateToCaseDetails(caseId: string) : void,
     logInAndCreateCase(username: string, password: string) : void,
     continueAndSubmit() : void,
     seeEventSubmissionConfirmation(event: string) : void,
@@ -286,8 +289,7 @@ declare namespace CodeceptJS {
     signOut() : void,
     say(msg: string) : void,
     retryStep(opts: string) : void,
-    reloadPage() : void,
-    signOut() : void,
+
   }
 
   export interface config {
@@ -303,6 +305,7 @@ declare namespace CodeceptJS {
 
   export interface caseListPage {
     openExistingCase(caseId: string) : void,
+    changeStateFilter(desiredState: string) : void,
 
   }
 
@@ -315,7 +318,7 @@ declare namespace CodeceptJS {
 
 
   export interface addEventSummaryPage {
-    submitCase(summary?: string, description?: string) : void,
+    submitCase() : void,
 
   }
 
