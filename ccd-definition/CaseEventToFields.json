@@ -412,7 +412,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "submitApplication",
-    "CaseFieldID": "userFullName",
+    "CaseFieldID": "submissionConsentLabel",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": 1,

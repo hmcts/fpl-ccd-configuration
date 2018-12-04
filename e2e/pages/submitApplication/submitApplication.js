@@ -8,6 +8,5 @@ module.exports = {
   
   giveConsentAndContinue() {
     I.checkOption(this.fields.consentCheckbox);
-    I.click('Continue');
   },
 };

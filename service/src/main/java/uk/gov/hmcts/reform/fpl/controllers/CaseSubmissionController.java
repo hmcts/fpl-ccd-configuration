@@ -33,17 +33,6 @@ public class CaseSubmissionController {
         this.userDetailsService = userDetailsService;
     }
 
-    @PostMapping("/submitted")
-    public ResponseEntity handleCaseSubmission(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
-        @RequestBody @NotNull CallbackRequest callbackRequest) {
-
-        applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
-
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
     @PostMapping("/about-to-start")
     public ResponseEntity handleCaseStart(
         @RequestHeader(value = "authorization") String authorization,
@@ -53,12 +42,23 @@ public class CaseSubmissionController {
         String label = "I, " + userDetailsService.getUserName(authorization) + ", believe that the facts stated in this application are true.";
 
         Map<String, Object> data = caseDetails.getData();
-        data.put("userFullName", label);
+        data.put("submissionConsentLabel", label);
 
         AboutToStartOrSubmitCallbackResponse body = AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
 
         return ResponseEntity.ok(body);
+    }
+
+    @PostMapping("/submitted")
+    public ResponseEntity handleCaseSubmission(
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestHeader(value = "user-id") String userId,
+        @RequestBody @NotNull CallbackRequest callbackRequest) {
+
+        applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

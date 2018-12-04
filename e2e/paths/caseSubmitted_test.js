@@ -10,6 +10,7 @@ Before((I, caseViewPage) => {
 
 Scenario('Submitting case', (I, caseViewPage, submitApplicationPage) => {
   submitApplicationPage.giveConsentAndContinue();
+  I.click('Continue');  
   I.click('Submit');
   I.waitForElement('.tabs');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);

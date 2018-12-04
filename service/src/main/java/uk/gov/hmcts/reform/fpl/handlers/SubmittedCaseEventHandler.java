@@ -51,11 +51,7 @@ public class SubmittedCaseEventHandler {
         String userId = event.getUserId();
         String authorization = event.getAuthorization();
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-
-        Map<String, Object> data = new ImmutableMap.Builder<String, Object>()
-            .put("userFullName", userDetailsService.getUserName(authorization))
-            .build();
-        caseDetails.setData(data);
+        caseDetails.getData().put("userFullName", userDetailsService.getUserName(authorization));
 
         byte[] pdf = documentGeneratorService.generateSubmittedFormPDF(caseDetails);
 

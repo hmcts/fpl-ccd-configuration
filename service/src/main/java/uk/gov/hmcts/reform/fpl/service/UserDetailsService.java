@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 
@@ -8,6 +9,7 @@ public class UserDetailsService {
 
     private final IdamApi idamApi;
 
+    @Autowired
     public UserDetailsService(IdamApi idamApi) {
         this.idamApi = idamApi;
     }
