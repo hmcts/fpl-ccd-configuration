@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.service.CaseRepository;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -35,7 +36,8 @@ class CaseSubmissionControllerTest {
     private UploadDocumentService uploadDocumentService;
     @MockBean
     private CaseRepository caseRepository;
-
+    @MockBean
+    private UserDetailsService userDetailsService;
     @Autowired
     private MockMvc mockMvc;
 
@@ -50,12 +52,13 @@ class CaseSubmissionControllerTest {
             .willReturn(document);
 
         mockMvc
-            .perform(post("/callback/case-submission")
+            .perform(post("/callback/case-submission/submitted")
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(readBytes("fixtures/case.json")))
             .andExpect(status().isOk());
+
 
         Thread.sleep(3000);
         verify(caseRepository).setSubmittedFormPDF(AUTH_TOKEN, USER_ID, "2313", document);
@@ -64,7 +67,7 @@ class CaseSubmissionControllerTest {
     @Test
     void shouldReturnUnsuccessfulResponseWithNoData() throws Exception {
         mockMvc
-            .perform(post("/callback/case-submission")
+            .perform(post("/callback/case-submission/submitted")
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID))
             .andExpect(status().is4xxClientError());
@@ -73,7 +76,7 @@ class CaseSubmissionControllerTest {
     @Test
     void shouldReturnUnsuccessfulResponseWithMalformedData() throws Exception {
         mockMvc
-            .perform(post("/callback/case-submission")
+            .perform(post("/callback/case-submission/submitted")
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
