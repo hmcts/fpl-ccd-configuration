@@ -34,7 +34,7 @@ public class CaseSubmissionController {
     }
 
     @PostMapping("/about-to-start")
-    public ResponseEntity handleCaseStart(
+    public AboutToStartOrSubmitCallbackResponse handleCaseStart(
         @RequestHeader(value = "authorization") String authorization,
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
@@ -44,11 +44,9 @@ public class CaseSubmissionController {
         Map<String, Object> data = caseDetails.getData();
         data.put("submissionConsentLabel", label);
 
-        AboutToStartOrSubmitCallbackResponse body = AboutToStartOrSubmitCallbackResponse.builder()
+        return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
-
-        return ResponseEntity.ok(body);
     }
 
     @PostMapping("/submitted")

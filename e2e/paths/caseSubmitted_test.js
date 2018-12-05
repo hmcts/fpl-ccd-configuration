@@ -8,7 +8,7 @@ Before((I, caseViewPage) => {
   I.click(caseViewPage.goButton);
 });
 
-Scenario('Submitting case', (I, caseViewPage, submitApplicationPage) => {
+Scenario('Can give consent and submit the case', (I, caseViewPage, submitApplicationPage) => {
   submitApplicationPage.giveConsent();
   I.click('Continue');  
   I.click('Submit');
@@ -20,6 +20,8 @@ Scenario('Submitting case', (I, caseViewPage, submitApplicationPage) => {
   I.see('Barnet_Council_v_Smith.pdf');
 });
 
-Scenario('Authenticated user\'s fullname is displayed', I => {
-  I.see('I, Tester Tester, believe that the facts stated in this application are true.');
+Scenario('Cannot submit a case unless consent is given', I => {
+  I.see('I, Tester Tester, believe that the facts stated in this application are true.');  
+  I.click('Continue');
+  I.seeInCurrentUrl('/submitApplication');
 });
