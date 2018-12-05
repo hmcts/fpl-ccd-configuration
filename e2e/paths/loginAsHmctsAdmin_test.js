@@ -3,11 +3,13 @@ let caseId;
 
 Feature('Login as hmcts admin').retry(2);
 
-Before(async (I, caseViewPage) => {
+Before(async (I, caseViewPage, submitApplicationPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseId = await I.grabTextFrom('.heading-medium');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  I.click('.button[type=submit]');
+  submitApplicationPage.giveConsent();
+  I.click('Continue');  
+  I.click('Submit');
   I.waitForElement('.tabs');
   I.signOut();
 });
