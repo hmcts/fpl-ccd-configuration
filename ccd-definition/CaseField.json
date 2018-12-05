@@ -85,7 +85,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkChronology_document",
-    "Label": "Social work chronology",
+    "Label": " ",
     "FieldType": "UploadDocument",
     "SecurityClassification": "Public"
   },
@@ -101,7 +101,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkStatement_document",
-    "Label": "Social work statement and genogram",
+    "Label": " ",
     "FieldType": "UploadDocument",
     "SecurityClassification": "Public"
   },
@@ -117,7 +117,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkAssessment_document",
-    "Label": "Social work assessment",
+    "Label": " ",
     "FieldType": "UploadDocument",
     "SecurityClassification": "Public"
   },
@@ -133,7 +133,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkCarePlan_document",
-    "Label": "Care plan",
+    "Label": " ",
     "FieldType": "UploadDocument",
     "SecurityClassification": "Public"
   },

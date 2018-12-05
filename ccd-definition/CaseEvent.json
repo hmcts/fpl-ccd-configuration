@@ -161,7 +161,7 @@
     "Name": "Documents",
     "Description": "Upload documents",
     "DisplayOrder": 14,
-    "PreConditionState(s)": "Open",
+    "PreConditionState(s)": "Open;Submitted",
     "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
