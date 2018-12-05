@@ -16,8 +16,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
-import javax.validation.constraints.NotNull;
 import java.util.Map;
+import javax.validation.constraints.NotNull;
 
 @Api
 @RestController
@@ -28,7 +28,9 @@ public class CaseSubmissionController {
     private final UserDetailsService userDetailsService;
 
     @Autowired
-    public CaseSubmissionController(ApplicationEventPublisher applicationEventPublisher, UserDetailsService userDetailsService) {
+    public CaseSubmissionController(
+        ApplicationEventPublisher applicationEventPublisher,
+        UserDetailsService userDetailsService) {
         this.applicationEventPublisher = applicationEventPublisher;
         this.userDetailsService = userDetailsService;
     }
@@ -39,7 +41,9 @@ public class CaseSubmissionController {
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
-        String label = "I, " + userDetailsService.getUserName(authorization) + ", believe that the facts stated in this application are true.";
+        String label = "I, "
+            + userDetailsService.getUserName(authorization)
+            + ", believe that the facts stated in this application are true.";
 
         Map<String, Object> data = caseDetails.getData();
         data.put("submissionConsentLabel", label);
