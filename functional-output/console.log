@@ -1,9 +1,0 @@
-
-
-[92m [0m[32m 0 passing[0m[90m (2ms)[0  [32m  ✓[0m[90m Sign in as local authority[0m[31m (7678ms)[0m
-  [32m  ✓[0m[90m Sign in as court admin[0m[31m (9675ms)[0m
-  [32m  ✓[0m[90m Sign in as CAFCASS[0m[31m (6856ms)[0m
-
-
-[92m [0m[32m 3 passing[0m[90m (26s)[0m
-
