@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.handlers.SubmittedCaseEventHandler.SubmittedFormF
 import uk.gov.hmcts.reform.fpl.service.CaseRepository;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import java.io.IOException;
 
@@ -36,6 +37,8 @@ class SubmittedCaseEventHandlerTest {
     private UploadDocumentService uploadDocumentService;
     @Mock
     private CaseRepository caseRepository;
+    @Mock
+    private UserDetailsService userDetailsService;
 
     @InjectMocks
     private SubmittedCaseEventHandler submittedCaseEventHandler;
