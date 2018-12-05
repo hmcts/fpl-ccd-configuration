@@ -15,7 +15,6 @@ Scenario('Filling in the information for the applicant and submitting', (I, ente
   I.seeEventSubmissionConfirmation(config.applicationActions.enterApplicants);
 
   caseViewPage.goToNewActions(config.applicationActions.enterApplicants);
-  enterApplicantPage.enterApplicantDetails(applicant);
   enterApplicantPage.enterSolicitorDetails(solicitor);
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterApplicants);
