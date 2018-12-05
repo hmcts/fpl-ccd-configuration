@@ -295,7 +295,8 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "submissionConsent",
     "Label": " ",
-    "FieldType": "SubmissionConsent",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "Consent",
     "SecurityClassification": "Public"
   }
 ]
