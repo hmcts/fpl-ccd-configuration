@@ -3,19 +3,17 @@ const respondents = require('../fixtures/respondents.js');
 
 Feature('Enter respondents').retry(2);
 
-Before((I, caseViewPage) => {
+Before((I) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-  caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
 });
 
 Scenario('Entering information for respondent and submitting', (I, enterRespondentsPage, caseViewPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
   enterRespondentsPage.enterRespondent('firstRespondent', respondents[0]);
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
-  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-});
 
-Scenario('Entering all information for first respondent and an additional respondent', (I, enterRespondentsPage, caseViewPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
   enterRespondentsPage.enterRespondent('firstRespondent', respondents[0]);
   enterRespondentsPage.enterRelationshipToChild('firstRespondent', 'mock reason');
   enterRespondentsPage.enterContactDetailsHidden('firstRespondent', 'Yes', 'mock reason');
@@ -27,6 +25,7 @@ Scenario('Entering all information for first respondent and an additional respon
   enterRespondentsPage.enterLitigationIssues('additional_0', 'No');
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
+
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(1, 'Respondent 1', 'Full name', 'Joe Bloggs');
   I.seeAnswerInTab(2, 'Respondent 1', 'Date of birth', '1 Jan 1980');

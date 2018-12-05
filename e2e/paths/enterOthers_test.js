@@ -3,19 +3,17 @@ const others = require('../fixtures/others.js');
 
 Feature('Enter others who should be given notice').retry(2);
 
-Before((I, caseViewPage) => {
+Before((I) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-  caseViewPage.goToNewActions(config.applicationActions.enterOthers);
 });
 
 Scenario('Enter other\'s details in c110a application', (I, enterOthersPage, caseViewPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.enterOthers);
   enterOthersPage.enterOtherDetails(others[0]);
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOthers);
-  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-});
 
-Scenario('Complete entering others details in the c110a application', (I, enterOthersPage, caseViewPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.enterOthers);
   enterOthersPage.enterOtherDetails(others[0]);
   enterOthersPage.enterRelationshipToChild('Tim Smith');
   enterOthersPage.enterContactDetailsHidden('Yes');
@@ -26,6 +24,8 @@ Scenario('Complete entering others details in the c110a application', (I, enterO
   enterOthersPage.enterContactDetailsHidden('Yes');
   enterOthersPage.enterLitigationIssues('No');
   I.continueAndSubmit();
+  I.seeEventSubmissionConfirmation(config.applicationActions.enterOthers);
+
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(1, 'Person', 'Full name', 'John Smith');
   I.seeAnswerInTab(2, 'Person', 'Date of birth', '1 Jan 1985');

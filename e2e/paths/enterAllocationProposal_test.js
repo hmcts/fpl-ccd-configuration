@@ -4,18 +4,17 @@ const config = require('../config.js');
 
 Feature('Enter Allocation Proposal').retry(2);
 
-Before((I, caseViewPage) => {
+Before((I) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-  caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
 });
 
-Scenario('Select lay justices for allocation proposal', (I, enterAllocationProposalPage) => {
+Scenario('Select lay justices for allocation proposal', (I, enterAllocationProposalPage, caseViewPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
   enterAllocationProposalPage.selectAllocationProposal('Lay justices');
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationProposal);
-});
 
-Scenario('Select lay justices for allocation proposal with proposal reason', (I, enterAllocationProposalPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
   enterAllocationProposalPage.selectAllocationProposal('Lay justices');
   enterAllocationProposalPage.enterProposalReason('test');
   I.continueAndSubmit();

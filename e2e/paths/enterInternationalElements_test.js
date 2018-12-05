@@ -2,31 +2,21 @@ const config = require('../config.js');
 
 Feature('Enter international element').retry(2);
 
-Before((I, caseViewPage) => {
+Before((I) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+});
+
+Scenario('completing half of the international element section of the c110a application', (I, enterInternationalElementsPage, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.enterInternationalElement);
-});
-
-Scenario('completing half of the international element section of the c110a' +
-  ' application', (I, enterInternationalElementsPage, caseViewPage) => {
   enterInternationalElementsPage.halfFillForm();
-  I.see('Give reason');
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterInternationalElement);
-  caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
-  I.seeAnswerInTab(1, 'International element', 'Is there anyone in the' +
-    ' genogram outside the UK who has been assessed as a possible carer?', 'Yes');
-  I.seeAnswerInTab(2, 'International element', 'Give reason', 'test');
-  I.seeAnswerInTab(3, 'International element', 'Are you aware of any' +
-    ' significant events that have happened outside the UK?', 'Yes');
-  I.seeAnswerInTab(4, 'International element', 'Give reason', 'test');
-});
 
-Scenario('completed international element of the c110a application', (I, enterInternationalElementsPage, caseViewPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.enterInternationalElement);
   enterInternationalElementsPage.fillForm();
-  I.see('Give reason');
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterInternationalElement);
+
   caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
   I.seeAnswerInTab(1, 'International element', 'Is there anyone in the' +
     ' genogram outside the UK who has been assessed as a possible carer?', 'Yes');

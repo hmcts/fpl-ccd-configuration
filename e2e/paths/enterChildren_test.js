@@ -26,21 +26,19 @@ const addresses = [
 
 Feature('Enter children in application').retry(2);
 
-Before((I, caseViewPage) => {
+Before((I) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-  caseViewPage.goToNewActions(config.applicationActions.enterChildren);
 });
 
 Scenario('completing half of the enter children in the c110a application', (I, enterChildrenPage, caseViewPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.enterChildren);
   enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
   enterChildrenPage.defineChildSituation('01', '11', '2017');
   enterChildrenPage.enterAddress(addresses[0]);
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
-  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
-});
 
-Scenario('completing entering child information in the c110a application', (I, enterChildrenPage, caseViewPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.enterChildren);
   enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
   enterChildrenPage.defineChildSituation('01', '11', '2017');
   enterChildrenPage.enterAddress(addresses[0]);
@@ -66,6 +64,7 @@ Scenario('completing entering child information in the c110a application', (I, e
   enterChildrenPage.defineAbilityToTakePartInProceedings();
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
+
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(1, 'Child 1', 'Child\'s full name', 'Timothy');
   I.seeAnswerInTab(2, 'Child 1', 'Date of birth', '1 Aug 2015');
