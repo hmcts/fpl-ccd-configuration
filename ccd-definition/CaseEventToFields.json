@@ -401,9 +401,9 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "submitApplication",
-    "CaseFieldID": "submissionConsent",
+    "CaseFieldID": "submissionConsentLabel",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1
@@ -412,9 +412,9 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "submitApplication",
-    "CaseFieldID": "submissionConsentLabel",
+    "CaseFieldID": "submissionConsent",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "READONLY",
+    "DisplayContext": "MANDATORY",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1
