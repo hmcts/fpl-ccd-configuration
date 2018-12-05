@@ -14,8 +14,6 @@ Scenario('complete half of the enter risk and harm to children in the c110a appl
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRisk);
 
   caseViewPage.goToNewActions(config.applicationActions.enterRisk);
-  enterRiskAndHarmToChildPage.completePhyiscalHarm();
-  enterRiskAndHarmToChildPage.completeEmotionalHarm();
   enterRiskAndHarmToChildPage.completeSexualAbuse();
   enterRiskAndHarmToChildPage.completeNeglect();
   I.continueAndSubmit();

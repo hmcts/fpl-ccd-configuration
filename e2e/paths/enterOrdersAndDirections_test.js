@@ -13,7 +13,6 @@ Scenario('Select the care order case order and continue', (I, caseViewPage, orde
   I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
 
   caseViewPage.goToNewActions(config.applicationActions.selectOrders);
-  ordersNeededPage.checkCareOrder();
   ordersNeededPage.checkSupervisionOrder();
   ordersNeededPage.checkEducationSupervisionOrder();
   ordersNeededPage.checkEmergencyProtectionOrder();
