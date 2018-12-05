@@ -13,6 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
+import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -20,9 +22,16 @@ import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.Constants.SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 @ActiveProfiles("integration-test")
@@ -31,13 +40,23 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 class CaseInitiationControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
+    private static final String USER_ID = "10";
+    private static final String JURISDICTION = "PUBLICLAW";
+    private static final String CASE_TYPE = "Shared_Storage_DRAFTType";
+    private static final String CASE_ID = "1";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Autowired
     private MockMvc mockMvc;
 
     @MockBean
+    private ServiceAuthorisationApi serviceAuthorisationApi;
+
+    @MockBean
     private IdamApi idamApi;
+
+    @MockBean
+    private CaseAccessApi caseAccessApi;
 
     @Test
     void shouldAddCaseLocalAuthorityToCaseData() throws Exception {
@@ -55,7 +74,7 @@ class CaseInitiationControllerTest {
             .build();
 
         MvcResult response = mockMvc
-            .perform(post("/callback/case-initiation")
+            .perform(post("/callback/case-initiation/about-to-submit")
                 .header("authorization", AUTH_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(MAPPER.writeValueAsString(request)))
@@ -77,7 +96,7 @@ class CaseInitiationControllerTest {
             .willReturn(new UserDetails(null, "user@email.gov.uk", null, null, null));
 
         MvcResult response = mockMvc
-            .perform(post("/callback/case-initiation")
+            .perform(post("/callback/case-initiation/about-to-submit")
                 .header("authorization", AUTH_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(readBytes("core-case-data-store-api/empty-case-details.json")))
@@ -85,5 +104,63 @@ class CaseInitiationControllerTest {
             .andReturn();
 
         assertThat(response.getResponse().getContentAsString()).isEqualTo(MAPPER.writeValueAsString(expectedResponse));
+    }
+
+    @Test
+    void grantAccessShouldBeCalledOnceForEachUser() throws Exception {
+        given(serviceAuthorisationApi.serviceToken(anyMap()))
+            .willReturn(SERVICE_AUTH_TOKEN);
+
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .id(Long.valueOf(CASE_ID))
+            .data(ImmutableMap.<String, Object>builder()
+                .put("caseLocalAuthority", "example")
+                .build()).build())
+            .build();
+
+        mockMvc
+            .perform(post("/callback/case-initiation/submitted")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(MAPPER.writeValueAsString(request)))
+            .andExpect(status().isOk());
+
+        Thread.sleep(3000);
+
+        verify(caseAccessApi, times(3)).grantAccessToCase(
+            eq(AUTH_TOKEN), any(), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID), any()
+        );
+    }
+
+    @Test
+    void shouldContinueAddingUsersAfterGrantAccessFailure() throws Exception {
+        given(serviceAuthorisationApi.serviceToken(anyMap()))
+            .willReturn(SERVICE_AUTH_TOKEN);
+
+        doThrow(RuntimeException.class).when(caseAccessApi).grantAccessToCase(
+            any(), any(), any(), any(), any(), any(), any()
+        );
+
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .id(Long.valueOf(CASE_ID))
+            .data(ImmutableMap.<String, Object>builder()
+                .put("caseLocalAuthority", "example")
+                .build()).build())
+            .build();
+
+        mockMvc
+            .perform(post("/callback/case-initiation/submitted")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(MAPPER.writeValueAsString(request)))
+            .andExpect(status().isOk()).andReturn();
+
+        Thread.sleep(3000);
+
+        verify(caseAccessApi, times(3)).grantAccessToCase(
+            eq(AUTH_TOKEN), any(), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID), any()
+        );
     }
 }

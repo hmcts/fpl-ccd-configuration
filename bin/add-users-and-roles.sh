@@ -10,13 +10,13 @@ export CCD_CONFIGURER_S2S_SECRET=AAAAAAAAAAAAAAAC
 
 dir=$(dirname ${0})
 
-${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh damian@swansea.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor
-${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh kurt@swansea.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor
-${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh james@swansea.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor
-${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh sam@hillingdon.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor
-${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh siva@hillingdon.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor
-${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh hmcts-admin@example.com caseworker,caseworker-publiclaw,caseworker-publiclaw-courtadmin
-${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh cafcass@example.com caseworker,caseworker-publiclaw,caseworker-publiclaw-cafcass
+${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh damian@swansea.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor "(local-authority)"
+${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh kurt@swansea.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor "(local-authority)"
+${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh james@swansea.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor "(local-authority)"
+${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh sam@hillingdon.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor "(local-authority)"
+${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh siva@hillingdon.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor "(local-authority)"
+${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh hmcts-admin@example.com caseworker,caseworker-publiclaw,caseworker-publiclaw-courtadmin "(hmcts-admin)"
+${dir}/../kubernetes/configurer/utils/idam-create-caseworker.sh cafcass@example.com caseworker,caseworker-publiclaw,caseworker-publiclaw-cafcass "(cafcass)"
 ${dir}/../kubernetes/configurer/utils/ccd-add-role.sh caseworker-publiclaw-solicitor
 ${dir}/../kubernetes/configurer/utils/ccd-add-role.sh caseworker-publiclaw-courtadmin
 ${dir}/../kubernetes/configurer/utils/ccd-add-role.sh caseworker-publiclaw-cafcass

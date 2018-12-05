@@ -39,6 +39,7 @@ data:
   IDAM_S2S_AUTH_TOTP_SECRET: "AABBCCDDEEFFGGHH"
   IDAM_API_URL: "http://idam-api"
   FPL_LOCAL_AUTHORITY_NAME_MAPPING: "swansea.gov.uk=>SA;hillingdon.gov.uk=>HN"
+  FPL_LOCAL_AUTHORITY_USER_MAPPING: "SA=>25,26,27;HN=>28,29"
 
 ---
 
@@ -257,14 +258,14 @@ spec:
               cpu: 200m
             limits:
               memory: 512Mi
-              cpu: 1000m
+              cpu: 2000m
           ports:
             - containerPort: 4000
               name: http
           livenessProbe:
             tcpSocket:
               port: 4000
-            initialDelaySeconds: 140
+            initialDelaySeconds: 210
             periodSeconds: 20
       dnsConfig:
         options:
@@ -324,14 +325,14 @@ spec:
               cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 1000m
+              cpu: 2000m
           ports:
             - containerPort: 8489
               name: http
           livenessProbe:
             tcpSocket:
               port: 8489
-            initialDelaySeconds: 140
+            initialDelaySeconds: 210
             periodSeconds: 20
       dnsConfig:
         options:
@@ -462,14 +463,14 @@ spec:
               cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 1000m
+              cpu: 2000m
           ports:
             - containerPort: 8080
               name: http
           livenessProbe:
             tcpSocket:
               port: 8080
-            initialDelaySeconds: 140
+            initialDelaySeconds: 210
             periodSeconds: 20
       dnsConfig:
         options:
@@ -667,14 +668,14 @@ spec:
               cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 1000m
+              cpu: 2000m
           ports:
             - containerPort: 4453
               name: http
           livenessProbe:
             tcpSocket:
               port: 4453
-            initialDelaySeconds: 140
+            initialDelaySeconds: 210
             periodSeconds: 20
       dnsConfig:
         options:
@@ -738,14 +739,14 @@ spec:
               cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 1000m
+              cpu: 2000m
           ports:
             - containerPort: 4451
               name: http
           livenessProbe:
             tcpSocket:
               port: 4451
-            initialDelaySeconds: 140
+            initialDelaySeconds: 210
             periodSeconds: 20
       dnsConfig:
         options:
@@ -809,14 +810,14 @@ spec:
               cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 1000m
+              cpu: 2000m
           ports:
             - containerPort: 4452
               name: http
           livenessProbe:
             tcpSocket:
               port: 4452
-            initialDelaySeconds: 140
+            initialDelaySeconds: 210
             periodSeconds: 20
       dnsConfig:
         options:
@@ -880,14 +881,14 @@ spec:
               cpu: 200m
             limits:
               memory: 1024Mi
-              cpu: 1000m
+              cpu: 2000m
           ports:
             - containerPort: 4603
               name: http
           livenessProbe:
             tcpSocket:
               port: 4603
-            initialDelaySeconds: 140
+            initialDelaySeconds: 210
             periodSeconds: 20
       dnsConfig:
         options:
@@ -913,6 +914,25 @@ spec:
       targetPort: 4603
   selector:
     app: dm-store
+
+---
+
+#
+# SHARED-DATABASE :: Volume
+#
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shared-database-data
+  namespace: ${NAMESPACE}
+spec:
+  storageClassName: managed-premium
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 250Mi
 
 ---
 
@@ -945,13 +965,21 @@ spec:
             limits:
               memory: 256Mi
               cpu: 1000m
+          volumeMounts:
+            - name: shared-database-data
+              mountPath: /var/lib/postgresql/data
+              subPath: data
           ports:
             - containerPort: 5432
               name: postgres
           livenessProbe:
             tcpSocket:
               port: 5432
-            initialDelaySeconds: 10
+            initialDelaySeconds: 70
+      volumes:
+        - name: shared-database-data
+          persistentVolumeClaim:
+            claimName: shared-database-data
       dnsConfig:
         options:
           - name: single-request-reopen
