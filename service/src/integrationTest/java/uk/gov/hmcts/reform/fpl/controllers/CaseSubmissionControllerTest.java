@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -10,6 +11,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.service.CaseRepository;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
@@ -63,7 +67,6 @@ class CaseSubmissionControllerTest {
                 .content(readBytes("fixtures/case.json")))
             .andExpect(status().isOk());
 
-
         Thread.sleep(3000);
         verify(caseRepository).setSubmittedFormPDF(AUTH_TOKEN, USER_ID, "2313", document);
     }
@@ -90,18 +93,28 @@ class CaseSubmissionControllerTest {
 
     @Test
     void shouldAddConsentLabelToCaseDetails() throws Exception {
-        String mockConsentLabel = "I, Emma Taylor, believe that the facts stated in this application are true.";
+        given(userDetailsService.getUserName(AUTH_TOKEN)).willReturn("Emma Taylor");
 
-        given(userDetailsService.getUserName(AUTH_TOKEN)).willReturn(mockConsentLabel);
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .data(ImmutableMap.<String, Object>builder()
+                .put("caseName", "title")
+                .build()).build())
+            .build();
 
         MvcResult response = mockMvc
             .perform(post("/callback/case-submission/about-to-start")
                 .header("authorization", AUTH_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(readBytes("fixtures/case.json")))
+                .content(MAPPER.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andReturn();
 
-        assertThat(response.getResponse().getContentAsString()).contains(mockConsentLabel);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(callbackResponse.getData())
+            .containsEntry("caseName", "title")
+            .containsEntry("submissionConsentLabel",
+                "I, Emma Taylor, believe that the facts stated in this application are true.");
     }
 }

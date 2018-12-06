@@ -81,7 +81,12 @@ class CaseInitiationControllerTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        assertThat(response.getResponse().getContentAsString()).contains(expectedData.toString());
+        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(callbackResponse.getData())
+            .containsEntry("caseName", "title")
+            .containsEntry("caseLocalAuthority", "EX");
     }
 
     @Test
