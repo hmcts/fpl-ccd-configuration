@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -60,10 +59,6 @@ class CaseInitiationControllerTest {
 
     @Test
     void shouldAddCaseLocalAuthorityToCaseData() throws Exception {
-        JSONObject expectedData = new JSONObject();
-        expectedData.put("caseName", "title");
-        expectedData.put("caseLocalAuthority", "EX");
-
         given(idamApi.retrieveUserDetails(AUTH_TOKEN)).willReturn(
             new UserDetails(null, "user@example.gov.uk", null, null, null));
 

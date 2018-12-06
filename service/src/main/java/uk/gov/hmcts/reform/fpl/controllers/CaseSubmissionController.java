@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 @RequestMapping("/callback/case-submission")
 public class CaseSubmissionController {
 
+    private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
     private final ApplicationEventPublisher applicationEventPublisher;
     private final UserDetailsService userDetailsService;
 
@@ -41,9 +42,7 @@ public class CaseSubmissionController {
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
-        String label = "I, "
-            + userDetailsService.getUserName(authorization)
-            + ", believe that the facts stated in this application are true.";
+        String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
 
         Map<String, Object> data = caseDetails.getData();
         data.put("submissionConsentLabel", label);
