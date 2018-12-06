@@ -1,9 +1,6 @@
 package uk.gov.hmcts.reform.fpl.config.utils;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 import java.util.Arrays;
 import java.util.List;
@@ -11,6 +8,7 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static com.google.common.collect.ImmutableMap.toImmutableMap;
 
 public class LookupConfigParser {
 
@@ -47,14 +45,12 @@ public class LookupConfigParser {
     private static <T> Map<String, T> parse(String config, ValueParser<T> valueParser) {
         checkArgument(!isNullOrEmpty(config), "Mapping configuration cannot be empty");
 
-        ImmutableMap.Builder<String, T> lookupTable = ImmutableMap.builder();
-
-        Arrays.stream(config.split(MAPPING_SEPARATOR)).forEach(entry -> {
-            String[] entrySplit = entry.split(ENTRY_SEPARATOR);
-            lookupTable.put(entrySplit[0], valueParser.parse(entrySplit[1]));
-        });
-
-        return lookupTable.build();
+        return Arrays.stream(config.split(MAPPING_SEPARATOR))
+            .map(entry -> entry.split(ENTRY_SEPARATOR))
+            .collect(toImmutableMap(
+                entry -> entry[0],
+                entry -> valueParser.parse(entry[1])
+            ));
     }
 
     interface ValueParser<T> {
