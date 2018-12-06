@@ -23,6 +23,8 @@ public class NotificationHandler {
     private final NotificationClient notificationClient;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private String timeFramePresent = "No";
+
     @Autowired
     public NotificationHandler(EmailLookUpService emailLookUpService, NotificationClient notificationClient) {
         this.emailLookUpService = emailLookUpService;
@@ -49,28 +51,30 @@ public class NotificationHandler {
     }
 
     private Map<String, String> buildEmailData(CaseDetails caseDetails) {
-        //optional
-
         LinkedHashMap orders =
             Optional.ofNullable((LinkedHashMap) caseDetails.getData().get("orders")).orElse(new LinkedHashMap());
-        String orderType = Optional.ofNullable(orders.get("orderType")).orElse("").toString();
-        String directionsAndInterim =
-            Optional.ofNullable(orders.get("directionsAndInterim")).orElse("").toString();
 
         LinkedHashMap hearing =
             Optional.ofNullable((LinkedHashMap) caseDetails.getData().get("hearing")).orElse(new LinkedHashMap());
+
+        String orderType = Optional.ofNullable(orders.get("orderType")).orElse("").toString();
+        String directions = Optional.ofNullable(orders.get("directionsAndInterim")).orElse("").toString();
         String timeFrame = Optional.ofNullable(hearing.get("timeFrame")).orElse("").toString();
         String caseId = caseDetails.getId().toString();
+
+        if(hearing.containsKey("timeFrame")) {
+            timeFramePresent = "Yes";
+        }
 
         return ImmutableMap.<String, String>builder()
             .put("court", "")
             .put("localAuthority", "")
             .put("orders", orderType)
-            .put("directionsAndInterim", directionsAndInterim)
-            .put("timeFramePresent", "")
+            .put("directionsAndInterim", directions)
+            .put("timeFramePresent", timeFramePresent)
             .put("timeFrame", timeFrame)
             .put("reference", caseId)
-            .put("caseUrl", "webAddress/" + caseId)
+            .put("caseUrl", "http://www.webAddress/" + caseId)
             .build();
     }
 }
