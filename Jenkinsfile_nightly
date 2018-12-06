@@ -4,19 +4,31 @@ properties([
   pipelineTriggers([cron('20 21 * * *')])
 ])
 
-@Library("Infrastructure")
+@Library('Infrastructure')
 
-def type = "java"
+def type = 'java'
 
-def product = "fpl"
-def component = "fpl-service"
+def product = 'fpl'
+def component = 'case-service'
 
 withNightlyPipeline(type, product, component) {
   enableMutationTest()
+  enableFullFunctionalTest()
 
   after('mutationTest') {
-    withSonarQubeEnv("SonarQube") {
-      sh "./gradlew --info sonarqube"
+    withSonarQubeEnv('SonarQube') {
+      sh './gradlew --info sonarqube'
+    }
+  }
+
+  before('fullFunctionalTest') {
+    env.URL = 'http://ccd-case-management-web-aat.service.core-compute-aat.internal'
+    env.PROXY_SERVER = 'proxyout.reform.hmcts.net:8080'
+
+    try {
+      sh('./gradlew --no-daemon --info --rerun-tasks functional')
+    } finally {
+      archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     }
   }
 }
