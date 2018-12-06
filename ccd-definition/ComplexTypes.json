@@ -1278,13 +1278,5 @@
     "FieldType": "TextArea",
     "ElementLabel": "Directions and interim orders, if needed",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "StandardDirections",
-    "ListElementCode": "standardDirectionsDocument",
-    "FieldType": "Document",
-    "ElementLabel": "Upload a file",
-    "SecurityClassification": "Public"
   }
 ]
