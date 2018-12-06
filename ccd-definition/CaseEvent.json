@@ -226,5 +226,16 @@
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Submitted",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "uploadStandardDirections",
+    "Name": "Standard directions",
+    "Description": "Upload standard directions",
+    "DisplayOrder": 1,
+    "PreConditionState(s)": "Submitted",
+    "PostConditionState": "Submitted",
+    "SecurityClassification": "Public"
   }
 ]

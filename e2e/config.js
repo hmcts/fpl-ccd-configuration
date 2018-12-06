@@ -34,6 +34,7 @@ module.exports = {
     submitCase: 'Submit application',
   },
   addFamilyManCaseNumber: 'Add case number',
+  standardDirections: 'Standard directions',
   // files
   testFile: './e2e/fixtures/mockFile.txt',
   // urls

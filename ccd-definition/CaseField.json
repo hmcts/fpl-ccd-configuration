@@ -281,5 +281,13 @@
     "Label": "FamilyMan case number",
     "FieldType": "Text",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "standardDirections",
+    "Label": "Upload standard directions",
+    "FieldType": "StandardDirections",
+    "SecurityClassification": "Public"
   }
 ]

@@ -726,5 +726,26 @@
     "CaseFieldID": "familyManCaseNumber",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "standardDirections",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "standardDirections",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "standardDirections",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "R"
   }
 ]
