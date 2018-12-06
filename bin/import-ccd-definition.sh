@@ -9,7 +9,4 @@ export CCD_DEF_CASE_SERVICE_BASE_URL=http://fpl-service:4000
 
 export CCD_CONFIGURER_S2S_SECRET=AAAAAAAAAAAAAAAC
 
-dir=$(dirname ${0})
-
-${dir}/../kubernetes/configurer/utils/fpl-process-definition.sh
-${dir}/../kubernetes/configurer/utils/ccd-import-definition.sh ${dir}/../ccd-definition.xlsx
+$(dirname ${0})/../kubernetes/configurer/import-ccd-definition.sh
