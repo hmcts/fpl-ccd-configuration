@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.UserEmailLookupConfiguration;
-
-import java.util.List;
+import uk.gov.hmcts.reform.fpl.config.UserEmailLookupConfiguration.Court;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -22,15 +22,15 @@ public class EmailLookUpService {
         this.userEmailLookupConfiguration = userEmailLookupConfiguration;
     }
 
-    public List<String> getEmails(String localAuthorityCode) {
+    public String getEmail(String localAuthorityCode) {
         checkNotNull(localAuthorityCode, "Case does not have local authority assigned");
 
-        List<String> userEmails = userEmailLookupConfiguration.getLookupTable().get(localAuthorityCode);
+        Court court = userEmailLookupConfiguration.getLookupTable().get(localAuthorityCode);
 
-        if (userEmails.isEmpty()) {
-            logger.warn("No emails found for {}", localAuthorityCode);
+        if (Strings.isNullOrEmpty(court.getEmail())) {
+            logger.warn("No email found for {}", localAuthorityCode);
         }
 
-        return userEmails;
+        return court.getEmail();
     }
 }

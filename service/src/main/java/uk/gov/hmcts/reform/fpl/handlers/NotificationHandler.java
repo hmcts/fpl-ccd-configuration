@@ -37,15 +37,14 @@ public class NotificationHandler {
         String reference = caseDetails.getId().toString();
         String template = "1b1be684-9b0a-4e58-8e51-f0c3c2dba37c";
 
-        emailLookUpService.getEmails(localAuthorityCode)
-            .forEach(email -> {
-                logger.debug("Sending email to {}", email);
-                try {
-                    notificationClient.sendEmail(template, email, parameters, reference);
-                } catch (NotificationClientException e) {
-                    logger.warn("Failed to send email to {}", email);
-                }
-            });
+        String email = emailLookUpService.getEmail(localAuthorityCode);
+        logger.debug("Sending email to {}", email);
+
+        try {
+            notificationClient.sendEmail(template, email, parameters, reference);
+        } catch (NotificationClientException e) {
+            logger.warn("Failed to send email to {}", email);
+        }
     }
 
     private Map<String, String> buildEmailData(CaseDetails caseDetails) {
