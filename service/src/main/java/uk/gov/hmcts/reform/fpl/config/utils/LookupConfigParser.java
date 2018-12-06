@@ -42,7 +42,14 @@ public class LookupConfigParser {
         );
     }
 
-    private static <T> Map<String, T> parse(String config, ValueParser<T> valueParser) {
+    /**
+     * Parses mapping using provided value parser.
+     *
+     * @param config raw mapping
+     * @param valueParser value parser
+     * @return lookup table
+     */
+    public static <T> Map<String, T> parse(String config, ValueParser<T> valueParser) {
         checkArgument(!isNullOrEmpty(config), "Mapping configuration cannot be empty");
 
         return Arrays.stream(config.split(MAPPING_SEPARATOR))
@@ -53,7 +60,7 @@ public class LookupConfigParser {
             ));
     }
 
-    interface ValueParser<T> {
+    public interface ValueParser<T> {
         T parse(String value);
     }
 

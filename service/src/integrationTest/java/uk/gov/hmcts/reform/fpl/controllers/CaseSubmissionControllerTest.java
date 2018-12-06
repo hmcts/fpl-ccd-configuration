@@ -118,7 +118,7 @@ class CaseSubmissionControllerTest {
             .andExpect(status().isOk());
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(TEMPLATE_ID), eq("user@example.com"), eq(expectedParameters), eq("12345")
+            eq(TEMPLATE_ID), eq("admin@family-court.com"), eq(expectedParameters), eq("12345")
         );
     }
 
@@ -152,7 +152,7 @@ class CaseSubmissionControllerTest {
             .andExpect(status().isOk());
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(TEMPLATE_ID), eq("user@example.com"), eq(expectedParameters), eq("12345")
+            eq(TEMPLATE_ID), eq("admin@family-court.com"), eq(expectedParameters), eq("12345")
         );
     }
 }
