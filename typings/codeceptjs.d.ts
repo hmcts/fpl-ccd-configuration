@@ -279,6 +279,7 @@ declare namespace CodeceptJS {
     clickBrowserBack() : void,
     reloadPage() : void,
     navigateToUrl(url: string) : void,
+    navigateToCaseDetails(caseId: string) : void,
     logInAndCreateCase(username: string, password: string) : void,
     continueAndSubmit() : void,
     seeEventSubmissionConfirmation(event: string) : void,
