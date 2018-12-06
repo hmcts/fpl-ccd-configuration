@@ -45,7 +45,7 @@ public class NotificationHandler {
                 try {
                     notificationClient.sendEmail(template, email, parameters, reference);
                 } catch (NotificationClientException e) {
-                    logger.warn("Failed to send email to {}", email);
+                    logger.warn("Failed to send email to {}", email, e);
                 }
             });
     }
