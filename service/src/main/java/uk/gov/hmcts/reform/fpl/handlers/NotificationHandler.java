@@ -1,27 +1,32 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.google.common.collect.ImmutableMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.EmailLookUpService;
-import uk.gov.hmcts.reform.fpl.service.NotificationService;
+import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class NotificationHandler {
 
     private final EmailLookUpService emailLookUpService;
-    private final NotificationService notificationService;
+    private final NotificationClient notificationClient;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    public NotificationHandler(EmailLookUpService emailLookUpService, NotificationService notificationService) {
+    public NotificationHandler(EmailLookUpService emailLookUpService, NotificationClient notificationClient) {
         this.emailLookUpService = emailLookUpService;
-        this.notificationService = notificationService;
+        this.notificationClient = notificationClient;
     }
 
     @EventListener
@@ -34,23 +39,38 @@ public class NotificationHandler {
 
         emailLookUpService.getEmails(localAuthorityCode)
             .forEach(email -> {
+                logger.debug("Sending email to {}", email);
                 try {
-                    notificationService.sendMail(email, template, parameters, reference);
+                    notificationClient.sendEmail(template, email, parameters, reference);
                 } catch (NotificationClientException e) {
-                    e.printStackTrace();
+                    logger.warn("Failed to send email to {}", email);
                 }
             });
     }
 
     private Map<String, String> buildEmailData(CaseDetails caseDetails) {
+        //optional
+
+        LinkedHashMap orders =
+            Optional.ofNullable((LinkedHashMap) caseDetails.getData().get("orders")).orElse(new LinkedHashMap());
+        String orderType = Optional.ofNullable(orders.get("orderType")).orElse("").toString();
+        String directionsAndInterim =
+            Optional.ofNullable(orders.get("directionsAndInterim")).orElse("").toString();
+
+        LinkedHashMap hearing =
+            Optional.ofNullable((LinkedHashMap) caseDetails.getData().get("hearing")).orElse(new LinkedHashMap());
+        String timeFrame = Optional.ofNullable(hearing.get("timeFrame")).orElse("").toString();
+        String caseId = caseDetails.getId().toString();
+
         return ImmutableMap.<String, String>builder()
             .put("court", "")
             .put("localAuthority", "")
-            .put("orders", "")
-            .put("directionsAndInterim", "")
-            .put("timeFrame", "")
-            .put("reference", caseDetails.getId().toString())
-            .put("caseUrl", "")
+            .put("orders", orderType)
+            .put("directionsAndInterim", directionsAndInterim)
+            .put("timeFramePresent", "")
+            .put("timeFrame", timeFrame)
+            .put("reference", caseId)
+            .put("caseUrl", "webAddress/" + caseId)
             .build();
     }
 }

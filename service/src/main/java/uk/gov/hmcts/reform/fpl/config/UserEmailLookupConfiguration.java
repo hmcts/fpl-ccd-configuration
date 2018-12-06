@@ -17,7 +17,7 @@ public class UserEmailLookupConfiguration {
     private static final String USER_SEPARATOR = ",";
     private final Map<String, List<String>> mapping;
 
-    public UserEmailLookupConfiguration(@Value("${fpl.hmcts_email.mapping}") String config) {
+    public UserEmailLookupConfiguration(@Value("${fpl.local_authority_code_to_hmcts_email.mapping}") String config) {
         ImmutableMap.Builder<String, List<String>> emails = ImmutableMap.builder();
 
         Arrays.stream(config.split(MAPPINGS_SEPARATOR)).forEach(entry -> {

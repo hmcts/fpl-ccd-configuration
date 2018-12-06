@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,11 +10,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.service.CaseRepository;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.NotificationService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.service.notify.NotificationClient;
 
 import java.util.Map;
 
@@ -36,6 +39,8 @@ class CaseSubmissionControllerTest {
     private static final String USER_ID = "1";
     private static final String CASE_ID = "2313";
     private static final String TEMPLATE_ID = "1b1be684-9b0a-4e58-8e51-f0c3c2dba37c";
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
 
     @MockBean
     private DocumentGeneratorService documentGeneratorService;
@@ -44,7 +49,7 @@ class CaseSubmissionControllerTest {
     @MockBean
     private CaseRepository caseRepository;
     @MockBean
-    private NotificationService notificationService;
+    private NotificationClient notificationClient;
 
     @Autowired
     private MockMvc mockMvc;
@@ -96,11 +101,12 @@ class CaseSubmissionControllerTest {
         Map<String, String> expectedParameters = ImmutableMap.<String, String>builder()
             .put("court", "")
             .put("localAuthority", "")
-            .put("orders", "")
-            .put("directionsAndInterim", "")
-            .put("timeFrame", "")
-            .put("reference", CASE_ID)
-            .put("caseUrl", "")
+            .put("orders", "[Emergency protection order]")
+            .put("directionsAndInterim", "Information on the whereabouts of the child")
+            .put("timeFramePresent", "")
+            .put("timeFrame", "Same day")
+            .put("reference", "12345")
+            .put("caseUrl", "webAddress/12345")
             .build();
 
         mockMvc
@@ -108,11 +114,45 @@ class CaseSubmissionControllerTest {
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(readBytes("fixtures/case.json")))
+                .content(readBytes("core-case-data-store-api/callback-request.json")))
             .andExpect(status().isOk());
 
-        verify(notificationService, times(1)).sendMail(
-            eq("user@example.com"), eq(TEMPLATE_ID), eq(expectedParameters), eq(CASE_ID)
+        verify(notificationClient, times(1)).sendEmail(
+            eq(TEMPLATE_ID), eq("user@example.com"), eq(expectedParameters), eq("12345")
+        );
+    }
+
+    @Test
+    void shouldBuildTemplateWithValuesMissingInCallback() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.<String, Object>builder()
+                    .put("caseLocalAuthority", "example").build())
+                .build())
+            .build();
+
+        Map<String, String> expectedParameters = ImmutableMap.<String, String>builder()
+            .put("court", "")
+            .put("localAuthority", "")
+            .put("orders", "")
+            .put("directionsAndInterim", "")
+            .put("timeFramePresent", "")
+            .put("timeFrame", "")
+            .put("reference", "12345")
+            .put("caseUrl", "webAddress/12345")
+            .build();
+
+        mockMvc
+            .perform(post("/callback/case-submission")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(MAPPER.writeValueAsString(request)))
+            .andExpect(status().isOk());
+
+        verify(notificationClient, times(1)).sendEmail(
+            eq(TEMPLATE_ID), eq("user@example.com"), eq(expectedParameters), eq("12345")
         );
     }
 }
