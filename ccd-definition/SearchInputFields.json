@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "caseLocalAuthority",
-    "Label": "LA",
+    "Label": "Local authority",
     "DisplayOrder": 1
   },
   {

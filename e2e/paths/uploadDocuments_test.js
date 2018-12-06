@@ -29,3 +29,4 @@ Scenario('Uploading all files in the c110a application', (I, uploadDocumentsPage
   I.seeDocument('Social work assessment', 'mockFile.txt', 'Attached');
   I.seeDocument('Care plan', 'mockFile.txt', 'Attached');
 });
+
