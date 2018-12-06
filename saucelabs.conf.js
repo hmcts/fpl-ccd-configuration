@@ -2,10 +2,12 @@
 const supportedBrowsers = require('./e2e/crossbrowser/supportedBrowsers.js');
 const E2E_FRONTEND_URL = 'https://www.ccd.demo.platform.hmcts.net';
 
-const SAUCE_USERNAME = 'SivaK';
-const SAUCE_ACCESS_KEY = '65e1e5c6-ae4b-4432-9854-276fff0610d8';
-const tunnelName = 'fpltunnel';
-const browser = 'chrome';
+const saucelabs_tunnelId= 'reform_tunnel';
+const saucelabs_username = 'username';
+const saucelabs_accesskey = 'privatekey';
+const tunnelName = process.env.SAUCE_TUNNEL_IDENTIFIER || saucelabs_tunnelId;
+const saucelabs_browserName = 'chrome';
+
 
 const { config } = require('./codecept.conf');
 
@@ -13,13 +15,13 @@ console.log('before', config);
 
 delete config.helpers.Puppeteer;
 config.helpers.WebDriverIO = {
-  url: E2E_FRONTEND_URL,
-  browser: browser,
+  url: process.env.URL,
+  browser: process.env.SAUCE_BROWSER || saucelabs_browserName,
   cssSelectorsEnabled: 'true',
   host: 'ondemand.saucelabs.com',
   port: 80,
-  user: SAUCE_USERNAME,
-  key: SAUCE_ACCESS_KEY,
+  user: process.env.SAUCE_USERNAME || saucelabs_username,
+  key: process.env.SAUCE_ACCESS_KEY || saucelabs_accesskey,
   desiredCapabilities: {},
 };
 config.helpers.SauceLabsReportingHelper = {

@@ -1,8 +1,8 @@
 const event = require('codeceptjs').event;
 const container = require('codeceptjs').container;
 let exec = require('child_process').exec;
-//process.env.SAUCE_USERNAME='SivaK';
-//process.env.SAUCE_ACCESS_KEY='65e1e5c6-ae4b-4432-9854-276fff0610d8';
+//const SAUCE_USERNAME='SivaK';
+//const SAUCE_ACCESS_KEY='65e1e5c6-ae4b-4432-9854-276fff0610d8';
 //const sauceUsername = process.env.SAUCE_USERNAME;
 //const sauceKey = process.env.SAUCE_ACCESS_KEY;
 

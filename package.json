@@ -18,8 +18,8 @@
     "lint": "eslint e2e",
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
     "test": "codeceptjs run-multiple parallel",
-    "test-crossbrowser": "NODE_ENV=testing LOG_LEVEL=OFF NODE_PATH=. node_modules/.bin/codeceptjs run-multiple  ${BROWSER_GROUP:-'--all'} -c ./saucelabs.conf.js --steps --reporter mocha-multi",
-    "test-crossbrowser-e2e": "NODE_ENV=testing LOG_LEVEL=OFF NODE_PATH=. node_modules/.bin/codeceptjs run-multiple  ${BROWSER_GROUP:-'--all'} -c ./saucelabs.conf.js --steps",
+    "test:crossbrowser": "NODE_ENV=testing LOG_LEVEL=OFF NODE_PATH=. node_modules/.bin/codeceptjs run-multiple  ${BROWSER_GROUP:-'--all'} -c ./saucelabs.conf.js --steps --reporter mocha-multi",
+    "test:crossbrowser-e2e": "NODE_ENV=testing LOG_LEVEL=OFF NODE_PATH=. node_modules/.bin/codeceptjs run-multiple  ${BROWSER_GROUP:-'--all'} -c ./saucelabs.conf.js --steps",
     "test:functional": "codeceptjs run-multiple parallel --invert --grep @smoke-tests",
     "test:smoke": "codeceptjs run --reporter mocha-multi --grep @smoke-tests"
   },
