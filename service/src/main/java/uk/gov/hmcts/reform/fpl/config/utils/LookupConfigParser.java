@@ -10,6 +10,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 
+@SuppressWarnings({"PMD", "checkstyle:hideutilityclassconstructor"})
 public class LookupConfigParser {
 
     private static final String MAPPING_SEPARATOR = ";";
@@ -17,8 +18,8 @@ public class LookupConfigParser {
 
     /**
      * Parses mapping containing single string as a value.
-     * <p>
-     * Example: SA=>Swansea;HN=>Hillingdon
+     *
+     * <p>Example: SA=>Swansea;HN=>Hillingdon
      *
      * @param config raw mapping
      * @return lookup table
@@ -29,8 +30,8 @@ public class LookupConfigParser {
 
     /**
      * Parses mapping containing list of string as a value.
-     * <p>
-     * Example: SA=>1,2,3;HN=>4,5,6
+     *
+     * <p>Example: SA=>1,2,3;HN=>4,5,6
      *
      * @param config raw mapping
      * @return lookup table
@@ -45,7 +46,7 @@ public class LookupConfigParser {
     /**
      * Parses mapping using provided value parser.
      *
-     * @param config raw mapping
+     * @param config      raw mapping
      * @param valueParser value parser
      * @return lookup table
      */
@@ -63,5 +64,4 @@ public class LookupConfigParser {
     public interface ValueParser<T> {
         T parse(String value);
     }
-
 }

@@ -19,13 +19,23 @@ data "azurerm_key_vault_secret" "s2s_secret" {
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
-data "azurerm_key_vault_secret" "local_authority_name_mapping" {
-  name = "local-authority-name-mapping"
+data "azurerm_key_vault_secret" "local_authority_email_to_code_mapping" {
+  name = "local-authority-email-to-code-mapping"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "local_authority_code_to_name_mapping" {
+  name = "local-authority-code-to-name-mapping"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "local_authority_user_mapping" {
   name = "local-authority-user-mapping"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "local_authority_code_to_hmcts_court_mapping" {
+  name = "local-authority-code-to-hmcts-court-mapping"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 

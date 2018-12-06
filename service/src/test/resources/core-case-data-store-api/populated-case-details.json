@@ -5,6 +5,7 @@
   "case_type_id": "Shared_Storage_DRAFTType",
   "security_classification": "PUBLIC",
   "case_data": {
+    "caseLocalAuthority": "example",
     "risks": {
       "neglect": "Yes",
       "sexualAbuse": "Yes",
@@ -29,6 +30,8 @@
     },
     "orders": {
       "orderType": [
+        "Emergency protection order"
+      ], "orderType": [
         "Emergency protection order"
       ],
       "directionsAndInterim": "Information on the whereabouts of the child"

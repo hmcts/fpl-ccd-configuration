@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityDomainException;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
@@ -9,20 +10,25 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Gets a Local Authority name.
  */
 @Service
-public class LocalAuthorityNameService {
+public class LocalAuthorityService {
 
     private final IdamApi idamApi;
-    private final LocalAuthorityNameLookupConfiguration localAuthorityLookupConfiguration;
+    private final LocalAuthorityCodeLookupConfiguration localAuthorityCodeLookupConfiguration;
+    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     @Autowired
-    public LocalAuthorityNameService(IdamApi idamApi,
-                                     LocalAuthorityNameLookupConfiguration localAuthorityLookupConfiguration) {
+    public LocalAuthorityService(IdamApi idamApi,
+                                 LocalAuthorityCodeLookupConfiguration localAuthorityCodeLookupConfiguration,
+                                 LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration) {
         this.idamApi = idamApi;
-        this.localAuthorityLookupConfiguration = localAuthorityLookupConfiguration;
+        this.localAuthorityCodeLookupConfiguration = localAuthorityCodeLookupConfiguration;
+        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
     }
 
     /**
@@ -46,12 +52,17 @@ public class LocalAuthorityNameService {
     }
 
     private String lookUpCode(String emailDomain) {
-        Map<String, String> lookupTable = localAuthorityLookupConfiguration.getLookupTable();
+        Map<String, String> lookupTable = localAuthorityCodeLookupConfiguration.getLookupTable();
 
         if (lookupTable.get(emailDomain) == null) {
             throw new UnknownLocalAuthorityDomainException(emailDomain + " not found");
         }
 
         return lookupTable.get(emailDomain);
+    }
+
+    public String getLocalAuthorityName(String localAuthorityCode) {
+        checkNotNull(localAuthorityCode, "No local authority found");
+        return localAuthorityNameLookupConfiguration.getLookupTable().get(localAuthorityCode);
     }
 }

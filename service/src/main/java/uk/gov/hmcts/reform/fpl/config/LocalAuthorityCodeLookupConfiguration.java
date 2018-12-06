@@ -7,11 +7,11 @@ import uk.gov.hmcts.reform.fpl.config.utils.LookupConfigParser;
 import java.util.Map;
 
 @Configuration
-public class LocalAuthorityNameLookupConfiguration {
+public class LocalAuthorityCodeLookupConfiguration {
 
     private final Map<String, String> mapping;
 
-    public LocalAuthorityNameLookupConfiguration(@Value("${fpl.local_authority_code_to_name.mapping}") String config) {
+    public LocalAuthorityCodeLookupConfiguration(@Value("${fpl.local_authority_email_to_code.mapping}") String config) {
         this.mapping = LookupConfigParser.parseStringValue(config);
     }
 
@@ -19,3 +19,4 @@ public class LocalAuthorityNameLookupConfiguration {
         return mapping;
     }
 }
+

@@ -7,11 +7,11 @@ import uk.gov.hmcts.reform.fpl.config.utils.LookupConfigParser;
 import java.util.Map;
 
 @Configuration
-public class UserEmailLookupConfiguration {
+public class HmctsCourtLookupConfiguration {
 
     private final Map<String, Court> mapping;
 
-    public UserEmailLookupConfiguration(@Value("${fpl.local_authority_code_to_hmcts_email.mapping}") String config) {
+    public HmctsCourtLookupConfiguration(@Value("${fpl.local_authority_code_to_hmcts_court.mapping}") String config) {
         this.mapping = LookupConfigParser.parse(config, value -> {
             String[] entrySplit = value.split(":");
             return new Court(entrySplit[0], entrySplit[1]);

@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.InitiatedCaseEvent;
-import uk.gov.hmcts.reform.fpl.service.LocalAuthorityNameService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 
 import java.util.Map;
 
@@ -22,12 +22,12 @@ import java.util.Map;
 @RequestMapping("/callback/case-initiation")
 public class CaseInitiationController {
 
-    private final LocalAuthorityNameService localAuthorityNameService;
+    private final LocalAuthorityService localAuthorityNameService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
 
     @Autowired
-    public CaseInitiationController(LocalAuthorityNameService localAuthorityNameService,
+    public CaseInitiationController(LocalAuthorityService localAuthorityNameService,
                                     ApplicationEventPublisher applicationEventPublisher) {
         this.localAuthorityNameService = localAuthorityNameService;
         this.applicationEventPublisher = applicationEventPublisher;

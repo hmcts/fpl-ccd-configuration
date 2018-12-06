@@ -41,7 +41,6 @@ class CaseSubmissionControllerTest {
     private static final String TEMPLATE_ID = "1b1be684-9b0a-4e58-8e51-f0c3c2dba37c";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-
     @MockBean
     private DocumentGeneratorService documentGeneratorService;
     @MockBean
@@ -99,14 +98,14 @@ class CaseSubmissionControllerTest {
     @Test
     void shouldCallNotify() throws Exception {
         Map<String, String> expectedParameters = ImmutableMap.<String, String>builder()
-            .put("court", "")
-            .put("localAuthority", "")
+            .put("court", "Family Court")
+            .put("localAuthority", "Example Local Authority")
             .put("orders", "[Emergency protection order]")
             .put("directionsAndInterim", "Information on the whereabouts of the child")
-            .put("timeFramePresent", "")
+            .put("timeFramePresent", "Yes")
             .put("timeFrame", "Same day")
             .put("reference", "12345")
-            .put("caseUrl", "webAddress/12345")
+            .put("caseUrl", "http://www.webAddress/12345")
             .build();
 
         mockMvc
@@ -133,14 +132,14 @@ class CaseSubmissionControllerTest {
             .build();
 
         Map<String, String> expectedParameters = ImmutableMap.<String, String>builder()
-            .put("court", "")
-            .put("localAuthority", "")
+            .put("court", "Family Court")
+            .put("localAuthority", "Example Local Authority")
             .put("orders", "")
             .put("directionsAndInterim", "")
-            .put("timeFramePresent", "")
+            .put("timeFramePresent", "No")
             .put("timeFrame", "")
             .put("reference", "12345")
-            .put("caseUrl", "webAddress/12345")
+            .put("caseUrl", "http://www.webAddress/12345")
             .build();
 
         mockMvc
