@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -39,6 +41,9 @@ class SubmittedCaseEventHandlerTest {
     private CaseRepository caseRepository;
     @Mock
     private UserDetailsService userDetailsService;
+
+    @Captor
+    ArgumentCaptor<CaseDetails> caseDetailsCaptor;
 
     @InjectMocks
     private SubmittedCaseEventHandler submittedCaseEventHandler;
@@ -78,5 +83,18 @@ class SubmittedCaseEventHandlerTest {
 
         verify(caseRepository).setSubmittedFormPDF(AUTH_TOKEN, USER_ID,
             Long.toString(request.getCaseDetails().getId()), document);
+    }
+
+    @Test
+    void shouldPassUserFullNameToPDFGenerator() throws IOException {
+        given(userDetailsService.getUserName(AUTH_TOKEN))
+            .willReturn("Emma Taylor");
+
+        submittedCaseEventHandler.handleCaseSubmission(new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+
+        verify(documentGeneratorService).generateSubmittedFormPDF(caseDetailsCaptor.capture());
+
+        assertThat(caseDetailsCaptor.getValue().getData())
+            .containsEntry("userFullName", "Emma Taylor");
     }
 }
