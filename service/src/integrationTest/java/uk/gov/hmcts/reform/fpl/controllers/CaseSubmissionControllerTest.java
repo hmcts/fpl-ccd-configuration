@@ -107,7 +107,7 @@ class CaseSubmissionControllerTest {
         Map<String, String> expectedParameters = ImmutableMap.<String, String>builder()
             .put("court", "Family Court")
             .put("localAuthority", "Example Local Authority")
-            .put("orders", "[Emergency protection order]")
+            .put("orders", "Emergency protection order")
             .put("directionsAndInterim", "Information on the whereabouts of the child")
             .put("timeFramePresent", "Yes")
             .put("timeFrame", "Same day")
@@ -116,7 +116,7 @@ class CaseSubmissionControllerTest {
             .build();
 
         mockMvc
-            .perform(post("/callback/case-submission")
+            .perform(post("/callback/case-submission/submitted")
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -150,7 +150,7 @@ class CaseSubmissionControllerTest {
             .build();
 
         mockMvc
-            .perform(post("/callback/case-submission")
+            .perform(post("/callback/case-submission/submitted")
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
