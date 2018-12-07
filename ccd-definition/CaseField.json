@@ -100,14 +100,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "documents_socialWorkAssessment_document",
-    "Label": "# 3. Social work assessment",
-    "FieldType": "UploadDocument",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkCarePlan_document",
     "Label": "# 4. Care plan",
     "FieldType": "UploadDocument",
