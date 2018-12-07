@@ -83,7 +83,7 @@ exports.config = {
         options: {
           reportDir: './output',
           reportName: 'index',
-          inlineAssets: true
+          inlineAssets: true,
         },
       },
     },

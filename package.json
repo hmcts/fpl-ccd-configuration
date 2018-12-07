@@ -17,8 +17,8 @@
     "lint": "eslint e2e",
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
     "test": "codeceptjs run-multiple parallel",
-    "test:functional": "codeceptjs run-multiple parallel --reporter mocha-multi --invert --grep @smoke-tests",
-    "test:smoke": "codeceptjs run --reporter mocha-multi --grep @smoke-tests --reporter mochawesome --reporter-options reportFilename='smoke'"
+    "test:functional": "MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --invert --grep @smoke-tests --reporter mocha-multi",
+    "test:smoke": "MOCHAWESOME_REPORTFILENAME=smoke codeceptjs run --grep @smoke-tests --reporter mocha-multi"
   },
   "husky": {
     "hooks": {
