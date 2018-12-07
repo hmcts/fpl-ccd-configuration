@@ -39,6 +39,8 @@ class CaseSubmissionControllerTest {
     private static final String USER_ID = "1";
     private static final String CASE_ID = "2313";
     private static final String TEMPLATE_ID = "1b1be684-9b0a-4e58-8e51-f0c3c2dba37c";
+    private static final String JURISDICTION = "PUBLICLAW";
+    private static final String CASE_TYPE = "Shared_Storage_DRAFTType";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @MockBean
@@ -105,7 +107,7 @@ class CaseSubmissionControllerTest {
             .put("timeFramePresent", "Yes")
             .put("timeFrame", "Same day")
             .put("reference", "12345")
-            .put("caseUrl", "http://www.webAddress/12345")
+            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
         mockMvc
@@ -139,7 +141,7 @@ class CaseSubmissionControllerTest {
             .put("timeFramePresent", "No")
             .put("timeFrame", "")
             .put("reference", "12345")
-            .put("caseUrl", "http://www.webAddress/12345")
+            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
         mockMvc

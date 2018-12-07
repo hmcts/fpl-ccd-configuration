@@ -20,6 +20,7 @@ services:
       - FPL_LOCAL_AUTHORITY_USER_MAPPING=SA=>25,26,27;HN=>28,29
       - FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING=SA=>Swansea Family Court:FamilyPublicLaw+sa@gmail.com;HN=>Portsmouth Combined Court:FamilyPublicLaw+hn@gmail.com
       - NOTIFY_API_KEY
+      - CCD_UI_BASE_URL=http://localhost:3451
       # these environment variables are used by java-logging library
       - ROOT_APPENDER
       - JSON_CONSOLE_PRETTY_PRINT

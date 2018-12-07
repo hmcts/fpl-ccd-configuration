@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -24,6 +26,12 @@ public class NotificationHandler {
     private final LocalAuthorityService localAuthorityService;
     private final NotificationClient notificationClient;
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final static String JURISDICTION = "PUBLICLAW";
+    private final static String CASE_TYPE = "Shared_Storage_DRAFTType";
+
+    @Value("${ccd.ui.base.url}")
+    String CCD_BASE_URL;
 
     private String timeFramePresent;
 
@@ -68,7 +76,8 @@ public class NotificationHandler {
             timeFramePresent = "No";
         }
 
-        String orderType = Optional.ofNullable(orders.get("orderType")).orElse("").toString();
+        String orderType = Optional.ofNullable(orders.get("orderType"))
+            .orElse("").toString();
         String directions = Optional.ofNullable(orders.get("directionsAndInterim")).orElse("").toString();
         String timeFrame = Optional.ofNullable(hearing.get("timeFrame")).orElse("").toString();
         String caseId = caseDetails.getId().toString();
@@ -79,12 +88,12 @@ public class NotificationHandler {
         return ImmutableMap.<String, String>builder()
             .put("court", courtName)
             .put("localAuthority", localAuthorityName)
-            .put("orders", orderType)
+            .put("orders", orderType.replace("[", "").replace("]", ""))
             .put("directionsAndInterim", directions)
             .put("timeFramePresent", timeFramePresent)
             .put("timeFrame", timeFrame)
             .put("reference", caseId)
-            .put("caseUrl", "http://www.webAddress/" + caseId)
+            .put("caseUrl", CCD_BASE_URL + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseId)
             .build();
     }
 }
