@@ -71,6 +71,7 @@ module "case-service" {
     FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING = "${data.azurerm_key_vault_secret.local_authority_code_to_name_mapping.value}"
     FPL_LOCAL_AUTHORITY_USER_MAPPING = "${data.azurerm_key_vault_secret.local_authority_user_mapping.value}"
     FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING = "${data.azurerm_key_vault_secret.local_authority_code_to_hmcts_court_mapping.value}"
+    NOTIFY_API_KEY = "${data.azurerm_key_vault_secret.notify_api_key.value}"
 
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE  = false
