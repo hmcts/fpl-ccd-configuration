@@ -16,6 +16,7 @@ public class LookupConfigParser {
     private static final String ENTRY_SEPARATOR = "=>";
 
     private LookupConfigParser() {
+        //NO-OP
     }
 
     /**

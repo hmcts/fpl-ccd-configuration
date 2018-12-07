@@ -31,6 +31,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
@@ -42,9 +45,6 @@ class CaseSubmissionControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final String CASE_ID = "2313";
-    private static final String TEMPLATE_ID = "1b1be684-9b0a-4e58-8e51-f0c3c2dba37c";
-    private static final String JURISDICTION = "PUBLICLAW";
-    private static final String CASE_TYPE = "Shared_Storage_DRAFTType";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @MockBean
@@ -124,7 +124,7 @@ class CaseSubmissionControllerTest {
             .andExpect(status().isOk());
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(TEMPLATE_ID), eq("admin@family-court.com"), eq(expectedParameters), eq("12345")
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("admin@family-court.com"), eq(expectedParameters), eq("12345")
         );
     }
 
@@ -158,7 +158,7 @@ class CaseSubmissionControllerTest {
             .andExpect(status().isOk());
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(TEMPLATE_ID), eq("admin@family-court.com"), eq(expectedParameters), eq("12345")
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("admin@family-court.com"), eq(expectedParameters), eq("12345")
         );
     }
 

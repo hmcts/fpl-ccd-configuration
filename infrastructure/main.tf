@@ -39,6 +39,11 @@ data "azurerm_key_vault_secret" "local_authority_code_to_hmcts_court_mapping" {
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "notify_api_key" {
+  name = "notify_api_key"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
 module "key-vault" {
   source = "git@github.com:hmcts/cnp-module-key-vault.git?ref=master"
   name = "fpl-${var.env}"

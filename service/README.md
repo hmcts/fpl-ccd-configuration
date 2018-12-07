@@ -50,33 +50,33 @@ You should get a response similar to this:
 
 ## Application Mappings
 
-###Email domain to Local Authority code
+### Email domain to Local Authority code
 
-Returns a String local authority code
+Example:
 ```
 FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING:
 example.gov.uk=>EX
 ```
 
-###Local Authority code to Local Authority name
+### Local Authority code to Local Authority name
 
-Returns a String name of a local authority
+Example:
 ```
 FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING:
 EX=>Example Local Authority
 ```
 
-###Local Authority code to Local Authority users
+### Local Authority code to Local Authority users
 
-Returns a List<String> of user ids
+Example:
 ```
 FPL_LOCAL_AUTHORITY_USER_MAPPING:
 EX=>1,2,3
 ```
 
-###Local Authority Code to HMCTS Court
+### Local Authority Code to HMCTS Court
 
-Returns a String name and email of a court
+Example:
 ```
 FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING:
 EX=>Example Family Court: FamilyCourt@email.com

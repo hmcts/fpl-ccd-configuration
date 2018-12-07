@@ -18,6 +18,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+
 @Component
 public class NotificationHandler {
 
@@ -25,20 +29,17 @@ public class NotificationHandler {
     private final LocalAuthorityService localAuthorityService;
     private final NotificationClient notificationClient;
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private static final String JURISDICTION = "PUBLICLAW";
-    private static final String CASE_TYPE = "Shared_Storage_DRAFTType";
-
-    @Value("${ccd.ui.base.url}")
-    private static String CCD_BASE_URL;
+    private final String uiBaseUrl;
 
     @Autowired
     public NotificationHandler(HmctsCourtLookUpService hmctsCourtLookUpService,
                                NotificationClient notificationClient,
-                               LocalAuthorityService localAuthorityService) {
+                               LocalAuthorityService localAuthorityService,
+                               @Value("${ccd.ui.base.url}") String uiBaseUrl) {
         this.hmctsCourtLookUpService = hmctsCourtLookUpService;
         this.notificationClient = notificationClient;
         this.localAuthorityService = localAuthorityService;
+        this.uiBaseUrl = uiBaseUrl;
     }
 
     @EventListener
@@ -47,16 +48,17 @@ public class NotificationHandler {
         String localAuthorityCode = caseDetails.getData().get("caseLocalAuthority").toString();
         Map<String, String> parameters = buildEmailData(caseDetails, localAuthorityCode);
         String reference = caseDetails.getId().toString();
-        String template = "1b1be684-9b0a-4e58-8e51-f0c3c2dba37c";
-
 
         String email = hmctsCourtLookUpService.getCourt(localAuthorityCode).getEmail();
         logger.debug("Sending email to {}", email);
 
         try {
-            notificationClient.sendEmail(template, email, parameters, reference);
+            notificationClient.sendEmail(HMCTS_COURT_SUBMISSION_TEMPLATE, email, parameters, reference);
         } catch (NotificationClientException e) {
             logger.warn("Failed to send email to {}", email, e);
+
+            e.getHttpResult();
+            e.getMessage();
         }
     }
 
@@ -92,7 +94,7 @@ public class NotificationHandler {
             .put("timeFramePresent", timeFramePresent)
             .put("timeFrame", timeFrame)
             .put("reference", caseId)
-            .put("caseUrl", CCD_BASE_URL + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseId)
+            .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseId)
             .build();
     }
 }
