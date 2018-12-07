@@ -18,7 +18,7 @@
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
     "test": "codeceptjs run-multiple parallel",
     "test:functional": "codeceptjs run-multiple parallel --reporter mocha-multi --invert --grep @smoke-tests",
-    "test:smoke": "codeceptjs run --reporter mocha-multi --grep @smoke-tests"
+    "test:smoke": "codeceptjs run --reporter mocha-multi --grep @smoke-tests --reporter mochawesome --reporter-options reportFilename='smoke'"
   },
   "husky": {
     "hooks": {
