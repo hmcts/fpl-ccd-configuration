@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -27,13 +26,11 @@ public class NotificationHandler {
     private final NotificationClient notificationClient;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final static String JURISDICTION = "PUBLICLAW";
-    private final static String CASE_TYPE = "Shared_Storage_DRAFTType";
+    private static final String JURISDICTION = "PUBLICLAW";
+    private static final String CASE_TYPE = "Shared_Storage_DRAFTType";
 
     @Value("${ccd.ui.base.url}")
-    String CCD_BASE_URL;
-
-    private String timeFramePresent;
+    private static String CCD_BASE_URL;
 
     @Autowired
     public NotificationHandler(HmctsCourtLookUpService hmctsCourtLookUpService,
@@ -69,6 +66,8 @@ public class NotificationHandler {
 
         LinkedHashMap hearing =
             Optional.ofNullable((LinkedHashMap) caseDetails.getData().get("hearing")).orElse(new LinkedHashMap());
+
+        String timeFramePresent;
 
         if (hearing.containsKey("timeFrame")) {
             timeFramePresent = "Yes";

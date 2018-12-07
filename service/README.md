@@ -79,5 +79,5 @@ EX=>1,2,3
 Returns a String name and email of a court
 ```
 FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING:
-EX=>Example Family Cour: FamilyCourt@email.com
+EX=>Example Family Court: FamilyCourt@email.com
 ```

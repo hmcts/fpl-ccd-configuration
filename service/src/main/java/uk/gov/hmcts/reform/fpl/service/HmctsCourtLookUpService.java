@@ -26,6 +26,8 @@ public class HmctsCourtLookUpService {
 
         Court court = hmctsCourtLookupConfiguration.getLookupTable().get(localAuthorityCode);
 
+        checkNotNull(court, "Court information not found");
+
         if (Strings.isNullOrEmpty(court.getEmail())) {
             logger.warn("No court email found for {}", localAuthorityCode);
         }

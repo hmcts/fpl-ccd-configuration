@@ -43,4 +43,11 @@ class HmctsCourtLookupServiceTest {
             .isInstanceOf(NullPointerException.class)
             .hasMessage("Case does not have local authority assigned");
     }
+
+    @Test
+    void shouldThrowNullPointerExceptionWhenCourtIsNull() {
+        Assertions.assertThatThrownBy(() -> service.getCourt("FAKE"))
+            .isInstanceOf(NullPointerException.class)
+            .hasMessage("Court information not found");
+    }
 }

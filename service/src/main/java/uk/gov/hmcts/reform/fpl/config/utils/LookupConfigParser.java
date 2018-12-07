@@ -10,11 +10,13 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 
-@SuppressWarnings({"PMD", "checkstyle:hideutilityclassconstructor"})
 public class LookupConfigParser {
 
     private static final String MAPPING_SEPARATOR = ";";
     private static final String ENTRY_SEPARATOR = "=>";
+
+    private LookupConfigParser() {
+    }
 
     /**
      * Parses mapping containing single string as a value.
