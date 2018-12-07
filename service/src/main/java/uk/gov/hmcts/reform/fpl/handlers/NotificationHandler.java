@@ -70,8 +70,9 @@ public class NotificationHandler {
             Optional.ofNullable((LinkedHashMap) caseDetails.getData().get("hearing")).orElse(new LinkedHashMap());
 
         String timeFramePresent;
+        String timeFrame = "timeFrame";
 
-        if (hearing.containsKey("timeFrame")) {
+        if (hearing.containsKey(timeFrame)) {
             timeFramePresent = "Yes";
         } else {
             timeFramePresent = "No";
@@ -80,7 +81,7 @@ public class NotificationHandler {
         String orderType = Optional.ofNullable(orders.get("orderType"))
             .orElse("").toString();
         String directions = Optional.ofNullable(orders.get("directionsAndInterim")).orElse("").toString();
-        String timeFrame = Optional.ofNullable(hearing.get("timeFrame")).orElse("").toString();
+        String timeFrameValue = Optional.ofNullable(hearing.get(timeFrame)).orElse("").toString();
         String caseId = caseDetails.getId().toString();
 
         String courtName = hmctsCourtLookUpService.getCourt(localAuthorityCode).getName();
@@ -92,7 +93,7 @@ public class NotificationHandler {
             .put("orders", orderType.replace("[", "").replace("]", ""))
             .put("directionsAndInterim", directions)
             .put("timeFramePresent", timeFramePresent)
-            .put("timeFrame", timeFrame)
+            .put("timeFrame", timeFrameValue)
             .put("reference", caseId)
             .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseId)
             .build();
