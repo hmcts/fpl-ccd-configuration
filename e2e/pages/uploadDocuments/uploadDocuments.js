@@ -9,7 +9,7 @@ module.exports = {
     carePlan: '#documents_socialWorkCarePlan_document_typeOfDocument',
     otherDocuments_1: '#documents_socialWorkOther_0_typeOfDocument',
     otherDocuments_2: '#documents_socialWorkOther_1_typeOfDocument',
-    standardDirections: '#standardDirections_standardDirectionsDocument',
+    standardDirections: '#standardDirections',
   },
 
   fields: {
