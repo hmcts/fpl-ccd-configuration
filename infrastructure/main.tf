@@ -40,7 +40,7 @@ data "azurerm_key_vault_secret" "local_authority_code_to_hmcts_court_mapping" {
 }
 
 data "azurerm_key_vault_secret" "notify_api_key" {
-  name = "notify_api_key"
+  name = "notify-api-key"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
