@@ -48,7 +48,8 @@ exports.config = {
     enterOthersPage: './e2e/pages/enterOthers/enterOthers.js',
     ordersNeededPage: './e2e/pages/ordersNeeded/ordersNeeded.js',
     enterFamilyManPage: './e2e/pages/enterFamilyMan/enterFamilyMan.js',
-    changeCaseNamePage: './e2e/pages/changeCaseName/changeCaseName.js'
+    changeCaseNamePage: './e2e/pages/changeCaseName/changeCaseName.js',
+    submitApplicationPage: './e2e/pages/submitApplication/submitApplication.js'
   },
   plugins: {
     autoDelay: {
@@ -75,6 +76,14 @@ exports.config = {
         stdout: '-',
         options: {
           mochaFile: 'test-results/result.xml',
+        },
+      },
+      'mochawesome': {
+        stdout: '-',
+        options: {
+          reportDir: './output',
+          reportName: 'index',
+          inlineAssets: true,
         },
       },
     },

@@ -8,6 +8,7 @@
 # node_modules
 package-lock.json
 node_modules/
+yarn-error.log
 
 # test output
 output/
