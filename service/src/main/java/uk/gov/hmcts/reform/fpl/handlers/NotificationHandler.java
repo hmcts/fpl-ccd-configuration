@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
-import uk.gov.hmcts.reform.fpl.service.HmctsCourtLookUpService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -25,18 +25,18 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEM
 @Component
 public class NotificationHandler {
 
-    private final HmctsCourtLookUpService hmctsCourtLookUpService;
+    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final LocalAuthorityService localAuthorityService;
     private final NotificationClient notificationClient;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String uiBaseUrl;
 
     @Autowired
-    public NotificationHandler(HmctsCourtLookUpService hmctsCourtLookUpService,
+    public NotificationHandler(HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
                                NotificationClient notificationClient,
                                LocalAuthorityService localAuthorityService,
                                @Value("${ccd.ui.base.url}") String uiBaseUrl) {
-        this.hmctsCourtLookUpService = hmctsCourtLookUpService;
+        this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.notificationClient = notificationClient;
         this.localAuthorityService = localAuthorityService;
         this.uiBaseUrl = uiBaseUrl;
@@ -49,7 +49,7 @@ public class NotificationHandler {
         Map<String, String> parameters = buildEmailData(caseDetails, localAuthorityCode);
         String reference = caseDetails.getId().toString();
 
-        String email = hmctsCourtLookUpService.getCourt(localAuthorityCode).getEmail();
+        String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
         logger.debug(
             "Sending submission notification (with template id: {}) to {}", HMCTS_COURT_SUBMISSION_TEMPLATE, email);
 
@@ -82,7 +82,7 @@ public class NotificationHandler {
             Optional.ofNullable((Map) caseDetails.getData().get("hearing")).orElse(ImmutableMap.builder().build());
 
         return ImmutableMap.<String, String>builder()
-            .put("court", hmctsCourtLookUpService.getCourt(localAuthorityCode).getName())
+            .put("court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
             .put("localAuthority", localAuthorityService.getLocalAuthorityName(localAuthorityCode))
             .putAll(orderTypeArray.build())
             .put("directionsAndInterim", Optional.ofNullable((String) orders.get("directionsAndInterim"))
