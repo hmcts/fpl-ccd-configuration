@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
 
@@ -64,7 +65,16 @@ public class NotificationHandler {
         Map orders =
             Optional.ofNullable((Map) caseDetails.getData().get("orders")).orElse(ImmutableMap.builder().build());
 
-        String orderType = Optional.ofNullable(orders.get("orderType")).orElse("").toString();
+        ArrayList orderType = (ArrayList) Optional.ofNullable(orders.get("orderType")).orElse(new ArrayList<>());
+
+        ImmutableMap.Builder<String, String> orderTypeArray = ImmutableMap.builder();
+        for (int i = 0; i < 5; i++) {
+            if (i < orderType.size()) {
+                orderTypeArray.put("orders" + i, (String) orderType.get(i));
+            } else {
+                orderTypeArray.put("orders" + i, "");
+            }
+        }
 
         Map hearing =
             Optional.ofNullable((Map) caseDetails.getData().get("hearing")).orElse(ImmutableMap.builder().build());
@@ -72,14 +82,13 @@ public class NotificationHandler {
         return ImmutableMap.<String, String>builder()
             .put("court", hmctsCourtLookUpService.getCourt(localAuthorityCode).getName())
             .put("localAuthority", localAuthorityService.getLocalAuthorityName(localAuthorityCode))
-            .put("orders", orderType.replace("[", "").replace("]", ""))
+            .putAll(orderTypeArray.build())
             .put("directionsAndInterim", Optional.ofNullable((String) orders.get("directionsAndInterim"))
                 .orElse(""))
             .put("timeFramePresent", (hearing.containsKey("timeFrame")) ? ("Yes") : ("No"))
-            .put("timeFrame", Optional.ofNullable((String) hearing.get("timeFrame")).orElse(""))
+            .put("timeFrameValue", Optional.ofNullable((String) hearing.get("timeFrame")).orElse(""))
             .put("reference", String.valueOf(caseDetails.getId()))
-            .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/"
-                + String.valueOf(caseDetails.getId()))
+            .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId())
             .build();
     }
 }
