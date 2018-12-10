@@ -39,7 +39,10 @@ Scenario('As a local authority I have the ability to upload a document after sub
   I.click('Submit');
   I.waitForElement('.tabs');
   caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-  uploadDocumentsPage.selectSocialWorkChronologyToFollow(config.testFile);
+  uploadDocumentsPage.uploadSocialWorkAssessment(config.testFile);
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  caseViewPage.selectTab(caseViewPage.tabs.evidence);
+  I.seeDocument('Social work assessment', 'mockFile.txt', 'Attached');
+
 });
