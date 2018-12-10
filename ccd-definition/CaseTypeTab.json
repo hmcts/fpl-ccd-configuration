@@ -218,5 +218,15 @@
     "TabDisplayOrder": 4,
     "CaseFieldID": "submittedForm",
     "TabFieldDisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "Channel": "CaseWorker",
+    "TabID": "EvidenceTab",
+    "TabLabel": "Evidence",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "standardDirections",
+    "TabFieldDisplayOrder": 8
   }
 ]

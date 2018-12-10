@@ -44,6 +44,7 @@ module.exports = {
   },
 
   enterOtherDetails(other) {
+    I.waitForElement(this.fields(activeOther).name);
     I.fillField(this.fields(activeOther).name, other.name);
     I.fillField(this.fields(activeOther).DOB.day, other.DOB.day);
     I.fillField(this.fields(activeOther).DOB.month, other.DOB.month);

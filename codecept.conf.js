@@ -78,6 +78,14 @@ exports.config = {
           mochaFile: 'test-results/result.xml',
         },
       },
+      'mochawesome': {
+        stdout: '-',
+        options: {
+          reportDir: './output',
+          reportName: 'index',
+          inlineAssets: true,
+        },
+      },
     },
   },
 };
