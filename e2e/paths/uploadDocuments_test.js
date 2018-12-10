@@ -30,11 +30,11 @@ Scenario('Uploading all files in the c110a application', (I, uploadDocumentsPage
   I.seeDocument('Care plan', 'mockFile.txt', 'Attached');
 });
 
-Scenario('As a local authority I have the ability to upload a document after submission of a case', (I, uploadDocumentsPage, caseViewPage) => {
+Scenario('As a local authority I have the ability to upload a document after submission of a case', (I, uploadDocumentsPage, submitApplicationPage, caseViewPage) => {
   uploadDocumentsPage.selectSocialWorkChronologyToFollow(config.testFile);
   I.continueAndSubmit();
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  //submitApplicationPage.giveConsent();
+  submitApplicationPage.giveConsent();
   I.click('Continue');
   I.click('Submit');
   I.waitForElement('.tabs');
