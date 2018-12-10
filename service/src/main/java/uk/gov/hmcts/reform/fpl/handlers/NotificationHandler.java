@@ -67,12 +67,14 @@ public class NotificationHandler {
 
         ArrayList orderType = (ArrayList) Optional.ofNullable(orders.get("orderType")).orElse(new ArrayList<>());
 
+        String ordersKey = "orders";
+
         ImmutableMap.Builder<String, String> orderTypeArray = ImmutableMap.builder();
         for (int i = 0; i < 5; i++) {
             if (i < orderType.size()) {
-                orderTypeArray.put("orders" + i, (String) orderType.get(i));
+                orderTypeArray.put(ordersKey + i, (String) orderType.get(i));
             } else {
-                orderTypeArray.put("orders" + i, "");
+                orderTypeArray.put(ordersKey + i, "");
             }
         }
 
