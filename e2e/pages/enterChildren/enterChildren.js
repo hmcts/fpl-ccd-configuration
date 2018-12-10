@@ -101,5 +101,9 @@ module.exports = {
 
   defineAbilityToTakePartInProceedings() {
     I.click(this.fields(activeChild).litigationNo);
+    if (activeChild!=''){
+      activeChild ='';
+      activeChild = 'firstChild';
+    }
   },
 };
