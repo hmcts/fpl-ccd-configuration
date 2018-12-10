@@ -3,7 +3,7 @@ const config = require('../config.js');
 Feature('Enter attending hearing information into the application').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
+  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.attendingHearing);
 });
 
@@ -12,7 +12,7 @@ Scenario('completing half of the attending hearing section of the c110a applicat
     attendingHearingPage.enterInterpreter();
     attendingHearingPage.enterIntermediary();
     attendingHearingPage.enterLitigationIssues();
-    I.continueAndSubmit(config.eventSummary, config.eventDescription);
+    I.continueAndSubmit();
     I.seeEventSubmissionConfirmation(config.applicationActions.attendingHearing);
     caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
     I.seeAnswerInTab(1, 'Attending the hearing', 'Any Interpreter required?', 'Yes');
@@ -30,7 +30,7 @@ Scenario('completing the attending hearing section of the c110a application',
     attendingHearingPage.enterLearningDisability();
     attendingHearingPage.enterWelshProceedings();
     attendingHearingPage.enterExtraSecurityMeasures();
-    I.continueAndSubmit(config.eventSummary, config.eventDescription);
+    I.continueAndSubmit();
     I.seeEventSubmissionConfirmation(config.applicationActions.attendingHearing);
     caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
     I.seeAnswerInTab(1, 'Attending the hearing', 'Any Interpreter required?', 'Yes');

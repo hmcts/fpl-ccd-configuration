@@ -3,13 +3,13 @@ const config = require('../config.js');
 Feature('Enter grounds').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventSummary);
+  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
 });
 
 Scenario('Filling in grounds for application section of c110a', (I, enterGroundsPage, caseViewPage) => {
   enterGroundsPage.enterThresholdCriteriaDetails();
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterGrounds);
   caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
   I.seeAnswerInTab(1, 'Grounds for the application', 'How does this case meet the threshold criteria?',

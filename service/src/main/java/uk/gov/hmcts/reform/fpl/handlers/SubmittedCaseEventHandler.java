@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.CaseRepository;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import static uk.gov.hmcts.reform.fpl.handlers.SubmittedCaseEventHandler.SubmittedFormFilenameHelper.buildFileName;
 
@@ -23,14 +24,17 @@ public class SubmittedCaseEventHandler {
     private final DocumentGeneratorService documentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final CaseRepository caseRepository;
+    private final UserDetailsService userDetailsService;
 
     @Autowired
     public SubmittedCaseEventHandler(DocumentGeneratorService documentGeneratorService,
                                      UploadDocumentService uploadDocumentService,
-                                     CaseRepository caseRepository) {
+                                     CaseRepository caseRepository,
+                                     UserDetailsService userDetailsService) {
         this.documentGeneratorService = documentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
         this.caseRepository = caseRepository;
+        this.userDetailsService = userDetailsService;
     }
 
     /**
@@ -44,6 +48,7 @@ public class SubmittedCaseEventHandler {
         String userId = event.getUserId();
         String authorization = event.getAuthorization();
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
+        caseDetails.getData().put("userFullName", userDetailsService.getUserName(authorization));
 
         byte[] pdf = documentGeneratorService.generateSubmittedFormPDF(caseDetails);
 
@@ -68,5 +73,4 @@ public class SubmittedCaseEventHandler {
             return Long.toString(caseDetails.getId()) + ".pdf";
         }
     }
-
 }

@@ -4,4 +4,4 @@
 
 # exceptions from `exclude all` rule
 
-!service/build/libs/*.jar
+!build/libs/*.jar

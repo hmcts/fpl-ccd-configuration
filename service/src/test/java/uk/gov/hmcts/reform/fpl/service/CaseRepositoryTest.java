@@ -62,6 +62,7 @@ class CaseRepositoryTest {
         verify(coreCaseDataApi).submitEventForCaseWorker(eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(caseId), eq(true), caseDataContentArgumentCaptor.capture());
 
         CaseDataContent caseDataContent = caseDataContentArgumentCaptor.getValue();
+
         assertThat(caseDataContent.getEvent().getId()).isEqualTo(event);
         assertThat(caseDataContent.getEventToken()).isEqualTo("event-token:0");
         assertThat((Map<String, Map<String, String>>) caseDataContent.getData())
@@ -74,5 +75,4 @@ class CaseRepositoryTest {
                 }
             });
     }
-
 }

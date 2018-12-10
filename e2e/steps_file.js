@@ -1,27 +1,29 @@
-/* global locate */
+/* global locate, process */
 const config = require('./config');
 
 const logIn = require('./pages/login/loginPage');
 const createCase = require('./pages/createCase/createCase');
 const addEventDetails = require('./pages/createCase/addEventSummary');
 
+let baseUrl = process.env.URL || 'http://localhost:3451';
+
 'use strict';
 
 module.exports = function () {
   return actor({
-    logInAndCreateCase(username, password, summary, description) {
+    logInAndCreateCase(username, password) {
       logIn.signIn(username, password);
-      this.click('Create new case');
+      this.click('Create Case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       createCase.createNewCase();
       this.waitForElement('.check-your-answers');
-      addEventDetails.submitCase(summary, description);
+      addEventDetails.submitCase();
     },
 
-    continueAndSubmit(summary, description) {
+    continueAndSubmit() {
       this.click('Continue');
       this.waitForElement('.check-your-answers');
-      addEventDetails.submitCase(summary, description);
+      addEventDetails.submitCase();
       this.waitForElement('.tabs');
     },
 
@@ -60,8 +62,12 @@ module.exports = function () {
     },
 
     signOut() {
-      this.clearCookie();
-      this.refreshPage();
+      this.click('Sign Out');
+    },
+
+    navigateToCaseDetails(caseId) {
+      const href = `${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${caseId.replace(/\D/g, '')}`;
+      this.navigateToUrl(href);
     },
   });
 };

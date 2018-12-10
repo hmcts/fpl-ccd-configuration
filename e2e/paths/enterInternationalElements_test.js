@@ -3,7 +3,7 @@ const config = require('../config.js');
 Feature('Enter international element').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
+  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.enterInternationalElement);
 });
 
@@ -11,7 +11,7 @@ Scenario('completing half of the international element section of the c110a' +
   ' application', (I, enterInternationalElementsPage, caseViewPage) => {
   enterInternationalElementsPage.halfFillForm();
   I.see('Give reason');
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterInternationalElement);
   caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
   I.seeAnswerInTab(1, 'International element', 'Is there anyone in the' +
@@ -25,7 +25,7 @@ Scenario('completing half of the international element section of the c110a' +
 Scenario('completed international element of the c110a application', (I, enterInternationalElementsPage, caseViewPage) => {
   enterInternationalElementsPage.fillForm();
   I.see('Give reason');
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterInternationalElement);
   caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
   I.seeAnswerInTab(1, 'International element', 'Is there anyone in the' +

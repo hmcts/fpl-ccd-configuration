@@ -3,7 +3,7 @@ const config = require('../config.js');
 Feature('Enter risk and harm to child').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventDescription);
+  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.enterRisk);
 });
 
@@ -11,7 +11,7 @@ Scenario('complete half of the enter risk and harm to children in the c110a' +
   ' application', (I, enterRiskAndHarmToChildPage, caseViewPage) => {
   enterRiskAndHarmToChildPage.completePhyiscalHarm();
   enterRiskAndHarmToChildPage.completeEmotionalHarm();
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRisk);
   caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
   I.seeAnswerInTab(1, 'Risks and harm to children', 'Physical harm including' +
@@ -26,7 +26,7 @@ Scenario('complete entering risk and harm to children in the c110a' +
   enterRiskAndHarmToChildPage.completeEmotionalHarm();
   enterRiskAndHarmToChildPage.completeSexualAbuse();
   enterRiskAndHarmToChildPage.completeNeglect();
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRisk);
   caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
   I.seeAnswerInTab(1, 'Risks and harm to children', 'Physical harm including' +

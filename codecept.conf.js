@@ -1,19 +1,5 @@
 /* global process */
 
-
-let proxyServer = undefined;
-
-if (process.env.http_proxy || process.env.https_proxy) {
-  const urlUtils = require('url');
-
-  if (process.env.http_proxy) {
-    proxyServer = `${urlUtils.parse(process.env.http_proxy).host}`;
-  }
-  if (process.env.https_proxy) {
-    proxyServer = `${urlUtils.parse(process.env.https_proxy).host}`;
-  }
-}
-
 exports.config = {
   output: './output',
   multiple: {
@@ -29,8 +15,8 @@ exports.config = {
       waitForTimeout: 30000,
       chrome: {
         ignoreHTTPSErrors: true,
-        args: proxyServer ? [
-          `--proxy-server=${proxyServer}`,
+        args: process.env.PROXY_SERVER ? [
+          `--proxy-server=${process.env.PROXY_SERVER}`,
         ] : [],
       },
       windowSize: '1280x960',
@@ -62,7 +48,8 @@ exports.config = {
     enterOthersPage: './e2e/pages/enterOthers/enterOthers.js',
     ordersNeededPage: './e2e/pages/ordersNeeded/ordersNeeded.js',
     enterFamilyManPage: './e2e/pages/enterFamilyMan/enterFamilyMan.js',
-    changeCaseNamePage: './e2e/pages/changeCaseName/changeCaseName.js'
+    changeCaseNamePage: './e2e/pages/changeCaseName/changeCaseName.js',
+    submitApplicationPage: './e2e/pages/submitApplication/submitApplication.js'
   },
   plugins: {
     autoDelay: {
@@ -77,4 +64,28 @@ exports.config = {
   },
   tests: './e2e/paths/*_test.js',
   timeout: 30000,
+  mocha: {
+    reporterOptions: {
+      'codeceptjs-cli-reporter': {
+        stdout: '-',
+        options: {
+          steps: true,
+        },
+      },
+      'mocha-junit-reporter': {
+        stdout: '-',
+        options: {
+          mochaFile: 'test-results/result.xml',
+        },
+      },
+      'mochawesome': {
+        stdout: '-',
+        options: {
+          reportDir: './output',
+          reportName: 'index',
+          inlineAssets: true,
+        },
+      },
+    },
+  },
 };

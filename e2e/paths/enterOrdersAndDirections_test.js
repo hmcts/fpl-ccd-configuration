@@ -3,13 +3,13 @@ const config = require('../config.js');
 Feature('Enter order and details').retry(2);
 
 Before((I, caseViewPage) => {
-  I.logInAndCreateCase(config.localAuthorityEmail, config.localAuthorityPassword, config.eventSummary, config.eventSummary);
+  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseViewPage.goToNewActions(config.applicationActions.selectOrders);
 });
 
 Scenario('Select the care order case order and continue', (I, caseViewPage, ordersNeededPage) => {
   ordersNeededPage.checkCareOrder();
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
   caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
   I.seeAnswerInTab(1, 'Orders and directions needed', 'Which orders and directions do you want to apply for?', 'Care order');
@@ -22,7 +22,7 @@ Scenario('Select all case orders and fill in directions & interim information', 
   ordersNeededPage.checkEmergencyProtectionOrder();
   ordersNeededPage.checkOtherOrder();
   ordersNeededPage.enterDirectionAndInterim();
-  I.continueAndSubmit(config.eventSummary, config.eventDescription);
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
   caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
   I.seeAnswerInTab(1, 'Orders and directions needed', 'Which orders and directions do you want to apply for?',

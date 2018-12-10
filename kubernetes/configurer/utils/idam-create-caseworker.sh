@@ -1,20 +1,22 @@
 #!/usr/bin/env bash
 
-set -e
+set -eu
 
 email=${1}
 rolesStr=${2}
+surname=${3:-"Tester"}
 
 searchResponse=$(curl -k --silent --show-error --output /dev/null --write-out "%{http_code}" ${IDAM_API_BASE_URL}/users?email=${email})
-
-if [ ${searchResponse} -eq 200 ]; then
+if [[ ${searchResponse} -eq 200 ]]; then
+  echo "User ${email} already exists - skipping"
   exit 0
 fi
 
 IFS=',' read -ra roles <<< ${rolesStr}
 
+rolesJson=''
 for role in ${roles[@]}; do
-  if [ ! -z ${rolesJson} ] ; then
+  if [[ ! -z ${rolesJson} ]] ; then
     rolesJson="${rolesJson},"
   fi
   rolesJson=${rolesJson}'{"code":"'${role}'"}'
@@ -25,8 +27,8 @@ curl -k --fail --show-error --silent --output /dev/null -X POST \
   -H "Content-Type: application/json" \
   -d '{
     "email": "'${email}'",
-    "forename": "Tester",
-    "surname": "Tester",
+    "forename": "'${email}'",
+    "surname": "'${surname}'",
     "password": "Password12",
     "levelOfAccess": 1,
     "roles": [

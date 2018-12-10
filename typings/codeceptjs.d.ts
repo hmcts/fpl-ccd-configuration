@@ -1,5 +1,5 @@
 
-type ICodeceptCallback = (i: CodeceptJS.I, config:any, loginPage:any, createCasePage:any, addEventSummaryPage:any, caseViewPage:any, selectHearingPage:any, enterGroundsPage:any, enterFactorsAffectingParentingPage:any, enterInternationalElementsPage:any, enterRiskAndHarmToChildPage:any, uploadDocumentsPage:any, enterApplicantPage:any, enterChildrenPage:any, enterOtherProceedingsPage:any, attendingHearingPage:any, enterAllocationProposalPage:any, enterRespondentsPage:any, enterOthersPage:any, ordersNeededPage:any) => void;
+type ICodeceptCallback = (i: CodeceptJS.I, config:any, loginPage:any, caseListPage:any, createCasePage:any, addEventSummaryPage:any, caseViewPage:any, selectHearingPage:any, enterGroundsPage:any, enterFactorsAffectingParentingPage:any, enterInternationalElementsPage:any, enterRiskAndHarmToChildPage:any, uploadDocumentsPage:any, enterApplicantPage:any, enterChildrenPage:any, enterOtherProceedingsPage:any, attendingHearingPage:any, enterAllocationProposalPage:any, enterRespondentsPage:any, enterOthersPage:any, ordersNeededPage:any, enterFamilyManPage:any, changeCaseNamePage:any) => void;
 
 declare class FeatureConfig {
   retry(times:number): FeatureConfig
@@ -138,7 +138,7 @@ declare namespace CodeceptJS {
     haveRequestHeaders(customHeaders: string) : void,
     moveCursorTo(locator: ILocator, offsetX?: number, offsetY?: number) : void,
     moveCursorTo(locator: string, offsetX?: number, offsetY?: number) : void,
-    dragAndDrop(source: string, destination: string) : void,
+    dragAndDrop(srcElement: string, destElement: string) : void,
     refreshPage() : void,
     scrollPageToTop() : void,
     scrollPageToBottom() : void,
@@ -247,8 +247,8 @@ declare namespace CodeceptJS {
     wait(sec: number) : void,
     waitForEnabled(locator: ILocator, sec: number) : void,
     waitForEnabled(locator: string, sec: number) : void,
-    waitForValue(locator: ILocator, value: string, sec: number) : void,
-    waitForValue(locator: string, value: string, sec: number) : void,
+    waitForValue(field: ILocator, value: string, sec: number) : void,
+    waitForValue(field: string, value: string, sec: number) : void,
     waitNumberOfVisibleElements(locator: ILocator, num: number, sec: number) : void,
     waitNumberOfVisibleElements(locator: string, num: number, sec: number) : void,
     waitForElement(locator: ILocator, sec: number) : void,
@@ -277,16 +277,18 @@ declare namespace CodeceptJS {
     debug(msg: string) : void,
     debugSection(section: string, msg: string) : void,
     clickBrowserBack() : void,
-    logInAndCreateCase(username: string, password: string, summary: string, description: string) : void,
-    continueAndSubmit(summary: string, description: string) : void,
+    reloadPage() : void,
+    navigateToUrl(url: string) : void,
+    navigateToCaseDetails(caseId: string) : void,
+    logInAndCreateCase(username: string, password: string) : void,
+    continueAndSubmit() : void,
     seeEventSubmissionConfirmation(event: string) : void,
     clickHyperlink(link: string, urlNavigatedTo: string) : void,
     seeDocument(title: string, name: string, status: string, reason?: string) : void,
     seeAnswerInTab(questionNo: string, complexTypeHeading: string, question: string, answer: string) : void,
+    signOut() : void,
     say(msg: string) : void,
     retryStep(opts: string) : void,
-    reloadPage() : void,
-    signOut() : void,
 
   }
 
@@ -301,14 +303,22 @@ declare namespace CodeceptJS {
   }
 
 
+  export interface caseListPage {
+    openExistingCase(caseId: string) : void,
+    changeStateFilter(desiredState: string) : void,
+
+  }
+
+
   export interface createCasePage {
+    enterCaseName(caseName?: string) : void,
     createNewCase() : void,
 
   }
 
 
   export interface addEventSummaryPage {
-    submitCase(summary: string, description: string) : void,
+    submitCase() : void,
 
   }
 
@@ -381,7 +391,8 @@ declare namespace CodeceptJS {
     fields(childNo: string) : void,
     addChild() : void,
     enterChildDetails(name: string, day: string, month: string, year: string, gender?: string) : void,
-    defineChildSituation(day: string, month: string, year: string, situation?: string, address?: string) : void,
+    defineChildSituation(day: string, month: string, year: string, situation?: string) : void,
+    enterAddress(address: string) : void,
     enterKeyDatesAffectingHearing(keyDates?: string) : void,
     enterSummaryOfCarePlan(carePlan?: string) : void,
     defineAdoptionIntention() : void,
@@ -431,6 +442,8 @@ declare namespace CodeceptJS {
 
 
   export interface enterOthersPage {
+    fields(otherNo: string) : void,
+    addOther() : void,
     enterOtherDetails(other: string) : void,
     enterRelationshipToChild(childInformation: string) : void,
     enterContactDetailsHidden(option: string) : void,
@@ -446,6 +459,18 @@ declare namespace CodeceptJS {
     checkEmergencyProtectionOrder() : void,
     checkOtherOrder() : void,
     enterDirectionAndInterim(testString?: string) : void,
+
+  }
+
+
+  export interface enterFamilyManPage {
+    enterCaseID(caseId?: string) : void,
+
+  }
+
+
+  export interface changeCaseNamePage {
+    changeCaseName(caseName?: string) : void,
 
   }
 

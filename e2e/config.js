@@ -2,17 +2,30 @@
 
 module.exports = {
   // users
-  localAuthorityEmail: 'local-authority@example.com',
+  swanseaLocalAuthorityUserOne: {
+    forename: 'kurt@swansea.gov.uk',
+    surname: '(local-authority)',
+  },
+  swanseaLocalAuthorityUserTwo: {
+    forename: 'damian@swansea.gov.uk',
+    surname: '(local-authority)',
+  },
+  hillingdonLocalAuthorityUserOne: {
+    forename: 'sam@hillingdon.gov.uk',
+    surname: '(local-authority)',
+  },
+  swanseaLocalAuthorityEmailUserOne: 'kurt@swansea.gov.uk',
+  swanseaLocalAuthorityEmailUserTwo: 'damian@swansea.gov.uk',
+  hillingdonLocalAuthorityEmailUserOne: 'sam@hillingdon.gov.uk',
   localAuthorityPassword: process.env.LA_USER_PASSWORD || 'Password12',
   hmctsAdminEmail: 'hmcts-admin@example.com',
   hmctsAdminPassword: process.env.CA_USER_PASSWORD || 'Password12',
+  cafcassEmail: 'cafcass@example.com',
+  cafcassPassword: process.env.CAFCASS_USER_PASSWORD || 'Password12',
   definition: {
     jurisdiction: 'PUBLICLAW',
     caseType: 'Shared_Storage_DRAFTType',
   },
-  // event dialog
-  eventSummary: '',
-  eventDescription: '',
   // actions
   applicationActions: {
     selectOrders: 'Orders and directions needed',
@@ -29,10 +42,11 @@ module.exports = {
     enterAllocationProposal: 'Allocation proposal',
     attendingHearing: 'Attending the hearing',
     uploadDocuments: 'Documents',
-    changeCaseName: 'Change case name',    
+    changeCaseName: 'Change case name',
     submitCase: 'Submit application',
   },
   addFamilyManCaseNumber: 'Add case number',
+  standardDirections: 'Standard directions',
   // files
   testFile: './e2e/fixtures/mockFile.txt',
   // urls

@@ -8,9 +8,11 @@
 # node_modules
 package-lock.json
 node_modules/
+yarn-error.log
 
-# output screenshots
+# test output
 output/
+test-results/
 
 .DS_Store
 ~*
