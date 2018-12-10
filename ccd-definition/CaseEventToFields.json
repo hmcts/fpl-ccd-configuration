@@ -235,6 +235,18 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseEventID": "uploadDocuments",
+    "CaseFieldID": "documents_courtBundle",
+    "PageFieldDisplayOrder": 14,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "submissionConsent=\"I agree with this statement\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "enterChildren",
     "CaseFieldID": "children",
     "PageFieldDisplayOrder": 1,

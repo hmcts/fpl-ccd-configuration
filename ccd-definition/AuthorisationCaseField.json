@@ -394,6 +394,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "documents_courtBundle",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "children",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
@@ -633,6 +640,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseFieldID": "documents_socialWorkOther_border_bottom",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseFieldID": "documents_courtBundle",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
   },

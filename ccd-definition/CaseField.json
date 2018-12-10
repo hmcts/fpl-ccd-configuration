@@ -165,6 +165,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "documents_courtBundle",
+    "Label": "5. Court Bundle",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "children",
     "Label": "Children",
     "FieldType": "Children",
