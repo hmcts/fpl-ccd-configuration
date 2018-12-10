@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityDomainException;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -44,9 +43,7 @@ class LocalAuthorityServiceTest {
     void shouldReturnLocalAuthorityCode(String email) {
         final String expectedLaCode = "EX";
 
-        given(codeConfig.getLookupTable()).willReturn(
-            ImmutableMap.<String, String>builder().put("example.gov.uk", LOCAL_AUTHORITY_CODE).build()
-        );
+        given(codeConfig.getLocalAuthorityCode("example.gov.uk")).willReturn(LOCAL_AUTHORITY_CODE);
 
         given(idamApi.retrieveUserDetails(AUTH_TOKEN)).willReturn(
             new UserDetails("1", email, "Mock", "Mock", new ArrayList<>()));
@@ -64,19 +61,6 @@ class LocalAuthorityServiceTest {
         assertThatThrownBy(() -> localAuthorityService.getLocalAuthorityCode(AUTH_TOKEN))
             .isInstanceOf(RuntimeException.class)
             .hasMessage("user does not exist");
-    }
-
-    @Test
-    void shouldThrowCustomExceptionWhenDomainNotFound() throws IllegalArgumentException {
-        given(codeConfig.getLookupTable()).willReturn(
-            ImmutableMap.<String, String>builder().put("example.gov.uk", LOCAL_AUTHORITY_CODE).build()
-        );
-
-        given(idamApi.retrieveUserDetails(AUTH_TOKEN)).willReturn(
-            new UserDetails(null, "notfound@email.com", null, null, null));
-
-        assertThatThrownBy(() -> localAuthorityService.getLocalAuthorityCode(AUTH_TOKEN))
-            .isInstanceOf(UnknownLocalAuthorityDomainException.class).hasMessage("email.com not found");
     }
 
     @Test

@@ -34,19 +34,19 @@ class HmctsCourtLookupConfigurationTest {
     void shouldThrowNullPointerExceptionWhenLocalAuthorityCodeIsNull() {
         Assertions.assertThatThrownBy(() -> configuration.getCourt(null))
             .isInstanceOf(NullPointerException.class)
-            .hasMessage("Case does not have local authority assigned");
+            .hasMessage("Local authority code cannot be null");
     }
 
     @Test
-    void shouldThrowNullPointerExceptionWhenCourtIsNull() {
+    void shouldThrowNullPointerExceptionWhenLocalAuthorityCodeDoesNotExist() {
         Assertions.assertThatThrownBy(() -> configuration.getCourt("FAKE"))
             .isInstanceOf(NullPointerException.class)
             .hasMessage("Court information not found");
     }
 
     @Test
-    void shouldReturnCourtInformationWhenLocalAuthorityExist() {
-        Court court = configuration.getCourt("example");
+    void shouldReturnCourtInformationWhenLocalAuthorityCodeExists() {
+        Court court = configuration.getCourt(LOCAL_AUTHORITY_CODE);
 
         assertThat(court).isEqualToComparingFieldByField(new Court(COURT_NAME, COURT_EMAIL));
     }

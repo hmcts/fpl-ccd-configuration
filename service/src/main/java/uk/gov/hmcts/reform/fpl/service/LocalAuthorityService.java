@@ -4,11 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityDomainException;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
-
-import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -42,23 +39,13 @@ public class LocalAuthorityService {
         String email = userDetails.getEmail();
         String domain = extractEmailDomain(email);
 
-        return lookUpCode(domain);
+        return localAuthorityCodeLookupConfiguration.getLocalAuthorityCode(domain);
     }
 
     private String extractEmailDomain(String email) {
         int start = email.indexOf('@');
 
         return email.toLowerCase().substring(start + 1);
-    }
-
-    private String lookUpCode(String emailDomain) {
-        Map<String, String> lookupTable = localAuthorityCodeLookupConfiguration.getLookupTable();
-
-        if (lookupTable.get(emailDomain) == null) {
-            throw new UnknownLocalAuthorityDomainException(emailDomain + " not found");
-        }
-
-        return lookupTable.get(emailDomain);
     }
 
     public String getLocalAuthorityName(String localAuthorityCode) {
