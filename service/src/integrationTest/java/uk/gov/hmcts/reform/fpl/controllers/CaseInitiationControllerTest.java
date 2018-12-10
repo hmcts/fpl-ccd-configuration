@@ -81,7 +81,7 @@ class CaseInitiationControllerTest {
 
         assertThat(callbackResponse.getData())
             .containsEntry("caseName", "title")
-            .containsEntry("caseLocalAuthority", "EX");
+            .containsEntry("caseLocalAuthority", "example");
     }
 
     @Test

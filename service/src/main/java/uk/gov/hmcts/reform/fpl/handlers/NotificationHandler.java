@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -50,52 +49,37 @@ public class NotificationHandler {
         String reference = caseDetails.getId().toString();
 
         String email = hmctsCourtLookUpService.getCourt(localAuthorityCode).getEmail();
-        logger.debug("Sending email to {}", email);
+        logger.debug(
+            "Sending submission notification (with template id: {}) to {}", HMCTS_COURT_SUBMISSION_TEMPLATE, email);
 
         try {
             notificationClient.sendEmail(HMCTS_COURT_SUBMISSION_TEMPLATE, email, parameters, reference);
         } catch (NotificationClientException e) {
-            logger.warn("Failed to send email to {}", email, e);
-
-            e.getHttpResult();
-            e.getMessage();
+            logger.warn("Failed to send submission notification (with template id: {}) to {}",
+                HMCTS_COURT_SUBMISSION_TEMPLATE, email, e);
         }
     }
 
     private Map<String, String> buildEmailData(CaseDetails caseDetails, String localAuthorityCode) {
-        LinkedHashMap orders =
-            Optional.ofNullable((LinkedHashMap) caseDetails.getData().get("orders")).orElse(new LinkedHashMap());
+        Map orders =
+            Optional.ofNullable((Map) caseDetails.getData().get("orders")).orElse(ImmutableMap.builder().build());
 
-        LinkedHashMap hearing =
-            Optional.ofNullable((LinkedHashMap) caseDetails.getData().get("hearing")).orElse(new LinkedHashMap());
+        String orderType = Optional.ofNullable(orders.get("orderType")).orElse("").toString();
 
-        String timeFramePresent;
-        String timeFrame = "timeFrame";
-
-        if (hearing.containsKey(timeFrame)) {
-            timeFramePresent = "Yes";
-        } else {
-            timeFramePresent = "No";
-        }
-
-        String orderType = Optional.ofNullable(orders.get("orderType"))
-            .orElse("").toString();
-        String directions = Optional.ofNullable(orders.get("directionsAndInterim")).orElse("").toString();
-        String timeFrameValue = Optional.ofNullable(hearing.get(timeFrame)).orElse("").toString();
-        String caseId = caseDetails.getId().toString();
-
-        String courtName = hmctsCourtLookUpService.getCourt(localAuthorityCode).getName();
-        String localAuthorityName = localAuthorityService.getLocalAuthorityName(localAuthorityCode);
+        Map hearing =
+            Optional.ofNullable((Map) caseDetails.getData().get("hearing")).orElse(ImmutableMap.builder().build());
 
         return ImmutableMap.<String, String>builder()
-            .put("court", courtName)
-            .put("localAuthority", localAuthorityName)
+            .put("court", hmctsCourtLookUpService.getCourt(localAuthorityCode).getName())
+            .put("localAuthority", localAuthorityService.getLocalAuthorityName(localAuthorityCode))
             .put("orders", orderType.replace("[", "").replace("]", ""))
-            .put("directionsAndInterim", directions)
-            .put("timeFramePresent", timeFramePresent)
-            .put("timeFrame", timeFrameValue)
-            .put("reference", caseId)
-            .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseId)
+            .put("directionsAndInterim", Optional.ofNullable((String) orders.get("directionsAndInterim"))
+                .orElse(""))
+            .put("timeFramePresent", (hearing.containsKey("timeFrame")) ? ("Yes") : ("No"))
+            .put("timeFrame", Optional.ofNullable((String) hearing.get("timeFrame")).orElse(""))
+            .put("reference", String.valueOf(caseDetails.getId()))
+            .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/"
+                + String.valueOf(caseDetails.getId()))
             .build();
     }
 }
