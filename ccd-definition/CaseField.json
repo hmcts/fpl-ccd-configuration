@@ -197,25 +197,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "others_label",
-    "Label": "## Other 1",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "others",
     "Label": "Others to be given notice",
     "FieldType": "Person",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "respondent_label",
-    "Label": "## Respondent 1",
-    "FieldType": "Label",
     "SecurityClassification": "Public"
   },
   {
