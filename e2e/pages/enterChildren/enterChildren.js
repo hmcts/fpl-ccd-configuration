@@ -47,6 +47,7 @@ module.exports = {
   },
 
   enterChildDetails(name, day, month, year, gender = 'Boy') {
+    I.waitForElement(this.fields(activeChild).fullName);
     I.fillField(this.fields(activeChild).fullName, name);
     I.fillField(this.fields(activeChild).DOB.day, day);
     I.fillField(this.fields(activeChild).DOB.month, month);
