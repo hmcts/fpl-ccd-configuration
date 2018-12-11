@@ -39,8 +39,8 @@ data "azurerm_key_vault_secret" "local_authority_code_to_hmcts_court_mapping" {
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
-data "azurerm_key_vault_secret" "local_authority_code_to_cafcass_email_mapping" {
-  name = "local-authority-code-to-cafcass-email-mapping"
+data "azurerm_key_vault_secret" "local_authority_code_to_cafcass_mapping" {
+  name = "local-authority-code-to-cafcass-mapping"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
@@ -81,7 +81,7 @@ module "case-service" {
     FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING = "${data.azurerm_key_vault_secret.local_authority_code_to_name_mapping.value}"
     FPL_LOCAL_AUTHORITY_USER_MAPPING = "${data.azurerm_key_vault_secret.local_authority_user_mapping.value}"
     FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING = "${data.azurerm_key_vault_secret.local_authority_code_to_hmcts_court_mapping.value}"
-    FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_EMAIL_MAPPING = "${data.azurerm_key_vault_secret.local_authority_code_to_cafcass_email_mapping.value}"
+    FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING = "${data.azurerm_key_vault_secret.local_authority_code_to_cafcass_mapping.value}"
     NOTIFY_API_KEY = "${data.azurerm_key_vault_secret.notify_api_key.value}"
 
     LOGBACK_REQUIRE_ALERT_LEVEL = false

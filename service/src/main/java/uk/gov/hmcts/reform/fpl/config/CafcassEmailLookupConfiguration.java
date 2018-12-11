@@ -14,7 +14,7 @@ public class CafcassEmailLookupConfiguration {
 
     private final Map<String, Cafcass> mapping;
 
-    public CafcassEmailLookupConfiguration(@Value("${fpl.local_authority_code_to_cafcass_email.mapping}")
+    public CafcassEmailLookupConfiguration(@Value("${fpl.local_authority_code_to_cafcass.mapping}")
                                                String config) {
         this.mapping = LookupConfigParser.parse(config, value -> {
             String[] entrySplit = value.split(":", 2);
