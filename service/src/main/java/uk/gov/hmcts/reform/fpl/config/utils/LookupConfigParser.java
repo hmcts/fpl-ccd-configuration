@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.emptyToNull;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static com.google.common.collect.ImmutableMap.toImmutableMap;
 
@@ -57,10 +59,10 @@ public class LookupConfigParser {
         checkArgument(!isNullOrEmpty(config), "Mapping configuration cannot be empty");
 
         return Arrays.stream(config.split(MAPPING_SEPARATOR))
-            .map(entry -> entry.split(ENTRY_SEPARATOR))
+            .map(entry -> entry.split(ENTRY_SEPARATOR, 2))
             .collect(toImmutableMap(
-                entry -> entry[0],
-                entry -> valueParser.parse(entry[1])
+                entry -> checkNotNull(emptyToNull(entry[0]), "Mapping key cannot be empty"),
+                entry -> valueParser.parse(checkNotNull(emptyToNull(entry[1]), "Mapping value cannot be empty"))
             ));
     }
 

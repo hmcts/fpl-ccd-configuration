@@ -3,8 +3,11 @@ package uk.gov.hmcts.reform.fpl.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.fpl.config.utils.LookupConfigParser;
+import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityDomainException;
 
 import java.util.Map;
+
+import static org.assertj.core.util.Preconditions.checkNotNull;
 
 @Configuration
 public class LocalAuthorityCodeLookupConfiguration {
@@ -15,8 +18,14 @@ public class LocalAuthorityCodeLookupConfiguration {
         this.mapping = LookupConfigParser.parseStringValue(config);
     }
 
-    public Map<String, String> getLookupTable() {
-        return mapping;
-    }
-}
+    public String getLocalAuthorityCode(String emailDomain) {
+        checkNotNull(emailDomain, "Email domain cannot be null");
 
+        if (mapping.get(emailDomain) == null) {
+            throw new UnknownLocalAuthorityDomainException(emailDomain + " not found");
+        }
+
+        return mapping.get(emailDomain);
+    }
+
+}
