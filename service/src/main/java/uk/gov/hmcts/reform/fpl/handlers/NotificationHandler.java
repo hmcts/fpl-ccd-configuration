@@ -9,8 +9,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
-import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -26,19 +26,19 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEM
 public class NotificationHandler {
 
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final LocalAuthorityService localAuthorityService;
+    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final NotificationClient notificationClient;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String uiBaseUrl;
 
     @Autowired
     public NotificationHandler(HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
+                               LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                                NotificationClient notificationClient,
-                               LocalAuthorityService localAuthorityService,
                                @Value("${ccd.ui.base.url}") String uiBaseUrl) {
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
+        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.notificationClient = notificationClient;
-        this.localAuthorityService = localAuthorityService;
         this.uiBaseUrl = uiBaseUrl;
     }
 
@@ -83,7 +83,7 @@ public class NotificationHandler {
 
         return ImmutableMap.<String, String>builder()
             .put("court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
-            .put("localAuthority", localAuthorityService.getLocalAuthorityName(localAuthorityCode))
+            .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .putAll(orderTypeArray.build())
             .put("directionsAndInterim", Optional.ofNullable((String) orders.get("directionsAndInterim"))
                 .orElse(""))

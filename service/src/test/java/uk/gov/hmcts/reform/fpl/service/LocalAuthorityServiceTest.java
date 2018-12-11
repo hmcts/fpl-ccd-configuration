@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.ArrayList;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
@@ -61,33 +60,5 @@ class LocalAuthorityServiceTest {
         assertThatThrownBy(() -> localAuthorityService.getLocalAuthorityCode(AUTH_TOKEN))
             .isInstanceOf(RuntimeException.class)
             .hasMessage("user does not exist");
-    }
-
-    @Test
-    void shouldReturnLocalAuthorityName() {
-        final String expectedName = "Example Local Authority";
-
-        given(nameConfig.getLookupTable()).willReturn(
-            ImmutableMap.<String, String>builder()
-            .put(LOCAL_AUTHORITY_CODE, "Example Local Authority")
-                .build()
-        );
-
-        String name = localAuthorityService.getLocalAuthorityName(LOCAL_AUTHORITY_CODE);
-
-        assertThat(name).isEqualTo(expectedName);
-    }
-
-    @Test
-    void shouldThrowNullPointerWhenLocalAuthorityIsNull() {
-        given(nameConfig.getLookupTable()).willReturn(
-            ImmutableMap.<String, String>builder()
-            .put(LOCAL_AUTHORITY_CODE, "Example Local Authority")
-                .build()
-        );
-
-        assertThatThrownBy(() -> localAuthorityService.getLocalAuthorityName(null))
-            .isInstanceOf(NullPointerException.class)
-            .hasMessage("No local authority found");
     }
 }

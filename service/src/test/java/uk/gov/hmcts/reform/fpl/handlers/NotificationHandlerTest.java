@@ -8,8 +8,8 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
-import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -38,7 +38,7 @@ class NotificationHandlerTest {
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     @Mock
-    private LocalAuthorityService localAuthorityService;
+    private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     @Mock
     private NotificationClient notificationClient;
@@ -67,7 +67,7 @@ class NotificationHandlerTest {
         given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
             .willReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, COURT_EMAIL_ADDRESS));
 
-        given(localAuthorityService.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
         notificationHandler.sendNotificationToHmctsAdmin(new SubmittedCaseEvent(request, AUTH_TOKEN, USER_ID));

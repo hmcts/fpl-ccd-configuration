@@ -20,7 +20,7 @@ class LocalAuthorityUserLookupConfigurationTest {
 
     @Test
     void shouldThrowNullPointerExceptionUponInitialisationWhenMappingValueIsEmpty() {
-        Assertions.assertThatThrownBy(() -> new LocalAuthorityCodeLookupConfiguration(CONFIG + ";fake=>"))
+        Assertions.assertThatThrownBy(() -> new LocalAuthorityUserLookupConfiguration(CONFIG + ";fake=>"))
             .isInstanceOf(NullPointerException.class)
             .hasMessage("Mapping value cannot be empty");
     }

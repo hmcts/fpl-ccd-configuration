@@ -47,9 +47,4 @@ public class LocalAuthorityService {
 
         return email.toLowerCase().substring(start + 1);
     }
-
-    public String getLocalAuthorityName(String localAuthorityCode) {
-        checkNotNull(localAuthorityCode, "No local authority found");
-        return localAuthorityNameLookupConfiguration.getLookupTable().get(localAuthorityCode);
-    }
 }
