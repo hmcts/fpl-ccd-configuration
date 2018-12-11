@@ -53,7 +53,7 @@ class CafcassLookupConfigurationTest {
     }
 
     @Test
-    void shouldReturnCafcassEmailWhenLocalAuthorityCodeExists() {
+    void shouldReturnCafcassDetailsWhenLocalAuthorityCodeExists() {
         Cafcass cafcass = configuration.getCafcass(LOCAL_AUTHORITY_CODE);
 
         assertThat(cafcass).isEqualToComparingFieldByField(

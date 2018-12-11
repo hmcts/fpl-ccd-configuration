@@ -107,7 +107,6 @@ public class NotificationHandler {
     }
 
     private Map<String, String> buildCafcassSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
-        final String name = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName();
         String ordersKey = "orders";
         Map orders =
             Optional.ofNullable((Map) caseDetails.getData().get(ordersKey)).orElse(ImmutableMap.builder().build());
@@ -126,7 +125,7 @@ public class NotificationHandler {
         String directionsAndInterimKey = "directionsAndInterim";
 
         return ImmutableMap.<String, String>builder()
-            .put("cafcass", name)
+            .put("cafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
             .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .putAll(orderTypeArray.build())
             .put("dataPresent", orderType.isEmpty() ? ("No") : ("Yes"))
