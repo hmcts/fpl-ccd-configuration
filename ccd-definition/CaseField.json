@@ -76,64 +76,32 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "documents_socialWorkChronology_question",
-    "Label": "# 1. Social work chronology",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkChronology_document",
-    "Label": "Social work chronology",
+    "Label": "1. Social work chronology",
     "FieldType": "UploadDocument",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "documents_socialWorkStatement_question",
-    "Label": "# 2. Social work statement and genogram",
-    "FieldType": "Label",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkStatement_document",
-    "Label": "Social work statement and genogram",
+    "Label": "2. Social work statement and genogram",
     "FieldType": "UploadDocument",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "documents_socialWorkAssessment_question",
-    "Label": "# 3. Social work assessment",
-    "FieldType": "Label",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkAssessment_document",
-    "Label": "Social work assessment",
+    "Label": "3. Social work assessment",
     "FieldType": "UploadDocument",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "documents_socialWorkCarePlan_question",
-    "Label": "# 4. Care plan",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "documents_socialWorkCarePlan_document",
-    "Label": "Care plan",
+    "Label": "4. Care plan",
     "FieldType": "UploadDocument",
     "SecurityClassification": "Public"
   },
@@ -237,25 +205,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "others_label",
-    "Label": "## Other 1",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "others",
     "Label": "Others to be given notice",
     "FieldType": "Person",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "respondent_label",
-    "Label": "## Respondent 1",
-    "FieldType": "Label",
     "SecurityClassification": "Public"
   },
   {
