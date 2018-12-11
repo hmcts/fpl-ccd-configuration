@@ -11,7 +11,8 @@ def component = "case-service"
 
 List<Map<String, Object>> secrets = [
   secret('ccd-configurer-s2s-secret', 'CCD_CONFIGURER_S2S_SECRET'),
-  secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN')
+  secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN'),
+  secret('notify-api-key', 'NOTIFY_API_KEY')
 ]
 
 static Map<String, Object> secret(String secretName, String envVariable) {
