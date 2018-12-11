@@ -31,9 +31,9 @@ class LocalAuthorityCodeLookupConfigurationTest {
 
     @Test
     void shouldThrowUnknownLocalAuthorityDomainExceptionWhenLocalAuthorityEmailDomainDoesNotExist() {
-        Assertions.assertThatThrownBy(() -> configuration.getLocalAuthorityCode("FAKE"))
+        Assertions.assertThatThrownBy(() -> configuration.getLocalAuthorityCode("fake@example.com"))
             .isInstanceOf(UnknownLocalAuthorityDomainException.class)
-            .hasMessage("FAKE not found");
+            .hasMessage("fake@example.com not found");
     }
 
     @Test

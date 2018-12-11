@@ -3,11 +3,8 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Gets a Local Authority name.
@@ -17,15 +14,12 @@ public class LocalAuthorityService {
 
     private final IdamApi idamApi;
     private final LocalAuthorityCodeLookupConfiguration localAuthorityCodeLookupConfiguration;
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     @Autowired
     public LocalAuthorityService(IdamApi idamApi,
-                                 LocalAuthorityCodeLookupConfiguration localAuthorityCodeLookupConfiguration,
-                                 LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration) {
+                                 LocalAuthorityCodeLookupConfiguration localAuthorityCodeLookupConfiguration) {
         this.idamApi = idamApi;
         this.localAuthorityCodeLookupConfiguration = localAuthorityCodeLookupConfiguration;
-        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
     }
 
     /**

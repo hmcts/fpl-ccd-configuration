@@ -28,6 +28,4 @@ public class LocalAuthorityCodeLookupConfiguration {
         return mapping.get(emailDomain);
     }
 
-
 }
-

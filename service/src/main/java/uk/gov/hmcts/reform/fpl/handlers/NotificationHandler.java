@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -55,9 +56,9 @@ public class NotificationHandler {
 
         try {
             notificationClient.sendEmail(HMCTS_COURT_SUBMISSION_TEMPLATE, email, parameters, reference);
-        } catch (NotificationClientException e) {
-            logger.warn("Failed to send submission notification (with template id: {}) to {}",
-                HMCTS_COURT_SUBMISSION_TEMPLATE, email, e);
+        } catch (NotificationClientException ex) {
+            logger.error("Failed to send submission notification (with template id: {}) to {}",
+                HMCTS_COURT_SUBMISSION_TEMPLATE, email, ex);
         }
     }
 
@@ -65,7 +66,7 @@ public class NotificationHandler {
         Map orders =
             Optional.ofNullable((Map) caseDetails.getData().get("orders")).orElse(ImmutableMap.builder().build());
 
-        ArrayList orderType = (ArrayList) Optional.ofNullable(orders.get("orderType")).orElse(new ArrayList<>());
+        List orderType = (List) Optional.ofNullable(orders.get("orderType")).orElse(ImmutableList.builder().build());
 
         String ordersKey = "orders";
 

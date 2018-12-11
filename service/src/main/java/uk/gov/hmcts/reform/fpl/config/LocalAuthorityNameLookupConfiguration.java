@@ -20,6 +20,6 @@ public class LocalAuthorityNameLookupConfiguration {
     public String getLocalAuthorityName(String localAuthorityCode) {
         checkNotNull(localAuthorityCode, "Local authority code cannot be null");
 
-        return checkNotNull(mapping.get(localAuthorityCode), "Local authority name not found");
+        return checkNotNull(mapping.get(localAuthorityCode), "Local authority '" + localAuthorityCode + "' not found");
     }
 }

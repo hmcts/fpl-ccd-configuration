@@ -27,7 +27,7 @@ public class HmctsCourtLookupConfiguration {
     public Court getCourt(String localAuthorityCode) {
         checkNotNull(localAuthorityCode, "Local authority code cannot be null");
 
-        return checkNotNull(mapping.get(localAuthorityCode), "Court information not found");
+        return checkNotNull(mapping.get(localAuthorityCode), "Local authority '" + localAuthorityCode + "' not found");
     }
 
     public static class Court {

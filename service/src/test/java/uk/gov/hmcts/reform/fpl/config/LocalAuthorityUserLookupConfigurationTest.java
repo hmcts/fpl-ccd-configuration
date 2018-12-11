@@ -36,9 +36,9 @@ class LocalAuthorityUserLookupConfigurationTest {
     @Test
     void shouldThrowCustomExceptionWhenLocalAuthorityCodeDoesNotExist() throws IllegalArgumentException {
         assertThatThrownBy(() ->
-            configuration.getUserIds("FT"))
+            configuration.getUserIds("FAKE"))
             .isInstanceOf(UnknownLocalAuthorityCodeException.class)
-            .hasMessage("Local authority 'FT' was not found");
+            .hasMessage("Local authority 'FAKE' was not found");
     }
 
     @Test

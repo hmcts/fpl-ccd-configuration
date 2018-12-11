@@ -33,7 +33,7 @@ class LocalAuthorityNameLookupConfigurationTest {
     void shouldThrowNullPointerExceptionWhenLocalAuthorityCodeDoesNotExist() {
         assertThatThrownBy(() -> configuration.getLocalAuthorityName("FAKE"))
             .isInstanceOf(NullPointerException.class)
-            .hasMessage("Local authority name not found");
+            .hasMessage("Local authority 'FAKE' not found");
     }
 
     @Test

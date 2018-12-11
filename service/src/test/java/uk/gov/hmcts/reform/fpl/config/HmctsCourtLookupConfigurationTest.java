@@ -17,6 +17,13 @@ class HmctsCourtLookupConfigurationTest {
     private HmctsCourtLookupConfiguration configuration = new HmctsCourtLookupConfiguration(CONFIG);
 
     @Test
+    void shouldThrowNullPointerExceptionUponInitialisationWhenMappingValueIsEmpty() {
+        Assertions.assertThatThrownBy(() -> new HmctsCourtLookupConfiguration(CONFIG + ";fake=>"))
+            .isInstanceOf(NullPointerException.class)
+            .hasMessage("Mapping value cannot be empty");
+    }
+
+    @Test
     void shouldThrowNullPointerExceptionUponInitialisationWhenCourtNameIsEmpty() {
         Assertions.assertThatThrownBy(() -> new HmctsCourtLookupConfiguration(CONFIG + ";fake=>:fake@example.com"))
             .isInstanceOf(NullPointerException.class)
@@ -41,7 +48,7 @@ class HmctsCourtLookupConfigurationTest {
     void shouldThrowNullPointerExceptionWhenLocalAuthorityCodeDoesNotExist() {
         Assertions.assertThatThrownBy(() -> configuration.getCourt("FAKE"))
             .isInstanceOf(NullPointerException.class)
-            .hasMessage("Court information not found");
+            .hasMessage("Local authority 'FAKE' not found");
     }
 
     @Test
