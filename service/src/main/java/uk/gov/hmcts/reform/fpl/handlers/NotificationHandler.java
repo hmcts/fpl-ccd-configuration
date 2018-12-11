@@ -82,12 +82,14 @@ public class NotificationHandler {
         Map hearing =
             Optional.ofNullable((Map) caseDetails.getData().get("hearing")).orElse(ImmutableMap.builder().build());
 
+        String directionsAndInterimKey = "directionsAndInterim";
+
         return ImmutableMap.<String, String>builder()
             .put("court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
             .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .putAll(orderTypeArray.build())
-            .put("directionsAndInterim", (orders.containsKey("directionsAndInterim"))
-                ? ("^" + orders.get("directionsAndInterim")) : (""))
+            .put(directionsAndInterimKey, (orders.containsKey(directionsAndInterimKey))
+                ? ("^" + orders.get(directionsAndInterimKey)) : (""))
             .put("timeFramePresent", (hearing.containsKey("timeFrame")) ? ("Yes") : ("No"))
             .put("timeFrameValue", Optional.ofNullable((String) hearing.get("timeFrame")).orElse(""))
             .put("reference", String.valueOf(caseDetails.getId()))
