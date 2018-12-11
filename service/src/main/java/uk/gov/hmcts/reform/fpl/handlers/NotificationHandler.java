@@ -72,7 +72,7 @@ public class NotificationHandler {
         ImmutableMap.Builder<String, String> orderTypeArray = ImmutableMap.builder();
         for (int i = 0; i < 5; i++) {
             if (i < orderType.size()) {
-                orderTypeArray.put(ordersKey + i, (String) orderType.get(i));
+                orderTypeArray.put(ordersKey + i, "^" + orderType.get(i));
             } else {
                 orderTypeArray.put(ordersKey + i, "");
             }
@@ -85,8 +85,8 @@ public class NotificationHandler {
             .put("court", hmctsCourtLookUpService.getCourt(localAuthorityCode).getName())
             .put("localAuthority", localAuthorityService.getLocalAuthorityName(localAuthorityCode))
             .putAll(orderTypeArray.build())
-            .put("directionsAndInterim", Optional.ofNullable((String) orders.get("directionsAndInterim"))
-                .orElse(""))
+            .put("directionsAndInterim", (orders.containsKey("directionsAndInterim"))
+                ? ("^" + orders.get("directionsAndInterim")) : (""))
             .put("timeFramePresent", (hearing.containsKey("timeFrame")) ? ("Yes") : ("No"))
             .put("timeFrameValue", Optional.ofNullable((String) hearing.get("timeFrame")).orElse(""))
             .put("reference", String.valueOf(caseDetails.getId()))
