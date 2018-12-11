@@ -13,13 +13,13 @@ import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
-import static uk.gov.hmcts.reform.fpl.handlers.SubmittedCaseEventHandler.SubmittedFormFilenameHelper.buildFileName;
+import static uk.gov.hmcts.reform.fpl.handlers.PdfGenerationHandler.SubmittedFormFilenameHelper.buildFileName;
 
 /**
  * Handler of case submission event.
  */
 @Component
-public class SubmittedCaseEventHandler {
+public class PdfGenerationHandler {
 
     private final DocumentGeneratorService documentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
@@ -27,10 +27,10 @@ public class SubmittedCaseEventHandler {
     private final UserDetailsService userDetailsService;
 
     @Autowired
-    public SubmittedCaseEventHandler(DocumentGeneratorService documentGeneratorService,
-                                     UploadDocumentService uploadDocumentService,
-                                     CaseRepository caseRepository,
-                                     UserDetailsService userDetailsService) {
+    public PdfGenerationHandler(DocumentGeneratorService documentGeneratorService,
+                                UploadDocumentService uploadDocumentService,
+                                CaseRepository caseRepository,
+                                UserDetailsService userDetailsService) {
         this.documentGeneratorService = documentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
         this.caseRepository = caseRepository;
