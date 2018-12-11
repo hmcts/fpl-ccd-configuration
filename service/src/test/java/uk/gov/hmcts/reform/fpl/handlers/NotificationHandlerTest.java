@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.fpl.config.CafcassEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
@@ -36,13 +36,13 @@ class NotificationHandlerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final String CAFCASS_EMAIL_ADDRESS = "FamilyPublicLaw+cafcass@gmail.com";
-    private static final String CAFCASS_NAME = "example";
+    private static final String CAFCASS_NAME = "cafcass";
 
     @Mock
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     @Mock
-    private CafcassEmailLookupConfiguration cafcassEmailLookupConfiguration;
+    private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @Mock
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
@@ -89,7 +89,7 @@ class NotificationHandlerTest {
     void shouldSendEmailToCafcass() throws IOException, NotificationClientException {
         CallbackRequest request = callbackRequest();
         final Map<String, String> expectedParameters = ImmutableMap.<String, String>builder()
-            .put("cafcass", "example")
+            .put("cafcass", CAFCASS_NAME)
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")
             .put("fullStop", "No")
@@ -103,8 +103,8 @@ class NotificationHandlerTest {
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
-        given(cafcassEmailLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
-            .willReturn(new CafcassEmailLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
+        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+            .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");

@@ -123,7 +123,7 @@ class CaseSubmissionControllerTest {
             .build();
 
         Map<String, String> expectedCafcassParameters = ImmutableMap.<String, String>builder()
-            .put("cafcass", "example")
+            .put("cafcass", "cafcass")
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")
             .put("fullStop", "No")
@@ -182,7 +182,7 @@ class CaseSubmissionControllerTest {
             .build();
 
         Map<String, String> expectedCafcassParameters = ImmutableMap.<String, String>builder()
-            .put("cafcass", "example")
+            .put("cafcass", "cafcass")
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "No")
             .put("fullStop", "Yes")

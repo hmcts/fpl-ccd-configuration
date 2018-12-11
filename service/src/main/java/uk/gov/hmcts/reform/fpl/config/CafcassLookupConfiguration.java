@@ -10,11 +10,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.emptyToNull;
 
 @Configuration
-public class CafcassEmailLookupConfiguration {
+public class CafcassLookupConfiguration {
 
     private final Map<String, Cafcass> mapping;
 
-    public CafcassEmailLookupConfiguration(@Value("${fpl.local_authority_code_to_cafcass.mapping}")
+    public CafcassLookupConfiguration(@Value("${fpl.local_authority_code_to_cafcass.mapping}")
                                                String config) {
         this.mapping = LookupConfigParser.parse(config, value -> {
             String[] entrySplit = value.split(":", 2);
