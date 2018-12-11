@@ -2,7 +2,6 @@
 
 @Library("Infrastructure")
 
-import uk.gov.hmcts.contino.Consul
 import uk.gov.hmcts.contino.Kubectl
 
 def type = "java"
@@ -55,14 +54,13 @@ withPipeline(type, product, component) {
 
     def ingressIP = kubectl.getServiceLoadbalancerIP("traefik", "kube-system")
 
-    def consul = new Consul(this)
-    consul.registerDns(subscription, "service-auth-provider-api-${aksServiceName}", ingressIP)
-    consul.registerDns(subscription, "idam-authentication-web-${aksServiceName}", ingressIP)
-    consul.registerDns(subscription, "idam-api-${aksServiceName}", ingressIP)
-    consul.registerDns(subscription, "ccd-case-management-web-${aksServiceName}", ingressIP)
-    consul.registerDns(subscription, "ccd-api-gateway-${aksServiceName}", ingressIP)
-    consul.registerDns(subscription, "ccd-definition-store-api-${aksServiceName}", ingressIP)
-    consul.registerDns(subscription, "ccd-user-profile-api-${aksServiceName}", ingressIP)
+    registerConsulDns(subscription, "service-auth-provider-api-${aksServiceName}", ingressIP)
+    registerConsulDns(subscription, "idam-authentication-web-${aksServiceName}", ingressIP)
+    registerConsulDns(subscription, "idam-api-${aksServiceName}", ingressIP)
+    registerConsulDns(subscription, "ccd-case-management-web-${aksServiceName}", ingressIP)
+    registerConsulDns(subscription, "ccd-api-gateway-${aksServiceName}", ingressIP)
+    registerConsulDns(subscription, "ccd-definition-store-api-${aksServiceName}", ingressIP)
+    registerConsulDns(subscription, "ccd-user-profile-api-${aksServiceName}", ingressIP)
 
     env.IDAM_API_BASE_URL = "https://idam-api-${aksServiceName}.${aksDomain}"
     env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "https://service-auth-provider-api-${aksServiceName}.${aksDomain}"
