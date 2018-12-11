@@ -242,7 +242,7 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "submissionConsent=\"I agree with this statement\""
+    "FieldShowCondition": "Consent=\"I agree with this statement\""
   },
   {
     "LiveFrom": "01/01/2017",
