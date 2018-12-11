@@ -45,9 +45,9 @@ public class NotificationHandler {
     @EventListener
     public void sendNotificationToHmctsAdmin(SubmittedCaseEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        String localAuthorityCode = caseDetails.getData().get("caseLocalAuthority").toString();
+        String localAuthorityCode = (String) caseDetails.getData().get("caseLocalAuthority");
         Map<String, String> parameters = buildEmailData(caseDetails, localAuthorityCode);
-        String reference = caseDetails.getId().toString();
+        String reference = Long.toString(caseDetails.getId());
 
         String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
         logger.debug(
