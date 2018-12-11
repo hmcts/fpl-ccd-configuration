@@ -2,6 +2,18 @@
 
 module.exports = {
   // users
+  swanseaLocalAuthorityUserOne: {
+    forename: 'kurt@swansea.gov.uk',
+    surname: '(local-authority)',
+  },
+  swanseaLocalAuthorityUserTwo: {
+    forename: 'damian@swansea.gov.uk',
+    surname: '(local-authority)',
+  },
+  hillingdonLocalAuthorityUserOne: {
+    forename: 'sam@hillingdon.gov.uk',
+    surname: '(local-authority)',
+  },
   swanseaLocalAuthorityEmailUserOne: 'kurt@swansea.gov.uk',
   swanseaLocalAuthorityEmailUserTwo: 'damian@swansea.gov.uk',
   hillingdonLocalAuthorityEmailUserOne: 'sam@hillingdon.gov.uk',
@@ -34,6 +46,7 @@ module.exports = {
     submitCase: 'Submit application',
   },
   addFamilyManCaseNumber: 'Add case number',
+  standardDirections: 'Standard directions',
   // files
   testFile: './e2e/fixtures/mockFile.txt',
   // urls
