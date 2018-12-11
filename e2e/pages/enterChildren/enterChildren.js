@@ -47,8 +47,8 @@ module.exports = {
   },
 
   enterChildDetails(name, day, month, year, gender = 'Boy') {
-    I.waitForElement(this.fields(activeChild).fullName);
     I.fillField(this.fields(activeChild).fullName, name);
+    I.wait(1);
     I.fillField(this.fields(activeChild).DOB.day, day);
     I.fillField(this.fields(activeChild).DOB.month, month);
     I.fillField(this.fields(activeChild).DOB.year, year);
@@ -101,9 +101,5 @@ module.exports = {
 
   defineAbilityToTakePartInProceedings() {
     I.click(this.fields(activeChild).litigationNo);
-    if (activeChild!=''){
-      activeChild ='';
-      activeChild = 'firstChild';
-    }
   },
 };
