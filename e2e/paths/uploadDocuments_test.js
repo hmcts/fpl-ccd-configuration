@@ -44,5 +44,20 @@ Scenario('As a local authority I have the ability to upload a document after sub
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.evidence);
   I.seeDocument('Social work assessment', 'mockFile.txt', 'Attached');
+});
 
+Scenario('Ability to upload court bundle', (I, uploadDocumentsPage, submitApplicationPage, caseViewPage) => {
+  I.dontSee('Court bundle');
+  I.continueAndSubmit();
+  caseViewPage.goToNewActions(config.applicationActions.submitCase);
+  submitApplicationPage.giveConsent();
+  I.click('Continue');
+  I.click('Submit');
+  I.waitForElement('.tabs');
+  caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+  uploadDocumentsPage.uploadCourtBundle(config.testFile);
+  I.continueAndSubmit();
+  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  caseViewPage.selectTab(caseViewPage.tabs.evidence);
+  I.see('mockFile.txt');
 });

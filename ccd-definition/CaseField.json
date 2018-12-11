@@ -134,7 +134,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "courtBundleLabel",
-    "Label": "# 5. Court Bundle",
+    "Label": "# 5. Court bundle",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   },
@@ -142,7 +142,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "courtBundleLabelEvidence",
-    "Label": "## 5. Court Bundle",
+    "Label": "## 5. Court bundle",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   },
