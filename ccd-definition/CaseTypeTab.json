@@ -236,7 +236,7 @@
     "TabID": "EvidenceTab",
     "TabLabel": "Evidence",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "courtBundleLabelEvidence",
+    "CaseFieldID": "courtBundleLabel",
     "TabFieldDisplayOrder": 9
   },
   {
