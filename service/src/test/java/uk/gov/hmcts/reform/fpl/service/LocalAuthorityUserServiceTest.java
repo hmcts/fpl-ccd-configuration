@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import feign.RetryableException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,9 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.NoAssociatedUsersException;
-import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,36 +45,9 @@ class LocalAuthorityUserServiceTest {
     private LocalAuthorityUserService localAuthorityUserService;
 
     @Test
-    void shouldThrowNullPointerExceptionWhenLocalAuthorityCodeIsNull() throws IllegalArgumentException {
-        assertThatThrownBy(() ->
-            localAuthorityUserService.grantUserAccess(AUTH_TOKEN, CREATOR_USER_ID, CASE_ID, null))
-            .isInstanceOf(NullPointerException.class)
-            .hasMessage("Case does not have local authority assigned");
-    }
-
-    @Test
-    void shouldThrowCustomExceptionWhenLocalAuthorityCodeIsNotFound() throws IllegalArgumentException {
-        given(localAuthorityUserLookupConfiguration.getLookupTable()).willReturn(
-            ImmutableMap.<String, List<String>>builder()
-                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder()
-                    .add(CREATOR_USER_ID)
-                    .build())
-                .build()
-        );
-
-        assertThatThrownBy(() ->
-            localAuthorityUserService.grantUserAccess(AUTH_TOKEN, CREATOR_USER_ID, CASE_ID, "FT"))
-            .isInstanceOf(UnknownLocalAuthorityCodeException.class)
-            .hasMessage("Local authority 'FT' was not found");
-    }
-
-    @Test
     void shouldThrowCustomExceptionWhenValidLocalAuthorityHasNoUsers() throws IllegalArgumentException {
-        given(localAuthorityUserLookupConfiguration.getLookupTable()).willReturn(
-            ImmutableMap.<String, List<String>>builder()
-                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder()
-                    .build())
-                .build()
+        given(localAuthorityUserLookupConfiguration.getUserIds(LOCAL_AUTHORITY)).willReturn(
+            ImmutableList.<String>builder().build()
         );
 
         assertThatThrownBy(() ->
@@ -90,11 +59,9 @@ class LocalAuthorityUserServiceTest {
     @Test
     void shouldNotMakeCallToGrantAccessEndpointWhenUserCreatingCaseIsOnlyUserWithinLocalAuthority() {
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
-        given(localAuthorityUserLookupConfiguration.getLookupTable()).willReturn(
-            ImmutableMap.<String, List<String>>builder()
-                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder()
-                    .add(CREATOR_USER_ID)
-                    .build())
+        given(localAuthorityUserLookupConfiguration.getUserIds(LOCAL_AUTHORITY)).willReturn(
+            ImmutableList.<String>builder()
+                .add(CREATOR_USER_ID)
                 .build()
         );
 
@@ -110,11 +77,9 @@ class LocalAuthorityUserServiceTest {
         String additionalUserId = "2";
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
-        given(localAuthorityUserLookupConfiguration.getLookupTable()).willReturn(
-            ImmutableMap.<String, List<String>>builder()
-                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder()
-                    .add(CREATOR_USER_ID, additionalUserId)
-                    .build())
+        given(localAuthorityUserLookupConfiguration.getUserIds(LOCAL_AUTHORITY)).willReturn(
+            ImmutableList.<String>builder()
+                .add(CREATOR_USER_ID, additionalUserId)
                 .build()
         );
 
@@ -131,11 +96,9 @@ class LocalAuthorityUserServiceTest {
         String secondAdditionalUserId = "3";
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
-        given(localAuthorityUserLookupConfiguration.getLookupTable()).willReturn(
-            ImmutableMap.<String, List<String>>builder()
-                .put(LOCAL_AUTHORITY, ImmutableList.<String>builder()
-                    .add(CREATOR_USER_ID, firstAdditionalUserId, secondAdditionalUserId)
-                    .build())
+        given(localAuthorityUserLookupConfiguration.getUserIds(LOCAL_AUTHORITY)).willReturn(
+            ImmutableList.<String>builder()
+                .add(CREATOR_USER_ID, firstAdditionalUserId, secondAdditionalUserId)
                 .build()
         );
         willThrow(new RetryableException("Some error", null)).given(caseAccessApi).grantAccessToCase(
