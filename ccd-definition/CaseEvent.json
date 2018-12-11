@@ -163,7 +163,7 @@
     "Name": "Documents",
     "Description": "Upload documents",
     "DisplayOrder": 14,
-    "PreConditionState(s)": "Open;Submitted",
+    "PreConditionState(s)": "Open",
     "PostConditionState": "Open",
     "SecurityClassification": "Public"
   },
@@ -238,6 +238,17 @@
     "ID": "uploadStandardDirections",
     "Name": "Standard directions",
     "Description": "Upload standard directions",
+    "DisplayOrder": 1,
+    "PreConditionState(s)": "Submitted",
+    "PostConditionState": "Submitted",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "uploadCourtBundle",
+    "Name": "Documents",
+    "Description": "Upload a court bundle",
     "DisplayOrder": 1,
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Submitted",
