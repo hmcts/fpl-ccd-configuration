@@ -138,14 +138,16 @@ public class NotificationHandler {
             }
         }
 
+        String directionsAndInterimKey = "directionsAndInterim";
+
         return ImmutableMap.<String, String>builder()
             .put("cafcass", name)
             .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .putAll(orderTypeArray.build())
             .put("dataPresent", (orderType.isEmpty()) ? ("No") : ("Yes"))
             .put("fullStop", (orderType.isEmpty()) ? ("Yes") : ("No"))
-            .put("directionsAndInterim", (orders.containsKey("directionsAndInterim"))
-                ? "^" + (orders.get("directionsAndInterim")) : "")
+            .put(directionsAndInterimKey, (orders.containsKey(directionsAndInterimKey))
+                ? "^" + (orders.get(directionsAndInterimKey)) : "")
             .put("reference", String.valueOf(caseDetails.getId()))
             .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId())
             .build();
