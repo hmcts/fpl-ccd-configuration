@@ -391,7 +391,7 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "CaseEventID": "uploadCourtBundle",
     "CaseFieldID": "uploadDocuments_paragraph_2",
-    "PageFieldDisplayOrder": 2,
+    "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": 1,
     "PageDisplayOrder": 1,
