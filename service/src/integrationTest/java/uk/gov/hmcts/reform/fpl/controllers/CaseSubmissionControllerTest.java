@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
@@ -103,10 +104,12 @@ class CaseSubmissionControllerTest {
     }
 
     @Test
-    void shouldBuildTemplateWithCompleteValues() throws Exception {
-        Map<String, String> expectedParameters = ImmutableMap.<String, String>builder()
+    void shouldBuildNotificationTemplatesWithCompleteValues() throws Exception {
+        Map<String, String> expectedHmctsParameters = ImmutableMap.<String, String>builder()
             .put("court", "Family Court")
             .put("localAuthority", "Example Local Authority")
+            .put("dataPresent", "Yes")
+            .put("fullStop", "No")
             .put("orders0", "^Emergency protection order")
             .put("orders1", "")
             .put("orders2", "")
@@ -115,6 +118,21 @@ class CaseSubmissionControllerTest {
             .put("directionsAndInterim", "^Information on the whereabouts of the child")
             .put("timeFramePresent", "Yes")
             .put("timeFrameValue", "Same day")
+            .put("reference", "12345")
+            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
+
+        Map<String, String> expectedCafcassParameters = ImmutableMap.<String, String>builder()
+            .put("cafcass", "cafcass")
+            .put("localAuthority", "Example Local Authority")
+            .put("dataPresent", "Yes")
+            .put("fullStop", "No")
+            .put("orders0", "^Emergency protection order")
+            .put("orders1", "")
+            .put("orders2", "")
+            .put("orders3", "")
+            .put("orders4", "")
+            .put("directionsAndInterim", "^Information on the whereabouts of the child")
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
@@ -128,12 +146,16 @@ class CaseSubmissionControllerTest {
             .andExpect(status().isOk());
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("admin@family-court.com"), eq(expectedParameters), eq("12345")
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("admin@family-court.com"), eq(expectedHmctsParameters), eq("12345")
+        );
+
+        verify(notificationClient, times(1)).sendEmail(
+            eq(CAFCASS_SUBMISSION_TEMPLATE), eq("cafcass@cafcass.com"), eq(expectedCafcassParameters), eq("12345")
         );
     }
 
     @Test
-    void shouldBuildTemplateWithValuesMissingInCallback() throws Exception {
+    void shouldBuildNotificationTemplatesWithValuesMissingInCallback() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -142,9 +164,11 @@ class CaseSubmissionControllerTest {
                 .build())
             .build();
 
-        Map<String, String> expectedParameters = ImmutableMap.<String, String>builder()
+        Map<String, String> expectedHmctsParameters = ImmutableMap.<String, String>builder()
             .put("court", "Family Court")
             .put("localAuthority", "Example Local Authority")
+            .put("dataPresent", "No")
+            .put("fullStop", "Yes")
             .put("orders0", "")
             .put("orders1", "")
             .put("orders2", "")
@@ -153,6 +177,21 @@ class CaseSubmissionControllerTest {
             .put("directionsAndInterim", "")
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
+            .put("reference", "12345")
+            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
+
+        Map<String, String> expectedCafcassParameters = ImmutableMap.<String, String>builder()
+            .put("cafcass", "cafcass")
+            .put("localAuthority", "Example Local Authority")
+            .put("dataPresent", "No")
+            .put("fullStop", "Yes")
+            .put("orders0", "")
+            .put("orders1", "")
+            .put("orders2", "")
+            .put("orders3", "")
+            .put("orders4", "")
+            .put("directionsAndInterim", "")
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
@@ -166,7 +205,11 @@ class CaseSubmissionControllerTest {
             .andExpect(status().isOk());
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("admin@family-court.com"), eq(expectedParameters), eq("12345")
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("admin@family-court.com"), eq(expectedHmctsParameters), eq("12345")
+        );
+
+        verify(notificationClient, times(1)).sendEmail(
+            eq(CAFCASS_SUBMISSION_TEMPLATE), eq("cafcass@cafcass.com"), eq(expectedCafcassParameters), eq("12345")
         );
     }
 
