@@ -32,8 +32,8 @@ module.exports = {
       socialWorkerTel: `#children_${childNo}_socialWorkerTel`,
       additionalNeedsNo: `#children_${childNo}_additionalNeeds-No`,
       contactHiddenNo: `#children_${childNo}_detailsHidden-No`,
-      litigationNo: `#children_${childNo}_litigationIssues`,
-      litigationIssuesReason: `#children_${childNo}_litigationIssuesReason`,
+      litigationIssue: `#children_${childNo}_litigationIssues`,
+      litigationIssueReason: `#children_${childNo}_litigationIssuesReason`,
     };
   },
   addChildButton: 'Add new',
@@ -99,10 +99,10 @@ module.exports = {
     I.click(this.fields(activeChild).contactHiddenNo);
   },
 
-  defineAbilityToTakePartInProceedings(LitigationIssues = 'No', LitigationIssuesReason = 'Reason') {
-    I.selectOption(this.fields(activeChild).litigationNo, LitigationIssues);
-    if (LitigationIssues == 'Yes') {
-      I.fillField(this.fields(activeChild).litigationIssuesReason, LitigationIssuesReason);
+  defineAbilityToTakePartInProceedings(LitigationIssue = 'No', LitigationIssueReason = 'Mock reason') {
+    I.selectOption(this.fields(activeChild).litigationIssue, LitigationIssue);
+    if (LitigationIssue == 'Yes') {
+      I.fillField(this.fields(activeChild).litigationIssuesReason, LitigationIssueReason);
     }
   },
 };
