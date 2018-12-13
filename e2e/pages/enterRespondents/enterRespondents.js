@@ -18,17 +18,13 @@ module.exports = {
         address: `#respondents_${id}_address_address`,
         telephone: `#respondents_${id}_telephone`,
         relationshipToChild: `#respondents_${id}_relationshipToChild`,
+        litigationIssue: `#respondents_${id}_litigationIssues`,
+        litigationIssueReason: `#respondents_${id}_litigationIssuesReason`,
       },
       contactDetailsHidden: (option) => {
         return {
           option: `#respondents_${id}_contactDetailsHidden-${option}`,
           reason: `#respondents_${id}_contactDetailsHiddenReason`,
-        };
-      },
-      litigationIssues: (option) => {
-        return {
-          option: `#respondents_${id}_litigationIssues-${option}`,
-          reason: `#respondents_${id}_litigationIssuesReason`,
         };
       },
     };
@@ -62,10 +58,10 @@ module.exports = {
     }
   },
 
-  enterLitigationIssues(id, option, reason = '') {
-    I.click(this.fields(id).litigationIssues(option).option);
-    if (option === 'Yes') {
-      I.fillField(this.fields(id).litigationIssues(option).reason, reason);
+  enterLitigationIssues(id, LitigationIssue = 'No', LitigationIssueReason = 'Mock reason') {
+    I.selectOption(this.fields(id).respondent.litigationIssue, LitigationIssue);
+    if (LitigationIssue === 'Yes') {
+      I.fillField(this.fields(id).respondent.litigationIssueReason, LitigationIssueReason);
     }
   },
 };
