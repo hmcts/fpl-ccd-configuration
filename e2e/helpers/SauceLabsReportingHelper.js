@@ -1,13 +1,10 @@
 const event = require('codeceptjs').event;
 const container = require('codeceptjs').container;
 let exec = require('child_process').exec;
-//const SAUCE_USERNAME='SivaK';
-//const SAUCE_ACCESS_KEY='65e1e5c6-ae4b-4432-9854-276fff0610d8';
-//const sauceUsername = process.env.SAUCE_USERNAME;
-//const sauceKey = process.env.SAUCE_ACCESS_KEY;
-
-const sauceUsername='SivaK';
-const sauceKey = '65e1e5c6-ae4b-4432-9854-276fff0610d8';
+const saucelabs_username = 'username';
+const saucelabs_accesskey = 'privatekey';
+const sauceUsername = saucelabs_username;
+const sauceKey = saucelabs_accesskey;
 
 function updateSauceLabsResult(result, sessionId) {
   console.log('SauceOnDemandSessionID=' + sessionId + ' job-name=fpl-ccd-configuration'); /* eslint-disable-line no-console, prefer-template */

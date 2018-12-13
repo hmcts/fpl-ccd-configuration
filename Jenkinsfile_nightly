@@ -32,4 +32,15 @@ withNightlyPipeline(type, product, component) {
       archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     }
   }
+
+  before('crossBrowserTest') {
+    env.URL = 'http://ccd-case-management-web-aat.service.core-compute-aat.internal'
+    env.PROXY_SERVER = 'proxyout.reform.hmcts.net:8080'
+
+    try {
+      sh('./gradlew --no-daemon --info --rerun-tasks crossBrowserfunctional')
+    } finally {
+      archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+    }
+  }
 }

@@ -90,6 +90,21 @@ task functional(description: 'Runs the functional tests.') {
   dependsOn(awaitApplicationReadiness, installDependencies, runFunctionalTest)
 }
 
+task runCrossBrowserFunctionalTest(type: Exec, description: 'Runs E2E tests.') {
+  onlyIf(new Spec<Task>() {
+    boolean isSatisfiedBy(Task task) {
+      String skipTestsEnvironmentVariable = System.env.SKIP_FUNCTIONAL_TESTS
+      return skipTestsEnvironmentVariable == null || skipTestsEnvironmentVariable == 'false'
+    }
+  })
+  commandLine '/usr/bin/yarn', '--silent', 'test:crossbrowser'
+}
+
+
+task crossBrowserfunctional(description: 'Runs the cross Browser functional tests.') {
+  dependsOn(awaitApplicationReadiness, installDependencies, runCrossBrowserFunctionalTest)
+}
+
 checkstyle {
   maxWarnings = 0
   toolVersion = '8.14'
