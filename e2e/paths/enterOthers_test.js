@@ -56,5 +56,5 @@ Scenario('Complete entering others details in the c110a application', (I, enterO
   I.seeAnswerInTab(7, 'Other person 1', 'What is this person’s relationship to the child or children in this case?', 'Tim Smith');
   I.seeAnswerInTab(8, 'Other person 1', 'Do you need contact details hidden from other parties?', 'Yes');
   I.seeAnswerInTab(9, 'Other person 1', 'Give reason', 'mock reason');
-  I.seeAnswerInTab(10, 'Other person 1', 'Does this person have any issues with litigation capacity?', 'No');
+  I.seeAnswerInTab(10, 'Other person 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
 });

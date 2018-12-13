@@ -59,5 +59,5 @@ Scenario('Entering all information for first respondent and an additional respon
     'mock reason');
   I.seeAnswerInTab(8, 'Additional respondents 1', 'Do you need contact details hidden from anyone?', 'Yes');
   I.seeAnswerInTab(9, 'Additional respondents 1', 'Give reason', 'mock reason');
-  I.seeAnswerInTab(10, 'Additional respondents 1', 'Does this respondent have any issues with litigation capacity?', 'No');
+  I.seeAnswerInTab(10, 'Additional respondents 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
 });
