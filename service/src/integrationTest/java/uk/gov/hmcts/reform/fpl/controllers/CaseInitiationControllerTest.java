@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -31,6 +30,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.Constants.SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
@@ -41,8 +42,6 @@ class CaseInitiationControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "10";
-    private static final String JURISDICTION = "PUBLICLAW";
-    private static final String CASE_TYPE = "Shared_Storage_DRAFTType";
     private static final String CASE_ID = "1";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -60,10 +59,6 @@ class CaseInitiationControllerTest {
 
     @Test
     void shouldAddCaseLocalAuthorityToCaseData() throws Exception {
-        JSONObject expectedData = new JSONObject();
-        expectedData.put("caseName", "title");
-        expectedData.put("caseLocalAuthority", "EX");
-
         given(idamApi.retrieveUserDetails(AUTH_TOKEN)).willReturn(
             new UserDetails(null, "user@example.gov.uk", null, null, null));
 
@@ -81,7 +76,12 @@ class CaseInitiationControllerTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        assertThat(response.getResponse().getContentAsString()).contains(expectedData.toString());
+        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(callbackResponse.getData())
+            .containsEntry("caseName", "title")
+            .containsEntry("caseLocalAuthority", "example");
     }
 
     @Test

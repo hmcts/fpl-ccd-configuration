@@ -47,3 +47,7 @@ variable "jenkins_AAD_objectId" {
 variable "idam_api_url" {
   type = "string"
 }
+
+variable "ccd_ui_base_url" {
+  type = "string"
+}

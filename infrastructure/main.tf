@@ -19,13 +19,33 @@ data "azurerm_key_vault_secret" "s2s_secret" {
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
-data "azurerm_key_vault_secret" "local_authority_name_mapping" {
-  name = "local-authority-name-mapping"
+data "azurerm_key_vault_secret" "local_authority_email_to_code_mapping" {
+  name = "local-authority-email-to-code-mapping"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "local_authority_code_to_name_mapping" {
+  name = "local-authority-code-to-name-mapping"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
 data "azurerm_key_vault_secret" "local_authority_user_mapping" {
   name = "local-authority-user-mapping"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "local_authority_code_to_hmcts_court_mapping" {
+  name = "local-authority-code-to-hmcts-court-mapping"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "local_authority_code_to_cafcass_mapping" {
+  name = "local-authority-code-to-cafcass-mapping"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "notify_api_key" {
+  name = "notify-api-key"
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
@@ -56,8 +76,13 @@ module "case-service" {
     IDAM_S2S_AUTH_TOTP_SECRET = "${data.azurerm_key_vault_secret.s2s_secret.value}"
     DOCUMENT_MANAGEMENT_URL = "${local.DOCUMENT_MANAGEMENT_URL}"
     CORE_CASE_DATA_API_URL = "${local.CORE_CASE_DATA_API_URL}"
-    FPL_LOCAL_AUTHORITY_NAME_MAPPING = "${data.azurerm_key_vault_secret.local_authority_name_mapping.value}"
+    CCD_UI_BASE_URL = "${var.ccd_ui_base_url}"
+    FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING = "${data.azurerm_key_vault_secret.local_authority_email_to_code_mapping.value}"
+    FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING = "${data.azurerm_key_vault_secret.local_authority_code_to_name_mapping.value}"
     FPL_LOCAL_AUTHORITY_USER_MAPPING = "${data.azurerm_key_vault_secret.local_authority_user_mapping.value}"
+    FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING = "${data.azurerm_key_vault_secret.local_authority_code_to_hmcts_court_mapping.value}"
+    FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING = "${data.azurerm_key_vault_secret.local_authority_code_to_cafcass_mapping.value}"
+    NOTIFY_API_KEY = "${data.azurerm_key_vault_secret.notify_api_key.value}"
 
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE  = false

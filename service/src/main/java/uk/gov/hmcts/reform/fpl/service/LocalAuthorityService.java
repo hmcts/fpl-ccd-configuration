@@ -2,27 +2,24 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityDomainException;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
-
-import java.util.Map;
 
 /**
  * Gets a Local Authority name.
  */
 @Service
-public class LocalAuthorityNameService {
+public class LocalAuthorityService {
 
     private final IdamApi idamApi;
-    private final LocalAuthorityNameLookupConfiguration localAuthorityLookupConfiguration;
+    private final LocalAuthorityCodeLookupConfiguration localAuthorityCodeLookupConfiguration;
 
     @Autowired
-    public LocalAuthorityNameService(IdamApi idamApi,
-                                     LocalAuthorityNameLookupConfiguration localAuthorityLookupConfiguration) {
+    public LocalAuthorityService(IdamApi idamApi,
+                                 LocalAuthorityCodeLookupConfiguration localAuthorityCodeLookupConfiguration) {
         this.idamApi = idamApi;
-        this.localAuthorityLookupConfiguration = localAuthorityLookupConfiguration;
+        this.localAuthorityCodeLookupConfiguration = localAuthorityCodeLookupConfiguration;
     }
 
     /**
@@ -36,22 +33,12 @@ public class LocalAuthorityNameService {
         String email = userDetails.getEmail();
         String domain = extractEmailDomain(email);
 
-        return lookUpCode(domain);
+        return localAuthorityCodeLookupConfiguration.getLocalAuthorityCode(domain);
     }
 
     private String extractEmailDomain(String email) {
         int start = email.indexOf('@');
 
         return email.toLowerCase().substring(start + 1);
-    }
-
-    private String lookUpCode(String emailDomain) {
-        Map<String, String> lookupTable = localAuthorityLookupConfiguration.getLookupTable();
-
-        if (lookupTable.get(emailDomain) == null) {
-            throw new UnknownLocalAuthorityDomainException(emailDomain + " not found");
-        }
-
-        return lookupTable.get(emailDomain);
     }
 }
