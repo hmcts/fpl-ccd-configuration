@@ -17,16 +17,12 @@ module.exports = {
       address: `#others_${otherNo}_address_address`,
       telephoneNumber: `#others_${otherNo}_telephone`,
       relationshipToChild: `#others_${otherNo}_childInformation`,
+      litigationIssue: `#others_${otherNo}_litigationIssues`,
+      litigationIssuesReason: `#others_${otherNo}_litigationIssuesReason`,
       detailsHidden: (option) => {
         return {
           option: `#others_${otherNo}_detailsHidden-${option}`,
           reason: `#others_${otherNo}_detailsHiddenReason`,
-        };
-      },
-      litigationIssues: (option) => {
-        return {
-          option: `#others_${otherNo}_litigationIssues-${option}`,
-          reason: `#others_${otherNo}_litigationIssuesReason`,
         };
       },
     };
@@ -68,10 +64,10 @@ module.exports = {
     }
   },
 
-  enterLitigationIssues(option) {
-    I.click(this.fields(activeOther).litigationIssues(option).option);
-    if (option === 'Yes') {
-      I.fillField(this.fields(activeOther).litigationIssues(option).reason, 'mock reason');
+  enterLitigationIssues(litigationIssue = 'No', litigationIssueReason = 'Mock reason') {
+    I.selectOption(this.fields(activeOther).litigationIssue, litigationIssue);
+    if (litigationIssue === 'Yes') {
+      I.fillField(this.fields(activeOther).litigationIssuesReason, litigationIssueReason);
     }
   },
 };

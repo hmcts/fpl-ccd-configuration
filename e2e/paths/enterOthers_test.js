@@ -19,12 +19,12 @@ Scenario('Complete entering others details in the c110a application', (I, enterO
   enterOthersPage.enterOtherDetails(others[0]);
   enterOthersPage.enterRelationshipToChild('Tim Smith');
   enterOthersPage.enterContactDetailsHidden('Yes');
-  enterOthersPage.enterLitigationIssues('No');
+  enterOthersPage.enterLitigationIssues();
   enterOthersPage.addOther();
   enterOthersPage.enterOtherDetails(others[1]);
   enterOthersPage.enterRelationshipToChild('Tim Smith');
   enterOthersPage.enterContactDetailsHidden('Yes');
-  enterOthersPage.enterLitigationIssues('No');
+  enterOthersPage.enterLitigationIssues();
   I.continueAndSubmit();
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(1, 'Person 1', 'Full name', 'John Smith');
@@ -41,7 +41,7 @@ Scenario('Complete entering others details in the c110a application', (I, enterO
   I.seeAnswerInTab(7, 'Person 1', 'What is this person’s relationship to the child or children in this case?', 'Tim Smith');
   I.seeAnswerInTab(8, 'Person 1', 'Do you need contact details hidden from other parties?', 'Yes');
   I.seeAnswerInTab(9, 'Person 1', 'Give reason', 'mock reason');
-  I.seeAnswerInTab(10, 'Person 1', 'Does this person have any issues with litigation capacity?', 'No');
+  I.seeAnswerInTab(10, 'Person 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
   I.seeAnswerInTab(1, 'Other person 1', 'Full name', 'Paul Wilsdon');
   I.seeAnswerInTab(2, 'Other person 1', 'Date of birth', '1 Jan 1984');
   I.seeAnswerInTab(3, 'Other person 1', 'Gender', 'Male');
