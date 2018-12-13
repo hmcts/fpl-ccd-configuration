@@ -19,12 +19,12 @@ Scenario('Entering all information for first respondent and an additional respon
   enterRespondentsPage.enterRespondent('firstRespondent', respondents[0]);
   enterRespondentsPage.enterRelationshipToChild('firstRespondent', 'mock reason');
   enterRespondentsPage.enterContactDetailsHidden('firstRespondent', 'Yes', 'mock reason');
-  enterRespondentsPage.enterLitigationIssues('firstRespondent', 'No');
+  enterRespondentsPage.enterLitigationIssues('firstRespondent');
   I.click(enterRespondentsPage.addRespondent);
   enterRespondentsPage.enterRespondent('additional_0', respondents[1]);
   enterRespondentsPage.enterRelationshipToChild('additional_0', 'mock reason');
   enterRespondentsPage.enterContactDetailsHidden('additional_0', 'Yes', 'mock reason');
-  enterRespondentsPage.enterLitigationIssues('additional_0', 'No');
+  enterRespondentsPage.enterLitigationIssues('additional_0');
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
