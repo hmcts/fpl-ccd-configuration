@@ -32,7 +32,8 @@ module.exports = {
       socialWorkerTel: `#children_${childNo}_socialWorkerTel`,
       additionalNeedsNo: `#children_${childNo}_additionalNeeds-No`,
       contactHiddenNo: `#children_${childNo}_detailsHidden-No`,
-      litigationNo: `#children_${childNo}_litigationIssues-No`,
+      litigationNo: `#children_${childNo}_litigationIssues`,
+      litigationIssuesReason: `#children_${childNo}_litigationIssuesReason`,
     };
   },
   addChildButton: 'Add new',
@@ -98,7 +99,10 @@ module.exports = {
     I.click(this.fields(activeChild).contactHiddenNo);
   },
 
-  defineAbilityToTakePartInProceedings() {
-    I.click(this.fields(activeChild).litigationNo);
+  defineAbilityToTakePartInProceedings(LitigationIssues = 'No', LitigationIssuesReason = 'Reason') {
+    I.selectOption(this.fields(activeChild).litigationNo, LitigationIssues);
+    if (LitigationIssues == 'Yes') {
+      I.fillField(this.fields(activeChild).litigationIssuesReason, LitigationIssuesReason);
+    }
   },
 };
