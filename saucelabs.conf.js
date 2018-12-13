@@ -1,7 +1,7 @@
 // /* eslint-disable no-console */
 const supportedBrowsers = require('./e2e/crossbrowser/supportedBrowsers.js');
 
-const saucelabs_tunnelId= 'reform_tunnel';
+const saucelabs_tunnelId= 'reformtunnel';
 const saucelabs_username = 'username';
 const saucelabs_accesskey = 'privatekey';
 const tunnelName = process.env.SAUCE_TUNNEL_IDENTIFIER || saucelabs_tunnelId;

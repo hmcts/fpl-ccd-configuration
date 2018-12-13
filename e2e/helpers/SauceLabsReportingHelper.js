@@ -1,10 +1,12 @@
+/* eslint-disable no-process-env, func-names */
+
 const event = require('codeceptjs').event;
 const container = require('codeceptjs').container;
-let exec = require('child_process').exec;
+const exec = require('child_process').exec;
 const saucelabs_username = 'username';
 const saucelabs_accesskey = 'privatekey';
-const sauceUsername = saucelabs_username;
-const sauceKey = saucelabs_accesskey;
+const sauceUsername = process.env.SAUCE_USERNAME || saucelabs_username;
+const sauceKey = process.env.SAUCE_ACCESS_KEY || saucelabs_accesskey;
 
 function updateSauceLabsResult(result, sessionId) {
   console.log('SauceOnDemandSessionID=' + sessionId + ' job-name=fpl-ccd-configuration'); /* eslint-disable-line no-console, prefer-template */
