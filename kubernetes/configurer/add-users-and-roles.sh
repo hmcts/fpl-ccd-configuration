@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+set -eu
+
 dir=$(dirname ${0})
 
 ${dir}/utils/idam-create-caseworker.sh damian@swansea.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor "(local-authority)"
