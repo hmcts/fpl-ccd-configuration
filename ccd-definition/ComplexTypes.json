@@ -246,7 +246,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "litigationIssues",
-    "FieldType": "YesOrNo",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ChildrenLitigationList",
     "ElementLabel": "Do you believe this child will have problems with litigation capacity (understanding what's happening in the case)?",
     "SecurityClassification": "Public"
   },
@@ -1072,7 +1073,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "litigationIssues",
-    "FieldType": "YesOrNo",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "OthersLitigationList",
     "ElementLabel": "Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
     "SecurityClassification": "Public"
   },
@@ -1224,7 +1226,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "litigationIssues",
-    "FieldType": "YesOrNo",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "RespondentsLitigationList",
     "ElementLabel": "Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
     "SecurityClassification": "Public"
   },
