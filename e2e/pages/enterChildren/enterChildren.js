@@ -104,10 +104,10 @@ module.exports = {
     I.click(this.fields().contactHiddenNo);
   },
 
-  defineAbilityToTakePartInProceedings(LitigationIssue = 'No', LitigationIssueReason = 'Mock reason') {
-    I.selectOption(this.fields().litigationIssue, LitigationIssue);
-    if (LitigationIssue == 'Yes') {
-      I.fillField(this.fields().litigationIssuesReason, LitigationIssueReason);
+  enterLitigationIssues(litigationIssue = 'No', litigationIssueReason = 'Mock reason') {
+    I.selectOption(this.fields().litigationIssue, litigationIssue);
+    if (litigationIssue == 'Yes') {
+      I.fillField(this.fields().litigationIssueReason, litigationIssueReason);
     }
   },
 };

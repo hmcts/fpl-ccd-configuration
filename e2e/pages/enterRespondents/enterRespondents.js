@@ -58,10 +58,10 @@ module.exports = {
     }
   },
 
-  enterLitigationIssues(id, LitigationIssue = 'No', LitigationIssueReason = 'Mock reason') {
-    I.selectOption(this.fields(id).respondent.litigationIssue, LitigationIssue);
-    if (LitigationIssue === 'Yes') {
-      I.fillField(this.fields(id).respondent.litigationIssueReason, LitigationIssueReason);
+  enterLitigationIssues(id, litigationIssue = 'No', litigationIssueReason = 'Mock reason') {
+    I.selectOption(this.fields(id).respondent.litigationIssue, litigationIssue);
+    if (litigationIssue === 'Yes') {
+      I.fillField(this.fields(id).respondent.litigationIssueReason, litigationIssueReason);
     }
   },
 };

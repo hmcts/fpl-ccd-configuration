@@ -52,7 +52,7 @@ Scenario('completing entering child information in the c110a application', (I, e
   enterChildrenPage.enterSocialWorkerDetails();
   enterChildrenPage.defineChildAdditionalNeeds();
   enterChildrenPage.defineContactDetailsVisibility();
-  enterChildrenPage.defineAbilityToTakePartInProceedings();
+  enterChildrenPage.enterLitigationIssues('No', 'Mock reason');
   enterChildrenPage.addChild();
   enterChildrenPage.enterChildDetails('Susan', '01', '07', '2016');
   enterChildrenPage.defineChildSituation('02', '11', '2017');
@@ -64,7 +64,7 @@ Scenario('completing entering child information in the c110a application', (I, e
   enterChildrenPage.enterSocialWorkerDetails();
   enterChildrenPage.defineChildAdditionalNeeds();
   enterChildrenPage.defineContactDetailsVisibility();
-  enterChildrenPage.defineAbilityToTakePartInProceedings();
+  enterChildrenPage.enterLitigationIssues('No', 'Mock reason');
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
