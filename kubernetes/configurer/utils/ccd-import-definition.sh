@@ -12,3 +12,5 @@ curl -k --fail --show-error --silent -X POST \
   -H "Authorization: Bearer ${userToken}" \
   -H "ServiceAuthorization: Bearer ${serviceToken}" \
   -F file=@${1}
+
+echo ""
