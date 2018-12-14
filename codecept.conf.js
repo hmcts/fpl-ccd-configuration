@@ -1,4 +1,21 @@
-/* global process */
+/* global require, process */
+const _ = require('lodash');
+
+const container = require('codeceptjs').container;
+
+container.support = new Proxy(container.support, {
+  /**
+   * Handler that makes deep clone of registered support objects declared via `include` configuration property.
+   *
+   * @param target
+   * @param thisArg
+   * @param argumentsList
+   * @returns {*}
+   */
+  apply(target, thisArg, argumentsList) {
+    return _.cloneDeep(target.apply(thisArg, argumentsList));
+  },
+});
 
 exports.config = {
   output: './output',
