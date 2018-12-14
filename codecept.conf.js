@@ -49,17 +49,27 @@ exports.config = {
     ordersNeededPage: './e2e/pages/ordersNeeded/ordersNeeded.js',
     enterFamilyManPage: './e2e/pages/enterFamilyMan/enterFamilyMan.js',
     changeCaseNamePage: './e2e/pages/changeCaseName/changeCaseName.js',
-    submitApplicationPage: './e2e/pages/submitApplication/submitApplication.js'
+    submitApplicationPage: './e2e/pages/submitApplication/submitApplication.js',
   },
   plugins: {
     autoDelay: {
       enabled: true,
+      methods: [
+        'click',
+        'doubleClick',
+        'rightClick',
+        'fillField',
+        'pressKey',
+        'checkOption',
+        'selectOption',
+      ],
     },
     retryFailedStep: {
       enabled: true,
     },
     screenshotOnFail: {
       enabled: true,
+      fullPageScreenshots: true,
     },
   },
   tests: './e2e/paths/*_test.js',

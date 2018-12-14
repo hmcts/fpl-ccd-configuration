@@ -1,5 +1,6 @@
 const I = actor();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
+
 let activeChild = 'firstChild';
 
 module.exports = {
@@ -48,6 +49,7 @@ module.exports = {
 
   enterChildDetails(name, day, month, year, gender = 'Boy') {
     I.fillField(this.fields(activeChild).fullName, name);
+    I.click(this.fields(activeChild).DOB.day);
     I.fillField(this.fields(activeChild).DOB.day, day);
     I.fillField(this.fields(activeChild).DOB.month, month);
     I.fillField(this.fields(activeChild).DOB.year, year);
