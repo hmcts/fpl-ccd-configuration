@@ -19,10 +19,11 @@ module.exports = {
   },
   findAddressButton: 'Find address',
   cantEnterPostcodeLink: locate('span').withText('I can\'t enter a UK postcode'),
-  
+
   lookupPostcode(address) {
     I.fillField(this.fields.postcodeLookup, address.postcode);
     I.click(this.findAddressButton);
+    I.waitForElement(locate(this.fields.addressList).find('option').withText(address.lookupOption));
     I.selectOption(this.fields.addressList, address.lookupOption);
   },
 
