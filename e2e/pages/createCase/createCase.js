@@ -18,7 +18,7 @@ module.exports = {
   },
 
   createNewCase() {
-    I.selectOption(this.fields.jurisdiction, 'Public Law');
+    I.selectOption(this.fields.jurisdiction, 'Family Public Law');
     I.selectOption(this.fields.caseType, 'Care, supervision and EPOs');
     I.selectOption(this.fields.event, 'Open case');
     I.click(this.startButton);
