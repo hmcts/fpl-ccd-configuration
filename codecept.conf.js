@@ -29,7 +29,7 @@ exports.config = {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: true,
       waitForNavigation: 'networkidle0',
-      waitForTimeout: 30000,
+      waitForTimeout: 15000,
       chrome: {
         ignoreHTTPSErrors: true,
         args: process.env.PROXY_SERVER ? [
@@ -90,7 +90,7 @@ exports.config = {
     },
   },
   tests: './e2e/paths/*_test.js',
-  timeout: 30000,
+  timeout: 15000,
   mocha: {
     reporterOptions: {
       'codeceptjs-cli-reporter': {
