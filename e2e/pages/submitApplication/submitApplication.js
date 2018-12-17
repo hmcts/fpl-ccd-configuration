@@ -3,10 +3,12 @@ const I = actor();
 module.exports = {
 
   fields: {
-    consentCheckbox: '#submissionConsent-agree', 
+    consentCheckbox: '#submissionConsent-agree',
   },
-  
-  giveConsent() {
+
+  giveConsentAndProgress() {
     I.checkOption(this.fields.consentCheckbox);
+    I.click('Continue');
+    I.click('Submit');
   },
 };

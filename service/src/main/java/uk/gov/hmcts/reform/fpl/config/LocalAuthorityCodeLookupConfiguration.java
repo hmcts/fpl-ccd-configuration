@@ -22,7 +22,8 @@ public class LocalAuthorityCodeLookupConfiguration {
         checkNotNull(emailDomain, "Email domain cannot be null");
 
         if (mapping.get(emailDomain) == null) {
-            throw new UnknownLocalAuthorityDomainException(emailDomain + " not found");
+            throw new UnknownLocalAuthorityDomainException(emailDomain + " not found",
+                "The email address was not linked to a known Local Authority");
         }
 
         return mapping.get(emailDomain);

@@ -49,7 +49,8 @@ exports.config = {
     ordersNeededPage: './e2e/pages/ordersNeeded/ordersNeeded.js',
     enterFamilyManPage: './e2e/pages/enterFamilyMan/enterFamilyMan.js',
     changeCaseNamePage: './e2e/pages/changeCaseName/changeCaseName.js',
-    submitApplicationPage: './e2e/pages/submitApplication/submitApplication.js'
+    submitApplicationPage: './e2e/pages/submitApplication/submitApplication.js',
+    sendToGatekeeperPage: './e2e/pages/sendToGatekeeper/sendToGatekeeper.js'
   },
   plugins: {
     autoDelay: {

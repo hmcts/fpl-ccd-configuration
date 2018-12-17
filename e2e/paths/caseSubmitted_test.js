@@ -9,9 +9,7 @@ Before((I, caseViewPage) => {
 });
 
 Scenario('Can give consent and submit the case', (I, caseViewPage, submitApplicationPage) => {
-  submitApplicationPage.giveConsent();
-  I.click('Continue');  
-  I.click('Submit');
+  submitApplicationPage.giveConsentAndProgress();
   I.waitForElement('.tabs');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   I.dontSee(caseViewPage.actionsDropdown);
@@ -21,7 +19,7 @@ Scenario('Can give consent and submit the case', (I, caseViewPage, submitApplica
 });
 
 Scenario('Cannot submit a case unless consent is given', I => {
-  I.see(`I, ${config.swanseaLocalAuthorityUserOne.forename} ${config.swanseaLocalAuthorityUserOne.surname}, believe that the facts stated in this application are true.`);  
+  I.see(`I, ${config.swanseaLocalAuthorityUserOne.forename} ${config.swanseaLocalAuthorityUserOne.surname}, believe that the facts stated in this application are true.`);
   I.click('Continue');
   I.seeInCurrentUrl('/submitApplication');
 });

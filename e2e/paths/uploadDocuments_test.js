@@ -34,9 +34,7 @@ Scenario('As a local authority I have the ability to upload a document after sub
   uploadDocumentsPage.selectSocialWorkChronologyToFollow(config.testFile);
   I.continueAndSubmit();
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationPage.giveConsent();
-  I.click('Continue');
-  I.click('Submit');
+  submitApplicationPage.giveConsentAndProgress();
   I.waitForElement('.tabs');
   caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsPage.uploadSocialWorkAssessment(config.testFile);

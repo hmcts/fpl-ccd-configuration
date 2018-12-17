@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.exceptions;
 
-public class UnknownLocalAuthorityDomainException extends RuntimeException {
-    public UnknownLocalAuthorityDomainException(String message) {
-        super(message);
+public class UnknownLocalAuthorityDomainException extends AboutToStartOrSubmitCallbackException {
+    public UnknownLocalAuthorityDomainException(String message, String userMessage) {
+        super(message, userMessage);
     }
 }

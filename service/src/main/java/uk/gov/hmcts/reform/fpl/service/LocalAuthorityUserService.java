@@ -59,7 +59,8 @@ public class LocalAuthorityUserService {
         List<String> userIds = localAuthorityUserLookupConfiguration.getUserIds(localAuthorityCode);
 
         if (userIds.isEmpty()) {
-            throw new NoAssociatedUsersException("No users found for the local authority '" + localAuthorityCode + "'");
+            throw new NoAssociatedUsersException("No users found for the local authority '" + localAuthorityCode
+                + "'", "No users were found for the local authority");
         }
 
         return userIds;

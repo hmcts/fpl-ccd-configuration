@@ -25,7 +25,8 @@ public class LocalAuthorityUserLookupConfiguration {
         List<String> userIds = mapping.get(localAuthorityCode);
 
         if (userIds == null) {
-            throw new UnknownLocalAuthorityCodeException("Local authority '" + localAuthorityCode + "' was not found");
+            throw new UnknownLocalAuthorityCodeException("Local authority '" + localAuthorityCode + "' was not "
+                + "found", "The local authority was not found");
         }
 
         return userIds;
