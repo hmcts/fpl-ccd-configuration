@@ -1,10 +1,14 @@
 const I = actor();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
-let activeOther = 'firstOther';
 
 module.exports = {
+  state: {
+    context: 'firstOther',
+  },
 
-  fields: (otherNo) => {
+  fields: function () {
+    const otherNo = this.state.context;
+    
     return {
       name: `#others_${otherNo}_name`,
       DOB: {
@@ -35,43 +39,43 @@ module.exports = {
   addOtherButton: 'Add new',
 
   addOther() {
-    if (activeOther === 'additionalOthers_0') {
+    if (this.state.context === 'additionalOthers_0') {
       throw new Error('Adding additional others is not supported in the test');
     }
 
     I.click(this.addOtherButton);
-    activeOther = 'additionalOthers_0';
+    this.state.context = 'additionalOthers_0';
   },
 
   enterOtherDetails(other) {
-    I.waitForElement(this.fields(activeOther).name);
-    I.fillField(this.fields(activeOther).name, other.name);
-    I.fillField(this.fields(activeOther).DOB.day, other.DOB.day);
-    I.fillField(this.fields(activeOther).DOB.month, other.DOB.month);
-    I.fillField(this.fields(activeOther).DOB.year, other.DOB.year);
-    I.selectOption(this.fields(activeOther).gender, other.gender);
-    I.fillField(this.fields(activeOther).birthPlace, other.birthPlace);
-    within(this.fields(activeOther).address, () => {
+    I.fillField(this.fields().name, other.name);
+    I.click(this.fields().DOB.day);
+    I.fillField(this.fields().DOB.day, other.DOB.day);
+    I.fillField(this.fields().DOB.month, other.DOB.month);
+    I.fillField(this.fields().DOB.year, other.DOB.year);
+    I.selectOption(this.fields().gender, other.gender);
+    I.fillField(this.fields().birthPlace, other.birthPlace);
+    within(this.fields().address, () => {
       postcodeLookup.lookupPostcode(other.address);
     });
-    I.fillField(this.fields(activeOther).telephoneNumber, other.telephoneNumber);
+    I.fillField(this.fields().telephoneNumber, other.telephoneNumber);
   },
 
   enterRelationshipToChild(childInformation) {
-    I.fillField(this.fields(activeOther).relationshipToChild, childInformation);
+    I.fillField(this.fields().relationshipToChild, childInformation);
   },
 
   enterContactDetailsHidden(option) {
-    I.click(this.fields(activeOther).detailsHidden(option).option);
+    I.click(this.fields().detailsHidden(option).option);
     if (option === 'Yes') {
-      I.fillField(this.fields(activeOther).detailsHidden(option).reason, 'mock reason');
+      I.fillField(this.fields().detailsHidden(option).reason, 'mock reason');
     }
   },
 
   enterLitigationIssues(option) {
-    I.click(this.fields(activeOther).litigationIssues(option).option);
+    I.click(this.fields().litigationIssues(option).option);
     if (option === 'Yes') {
-      I.fillField(this.fields(activeOther).litigationIssues(option).reason, 'mock reason');
+      I.fillField(this.fields().litigationIssues(option).reason, 'mock reason');
     }
   },
 };

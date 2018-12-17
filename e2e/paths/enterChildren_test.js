@@ -1,4 +1,5 @@
 const config = require('../config.js');
+
 const addresses = [
   {
     lookupOption: 'Flat 2, Caversham House 15-17, Church Road, Reading',

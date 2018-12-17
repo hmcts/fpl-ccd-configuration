@@ -1,10 +1,14 @@
 const I = actor();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
-let activeChild = 'firstChild';
 
 module.exports = {
-
-  fields: (childNo) => {
+  state: {
+    context: 'firstChild',
+  },
+  
+  fields: function() {
+    const childNo = this.state.context;
+    
     return {
       fullName: `#children_${childNo}_childName`,
       DOB: {
@@ -38,67 +42,68 @@ module.exports = {
   addChildButton: 'Add new',
 
   addChild() {
-    if (activeChild === 'additionalChildren_0') {
+    if (this.state.context === 'additionalChildren_0') {
       throw new Error('Adding more children is not supported in the test');
     }
 
     I.click(this.addChildButton);
-    activeChild = 'additionalChildren_0';
+    this.state.context = 'additionalChildren_0';
   },
 
   enterChildDetails(name, day, month, year, gender = 'Boy') {
-    I.fillField(this.fields(activeChild).fullName, name);
-    I.fillField(this.fields(activeChild).DOB.day, day);
-    I.fillField(this.fields(activeChild).DOB.month, month);
-    I.fillField(this.fields(activeChild).DOB.year, year);
-    I.selectOption(this.fields(activeChild).gender, gender);
+    I.fillField(this.fields().fullName, name);
+    I.click(this.fields().DOB.day);
+    I.fillField(this.fields().DOB.day, day);
+    I.fillField(this.fields().DOB.month, month);
+    I.fillField(this.fields().DOB.year, year);
+    I.selectOption(this.fields().gender, gender);
   },
 
   defineChildSituation(day, month, year, situation = 'Living with respondents') {
-    I.selectOption(this.fields(activeChild).situation.selector, situation);
-    I.fillField(this.fields(activeChild).situation.dateStartedStaying.day, day);
-    I.fillField(this.fields(activeChild).situation.dateStartedStaying.month, month);
-    I.fillField(this.fields(activeChild).situation.dateStartedStaying.year, year);
+    I.selectOption(this.fields().situation.selector, situation);
+    I.fillField(this.fields().situation.dateStartedStaying.day, day);
+    I.fillField(this.fields().situation.dateStartedStaying.month, month);
+    I.fillField(this.fields().situation.dateStartedStaying.year, year);
   },
 
   enterAddress(address) {
-    within(this.fields(activeChild).situation.addressOfChild, () => {
+    within(this.fields().situation.addressOfChild, () => {
       postcodeLookup.lookupPostcode(address);
     });
   },
 
   enterKeyDatesAffectingHearing(keyDates = 'Tuesday the 11th') {
-    I.fillField(this.fields(activeChild).keyDates, keyDates);
+    I.fillField(this.fields().keyDates, keyDates);
   },
 
   enterSummaryOfCarePlan(carePlan = 'care plan summary') {
-    I.fillField(this.fields(activeChild).careAndContactPlan, carePlan);
+    I.fillField(this.fields().careAndContactPlan, carePlan);
   },
 
   defineAdoptionIntention() {
-    I.click(this.fields(activeChild).adoptionNo);
+    I.click(this.fields().adoptionNo);
   },
 
   enterParentsDetails(fatherResponsible = 'Yes', motherName = 'Laura Smith', fatherName = 'David Smith') {
-    I.fillField(this.fields(activeChild).mothersName, motherName);
-    I.fillField(this.fields(activeChild).fathersName, fatherName);
-    I.selectOption(this.fields(activeChild).fatherResponsible, fatherResponsible);
+    I.fillField(this.fields().mothersName, motherName);
+    I.fillField(this.fields().fathersName, fatherName);
+    I.selectOption(this.fields().fatherResponsible, fatherResponsible);
   },
 
   enterSocialWorkerDetails(socialWorkerName = 'James Jackson', socialWorkerTel = '01234567') {
-    I.fillField(this.fields(activeChild).socialWorkerName, socialWorkerName);
-    I.fillField(this.fields(activeChild).socialWorkerTel, socialWorkerTel);
+    I.fillField(this.fields().socialWorkerName, socialWorkerName);
+    I.fillField(this.fields().socialWorkerTel, socialWorkerTel);
   },
 
   defineChildAdditionalNeeds() {
-    I.click(this.fields(activeChild).additionalNeedsNo);
+    I.click(this.fields().additionalNeedsNo);
   },
 
   defineContactDetailsVisibility() {
-    I.click(this.fields(activeChild).contactHiddenNo);
+    I.click(this.fields().contactHiddenNo);
   },
 
   defineAbilityToTakePartInProceedings() {
-    I.click(this.fields(activeChild).litigationNo);
+    I.click(this.fields().litigationNo);
   },
 };

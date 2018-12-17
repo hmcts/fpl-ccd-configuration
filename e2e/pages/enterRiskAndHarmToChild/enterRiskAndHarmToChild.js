@@ -18,7 +18,7 @@ module.exports = {
     },
   },
 
-  completePhyiscalHarm() {
+  completePhysicalHarm() {
     I.click(this.fields.physicalHarm.yes);
     I.checkOption(this.fields.physicalHarm.pastHarm);
   },
