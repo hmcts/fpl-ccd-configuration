@@ -2,7 +2,7 @@ const config = require('../config.js');
 
 let caseId;
 
-Feature('Send notification to gatekeeper');
+Feature('Send notification to gatekeeper').retry(2);
 
 Before(async (I, caseViewPage, loginPage, submitApplicationPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
