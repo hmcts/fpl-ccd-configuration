@@ -257,7 +257,7 @@
     "ListElementCode": "litigationIssuesReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
-    "FieldShowCondition": "litigationIssues=\"Yes\"",
+    "FieldShowCondition": "litigationIssues=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
@@ -1084,7 +1084,7 @@
     "ListElementCode": "litigationIssuesReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
-    "FieldShowCondition": "litigationIssues=\"Yes\"",
+    "FieldShowCondition": "litigationIssues=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
@@ -1211,7 +1211,7 @@
     "ListElementCode": "contactDetailsHiddenReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "contactDetailsHidden=\"Yes\"",
+    "FieldShowCondition": "contactDetailsHidden=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
@@ -1237,7 +1237,7 @@
     "ListElementCode": "litigationIssuesReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
-    "FieldShowCondition": "litigationIssues=\"Yes\"",
+    "FieldShowCondition": "litigationIssues=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
