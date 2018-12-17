@@ -254,7 +254,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Child",
-    "ListElementCode": "litigationIssuesReason",
+    "ListElementCode": "litigationIssuesDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
     "FieldShowCondition": "litigationIssues=\"YES\"",
@@ -1081,7 +1081,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Others",
-    "ListElementCode": "litigationIssuesReason",
+    "ListElementCode": "litigationIssuesDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
     "FieldShowCondition": "litigationIssues=\"YES\"",
@@ -1234,7 +1234,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
-    "ListElementCode": "litigationIssuesReason",
+    "ListElementCode": "litigationIssuesDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
     "FieldShowCondition": "litigationIssues=\"YES\"",

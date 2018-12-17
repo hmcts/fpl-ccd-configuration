@@ -18,8 +18,8 @@ module.exports = {
         address: `#respondents_${id}_address_address`,
         telephone: `#respondents_${id}_telephone`,
         relationshipToChild: `#respondents_${id}_relationshipToChild`,
-        litigationIssue: `#respondents_${id}_litigationIssues`,
-        litigationIssueReason: `#respondents_${id}_litigationIssuesReason`,
+        litigationIssues: `#respondents_${id}_litigationIssues`,
+        litigationIssuesDetails: `#respondents_${id}_litigationIssuesDetails`,
       },
       contactDetailsHidden: (option) => {
         return {
@@ -58,10 +58,10 @@ module.exports = {
     }
   },
 
-  enterLitigationIssues(id, litigationIssue = 'No', litigationIssueReason = 'Mock reason') {
-    I.selectOption(this.fields(id).respondent.litigationIssue, litigationIssue);
+  enterLitigationIssues(id, litigationIssue = 'No', litigationIssueDetail = 'Mock reason') {
+    I.selectOption(this.fields(id).respondent.litigationIssues, litigationIssue);
     if (litigationIssue === 'Yes') {
-      I.fillField(this.fields(id).respondent.litigationIssueReason, litigationIssueReason);
+      I.fillField(this.fields(id).respondent.litigationIssuesDetails, litigationIssueDetail);
     }
   },
 };

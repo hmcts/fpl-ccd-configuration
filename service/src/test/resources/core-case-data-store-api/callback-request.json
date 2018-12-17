@@ -78,7 +78,7 @@
               "childInformation": "Friend of family",
               "litigationIssues": "Yes",
               "detailsHiddenReason": "Other two hide from parties",
-              "litigationIssuesReason": "Other two inability to take part in proceedings"
+              "litigationIssuesDetails": "Other two inability to take part in proceedings"
             }
           }
         ]
@@ -168,7 +168,7 @@
               "detailsHiddenReason": "test child two contact details hidden reason",
               "fathersResponsibility": "Yes",
               "additionalNeedsDetails": "learning disabilities",
-              "litigationIssuesReason": "test child two ability to take part in proceedings",
+              "litigationIssuesDetails": "test child two ability to take part in proceedings",
               "placementOrderApplication": "Yes"
             }
           }
@@ -235,7 +235,7 @@
               "litigationIssues": "Yes",
               "relationshipToChild": "Brother",
               "contactDetailsHidden": "Yes",
-              "litigationIssuesReason": "respondent two litigation capacity reason",
+              "litigationIssuesDetails": "respondent two litigation capacity reason",
               "contactDetailsHiddenReason": "respondent two hidden contact details reason"
             }
           },
@@ -278,7 +278,7 @@
           "litigationIssues": "Yes",
           "relationshipToChild": "Uncle",
           "contactDetailsHidden": "Yes",
-          "litigationIssuesReason": "respondent one test litigation reason",
+          "litigationIssuesDetails": "respondent one test litigation reason",
           "contactDetailsHiddenReason": "Hide from all"
         }
       },
