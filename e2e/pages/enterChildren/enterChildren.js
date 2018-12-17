@@ -106,7 +106,7 @@ module.exports = {
 
   enterLitigationIssues(litigationIssue = 'No', litigationIssueReason = 'Mock reason') {
     I.selectOption(this.fields().litigationIssue, litigationIssue);
-    if (litigationIssue == 'Yes') {
+    if (litigationIssue === 'Yes') {
       I.fillField(this.fields().litigationIssueReason, litigationIssueReason);
     }
   },

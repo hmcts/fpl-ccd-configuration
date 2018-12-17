@@ -1211,7 +1211,7 @@
     "ListElementCode": "contactDetailsHiddenReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "contactDetailsHidden=\"YES\"",
+    "FieldShowCondition": "contactDetailsHidden=\"Yes\"",
     "SecurityClassification": "Public"
   },
   {

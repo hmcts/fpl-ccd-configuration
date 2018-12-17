@@ -19,12 +19,12 @@ Scenario('Complete entering others details in the c110a application', (I, enterO
   enterOthersPage.enterOtherDetails(others[0]);
   enterOthersPage.enterRelationshipToChild('Tim Smith');
   enterOthersPage.enterContactDetailsHidden('Yes');
-  enterOthersPage.enterLitigationIssues('No', 'Mock reason');
+  enterOthersPage.enterLitigationIssues('No');
   enterOthersPage.addOther();
   enterOthersPage.enterOtherDetails(others[1]);
   enterOthersPage.enterRelationshipToChild('Tim Smith');
   enterOthersPage.enterContactDetailsHidden('Yes');
-  enterOthersPage.enterLitigationIssues('No', 'Mock reason');
+  enterOthersPage.enterLitigationIssues('No');
   I.continueAndSubmit();
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(1, 'Person 1', 'Full name', 'John Smith');
