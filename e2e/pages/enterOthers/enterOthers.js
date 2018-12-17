@@ -21,7 +21,11 @@ module.exports = {
       address: `#others_${otherNo}_address_address`,
       telephoneNumber: `#others_${otherNo}_telephone`,
       relationshipToChild: `#others_${otherNo}_childInformation`,
-      litigationIssues: `#others_${otherNo}_litigationIssues`,
+      litigationIssues: {
+        yes: `#others_${otherNo}_litigationIssues-YES`,
+        no: `#others_${otherNo}_litigationIssues-NO`,
+        dont_know: `#others_${otherNo}_litigationIssues-DONT_KNOW`,
+      },
       litigationIssuesDetails: `#others_${otherNo}_litigationIssuesDetails`,
       detailsHidden: (option) => {
         return {
@@ -68,9 +72,20 @@ module.exports = {
     }
   },
 
-  enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'Mock reason') {
-    I.selectOption(this.fields().litigationIssues, litigationIssue);
-    if (litigationIssue === 'Yes') {
+  enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
+    litigationIssue = litigationIssue.toLowerCase();
+    switch(litigationIssue) {
+    case 'yes':
+      I.checkOption(this.fields().litigationIssues.yes);
+      break;
+    case 'no':
+      I.checkOption(this.fields().litigationIssues.no);      
+      break;
+    case 'dont know':
+      I.checkOption(this.fields().litigationIssues.dont_know);
+      break;
+    }
+    if (litigationIssue === 'yes') {
       I.fillField(this.fields().litigationIssuesDetails, litigationIssueDetail);
     }
   },

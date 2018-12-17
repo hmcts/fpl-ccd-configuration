@@ -36,7 +36,11 @@ module.exports = {
       socialWorkerTel: `#children_${childNo}_socialWorkerTel`,
       additionalNeedsNo: `#children_${childNo}_additionalNeeds-No`,
       contactHiddenNo: `#children_${childNo}_detailsHidden-No`,
-      litigationIssues: `#children_${childNo}_litigationIssues`,
+      litigationIssues: {
+        yes: `#children_${childNo}_litigationIssues-YES`,
+        no: `#children_${childNo}_litigationIssues-NO`,
+        dont_know: `#children_${childNo}_litigationIssues-DONT_KNOW`,
+      },
       litigationIssuesDetails: `#children_${childNo}_litigationIssuesDetails`,
     };
   },
@@ -104,9 +108,20 @@ module.exports = {
     I.click(this.fields().contactHiddenNo);
   },
 
-  enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'Mock reason') {
-    I.selectOption(this.fields().litigationIssues, litigationIssue);
-    if (litigationIssue === 'Yes') {
+  enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
+    litigationIssue = litigationIssue.toLowerCase();
+    switch(litigationIssue) {
+    case 'yes':
+      I.checkOption(this.fields().litigationIssues.yes);
+      break;
+    case 'no':
+      I.checkOption(this.fields().litigationIssues.no);      
+      break;
+    case 'dont know':
+      I.checkOption(this.fields().litigationIssues.dont_know);
+      break;
+    }
+    if (litigationIssue === 'yes') {
       I.fillField(this.fields().litigationIssuesDetails, litigationIssueDetail);
     }
   },
