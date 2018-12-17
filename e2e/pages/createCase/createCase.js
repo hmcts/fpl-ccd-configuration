@@ -18,8 +18,8 @@ module.exports = {
   },
 
   createNewCase() {
-    I.selectOption(this.fields.jurisdiction, 'Public Law DRAFT');
-    I.selectOption(this.fields.caseType, 'Shared_Storage_DRAFT_v0.3');
+    I.selectOption(this.fields.jurisdiction, 'Family Public Law');
+    I.selectOption(this.fields.caseType, 'Care, supervision and EPOs');
     I.selectOption(this.fields.event, 'Open case');
     I.click(this.startButton);
     this.enterCaseName();
