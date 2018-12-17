@@ -2,8 +2,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Shared_Storage_DRAFTType",
-    "Name": "Shared_Storage_DRAFT_v0.3",
-    "Description": "Shared_Storage_DRAFt_v01",
+    "Name": "Care, supervision and EPOs",
+    "Description": "Care, supervision and emergency protection orders",
     "JurisdictionID": "PUBLICLAW",
     "SecurityClassification": "Public"
   }
