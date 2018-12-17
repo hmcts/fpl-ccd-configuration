@@ -46,7 +46,7 @@ Scenario('As a local authority I have the ability to upload a document after sub
   I.seeDocument('Social work assessment', 'mockFile.txt', 'Attached');
 });
 
-Scenario('Ability to upload court bundle only after case is submitted', (I, uploadDocumentsPage, submitApplicationPage, caseViewPage) => {
+Scenario('Ability for a local authority to upload court bundle only after case is submitted', (I, uploadDocumentsPage, submitApplicationPage, caseViewPage) => {
   I.dontSee('Court bundle');
   I.continueAndSubmit();
   caseViewPage.goToNewActions(config.applicationActions.submitCase);

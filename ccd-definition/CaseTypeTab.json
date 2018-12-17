@@ -235,18 +235,8 @@
     "Channel": "CaseWorker",
     "TabID": "EvidenceTab",
     "TabLabel": "Evidence",
-    "TabDisplayOrder": 4,
-    "CaseFieldID": "courtBundleLabel",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "courtBundle",
     "TabFieldDisplayOrder": 9
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
-    "Channel": "CaseWorker",
-    "TabID": "EvidenceTab",
-    "TabLabel": "Evidence",
-    "TabDisplayOrder": 4,
-    "CaseFieldID": "documents_courtBundle",
-    "TabFieldDisplayOrder": 10
   }
 ]

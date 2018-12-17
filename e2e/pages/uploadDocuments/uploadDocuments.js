@@ -10,7 +10,7 @@ module.exports = {
     otherDocuments_1: '#documents_socialWorkOther_0_typeOfDocument',
     otherDocuments_2: '#documents_socialWorkOther_1_typeOfDocument',
     standardDirections: '#standardDirections',
-    courtBundle: '#documents_courtBundle',
+    courtBundle: '#courtBundle_document',
   },
 
   fields: {
