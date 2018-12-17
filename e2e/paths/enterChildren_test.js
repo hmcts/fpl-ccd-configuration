@@ -52,7 +52,7 @@ Scenario('completing entering child information in the c110a application', (I, e
   enterChildrenPage.enterSocialWorkerDetails();
   enterChildrenPage.defineChildAdditionalNeeds();
   enterChildrenPage.defineContactDetailsVisibility();
-  enterChildrenPage.enterLitigationIssues('No');
+  enterChildrenPage.enterLitigationIssues('Yes', 'mock reason');
   enterChildrenPage.addChild();
   enterChildrenPage.enterChildDetails('Susan', '01', '07', '2016');
   enterChildrenPage.defineChildSituation('02', '11', '2017');
@@ -89,7 +89,8 @@ Scenario('completing entering child information in the c110a application', (I, e
   I.seeAnswerInTab(14, 'Child 1', 'Social worker\'s telephone number', '01234567');
   I.seeAnswerInTab(15, 'Child 1', 'Does the child have any additional needs?', 'No');
   I.seeAnswerInTab(16, 'Child 1', 'Do you need contact details hidden from other parties?', 'No');
-  I.seeAnswerInTab(17, 'Child 1', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'No');
+  I.seeAnswerInTab(17, 'Child 1', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'Yes');
+  I.seeAnswerInTab(18, 'Child 1', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
 
   I.seeAnswerInTab(1, 'Additional children 1', 'Child\'s full name', 'Susan');
   I.seeAnswerInTab(2, 'Additional children 1', 'Date of birth', '1 Jul 2016');
