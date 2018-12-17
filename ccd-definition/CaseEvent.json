@@ -250,6 +250,8 @@
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"    
   },
   {
@@ -262,6 +264,8 @@
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"    
   }
 ]
