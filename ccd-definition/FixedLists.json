@@ -266,19 +266,19 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "LitigationCapacityIssues",
-    "ListElementCode": "Yes",
+    "ListElementCode": "YES",
     "ListElement": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "LitigationCapacityIssues",
-    "ListElementCode": "No",
+    "ListElementCode": "NO",
     "ListElement": "No"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "LitigationCapacityIssues",
-    "ListElementCode": "Don't know",
+    "ListElementCode": "DONT_KNOW",
     "ListElement": "Don't know"
   }
 ]
