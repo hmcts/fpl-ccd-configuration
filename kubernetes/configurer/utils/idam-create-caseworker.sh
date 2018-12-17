@@ -12,6 +12,8 @@ if [[ ${searchResponse} -eq 200 ]]; then
   exit 0
 fi
 
+echo "User ${email} - adding"
+
 IFS=',' read -ra roles <<< ${rolesStr}
 
 rolesJson=''

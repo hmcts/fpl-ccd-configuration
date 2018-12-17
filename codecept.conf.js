@@ -1,4 +1,21 @@
-/* global process */
+/* global require, process */
+const _ = require('lodash');
+
+const container = require('codeceptjs').container;
+
+container.support = new Proxy(container.support, {
+  /**
+   * Handler that makes deep clone of registered support objects declared via `include` configuration property.
+   *
+   * @param target
+   * @param thisArg
+   * @param argumentsList
+   * @returns {*}
+   */
+  apply(target, thisArg, argumentsList) {
+    return _.cloneDeep(target.apply(thisArg, argumentsList));
+  },
+});
 
 exports.config = {
   output: './output',
@@ -12,7 +29,7 @@ exports.config = {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: true,
       waitForNavigation: 'networkidle0',
-      waitForTimeout: 30000,
+      waitForTimeout: 15000,
       chrome: {
         ignoreHTTPSErrors: true,
         args: process.env.PROXY_SERVER ? [
@@ -50,21 +67,31 @@ exports.config = {
     enterFamilyManPage: './e2e/pages/enterFamilyMan/enterFamilyMan.js',
     changeCaseNamePage: './e2e/pages/changeCaseName/changeCaseName.js',
     submitApplicationPage: './e2e/pages/submitApplication/submitApplication.js',
-    sendToGatekeeperPage: './e2e/pages/sendToGatekeeper/sendToGatekeeper.js'
+    sendToGatekeeperPage: './e2e/pages/sendToGatekeeper/sendToGatekeeper.js',
   },
   plugins: {
     autoDelay: {
       enabled: true,
+      methods: [
+        'click',
+        'doubleClick',
+        'rightClick',
+        'fillField',
+        'pressKey',
+        'checkOption',
+        'selectOption',
+      ],
     },
     retryFailedStep: {
       enabled: true,
     },
     screenshotOnFail: {
       enabled: true,
+      fullPageScreenshots: true,
     },
   },
   tests: './e2e/paths/*_test.js',
-  timeout: 30000,
+  timeout: 15000,
   mocha: {
     reporterOptions: {
       'codeceptjs-cli-reporter': {
