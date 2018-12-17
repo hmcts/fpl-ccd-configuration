@@ -7,7 +7,7 @@
     "codeceptjs": "^1.4.6",
     "eslint": "5.10.0 ",
     "eslint-plugin-codeceptjs": "^0.4.0",
-    "husky": "^1.2.0",
+    "husky": "^1.2.1",
     "mocha-junit-reporter": "^1.18.0",
     "mocha-multi": "^1.0.1",
     "mochawesome": "^3.1.1",

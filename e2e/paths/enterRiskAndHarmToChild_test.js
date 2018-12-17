@@ -9,7 +9,7 @@ Before((I, caseViewPage) => {
 
 Scenario('complete half of the enter risk and harm to children in the c110a' +
   ' application', (I, enterRiskAndHarmToChildPage, caseViewPage) => {
-  enterRiskAndHarmToChildPage.completePhyiscalHarm();
+  enterRiskAndHarmToChildPage.completePhysicalHarm();
   enterRiskAndHarmToChildPage.completeEmotionalHarm();
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRisk);
@@ -22,7 +22,7 @@ Scenario('complete half of the enter risk and harm to children in the c110a' +
 
 Scenario('complete entering risk and harm to children in the c110a' +
   ' application', (I, enterRiskAndHarmToChildPage, caseViewPage) => {
-  enterRiskAndHarmToChildPage.completePhyiscalHarm();
+  enterRiskAndHarmToChildPage.completePhysicalHarm();
   enterRiskAndHarmToChildPage.completeEmotionalHarm();
   enterRiskAndHarmToChildPage.completeSexualAbuse();
   enterRiskAndHarmToChildPage.completeNeglect();
