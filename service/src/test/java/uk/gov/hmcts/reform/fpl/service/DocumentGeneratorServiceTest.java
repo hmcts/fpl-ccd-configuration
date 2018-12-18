@@ -46,7 +46,6 @@ class DocumentGeneratorServiceTest {
         caseDetails.getData().put("userFullName", "Emma Taylor");
 
         String content = textContentOf(createServiceInstance(clock).generateSubmittedFormPDF(caseDetails));
-
         String expectedContent = ResourceReader.readString("submitted-form-pdf-content.txt");
 
         assertThat(splitContentIntoTrimmedLines(content))
