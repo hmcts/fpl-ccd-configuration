@@ -53,7 +53,7 @@
           "birthPlace": "Armagh",
           "detailsHidden": "No",
           "childInformation": "Cousin",
-          "litigationIssues": "No",
+          "litigationIssues": "NO",
           "genderIdentification": "Unknown"
         },
         "additionalOthers": [
@@ -76,7 +76,7 @@
               "birthPlace": "Lisburn",
               "detailsHidden": "Yes",
               "childInformation": "Friend of family",
-              "litigationIssues": "Yes",
+              "litigationIssues": "YES",
               "detailsHiddenReason": "Other two hide from parties",
               "litigationIssuesDetails": "Other two inability to take part in proceedings"
             }
@@ -128,7 +128,7 @@
           "additionalNeeds": "Yes",
           "livingSituation": "Living with respondents",
           "socialWorkerTel": "0123456789",
-          "litigationIssues": "No",
+          "litigationIssues": "NO",
           "socialWorkerName": "Helen Green",
           "detailsHiddenReason": "History of domestic violence with relatives",
           "fathersResponsibility": "Yes",
@@ -163,7 +163,7 @@
               "additionalNeeds": "Yes",
               "livingSituation": "Living with respondents",
               "socialWorkerTel": "07749972242",
-              "litigationIssues": "Yes",
+              "litigationIssues": "YES",
               "socialWorkerName": "Paul Wilsdon",
               "detailsHiddenReason": "test child two contact details hidden reason",
               "fathersResponsibility": "Yes",
@@ -232,7 +232,7 @@
               "telephone": "02892611016",
               "placeOfBirth": "Newry",
               "genderIdentify": "Unknown",
-              "litigationIssues": "Yes",
+              "litigationIssues": "YES",
               "relationshipToChild": "Brother",
               "contactDetailsHidden": "Yes",
               "litigationIssuesDetails": "respondent two litigation capacity reason",
@@ -256,7 +256,7 @@
               },
               "telephone": "0987654321",
               "placeOfBirth": "Reading",
-              "litigationIssues": "no"
+              "litigationIssues": "NO"
             }
           }
         ],
@@ -275,7 +275,7 @@
           },
           "telephone": "07712345678",
           "placeOfBirth": "Crewe",
-          "litigationIssues": "Yes",
+          "litigationIssues": "YES",
           "relationshipToChild": "Uncle",
           "contactDetailsHidden": "Yes",
           "litigationIssuesDetails": "respondent one test litigation reason",
