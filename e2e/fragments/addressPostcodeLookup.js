@@ -24,6 +24,7 @@ module.exports = {
     I.fillField(this.fields.postcodeLookup, address.postcode);
     I.click(this.findAddressButton);
     I.waitForElement(locate(this.fields.addressList).find('option').withText(address.lookupOption));
+    I.click(this.fields.addressList);
     I.selectOption(this.fields.addressList, address.lookupOption);
   },
 
