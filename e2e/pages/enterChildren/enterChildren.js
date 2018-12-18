@@ -111,15 +111,15 @@ module.exports = {
   enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
     litigationIssue = litigationIssue.toLowerCase();
     switch(litigationIssue) {
-    case 'yes':
-      I.checkOption(this.fields().litigationIssues.yes);
-      break;
-    case 'no':
-      I.checkOption(this.fields().litigationIssues.no);      
-      break;
-    case 'dont know':
-      I.checkOption(this.fields().litigationIssues.dont_know);
-      break;
+      case 'yes':
+        I.checkOption(this.fields().litigationIssues.yes);
+        break;
+      case 'no':
+        I.checkOption(this.fields().litigationIssues.no);      
+        break;
+      case 'dont know':
+        I.checkOption(this.fields().litigationIssues.dont_know);
+        break;
     }
     if (litigationIssue === 'yes') {
       I.fillField(this.fields().litigationIssuesDetails, litigationIssueDetail);
