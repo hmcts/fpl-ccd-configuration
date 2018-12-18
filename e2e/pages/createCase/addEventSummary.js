@@ -2,7 +2,7 @@ const I = actor();
 
 module.exports = {
 
-  submitButton: 'Submit',
+  submitButton: 'Save and continue',
 
   submitCase() {
     I.click(this.submitButton);
