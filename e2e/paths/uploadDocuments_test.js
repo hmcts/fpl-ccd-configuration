@@ -36,7 +36,7 @@ Scenario('As a local authority I have the ability to upload a document after sub
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationPage.giveConsent();
   I.click('Continue');
-  I.click('Save and continue');
+  I.click('Submit');
   I.waitForElement('.tabs');
   caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsPage.uploadSocialWorkAssessment(config.testFile);
@@ -52,7 +52,7 @@ Scenario('Ability for a local authority to upload court bundle only after case i
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationPage.giveConsent();
   I.click('Continue');
-  I.click('Save and continue');
+  I.click('Submit');
   I.waitForElement('.tabs');
   caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsPage.uploadCourtBundle(config.testFile);

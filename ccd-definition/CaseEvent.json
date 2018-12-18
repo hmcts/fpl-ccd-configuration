@@ -305,7 +305,7 @@
     "CaseTypeID": "Shared_Storage_DRAFTType",
     "ID": "uploadDocumentsAfterSubmission",
     "Name": "Documents",
-    "Description": "Upload a court bundle",
+    "Description": "Upload documents after submission",
     "DisplayOrder": 1,
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Submitted",
