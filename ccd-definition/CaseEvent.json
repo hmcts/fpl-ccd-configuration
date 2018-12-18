@@ -246,7 +246,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "ID": "uploadCourtBundle",
+    "ID": "uploadDocumentsAfterSubmission",
     "Name": "Documents",
     "Description": "Upload a court bundle",
     "DisplayOrder": 1,

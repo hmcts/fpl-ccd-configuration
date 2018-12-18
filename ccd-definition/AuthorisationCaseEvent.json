@@ -156,7 +156,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "Shared_Storage_DRAFTType",
-    "CaseEventID": "uploadCourtBundle",
+    "CaseEventID": "uploadDocumentsAfterSubmission",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRU"
   }
