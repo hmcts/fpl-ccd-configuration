@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseName",
     "Label": "Case Name",
     "HintText": "Include the Local Authority name and respondent’s last name. For example, Endley Council v Smith/Tate/Jones",
@@ -10,7 +10,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseLocalAuthority",
     "Label": "Local Authority :",
     "FieldType": "FixedList",
@@ -19,7 +19,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseIDReference",
     "Label": "Case ID",
     "FieldType": "Text",
@@ -27,7 +27,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "grounds",
     "Label": "Grounds for the application",
     "FieldType": "Grounds",
@@ -35,7 +35,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearing",
     "Label": "Hearing needed",
     "FieldType": "Hearing",
@@ -43,7 +43,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "internationalElement",
     "Label": "International element",
     "FieldType": "InternationalElement",
@@ -51,7 +51,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "factorsParenting",
     "Label": "Factors affecting parenting",
     "FieldType": "FactorsParenting",
@@ -59,7 +59,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadDocuments_paragraph_1",
     "Label": "You must upload these documents if possible. Give the reason and date you expect to provide it if you don’t have a document yet.",
     "FieldType": "Label",
@@ -67,7 +67,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadDocuments_paragraph_2",
     "Label": "If you have a Social Work Evidence Template (SWET), add it under ‘Other documents’.",
     "FieldType": "Label",
@@ -75,7 +75,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documents_socialWorkChronology_document",
     "Label": "1. Social work chronology",
     "FieldType": "UploadDocument",
@@ -83,7 +83,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documents_socialWorkStatement_document",
     "Label": "2. Social work statement and genogram",
     "FieldType": "UploadDocument",
@@ -91,7 +91,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documents_socialWorkAssessment_document",
     "Label": "3. Social work assessment",
     "FieldType": "UploadDocument",
@@ -99,7 +99,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documents_socialWorkCarePlan_document",
     "Label": "4. Care plan",
     "FieldType": "UploadDocument",
@@ -107,7 +107,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documents_socialWorkOther_border_top",
     "Label": "-------------------------------------------------------------------------------------------------------------",
     "FieldType": "Label",
@@ -115,7 +115,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documents_socialWorkOther",
     "Label": "Additional documents",
     "FieldType": "Collection",
@@ -124,7 +124,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documents_socialWorkOther_border_bottom",
     "Label": "-------------------------------------------------------------------------------------------------------------",
     "FieldType": "Label",
@@ -132,7 +132,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "children",
     "Label": "Children",
     "FieldType": "Children",
@@ -140,7 +140,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "applicant",
     "Label": "Applicant",
     "FieldType": "Applicant",
@@ -148,7 +148,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "solicitor",
     "Label": "Solicitor",
     "FieldType": "Solicitor",
@@ -156,7 +156,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "risks",
     "Label": "Risks and harm to children",
     "FieldType": "RiskAndHarm",
@@ -164,7 +164,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "proceeding",
     "Label": "Other proceedings",
     "FieldType": "Proceeding",
@@ -172,7 +172,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingPreferences",
     "Label": "Attending the hearing",
     "FieldType": "HearingPreferences",
@@ -180,7 +180,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "allocationProposal_label",
     "Label": "This should be completed by a solicitor with good knowledge of the case. Use the [President's Guidance](https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) and [schedule](https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf) on allocation and gatekeeping to make your recommendation.",
     "FieldType": "Label",
@@ -188,7 +188,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "allocationProposal",
     "Label": "Allocation proposal",
     "FieldType": "AllocationProposal",
@@ -196,7 +196,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "others",
     "Label": "Others to be given notice",
     "FieldType": "Person",
@@ -204,7 +204,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respondents",
     "Label": "Respondents",
     "FieldType": "Respondent",
@@ -212,7 +212,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "orders",
     "Label": "Orders and directions needed",
     "FieldType": "Orders",
@@ -220,7 +220,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submittedForm",
     "Label": "Attached PDF",
     "FieldType": "Document",
@@ -228,7 +228,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "familyManCaseNumber",
     "Label": "FamilyMan case number",
     "FieldType": "Text",
@@ -236,7 +236,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "standardDirectionsLabel",
     "Label": "Upload standard directions.",
     "FieldType": "Label",
@@ -244,7 +244,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "standardDirections",
     "Label": "Upload a file",
     "FieldType": "Document",
@@ -252,7 +252,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submissionConsentLabel",
     "Label": " ",
     "FieldType": "Text",
@@ -260,7 +260,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submissionConsent",
     "Label": " ",
     "FieldType": "MultiSelectList",

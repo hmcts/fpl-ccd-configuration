@@ -2,7 +2,7 @@
   "id": 12345,
   "jurisdiction": "PUBLICLAW",
   "state": "Open",
-  "case_type_id": "Shared_Storage_DRAFTType",
+  "case_type_id": "CARE_SUPERVISION_EPO",
   "security_classification": "PUBLIC",
   "case_data": {
     "caseLocalAuthority": "example",
