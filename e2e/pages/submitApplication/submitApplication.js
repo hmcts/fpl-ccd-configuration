@@ -13,5 +13,5 @@ module.exports = {
   progress() {
     I.click('Continue');
     I.click('Submit');
-  }
+  },
 };
