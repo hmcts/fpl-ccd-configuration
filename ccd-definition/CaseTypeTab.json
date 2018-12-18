@@ -235,7 +235,7 @@
     "Channel": "CaseWorker",
     "TabID": "EvidenceTab",
     "TabLabel": "Evidence",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 4,
     "CaseFieldID": "courtBundle",
     "TabFieldDisplayOrder": 9
   }
