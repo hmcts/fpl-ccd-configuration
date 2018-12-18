@@ -25,7 +25,7 @@ const addresses = [
   },
 ];
 
-Feature('Enter children in application').retry(2);
+Feature('Enter children in application');
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
