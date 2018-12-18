@@ -31,13 +31,13 @@ Application from London Borough of Southwark submitted on 26 November
 Orders
 Hearing needed
 Allocation proposal
-Living with respondentsChild's living situation
 GirlGender
 2002-02-02Date of birth
 16 years oldAge
 Sarah ReevesName
 History of domestic violence with relatives
 YesConfidential contact details
+Don't knowLitigation capacity issues
 Autism
 YesAdditional needs
 0123456789Social worker's telephone number
@@ -76,7 +76,6 @@ Interpreter
 Attending the hearing
 Child 1
 Child 2
-James SmithName
 Hide from all
 YesConfidential contact details
 -Anything else to help take part in proceedings
@@ -98,6 +97,8 @@ MaleGender
 Paul SmithName
 test child two contact details hidden reason
 YesConfidential contact details
+test child two ability to take part in proceedings
+YesLitigation capacity issues
 learning disabilities
 YesAdditional needs
 07749972242Social worker's telephone number
@@ -113,11 +114,11 @@ test child two key dateKey dates
 Date this began: 2 February 2002
 , BT66 7RR, MK10 1SA, MK
 , Milton Keynes, Central Milton KeynesCarnegie House
+Living with respondentsChild's living situation
 Respondent 1
-Respondent 2
 -Confidential contact details
 -Anything else to help take part in proceedings
-noLitigation capacity issues
+NoLitigation capacity issues
 -Separate waiting room or other security measures
 -Facilities or assistance for a disability
 -Intermediary
@@ -150,10 +151,9 @@ NewryPlace of birth
 UnknownGender
 2 April 1933Date of birth
 85 years oldAge
+James SmithName
+Respondent 2
 Respondent 3
-Applicant
-, Newcastle, Newcastle street, Newcastle roadFlat 29Current address
-LisburnPlace of birth
 MaleGender
 2 February 2000Date of birth
 Peter LaveryName
@@ -187,6 +187,7 @@ jane@smith.comEmail address
 Legal adviserJob title
 Jane SmithContact name
 London Borough of SouthwarkName
+Applicant
 Other 1
 Other 2
 NoAnything else
@@ -219,9 +220,8 @@ Yes
 Other two hide from parties
 Confidential contact details
 -Anything else to help take part in the proceedings
-Yes
 Other two inability to take part in proceedings
-Litigation capacity issues
+YesLitigation capacity issues
 -Separate waiting room or other security measures
 -Facilities or assistance for a disability
 -Intermediary
@@ -230,6 +230,8 @@ Litigation capacity issues
 Friend of familyRelationship to the child
 07749972241Telephone number
 , Northern Ireland, Cork, BTTT TTT
+, Newcastle, Newcastle street, Newcastle roadFlat 29Current address
+LisburnPlace of birth
 Grounds for the application
 Threshold evidence
 grounds for application criteria

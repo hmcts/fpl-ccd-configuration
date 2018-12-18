@@ -262,5 +262,23 @@
     "ID": "Consent",
     "ListElementCode": "agree",
     "ListElement": "I agree with this statement"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LitigationCapacityIssues",
+    "ListElementCode": "YES",
+    "ListElement": "Yes"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LitigationCapacityIssues",
+    "ListElementCode": "NO",
+    "ListElement": "No"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LitigationCapacityIssues",
+    "ListElementCode": "DONT_KNOW",
+    "ListElement": "Don't know"
   }
 ]
