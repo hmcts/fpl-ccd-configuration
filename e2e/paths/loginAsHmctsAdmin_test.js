@@ -7,7 +7,8 @@ Before(async (I, caseViewPage, submitApplicationPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseId = await I.grabTextFrom('.heading-medium');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationPage.giveConsentAndProgress();
+  submitApplicationPage.giveConsent();
+  submitApplicationPage.progress();
   I.waitForElement('.tabs');
   I.signOut();
 });

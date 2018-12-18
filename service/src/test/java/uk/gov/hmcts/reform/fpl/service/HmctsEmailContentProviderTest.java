@@ -21,12 +21,11 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDet
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
-class HmctsEmailContentProviderServiceTest {
+class HmctsEmailContentProviderTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_NAME = "Test court";
     private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
-
 
     @Mock
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -35,7 +34,7 @@ class HmctsEmailContentProviderServiceTest {
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     @InjectMocks
-    private HmctsEmailContentProviderService hmctsEmailContentProviderService;
+    private HmctsEmailContentProvider hmctsEmailContentProvider;
 
     @Test
     void shouldReturnExpectedMapWithValidCaseDetails() throws IOException {
@@ -62,7 +61,7 @@ class HmctsEmailContentProviderServiceTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        assertThat(hmctsEmailContentProviderService.buildHmctsSubmissionNotification(populatedCaseDetails(),
+        assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(populatedCaseDetails(),
             LOCAL_AUTHORITY_CODE), is(expectedMap));
     }
 
@@ -91,7 +90,7 @@ class HmctsEmailContentProviderServiceTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        assertThat(hmctsEmailContentProviderService.buildHmctsSubmissionNotification(emptyCaseDetails(),
+        assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(emptyCaseDetails(),
             LOCAL_AUTHORITY_CODE), is(expectedMap));
     }
 }

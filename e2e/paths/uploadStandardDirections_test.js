@@ -8,7 +8,8 @@ Before(async (I, caseViewPage, loginPage, submitApplicationPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseId = await I.grabTextFrom('.heading-medium');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationPage.giveConsentAndProgress();
+  submitApplicationPage.giveConsent();
+  submitApplicationPage.progress();
   I.signOut();
   loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   I.navigateToCaseDetails(caseId);

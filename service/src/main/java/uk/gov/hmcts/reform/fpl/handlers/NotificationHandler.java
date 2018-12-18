@@ -11,9 +11,9 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.AboutToStartOrSubmitCallbackException;
-import uk.gov.hmcts.reform.fpl.service.CafcassEmailContentProviderService;
-import uk.gov.hmcts.reform.fpl.service.GatekeeperEmailContentProviderService;
-import uk.gov.hmcts.reform.fpl.service.HmctsEmailContentProviderService;
+import uk.gov.hmcts.reform.fpl.service.CafcassEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.GatekeeperEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.HmctsEmailContentProvider;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -28,9 +28,9 @@ public class NotificationHandler {
 
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
-    private final HmctsEmailContentProviderService hmctsEmailContentProviderService;
-    private final CafcassEmailContentProviderService cafcassEmailContentProviderService;
-    private final GatekeeperEmailContentProviderService gatekeeperEmailContentProviderService;
+    private final HmctsEmailContentProvider hmctsEmailContentProvider;
+    private final CafcassEmailContentProvider cafcassEmailContentProvider;
+    private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
     private final NotificationClient notificationClient;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -38,22 +38,22 @@ public class NotificationHandler {
     public NotificationHandler(HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
                                CafcassLookupConfiguration cafcassLookupConfiguration,
                                NotificationClient notificationClient,
-                               HmctsEmailContentProviderService hmctsEmailContentProviderService,
-                               CafcassEmailContentProviderService cafcassEmailContentProviderService,
-                               GatekeeperEmailContentProviderService gatekeeperEmailContentProviderService) {
+                               HmctsEmailContentProvider hmctsEmailContentProvider,
+                               CafcassEmailContentProvider cafcassEmailContentProvider,
+                               GatekeeperEmailContentProvider gatekeeperEmailContentProvider) {
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.cafcassLookupConfiguration = cafcassLookupConfiguration;
         this.notificationClient = notificationClient;
-        this.hmctsEmailContentProviderService = hmctsEmailContentProviderService;
-        this.cafcassEmailContentProviderService = cafcassEmailContentProviderService;
-        this.gatekeeperEmailContentProviderService = gatekeeperEmailContentProviderService;
+        this.hmctsEmailContentProvider = hmctsEmailContentProvider;
+        this.cafcassEmailContentProvider = cafcassEmailContentProvider;
+        this.gatekeeperEmailContentProvider = gatekeeperEmailContentProvider;
     }
 
     @EventListener
     public void sendNotificationToHmctsAdmin(SubmittedCaseEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get("caseLocalAuthority");
-        Map<String, String> parameters = hmctsEmailContentProviderService
+        Map<String, String> parameters = hmctsEmailContentProvider
             .buildHmctsSubmissionNotification(caseDetails, localAuthorityCode);
         String reference = Long.toString(caseDetails.getId());
         String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
@@ -65,7 +65,7 @@ public class NotificationHandler {
     public void sendNotificationToCafcass(SubmittedCaseEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get("caseLocalAuthority");
-        Map<String, String> parameters = cafcassEmailContentProviderService
+        Map<String, String> parameters = cafcassEmailContentProvider
             .buildCafcassSubmissionNotification(caseDetails, localAuthorityCode);
         String reference = (String.valueOf(caseDetails.getId()));
         String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
@@ -78,7 +78,7 @@ public class NotificationHandler {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get("caseLocalAuthority");
         String email = (String) caseDetails.getData().get("gateKeeperEmail");
-        Map<String, String> parameters = gatekeeperEmailContentProviderService.buildGatekeeperNotification(caseDetails,
+        Map<String, String> parameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(caseDetails,
             localAuthorityCode);
         String reference = (String.valueOf(caseDetails.getId()));
 
@@ -90,10 +90,7 @@ public class NotificationHandler {
         try {
             notificationClient.sendEmail(templateId, email, parameters, reference);
         } catch (NotificationClientException e) {
-            String message = String.format("Failed to send submission notification (with template id: %s) to %s",
-                templateId, email, e);
-            throw new AboutToStartOrSubmitCallbackException(message,
-                "The email did not send. Try again or come back later.");
+            logger.error("Failed to send submission notification (with template id: {}) to {}", templateId, email, e);
         }
     }
 }

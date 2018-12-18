@@ -15,9 +15,9 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.AboutToStartOrSubmitCallbackException;
-import uk.gov.hmcts.reform.fpl.service.CafcassEmailContentProviderService;
-import uk.gov.hmcts.reform.fpl.service.GatekeeperEmailContentProviderService;
-import uk.gov.hmcts.reform.fpl.service.HmctsEmailContentProviderService;
+import uk.gov.hmcts.reform.fpl.service.CafcassEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.GatekeeperEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.HmctsEmailContentProvider;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -61,13 +61,13 @@ class NotificationHandlerTest {
     private NotificationClient notificationClient;
 
     @Mock
-    private HmctsEmailContentProviderService hmctsEmailContentProviderService;
+    private HmctsEmailContentProvider hmctsEmailContentProvider;
 
     @Mock
-    private CafcassEmailContentProviderService cafcassEmailContentProviderService;
+    private CafcassEmailContentProvider cafcassEmailContentProvider;
 
     @Mock
-    private GatekeeperEmailContentProviderService gatekeeperEmailContentProviderService;
+    private GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
 
     @InjectMocks
     private NotificationHandler notificationHandler;
@@ -98,7 +98,7 @@ class NotificationHandlerTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        given(hmctsEmailContentProviderService.buildHmctsSubmissionNotification(callbackRequest().getCaseDetails(),
+        given(hmctsEmailContentProvider.buildHmctsSubmissionNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
         notificationHandler.sendNotificationToHmctsAdmin(new SubmittedCaseEvent(request, AUTH_TOKEN, USER_ID));
@@ -109,7 +109,6 @@ class NotificationHandlerTest {
 
     @Test
     void shouldSendEmailToCafcass() throws IOException, NotificationClientException {
-        final CallbackRequest request = callbackRequest();
         final Map<String, String> expectedParameters = ImmutableMap.<String, String>builder()
             .put("cafcass", CAFCASS_NAME)
             .put("localAuthority", "Example Local Authority")
@@ -131,10 +130,10 @@ class NotificationHandlerTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        given(cafcassEmailContentProviderService.buildCafcassSubmissionNotification(callbackRequest().getCaseDetails(),
+        given(cafcassEmailContentProvider.buildCafcassSubmissionNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
-        notificationHandler.sendNotificationToCafcass(new SubmittedCaseEvent(request, AUTH_TOKEN, USER_ID));
+        notificationHandler.sendNotificationToCafcass(new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
             eq(CAFCASS_SUBMISSION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
@@ -142,7 +141,6 @@ class NotificationHandlerTest {
 
     @Test
     void shouldSendEmailToGatekeeper() throws IOException, NotificationClientException {
-        CallbackRequest request = callbackRequest();
         final Map<String, String> expectedParameters = ImmutableMap.<String, String>builder()
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")
@@ -162,10 +160,10 @@ class NotificationHandlerTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        given(gatekeeperEmailContentProviderService.buildGatekeeperNotification(callbackRequest().getCaseDetails(),
+        given(gatekeeperEmailContentProvider.buildGatekeeperNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
-        notificationHandler.sendNotificationToGatekeeper(new NotifyGatekeeperEvent(request, AUTH_TOKEN, USER_ID));
+        notificationHandler.sendNotificationToGatekeeper(new NotifyGatekeeperEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
             eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq(GATEKEEPER_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
@@ -192,7 +190,7 @@ class NotificationHandlerTest {
         String message = String.format("Failed to send submission notification (with template id: %s) to %s",
             GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL_ADDRESS);
 
-        given(gatekeeperEmailContentProviderService.buildGatekeeperNotification(callbackRequest().getCaseDetails(),
+        given(gatekeeperEmailContentProvider.buildGatekeeperNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
         given(notificationClient.sendEmail(GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL_ADDRESS, expectedParameters,

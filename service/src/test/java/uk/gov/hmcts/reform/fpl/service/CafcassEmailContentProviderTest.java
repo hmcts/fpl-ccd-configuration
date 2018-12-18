@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 
 import java.io.IOException;
@@ -20,19 +21,25 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDet
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
-class GatekeeperEmailContentProviderServiceTest {
+class CafcassEmailContentProviderTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
+    private static final String CAFCASS_NAME = "Test cafcass";
+    private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
+
+    @Mock
+    private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @Mock
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     @InjectMocks
-    private GatekeeperEmailContentProviderService gatekeeperEmailContentProviderService;
+    private CafcassEmailContentProvider cafcassEmailContentProvider;
 
     @Test
     void shouldReturnExpectedMapWithValidCaseDetails() throws IOException {
         Map<String, String> expectedMap = ImmutableMap.<String, String>builder()
+            .put("cafcass", CAFCASS_NAME)
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")
             .put("fullStop", "No")
@@ -42,22 +49,24 @@ class GatekeeperEmailContentProviderServiceTest {
             .put("orders3", "")
             .put("orders4", "")
             .put("directionsAndInterim", "^Information on the whereabouts of the child")
-            .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "Same day")
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
+        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+            .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, COURT_EMAIL_ADDRESS));
+
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        assertThat(gatekeeperEmailContentProviderService.buildGatekeeperNotification(populatedCaseDetails(),
+        assertThat(cafcassEmailContentProvider.buildCafcassSubmissionNotification(populatedCaseDetails(),
             LOCAL_AUTHORITY_CODE), is(expectedMap));
     }
 
     @Test
     void shouldReturnSuccessfullyWithEmptyCaseDetails() throws IOException {
         Map<String, String> expectedMap = ImmutableMap.<String, String>builder()
+            .put("cafcass", CAFCASS_NAME)
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "No")
             .put("fullStop", "Yes")
@@ -67,16 +76,17 @@ class GatekeeperEmailContentProviderServiceTest {
             .put("orders3", "")
             .put("orders4", "")
             .put("directionsAndInterim", "")
-            .put("timeFramePresent", "No")
-            .put("timeFrameValue", "")
             .put("reference", "123")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/123")
             .build();
 
+        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+            .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, COURT_EMAIL_ADDRESS));
+
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        assertThat(gatekeeperEmailContentProviderService.buildGatekeeperNotification(emptyCaseDetails(),
+        assertThat(cafcassEmailContentProvider.buildCafcassSubmissionNotification(emptyCaseDetails(),
             LOCAL_AUTHORITY_CODE), is(expectedMap));
     }
 }

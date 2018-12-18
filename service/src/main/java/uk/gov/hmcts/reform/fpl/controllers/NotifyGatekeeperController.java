@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 
 @Api
 @RestController
-@RequestMapping("/callback/about-to-submit")
+@RequestMapping("/callback/notify-gatekeeper")
 public class NotifyGatekeeperController {
 
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -25,7 +25,7 @@ public class NotifyGatekeeperController {
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
-    @PostMapping("/notify-gatekeeper")
+    @PostMapping("/submitted")
     public ResponseEntity handleAboutToSubmitEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,

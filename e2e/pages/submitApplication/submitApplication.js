@@ -6,9 +6,12 @@ module.exports = {
     consentCheckbox: '#submissionConsent-agree',
   },
 
-  giveConsentAndProgress() {
+  giveConsent() {
     I.checkOption(this.fields.consentCheckbox);
+  },
+  
+  progress() {
     I.click('Continue');
     I.click('Submit');
-  },
+  }
 };

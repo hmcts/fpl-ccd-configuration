@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 
 import java.util.List;
@@ -16,23 +17,25 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
 @Service
-public class GatekeeperEmailContentProviderService {
+public class HmctsEmailContentProvider {
 
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final String uiBaseUrl;
 
     private static final String ORDER_KEY = "orders";
     private static final String DIRECTIONS_KEY = "directionsAndInterim";
 
     @Autowired
-    public GatekeeperEmailContentProviderService(LocalAuthorityNameLookupConfiguration
-                                                         localAuthorityNameLookupConfiguration,
-                                                 @Value("${ccd.ui.base.url}") String uiBaseUrl) {
+    public HmctsEmailContentProvider(LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
+                                     HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
+                                     @Value("${ccd.ui.base.url}") String uiBaseUrl) {
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
+        this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.uiBaseUrl = uiBaseUrl;
     }
 
-    public Map<String, String> buildGatekeeperNotification(CaseDetails caseDetails, String localAuthorityCode) {
+    public Map<String, String> buildHmctsSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
         Map orders =
             Optional.ofNullable((Map) caseDetails.getData().get(ORDER_KEY)).orElse(ImmutableMap.builder().build());
 
@@ -52,6 +55,7 @@ public class GatekeeperEmailContentProviderService {
             Optional.ofNullable((Map) caseDetails.getData().get("hearing")).orElse(ImmutableMap.builder().build());
 
         return ImmutableMap.<String, String>builder()
+            .put("court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
             .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .put("dataPresent", orderType.isEmpty() ? ("No") : ("Yes"))
             .put("fullStop", orderType.isEmpty() ? ("Yes") : ("No"))

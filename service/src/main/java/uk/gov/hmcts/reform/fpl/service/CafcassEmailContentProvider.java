@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
 @Service
-public class CafcassEmailContentProviderService {
+public class CafcassEmailContentProvider {
 
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
@@ -27,10 +27,9 @@ public class CafcassEmailContentProviderService {
     private static final String DIRECTIONS_KEY = "directionsAndInterim";
 
     @Autowired
-    public CafcassEmailContentProviderService(LocalAuthorityNameLookupConfiguration
-                                                      localAuthorityNameLookupConfiguration,
-                                              CafcassLookupConfiguration cafcassLookupConfiguration,
-                                              @Value("${ccd.ui.base.url}") String uiBaseUrl) {
+    public CafcassEmailContentProvider(LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
+                                       CafcassLookupConfiguration cafcassLookupConfiguration,
+                                       @Value("${ccd.ui.base.url}") String uiBaseUrl) {
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.cafcassLookupConfiguration = cafcassLookupConfiguration;
         this.uiBaseUrl = uiBaseUrl;
