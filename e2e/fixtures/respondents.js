@@ -9,7 +9,7 @@ module.exports = [
     gender: 'Male',
     placeOfBirth: 'London',
     address: {
-      lookupOption: 'Flat 2, Caversham House 15-17, Church Road, Reading',    
+      lookupOption: 'Flat 2, Caversham House 15-17, Church Road, Reading',
       buildingAndStreet: {
         lineOne: 'Flat 2',
         lineTwo: 'Caversham House 15-17',
