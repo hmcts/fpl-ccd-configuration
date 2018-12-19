@@ -19,19 +19,19 @@ module.exports = {
   },
 
   checkSupervisionOrder() {
-    I.checkOption(this.fields.orderType.supervisionOrder);    
+    I.checkOption(this.fields.orderType.supervisionOrder);
   },
 
   checkEducationSupervisionOrder() {
-    I.checkOption(this.fields.orderType.educationSupervisionOrder);    
+    I.checkOption(this.fields.orderType.educationSupervisionOrder);
   },
 
   checkEmergencyProtectionOrder() {
-    I.checkOption(this.fields.orderType.emergencyProtectionOrder);    
+    I.checkOption(this.fields.orderType.emergencyProtectionOrder);
   },
 
   checkOtherOrder() {
-    I.checkOption(this.fields.orderType.other);    
+    I.checkOption(this.fields.orderType.other);
   },
 
   enterDirectionAndInterim(testString = 'Test direction and interim') {
