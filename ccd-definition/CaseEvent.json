@@ -205,7 +205,7 @@
     "Name": "Documents",
     "Description": "Upload documents",
     "DisplayOrder": 14,
-    "PreConditionState(s)": "Open;Submitted",
+    "PreConditionState(s)": "Open",
     "PostConditionState": "Open",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
@@ -298,6 +298,20 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "uploadDocumentsAfterSubmission",
+    "Name": "Documents",
+    "Description": "Upload documents after submission",
+    "DisplayOrder": 1,
+    "PreConditionState(s)": "Submitted",
+    "PostConditionState": "Submitted",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
+    "EndButtonLabel": "Save and continue"
   }
 ]
