@@ -24,7 +24,7 @@ Scenario('Complete entering others details in the c110a application', (I, enterO
   enterOthersPage.enterOtherDetails(others[1]);
   enterOthersPage.enterRelationshipToChild('Tim Smith');
   enterOthersPage.enterContactDetailsHidden('Yes');
-  enterOthersPage.enterLitigationIssues('Yes', 'mock reason');  
+  enterOthersPage.enterLitigationIssues('Yes', 'mock reason');
   I.continueAndSubmit();
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(1, 'Person 1', 'Full name', 'John Smith');

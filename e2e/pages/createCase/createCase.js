@@ -11,7 +11,7 @@ module.exports = {
     caseName: '#caseName',
   },
   startButton: 'Start',
-  continueButton: 'Continue',  
+  continueButton: 'Continue',
 
   enterCaseName(caseName = 'Barnet Council v Smith') {
     I.fillField(this.enterCaseNamePage.caseName, caseName);
