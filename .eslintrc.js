@@ -29,6 +29,12 @@ module.exports = {
             "error",
             "single"
         ],
+        "no-trailing-spaces": [
+            "error",
+            {
+                "skipBlankLines": true
+            }
+        ],
         "semi": [
             "error",
             "always"
