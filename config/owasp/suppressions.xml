@@ -1,20 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.1.xsd">
   <suppress>
-    <notes><![CDATA[
+    <notes>
+      <![CDATA[
          Shadowed dependency from AppInsights-Core. Unfortunately, not propagating and applying an override for transitive dependencies.
          Anyway, this is specific to deserialisation of AtomicDoubleArray and CompoundOrdering classes: https://github.com/google/guava/wiki/CVE-2018-10237
-        ]]></notes>
+      ]]>
+    </notes>
     <gav regex="true">^com\.google\.guava:guava:.*$</gav>
     <cve>CVE-2018-10237</cve>
   </suppress>
-    <suppress>
-    <notes><![CDATA[
-    org.slf4j.ext.EventData in the slf4j-ext module in QOS.CH SLF4J before 1.8.0-beta2 
-    allows remote attackers to bypass intended access restrictions via crafted data. 
-    Waiting for an update of org.springframework.boot to address this issue      
-    ]]></notes>
-    <gav regex="true">org.slf4j:.*$</gav>
+  <suppress>
+    <notes>
+      <![CDATA[
+        org.slf4j.ext.EventData in the slf4j-ext module in QOS.CH SLF4J before 1.8.0-beta2
+        allows remote attackers to bypass intended access restrictions via crafted data.
+        Waiting for an update of org.springframework.boot to address this issue
+      ]]>
+    </notes>
+    <gav regex="true">^org\.slf4j:.*$</gav>
     <cve>CVE-2018-8088</cve>
+  </suppress>
+  <suppress>
+    <notes>
+      <![CDATA[
+        Vulnerability in RC4 algorithm, that affects browser and some application servers
+        is wrongly reported against javax.annotation:javax.annotation-api.
+      ]]>
+    </notes>
+    <gav regex="true">^javax\.annotation:javax\.annotation-api:.*$</gav>
+    <cve>CVE-2013-2566</cve>
+    <cve>CVE-2015-2808</cve>
   </suppress>
 </suppressions>
