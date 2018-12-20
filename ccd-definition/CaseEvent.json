@@ -28,7 +28,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -42,7 +42,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -56,7 +56,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -70,7 +70,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -84,7 +84,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -98,7 +98,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -112,7 +112,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -126,7 +126,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -140,7 +140,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -154,7 +154,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -168,7 +168,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -182,7 +182,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -196,7 +196,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -209,8 +209,8 @@
     "PostConditionState": "Open",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
-    "ShowEventNotes": "N", 
-    "EndButtonLabel": "Save and continue"    
+    "ShowEventNotes": "N",
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -223,8 +223,8 @@
     "PostConditionState": "Open",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
-    "ShowEventNotes": "N",    
-    "EndButtonLabel": "Save and continue"    
+    "ShowEventNotes": "N",
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -237,8 +237,8 @@
     "PostConditionState": "Open",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
-    "ShowEventNotes": "N",    
-    "EndButtonLabel": "Save and continue"    
+    "ShowEventNotes": "N",
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -270,7 +270,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -284,7 +284,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"    
+    "EndButtonLabel": "Save and continue"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -312,6 +312,19 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
+    "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "ID": "sendToGatekeeper",
+    "Name": "Send to gatekeeper",
+    "Description": "Send email to gatekeeper",
+    "DisplayOrder": 1,
+    "PreConditionState(s)": "Submitted",
+    "PostConditionState": "Submitted",
+    "SecurityClassification": "Public",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/notify-gatekeeper/submitted",
     "EndButtonLabel": "Save and continue"
   }
 ]
