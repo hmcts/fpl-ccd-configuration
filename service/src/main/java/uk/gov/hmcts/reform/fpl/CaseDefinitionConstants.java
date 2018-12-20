@@ -7,5 +7,5 @@ public class CaseDefinitionConstants {
     }
 
     public static final String JURISDICTION = "PUBLICLAW";
-    public static final String CASE_TYPE = "Shared_Storage_DRAFTType";
+    public static final String CASE_TYPE = "CARE_SUPERVISION_EPO";
 }
