@@ -48,6 +48,8 @@ class CafcassEmailContentProviderTest {
             .put("orders2", "")
             .put("orders3", "")
             .put("orders4", "")
+            .put("timeFramePresent", "Yes")
+            .put("timeFrameValue", "Same day")
             .put("directionsAndInterim", "^Information on the whereabouts of the child")
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
@@ -76,6 +78,8 @@ class CafcassEmailContentProviderTest {
             .put("orders3", "")
             .put("orders4", "")
             .put("directionsAndInterim", "")
+            .put("timeFramePresent", "No")
+            .put("timeFrameValue", "")
             .put("reference", "123")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/123")
             .build();

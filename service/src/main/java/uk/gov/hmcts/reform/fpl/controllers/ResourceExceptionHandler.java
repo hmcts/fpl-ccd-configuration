@@ -9,21 +9,19 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.fpl.exceptions.AboutToStartOrSubmitCallbackException;
 
+@SuppressWarnings("line-length")
 @ControllerAdvice
 public class ResourceExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(ResourceExceptionHandler.class);
 
     @ExceptionHandler(value = AboutToStartOrSubmitCallbackException.class)
-    public ResponseEntity<Object> handleAboutToStartOrSubmitCallbackException(AboutToStartOrSubmitCallbackException
-                                                                                  exception) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStartOrSubmitCallbackException(AboutToStartOrSubmitCallbackException exception) {
         logger.error(exception.getMessage(), exception);
 
-        AboutToStartOrSubmitCallbackResponse response = AboutToStartOrSubmitCallbackResponse.builder()
+        return AboutToStartOrSubmitCallbackResponse.builder()
             .errors(ImmutableList.<String>builder()
                 .add(exception.getUserMessage())
                 .build())
             .build();
-
-        return ResponseEntity.ok(response);
     }
 }

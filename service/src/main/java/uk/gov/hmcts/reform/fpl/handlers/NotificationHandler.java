@@ -67,7 +67,7 @@ public class NotificationHandler {
         String localAuthorityCode = (String) caseDetails.getData().get("caseLocalAuthority");
         Map<String, String> parameters = cafcassEmailContentProvider
             .buildCafcassSubmissionNotification(caseDetails, localAuthorityCode);
-        String reference = (String.valueOf(caseDetails.getId()));
+        String reference = String.valueOf(caseDetails.getId());
         String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
 
         sendNotification(CAFCASS_SUBMISSION_TEMPLATE, email, parameters, reference);
@@ -80,7 +80,7 @@ public class NotificationHandler {
         String email = (String) caseDetails.getData().get("gateKeeperEmail");
         Map<String, String> parameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(caseDetails,
             localAuthorityCode);
-        String reference = (String.valueOf(caseDetails.getId()));
+        String reference = String.valueOf(caseDetails.getId());
 
         sendNotification(GATEKEEPER_SUBMISSION_TEMPLATE, email, parameters, reference);
     }

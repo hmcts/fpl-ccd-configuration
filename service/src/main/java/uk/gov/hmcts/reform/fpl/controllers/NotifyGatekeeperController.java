@@ -26,13 +26,11 @@ public class NotifyGatekeeperController {
     }
 
     @PostMapping("/submitted")
-    public ResponseEntity handleAboutToSubmitEvent(
+    public void handleSubmitEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
 
         applicationEventPublisher.publishEvent(new NotifyGatekeeperEvent(callbackRequest, authorization, userId));
-
-        return ResponseEntity.ok(callbackRequest);
     }
 }
