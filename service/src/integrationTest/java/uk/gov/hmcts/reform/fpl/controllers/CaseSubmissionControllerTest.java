@@ -133,6 +133,8 @@ class CaseSubmissionControllerTest {
             .put("orders3", "")
             .put("orders4", "")
             .put("directionsAndInterim", "^Information on the whereabouts of the child")
+            .put("timeFramePresent", "Yes")
+            .put("timeFrameValue", "Same day")
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
@@ -192,6 +194,8 @@ class CaseSubmissionControllerTest {
             .put("orders3", "")
             .put("orders4", "")
             .put("directionsAndInterim", "")
+            .put("timeFramePresent", "No")
+            .put("timeFrameValue", "")
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();

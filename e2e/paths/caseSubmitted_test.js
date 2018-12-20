@@ -10,8 +10,7 @@ Before((I, caseViewPage) => {
 
 Scenario('Can give consent and submit the case', (I, caseViewPage, submitApplicationPage) => {
   submitApplicationPage.giveConsent();
-  I.click('Continue');
-  I.click('Submit');
+  submitApplicationPage.progress();
   I.waitForElement('.tabs');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   I.dontSee(caseViewPage.actionsDropdown);

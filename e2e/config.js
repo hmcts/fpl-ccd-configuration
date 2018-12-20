@@ -47,6 +47,7 @@ module.exports = {
   },
   addFamilyManCaseNumber: 'Add case number',
   standardDirections: 'Standard directions',
+  sendToGatekeeper: 'Send to gatekeeper',
   // files
   testFile: './e2e/fixtures/mockFile.txt',
   // urls

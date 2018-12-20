@@ -5,6 +5,7 @@
   "case_type_id": "CARE_SUPERVISION_EPO",
   "security_classification": "PUBLIC",
   "case_data": {
+    "gatekeeperEmail": "FamilyPublicLaw+gatekeeper@gmail.com",
     "caseLocalAuthority": "example",
     "risks": {
       "neglect": "Yes",
