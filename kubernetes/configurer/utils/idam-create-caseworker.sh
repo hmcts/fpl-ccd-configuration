@@ -6,7 +6,15 @@ email=${1}
 rolesStr=${2}
 surname=${3:-"Tester"}
 
-searchResponse=$(curl -k --silent --show-error --output /dev/null --write-out "%{http_code}" ${IDAM_API_BASE_URL}/users?email=${email})
+userToken=$($(dirname ${0})/idam-lease-user-token.sh 1 admin)
+
+searchResponse=$(curl -k --silent --show-error --output /dev/null --write-out "%{http_code}" -H "Authorization: Bearer ${userToken}" ${IDAM_API_BASE_URL}/users?email=${email})
+
+if [[ ${searchResponse} -ne 200 && ${searchResponse} -ne 404 ]]; then
+  echo "The requested user search returned error: ${searchResponse}"
+  exit 1
+fi
+
 if [[ ${searchResponse} -eq 200 ]]; then
   echo "User ${email} already exists - skipping"
   exit 0
