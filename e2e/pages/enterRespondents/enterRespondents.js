@@ -3,7 +3,13 @@ const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
 
-  fields: (id) => {
+  state: {
+    context: 'firstRespondent',
+  },
+
+  fields: function() {
+    const id = this.state.context;
+
     return {
       respondent: {
         name: `#respondents_${id}_name`,
@@ -18,6 +24,12 @@ module.exports = {
         address: `#respondents_${id}_address_address`,
         telephone: `#respondents_${id}_telephone`,
         relationshipToChild: `#respondents_${id}_relationshipToChild`,
+        litigationIssues: {
+          yes: `#respondents_${id}_litigationIssues-YES`,
+          no: `#respondents_${id}_litigationIssues-NO`,
+          dont_know: `#respondents_${id}_litigationIssues-DONT_KNOW`,
+        },
+        litigationIssuesDetails: `#respondents_${id}_litigationIssuesDetails`,
       },
       contactDetailsHidden: (option) => {
         return {
@@ -25,47 +37,61 @@ module.exports = {
           reason: `#respondents_${id}_contactDetailsHiddenReason`,
         };
       },
-      litigationIssues: (option) => {
-        return {
-          option: `#respondents_${id}_litigationIssues-${option}`,
-          reason: `#respondents_${id}_litigationIssuesReason`,
-        };
-      },
     };
   },
-  addRespondent: 'Add new',
+  addRespondentButton: 'Add new',
 
-  enterRespondent(id, respondent) {
-    I.fillField(this.fields(id).respondent.name, respondent.name);
-    I.fillField(this.fields(id).respondent.dob.day, respondent.dob.day);
-    I.fillField(this.fields(id).respondent.dob.month, respondent.dob.month);
-    I.fillField(this.fields(id).respondent.dob.year, respondent.dob.year);
-    I.selectOption(this.fields(id).respondent.gender, respondent.gender);
-    if (respondent.gender === 'They identify in another way') {
-      I.fillField(this.fields(id).respondent.genderIdentify, '');
+  addRespondent() {
+    if (this.state.context === 'additional_0') {
+      throw new Error('Adding more respondents is not supported in the test');
     }
-    I.fillField(this.fields(id).respondent.placeOfBirth, respondent.placeOfBirth);
-    within(this.fields(id).respondent.address, () => {
+
+    I.click(this.addRespondentButton);
+    this.state.context = 'additional_0';
+  },
+
+  enterRespondent(respondent) {
+    I.fillField(this.fields().respondent.name, respondent.name);
+    I.fillField(this.fields().respondent.dob.day, respondent.dob.day);
+    I.fillField(this.fields().respondent.dob.month, respondent.dob.month);
+    I.fillField(this.fields().respondent.dob.year, respondent.dob.year);
+    I.selectOption(this.fields().respondent.gender, respondent.gender);
+    if (respondent.gender === 'They identify in another way') {
+      I.fillField(this.fields().respondent.genderIdentify, '');
+    }
+    I.fillField(this.fields().respondent.placeOfBirth, respondent.placeOfBirth);
+    within(this.fields().respondent.address, () => {
       postcodeLookup.lookupPostcode(respondent.address);
     });
-    I.fillField(this.fields(id).respondent.telephone, respondent.telephone);
+    I.fillField(this.fields().respondent.telephone, respondent.telephone);
   },
 
-  enterRelationshipToChild(id, relationship) {
-    I.fillField(this.fields(id).respondent.relationshipToChild, relationship);
+  enterRelationshipToChild(relationship) {
+    I.fillField(this.fields().respondent.relationshipToChild, relationship);
   },
 
-  enterContactDetailsHidden(id, option, reason = '') {
-    I.click(this.fields(id).contactDetailsHidden(option).option);
+  enterContactDetailsHidden(option, reason = '') {
+    I.click(this.fields().contactDetailsHidden(option).option);
     if (option === 'Yes') {
-      I.fillField(this.fields(id).contactDetailsHidden(option).reason, reason);
+      I.fillField(this.fields().contactDetailsHidden(option).reason, reason);
     }
   },
 
-  enterLitigationIssues(id, option, reason = '') {
-    I.click(this.fields(id).litigationIssues(option).option);
-    if (option === 'Yes') {
-      I.fillField(this.fields(id).litigationIssues(option).reason, reason);
+  enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
+    litigationIssue = litigationIssue.toLowerCase();
+    switch(litigationIssue) {
+      case 'yes':
+        I.checkOption(this.fields().respondent.litigationIssues.yes);
+        break;
+      case 'no':
+        I.checkOption(this.fields().respondent.litigationIssues.no);
+        break;
+      case 'dont know':
+        I.checkOption(this.fields().respondent.litigationIssues.dont_know);
+        break;
+    }
+    if (litigationIssue === 'yes') {
+      I.fillField(this.fields().respondent.litigationIssuesDetails, litigationIssueDetail);
     }
   },
 };

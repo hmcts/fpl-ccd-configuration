@@ -6,6 +6,7 @@ import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.DocumentGeneratorConfiguration;
 import uk.gov.hmcts.reform.fpl.templates.DocumentTemplates;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
@@ -29,7 +30,10 @@ class DocumentGeneratorServiceTest {
 
     @Test
     void shouldGenerateSubmittedFormDocumentWhenCaseHasNoData() throws IOException {
-        String content = textContentOf(createServiceInstance().generateSubmittedFormPDF(emptyCaseDetails()));
+        CaseDetails caseDetails = emptyCaseDetails();
+        caseDetails.getData().put("userFullName", "Emma Taylor");
+
+        String content = textContentOf(createServiceInstance().generateSubmittedFormPDF(caseDetails));
 
         assertThat(content).contains("C110A");
     }
@@ -38,7 +42,10 @@ class DocumentGeneratorServiceTest {
     void shouldGenerateSubmittedFormDocumentWhenCaseIsFullyPopulated() throws IOException {
         Clock clock = Clock.fixed(Instant.parse("2018-11-26T00:00:00Z"), ZoneId.systemDefault());
 
-        String content = textContentOf(createServiceInstance(clock).generateSubmittedFormPDF(populatedCaseDetails()));
+        CaseDetails caseDetails = populatedCaseDetails();
+        caseDetails.getData().put("userFullName", "Emma Taylor");
+
+        String content = textContentOf(createServiceInstance(clock).generateSubmittedFormPDF(caseDetails));
         String expectedContent = ResourceReader.readString("submitted-form-pdf-content.txt");
 
         assertThat(splitContentIntoTrimmedLines(content))

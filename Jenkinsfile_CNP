@@ -2,6 +2,7 @@
 
 @Library("Infrastructure")
 
+import uk.gov.hmcts.contino.Consul
 import uk.gov.hmcts.contino.Kubectl
 
 def type = "java"
@@ -11,7 +12,8 @@ def component = "case-service"
 
 List<Map<String, Object>> secrets = [
   secret('ccd-configurer-s2s-secret', 'CCD_CONFIGURER_S2S_SECRET'),
-  secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN')
+  secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN'),
+  secret('notify-api-key', 'NOTIFY_API_KEY')
 ]
 
 static Map<String, Object> secret(String secretName, String envVariable) {
@@ -31,19 +33,6 @@ withPipeline(type, product, component) {
 
   env.POSTCODE_PLACEHOLDER = '${postcode}'
 
-  after('checkout') {
-    onMaster {
-      try {
-        sh """
-          git fetch origin demo:demo
-          git push --force origin HEAD:demo
-        """
-      } catch (err) {
-        notifyBuildEvent channel: '#fpl-tech', color: 'warning', message: 'Failed to update demo branch'
-      }
-    }
-  }
-
   after('aksdeploy') {
     def subscription = env.SUBSCRIPTION_NAME
     def aksServiceName = "${product}-${component}-${env.BRANCH_NAME}".toLowerCase()
@@ -53,13 +42,14 @@ withPipeline(type, product, component) {
 
     def ingressIP = kubectl.getServiceLoadbalancerIP("traefik", "kube-system")
 
-    registerConsulDns(subscription, "service-auth-provider-api-${aksServiceName}", ingressIP)
-    registerConsulDns(subscription, "idam-authentication-web-${aksServiceName}", ingressIP)
-    registerConsulDns(subscription, "idam-api-${aksServiceName}", ingressIP)
-    registerConsulDns(subscription, "ccd-case-management-web-${aksServiceName}", ingressIP)
-    registerConsulDns(subscription, "ccd-api-gateway-${aksServiceName}", ingressIP)
-    registerConsulDns(subscription, "ccd-definition-store-api-${aksServiceName}", ingressIP)
-    registerConsulDns(subscription, "ccd-user-profile-api-${aksServiceName}", ingressIP)
+    def consul = new Consul(this)
+    consul.registerDns("service-auth-provider-api-${aksServiceName}", ingressIP)
+    consul.registerDns("idam-authentication-web-${aksServiceName}", ingressIP)
+    consul.registerDns("idam-api-${aksServiceName}", ingressIP)
+    consul.registerDns("ccd-case-management-web-${aksServiceName}", ingressIP)
+    consul.registerDns("ccd-api-gateway-${aksServiceName}", ingressIP)
+    consul.registerDns("ccd-definition-store-api-${aksServiceName}", ingressIP)
+    consul.registerDns("ccd-user-profile-api-${aksServiceName}", ingressIP)
 
     env.IDAM_API_BASE_URL = "https://idam-api-${aksServiceName}.${aksDomain}"
     env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "https://service-auth-provider-api-${aksServiceName}.${aksDomain}"

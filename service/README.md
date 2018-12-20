@@ -47,3 +47,37 @@ You should get a response similar to this:
 ```
   {"status":"UP","diskSpace":{"status":"UP","total":249644974080,"free":137188298752,"threshold":10485760}}
 ```
+
+## Application Mappings
+
+### Email domain to Local Authority code
+
+Example:
+```
+FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING:
+example.gov.uk=>EX
+```
+
+### Local Authority code to Local Authority name
+
+Example:
+```
+FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING:
+EX=>Example Local Authority
+```
+
+### Local Authority code to Local Authority users
+
+Example:
+```
+FPL_LOCAL_AUTHORITY_USER_MAPPING:
+EX=>1,2,3
+```
+
+### Local Authority Code to HMCTS Court
+
+Example:
+```
+FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING:
+EX=>Example Family Court: FamilyCourt@email.com
+```
