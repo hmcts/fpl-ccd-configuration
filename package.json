@@ -16,7 +16,7 @@
     "puppeteer": "^1.11.0"
   },
   "scripts": {
-    "lint": "concurrently \"npm run e2e-lint\" \"npm run json-lint\"",
+    "lint": "concurrently \"yarn e2e-lint\" \"yarn json-lint\"",
     "e2e-lint": "eslint e2e",
     "json-lint": "jsonlint-tree ccd-definition",
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
