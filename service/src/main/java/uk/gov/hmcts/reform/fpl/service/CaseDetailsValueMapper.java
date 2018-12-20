@@ -11,6 +11,7 @@ import java.util.Optional;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
+@SuppressWarnings("VariableDeclarationUsageDistance")
 public abstract class CaseDetailsValueMapper {
 
     private static final String ORDER_KEY = "orders";

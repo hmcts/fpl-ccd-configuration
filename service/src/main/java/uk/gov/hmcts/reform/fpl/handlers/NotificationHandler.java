@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
-import uk.gov.hmcts.reform.fpl.exceptions.AboutToStartOrSubmitCallbackException;
 import uk.gov.hmcts.reform.fpl.service.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.HmctsEmailContentProvider;

@@ -15,7 +15,7 @@ public class CafcassLookupConfiguration {
     private final Map<String, Cafcass> mapping;
 
     public CafcassLookupConfiguration(@Value("${fpl.local_authority_code_to_cafcass.mapping}")
-                                               String config) {
+                                          String config) {
         this.mapping = LookupConfigParser.parse(config, value -> {
             String[] entrySplit = value.split(":", 2);
             return new Cafcass(

@@ -56,7 +56,7 @@ class NotifyGatekeeperTest {
             .build();
 
         mockMvc
-            .perform(post("/callback/about-to-submit/notify-gatekeeper")
+            .perform(post("/callback/notify-gatekeeper/submitted")
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
