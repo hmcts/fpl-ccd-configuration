@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "openCase",
     "Name": "Open case",
     "Description": "Create a new case – add a title",
@@ -18,7 +18,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "ordersNeeded",
     "Name": "Orders and directions needed",
     "Description": "Selecting the orders needed for application",
@@ -32,7 +32,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingNeeded",
     "Name": "Hearing needed",
     "Description": "Selecting the hearing needed for application",
@@ -46,7 +46,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "enterChildren",
     "Name": "Children",
     "Description": "Entering the children for the case",
@@ -60,7 +60,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "enterRespondents",
     "Name": "Respondents",
     "Description": "Entering the respondents for the case",
@@ -74,7 +74,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "enterApplicant",
     "Name": "Applicant",
     "Description": "Entering the applicant for the case",
@@ -88,7 +88,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "enterOthers",
     "Name": "Others to be given notice",
     "Description": "Entering others for the case",
@@ -102,7 +102,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "enterGrounds",
     "Name": "Grounds for the application",
     "Description": "Entering the grounds for the application",
@@ -116,7 +116,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "enterRiskHarm",
     "Name": "Risk and harm to children",
     "Description": "Entering opinion on risk and harm to children",
@@ -130,7 +130,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "enterParentingFactors",
     "Name": "Factors affecting parenting",
     "Description": "Entering the factors affecting parenting",
@@ -144,7 +144,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "enterInternationalElement",
     "Name": "International element",
     "Description": "Entering the international element",
@@ -158,7 +158,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "otherProceedings",
     "Name": "Other proceedings",
     "Description": "Entering other proceedings and allocation proposals",
@@ -172,7 +172,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "otherProposal",
     "Name": "Allocation proposal",
     "Description": "Entering other proceedings and allocation proposals",
@@ -186,7 +186,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "attendingHearing",
     "Name": "Attending the hearing",
     "Description": "Enter extra support needed for anyone to take part in hearing",
@@ -200,7 +200,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadDocuments",
     "Name": "Documents",
     "Description": "Upload documents",
@@ -214,7 +214,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "changeCaseName",
     "Name": "Change case name",
     "Description": "Change case name",
@@ -228,7 +228,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "addCaseIDReference",
     "Name": "Add case ID",
     "Description": "Add case ID",
@@ -242,7 +242,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "submitApplication",
     "Name": "Submit application",
     "Description": "Submit application",
@@ -260,7 +260,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "attachSubmittedFormPDF",
     "Name": "Attach submitted form PDF",
     "Description": "Attach submitted form PDF",
@@ -274,7 +274,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "addFamilyManCaseNumber",
     "Name": "Add case number",
     "Description": "Add case number",
@@ -288,7 +288,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadStandardDirections",
     "Name": "Standard directions",
     "Description": "Upload standard directions",
@@ -302,7 +302,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadDocumentsAfterSubmission",
     "Name": "Documents",
     "Description": "Upload documents after submission",
@@ -316,7 +316,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "sendToGatekeeper",
     "Name": "Send to gatekeeper",
     "Description": "Send email to gatekeeper",

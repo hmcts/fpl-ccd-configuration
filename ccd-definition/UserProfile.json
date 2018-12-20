@@ -3,49 +3,49 @@
     "LiveFrom": "01/01/2017",
     "UserIDAMId": "damian@swansea.gov.uk",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "Shared_Storage_DRAFTType",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Open"
   },
   {
     "LiveFrom": "01/01/2017",
     "UserIDAMId": "kurt@swansea.gov.uk",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "Shared_Storage_DRAFTType",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Open"
   },
   {
     "LiveFrom": "01/01/2017",
     "UserIDAMId": "james@swansea.gov.uk",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "Shared_Storage_DRAFTType",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Open"
   },
   {
     "LiveFrom": "01/01/2017",
     "UserIDAMId": "sam@hillingdon.gov.uk",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "Shared_Storage_DRAFTType",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Open"
   },
   {
     "LiveFrom": "01/01/2017",
     "UserIDAMId": "siva@hillingdon.gov.uk",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "Shared_Storage_DRAFTType",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Open"
   },
   {
     "LiveFrom": "01/01/2017",
     "UserIDAMId": "hmcts-admin@example.com",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "Shared_Storage_DRAFTType",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Submitted"
   },
   {
     "LiveFrom": "01/01/2017",
     "UserIDAMId": "cafcass@example.com",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "Shared_Storage_DRAFTType",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Submitted"
   }
 ]

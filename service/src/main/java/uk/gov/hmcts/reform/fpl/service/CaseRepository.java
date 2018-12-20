@@ -18,7 +18,7 @@ import java.util.Map;
 public class CaseRepository {
 
     static final String JURISDICTION = "PUBLICLAW";
-    static final String CASE_TYPE = "Shared_Storage_DRAFTType";
+    static final String CASE_TYPE = "CARE_SUPERVISION_EPO";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

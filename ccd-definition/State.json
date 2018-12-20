@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "Open",
     "Name": "Open",
     "Description": "Initial case state – create title as a minimum; add documents, etc.",
@@ -9,7 +9,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "Submitted",
     "Name": "Submitted",
     "Description": "Submitted case state - LA can no longer edit",

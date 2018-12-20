@@ -17,7 +17,7 @@ import java.util.Objects;
 public class LocalAuthorityUserService {
 
     private static final String JURISDICTION = "PUBLICLAW";
-    private static final String CASE_TYPE = "Shared_Storage_DRAFTType";
+    private static final String CASE_TYPE = "CARE_SUPERVISION_EPO";
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseAccessApi caseAccessApi;

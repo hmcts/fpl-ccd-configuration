@@ -24,7 +24,7 @@ module.exports = {
   cafcassPassword: process.env.CAFCASS_USER_PASSWORD || 'Password12',
   definition: {
     jurisdiction: 'PUBLICLAW',
-    caseType: 'Shared_Storage_DRAFTType',
+    caseType: 'CARE_SUPERVISION_EPO',
   },
   // actions
   applicationActions: {
