@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -12,17 +12,18 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
 @SuppressWarnings("VariableDeclarationUsageDistance")
-public abstract class CaseDetailsValueMapper {
+public abstract class AbstractEmailContentProvider {
 
     private static final String ORDER_KEY = "orders";
     private static final String DIRECTIONS_KEY = "directionsAndInterim";
+
     private final String uiBaseUrl;
 
-    protected CaseDetailsValueMapper(String uiBaseUrl) {
+    protected AbstractEmailContentProvider(String uiBaseUrl) {
         this.uiBaseUrl = uiBaseUrl;
     }
 
-    protected ImmutableMap.Builder<String, String> getCommon(CaseDetails caseDetails) {
+    protected ImmutableMap.Builder<String, String> getCasePersonalisationBuilder(CaseDetails caseDetails) {
         String dataPresent = "Yes";
         String fullStop = "No";
         String timeFramePresent = "No";

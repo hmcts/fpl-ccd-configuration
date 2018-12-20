@@ -7,7 +7,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 
 import java.io.IOException;
 import java.util.Map;
@@ -56,7 +58,7 @@ class CafcassEmailContentProviderTest {
             .build();
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
-            .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, COURT_EMAIL_ADDRESS));
+            .willReturn(new Cafcass(CAFCASS_NAME, COURT_EMAIL_ADDRESS));
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
@@ -85,7 +87,7 @@ class CafcassEmailContentProviderTest {
             .build();
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
-            .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, COURT_EMAIL_ADDRESS));
+            .willReturn(new Cafcass(CAFCASS_NAME, COURT_EMAIL_ADDRESS));
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");

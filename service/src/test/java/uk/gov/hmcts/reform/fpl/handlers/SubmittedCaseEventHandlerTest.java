@@ -33,7 +33,7 @@ class SubmittedCaseEventHandlerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     @Captor
-    ArgumentCaptor<CaseDetails> caseDetailsCaptor;
+    private ArgumentCaptor<CaseDetails> caseDetailsCaptor;
     @Mock
     private DocumentGeneratorService documentGeneratorService;
     @Mock

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import java.util.Map;
 
 @Service
-public class CafcassEmailContentProvider extends CaseDetailsValueMapper {
+public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
 
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
@@ -25,7 +25,7 @@ public class CafcassEmailContentProvider extends CaseDetailsValueMapper {
     }
 
     public Map<String, String> buildCafcassSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
-        return super.getCommon(caseDetails)
+        return super.getCasePersonalisationBuilder(caseDetails)
             .put("cafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
             .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .build();

@@ -7,7 +7,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 
 import java.io.IOException;
 import java.util.Map;
@@ -56,7 +58,7 @@ class HmctsEmailContentProviderTest {
             .build();
 
         given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-            .willReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, COURT_EMAIL_ADDRESS));
+            .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS));
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
@@ -85,7 +87,7 @@ class HmctsEmailContentProviderTest {
             .build();
 
         given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-            .willReturn(new HmctsCourtLookupConfiguration.Court(COURT_NAME, COURT_EMAIL_ADDRESS));
+            .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS));
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
