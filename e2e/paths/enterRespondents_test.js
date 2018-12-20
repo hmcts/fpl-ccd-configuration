@@ -9,22 +9,22 @@ Before((I, caseViewPage) => {
 });
 
 Scenario('Entering information for respondent and submitting', (I, enterRespondentsPage, caseViewPage) => {
-  enterRespondentsPage.enterRespondent('firstRespondent', respondents[0]);
+  enterRespondentsPage.enterRespondent(respondents[0]);
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
 
 Scenario('Entering all information for first respondent and an additional respondent', (I, enterRespondentsPage, caseViewPage) => {
-  enterRespondentsPage.enterRespondent('firstRespondent', respondents[0]);
-  enterRespondentsPage.enterRelationshipToChild('firstRespondent', 'mock reason');
-  enterRespondentsPage.enterContactDetailsHidden('firstRespondent', 'Yes', 'mock reason');
-  enterRespondentsPage.enterLitigationIssues('firstRespondent', 'Yes', 'mock reason');
-  I.click(enterRespondentsPage.addRespondent);
-  enterRespondentsPage.enterRespondent('additional_0', respondents[1]);
-  enterRespondentsPage.enterRelationshipToChild('additional_0', 'mock reason');
-  enterRespondentsPage.enterContactDetailsHidden('additional_0', 'Yes', 'mock reason');
-  enterRespondentsPage.enterLitigationIssues('additional_0', 'No');
+  enterRespondentsPage.enterRespondent(respondents[0]);
+  enterRespondentsPage.enterRelationshipToChild('mock reason');
+  enterRespondentsPage.enterContactDetailsHidden('Yes', 'mock reason');
+  enterRespondentsPage.enterLitigationIssues('Yes', 'mock reason');
+  enterRespondentsPage.addRespondent();
+  enterRespondentsPage.enterRespondent(respondents[1]);
+  enterRespondentsPage.enterRelationshipToChild('mock reason');
+  enterRespondentsPage.enterContactDetailsHidden('Yes', 'mock reason');
+  enterRespondentsPage.enterLitigationIssues('No');
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
