@@ -302,7 +302,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadDocumentsAfterSubmission",
     "Name": "Documents",
     "Description": "Upload documents after submission",

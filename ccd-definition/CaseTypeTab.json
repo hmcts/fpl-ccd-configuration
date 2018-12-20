@@ -231,7 +231,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "EvidenceTab",
     "TabLabel": "Evidence",

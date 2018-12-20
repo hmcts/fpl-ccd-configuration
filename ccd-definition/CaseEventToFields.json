@@ -377,7 +377,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadDocumentsAfterSubmission",
     "CaseFieldID": "uploadDocuments_paragraph_1",
     "PageFieldDisplayOrder": 1,
@@ -388,7 +388,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadDocumentsAfterSubmission",
     "CaseFieldID": "uploadDocuments_paragraph_2",
     "PageFieldDisplayOrder": 2,
@@ -399,7 +399,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadDocumentsAfterSubmission",
     "CaseFieldID": "documents_socialWorkChronology_document",
     "PageFieldDisplayOrder": 3,
@@ -410,7 +410,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadDocumentsAfterSubmission",
     "CaseFieldID": "documents_socialWorkStatement_document",
     "PageFieldDisplayOrder": 4,
@@ -421,7 +421,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadDocumentsAfterSubmission",
     "CaseFieldID": "documents_socialWorkAssessment_document",
     "PageFieldDisplayOrder": 5,
@@ -432,7 +432,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadDocumentsAfterSubmission",
     "CaseFieldID": "documents_socialWorkCarePlan_document",
     "PageFieldDisplayOrder": 6,
@@ -443,7 +443,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadDocumentsAfterSubmission",
     "CaseFieldID": "documents_socialWorkOther_border_top",
     "PageFieldDisplayOrder": 7,
@@ -454,7 +454,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadDocumentsAfterSubmission",
     "CaseFieldID": "documents_socialWorkOther",
     "PageFieldDisplayOrder": 8,
@@ -465,7 +465,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadDocumentsAfterSubmission",
     "CaseFieldID": "documents_socialWorkOther_border_bottom",
     "PageFieldDisplayOrder": 9,
@@ -476,7 +476,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadDocumentsAfterSubmission",
     "CaseFieldID": "courtBundle",
     "PageFieldDisplayOrder": 10,
