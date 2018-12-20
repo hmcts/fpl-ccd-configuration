@@ -167,37 +167,4 @@ class NotificationHandlerTest {
         verify(notificationClient, times(1)).sendEmail(
             eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq(GATEKEEPER_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
     }
-
-    @Test
-    void shouldThrowAboutToStartOrSubmitCallbackException() throws NotificationClientException, IOException {
-        final Map<String, String> expectedParameters = ImmutableMap.<String, String>builder()
-            .put("localAuthority", "Example Local Authority")
-            .put("dataPresent", "Yes")
-            .put("fullStop", "No")
-            .put("orders0", "^Emergency protection order")
-            .put("orders1", "")
-            .put("orders2", "")
-            .put("orders3", "")
-            .put("orders4", "")
-            .put("directionsAndInterim", "^Information on the whereabouts of the child")
-            .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "Same day")
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
-
-        String message = String.format("Failed to send submission notification (with template id: %s) to %s",
-            GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL_ADDRESS);
-
-        given(gatekeeperEmailContentProvider.buildGatekeeperNotification(callbackRequest().getCaseDetails(),
-            LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
-
-        given(notificationClient.sendEmail(GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL_ADDRESS, expectedParameters,
-            "12345")).willThrow(new NotificationClientException(message));
-
-        assertThatThrownBy(() -> notificationHandler.sendNotificationToGatekeeper(
-            new NotifyGatekeeperEvent(callbackRequest(), AUTH_TOKEN, USER_ID)))
-            .isInstanceOf(AboutToStartOrSubmitCallbackException.class)
-            .hasMessage(message);
-    }
 }
