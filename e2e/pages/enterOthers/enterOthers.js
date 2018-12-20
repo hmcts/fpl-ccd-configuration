@@ -79,7 +79,7 @@ module.exports = {
         I.checkOption(this.fields().litigationIssues.yes);
         break;
       case 'no':
-        I.checkOption(this.fields().litigationIssues.no);      
+        I.checkOption(this.fields().litigationIssues.no);
         break;
       case 'dont know':
         I.checkOption(this.fields().litigationIssues.dont_know);
