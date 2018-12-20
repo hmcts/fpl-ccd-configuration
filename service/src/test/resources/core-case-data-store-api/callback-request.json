@@ -6,6 +6,7 @@
     "case_type_id": "Shared_Storage_DRAFTType",
     "security_classification": "PUBLIC",
     "case_data": {
+      "gateKeeperEmail": "FamilyPublicLaw+gatekeeper@gmail.com",
       "caseLocalAuthority": "example",
       "risks": {
         "neglect": "Yes",
