@@ -152,5 +152,12 @@
     "CaseEventID": "uploadStandardDirections",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseEventID": "uploadDocumentsAfterSubmission",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRU"
   }
 ]

@@ -36,7 +36,12 @@ module.exports = {
       socialWorkerTel: `#children_${childNo}_socialWorkerTel`,
       additionalNeedsNo: `#children_${childNo}_additionalNeeds-No`,
       contactHiddenNo: `#children_${childNo}_detailsHidden-No`,
-      litigationNo: `#children_${childNo}_litigationIssues-No`,
+      litigationIssues: {
+        yes: `#children_${childNo}_litigationIssues-YES`,
+        no: `#children_${childNo}_litigationIssues-NO`,
+        dont_know: `#children_${childNo}_litigationIssues-DONT_KNOW`,
+      },
+      litigationIssuesDetails: `#children_${childNo}_litigationIssuesDetails`,
     };
   },
   addChildButton: 'Add new',
@@ -103,7 +108,21 @@ module.exports = {
     I.click(this.fields().contactHiddenNo);
   },
 
-  defineAbilityToTakePartInProceedings() {
-    I.click(this.fields().litigationNo);
+  enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
+    litigationIssue = litigationIssue.toLowerCase();
+    switch(litigationIssue) {
+      case 'yes':
+        I.checkOption(this.fields().litigationIssues.yes);
+        break;
+      case 'no':
+        I.checkOption(this.fields().litigationIssues.no);
+        break;
+      case 'dont know':
+        I.checkOption(this.fields().litigationIssues.dont_know);
+        break;
+    }
+    if (litigationIssue === 'yes') {
+      I.fillField(this.fields().litigationIssuesDetails, litigationIssueDetail);
+    }
   },
 };

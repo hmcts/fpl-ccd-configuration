@@ -246,17 +246,18 @@
     "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "litigationIssues",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Does this child have any issues with litigation capacity?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LitigationCapacityIssues",
+    "ElementLabel": "Do you believe this child will have problems with litigation capacity (understanding what's happening in the case)?",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "Child",
-    "ListElementCode": "litigationIssuesReason",
+    "ListElementCode": "litigationIssuesDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "Give details, including referrals to or assessments by the Adult Learning Disability team or other health service, including outcomes",
-    "FieldShowCondition": "litigationIssues=\"Yes\"",
+    "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
+    "FieldShowCondition": "litigationIssues=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
@@ -1072,17 +1073,18 @@
     "LiveFrom": "01/01/2017",
     "ID": "Others",
     "ListElementCode": "litigationIssues",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Does this person have any issues with litigation capacity?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LitigationCapacityIssues",
+    "ElementLabel": "Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "Others",
-    "ListElementCode": "litigationIssuesReason",
+    "ListElementCode": "litigationIssuesDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "Give details, including referrals to or assessments by the Adult Learning Disability team or other health service, including outcomes",
-    "FieldShowCondition": "litigationIssues=\"Yes\"",
+    "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
+    "FieldShowCondition": "litigationIssues=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
@@ -1224,17 +1226,18 @@
     "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "litigationIssues",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Does this respondent have any issues with litigation capacity?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LitigationCapacityIssues",
+    "ElementLabel": "Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
-    "ListElementCode": "litigationIssuesReason",
+    "ListElementCode": "litigationIssuesDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "Give details, including referrals to or assessments by the Adult Learning Disability team or other health service, including outcomes",
-    "FieldShowCondition": "litigationIssues=\"Yes\"",
+    "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
+    "FieldShowCondition": "litigationIssues=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
@@ -1277,6 +1280,15 @@
     "ListElementCode": "directionsAndInterim",
     "FieldType": "TextArea",
     "ElementLabel": "Directions and interim orders, if needed",
+    "SecurityClassification": "Public"
+  }
+,
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtBundle",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Upload a file",
     "SecurityClassification": "Public"
   }
 ]

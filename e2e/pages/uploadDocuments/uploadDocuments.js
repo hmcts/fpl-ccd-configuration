@@ -10,6 +10,7 @@ module.exports = {
     otherDocuments_1: '#documents_socialWorkOther_0_typeOfDocument',
     otherDocuments_2: '#documents_socialWorkOther_1_typeOfDocument',
     standardDirections: '#standardDirections',
+    courtBundle: '#courtBundle_document',
   },
 
   fields: {
@@ -44,6 +45,10 @@ module.exports = {
     I.click('Add new');
     I.fillField(this.fields.otherDocumentsTitle_2, 'Document');
     I.attachFile(this.documents.otherDocuments_2, file);
+  },
+
+  uploadCourtBundle(file) {
+    I.attachFile(this.documents.courtBundle, file);
   },
 
   selectSocialWorkChronologyToFollow() {

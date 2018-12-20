@@ -8,7 +8,7 @@ Before(async (I, caseViewPage, submitApplicationPage) => {
   caseId = await I.grabTextFrom('.heading-medium');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationPage.giveConsent();
-  I.click('Continue');  
+  I.click('Continue');
   I.click('Submit');
   I.waitForElement('.tabs');
   I.signOut();

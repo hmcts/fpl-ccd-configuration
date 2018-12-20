@@ -21,16 +21,16 @@ module.exports = {
       address: `#others_${otherNo}_address_address`,
       telephoneNumber: `#others_${otherNo}_telephone`,
       relationshipToChild: `#others_${otherNo}_childInformation`,
+      litigationIssues: {
+        yes: `#others_${otherNo}_litigationIssues-YES`,
+        no: `#others_${otherNo}_litigationIssues-NO`,
+        dont_know: `#others_${otherNo}_litigationIssues-DONT_KNOW`,
+      },
+      litigationIssuesDetails: `#others_${otherNo}_litigationIssuesDetails`,
       detailsHidden: (option) => {
         return {
           option: `#others_${otherNo}_detailsHidden-${option}`,
           reason: `#others_${otherNo}_detailsHiddenReason`,
-        };
-      },
-      litigationIssues: (option) => {
-        return {
-          option: `#others_${otherNo}_litigationIssues-${option}`,
-          reason: `#others_${otherNo}_litigationIssuesReason`,
         };
       },
     };
@@ -72,10 +72,21 @@ module.exports = {
     }
   },
 
-  enterLitigationIssues(option) {
-    I.click(this.fields().litigationIssues(option).option);
-    if (option === 'Yes') {
-      I.fillField(this.fields().litigationIssues(option).reason, 'mock reason');
+  enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
+    litigationIssue = litigationIssue.toLowerCase();
+    switch(litigationIssue) {
+      case 'yes':
+        I.checkOption(this.fields().litigationIssues.yes);
+        break;
+      case 'no':
+        I.checkOption(this.fields().litigationIssues.no);
+        break;
+      case 'dont know':
+        I.checkOption(this.fields().litigationIssues.dont_know);
+        break;
+    }
+    if (litigationIssue === 'yes') {
+      I.fillField(this.fields().litigationIssuesDetails, litigationIssueDetail);
     }
   },
 };
