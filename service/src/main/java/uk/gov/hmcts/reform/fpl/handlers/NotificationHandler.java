@@ -25,6 +25,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEM
 @Component
 public class NotificationHandler {
 
+    private static final String CASE_LOCAL_AUTHORITY_PROPERTY_NAME = "caseLocalAuthority";
+
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final HmctsEmailContentProvider hmctsEmailContentProvider;
@@ -51,7 +53,7 @@ public class NotificationHandler {
     @EventListener
     public void sendNotificationToHmctsAdmin(SubmittedCaseEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        String localAuthorityCode = (String) caseDetails.getData().get("caseLocalAuthority");
+        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
         Map<String, String> parameters = hmctsEmailContentProvider
             .buildHmctsSubmissionNotification(caseDetails, localAuthorityCode);
         String reference = Long.toString(caseDetails.getId());
@@ -63,7 +65,7 @@ public class NotificationHandler {
     @EventListener
     public void sendNotificationToCafcass(SubmittedCaseEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        String localAuthorityCode = (String) caseDetails.getData().get("caseLocalAuthority");
+        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
         Map<String, String> parameters = cafcassEmailContentProvider
             .buildCafcassSubmissionNotification(caseDetails, localAuthorityCode);
         String reference = String.valueOf(caseDetails.getId());
@@ -75,7 +77,7 @@ public class NotificationHandler {
     @EventListener
     public void sendNotificationToGatekeeper(NotifyGatekeeperEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        String localAuthorityCode = (String) caseDetails.getData().get("caseLocalAuthority");
+        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
         String email = (String) caseDetails.getData().get("gateKeeperEmail");
         Map<String, String> parameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(caseDetails,
             localAuthorityCode);
