@@ -9,22 +9,22 @@ Before((I, caseViewPage) => {
 });
 
 Scenario('Entering information for respondent and submitting', (I, enterRespondentsPage, caseViewPage) => {
-  enterRespondentsPage.enterRespondent('firstRespondent', respondents[0]);
+  enterRespondentsPage.enterRespondent(respondents[0]);
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
 
 Scenario('Entering all information for first respondent and an additional respondent', (I, enterRespondentsPage, caseViewPage) => {
-  enterRespondentsPage.enterRespondent('firstRespondent', respondents[0]);
-  enterRespondentsPage.enterRelationshipToChild('firstRespondent', 'mock reason');
-  enterRespondentsPage.enterContactDetailsHidden('firstRespondent', 'Yes', 'mock reason');
-  enterRespondentsPage.enterLitigationIssues('firstRespondent', 'No');
-  I.click(enterRespondentsPage.addRespondent);
-  enterRespondentsPage.enterRespondent('additional_0', respondents[1]);
-  enterRespondentsPage.enterRelationshipToChild('additional_0', 'mock reason');
-  enterRespondentsPage.enterContactDetailsHidden('additional_0', 'Yes', 'mock reason');
-  enterRespondentsPage.enterLitigationIssues('additional_0', 'No');
+  enterRespondentsPage.enterRespondent(respondents[0]);
+  enterRespondentsPage.enterRelationshipToChild('mock reason');
+  enterRespondentsPage.enterContactDetailsHidden('Yes', 'mock reason');
+  enterRespondentsPage.enterLitigationIssues('Yes', 'mock reason');
+  enterRespondentsPage.addRespondent();
+  enterRespondentsPage.enterRespondent(respondents[1]);
+  enterRespondentsPage.enterRelationshipToChild('mock reason');
+  enterRespondentsPage.enterContactDetailsHidden('Yes', 'mock reason');
+  enterRespondentsPage.enterLitigationIssues('No');
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
@@ -43,7 +43,9 @@ Scenario('Entering all information for first respondent and an additional respon
     'mock reason');
   I.seeAnswerInTab(8, 'Respondent 1', 'Do you need contact details hidden from anyone?', 'Yes');
   I.seeAnswerInTab(9, 'Respondent 1', 'Give reason', 'mock reason');
-  I.seeAnswerInTab(10, 'Respondent 1', 'Does this respondent have any issues with litigation capacity?', 'No');
+  I.seeAnswerInTab(10, 'Respondent 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'Yes');
+  I.seeAnswerInTab(11, 'Respondent 1', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
+  
   I.seeAnswerInTab(1, 'Additional respondents 1', 'Full name', 'Wayne Best');
   I.seeAnswerInTab(2, 'Additional respondents 1', 'Date of birth', '1 Jan 1955');
   I.seeAnswerInTab(3, 'Additional respondents 1', 'Gender', 'Male');
@@ -59,5 +61,5 @@ Scenario('Entering all information for first respondent and an additional respon
     'mock reason');
   I.seeAnswerInTab(8, 'Additional respondents 1', 'Do you need contact details hidden from anyone?', 'Yes');
   I.seeAnswerInTab(9, 'Additional respondents 1', 'Give reason', 'mock reason');
-  I.seeAnswerInTab(10, 'Additional respondents 1', 'Does this respondent have any issues with litigation capacity?', 'No');
+  I.seeAnswerInTab(10, 'Additional respondents 1', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
 });

@@ -635,6 +635,27 @@
       </dd>
     </div>
     <div class="data-list__row">
+      <dt class="data-list__title">Litigation capacity issues</dt>
+      <dd class="data-list__definition">
+        {% if case_data.children is not empty and
+        case_data.children.firstChild is not empty and
+        case_data.children.firstChild.litigationIssues is not empty %}
+          {% if case_data.children.firstChild.litigationIssues == 'YES' %}
+          <span class="u-block">Yes</span>
+            {% if case_data.children.firstChild.litigationIssuesDetails is not empty %}
+              <span class="u-block">{{ case_data.children.firstChild.litigationIssuesDetails }}</span>
+            {% endif %}
+          {% elseif case_data.children.firstChild.litigationIssues == 'NO' %}
+            <span class="u-block">No</span>
+          {% else %}
+            <span class="u-block">Don't know</span>
+          {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
       <dt class="data-list__title">Confidential contact details</dt>
       <dd class="data-list__definition">
         {% if case_data.children is not empty and
@@ -868,6 +889,25 @@
             </dd>
           </div>
           <div class="data-list__row">
+            <dt class="data-list__title">Litigation capacity issues</dt>
+            <dd class="data-list__definition">
+              {% if child.value.litigationIssues is not empty %}
+                {% if child.value.litigationIssues == 'YES' %}
+                  <span class="u-block">Yes</span>
+                  {% if child.value.litigationIssuesDetails is not empty %}
+                    <span class="u-block">{{ child.value.litigationIssuesDetails }}</span>
+                  {% endif %}
+                {% elseif child.value.litigationIssues == 'NO' %}
+                  <span class="u-block">No</span>
+                {% else %}
+                  <span class="u-block">Don't know</span>
+                {% endif %}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
             <dt class="data-list__title">Confidential contact details</dt>
             <dd class="data-list__definition">
               {% if child.value.detailsHidden is not empty %}
@@ -1041,10 +1081,16 @@
         {% if case_data.respondents is not empty and
         case_data.respondents.firstRespondent is not empty and
         case_data.respondents.firstRespondent.litigationIssues is not empty %}
-          <span class="u-block">{{ case_data.respondents.firstRespondent.litigationIssues }}</span>
-        {% if case_data.respondents.firstRespondent.litigationIssuesReason is not empty %}
-          <span class="u-block">{{ case_data.respondents.firstRespondent.litigationIssuesReason }}</span>
-        {% endif %}
+          {% if case_data.respondents.firstRespondent.litigationIssues == 'YES' %}
+            <span class="u-block">Yes</span>
+            {% if case_data.respondents.firstRespondent.litigationIssuesDetails is not empty %}
+              <span class="u-block">{{ case_data.respondents.firstRespondent.litigationIssuesDetails }}</span>
+            {% endif %}
+          {% elseif case_data.respondents.firstRespondent.litigationIssues == 'NO' %}
+            <span class="u-block">No</span>
+          {% else %}
+            <span class="u-block">Don't know</span>
+          {% endif %}
         {% else %}
           -
         {% endif %}
@@ -1212,9 +1258,15 @@
           <dt class="data-list__title">Litigation capacity issues</dt>
           <dd class="data-list__definition">
             {% if respondent.value.litigationIssues is not empty %}
-              <span class="u-block">{{ respondent.value.litigationIssues }}</span>
-              {% if respondent.value.litigationIssuesReason is not empty %}
-                <span class="u-block">{{ respondent.value.litigationIssuesReason }}</span>
+              {% if respondent.value.litigationIssues == 'YES' %}
+                <span class="u-block">Yes</span>
+                {% if respondent.value.litigationIssuesDetails is not empty %}
+                  <span class="u-block">{{ respondent.value.litigationIssuesDetails }}</span>
+                {% endif %}
+              {% elseif respondent.value.litigationIssues == 'NO' %}
+                <span class="u-block">No</span>
+              {% else %}
+                <span class="u-block">Don't know</span>
               {% endif %}
             {% else %}
               -
@@ -1554,9 +1606,15 @@
         {% if case_data.others is not empty and
         case_data.others.firstOther is not empty and
         case_data.others.firstOther.litigationIssues is not empty %}
-          {{ case_data.others.firstOther.litigationIssues }}
-          {% if case_data.others.firstOther.litigationIssuesReason is not empty %}
-            <span class="u-block">{{ case_data.others.firstOther.litigationIssuesReason }}</span>
+          {% if case_data.others.firstOther.litigationIssues == 'YES' %}
+            <span class="u-block">Yes</span>
+            {% if case_data.others.firstOther.litigationIssuesDetails is not empty %}
+              <span class="u-block">{{ case_data.others.firstOther.litigationIssuesDetails }}</span>
+            {% endif %}
+          {% elseif case_data.others.firstOther.litigationIssues == 'NO' %}
+            <span class="u-block">No</span>
+          {% else %}
+            <span class="u-block">Don't know</span>
           {% endif %}
         {% else %}
           -
@@ -1714,11 +1772,18 @@
           <div class="data-list__row">
             <dt class="data-list__title">Litigation capacity issues</dt>
             <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.litigationIssues is not empty %}
-                {{ other.value.litigationIssues }}
-              {% if other.value.litigationIssuesReason is not empty %}
-                <span class="u-block">{{ other.value.litigationIssuesReason }}</span>
-              {% endif %}
+              {% if other.value is not empty and
+              other.value.litigationIssues  is not empty %}
+                {% if other.value.litigationIssues == 'YES' %}
+                  <span class="u-block">Yes</span>
+                  {% if other.value.litigationIssuesDetails is not empty %}
+                    <span class="u-block">{{ other.value.litigationIssuesDetails }}</span>
+                  {% endif %}
+                {% elseif other.value.litigationIssues == 'NO' %}
+                  <span class="u-block">No</span>
+                {% else %}
+                  <span class="u-block">Don't know</span>
+                {% endif %}
               {% else %}
                 -
               {% endif %}

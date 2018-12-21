@@ -1,35 +1,35 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseIDReference",
     "Label": "Case reference",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseName",
     "Label": "Case name",
     "DisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "familyManCaseNumber",
     "Label": "FamilyMan case number",
     "DisplayOrder": 3
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseLocalAuthority",
     "Label": "Local authority",
     "DisplayOrder": 4
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "[CREATED_DATE]",
     "Label": "Case creation date",
     "DisplayOrder": 5

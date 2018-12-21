@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "OrdersHearingTab",
     "TabLabel": "Orders and hearing",
@@ -11,7 +11,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "OrdersHearingTab",
     "TabLabel": "Orders and hearing",
@@ -21,7 +21,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
@@ -31,7 +31,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
@@ -41,7 +41,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
@@ -51,7 +51,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
@@ -61,7 +61,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
@@ -71,7 +71,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
     "TabLabel": "Legal opinion",
@@ -81,7 +81,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
     "TabLabel": "Legal opinion",
@@ -91,7 +91,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
     "TabLabel": "Legal opinion",
@@ -101,7 +101,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
     "TabLabel": "Legal opinion",
@@ -111,7 +111,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
     "TabLabel": "Legal opinion",
@@ -121,7 +121,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
     "TabLabel": "Legal opinion",
@@ -131,7 +131,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
     "TabLabel": "Legal opinion",
@@ -141,7 +141,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "LegalOpinionTab",
     "TabLabel": "Legal opinion",
@@ -151,7 +151,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "EvidenceTab",
     "TabLabel": "Evidence",
@@ -161,7 +161,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "EvidenceTab",
     "TabLabel": "Evidence",
@@ -171,7 +171,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "EvidenceTab",
     "TabLabel": "Evidence",
@@ -181,7 +181,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "EvidenceTab",
     "TabLabel": "Evidence",
@@ -191,7 +191,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "EvidenceTab",
     "TabLabel": "Evidence",
@@ -201,7 +201,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "EvidenceTab",
     "TabLabel": "Evidence",
@@ -211,7 +211,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "EvidenceTab",
     "TabLabel": "Evidence",
@@ -221,12 +221,22 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "EvidenceTab",
     "TabLabel": "Evidence",
     "TabDisplayOrder": 4,
     "CaseFieldID": "standardDirections",
     "TabFieldDisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "EvidenceTab",
+    "TabLabel": "Evidence",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "courtBundle",
+    "TabFieldDisplayOrder": 9
   }
 ]

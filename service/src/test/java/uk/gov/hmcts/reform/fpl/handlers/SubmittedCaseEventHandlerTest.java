@@ -32,7 +32,8 @@ class SubmittedCaseEventHandlerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-
+    @Captor
+    private ArgumentCaptor<CaseDetails> caseDetailsCaptor;
     @Mock
     private DocumentGeneratorService documentGeneratorService;
     @Mock
@@ -41,10 +42,6 @@ class SubmittedCaseEventHandlerTest {
     private CaseRepository caseRepository;
     @Mock
     private UserDetailsService userDetailsService;
-
-    @Captor
-    ArgumentCaptor<CaseDetails> caseDetailsCaptor;
-
     @InjectMocks
     private PdfGenerationHandler submittedCaseEventHandler;
 

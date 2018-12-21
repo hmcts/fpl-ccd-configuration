@@ -7,50 +7,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.fpl.exceptions.NoAssociatedUsersException;
-import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityCodeException;
-import uk.gov.hmcts.reform.fpl.exceptions.UnknownLocalAuthorityDomainException;
+import uk.gov.hmcts.reform.fpl.exceptions.AboutToStartOrSubmitCallbackException;
 
+@SuppressWarnings("LineLength")
 @ControllerAdvice
 public class ResourceExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(ResourceExceptionHandler.class);
 
-    @ExceptionHandler(value = UnknownLocalAuthorityDomainException.class)
-    public ResponseEntity<Object> handleUnknownLocalAuthorityDomain(Exception exception) {
+    @ExceptionHandler(value = AboutToStartOrSubmitCallbackException.class)
+    public ResponseEntity<AboutToStartOrSubmitCallbackResponse> handleAboutToStartOrSubmitCallbackException(AboutToStartOrSubmitCallbackException exception) {
         logger.error(exception.getMessage(), exception);
 
-        AboutToStartOrSubmitCallbackResponse response = AboutToStartOrSubmitCallbackResponse.builder()
+        return ResponseEntity.ok(AboutToStartOrSubmitCallbackResponse.builder()
             .errors(ImmutableList.<String>builder()
-                .add("The email address was not linked to a known Local Authority")
+                .add(exception.getUserMessage())
                 .build())
-            .build();
-
-        return ResponseEntity.ok(response);
-    }
-
-    @ExceptionHandler(value = UnknownLocalAuthorityCodeException.class)
-    public ResponseEntity<Object> handleUnknownLocalAuthorityCodeException(Exception exception) {
-        logger.error(exception.getMessage(), exception);
-
-        AboutToStartOrSubmitCallbackResponse response = AboutToStartOrSubmitCallbackResponse.builder()
-            .errors(ImmutableList.<String>builder()
-                .add("The local authority was not found")
-                .build())
-            .build();
-
-        return ResponseEntity.ok(response);
-    }
-
-    @ExceptionHandler(value = NoAssociatedUsersException.class)
-    public ResponseEntity<Object> handleNoAssociatedUsersException(Exception exception) {
-        logger.error(exception.getMessage(), exception);
-
-        AboutToStartOrSubmitCallbackResponse response = AboutToStartOrSubmitCallbackResponse.builder()
-            .errors(ImmutableList.<String>builder()
-                .add("No users were found for the local authority")
-                .build())
-            .build();
-
-        return ResponseEntity.ok(response);
+            .build());
     }
 }

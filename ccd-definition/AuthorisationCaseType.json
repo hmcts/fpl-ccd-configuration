@@ -1,19 +1,19 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
-    "CaseTypeID": "Shared_Storage_DRAFTType",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
   }

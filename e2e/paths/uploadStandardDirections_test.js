@@ -9,8 +9,7 @@ Before(async (I, caseViewPage, loginPage, submitApplicationPage) => {
   caseId = await I.grabTextFrom('.heading-medium');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationPage.giveConsent();
-  I.click('Continue');
-  I.click('Submit');
+  submitApplicationPage.progress();
   I.signOut();
   loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   I.navigateToCaseDetails(caseId);
@@ -20,7 +19,7 @@ Scenario('HMCTS admin upload standard directions and see them in evidence tab', 
   caseViewPage.goToNewActions(config.standardDirections);
   uploadDocumentsPage.uploadStandardDirections(config.testFile);
   I.click('Continue');
-  I.click('Submit');
+  I.click('Save and continue');
   I.seeEventSubmissionConfirmation(config.standardDirections);
   caseViewPage.selectTab(caseViewPage.tabs.evidence);
   I.see('mockFile.txt');
@@ -30,7 +29,7 @@ Scenario('Local authority can see standard directions in evidence tab', (I, case
   caseViewPage.goToNewActions(config.standardDirections);
   uploadDocumentsPage.uploadStandardDirections(config.testFile);
   I.click('Continue');
-  I.click('Submit');
+  I.click('Save and continue');
   I.signOut();
   loginPage.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   I.navigateToCaseDetails(caseId);
