@@ -41,7 +41,7 @@ data:
   CCD_UI_BASE_URL: "https://ccd-case-management-web-${SERVICE_FQDN}"
   FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING: "swansea.gov.uk=>SA;hillingdon.gov.uk=>HN"
   FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING: "SA=>Swansea Local Authority;HN=>Hillingdon Local Authority"
-  FPL_LOCAL_AUTHORITY_USER_MAPPING: "SA=>22,23,24;HN=>25,26"
+  FPL_LOCAL_AUTHORITY_USER_MAPPING: "SA=>25,26,27;HN=>28,29"
   FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING: "SA=>Swansea Family Court:FamilyPublicLaw+sa@gmail.com;HN=>Portsmouth Combined Court:FamilyPublicLaw+hn@gmail.com"
   FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING: "SA=>Cafcass Cymru:FamilyPublicLaw+cafcass@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcass@gmail.com"
   NOTIFY_API_KEY: ${NOTIFY_API_KEY}
