@@ -236,8 +236,20 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderType",
+    "ListElementCode": "Interim care order",
+    "ListElement": "Interim care order"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderType",
     "ListElementCode": "Supervision order",
     "ListElement": "Supervision order"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderType",
+    "ListElementCode": "Interim supervision order",
+    "ListElement": "Interim supervision order"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -256,6 +268,60 @@
     "ID": "OrderType",
     "ListElementCode": "Other",
     "ListElement": "Other order under part 4 of the Children Act 1989"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmergencyProtectionOrder",
+    "ListElementCode": "Child whereabouts",
+    "ListElement": "Information on the whereabouts of the child"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmergencyProtectionOrder",
+    "ListElementCode": "Entry premises",
+    "ListElement": "Authorisation for entry of premises"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmergencyProtectionOrder",
+    "ListElementCode": "Search for another child",
+    "ListElement": "Authorisation to search for another child on the premises"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmergencyProtectionOrder",
+    "ListElementCode": "Other",
+    "ListElement": "Other order under section 48 of the Children Act 1989"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EPODirections",
+    "ListElementCode": "Contact with any named person",
+    "ListElement": "Contact with any named person"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EPODirections",
+    "ListElementCode": "Child medical assessment",
+    "ListElement": "A medical or psychiatric examination, or another assessment of the child"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EPODirections",
+    "ListElementCode": "Medical practitioner",
+    "ListElement": "To be accompanied by a registered medical practitioner, nurse or midwife"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EPODirections",
+    "ListElementCode": "An exclusion requirement",
+    "ListElement": "An exclusion requirement"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EPODirections",
+    "ListElementCode": "Other",
+    "ListElement": "Other direction relating to an emergency protection order"
   },
   {
     "LiveFrom": "01/01/2017",

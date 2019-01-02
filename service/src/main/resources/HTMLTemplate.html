@@ -208,16 +208,40 @@
           {% for type in case_data.orders.orderType %}
             <span class="u-block">{{ type }}</span>
           {% endfor %}
+          {% if case_data.orders.otherOrder is not empty %}
+            <span class="u-block">{{ case_data.orders.otherOrder}}</span>
+          {% endif %}
+          {% if case_data.orders.emergencyProtectionOrders is not empty %}
+            {% for order in case_data.orders.emergencyProtectionOrders %}
+              <span class="u-block">{{ order }}</span>
+            {% endfor %}
+            {% if case_data.orders.emergencyProtectionOrdersDetails is not empty %}
+              <span class="u-block">{{ case_data.orders.emergencyProtectionOrdersDetails}}</span>
+            {% endif %}
+          {% endif %}
         {% else %}
           -
         {% endif %}
       </dd>
     </div>
     <div class="data-list__row">
-      <dt class="data-list__title">Direction and interim orders</dt>
+      <dt class="data-list__title">Direction needed</dt>
       <dd class="data-list__definition">
-        {% if case_data.orders is not empty and case_data.orders.directionsAndInterim is not empty %}
-          {{ case_data.orders.directionsAndInterim }}
+        {% if case_data.orders is not empty and case_data.orders.orderType is not empty %}
+          {% if case_data.orders.emergencyProtectionDirections is not empty %}
+            {% for epo in case_data.orders.emergencyProtectionDirections %}
+              <span class="u-block">{{ epo }}</span>
+            {% endfor %}
+          {% endif %}
+          {% if case_data.orders.emergencyProtectionDirectionsDetails is not empty %}
+            <span class="u-block">{{ case_data.orders.emergencyProtectionDirectionsDetails }}</span>
+          {% endif %}
+        {% endif %}
+        {% if case_data.orders is not empty and case_data.orders.directions is not empty %}
+          {{ case_data.orders.directions }}
+          {% if case_data.orders.directionsDetails is not empty %}
+            <span class="u-block">{{ case_data.orders.directionsDetails }}</span>
+          {% endif %}
         {% else %}
           -
         {% endif %}

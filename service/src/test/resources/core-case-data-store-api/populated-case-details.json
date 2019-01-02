@@ -33,7 +33,10 @@
       "orderType": [
         "Emergency protection order"
       ],
-      "directionsAndInterim": "Information on the whereabouts of the child"
+      "directions": "Yes",
+      "emergencyProtectionDirections": [
+        "Information on the whereabouts of the child"
+        ]
     },
     "others": {
       "firstOther": {
