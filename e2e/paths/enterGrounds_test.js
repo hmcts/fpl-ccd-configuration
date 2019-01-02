@@ -11,7 +11,7 @@ Scenario('Filling in grounds for application section of c110a', (I, enterGrounds
   enterGroundsPage.enterThresholdCriteriaDetails();
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterGrounds);
-  caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
+  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'Grounds for the application', 'How does this case meet the threshold criteria?',
     'Not receiving care that would be reasonably expected from a parent');
 });
