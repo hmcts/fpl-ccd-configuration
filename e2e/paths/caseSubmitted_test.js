@@ -14,7 +14,7 @@ Scenario('Can give consent and submit the case', (I, caseViewPage, submitApplica
   I.waitForElement('.tabs');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   I.dontSee(caseViewPage.actionsDropdown);
-  caseViewPage.selectTab(caseViewPage.tabs.evidence);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.reloadPage();
   I.see('Barnet_Council_v_Smith.pdf');
 });
