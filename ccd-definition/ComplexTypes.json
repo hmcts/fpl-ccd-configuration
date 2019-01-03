@@ -1267,24 +1267,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Orders",
-    "ListElementCode": "orderType",
-    "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "OrderType",
-    "ElementLabel": "Which orders and directions do you want to apply for?",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Orders",
-    "ListElementCode": "directionsAndInterim",
-    "FieldType": "TextArea",
-    "ElementLabel": "Directions and interim orders, if needed",
-    "SecurityClassification": "Public"
-  }
-,
-  {
-    "LiveFrom": "01/01/2017",
     "ID": "CourtBundle",
     "ListElementCode": "document",
     "FieldType": "Document",

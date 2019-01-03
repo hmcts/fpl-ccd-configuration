@@ -221,9 +221,26 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "orders",
-    "Label": "Orders and directions needed",
-    "FieldType": "Orders",
+    "ID": "orders_option",
+    "Label": "Which orders and directions do you want to apply for?",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "OrderType",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "mock_field",
+    "Label": "Can you see this?",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orders_directions",
+    "Label": "Directions and interim orders, if needed",
+    "FieldType": "TextArea",
     "SecurityClassification": "Public"
   },
   {
