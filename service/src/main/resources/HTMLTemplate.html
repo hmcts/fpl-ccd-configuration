@@ -118,6 +118,14 @@
       float: left;
     }
 
+    .u-block--space-below {
+      margin-bottom: 5px;
+    }
+
+    .u-block--space-below:last-child {
+      margin-bottom: 0;
+    }
+
     .u-margin-top-5 {
       margin-top: 5px;
     }
@@ -204,9 +212,9 @@
     <div class="data-list__row">
       <dt class="data-list__title">Orders needed</dt>
       <dd class="data-list__definition">
-        {% if case_data.orders is not empty and case_data.orders.orderType is not empty %}
-          {% for type in case_data.orders.orderType %}
-            <span class="u-block">{{ type }}</span>
+        {% if case_data.orders_option is not empty %}
+          {% for option in case_data.orders_option %}
+            <span class="u-block">{{ option }}</span>
           {% endfor %}
         {% else %}
           -
@@ -216,8 +224,8 @@
     <div class="data-list__row">
       <dt class="data-list__title">Direction and interim orders</dt>
       <dd class="data-list__definition">
-        {% if case_data.orders is not empty and case_data.orders.directionsAndInterim is not empty %}
-          {{ case_data.orders.directionsAndInterim }}
+        {% if case_data.orders_directions is not empty %}
+          {{ case_data.orders_directions }}
         {% else %}
           -
         {% endif %}
@@ -1814,21 +1822,48 @@
 
   <h3 class="heading heading--two">Grounds for the application</h3>
   <dl class="data-list">
+    {% if case_data.orders_option is not empty and
+    case_data.orders_option contains "Emergency protection order" %}
+      <div class="data-list__row">
+        <dt class="data-list__title">Grounds for emergency protection order</dt>
+        <dd class="data-list__definition">
+          {% if case_data.groundsForEPO is not empty and
+          case_data.groundsForEPO.reason is not empty %}
+            {% for reason in case_data.groundsForEPO.reason %}
+              <span class="u-block u-block--space-below">
+                {% if reason == 'Must be placed in provided accommodation' %}
+                  There's reasonable cause to believe the child is likely to suffer significant harm if they're not moved to accommodation provided by you, or on your behalf.
+                {% elseif reason == 'Must be kept in current accommodation' %}
+                  There's reasonable cause to believe the child is likely to suffer significant harm if they don't stay in their current accommodation.
+                {% elseif reason == 'Require urgent access to child' %}
+                  You're making enquiries and need urgent access to the child to find out about their welfare, and access is being unreasonably refused.
+                {% endif %}
+              </span>
+            {% endfor %}
+          {% else %}
+            -
+          {% endif %}
+        </dd>
+      </div>
+    {% endif %}
     <div class="data-list__row">
       <dt class="data-list__title">Threshold is met as the child is suffering or is likely to suffer significant harm because they are</dt>
       <dd class="data-list__definition">
-        {% if case_data.grounds is not empty and case_data.grounds.thresholdReason is not empty %}
+        {% if case_data.grounds is not empty and
+        case_data.grounds.thresholdReason is not empty %}
           {% for reason in case_data.grounds.thresholdReason %}
-            {% if reason == 'noCare' %}
-              <span class="u-block">Not receiving care that would be reasonably expected from a parent.</span>
-            {% elseif reason == 'beyondControl' %}
-              <span class="u-block">Beyond parental control.</span>
-            {% endif %}
+            <span class="u-block u-block--space-below">
+              {% if reason == 'noCare' %}
+                Not receiving care that would be reasonably expected from a parent.
+              {% elseif reason == 'beyondControl' %}
+                Beyond parental control.
+              {% endif %}
+            </span>
           {% endfor %}
         {% else %}
           -
         {% endif %}
-      </dd>
+        </dd>
     </div>
   </dl>
 
