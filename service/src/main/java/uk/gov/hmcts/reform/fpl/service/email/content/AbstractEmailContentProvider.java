@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.config.utils.FixedListMappingType;
 
 import java.util.List;
 import java.util.Map;
@@ -66,9 +67,11 @@ public abstract class AbstractEmailContentProvider {
         int j = 0;
         for (int i = 0; i < 11; i++) {
             if (i < orderType.size()) {
-                orderTypeArray.put(ORDER_KEY + i, "^" + orderType.get(i));
+                orderTypeArray.put(ORDER_KEY + i, "^"
+                    + FixedListMappingType.valueOf((String) orderType.get(i)).getLabel());
             } else if (j < emergencyProtectionOrders.size()) {
-                orderTypeArray.put(ORDER_KEY + i, "^" + emergencyProtectionOrders.get(j));
+                orderTypeArray.put(ORDER_KEY + i, "^"
+                    + FixedListMappingType.valueOf((String) emergencyProtectionOrders.get(j)).getLabel());
                 j++;
             } else {
                 orderTypeArray.put(ORDER_KEY + i, "");
@@ -82,19 +85,20 @@ public abstract class AbstractEmailContentProvider {
     }
 
     private void buildDirections(Map orders, ImmutableMap.Builder<String, String> directionsArray) {
-        List directions = (List) Optional.ofNullable(orders.get("emergencyProtectionDirections"))
+        List directions = (List) Optional.ofNullable(orders.get("emergencyProtectionOrderDirection"))
             .orElse(ImmutableList.builder().build());
         for (int i = 0; i < 5; i++) {
             if (i < directions.size()) {
-                directionsArray.put(DIRECTIONS_KEY + i, "^" + directions.get(i));
+                directionsArray.put(DIRECTIONS_KEY + i, "^"
+                    + FixedListMappingType.valueOf((String) directions.get(i)).getLabel());
             } else {
                 directionsArray.put(DIRECTIONS_KEY + i, "");
             }
         }
 
         directionsArray.put(DIRECTIONS_KEY + "5",
-            (String) Optional.ofNullable(orders.get("emergencyProtectionDirectionsDetails")).orElse(""));
+            (String) Optional.ofNullable(orders.get("emergencyProtectionOrderDirectionDetails")).orElse(""));
         directionsArray.put(DIRECTIONS_KEY + "6",
-            (String) Optional.ofNullable(orders.get("directionsDetails")).orElse(""));
+            (String) Optional.ofNullable(orders.get("directionDetails")).orElse(""));
     }
 }

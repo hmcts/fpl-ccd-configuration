@@ -1277,10 +1277,10 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Orders",
-    "ListElementCode": "emergencyProtectionLabel",
+    "ListElementCode": "emergencyProtectionOrderLabel",
     "FieldType": "Label",
     "ElementLabel": "## Emergency protection order",
-    "FieldShowCondition": "orderTypeCONTAINS\"Emergency protection order\"",
+    "FieldShowCondition": "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
   {
@@ -1288,9 +1288,9 @@
     "ID": "Orders",
     "ListElementCode": "emergencyProtectionOrders",
     "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "EmergencyProtectionOrder",
+    "FieldTypeParameter": "EmergencyProtectionOrderType",
     "ElementLabel": "Do you need any of these related orders?",
-    "FieldShowCondition": "orderTypeCONTAINS\"Emergency protection order\"",
+    "FieldShowCondition": "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
   {
@@ -1299,26 +1299,26 @@
     "ListElementCode": "emergencyProtectionOrderDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
-    "FieldShowCondition": "emergencyProtectionOrdersCONTAINS\"Other\" AND orderTypeCONTAINS\"Emergency protection order\"",
+    "FieldShowCondition": "emergencyProtectionOrders CONTAINS \"EMERGENCY_PROTECTION_ORDER_OTHER\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "Orders",
-    "ListElementCode": "emergencyProtectionDirections",
+    "ListElementCode": "emergencyProtectionOrderDirection",
     "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "EPODirections",
+    "FieldTypeParameter": "EmergencyProtectionOrderDirectionType",
     "ElementLabel": "Do you need any of these directions?",
-    "FieldShowCondition": "orderTypeCONTAINS\"Emergency protection order\"",
+    "FieldShowCondition": "orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "Orders",
-    "ListElementCode": "emergencyProtectionDirectionsDetails",
+    "ListElementCode": "emergencyProtectionOrderDirectionDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
-    "FieldShowCondition": "emergencyProtectionDirectionsCONTAINS\"Other\" AND orderTypeCONTAINS\"Emergency protection order\"",
+    "FieldShowCondition": "emergencyProtectionOrderDirection CONTAINS \"EMERGENCY_PROTECTION_DIRECTION_OTHER\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
   {
@@ -1327,7 +1327,7 @@
     "ListElementCode": "otherOrderLabel",
     "FieldType": "Label",
     "ElementLabel": "## Other order under part 4 of the Children Act 1989",
-    "FieldShowCondition": "orderTypeCONTAINS\"Other\"",
+    "FieldShowCondition": "orderType CONTAINS \"OTHER\"",
     "SecurityClassification": "Public"
   },
   {
@@ -1336,14 +1336,14 @@
     "ListElementCode": "otherOrder",
     "FieldType": "TextArea",
     "ElementLabel": "Which order do you need?",
-    "FieldShowCondition": "orderTypeCONTAINS\"Other\"",
+    "FieldShowCondition": "orderType CONTAINS \"OTHER\"",
     "SecurityClassification": "Public"
   },
 
   {
     "LiveFrom": "01/01/2017",
     "ID": "Orders",
-    "ListElementCode": "directionsLabel",
+    "ListElementCode": "directionLabel",
     "FieldType": "Label",
     "ElementLabel": "## Directions",
     "SecurityClassification": "Public"
@@ -1359,7 +1359,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Orders",
-    "ListElementCode": "directionsDetails",
+    "ListElementCode": "directionDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
     "FieldShowCondition": "directions=\"Yes\"",

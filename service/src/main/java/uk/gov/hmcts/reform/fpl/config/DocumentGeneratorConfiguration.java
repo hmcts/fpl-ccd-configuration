@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.pdf.generator.PDFGenerator;
 import uk.gov.hmcts.reform.pdf.generator.XMLContentSanitizer;
 import uk.gov.hmcts.reform.pebble.AgeFilter;
+import uk.gov.hmcts.reform.pebble.FixedListMappingFilter;
 import uk.gov.hmcts.reform.pebble.TodayFilter;
 
 import java.time.Clock;
@@ -25,7 +26,8 @@ public class DocumentGeneratorConfiguration {
     @Bean
     public HTMLToPDFConverter getConverter(Clock clock) {
         return new HTMLToPDFConverter(
-            new HTMLTemplateProcessor(buildEngine(new TodayFilter(clock), new AgeFilter(clock))),
+            new HTMLTemplateProcessor(buildEngine(new TodayFilter(clock), new AgeFilter(clock),
+                new FixedListMappingFilter())),
             new PDFGenerator(),
             new XMLContentSanitizer()
         );

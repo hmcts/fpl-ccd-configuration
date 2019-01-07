@@ -31,12 +31,12 @@
     },
     "orders": {
       "orderType": [
-        "Emergency protection order"
+        "EMERGENCY_PROTECTION_ORDER"
       ],
       "directions": "Yes",
-      "emergencyProtectionDirections": [
-        "Information on the whereabouts of the child"
-        ]
+      "emergencyProtectionOrderDirection": [
+        "CHILD_WHEREABOUTS"
+      ]
     },
     "others": {
       "firstOther": {

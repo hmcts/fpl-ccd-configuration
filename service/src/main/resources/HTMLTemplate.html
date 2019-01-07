@@ -206,17 +206,17 @@
       <dd class="data-list__definition">
         {% if case_data.orders is not empty and case_data.orders.orderType is not empty %}
           {% for type in case_data.orders.orderType %}
-            <span class="u-block">{{ type }}</span>
+            {{ type | fixedlistmapping }}
           {% endfor %}
           {% if case_data.orders.otherOrder is not empty %}
             <span class="u-block">{{ case_data.orders.otherOrder }}</span>
           {% endif %}
           {% if case_data.orders.emergencyProtectionOrders is not empty %}
             {% for order in case_data.orders.emergencyProtectionOrders %}
-              <span class="u-block">{{ order }}</span>
+              {{ order | fixedlistmapping }}
             {% endfor %}
-            {% if case_data.orders.emergencyProtectionOrdersDetails is not empty %}
-              <span class="u-block">{{ case_data.orders.emergencyProtectionOrdersDetails}}</span>
+            {% if case_data.orders.emergencyProtectionOrderDetails is not empty %}
+              <span class="u-block">{{ case_data.orders.emergencyProtectionOrderDetails }}</span>
             {% endif %}
           {% endif %}
         {% else %}
@@ -229,19 +229,19 @@
       <dd class="data-list__definition">
         {% if case_data.orders is not empty %}
           {% if case_data.orders.orderType is not empty or case_data.orders.directions is not empty %}
-            {% if case_data.orders.emergencyProtectionDirections is not empty %}
-              {% for epo in case_data.orders.emergencyProtectionDirections %}
-                <span class="u-block">{{ epo }}</span>
+            {% if case_data.orders.emergencyProtectionOrderDirection is not empty %}
+              {% for epo in case_data.orders.emergencyProtectionOrderDirection %}
+                {{ epo | fixedlistmapping }}
               {% endfor %}
             {% endif %}
-            {% if case_data.orders.emergencyProtectionDirectionsDetails is not empty %}
-              <span class="u-block">{{ case_data.orders.emergencyProtectionDirectionsDetails }}</span>
+            {% if case_data.orders.emergencyProtectionOrderDirectionDetails is not empty %}
+              <span class="u-block">{{ case_data.orders.emergencyProtectionOrderDirectionDetails }}</span>
             {% endif %}
             {% if case_data.orders.directions is not empty %}
               {{ case_data.orders.directions }}
             {% endif %}
-            {% if case_data.orders.directionsDetails is not empty %}
-              <span class="u-block">{{ case_data.orders.directionsDetails }}</span>
+            {% if case_data.orders.directionDetails is not empty %}
+              <span class="u-block">{{ case_data.orders.directionDetails }}</span>
             {% endif %}
           {% else %}
             -
