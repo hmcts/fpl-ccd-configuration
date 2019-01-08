@@ -229,8 +229,8 @@
       <dd class="data-list__definition">
         {% if case_data.orders is not empty %}
           {% if case_data.orders.orderType is not empty or case_data.orders.directions is not empty %}
-            {% if case_data.orders.emergencyProtectionOrderDirection is not empty %}
-              {% for epo in case_data.orders.emergencyProtectionOrderDirection %}
+            {% if case_data.orders.emergencyProtectionOrderDirections is not empty %}
+              {% for epo in case_data.orders.emergencyProtectionOrderDirections %}
                 {{ epo | emergencyprotectionorderdirectionmapping }}
               {% endfor %}
             {% endif %}

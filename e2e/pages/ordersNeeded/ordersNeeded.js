@@ -22,11 +22,11 @@ module.exports = {
       orderDetails: '#orders_emergencyProtectionOrderDetails',
     },
     protectionDirections: {
-      contact: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirection-CONTACT_WITH_NAMED_PERSON'}),
-      assessment: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirection-CHILD_MEDICAL_ASSESSMENT'}),
-      medicalPractitioner: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirection-MEDICAL_PRACTITIONER'}),
-      exclusion: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirection-EXCLUSION_REQUIREMENT'}),
-      other: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirection-OTHER'}),
+      contact: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirections-CONTACT_WITH_NAMED_PERSON'}),
+      assessment: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirections-CHILD_MEDICAL_ASSESSMENT'}),
+      medicalPractitioner: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirections-MEDICAL_PRACTITIONER'}),
+      exclusion: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirections-EXCLUSION_REQUIREMENT'}),
+      other: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirections-OTHER'}),
       directionsDetails: '#orders_emergencyProtectionOrderDirectionDetails',
     },
 

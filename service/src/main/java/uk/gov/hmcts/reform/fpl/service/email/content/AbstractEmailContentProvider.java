@@ -87,7 +87,7 @@ public abstract class AbstractEmailContentProvider {
     }
 
     private void buildDirections(Map orders, ImmutableMap.Builder<String, String> directionsArray) {
-        List directions = (List) Optional.ofNullable(orders.get("emergencyProtectionOrderDirection"))
+        List directions = (List) Optional.ofNullable(orders.get("emergencyProtectionOrderDirections"))
             .orElse(ImmutableList.builder().build());
         for (int i = 0; i < 5; i++) {
             if (i < directions.size()) {

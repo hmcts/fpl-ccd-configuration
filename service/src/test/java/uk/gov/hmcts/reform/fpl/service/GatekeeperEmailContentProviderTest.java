@@ -50,7 +50,7 @@ class GatekeeperEmailContentProviderTest {
             .put("orders10", "")
             .put("orders11", "")
             .put("orders12", "")
-            .put("directions0", "^Information on the whereabouts of the child")
+            .put("directions0", "^Contact with any named person")
             .put("directions1", "")
             .put("directions2", "")
             .put("directions3", "")

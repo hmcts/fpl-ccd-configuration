@@ -34,8 +34,8 @@
         "EMERGENCY_PROTECTION_ORDER"
       ],
       "directions": "Yes",
-      "emergencyProtectionOrderDirection": [
-        "CHILD_WHEREABOUTS"
+      "emergencyProtectionOrderDirections": [
+        "CONTACT_WITH_NAMED_PERSON"
       ]
     },
     "others": {

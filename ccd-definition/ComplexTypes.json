@@ -1305,7 +1305,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Orders",
-    "ListElementCode": "emergencyProtectionOrderDirection",
+    "ListElementCode": "emergencyProtectionOrderDirections",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "EmergencyProtectionOrderDirectionType",
     "ElementLabel": "Do you need any of these directions?",
@@ -1318,7 +1318,7 @@
     "ListElementCode": "emergencyProtectionOrderDirectionDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
-    "FieldShowCondition": "emergencyProtectionOrderDirection CONTAINS \"EMERGENCY_PROTECTION_DIRECTION_OTHER\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+    "FieldShowCondition": "emergencyProtectionOrderDirections CONTAINS \"EMERGENCY_PROTECTION_DIRECTION_OTHER\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
   {

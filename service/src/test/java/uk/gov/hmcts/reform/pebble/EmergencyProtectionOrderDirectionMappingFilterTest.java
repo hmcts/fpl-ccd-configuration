@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SuppressWarnings("LineLength")
 public class EmergencyProtectionOrderDirectionMappingFilterTest {
 
     private static final ImmutableMap<String, Object> NO_ARGS = ImmutableMap.<String, Object>builder().build();

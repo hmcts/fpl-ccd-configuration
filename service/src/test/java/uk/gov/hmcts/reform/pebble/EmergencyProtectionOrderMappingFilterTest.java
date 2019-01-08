@@ -42,6 +42,7 @@ public class EmergencyProtectionOrderMappingFilterTest {
 
         Assertions.assertThatThrownBy(() -> filter.apply(incorrectEnum, NO_ARGS))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("No enum constant uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderType." + incorrectEnum);
+            .hasMessage("No enum constant uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderType."
+                + incorrectEnum);
     }
 }
