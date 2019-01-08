@@ -13,7 +13,7 @@ Scenario('complete half of the enter risk and harm to children in the c110a' +
   enterRiskAndHarmToChildPage.completeEmotionalHarm();
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRisk);
-  caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
+  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'Risks and harm to children', 'Physical harm including' +
     ' non-accidental injury', 'Yes');
   I.seeAnswerInTab(2, 'Risks and harm to children', 'Select all that apply', 'Past harm');
@@ -28,7 +28,7 @@ Scenario('complete entering risk and harm to children in the c110a' +
   enterRiskAndHarmToChildPage.completeNeglect();
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRisk);
-  caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
+  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'Risks and harm to children', 'Physical harm including' +
   ' non-accidental injury', 'Yes');
   I.seeAnswerInTab(2, 'Risks and harm to children', 'Select all that apply', 'Past harm');
