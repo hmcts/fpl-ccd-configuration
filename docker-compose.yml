@@ -17,7 +17,7 @@ services:
       - IDAM_S2S_AUTH_TOTP_SECRET=AABBCCDDEEFFGGHH
       - FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING=swansea.gov.uk=>SA;hillingdon.gov.uk=>HN
       - FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING=SA=>Swansea Local Authority;HN=>Hillingdon Local Authority
-      - FPL_LOCAL_AUTHORITY_USER_MAPPING=SA=>23,24,25;HN=>26,27
+      - FPL_LOCAL_AUTHORITY_USER_MAPPING=SA=>29,30,31;HN=>32,33
       - FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING=SA=>Swansea Family Court:FamilyPublicLaw+sa@gmail.com;HN=>Portsmouth Combined Court:FamilyPublicLaw+hn@gmail.com
       - FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING=SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com
       - NOTIFY_API_KEY
