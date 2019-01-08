@@ -1,7 +1,6 @@
-/* global xScenario */
 const config = require('../config.js');
 
-Feature('Enter grounds');
+Feature('Enter grounds').retry(2);
 
 Before((I) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
@@ -17,10 +16,21 @@ Scenario('Filling in grounds for application section of c110a', (I, enterGrounds
     'Not receiving care that would be reasonably expected from a parent');
 });
 
-xScenario('Filling in grounds for application after selecting EPO', (I, enterGroundsPage, caseViewPage, ordersNeededPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.selectOrders);
-  ordersNeededPage.checkEmergencyProtectionOrder();
-  I.continueAndSubmit();
-  I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
-  caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
-});
+Scenario('Filling in grounds for application after selecting EPO',
+  (I, enterGroundsPage, caseViewPage, ordersNeededPage) => {
+    caseViewPage.goToNewActions(config.applicationActions.selectOrders);
+    ordersNeededPage.checkEmergencyProtectionOrder();
+    I.continueAndSubmit();
+    I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
+    caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
+    enterGroundsPage.enterGroundsForEmergencyProtectionOrder();
+    I.continueAndSubmit();
+    I.seeEventSubmissionConfirmation(config.applicationActions.enterGrounds);
+    caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
+    I.seeAnswerInTab(1, 'How are there grounds for an emergency protection order?', '',
+      [
+        config.groundsForApplication.harmIfNotMoved,
+        config.groundsForApplication.harmIfMoved,
+        config.groundsForApplication.urgentAccessRequired,
+      ]);
+  });
