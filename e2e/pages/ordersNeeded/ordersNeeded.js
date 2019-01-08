@@ -18,7 +18,7 @@ module.exports = {
       whereabouts: locate('input').withAttr({id: 'orders_emergencyProtectionOrders-CHILD_WHEREABOUTS'}),
       entry: locate('input').withAttr({id: 'orders_emergencyProtectionOrders-ENTRY_PREMISES'}),
       search: locate('input').withAttr({id: 'orders_emergencyProtectionOrders-SEARCH_FOR_ANOTHER_CHILD'}),
-      other: locate('input').withAttr({id: 'orders_emergencyProtectionOrders-EMERGENCY_PROTECTION_ORDER_OTHER'}),
+      other: locate('input').withAttr({id: 'orders_emergencyProtectionOrders-OTHER'}),
       orderDetails: '#orders_emergencyProtectionOrderDetails',
     },
     protectionDirections: {
@@ -26,7 +26,7 @@ module.exports = {
       assessment: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirection-CHILD_MEDICAL_ASSESSMENT'}),
       medicalPractitioner: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirection-MEDICAL_PRACTITIONER'}),
       exclusion: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirection-EXCLUSION_REQUIREMENT'}),
-      other: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirection-EMERGENCY_PROTECTION_DIRECTION_OTHER'}),
+      other: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirection-OTHER'}),
       directionsDetails: '#orders_emergencyProtectionOrderDirectionDetails',
     },
 

@@ -290,7 +290,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "EmergencyProtectionOrderType",
-    "ListElementCode": "EMERGENCY_PROTECTION_ORDER_OTHER",
+    "ListElementCode": "OTHER",
     "ListElement": "Other order under section 48 of the Children Act 1989"
   },
   {
@@ -320,7 +320,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "EmergencyProtectionOrderDirectionType",
-    "ListElementCode": "EMERGENCY_PROTECTION_DIRECTION_OTHER",
+    "ListElementCode": "OTHER",
     "ListElement": "Other direction relating to an emergency protection order"
   },
   {

@@ -3,7 +3,9 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.utils.FixedListMappingType;
+import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionType;
+import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderType;
+import uk.gov.hmcts.reform.fpl.config.utils.OrderType;
 
 import java.util.List;
 import java.util.Map;
@@ -68,10 +70,10 @@ public abstract class AbstractEmailContentProvider {
         for (int i = 0; i < 11; i++) {
             if (i < orderType.size()) {
                 orderTypeArray.put(ORDER_KEY + i, "^"
-                    + FixedListMappingType.valueOf((String) orderType.get(i)).getLabel());
+                    + OrderType.valueOf((String) orderType.get(i)).getLabel());
             } else if (j < emergencyProtectionOrders.size()) {
                 orderTypeArray.put(ORDER_KEY + i, "^"
-                    + FixedListMappingType.valueOf((String) emergencyProtectionOrders.get(j)).getLabel());
+                    + EmergencyProtectionOrderType.valueOf((String) emergencyProtectionOrders.get(j)).getLabel());
                 j++;
             } else {
                 orderTypeArray.put(ORDER_KEY + i, "");
@@ -90,7 +92,7 @@ public abstract class AbstractEmailContentProvider {
         for (int i = 0; i < 5; i++) {
             if (i < directions.size()) {
                 directionsArray.put(DIRECTIONS_KEY + i, "^"
-                    + FixedListMappingType.valueOf((String) directions.get(i)).getLabel());
+                    + EmergencyProtectionOrderDirectionType.valueOf((String) directions.get(i)).getLabel());
             } else {
                 directionsArray.put(DIRECTIONS_KEY + i, "");
             }
