@@ -47,7 +47,7 @@ class DocumentGeneratorServiceTest {
 
         String content = textContentOf(createServiceInstance(clock).generateSubmittedFormPDF(caseDetails));
         String expectedContent = ResourceReader.readString("submitted-form-pdf-content.txt");
-
+        
         assertThat(splitContentIntoTrimmedLines(content))
             .containsExactlyInAnyOrderElementsOf(splitContentIntoTrimmedLines(expectedContent));
     }

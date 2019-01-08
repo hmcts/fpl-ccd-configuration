@@ -29,11 +29,10 @@
         "Future risk of harm"
       ]
     },
-    "orders": {
-      "orderType": [
-        "Emergency protection order"
-      ],
-      "directionsAndInterim": "Information on the whereabouts of the child"
+    "orders_option": [
+      "Emergency protection order"
+    ],
+    "orders_directions": "Information on the whereabouts of the child"
     },
     "others": {
       "firstOther": {
@@ -89,6 +88,13 @@
         "beyondControl"
       ],
       "thresholdDetails": "grounds for application criteria"
+    },
+    "groundsForEPO": {
+      "reason": [
+        "Must be placed in provided accommodation",
+        "Must be kept in current accommodation",
+        "Require urgent access to child"
+      ]
     },
     "hearing": {
       "type": "Contested interim care order",
