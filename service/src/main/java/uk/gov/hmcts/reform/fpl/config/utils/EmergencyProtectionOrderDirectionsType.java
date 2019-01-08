@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.config.utils;
 
-public enum EmergencyProtectionOrderDirectionType {
+public enum EmergencyProtectionOrderDirectionsType {
 
     CONTACT_WITH_NAMED_PERSON("Contact with any named person"),
     CHILD_MEDICAL_ASSESSMENT("A medical or psychiatric examination, or another assessment of the child"),
@@ -10,7 +10,7 @@ public enum EmergencyProtectionOrderDirectionType {
 
     private final String label;
 
-    EmergencyProtectionOrderDirectionType(String label) {
+    private EmergencyProtectionOrderDirectionsType(String label) {
         this.label = label;
     }
 

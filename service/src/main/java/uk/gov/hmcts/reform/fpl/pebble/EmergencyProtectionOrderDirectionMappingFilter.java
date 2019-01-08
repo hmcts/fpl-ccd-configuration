@@ -1,11 +1,10 @@
-package uk.gov.hmcts.reform.pebble;
+package uk.gov.hmcts.reform.fpl.pebble;
 
 import com.mitchellbosecke.pebble.extension.Filter;
-import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionType;
+import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 
 import java.util.List;
 import java.util.Map;
-
 
 public class EmergencyProtectionOrderDirectionMappingFilter implements Filter {
 
@@ -16,6 +15,6 @@ public class EmergencyProtectionOrderDirectionMappingFilter implements Filter {
 
     @Override
     public Object apply(Object input, Map<String, Object> args) {
-        return EmergencyProtectionOrderDirectionType.valueOf((String) input).getLabel();
+        return EmergencyProtectionOrderDirectionsType.valueOf((String) input).getLabel();
     }
 }

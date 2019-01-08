@@ -4,16 +4,17 @@ import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.loader.StringLoader;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import uk.gov.hmcts.reform.fpl.pebble.EmergencyProtectionOrderDirectionMappingFilter;
+import uk.gov.hmcts.reform.fpl.pebble.EmergencyProtectionOrderMappingFilter;
+import uk.gov.hmcts.reform.fpl.pebble.OrderMappingFilter;
 import uk.gov.hmcts.reform.pdf.generator.HTMLTemplateProcessor;
 import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 import uk.gov.hmcts.reform.pdf.generator.PDFGenerator;
 import uk.gov.hmcts.reform.pdf.generator.XMLContentSanitizer;
 import uk.gov.hmcts.reform.pebble.AgeFilter;
-import uk.gov.hmcts.reform.pebble.EmergencyProtectionOrderDirectionMappingFilter;
-import uk.gov.hmcts.reform.pebble.EmergencyProtectionOrderMappingFilter;
-import uk.gov.hmcts.reform.pebble.OrderMappingFilter;
 import uk.gov.hmcts.reform.pebble.TodayFilter;
 
 import java.time.Clock;
@@ -46,9 +47,8 @@ public class DocumentGeneratorConfiguration {
                 public Map<String, Filter> getFilters() {
                     return Stream.of(filters)
                         .collect(toImmutableMap(
-                            filter -> filter.getClass().getSimpleName()
-                                .replace("Filter", "")
-                                .toLowerCase(),
+                            filter -> StringUtils.uncapitalize(filter.getClass().getSimpleName()
+                                .replace("Filter", "")),
                             filter -> filter)
                         );
                 }

@@ -1,7 +1,7 @@
-package uk.gov.hmcts.reform.pebble;
+package uk.gov.hmcts.reform.fpl.pebble;
 
 import com.mitchellbosecke.pebble.extension.Filter;
-import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderType;
+import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +15,6 @@ public class EmergencyProtectionOrderMappingFilter implements Filter {
 
     @Override
     public Object apply(Object input, Map<String, Object> args) {
-        return EmergencyProtectionOrderType.valueOf((String) input).getLabel();
+        return EmergencyProtectionOrdersType.valueOf((String) input).getLabel();
     }
 }

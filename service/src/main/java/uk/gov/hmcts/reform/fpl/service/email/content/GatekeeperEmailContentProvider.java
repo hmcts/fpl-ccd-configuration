@@ -20,7 +20,7 @@ public class GatekeeperEmailContentProvider extends AbstractEmailContentProvider
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
     }
 
-    public Map<String, String> buildGatekeeperNotification(CaseDetails caseDetails, String localAuthorityCode) {
+    public Map<String, Object> buildGatekeeperNotification(CaseDetails caseDetails, String localAuthorityCode) {
         return super.getCasePersonalisationBuilder(caseDetails)
             .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .build();

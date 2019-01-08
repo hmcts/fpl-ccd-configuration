@@ -1299,7 +1299,7 @@
     "ListElementCode": "emergencyProtectionOrderDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
-    "FieldShowCondition": "emergencyProtectionOrders CONTAINS \"EMERGENCY_PROTECTION_ORDER_OTHER\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+    "FieldShowCondition": "emergencyProtectionOrders CONTAINS \"OTHER\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
   {
@@ -1318,7 +1318,7 @@
     "ListElementCode": "emergencyProtectionOrderDirectionDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
-    "FieldShowCondition": "emergencyProtectionOrderDirections CONTAINS \"EMERGENCY_PROTECTION_DIRECTION_OTHER\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
+    "FieldShowCondition": "emergencyProtectionOrderDirections CONTAINS \"OTHER\" AND orderType CONTAINS \"EMERGENCY_PROTECTION_ORDER\"",
     "SecurityClassification": "Public"
   },
   {

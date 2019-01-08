@@ -54,7 +54,7 @@ module.exports = {
     I.checkOption(this.fields.orderType.other);
   },
 
-  enterDirections(testString = 'Test') {
+  enterDirections(testString) {
     I.fillField(this.fields.directionsDetails, testString);
   },
 
@@ -82,7 +82,7 @@ module.exports = {
     I.checkOption(this.fields.protectionOrders.other);
   },
 
-  enterProtectionOrdersDetails(testString = 'Test') {
+  enterProtectionOrdersDetails(testString) {
     I.fillField(this.fields.protectionOrders.orderDetails, testString);
   },
 
@@ -106,11 +106,11 @@ module.exports = {
     I.checkOption(this.fields.protectionDirections.other);
   },
 
-  enterProtectionDirectionsDetails(testString = 'Test') {
+  enterProtectionDirectionsDetails(testString) {
     I.fillField(this.fields.protectionDirections.directionsDetails, testString);
   },
 
-  enterOrderDetails(testString = 'Test') {
+  enterOrderDetails(testString) {
     I.fillField(this.fields.orderType.otherDetails, testString);
   },
 

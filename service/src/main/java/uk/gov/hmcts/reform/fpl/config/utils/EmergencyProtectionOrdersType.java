@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.config.utils;
 
-public enum EmergencyProtectionOrderType {
+public enum EmergencyProtectionOrdersType {
 
     CHILD_WHEREABOUTS("Information on the whereabouts of the child"),
     ENTRY_PREMISES("Authorisation for entry of premises"),
@@ -9,7 +9,7 @@ public enum EmergencyProtectionOrderType {
 
     private final String label;
 
-    EmergencyProtectionOrderType(String label) {
+    EmergencyProtectionOrdersType(String label) {
         this.label = label;
     }
 

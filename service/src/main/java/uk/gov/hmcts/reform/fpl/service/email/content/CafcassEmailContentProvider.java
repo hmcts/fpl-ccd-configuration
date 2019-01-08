@@ -24,7 +24,7 @@ public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
         this.cafcassLookupConfiguration = cafcassLookupConfiguration;
     }
 
-    public Map<String, String> buildCafcassSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
+    public Map<String, Object> buildCafcassSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
         return super.getCasePersonalisationBuilder(caseDetails)
             .put("cafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
             .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))

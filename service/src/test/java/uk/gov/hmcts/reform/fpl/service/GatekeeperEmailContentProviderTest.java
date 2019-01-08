@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -33,30 +35,12 @@ class GatekeeperEmailContentProviderTest {
 
     @Test
     void shouldReturnExpectedMapWithValidCaseDetails() throws IOException {
-        Map<String, String> expectedMap = ImmutableMap.<String, String>builder()
+        List ordersAndDirections = ImmutableList.of("Emergency protection order", "Contact with any named person");
+        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")
             .put("fullStop", "No")
-            .put("orders0", "^Emergency protection order")
-            .put("orders1", "")
-            .put("orders2", "")
-            .put("orders3", "")
-            .put("orders4", "")
-            .put("orders5", "")
-            .put("orders6", "")
-            .put("orders7", "")
-            .put("orders8", "")
-            .put("orders9", "")
-            .put("orders10", "")
-            .put("orders11", "")
-            .put("orders12", "")
-            .put("directions0", "^Contact with any named person")
-            .put("directions1", "")
-            .put("directions2", "")
-            .put("directions3", "")
-            .put("directions4", "")
-            .put("directions5", "")
-            .put("directions6", "")
+            .put("ordersAndDirections", ordersAndDirections)
             .put("timeFramePresent", "Yes")
             .put("timeFrameValue", "Same day")
             .put("reference", "12345")
@@ -72,30 +56,12 @@ class GatekeeperEmailContentProviderTest {
 
     @Test
     void shouldReturnSuccessfullyWithEmptyCaseDetails() throws IOException {
-        Map<String, String> expectedMap = ImmutableMap.<String, String>builder()
+        List ordersAndDirections = ImmutableList.builder().build();
+        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "No")
             .put("fullStop", "Yes")
-            .put("orders0", "")
-            .put("orders1", "")
-            .put("orders2", "")
-            .put("orders3", "")
-            .put("orders4", "")
-            .put("orders5", "")
-            .put("orders6", "")
-            .put("orders7", "")
-            .put("orders8", "")
-            .put("orders9", "")
-            .put("orders10", "")
-            .put("orders11", "")
-            .put("orders12", "")
-            .put("directions0", "")
-            .put("directions1", "")
-            .put("directions2", "")
-            .put("directions3", "")
-            .put("directions4", "")
-            .put("directions5", "")
-            .put("directions6", "")
+            .put("ordersAndDirections", ordersAndDirections)
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
             .put("reference", "123")

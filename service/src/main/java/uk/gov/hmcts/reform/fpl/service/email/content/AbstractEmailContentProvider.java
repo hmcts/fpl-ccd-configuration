@@ -2,9 +2,10 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionType;
-import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderType;
+import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
+import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.config.utils.OrderType;
 
 import java.util.List;
@@ -17,27 +18,25 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @SuppressWarnings("VariableDeclarationUsageDistance")
 public abstract class AbstractEmailContentProvider {
 
-    private static final String ORDER_KEY = "orders";
-    private static final String DIRECTIONS_KEY = "directions";
-
     private final String uiBaseUrl;
 
     protected AbstractEmailContentProvider(String uiBaseUrl) {
         this.uiBaseUrl = uiBaseUrl;
     }
 
-    protected ImmutableMap.Builder<String, String> getCasePersonalisationBuilder(CaseDetails caseDetails) {
+    protected ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(CaseDetails caseDetails) {
         String dataPresent = "Yes";
         String fullStop = "No";
         String timeFramePresent = "No";
 
         Map orders =
-            Optional.ofNullable((Map) caseDetails.getData().get(ORDER_KEY)).orElse(ImmutableMap.builder().build());
-        ImmutableMap.Builder<String, String> orderTypeArray = ImmutableMap.builder();
-        ImmutableMap.Builder<String, String> directionsArray = ImmutableMap.builder();
+            Optional.ofNullable((Map) caseDetails.getData().get("orders")).orElse(ImmutableMap.builder().build());
+        ImmutableSet.Builder<String> ordersAndDirectionsBuilder = ImmutableSet.builder();
 
-        boolean isDataPresent = buildOrders(orders, orderTypeArray);
-        buildDirections(orders, directionsArray);
+        boolean isDataPresent = buildOrders(orders, ordersAndDirectionsBuilder);
+        buildDirections(orders, ordersAndDirectionsBuilder);
+
+        List<String> ordersAndDirectionsList = ImmutableList.copyOf(ordersAndDirectionsBuilder.build());
 
         Map hearing =
             Optional.ofNullable((Map) caseDetails.getData().get("hearing")).orElse(ImmutableMap.builder().build());
@@ -51,56 +50,67 @@ public abstract class AbstractEmailContentProvider {
             fullStop = "Yes";
         }
 
-        return ImmutableMap.<String, String>builder()
-            .putAll(orderTypeArray.build())
+        return ImmutableMap.<String, Object>builder()
+            .put("ordersAndDirections", ordersAndDirectionsList)
             .put("dataPresent", dataPresent)
             .put("fullStop", fullStop)
             .put("timeFramePresent", timeFramePresent)
             .put("timeFrameValue", Optional.ofNullable((String) hearing.get("timeFrame")).orElse(""))
-            .putAll(directionsArray.build())
             .put("reference", String.valueOf(caseDetails.getId()))
             .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
     }
 
-    private boolean buildOrders(Map orders, ImmutableMap.Builder<String, String> orderTypeArray) {
+    private boolean buildOrders(Map orders, ImmutableSet.Builder<String> setBuilder) {
         List orderType = (List) Optional.ofNullable(orders.get("orderType")).orElse(ImmutableList.builder().build());
         List emergencyProtectionOrders = (List) Optional.ofNullable(orders.get("emergencyProtectionOrders"))
             .orElse(ImmutableList.builder().build());
-        int j = 0;
-        for (int i = 0; i < 11; i++) {
-            if (i < orderType.size()) {
-                orderTypeArray.put(ORDER_KEY + i, "^"
-                    + OrderType.valueOf((String) orderType.get(i)).getLabel());
-            } else if (j < emergencyProtectionOrders.size()) {
-                orderTypeArray.put(ORDER_KEY + i, "^"
-                    + EmergencyProtectionOrderType.valueOf((String) emergencyProtectionOrders.get(j)).getLabel());
-                j++;
-            } else {
-                orderTypeArray.put(ORDER_KEY + i, "");
+
+        for (int i = 0; i < orderType.size(); i++) {
+            if (orderType.get(i) != "OTHER") {
+                setBuilder.add(OrderType.valueOf((String) orderType.get(i)).getLabel());
             }
         }
+        for (int i = 0; i < emergencyProtectionOrders.size(); i++) {
+            if (emergencyProtectionOrders.get(i) != "OTHER") {
+                setBuilder.add(EmergencyProtectionOrdersType
+                    .valueOf((String) emergencyProtectionOrders.get(i)).getLabel());
+            }
 
-        orderTypeArray.put(ORDER_KEY + "11", (String) Optional.ofNullable(orders.get("otherOrder")).orElse(""));
-        orderTypeArray.put(ORDER_KEY + "12", (String) Optional.ofNullable(orders.get("emergencyProtectionOrderDetails"))
-            .orElse(""));
+        }
+
+        String otherOrder = (String) Optional.ofNullable(orders.get("otherOrder")).orElse("");
+        String emergencyProtectionOrderDetails = (String) Optional.ofNullable(orders
+            .get("emergencyProtectionOrderDetails")).orElse("");
+
+        if (!otherOrder.isEmpty()) {
+            setBuilder.add(otherOrder);
+        }
+        if (!emergencyProtectionOrderDetails.isEmpty()) {
+            setBuilder.add(emergencyProtectionOrderDetails);
+        }
+
         return orderType.isEmpty();
     }
 
-    private void buildDirections(Map orders, ImmutableMap.Builder<String, String> directionsArray) {
+    private void buildDirections(Map orders, ImmutableSet.Builder<String> setBuilder) {
         List directions = (List) Optional.ofNullable(orders.get("emergencyProtectionOrderDirections"))
             .orElse(ImmutableList.builder().build());
-        for (int i = 0; i < 5; i++) {
-            if (i < directions.size()) {
-                directionsArray.put(DIRECTIONS_KEY + i, "^"
-                    + EmergencyProtectionOrderDirectionType.valueOf((String) directions.get(i)).getLabel());
-            } else {
-                directionsArray.put(DIRECTIONS_KEY + i, "");
+        for (int i = 0; i < directions.size(); i++) {
+            if (directions.get(i) != "OTHER") {
+                setBuilder.add(EmergencyProtectionOrderDirectionsType
+                    .valueOf((String) directions.get(i)).getLabel());
             }
         }
 
-        directionsArray.put(DIRECTIONS_KEY + "5",
-            (String) Optional.ofNullable(orders.get("emergencyProtectionOrderDirectionDetails")).orElse(""));
-        directionsArray.put(DIRECTIONS_KEY + "6",
-            (String) Optional.ofNullable(orders.get("directionDetails")).orElse(""));
+        String emergencyProtectionOrderDirectionDetails =
+            (String) Optional.ofNullable(orders.get("emergencyProtectionOrderDirectionDetails")).orElse("");
+        String directionDetails = (String) Optional.ofNullable(orders.get("directionDetails")).orElse("");
+
+        if (!emergencyProtectionOrderDirectionDetails.isEmpty()) {
+            setBuilder.add(emergencyProtectionOrderDirectionDetails);
+        }
+        if (!directionDetails.isEmpty()) {
+            setBuilder.add(directionDetails);
+        }
     }
 }
