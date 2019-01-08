@@ -61,6 +61,20 @@ module.exports = function () {
       }
     },
 
+    seeQuestionWithAnswers(question, answer) {
+      const questionContainer = locate('.//div/tbody');
+      this.seeElement(questionContainer.withText(question));
+      if (Array.isArray(answer)) {
+        let index = 1;
+        answer.forEach(ans => {
+          this.seeElement(locate(`${questionContainer}//tr[${index}]`).withText(ans));
+          index++;
+        });
+      } else {
+        this.seeElement(locate(`${questionContainer}//span`).withText(answer));
+      }
+    },
+
     signOut() {
       this.click('Sign Out');
     },

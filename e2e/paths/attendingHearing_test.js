@@ -14,7 +14,7 @@ Scenario('completing half of the attending hearing section of the c110a applicat
     attendingHearingPage.enterLitigationIssues();
     I.continueAndSubmit();
     I.seeEventSubmissionConfirmation(config.applicationActions.attendingHearing);
-    caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
+    caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
     I.seeAnswerInTab(1, 'Attending the hearing', 'Any Interpreter required?', 'Yes');
     I.seeAnswerInTab(2, 'Attending the hearing', 'Give details', 'French' +
       ' translator');
@@ -32,7 +32,7 @@ Scenario('completing the attending hearing section of the c110a application',
     attendingHearingPage.enterExtraSecurityMeasures();
     I.continueAndSubmit();
     I.seeEventSubmissionConfirmation(config.applicationActions.attendingHearing);
-    caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
+    caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
     I.seeAnswerInTab(1, 'Attending the hearing', 'Any Interpreter required?', 'Yes');
     I.seeAnswerInTab(2, 'Attending the hearing', 'Give details', 'French translator');
     I.seeAnswerInTab(3, 'Attending the hearing', 'Any intermediary required?', 'No');

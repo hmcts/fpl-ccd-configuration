@@ -13,7 +13,7 @@ Scenario('completing half of the international element section of the c110a' +
   I.see('Give reason');
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterInternationalElement);
-  caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
+  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'International element', 'Is there anyone in the' +
     ' genogram outside the UK who has been assessed as a possible carer?', 'Yes');
   I.seeAnswerInTab(2, 'International element', 'Give reason', 'test');
@@ -27,7 +27,7 @@ Scenario('completed international element of the c110a application', (I, enterIn
   I.see('Give reason');
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterInternationalElement);
-  caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
+  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'International element', 'Is there anyone in the' +
     ' genogram outside the UK who has been assessed as a possible carer?', 'Yes');
   I.seeAnswerInTab(2, 'International element', 'Give reason', 'test');

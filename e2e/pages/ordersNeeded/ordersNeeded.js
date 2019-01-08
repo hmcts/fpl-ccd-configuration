@@ -5,13 +5,13 @@ const I = actor();
 module.exports = {
   fields: {
     orderType: {
-      careOrder: locate('input').withAttr({id: 'orders_orderType-Care order'}),
-      supervisionOrder: locate('input').withAttr({id: 'orders_orderType-Supervision order'}),
-      educationSupervisionOrder: locate('input').withAttr({id: 'orders_orderType-Education supervision order'}),
-      emergencyProtectionOrder: locate('input').withAttr({id: 'orders_orderType-Emergency protection order'}),
-      other: locate('input').withAttr({id: 'orders_orderType-Other'}),
+      careOrder: locate('input').withAttr({id: 'orders_option-Care order'}),
+      supervisionOrder: locate('input').withAttr({id: 'orders_option-Supervision order'}),
+      educationSupervisionOrder: locate('input').withAttr({id: 'orders_option-Education supervision order'}),
+      emergencyProtectionOrder: locate('input').withAttr({id: 'orders_option-Emergency protection order'}),
+      other: locate('input').withAttr({id: 'orders_option-Other'}),
     },
-    directionAndInterim: '#orders_directionsAndInterim',
+    directionAndInterim: '#orders_directions',
   },
 
   checkCareOrder() {
