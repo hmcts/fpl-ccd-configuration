@@ -12,7 +12,7 @@ Scenario('Select not aware of any ongoing or previous proceedings', (I, enterOth
   enterOtherProceedingsPage.selectNoForProceeding();
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOtherProceedings);
-  caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
+  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'Other proceedings', 'Are you aware of any ongoing or' +
     ' previous proceedings?', 'No');
 });
@@ -23,7 +23,7 @@ Scenario('Select yes for ongoing or previous proceedings and fill in information
     enterOtherProceedingsPage.enterProceedingInformation(otherProceedingData);
     I.continueAndSubmit();
     I.seeEventSubmissionConfirmation(config.applicationActions.enterOtherProceedings);
-    caseViewPage.selectTab(caseViewPage.tabs.legalOpinion);
+    caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
     I.seeAnswerInTab(1, 'Other proceedings', 'Are you aware of any ongoing or' +
       ' previous proceedings?', 'Yes');
     I.seeAnswerInTab(2, 'Other proceedings', 'Proceeding status', 'Ongoing');

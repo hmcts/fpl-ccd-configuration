@@ -286,6 +286,7 @@ declare namespace CodeceptJS {
     clickHyperlink(link: string, urlNavigatedTo: string) : void,
     seeDocument(title: string, name: string, status: string, reason?: string) : void,
     seeAnswerInTab(questionNo: string, complexTypeHeading: string, question: string, answer: string) : void,
+    seeQuestionWithAnswers(question: string, answers: string[]) : void,
     signOut() : void,
     say(msg: string) : void,
     retryStep(opts: string) : void,
