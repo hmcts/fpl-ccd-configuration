@@ -19,4 +19,10 @@ module.exports = {
     I.checkOption(this.fields.thresholdReason.notReceivingCare);
     I.fillField(this.fields.thresholdDetails, 'mock threshold details');
   },
+
+  enterGroundsForEmergencyProtectionOrder() {
+    I.checkOption(this.fields.groundsForApplication.harmIfNotMoved);
+    I.checkOption(this.fields.groundsForApplication.harmIfMoved);
+    I.checkOption(this.fields.groundsForApplication.urgentAccessRequired);
+  },
 };

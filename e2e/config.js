@@ -54,4 +54,9 @@ module.exports = {
   presidentsGuidanceUrl: 'https://www.judiciary.uk/wp-content/uploads/2013/03/President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf',
   scheduleUrl: 'https://www.judiciary.uk/wp-content/uploads/2013/03/Schedule-to-the-President%E2%80%99s-Guidance-on-Allocation-and-Gatekeeping.pdf',
   otherProposalUrl: '/otherProposal/otherProposal1',
+  groundsForApplication: {
+    harmIfNotMoved: 'There\'s reasonable cause to believe the child is likely to suffer significant harm if they\'re not moved to accommodation provided by you, or on your behalf',
+    harmIfMoved: 'There\'s reasonable cause to believe the child is likely to suffer significant harm if they don\'t stay in their current accommodation',
+    urgentAccessRequired: 'You\'re making enquiries and need urgent access to the child to find out about their welfare, and access is being unreasonably refused',
+  },
 };
