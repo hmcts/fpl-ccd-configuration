@@ -107,7 +107,8 @@ class CaseSubmissionControllerTest {
 
     @Test
     void shouldBuildNotificationTemplatesWithCompleteValues() throws Exception {
-        List ordersAndDirections = ImmutableList.of("Emergency protection order", "Contact with any named person");
+        List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
+            "Contact with any named person");
         Map<String, Object> expectedHmctsParameters = ImmutableMap.<String, Object>builder()
             .put("court", "Family Court")
             .put("localAuthority", "Example Local Authority")

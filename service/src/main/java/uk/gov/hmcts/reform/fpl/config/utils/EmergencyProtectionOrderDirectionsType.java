@@ -10,7 +10,7 @@ public enum EmergencyProtectionOrderDirectionsType {
 
     private final String label;
 
-    private EmergencyProtectionOrderDirectionsType(String label) {
+    EmergencyProtectionOrderDirectionsType(String label) {
         this.label = label;
     }
 

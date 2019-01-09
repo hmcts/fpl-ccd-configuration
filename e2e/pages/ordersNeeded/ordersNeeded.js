@@ -54,8 +54,8 @@ module.exports = {
     I.checkOption(this.fields.orderType.other);
   },
 
-  enterDirections(testString) {
-    I.fillField(this.fields.directionsDetails, testString);
+  enterDirections(details) {
+    I.fillField(this.fields.directionsDetails, details);
   },
 
   checkInterimCareOrder() {
@@ -82,8 +82,8 @@ module.exports = {
     I.checkOption(this.fields.protectionOrders.other);
   },
 
-  enterProtectionOrdersDetails(testString) {
-    I.fillField(this.fields.protectionOrders.orderDetails, testString);
+  enterProtectionOrdersDetails(details) {
+    I.fillField(this.fields.protectionOrders.orderDetails, details);
   },
 
   checkContact() {
@@ -106,12 +106,12 @@ module.exports = {
     I.checkOption(this.fields.protectionDirections.other);
   },
 
-  enterProtectionDirectionsDetails(testString) {
-    I.fillField(this.fields.protectionDirections.directionsDetails, testString);
+  enterProtectionDirectionsDetails(details) {
+    I.fillField(this.fields.protectionDirections.directionsDetails, details);
   },
 
-  enterOrderDetails(testString) {
-    I.fillField(this.fields.orderType.otherDetails, testString);
+  enterOrderDetails(details) {
+    I.fillField(this.fields.orderType.otherDetails, details);
   },
 
   checkDirections() {

@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.pebble.OrderMappingFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-
 public class OrderMappingFilterTest {
 
     private static final ImmutableMap<String, Object> NO_ARGS = ImmutableMap.<String, Object>builder().build();

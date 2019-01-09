@@ -41,7 +41,8 @@ class NotifyGatekeeperTest {
 
     @Test
     void shouldBuildGatekeeperNotificationTemplateWithCompleteValues() throws Exception {
-        List ordersAndDirections = ImmutableList.of("Emergency protection order", "Contact with any named person");
+        List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
+            "Contact with any named person");
         Map<String, Object> expectedGatekeeperParameters = ImmutableMap.<String, Object>builder()
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")

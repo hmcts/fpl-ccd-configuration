@@ -42,7 +42,8 @@ class CafcassEmailContentProviderTest {
 
     @Test
     void shouldReturnExpectedMapWithValidCaseDetails() throws IOException {
-        List ordersAndDirections = ImmutableList.of("Emergency protection order", "Contact with any named person");
+        List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
+            "Contact with any named person");
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
             .put("cafcass", CAFCASS_NAME)
             .put("localAuthority", "Example Local Authority")
