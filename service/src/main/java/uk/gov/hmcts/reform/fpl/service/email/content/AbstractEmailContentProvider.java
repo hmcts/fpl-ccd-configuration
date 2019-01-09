@@ -14,9 +14,6 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @SuppressWarnings("VariableDeclarationUsageDistance")
 public abstract class AbstractEmailContentProvider {
 
-    private static final String ORDER_OPTION_KEY = "orders_option";
-    private static final String ORDERS_DIRECTIONS_KEY = "orders_directions";
-
     private final String uiBaseUrl;
 
     protected AbstractEmailContentProvider(String uiBaseUrl) {
@@ -28,9 +25,9 @@ public abstract class AbstractEmailContentProvider {
         String fullStop = "No";
         String timeFramePresent = "No";
 
-        String directions = (String) Optional.ofNullable(caseDetails.getData().get(ORDERS_DIRECTIONS_KEY))
+        String directions = (String) Optional.ofNullable(caseDetails.getData().get("orders_directions"))
             .orElse("");
-        List orderOptions = (List) Optional.ofNullable(caseDetails.getData().get(ORDER_OPTION_KEY))
+        List orderOptions = (List) Optional.ofNullable(caseDetails.getData().get("orders_option"))
             .orElse(Collections.emptyList());
 
         ImmutableMap.Builder<String, String> orderOptionsArray = ImmutableMap.builder();
