@@ -29,7 +29,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 class DocumentGeneratorServiceTest {
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldGenerateSubmittedFormDocumentWhenCaseHasNoData() throws IOException {
         String content = textContentOf(createServiceInstance().generateSubmittedFormPDF(emptyCaseDetails(),
             Pair.of("userFullName", "Emma Taylor"))
@@ -39,7 +38,6 @@ class DocumentGeneratorServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldGenerateSubmittedFormDocumentWhenCaseIsFullyPopulated() throws IOException {
         Clock clock = Clock.fixed(Instant.parse("2018-11-26T00:00:00Z"), ZoneId.systemDefault());
 
@@ -57,7 +55,6 @@ class DocumentGeneratorServiceTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldThrowExceptionWhenTemplateIsTemplateIsMalformed() {
         assertThatThrownBy(() -> createServiceInstance().generateSubmittedFormPDF(null))
             .isInstanceOf(MalformedTemplateException.class);

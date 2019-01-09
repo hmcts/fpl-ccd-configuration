@@ -70,7 +70,6 @@ public class CaseSubmissionController {
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
-        @SuppressWarnings("unchecked")
         byte[] pdf = documentGeneratorService.generateSubmittedFormPDF(caseDetails,
             Pair.of("userFullName", userDetailsService.getUserName(authorization))
         );
