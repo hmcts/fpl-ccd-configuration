@@ -260,19 +260,19 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "EPOReason",
-    "ListElementCode": "Must be placed in provided accommodation",
+    "ListElementCode": "PLACED_IN_PROVIDED_ACCOMMODATION",
     "ListElement": "There's reasonable cause to believe the child is likely to suffer significant harm if they're not moved to accommodation provided by you, or on your behalf"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "EPOReason",
-    "ListElementCode": "Must be kept in current accommodation",
+    "ListElementCode": "KEPT_IN_CURRENT_ACCOMMODATION",
     "ListElement": "There's reasonable cause to believe the child is likely to suffer significant harm if they don't stay in their current accommodation"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "EPOReason",
-    "ListElementCode": "Require urgent access to child",
+    "ListElementCode": "URGENT_ACCESS_TO_CHILD",
     "ListElement": "You're making enquiries and need urgent access to the child to find out about their welfare, and access is being unreasonably refused"
   },
   {

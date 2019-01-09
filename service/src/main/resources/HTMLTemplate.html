@@ -1831,11 +1831,11 @@
           case_data.groundsForEPO.reason is not empty %}
             {% for reason in case_data.groundsForEPO.reason %}
               <span class="u-block u-block--space-below">
-                {% if reason == 'Must be placed in provided accommodation' %}
+                {% if reason == 'PLACED_IN_PROVIDED_ACCOMMODATION' %}
                   There's reasonable cause to believe the child is likely to suffer significant harm if they're not moved to accommodation provided by you, or on your behalf.
-                {% elseif reason == 'Must be kept in current accommodation' %}
+                {% elseif reason == 'KEPT_IN_CURRENT_ACCOMMODATION' %}
                   There's reasonable cause to believe the child is likely to suffer significant harm if they don't stay in their current accommodation.
-                {% elseif reason == 'Require urgent access to child' %}
+                {% elseif reason == 'URGENT_ACCESS_TO_CHILD' %}
                   You're making enquiries and need urgent access to the child to find out about their welfare, and access is being unreasonably refused.
                 {% endif %}
               </span>

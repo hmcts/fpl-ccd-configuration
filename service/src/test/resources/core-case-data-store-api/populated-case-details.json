@@ -35,9 +35,9 @@
     "orders_directions": "Information on the whereabouts of the child",
     "groundsForEPO": {
       "reason": [
-        "Must be placed in provided accommodation",
-        "Must be kept in current accommodation",
-        "Require urgent access to child"
+        "PLACED_IN_PROVIDED_ACCOMMODATION",
+        "KEPT_IN_CURRENT_ACCOMMODATION",
+        "URGENT_ACCESS_TO_CHILD"
       ]
     },
     "others": {

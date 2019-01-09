@@ -55,7 +55,7 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "groundsForEPOCONTAINS\"59281\""
+    "FieldShowCondition": "groundsForEPO CONTAINS\"NEVER_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -67,7 +67,7 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "orders_optionCONTAINS\"Emergency protection order\""
+    "FieldShowCondition": "orders_option CONTAINS\"Emergency protection order\""
   },
   {
     "LiveFrom": "01/01/2017",
