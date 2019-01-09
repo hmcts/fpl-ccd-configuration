@@ -30,12 +30,10 @@
           "Future risk of harm"
         ]
       },
-      "orders": {
-        "orderType": [
-          "Emergency protection order"
-        ],
-        "directionsAndInterim": "Information on the whereabouts of the child"
-      },
+      "orders_option": [
+        "Emergency protection order"
+      ],
+      "orders_directions": "Information on the whereabouts of the child",
       "others": {
         "firstOther": {
           "DOB": "1999-02-02",

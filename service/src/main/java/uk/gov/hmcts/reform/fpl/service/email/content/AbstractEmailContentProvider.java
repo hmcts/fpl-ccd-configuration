@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,8 +14,8 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @SuppressWarnings("VariableDeclarationUsageDistance")
 public abstract class AbstractEmailContentProvider {
 
-    private static final String ORDER_KEY = "orders";
-    private static final String DIRECTIONS_KEY = "directionsAndInterim";
+    private static final String ORDER_OPTION_KEY = "orders_option";
+    private static final String ORDERS_DIRECTIONS_KEY = "orders_directions";
 
     private final String uiBaseUrl;
 
@@ -28,18 +28,17 @@ public abstract class AbstractEmailContentProvider {
         String fullStop = "No";
         String timeFramePresent = "No";
 
-        Map orders =
-            Optional.ofNullable((Map) caseDetails.getData().get(ORDER_KEY)).orElse(ImmutableMap.builder().build());
+        String directions = (String) Optional.ofNullable(caseDetails.getData().get(ORDERS_DIRECTIONS_KEY))
+            .orElse("");
+        List orderOptions = (List) Optional.ofNullable(caseDetails.getData().get(ORDER_OPTION_KEY))
+            .orElse(Collections.emptyList());
 
-        List orderType = (List) Optional.ofNullable(orders.get("orderType")).orElse(ImmutableList.builder().build());
-        String directions = (String) Optional.ofNullable(orders.get(DIRECTIONS_KEY)).orElse("");
-
-        ImmutableMap.Builder<String, String> orderTypeArray = ImmutableMap.builder();
+        ImmutableMap.Builder<String, String> orderOptionsArray = ImmutableMap.builder();
         for (int i = 0; i < 5; i++) {
-            if (i < orderType.size()) {
-                orderTypeArray.put(ORDER_KEY + i, "^" + orderType.get(i));
+            if (i < orderOptions.size()) {
+                orderOptionsArray.put("orders" + i, "^" + orderOptions.get(i));
             } else {
-                orderTypeArray.put(ORDER_KEY + i, "");
+                orderOptionsArray.put("orders" + i, "");
             }
         }
 
@@ -50,18 +49,18 @@ public abstract class AbstractEmailContentProvider {
             timeFramePresent = "Yes";
         }
 
-        if (orderType.isEmpty()) {
+        if (orderOptions.isEmpty()) {
             dataPresent = "No";
             fullStop = "Yes";
         }
 
         return ImmutableMap.<String, String>builder()
-            .putAll(orderTypeArray.build())
+            .putAll(orderOptionsArray.build())
             .put("dataPresent", dataPresent)
             .put("fullStop", fullStop)
             .put("timeFramePresent", timeFramePresent)
             .put("timeFrameValue", Optional.ofNullable((String) hearing.get("timeFrame")).orElse(""))
-            .put(DIRECTIONS_KEY, !directions.isEmpty() ? "^" + directions : "")
+            .put("directionsAndInterim", !directions.isEmpty() ? "^" + directions : "")
             .put("reference", String.valueOf(caseDetails.getId()))
             .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
     }
