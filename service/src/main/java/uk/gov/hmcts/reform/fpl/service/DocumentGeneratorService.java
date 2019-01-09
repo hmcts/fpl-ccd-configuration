@@ -24,8 +24,12 @@ public class DocumentGeneratorService {
         this.mapper = mapper;
     }
 
-    public byte[] generateSubmittedFormPDF(CaseDetails caseDetails) {
+    public byte[] generateSubmittedFormPDF(CaseDetails caseDetails, Map.Entry<String, ?>... additionalContextEntries) {
         Map<String, Object> context = mapper.convertValue(caseDetails, Map.class);
+
+        for (Map.Entry<String, ?> entry : additionalContextEntries) {
+            context.put(entry.getKey(), entry.getValue());
+        }
 
         byte[] template = templates.getHtmlTemplate();
 
