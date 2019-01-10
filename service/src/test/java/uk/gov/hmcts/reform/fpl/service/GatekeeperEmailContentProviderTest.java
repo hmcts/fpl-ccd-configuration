@@ -57,7 +57,7 @@ class GatekeeperEmailContentProviderTest {
 
     @Test
     void shouldReturnSuccessfullyWithEmptyCaseDetails() throws IOException {
-        List ordersAndDirections = ImmutableList.builder().build();
+        List<String> ordersAndDirections = ImmutableList.<String>builder().build();
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "No")

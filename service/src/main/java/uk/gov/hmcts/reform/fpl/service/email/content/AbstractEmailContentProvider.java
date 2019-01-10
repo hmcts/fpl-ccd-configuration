@@ -29,17 +29,15 @@ public abstract class AbstractEmailContentProvider {
         String fullStop = "No";
         String timeFramePresent = "No";
 
-        Map orders =
-            Optional.ofNullable((Map) caseDetails.getData().get("orders")).orElse(ImmutableMap.builder().build());
+        Map orders = Optional.ofNullable((Map) caseDetails.getData().get("orders"))
+            .orElse(ImmutableMap.builder().build());
         ImmutableList.Builder<String> ordersAndDirectionsBuilder = ImmutableList.builder();
 
         boolean isDataPresent = buildOrders(orders, ordersAndDirectionsBuilder);
         buildDirections(orders, ordersAndDirectionsBuilder);
 
-        List<String> ordersAndDirectionsList = ImmutableList.copyOf(ordersAndDirectionsBuilder.build());
-
-        Map hearing =
-            Optional.ofNullable((Map) caseDetails.getData().get("hearing")).orElse(ImmutableMap.builder().build());
+        Map hearing = Optional.ofNullable((Map) caseDetails.getData().get("hearing"))
+            .orElse(ImmutableMap.builder().build());
 
         if (hearing.containsKey("timeFrame")) {
             timeFramePresent = "Yes";
@@ -51,7 +49,7 @@ public abstract class AbstractEmailContentProvider {
         }
 
         return ImmutableMap.<String, Object>builder()
-            .put("ordersAndDirections", ordersAndDirectionsList)
+            .put("ordersAndDirections", ordersAndDirectionsBuilder.build())
             .put("dataPresent", dataPresent)
             .put("fullStop", fullStop)
             .put("timeFramePresent", timeFramePresent)

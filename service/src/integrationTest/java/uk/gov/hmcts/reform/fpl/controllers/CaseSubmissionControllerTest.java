@@ -152,7 +152,7 @@ class CaseSubmissionControllerTest {
 
     @Test
     void shouldBuildNotificationTemplatesWithValuesMissingInCallback() throws Exception {
-        List ordersAndDirections = ImmutableList.builder().build();
+        List<String> ordersAndDirections = ImmutableList.<String>builder().build();
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)

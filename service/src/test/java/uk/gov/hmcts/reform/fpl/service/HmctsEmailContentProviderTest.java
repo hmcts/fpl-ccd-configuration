@@ -68,7 +68,7 @@ class HmctsEmailContentProviderTest {
 
     @Test
     void shouldReturnSuccessfullyWithEmptyCaseDetails() throws IOException {
-        List ordersAndDirections = ImmutableList.builder().build();
+        List<String> ordersAndDirections = ImmutableList.<String>builder().build();
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
             .put("court", COURT_NAME)
             .put("localAuthority", "Example Local Authority")
