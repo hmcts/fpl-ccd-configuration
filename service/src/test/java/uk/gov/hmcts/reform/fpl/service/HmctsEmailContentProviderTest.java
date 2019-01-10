@@ -16,8 +16,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -63,7 +62,7 @@ class HmctsEmailContentProviderTest {
             .willReturn("Example Local Authority");
 
         assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(populatedCaseDetails(),
-            LOCAL_AUTHORITY_CODE), is(expectedMap));
+            LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
     }
 
     @Test
@@ -88,6 +87,6 @@ class HmctsEmailContentProviderTest {
             .willReturn("Example Local Authority");
 
         assertThat(hmctsEmailContentProvider.buildHmctsSubmissionNotification(emptyCaseDetails(),
-            LOCAL_AUTHORITY_CODE), is(expectedMap));
+            LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
     }
 }
