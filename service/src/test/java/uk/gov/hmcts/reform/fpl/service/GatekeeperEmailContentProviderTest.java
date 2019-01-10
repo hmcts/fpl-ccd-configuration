@@ -56,12 +56,11 @@ class GatekeeperEmailContentProviderTest {
 
     @Test
     void shouldReturnSuccessfullyWithEmptyCaseDetails() throws IOException {
-        List<String> ordersAndDirections = ImmutableList.<String>builder().build();
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "No")
             .put("fullStop", "Yes")
-            .put("ordersAndDirections", ordersAndDirections)
+            .put("ordersAndDirections", "")
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
             .put("reference", "123")

@@ -152,7 +152,6 @@ class CaseSubmissionControllerTest {
 
     @Test
     void shouldBuildNotificationTemplatesWithValuesMissingInCallback() throws Exception {
-        List<String> ordersAndDirections = ImmutableList.<String>builder().build();
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -166,7 +165,7 @@ class CaseSubmissionControllerTest {
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "No")
             .put("fullStop", "Yes")
-            .put("ordersAndDirections", ordersAndDirections)
+            .put("ordersAndDirections", "")
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
             .put("reference", "12345")
@@ -178,7 +177,7 @@ class CaseSubmissionControllerTest {
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "No")
             .put("fullStop", "Yes")
-            .put("ordersAndDirections", ordersAndDirections)
+            .put("ordersAndDirections", "")
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
             .put("reference", "12345")
