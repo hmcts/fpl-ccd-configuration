@@ -4,7 +4,7 @@ set -eu
 build_dir=$(realpath $(dirname ${0})/../build/release-config)
 prod_config_dir=$build_dir/definitions
 dev_config_dir=$(dirname ${0})/../ccd-definition
-prod_definition_filename=CCD_FPL_PROD_V1_0.xlsx
+prod_definition_filename=CCD_FPL_PROD.xlsx
 
 #create build folder, copy development config and remove the users
 mkdir -p $prod_config_dir
