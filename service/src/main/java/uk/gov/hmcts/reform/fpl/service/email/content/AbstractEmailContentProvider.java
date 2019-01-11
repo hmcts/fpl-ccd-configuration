@@ -55,43 +55,23 @@ public abstract class AbstractEmailContentProvider {
     private void appendOrders(Map<String, Object> orders, ImmutableList.Builder<String> builder) {
         Optional.ofNullable(orders.get("orderType")).ifPresent(orderTypes -> {
             for (String typeString : (List<String>) orderTypes) {
-                OrderType type = OrderType.valueOf(typeString);
-                if (type != OrderType.OTHER) {
-                    builder.add(type.getLabel());
-                }
+                builder.add(OrderType.valueOf(typeString).getLabel());
             }
         });
 
         Optional.ofNullable(orders.get("emergencyProtectionOrders")).ifPresent(emergencyProtectionOrders -> {
             for (String typeString : (List<String>) emergencyProtectionOrders) {
-                EmergencyProtectionOrdersType type = EmergencyProtectionOrdersType.valueOf(typeString);
-                if (type != EmergencyProtectionOrdersType.OTHER) {
-                    builder.add(type.getLabel());
-                }
+                builder.add(EmergencyProtectionOrdersType.valueOf(typeString).getLabel());
             }
         });
-
-        Optional.ofNullable(orders.get("otherOrder")).ifPresent(otherOrder ->
-            builder.add((String) otherOrder));
-        Optional.ofNullable(orders.get("emergencyProtectionOrderDetails")).ifPresent(emergencyProtectionOrderDetails ->
-            builder.add((String) emergencyProtectionOrderDetails));
     }
 
     @SuppressWarnings("unchecked")
     private void appendDirections(Map<String, Object> orders, ImmutableList.Builder<String> builder) {
         Optional.ofNullable(orders.get("emergencyProtectionOrderDirections")).ifPresent(emergencyProtectionOrderDirections -> {
             for (String typeString : (List<String>) emergencyProtectionOrderDirections) {
-                EmergencyProtectionOrderDirectionsType type = EmergencyProtectionOrderDirectionsType.valueOf(typeString);
-                if (type != EmergencyProtectionOrderDirectionsType.OTHER) {
-                    builder.add(type.getLabel());
-                }
+                builder.add(EmergencyProtectionOrderDirectionsType.valueOf(typeString).getLabel());
             }
         });
-
-        Optional.ofNullable(orders.get("emergencyProtectionOrderDirectionDetails")).ifPresent(emergencyProtectionOrderDirectionDetails ->
-            builder.add((String) emergencyProtectionOrderDirectionDetails));
-
-        Optional.ofNullable(orders.get("directionDetails")).ifPresent(directionDetails ->
-            builder.add((String) directionDetails));
     }
 }

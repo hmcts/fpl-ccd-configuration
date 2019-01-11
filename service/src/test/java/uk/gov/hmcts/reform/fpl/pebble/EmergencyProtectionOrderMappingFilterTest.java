@@ -18,7 +18,7 @@ public class EmergencyProtectionOrderMappingFilterTest {
     @CsvSource({
         "CHILD_WHEREABOUTS, 'Information on the whereabouts of the child'",
         "ENTRY_PREMISES, 'Authorisation for entry of premises'",
-        "SEARCH_FOR_ANOTHER_CHILD, 'Authorisation to search for another child on the premises'",
+        "SEARCH_FOR_CHILD, 'Authorisation to search for another child on the premises'",
         "OTHER, 'Other order under section 48 of the Children Act 1989'"
     })
     void shouldReturnCorrectLabel(String code, String label) {

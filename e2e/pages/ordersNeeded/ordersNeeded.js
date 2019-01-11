@@ -17,7 +17,7 @@ module.exports = {
     protectionOrders: {
       whereabouts: locate('input').withAttr({id: 'orders_emergencyProtectionOrders-CHILD_WHEREABOUTS'}),
       entry: locate('input').withAttr({id: 'orders_emergencyProtectionOrders-ENTRY_PREMISES'}),
-      search: locate('input').withAttr({id: 'orders_emergencyProtectionOrders-SEARCH_FOR_ANOTHER_CHILD'}),
+      search: locate('input').withAttr({id: 'orders_emergencyProtectionOrders-SEARCH_FOR_CHILD'}),
       other: locate('input').withAttr({id: 'orders_emergencyProtectionOrders-OTHER'}),
       orderDetails: '#orders_emergencyProtectionOrderDetails',
     },
