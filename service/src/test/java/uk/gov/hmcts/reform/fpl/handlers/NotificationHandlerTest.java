@@ -72,7 +72,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldSendEmailToHmcts() throws IOException, NotificationClientException {
-        final Map<String, String> expectedParameters = ImmutableMap.<String, String>builder()
+        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("court", COURT_NAME)
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")
@@ -106,7 +106,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldSendEmailToCafcass() throws IOException, NotificationClientException {
-        final Map<String, String> expectedParameters = ImmutableMap.<String, String>builder()
+        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("cafcass", CAFCASS_NAME)
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")
@@ -138,7 +138,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldSendEmailToGatekeeper() throws IOException, NotificationClientException {
-        final Map<String, String> expectedParameters = ImmutableMap.<String, String>builder()
+        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")
             .put("fullStop", "No")

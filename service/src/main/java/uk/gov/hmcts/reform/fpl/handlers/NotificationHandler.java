@@ -54,7 +54,7 @@ public class NotificationHandler {
     public void sendNotificationToHmctsAdmin(SubmittedCaseEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
-        Map<String, String> parameters = hmctsEmailContentProvider
+        Map<String, Object> parameters = hmctsEmailContentProvider
             .buildHmctsSubmissionNotification(caseDetails, localAuthorityCode);
         String reference = Long.toString(caseDetails.getId());
         String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
@@ -66,7 +66,7 @@ public class NotificationHandler {
     public void sendNotificationToCafcass(SubmittedCaseEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
-        Map<String, String> parameters = cafcassEmailContentProvider
+        Map<String, Object> parameters = cafcassEmailContentProvider
             .buildCafcassSubmissionNotification(caseDetails, localAuthorityCode);
         String reference = String.valueOf(caseDetails.getId());
         String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
@@ -79,14 +79,14 @@ public class NotificationHandler {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
         String email = (String) caseDetails.getData().get("gateKeeperEmail");
-        Map<String, String> parameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(caseDetails,
+        Map<String, Object> parameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(caseDetails,
             localAuthorityCode);
         String reference = String.valueOf(caseDetails.getId());
 
         sendNotification(GATEKEEPER_SUBMISSION_TEMPLATE, email, parameters, reference);
     }
 
-    private void sendNotification(String templateId, String email, Map<String, String> parameters, String reference) {
+    private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
         logger.debug("Sending submission notification (with template id: {}) to {}", templateId, email);
         try {
             notificationClient.sendEmail(templateId, email, parameters, reference);

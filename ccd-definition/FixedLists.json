@@ -230,32 +230,98 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderType",
-    "ListElementCode": "Care order",
+    "ListElementCode": "CARE_ORDER",
     "ListElement": "Care order"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderType",
-    "ListElementCode": "Supervision order",
+    "ListElementCode": "INTERIM_CARE_ORDER",
+    "ListElement": "Interim care order"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderType",
+    "ListElementCode": "SUPERVISION_ORDER",
     "ListElement": "Supervision order"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderType",
-    "ListElementCode": "Education supervision order",
+    "ListElementCode": "INTERIM_SUPERVISION_ORDER",
+    "ListElement": "Interim supervision order"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderType",
+    "ListElementCode": "EDUCATION_SUPERVISION_ORDER",
     "ListElement": "Education supervision order"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderType",
-    "ListElementCode": "Emergency protection order",
+    "ListElementCode": "EMERGENCY_PROTECTION_ORDER",
     "ListElement": "Emergency protection order"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderType",
-    "ListElementCode": "Other",
+    "ListElementCode": "OTHER",
     "ListElement": "Other order under part 4 of the Children Act 1989"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmergencyProtectionOrderType",
+    "ListElementCode": "CHILD_WHEREABOUTS",
+    "ListElement": "Information on the whereabouts of the child"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmergencyProtectionOrderType",
+    "ListElementCode": "ENTRY_PREMISES",
+    "ListElement": "Authorisation for entry of premises"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmergencyProtectionOrderType",
+    "ListElementCode": "SEARCH_FOR_CHILD",
+    "ListElement": "Authorisation to search for another child on the premises"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmergencyProtectionOrderType",
+    "ListElementCode": "OTHER",
+    "ListElement": "Other order under section 48 of the Children Act 1989"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmergencyProtectionOrderDirectionType",
+    "ListElementCode": "CONTACT_WITH_NAMED_PERSON",
+    "ListElement": "Contact with any named person"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmergencyProtectionOrderDirectionType",
+    "ListElementCode": "CHILD_MEDICAL_ASSESSMENT",
+    "ListElement": "A medical or psychiatric examination, or another assessment of the child"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmergencyProtectionOrderDirectionType",
+    "ListElementCode": "MEDICAL_PRACTITIONER",
+    "ListElement": "To be accompanied by a registered medical practitioner, nurse or midwife"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmergencyProtectionOrderDirectionType",
+    "ListElementCode": "EXCLUSION_REQUIREMENT",
+    "ListElement": "An exclusion requirement"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmergencyProtectionOrderDirectionType",
+    "ListElementCode": "OTHER",
+    "ListElement": "Other direction relating to an emergency protection order"
   },
   {
     "LiveFrom": "01/01/2017",

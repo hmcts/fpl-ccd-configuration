@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.service.notify.NotificationClient;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Mockito.times;
@@ -39,16 +41,13 @@ class NotifyGatekeeperTest {
 
     @Test
     void shouldBuildGatekeeperNotificationTemplateWithCompleteValues() throws Exception {
-        Map<String, String> expectedGatekeeperParameters = ImmutableMap.<String, String>builder()
+        List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
+            "Contact with any named person");
+        Map<String, Object> expectedGatekeeperParameters = ImmutableMap.<String, Object>builder()
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")
             .put("fullStop", "No")
-            .put("orders0", "^Emergency protection order")
-            .put("orders1", "")
-            .put("orders2", "")
-            .put("orders3", "")
-            .put("orders4", "")
-            .put("directionsAndInterim", "^Information on the whereabouts of the child")
+            .put("ordersAndDirections", ordersAndDirections)
             .put("timeFramePresent", "Yes")
             .put("timeFrameValue", "Same day")
             .put("reference", "12345")

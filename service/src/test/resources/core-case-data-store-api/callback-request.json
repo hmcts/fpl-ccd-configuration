@@ -32,9 +32,11 @@
       },
       "orders": {
         "orderType": [
-          "Emergency protection order"
+          "EMERGENCY_PROTECTION_ORDER"
         ],
-        "directionsAndInterim": "Information on the whereabouts of the child"
+        "emergencyProtectionOrderDirections": [
+          "CONTACT_WITH_NAMED_PERSON"
+        ]
       },
       "others": {
         "firstOther": {
