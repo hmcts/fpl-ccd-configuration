@@ -2,9 +2,9 @@
 
 set -eu
 
-definition_dir=$1
-output_dir=$2
-definition_output_file_name=$3
+definition_dir=${1}
+output_dir=${2}
+definition_output_file_name=${3}
 
 definition_input_dir=${definition_dir}
 definition_output_file=${output_dir}/${definition_output_file_name}
