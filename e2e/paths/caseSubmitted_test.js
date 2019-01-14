@@ -1,5 +1,3 @@
-/* global xScenario */
-
 const config = require('../config.js');
 
 Feature('Submit Case').retry(2);
@@ -10,7 +8,7 @@ Before((I, caseViewPage) => {
   I.click(caseViewPage.goButton);
 });
 
-xScenario('Can give consent and submit the case', (I, caseViewPage, submitApplicationPage) => {
+Scenario('Can give consent and submit the case', (I, caseViewPage, submitApplicationPage) => {
   submitApplicationPage.giveConsent();
   submitApplicationPage.progress();
   I.waitForElement('.tabs');
