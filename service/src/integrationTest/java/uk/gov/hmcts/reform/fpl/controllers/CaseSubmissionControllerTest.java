@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.service.notify.NotificationClient;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -105,34 +107,26 @@ class CaseSubmissionControllerTest {
 
     @Test
     void shouldBuildNotificationTemplatesWithCompleteValues() throws Exception {
-        Map<String, String> expectedHmctsParameters = ImmutableMap.<String, String>builder()
+        List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
+            "Contact with any named person");
+        Map<String, Object> expectedHmctsParameters = ImmutableMap.<String, Object>builder()
             .put("court", "Family Court")
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")
             .put("fullStop", "No")
-            .put("orders0", "^Emergency protection order")
-            .put("orders1", "")
-            .put("orders2", "")
-            .put("orders3", "")
-            .put("orders4", "")
-            .put("directionsAndInterim", "^Information on the whereabouts of the child")
+            .put("ordersAndDirections", ordersAndDirections)
             .put("timeFramePresent", "Yes")
             .put("timeFrameValue", "Same day")
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
-        Map<String, String> expectedCafcassParameters = ImmutableMap.<String, String>builder()
+        Map<String, Object> expectedCafcassParameters = ImmutableMap.<String, Object>builder()
             .put("cafcass", "cafcass")
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")
             .put("fullStop", "No")
-            .put("orders0", "^Emergency protection order")
-            .put("orders1", "")
-            .put("orders2", "")
-            .put("orders3", "")
-            .put("orders4", "")
-            .put("directionsAndInterim", "^Information on the whereabouts of the child")
+            .put("ordersAndDirections", ordersAndDirections)
             .put("timeFramePresent", "Yes")
             .put("timeFrameValue", "Same day")
             .put("reference", "12345")
@@ -166,34 +160,24 @@ class CaseSubmissionControllerTest {
                 .build())
             .build();
 
-        Map<String, String> expectedHmctsParameters = ImmutableMap.<String, String>builder()
+        Map<String, Object> expectedHmctsParameters = ImmutableMap.<String, Object>builder()
             .put("court", "Family Court")
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "No")
             .put("fullStop", "Yes")
-            .put("orders0", "")
-            .put("orders1", "")
-            .put("orders2", "")
-            .put("orders3", "")
-            .put("orders4", "")
-            .put("directionsAndInterim", "")
+            .put("ordersAndDirections", "")
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
-        Map<String, String> expectedCafcassParameters = ImmutableMap.<String, String>builder()
+        Map<String, Object> expectedCafcassParameters = ImmutableMap.<String, Object>builder()
             .put("cafcass", "cafcass")
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "No")
             .put("fullStop", "Yes")
-            .put("orders0", "")
-            .put("orders1", "")
-            .put("orders2", "")
-            .put("orders3", "")
-            .put("orders4", "")
-            .put("directionsAndInterim", "")
+            .put("ordersAndDirections", "")
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
             .put("reference", "12345")
