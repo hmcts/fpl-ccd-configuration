@@ -11,7 +11,8 @@ Contested interim care orderHearing type
 Reason: Baby will be discharged from hospital on 21 June
 2018
 Same dayHearing date requested
-Contact with any named person YesDirection needed
+Contact with any named personDirection needed
+Yes
 Emergency protection orderOrders needed
 , Another, James SmithPaul SmithRespondents
 London Borough of SouthwarkApplicant
