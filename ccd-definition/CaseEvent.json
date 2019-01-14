@@ -109,6 +109,7 @@
     "DisplayOrder": 8,
     "PreConditionState(s)": "Open",
     "PostConditionState": "Open",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-grounds/about-to-start",
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",

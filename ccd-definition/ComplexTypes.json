@@ -714,6 +714,25 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Grounds",
+    "ListElementCode": "EPO_REASONING_SHOW",
+    "FieldType": "Text",
+    "ElementLabel": "EPO_REASONING",
+    "FieldShowCondition": "thresholdReason=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Grounds",
+    "ListElementCode": "EPO_reason",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "EPOReasons",
+    "ElementLabel": "How are there grounds for an emergency protection order",
+    "FieldShowCondition": "EPO_REASONING_SHOW=\"SHOW_FIELD\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Grounds",
     "ListElementCode": "thresholdReason",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "GroundsList",
