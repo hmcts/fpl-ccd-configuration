@@ -55,7 +55,7 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "grounds=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "groundsForEPO CONTAINS \"SHOW_FIELD\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -67,7 +67,7 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "EPO_REASONING_SHOW=\"SHOW_FIELD\""
+    "FieldShowCondition": "EPO_REASONING_SHOW CONTAINS \"SHOW_FIELD\""
   },
   {
     "LiveFrom": "01/01/2017",

@@ -33,11 +33,8 @@ public class EnterGroundsStartCallbackController {
             .map(orders -> (List<String>) orders.get("orderType"));
 
         if (orderType.toString().contains("EMERGENCY_PROTECTION_ORDER")) {
-                data.put("EPO_REASONING_SHOW", "SHOW_FIELD");
+                data.put("EPO_REASONING_SHOW", new String[]{"SHOW_FIELD"});
         }
-        System.out.println("data = " + AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)

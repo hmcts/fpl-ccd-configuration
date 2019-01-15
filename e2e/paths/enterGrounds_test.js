@@ -29,7 +29,7 @@ Scenario('Filling in grounds for application after selecting EPO',
     caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
     I.seeAnswerInTab(
       1, 'How are there grounds for an emergency protection order?', '', [
-        enterGroundsPage.fields.groundsForApplication.harmIfMoved,
+        enterGroundsPage.fields.groundsForApplication.harmIfNotMoved,
         enterGroundsPage.fields.groundsForApplication.harmIfMoved,
         enterGroundsPage.fields.groundsForApplication.urgentAccessRequired,
       ]);
