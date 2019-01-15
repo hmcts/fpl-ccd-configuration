@@ -875,7 +875,7 @@ spec:
           command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
       containers:
         - name: dm-store
-          image: hmcts.azurecr.io/hmcts/dm-store:latest
+          image: hmcts.azurecr.io/hmcts/dm-store:rdm-3200-reverted
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
