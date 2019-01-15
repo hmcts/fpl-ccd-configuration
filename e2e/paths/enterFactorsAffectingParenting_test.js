@@ -10,7 +10,7 @@ Before((I, caseViewPage) => {
 Scenario('Complete half the factors affecting parenting section of the c110a' +
   ' application', (I, enterFactorsAffectingParentingPage, caseViewPage) => {
   enterFactorsAffectingParentingPage.completeAlcoholOrDrugAbuse();
-  I.continueAndSubmit();
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterFactorsAffectingParenting);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'Factors affecting parenting', 'Alcohol or drug abuse', 'Yes');
@@ -21,7 +21,7 @@ Scenario('Filling in factors affecting parenting sections of c110a', (I, enterFa
   enterFactorsAffectingParentingPage.completeAlcoholOrDrugAbuse();
   enterFactorsAffectingParentingPage.completeDomesticViolence();
   enterFactorsAffectingParentingPage.completeAnythingElse();
-  I.continueAndSubmit();
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterFactorsAffectingParenting);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'Factors affecting parenting', 'Alcohol or drug abuse', 'Yes');
