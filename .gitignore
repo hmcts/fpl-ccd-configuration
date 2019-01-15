@@ -29,6 +29,3 @@ service/out
 .project
 .settings
 .springBeans
-
-# CCD definition
-ccd-definition.xlsx
