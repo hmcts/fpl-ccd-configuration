@@ -4,7 +4,9 @@
     "case_data": {
       "caseLocalAuthority": "example",
       "orders": {
-        "orderType": "[EMERGENCY_PROTECTION_ORDER]"
+        "orderType": [
+          "EMERGENCY_PROTECTION_ORDER"
+        ]
       }
     }
   }

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -30,7 +29,7 @@ class EnterGroundsStartCallbackControllerTest {
     @Test
     void shouldAddEPOReasoningShowValueToCaseDataWhenCallbackContainsEPO() throws Exception {
         MvcResult response = mockMvc
-            .perform(post("/callback/about-to-start/grounds")
+            .perform(post("/callback/enter-grounds/about-to-start")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(readBytes("fixtures/case.json")))
             .andExpect(status().isOk())
@@ -39,7 +38,6 @@ class EnterGroundsStartCallbackControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        assertThat(callbackResponse.getData()).containsEntry("grounds", ImmutableMap.<String, String>builder()
-            .put("EPO_REASONING_SHOW", "SHOW_FIELD").build());
+        assertThat(callbackResponse.getData()).containsEntry("EPO_REASONING_SHOW", "SHOW_FIELD");
     }
 }

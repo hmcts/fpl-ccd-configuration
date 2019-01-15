@@ -713,21 +713,12 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Grounds",
-    "ListElementCode": "EPO_REASONING_SHOW",
-    "FieldType": "Text",
-    "ElementLabel": "EPO_REASONING",
-    "FieldShowCondition": "thresholdReason=\"DO_NOT_SHOW\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Grounds",
+    "ID": "GroundsForEPO",
     "ListElementCode": "EPO_reason",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "EPOReasons",
-    "ElementLabel": "How are there grounds for an emergency protection order",
-    "FieldShowCondition": "EPO_REASONING_SHOW=\"SHOW_FIELD\"",
+    "ElementLabel": " ",
+    "HintText": "Select all that apply",
     "SecurityClassification": "Public"
   },
   {
@@ -736,8 +727,8 @@
     "ListElementCode": "thresholdReason",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "GroundsList",
-    "ElementLabel": "How does this case meet the threshold criteria?",
-    "HintText": "The child concerned is suffering or is likely to suffer significant harm, because they are:",
+    "ElementLabel": "The child concerned is suffering or is likely to suffer significant harm, because they are:",
+    "HintText": "Select all that apply",
     "SecurityClassification": "Public"
   },
   {
@@ -745,7 +736,7 @@
     "ID": "Grounds",
     "ListElementCode": "thresholdDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "Give details of criteria:",
+    "ElementLabel": "Give details of how this case meets the threshold criteria",
     "SecurityClassification": "Public"
   },
   {
