@@ -5,7 +5,6 @@ import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -30,7 +29,7 @@ public class EnterGroundsStartCallbackController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> ordersAndDirections = (Map<String, Object>) caseDetails.getData().get("orders");
 
-        if (ordersAndDirections.get("orderType").toString().equals("[EMERGENCY_PROTECTION_ORDER]" )) {
+        if (ordersAndDirections.get("orderType").toString().equals("[EMERGENCY_PROTECTION_ORDER]")) {
             Map<String, Object> data = caseDetails.getData();
             data.put("grounds", ImmutableMap.<String, String>builder()
                 .put("EPO_REASONING_SHOW", "SHOW_FIELD")
