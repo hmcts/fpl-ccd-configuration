@@ -87,6 +87,10 @@
       ]
     },
     "grounds": {
+      "EPO_reason": [
+        "PLACED_IN_PROVIDED_ACCOMMODATION",
+        "KEPT_IN_CURRENT_ACCOMMODATION"
+      ],
       "thresholdReason": [
         "noCare",
         "beyondControl"
