@@ -1858,7 +1858,7 @@
           case_data.grounds.EPO_reason is not empty %}
             {% for reason in case_data.grounds.EPO_reason %}
               <span class="u-block u-block--space-below">
-                {{ reason | emergencyProtectionOrderDirectionMapping }}
+                {{ reason | emergencyProtectionOrderReasonMapping }}
               </span>
             {% endfor %}
           {% else %}
