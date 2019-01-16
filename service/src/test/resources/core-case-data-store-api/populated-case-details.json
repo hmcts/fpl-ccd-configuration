@@ -87,15 +87,17 @@
       ]
     },
     "grounds": {
-      "EPO_reason": [
-        "PLACED_IN_PROVIDED_ACCOMMODATION",
-        "KEPT_IN_CURRENT_ACCOMMODATION"
-      ],
       "thresholdReason": [
         "noCare",
         "beyondControl"
       ],
       "thresholdDetails": "grounds for application criteria"
+    },
+    "groundsForEPO": {
+      "EPO_reason": [
+        "PLACED_IN_PROVIDED_ACCOMMODATION",
+        "KEPT_IN_CURRENT_ACCOMMODATION"
+      ]
     },
     "hearing": {
       "type": "Contested interim care order",
