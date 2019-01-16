@@ -17,8 +17,6 @@ module.exports = {
 
   enterThresholdCriteriaDetails() {
     I.checkOption(this.fields.thresholdReason.notReceivingCare);
-    I.checkOption(this.fields.thresholdReason.notReceivingCare);
-    I.fillField(this.fields.thresholdDetails, 'mock threshold details');
     I.fillField(this.fields.thresholdDetails, 'mock threshold details');
   },
 

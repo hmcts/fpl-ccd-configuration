@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,7 +10,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Api
 @RestController
@@ -27,20 +28,16 @@ public class EnterGroundsStartCallbackController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        Map<String, Object> ordersAndDirections = (Map<String, Object>) caseDetails.getData().get("orders");
+        Map<String, Object> data = caseDetails.getData();
+        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get("orders"))
+            .map(orders -> (List<String>) orders.get("orderType"));
 
-        if (ordersAndDirections.get("orderType").toString().equals("[EMERGENCY_PROTECTION_ORDER]")) {
-            Map<String, Object> data = caseDetails.getData();
-            data.put("grounds", ImmutableMap.<String, String>builder()
-                .put("EPO_REASONING_SHOW", "SHOW_FIELD")
-                .build());
-
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .build();
+        if (orderType.toString().contains("EMERGENCY_PROTECTION_ORDER")) {
+            data.put("EPO_REASONING_SHOW", new String[]{"SHOW_FIELD"});
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
             .build();
     }
 }
