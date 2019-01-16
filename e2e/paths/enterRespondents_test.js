@@ -10,7 +10,7 @@ Before((I, caseViewPage) => {
 
 Scenario('Entering information for respondent and submitting', (I, enterRespondentsPage, caseViewPage) => {
   enterRespondentsPage.enterRespondent(respondents[0]);
-  I.continueAndSubmit();
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
@@ -25,7 +25,7 @@ Scenario('Entering all information for first respondent and an additional respon
   enterRespondentsPage.enterRelationshipToChild('mock reason');
   enterRespondentsPage.enterContactDetailsHidden('Yes', 'mock reason');
   enterRespondentsPage.enterLitigationIssues('No');
-  I.continueAndSubmit();
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(1, 'Respondent 1', 'Full name', 'Joe Bloggs');

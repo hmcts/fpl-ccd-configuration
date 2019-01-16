@@ -9,6 +9,6 @@ Before((I, caseViewPage) => {
 
 Scenario('changed case name', (I, changeCaseNamePage) => {
   changeCaseNamePage.changeCaseName();
-  I.continueAndSubmit();
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.changeCaseName);
 });

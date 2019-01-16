@@ -9,7 +9,7 @@ Before(async (I, caseViewPage, loginPage, submitApplicationPage) => {
   caseId = await I.grabTextFrom('.heading-medium');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationPage.giveConsent();
-  submitApplicationPage.progress();
+  I.continueAndSubmit();
   I.signOut();
   loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   I.navigateToCaseDetails(caseId);
@@ -18,8 +18,7 @@ Before(async (I, caseViewPage, loginPage, submitApplicationPage) => {
 Scenario('HMCTS admin upload standard directions and see them in documents tab', (I, caseViewPage, uploadDocumentsPage) => {
   caseViewPage.goToNewActions(config.standardDirections);
   uploadDocumentsPage.uploadStandardDirections(config.testFile);
-  I.click('Continue');
-  I.click('Save and continue');
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.standardDirections);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.see('mockFile.txt');
@@ -28,8 +27,8 @@ Scenario('HMCTS admin upload standard directions and see them in documents tab',
 Scenario('Local authority can see standard directions in documents tab', (I, caseViewPage, uploadDocumentsPage, loginPage) => {
   caseViewPage.goToNewActions(config.standardDirections);
   uploadDocumentsPage.uploadStandardDirections(config.testFile);
-  I.click('Continue');
-  I.click('Save and continue');
+  I.continueAndSave();
+  I.seeEventSubmissionConfirmation(config.standardDirections);
   I.signOut();
   loginPage.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   I.navigateToCaseDetails(caseId);
