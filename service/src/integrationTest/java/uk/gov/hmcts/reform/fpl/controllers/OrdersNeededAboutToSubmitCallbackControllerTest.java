@@ -46,7 +46,7 @@ class OrdersNeededAboutToSubmitCallbackControllerTest {
         MvcResult response = mockMvc
             .perform(post("/callback/orders-needed/about-to-submit")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(readBytes("fixtures/caseDataWithBeforeDetails.json")))
+                .content(readBytes("fixtures/caseDataWithRemovedEPO.json")))
             .andExpect(status().isOk())
             .andReturn();
 
