@@ -269,8 +269,11 @@
     <div class="data-list__row">
       <dt class="data-list__title">Hearing type</dt>
       <dd class="data-list__definition">
-        {% if case_data.hearing is not empty and case_data.hearing.type is not empty %}
-          <span class="u-block">{{ case_data.hearing.type }}</span>
+        {% if case_data.hearing is not empty and
+        case_data.hearing.type is not empty %}
+          {% for type in case_data.hearing.type %}
+            <span class="u-block">{{ type | hearingTypeMapping }}</span>
+          {% endfor %}
           {% if case_data.hearing.type_GiveReason is not empty %}
             <span class="u-block">Reason: {{ case_data.hearing.type_GiveReason }}</span>
           {% endif %}
