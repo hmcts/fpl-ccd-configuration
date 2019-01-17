@@ -36,7 +36,7 @@ Scenario('completing half of the enter children in the c110a application', (I, e
   enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
   enterChildrenPage.defineChildSituation('01', '11', '2017');
   enterChildrenPage.enterAddress(addresses[0]);
-  I.continueAndSubmit();
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
@@ -65,7 +65,7 @@ Scenario('completing entering child information in the c110a application', (I, e
   enterChildrenPage.defineChildAdditionalNeeds();
   enterChildrenPage.defineContactDetailsVisibility();
   enterChildrenPage.enterLitigationIssues('No');
-  I.continueAndSubmit();
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(1, 'Child 1', 'Child\'s full name', 'Timothy');
