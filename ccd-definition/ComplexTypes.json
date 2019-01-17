@@ -793,6 +793,7 @@
     "ListElementCode": "type_GiveReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
+    "FieldShowCondition":"hearingType CONTAINS \"HEARING\"",
     "SecurityClassification": "Public"
   },
   {
