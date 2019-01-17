@@ -14,8 +14,7 @@ Scenario('completing half of the international element section of the c110a' +
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterInternationalElement);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
-  I.seeAnswerInTab(1, 'International element', 'Is there anyone in the' +
-    ' genogram outside the UK who has been assessed as a possible carer?', 'Yes');
+  I.seeAnswerInTab(1, 'International element', 'Are there any suitable carers outside of the UK?', 'Yes');
   I.seeAnswerInTab(2, 'International element', 'Give reason', 'test');
   I.seeAnswerInTab(3, 'International element', 'Are you aware of any' +
     ' significant events that have happened outside the UK?', 'Yes');
@@ -28,8 +27,7 @@ Scenario('completed international element of the c110a application', (I, enterIn
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterInternationalElement);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
-  I.seeAnswerInTab(1, 'International element', 'Is there anyone in the' +
-    ' genogram outside the UK who has been assessed as a possible carer?', 'Yes');
+  I.seeAnswerInTab(1, 'International element', 'Are there any suitable carers outside of the UK?', 'Yes');
   I.seeAnswerInTab(2, 'International element', 'Give reason', 'test');
   I.seeAnswerInTab(3, 'International element', 'Are you aware of any' +
     ' significant events that have happened outside the UK?', 'Yes');
@@ -40,4 +38,7 @@ Scenario('completed international element of the c110a application', (I, enterIn
   I.seeAnswerInTab(6, 'International element', 'Are you aware of any' +
     ' proceedings outside the UK?', 'Yes');
   I.seeAnswerInTab(7, 'International element', 'Give reason', 'test');
+  I.seeAnswerInTab(8, 'International element', 'Has, or should, a government or central authority in another ' +
+    'country been involved in this case?', 'Yes');
+  I.seeAnswerInTab(9, 'International element', 'Give reason', 'International involvement reason');
 });

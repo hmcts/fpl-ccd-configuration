@@ -2066,7 +2066,16 @@
     <div class="data-list__row">
       <dt class="data-list__title">Government or central authority in another country been involved</dt>
       <dd class="data-list__definition">
-        <span class="u-block">-</span>
+        {% if case_data.internationalElement is not empty
+        and case_data.internationalElement.internationalAuthorityInvolvement is not empty %}
+        <span class="u-block">{{ case_data.internationalElement.internationalAuthorityInvolvement }}</span>
+        {% if case_data.internationalElement.internationalAuthorityInvolvement == 'Yes'
+        and case_data.internationalElement.internationalAuthorityInvolvementReason is not empty %}
+        <span class="u-block">{{ case_data.internationalElement.internationalAuthorityInvolvementReason }}</span>
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
       </dd>
     </div>
   </dl>

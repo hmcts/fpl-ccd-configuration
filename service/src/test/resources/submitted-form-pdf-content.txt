@@ -259,7 +259,8 @@ Supervision orderOrders made
 02-02-2002Started
 12345Case number
 YesOngoing or previous proceedings
--Government or central authority in another country
+YesGovernment or central authority in another country
+French authorities were involved
 been involved
 Outside of the UK
 YesProceedings outside the UK

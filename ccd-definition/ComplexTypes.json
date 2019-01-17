@@ -853,7 +853,7 @@
     "ID": "InternationalElement",
     "ListElementCode": "possibleCarer",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Is there anyone in the genogram outside the UK who has been assessed as a possible carer?",
+    "ElementLabel": "Are there any suitable carers outside of the UK?",
     "SecurityClassification": "Public"
   },
   {
@@ -914,6 +914,23 @@
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
     "FieldShowCondition": "proceedings=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
+    "ListElementCode": "internationalAuthorityInvolvement",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Has, or should, a government or central authority in another country been involved in this case?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "InternationalElement",
+    "ListElementCode": "internationalAuthorityInvolvementReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "internationalAuthorityInvolvement=\"Yes\"",
     "SecurityClassification": "Public"
   },
   {
