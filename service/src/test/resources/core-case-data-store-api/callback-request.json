@@ -94,7 +94,9 @@
         "thresholdDetails": "grounds for application criteria"
       },
       "hearing": {
-        "type": "Contested interim care order",
+        "type": [
+          "STANDARD_CASE_HEARING"
+        ],
         "reason": "Baby will be discharged from hospital on 21 June 2018",
         "timeFrame": "Same day",
         "reducedNotice": "Yes",
