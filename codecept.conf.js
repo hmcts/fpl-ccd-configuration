@@ -48,7 +48,7 @@ exports.config = {
     loginPage: './e2e/pages/login/loginPage.js',
     caseListPage: './e2e/pages/caseList/caseList.js',
     createCasePage: './e2e/pages/createCase/createCase.js',
-    addEventSummaryPage: './e2e/pages/createCase/addEventSummary.js',
+    eventSummaryPage: './e2e/pages/createCase/eventSummary.js',
     caseViewPage: './e2e/pages/caseView/caseView.js',
     selectHearingPage: './e2e/pages/selectHearing/selectHearing.js',
     enterGroundsPage: './e2e/pages/enterGrounds/enterGrounds.js',

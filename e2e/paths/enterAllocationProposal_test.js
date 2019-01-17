@@ -11,14 +11,14 @@ Before((I, caseViewPage) => {
 
 Scenario('Select lay justices for allocation proposal', (I, enterAllocationProposalPage) => {
   enterAllocationProposalPage.selectAllocationProposal('Lay justices');
-  I.continueAndSubmit();
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationProposal);
 });
 
 Scenario('Select lay justices for allocation proposal with proposal reason', (I, enterAllocationProposalPage) => {
   enterAllocationProposalPage.selectAllocationProposal('Lay justices');
   enterAllocationProposalPage.enterProposalReason('test');
-  I.continueAndSubmit();
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationProposal);
 });
 

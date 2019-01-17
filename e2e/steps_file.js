@@ -2,8 +2,8 @@
 const config = require('./config');
 
 const logIn = require('./pages/login/loginPage');
-const createCase = require('./pages/createCase/createCase');
-const addEventDetails = require('./pages/createCase/addEventSummary');
+const createCasePage = require('./pages/createCase/createCase');
+const eventSummaryPage = require('./pages/createCase/eventSummary');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
 
@@ -15,16 +15,20 @@ module.exports = function () {
       logIn.signIn(username, password);
       this.click('Create Case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
-      createCase.createNewCase();
+      createCasePage.populateForm();
+      this.continueAndSave();
+    },
+
+    continueAndSave() {
+      this.click('Continue');
       this.waitForElement('.check-your-answers');
-      addEventDetails.submitCase();
+      eventSummaryPage.submit('Save and continue');
     },
 
     continueAndSubmit() {
       this.click('Continue');
       this.waitForElement('.check-your-answers');
-      addEventDetails.submitCase();
-      this.waitForElement('.tabs');
+      eventSummaryPage.submit('Submit');
     },
 
     seeEventSubmissionConfirmation(event) {

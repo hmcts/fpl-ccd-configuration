@@ -9,7 +9,7 @@ Before((I) => {
 Scenario('Filling in grounds for application section of c110a', (I, enterGroundsPage, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
   enterGroundsPage.enterThresholdCriteriaDetails();
-  I.continueAndSubmit();
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterGrounds);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'How does this case meet the threshold criteria?', '',
@@ -20,11 +20,11 @@ Scenario('Filling in grounds for application after selecting EPO',
   (I, enterGroundsPage, caseViewPage, ordersNeededPage) => {
     caseViewPage.goToNewActions(config.applicationActions.selectOrders);
     ordersNeededPage.checkEmergencyProtectionOrder();
-    I.continueAndSubmit();
+    I.continueAndSave();
     I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
     caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
     enterGroundsPage.enterGroundsForEmergencyProtectionOrder();
-    I.continueAndSubmit();
+    I.continueAndSave();
     I.seeEventSubmissionConfirmation(config.applicationActions.enterGrounds);
     caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
     I.seeAnswerInTab(
