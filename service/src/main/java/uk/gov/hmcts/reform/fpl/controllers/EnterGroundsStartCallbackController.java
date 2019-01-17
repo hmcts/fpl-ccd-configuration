@@ -19,10 +19,6 @@ import java.util.Optional;
 @RequestMapping("/callback/enter-grounds")
 public class EnterGroundsStartCallbackController {
 
-    @Autowired
-    public EnterGroundsStartCallbackController() {
-    }
-
     @PostMapping("/about-to-start")
     @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
