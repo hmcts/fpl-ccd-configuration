@@ -802,7 +802,7 @@
     "ListElementCode": "withoutNotice",
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need a without notice hearing?",
-    "HintText": "You can only do this if you're applying for an Emergency Protection Order",
+    "HintText": "You can only do this if you're applying for an emergency protection order or interim care order",
     "SecurityClassification": "Public"
   },
   {
