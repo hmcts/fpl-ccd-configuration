@@ -9,7 +9,7 @@ Before((I, caseViewPage) => {
 
 Scenario('Select the care order case order and continue', (I, caseViewPage, ordersNeededPage) => {
   ordersNeededPage.checkCareOrder();
-  I.continueAndSubmit();
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
   caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
   I.seeAnswerInTab(1, 'Orders and directions needed', 'Which orders do you need?', 'Care order');
@@ -37,7 +37,7 @@ Scenario('Select all case orders and fill in directions & interim information', 
   ordersNeededPage.enterOrderDetails('Test');
   ordersNeededPage.checkDirections();
   ordersNeededPage.enterDirections('Test');
-  I.continueAndSubmit();
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
   caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
   I.seeAnswerInTab(1, 'Orders and directions needed', 'Which orders do you need?',

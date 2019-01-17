@@ -17,12 +17,11 @@ module.exports = {
     I.fillField(this.enterCaseNamePage.caseName, caseName);
   },
 
-  createNewCase() {
+  populateForm() {
     I.selectOption(this.fields.jurisdiction, 'Family Public Law');
     I.selectOption(this.fields.caseType, 'Care, supervision and EPOs');
     I.selectOption(this.fields.event, 'Open case');
     I.click(this.startButton);
     this.enterCaseName();
-    I.click(this.continueButton);
   },
 };

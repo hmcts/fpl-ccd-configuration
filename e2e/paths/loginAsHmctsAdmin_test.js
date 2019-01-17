@@ -8,8 +8,7 @@ Before(async (I, caseViewPage, submitApplicationPage) => {
   caseId = await I.grabTextFrom('.heading-medium');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationPage.giveConsent();
-  submitApplicationPage.progress();
-  I.waitForElement('.tabs');
+  I.continueAndSubmit();
   I.signOut();
 });
 
@@ -19,6 +18,6 @@ Scenario('HMCTS admin can login and add a FamilyMan case number to a submitted c
   I.see(caseId);
   caseViewPage.goToNewActions(config.addFamilyManCaseNumber);
   enterFamilyManPage.enterCaseID();
-  I.continueAndSubmit();
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.addFamilyManCaseNumber);
 });

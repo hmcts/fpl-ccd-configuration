@@ -281,6 +281,7 @@ declare namespace CodeceptJS {
     navigateToUrl(url: string) : void,
     navigateToCaseDetails(caseId: string) : void,
     logInAndCreateCase(username: string, password: string) : void,
+    continueAndSave() : void,
     continueAndSubmit() : void,
     seeEventSubmissionConfirmation(event: string) : void,
     clickHyperlink(link: string, urlNavigatedTo: string) : void,

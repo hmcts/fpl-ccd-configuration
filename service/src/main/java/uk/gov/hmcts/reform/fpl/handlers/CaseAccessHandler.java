@@ -8,12 +8,12 @@ import uk.gov.hmcts.reform.fpl.events.InitiatedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityUserService;
 
 @Component
-public class InitiatedCaseEventHandler {
+public class CaseAccessHandler {
 
     private final LocalAuthorityUserService localAuthorityUserService;
 
     @Autowired
-    public InitiatedCaseEventHandler(LocalAuthorityUserService localAuthorityUserService) {
+    public CaseAccessHandler(LocalAuthorityUserService localAuthorityUserService) {
         this.localAuthorityUserService = localAuthorityUserService;
     }
 
