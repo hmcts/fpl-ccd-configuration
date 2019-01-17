@@ -1,3 +1,5 @@
+/* global locate */
+
 const I = actor();
 
 module.exports = {
@@ -10,8 +12,10 @@ module.exports = {
     },
 
     hearingType: {
-      dropdown: '#hearing_type',
-      contestedICO: 'Contested interim care order',
+      standardCaseManagement: locate('input').withAttr({id: 'hearing_type-STANDARD_CASE_HEARING'}),
+      urgentPreliminary: locate('input').withAttr({id: 'hearing_type-URGENT_PRELIMINARY_HEARING'}),
+      contestedInterimCareOrder: locate('input').withAttr({id: 'hearing_type-CONTESTED_INTERIM_HEARING'}),
+      EmergencyProtectionOrder: locate('input').withAttr({id: 'hearing_type-EMERGENCY_PROTECTION_HEARING'}),
     },
 
     noticeWithoutHearing: {
@@ -33,7 +37,7 @@ module.exports = {
   },
 
   enterHearingType() {
-    I.selectOption(this.fields.hearingType.dropdown, this.fields.hearingType.contestedICO);
+    I.checkOption(this.fields.hearingType.contestedInterimCareOrder);
   },
 
   enterWithoutNoticeHearing() {

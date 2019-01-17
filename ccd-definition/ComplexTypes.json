@@ -781,7 +781,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing",
-    "ListElementCode": "hearingType",
+    "ListElementCode": "type",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "HearingTypeMultiSelectList",
     "ElementLabel": "What type of hearing do you need?",
@@ -793,7 +793,7 @@
     "ListElementCode": "type_GiveReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition":"hearingType CONTAINS \"HEARING\"",
+    "FieldShowCondition":"type CONTAINS \"HEARING\"",
     "SecurityClassification": "Public"
   },
   {
