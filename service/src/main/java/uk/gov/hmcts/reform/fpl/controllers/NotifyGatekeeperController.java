@@ -24,7 +24,7 @@ public class NotifyGatekeeperController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmitEvent(
+    public void handleSubmittedEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {

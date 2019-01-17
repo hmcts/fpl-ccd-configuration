@@ -2,22 +2,18 @@
 
 set -eu
 
-dir=$(dirname ${0})
-root_dir=$(realpath ${dir}/../../..)
+definition_dir=${1}
+definition_output_file=${2}
 
-definition_input_dir_name=ccd-definition
-definition_output_file_name=ccd-definition.xlsx
-
-definition_input_dir=${root_dir}/${definition_input_dir_name}
-definition_output_file=${root_dir}/${definition_output_file_name}
+definition_input_dir=${definition_dir}
 
 if [[ ! -e ${definition_output_file} ]]; then
    touch ${definition_output_file}
 fi
 
 docker run --rm --name json2xlsx \
-  -v ${definition_input_dir}:/tmp/${definition_input_dir_name} \
-  -v ${definition_output_file}:/tmp/${definition_output_file_name} \
+  -v ${definition_input_dir}:/tmp/ccd-definition \
+  -v ${definition_output_file}:/tmp/ccd-definition.xlsx \
   -e CCD_DEF_CASE_SERVICE_BASE_URL \
   docker.artifactory.reform.hmcts.net/ccd/ccd-definition-processor:c480382 \
-  json2xlsx -D /tmp/${definition_input_dir_name} -o /tmp/${definition_output_file_name}
+  json2xlsx -D /tmp/ccd-definition -o /tmp/ccd-definition.xlsx

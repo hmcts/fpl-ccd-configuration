@@ -6,7 +6,7 @@ public class NotifyTemplates {
         //NO-OP
     }
 
-    public static final String HMCTS_COURT_SUBMISSION_TEMPLATE = "c76d4fb2-d2b0-4ac5-9c3a-fb1fb964a257";
-    public static final String CAFCASS_SUBMISSION_TEMPLATE = "186e1aa7-6668-4b01-bf78-87d7e7476ef8";
-    public static final String GATEKEEPER_SUBMISSION_TEMPLATE = "4424be05-5cf7-4b32-a3f9-3adc0d387a7e";
+    public static final String HMCTS_COURT_SUBMISSION_TEMPLATE = "9b8142bf-badd-4686-8d7d-3035fa01548e";
+    public static final String CAFCASS_SUBMISSION_TEMPLATE = "1c8e0794-197d-4e32-94c4-60111216dc89";
+    public static final String GATEKEEPER_SUBMISSION_TEMPLATE = "c1d5d634-f654-4afc-9e35-3e9e96f7a07c";
 }

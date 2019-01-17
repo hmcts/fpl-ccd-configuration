@@ -9,7 +9,7 @@ Before(async (I, caseViewPage, loginPage, submitApplicationPage) => {
   caseId = await I.grabTextFrom('.heading-medium');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationPage.giveConsent();
-  submitApplicationPage.progress();
+  I.continueAndSubmit();
   I.signOut();
   loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   I.navigateToCaseDetails(caseId);

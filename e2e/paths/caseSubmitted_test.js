@@ -10,11 +10,10 @@ Before((I, caseViewPage) => {
 
 Scenario('Can give consent and submit the case', (I, caseViewPage, submitApplicationPage) => {
   submitApplicationPage.giveConsent();
-  submitApplicationPage.progress();
-  I.waitForElement('.tabs');
+  I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   I.dontSee(caseViewPage.actionsDropdown);
-  caseViewPage.selectTab(caseViewPage.tabs.evidence);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.reloadPage();
   I.see('Barnet_Council_v_Smith.pdf');
 });

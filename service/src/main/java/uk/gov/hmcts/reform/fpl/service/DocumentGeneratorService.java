@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,6 @@ import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 import java.util.Map;
 
 @Service
-@SuppressWarnings("unchecked")
 public class DocumentGeneratorService {
 
     private final HTMLToPDFConverter converter;
@@ -24,8 +24,13 @@ public class DocumentGeneratorService {
         this.mapper = mapper;
     }
 
-    public byte[] generateSubmittedFormPDF(CaseDetails caseDetails) {
-        Map<String, Object> context = mapper.convertValue(caseDetails, Map.class);
+    @SafeVarargs
+    public final byte[] generateSubmittedFormPDF(CaseDetails caseDetails, Map.Entry<String, ?>... extraContextEntries) {
+        Map<String, Object> context = mapper.convertValue(caseDetails, new TypeReference<Map<String, Object>>() {});
+
+        for (Map.Entry<String, ?> entry : extraContextEntries) {
+            context.put(entry.getKey(), entry.getValue());
+        }
 
         byte[] template = templates.getHtmlTemplate();
 

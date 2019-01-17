@@ -10,7 +10,7 @@ Before((I, caseViewPage) => {
 
 Scenario('Enter other\'s details in c110a application', (I, enterOthersPage, caseViewPage) => {
   enterOthersPage.enterOtherDetails(others[0]);
-  I.continueAndSubmit();
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOthers);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
@@ -25,7 +25,8 @@ Scenario('Complete entering others details in the c110a application', (I, enterO
   enterOthersPage.enterRelationshipToChild('Tim Smith');
   enterOthersPage.enterContactDetailsHidden('Yes');
   enterOthersPage.enterLitigationIssues('Yes', 'mock reason');
-  I.continueAndSubmit();
+  I.continueAndSave();
+  I.seeEventSubmissionConfirmation(config.applicationActions.enterOthers);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(1, 'Person 1', 'Full name', 'John Smith');
   I.seeAnswerInTab(2, 'Person 1', 'Date of birth', '1 Jan 1985');
