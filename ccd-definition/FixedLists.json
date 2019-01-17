@@ -55,21 +55,27 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingTypeFixedList",
-    "ListElementCode": "Contested interim care order",
-    "ListElement": "Contested interim care order"
+    "ID": "HearingTypeMultiSelectList",
+    "ListElementCode": "STANDARD_CASE",
+    "ListElement": "Standard case management hearing"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingTypeFixedList",
-    "ListElementCode": "Urgent preliminary case management heari",
+    "ID": "HearingTypeMultiSelectList",
+    "ListElementCode": "URGENT_PRELIMINARY",
     "ListElement": "Urgent preliminary case management hearing"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingTypeFixedList",
-    "ListElementCode": "Standard case management hearing",
-    "ListElement": "Standard case management hearing"
+    "ID": "HearingTypeMultiSelectList",
+    "ListElementCode": "CONTESTED_INTERIM",
+    "ListElement": "Contested interim care order"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingTypeMultiSelectList",
+    "ListElementCode": "EMERGENCY_PROTECTION",
+    "ListElement": "Emergency protection order hearing "
   },
   {
     "LiveFrom": "01/01/2017",

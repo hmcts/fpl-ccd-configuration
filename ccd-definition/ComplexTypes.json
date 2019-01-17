@@ -781,9 +781,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing",
-    "ListElementCode": "type",
-    "FieldType": "FixedList",
-    "FieldTypeParameter": "HearingTypeFixedList",
+    "ListElementCode": "hearingType",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "HearingTypeMultiSelectList",
     "ElementLabel": "What type of hearing do you need?",
     "SecurityClassification": "Public"
   },
@@ -793,7 +793,6 @@
     "ListElementCode": "type_GiveReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "type=\"*\"",
     "SecurityClassification": "Public"
   },
   {
