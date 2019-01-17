@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseSubmissionController.class)
 @OverrideAutoConfiguration(enabled = true)
-class EnterGroundsStartCallbackControllerTest {
+class OrdersNeededAboutToSubmitCallbackControllerTest {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
@@ -29,7 +29,7 @@ class EnterGroundsStartCallbackControllerTest {
     @Test
     void shouldAddEPOReasoningShowValueToCaseDataWhenCallbackContainsEPO() throws Exception {
         MvcResult response = mockMvc
-            .perform(post("/callback/enter-grounds/about-to-start")
+            .perform(post("/callback/orders-needed/about-to-submit")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(readBytes("fixtures/case.json")))
             .andExpect(status().isOk())
@@ -39,5 +39,20 @@ class EnterGroundsStartCallbackControllerTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getData().get("EPO_REASONING_SHOW").toString()).isEqualTo("[SHOW_FIELD]");
+    }
+
+    @Test
+    void shouldRemoveGroundsForEPODataWhenEPOIsUnselected() throws Exception {
+        MvcResult response = mockMvc
+            .perform(post("/callback/orders-needed/about-to-submit")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(readBytes("fixtures/caseDataWithBeforeDetails.json")))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(callbackResponse.getData().get("groundsForEPO")).isEqualTo(null);
     }
 }
