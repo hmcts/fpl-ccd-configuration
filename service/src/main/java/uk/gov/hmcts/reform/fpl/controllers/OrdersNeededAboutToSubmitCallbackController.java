@@ -33,11 +33,13 @@ public class OrdersNeededAboutToSubmitCallbackController {
         Optional<List<String>> oldOrderType = Optional.ofNullable((Map<String, Object>) oldData.get("orders"))
             .map(orders -> (List<String>) orders.get("orderType"));
 
-        if (newOrderType.toString().contains("EMERGENCY_PROTECTION_ORDER")) {
+        String EPO = "EMERGENCY_PROTECTION_ORDER";
+
+        if (newOrderType.toString().contains(EPO)) {
             newData.put("EPO_REASONING_SHOW", new String[]{"SHOW_FIELD"});
         }
 
-        if (oldOrderType.toString().contains("EMERGENCY_PROTECTION_ORDER") && !newOrderType.toString().contains("EMERGENCY_PROTECTION_ORDER")) {
+        if (oldOrderType.toString().contains(EPO) && !newOrderType.toString().contains(EPO)) {
             newData.remove("groundsForEPO");
             newData.remove("EPO_REASONING_SHOW");
         }
