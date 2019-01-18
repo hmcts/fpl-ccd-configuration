@@ -714,7 +714,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GroundsForEPO",
-    "ListElementCode": "EPO_reason",
+    "ListElementCode": "reason",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "EPOReasons",
     "ElementLabel": " ",

@@ -1855,8 +1855,8 @@
         <dt class="data-list__title">Grounds for emergency protection order</dt>
         <dd class="data-list__definition">
           {% if case_data.groundsForEPO is not empty and
-          case_data.groundsForEPO.EPO_reason is not empty %}
-            {% for reason in case_data.groundsForEPO.EPO_reason %}
+          case_data.groundsForEPO.reason is not empty %}
+            {% for reason in case_data.groundsForEPO.reason %}
               <span class="u-block u-block--space-below">
                 {{ reason | emergencyProtectionOrderReasonMapping }}
               </span>

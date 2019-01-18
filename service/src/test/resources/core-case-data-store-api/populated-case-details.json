@@ -94,7 +94,7 @@
       "thresholdDetails": "grounds for application criteria"
     },
     "groundsForEPO": {
-      "EPO_reason": [
+      "reason": [
         "PLACED_IN_PROVIDED_ACCOMMODATION",
         "KEPT_IN_CURRENT_ACCOMMODATION"
       ]

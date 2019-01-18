@@ -17,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(CaseSubmissionController.class)
+@WebMvcTest(OrdersNeededAboutToSubmitCallbackController.class)
 @OverrideAutoConfiguration(enabled = true)
 class OrdersNeededAboutToSubmitCallbackControllerTest {
 

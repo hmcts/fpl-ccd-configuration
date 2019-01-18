@@ -43,7 +43,7 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "groundsForEPO CONTAINS \"SHOW_FIELD\""
+    "FieldShowCondition": "groundsForEPO CONTAINS \"Workaround to show groundsForEPO. Needs to be hidden from UI\""
   },
   {
     "LiveFrom": "01/01/2017",
