@@ -22,30 +22,23 @@ public class OrdersNeededAboutToSubmitCallbackController {
     @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
         @RequestBody CallbackRequest callbackrequest) {
-        CaseDetails newCaseDetails = callbackrequest.getCaseDetails();
-        CaseDetails oldCaseDetails = callbackrequest.getCaseDetailsBefore();
-
-        Map<String, Object> newData = newCaseDetails.getData();
-        Optional<List<String>> newOrderType = Optional.ofNullable((Map<String, Object>) newData.get("orders"))
-            .map(orders -> (List<String>) orders.get("orderType"));
-
-        Map<String, Object> oldData = oldCaseDetails.getData();
-        Optional<List<String>> oldOrderType = Optional.ofNullable((Map<String, Object>) oldData.get("orders"))
-            .map(orders -> (List<String>) orders.get("orderType"));
-
         String epo = "EMERGENCY_PROTECTION_ORDER";
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+        Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get("orders"))
+            .map(orders -> (List<String>) orders.get("orderType"));
 
-        if (newOrderType.toString().contains(epo)) {
-            newData.put("EPO_REASONING_SHOW", new String[]{"SHOW_FIELD"});
+        if (orderType.toString().contains(epo)) {
+            data.put("EPO_REASONING_SHOW", new String[]{"SHOW_FIELD"});
         }
 
-        if (oldOrderType.toString().contains(epo) && !newOrderType.toString().contains(epo)) {
-            newData.remove("groundsForEPO");
-            newData.remove("EPO_REASONING_SHOW");
+        if (!orderType.toString().contains(epo)) {
+            data.remove("groundsForEPO");
+            data.remove("EPO_REASONING_SHOW");
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(newData)
+            .data(data)
             .build();
     }
 }
