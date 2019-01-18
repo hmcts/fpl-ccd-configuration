@@ -788,7 +788,7 @@
     "ID": "Hearing",
     "ListElementCode": "type",
     "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "HearingTypeMultiSelectList",
+    "FieldTypeParameter": "HearingType",
     "ElementLabel": "What type of hearing do you need?",
     "SecurityClassification": "Public"
   },
