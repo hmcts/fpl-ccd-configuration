@@ -639,7 +639,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "standardDirectionsLabel",
+    "CaseFieldID": "standardDirectionsOther",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
@@ -653,7 +653,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "standardDirectionsOther",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "standardDirections",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "standardDirectionsOther",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
   },

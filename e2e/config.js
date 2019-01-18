@@ -46,7 +46,6 @@ module.exports = {
     submitCase: 'Submit application',
   },
   addFamilyManCaseNumber: 'Add case number',
-  standardDirections: 'Standard directions',
   sendToGatekeeper: 'Send to gatekeeper',
   // files
   testFile: './e2e/fixtures/mockFile.txt',

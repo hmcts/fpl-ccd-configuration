@@ -308,28 +308,37 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1
   },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadStandardDirections",
-    "CaseFieldID": "standardDirectionsLabel",
-    "PageFieldDisplayOrder": 1,
-    "DisplayContext": "READONLY",
-    "PageID": 1,
-    "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
-  },
+
+
+
+
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadStandardDirections",
     "CaseFieldID": "standardDirections",
-    "PageFieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1
   },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadStandardDirections",
+    "CaseFieldID": "standardDirectionsOther",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+
+
+
+
+
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",

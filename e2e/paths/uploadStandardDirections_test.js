@@ -15,23 +15,33 @@ Before(async (I, caseViewPage, loginPage, submitApplicationPage) => {
   I.navigateToCaseDetails(caseId);
 });
 
-Scenario('HMCTS admin upload standard directions and see them in documents tab', (I, caseViewPage, uploadDocumentsPage) => {
-  caseViewPage.goToNewActions(config.standardDirections);
-  uploadDocumentsPage.uploadStandardDirections(config.testFile);
+Scenario('HMCTS admin upload standard directions with other documents and see them in documents tab', (I, caseViewPage, standardDirectionsPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+  standardDirectionsPage.uploadStandardDirections(config.testFile);
+  standardDirectionsPage.uploadAdditionalDocuments(config.testFile);
   I.continueAndSave();
-  I.seeEventSubmissionConfirmation(config.standardDirections);
+  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.see('mockFile.txt');
+  I.seeAnswerInTab('1', '1. Standard directions', 'Upload a file', 'mockFile.txt');
+  I.seeAnswerInTab('1', 'Other documents 1', 'Document title', 'Document 1');
+  I.seeAnswerInTab('2', 'Other documents 1', 'Upload a file', 'mockFile.txt');
+  I.seeAnswerInTab('1', 'Other documents 2', 'Document title', 'Document 2');
+  I.seeAnswerInTab('2', 'Other documents 2', 'Upload a file', 'mockFile.txt');
 });
 
-Scenario('Local authority can see standard directions in documents tab', (I, caseViewPage, uploadDocumentsPage, loginPage) => {
-  caseViewPage.goToNewActions(config.standardDirections);
-  uploadDocumentsPage.uploadStandardDirections(config.testFile);
+Scenario('Local authority can see standard directions in documents tab', (I, caseViewPage, standardDirectionsPage, loginPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+  standardDirectionsPage.uploadStandardDirections(config.testFile);
+  standardDirectionsPage.uploadAdditionalDocuments(config.testFile);
   I.continueAndSave();
-  I.seeEventSubmissionConfirmation(config.standardDirections);
+  I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   I.signOut();
   loginPage.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   I.navigateToCaseDetails(caseId);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.see('mockFile.txt');
+  I.seeAnswerInTab('1', '1. Standard directions', 'Upload a file', 'mockFile.txt');
+  I.seeAnswerInTab('1', 'Other documents 1', 'Document title', 'Document 1');
+  I.seeAnswerInTab('2', 'Other documents 1', 'Upload a file', 'mockFile.txt');
+  I.seeAnswerInTab('1', 'Other documents 2', 'Document title', 'Document 2');
+  I.seeAnswerInTab('2', 'Other documents 2', 'Upload a file', 'mockFile.txt');
 });
