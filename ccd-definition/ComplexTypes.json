@@ -927,10 +927,10 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "InternationalElement",
-    "ListElementCode": "internationalAuthorityInvolvementReason",
+    "ListElementCode": "internationalAuthorityInvolvementDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "internationalAuthorityInvolvement=\"Yes\"",
+    "FieldShowCondition": "internationalAuthorityInvolvement = \"Yes\"",
     "SecurityClassification": "Public"
   },
   {

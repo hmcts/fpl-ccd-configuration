@@ -2004,7 +2004,7 @@
   <h3 class="heading heading--two">International element</h3>
   <dl class="data-list">
     <div class="data-list__row">
-      <dt class="data-list__title">Suitable carer outside the UK</dt>
+      <dt class="data-list__title">Suitable carers outside of the UK</dt>
       <dd class="data-list__definition">
         {% if case_data.internationalElement is not empty
         and case_data.internationalElement.possibleCarer is not empty %}
@@ -2068,11 +2068,11 @@
       <dd class="data-list__definition">
         {% if case_data.internationalElement is not empty
         and case_data.internationalElement.internationalAuthorityInvolvement is not empty %}
-        <span class="u-block">{{ case_data.internationalElement.internationalAuthorityInvolvement }}</span>
-        {% if case_data.internationalElement.internationalAuthorityInvolvement == 'Yes'
-        and case_data.internationalElement.internationalAuthorityInvolvementReason is not empty %}
-        <span class="u-block">{{ case_data.internationalElement.internationalAuthorityInvolvementReason }}</span>
-        {% endif %}
+          <span class="u-block">{{ case_data.internationalElement.internationalAuthorityInvolvement }}</span>
+          {% if case_data.internationalElement.internationalAuthorityInvolvement == 'Yes'
+          and case_data.internationalElement.internationalAuthorityInvolvementDetails is not empty %}
+            <span class="u-block">{{ case_data.internationalElement.internationalAuthorityInvolvementDetails }}</span>
+          {% endif %}
         {% else %}
         -
         {% endif %}

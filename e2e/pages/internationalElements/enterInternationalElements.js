@@ -24,7 +24,7 @@ module.exports = {
 
     internationalAuthorityInvolvement: {
       yes: '#internationalElement_internationalAuthorityInvolvement-Yes',
-      textField: '#internationalElement_internationalAuthorityInvolvementReason',
+      textField: '#internationalElement_internationalAuthorityInvolvementDetails',
     },
   },
 
