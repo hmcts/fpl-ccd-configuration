@@ -1,4 +1,5 @@
 const config = require('../config.js');
+const HearingTypes = require('../fragments/hearingTypes');
 
 Feature('Select hearing').retry(2);
 
@@ -9,7 +10,7 @@ Before((I, caseViewPage) => {
 
 Scenario('completing half the fields in the Select hearing section of the c110a application', (I, caseViewPage, selectHearingPage) => {
   selectHearingPage.enterTimeFrame();
-  selectHearingPage.enterHearingType();
+  selectHearingPage.checkHearingTypes(HearingTypes.CONTESTED_INTERIM);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.selectHearing);
   caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
@@ -20,7 +21,7 @@ Scenario('completing half the fields in the Select hearing section of the c110a 
 
 Scenario('completing the Select hearing section of the c110a application', (I, caseViewPage, selectHearingPage) => {
   selectHearingPage.enterTimeFrame();
-  selectHearingPage.enterHearingType();
+  selectHearingPage.checkHearingTypes(HearingTypes.CONTESTED_INTERIM);
   selectHearingPage.enterWithoutNoticeHearing();
   selectHearingPage.enterReducedHearing();
   selectHearingPage.enterRespondentsAware();
