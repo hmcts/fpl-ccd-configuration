@@ -86,7 +86,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "grounds",
+    "CaseFieldID": "groundsForEPO",
     "TabFieldDisplayOrder": 2
   },
   {
@@ -96,7 +96,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "risks",
+    "CaseFieldID": "grounds",
     "TabFieldDisplayOrder": 3
   },
   {
@@ -106,7 +106,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "factorsParenting",
+    "CaseFieldID": "risks",
     "TabFieldDisplayOrder": 4
   },
   {
@@ -116,7 +116,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "internationalElement",
+    "CaseFieldID": "factorsParenting",
     "TabFieldDisplayOrder": 5
   },
   {
@@ -126,7 +126,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "proceeding",
+    "CaseFieldID": "internationalElement",
     "TabFieldDisplayOrder": 6
   },
   {
@@ -136,7 +136,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "allocationProposal",
+    "CaseFieldID": "proceeding",
     "TabFieldDisplayOrder": 7
   },
   {
@@ -146,8 +146,18 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "hearingPreferences",
+    "CaseFieldID": "allocationProposal",
     "TabFieldDisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 3,
+    "CaseFieldID": "hearingPreferences",
+    "TabFieldDisplayOrder": 9
   },
   {
     "LiveFrom": "01/01/2017",

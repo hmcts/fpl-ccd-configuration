@@ -713,12 +713,22 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "GroundsForEPO",
+    "ListElementCode": "reason",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "EPOReasons",
+    "ElementLabel": " ",
+    "HintText": "Select all that apply",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "Grounds",
     "ListElementCode": "thresholdReason",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "GroundsList",
-    "ElementLabel": "How does this case meet the threshold criteria?",
-    "HintText": "The child concerned is suffering or is likely to suffer significant harm, because they are:",
+    "ElementLabel": "The child concerned is suffering or is likely to suffer significant harm because they are:",
+    "HintText": "Select all that apply",
     "SecurityClassification": "Public"
   },
   {
@@ -726,7 +736,7 @@
     "ID": "Grounds",
     "ListElementCode": "thresholdDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "Give details of criteria:",
+    "ElementLabel": "Give details of how this case meets the threshold criteria",
     "SecurityClassification": "Public"
   },
   {

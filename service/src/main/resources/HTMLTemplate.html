@@ -127,6 +127,14 @@
     .u-margin-bottom-10 {
       margin-bottom: 10px;
     }
+
+    .u-block--space-below {
+      margin-bottom: 5px;
+    }
+
+     .u-block--space-below:last-of-type {
+      margin-bottom: 0;
+    }
   </style>
 </head>
 <body>
@@ -1856,6 +1864,25 @@
 
   <h3 class="heading heading--two">Grounds for the application</h3>
   <dl class="data-list">
+    {% if case_data.orders is not empty and
+    case_data.orders.orderType is not empty and
+    case_data.orders.orderType contains 'EMERGENCY_PROTECTION_ORDER' %}
+      <div class="data-list__row">
+        <dt class="data-list__title">Grounds for emergency protection order</dt>
+        <dd class="data-list__definition">
+          {% if case_data.groundsForEPO is not empty and
+          case_data.groundsForEPO.reason is not empty %}
+            {% for reason in case_data.groundsForEPO.reason %}
+              <span class="u-block u-block--space-below">
+                {{ reason | emergencyProtectionOrderReasonMapping }}
+              </span>
+            {% endfor %}
+          {% else %}
+            -
+          {% endif %}
+        </dd>
+      </div>
+    {% endif %}
     <div class="data-list__row">
       <dt class="data-list__title">Threshold is met as the child is suffering or is likely to suffer significant harm because they are</dt>
       <dd class="data-list__definition">
