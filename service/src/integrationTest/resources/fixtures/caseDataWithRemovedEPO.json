@@ -1,0 +1,17 @@
+{
+  "case_details": {
+    "id": "2313",
+    "case_data": {
+      "caseLocalAuthority": "example",
+      "EPO_REASONING_SHOW": "SHOW_FIELD",
+      "orders": {
+        "orderType": []
+      },
+      "groundsForEPO": {
+        "reason": [
+          "HARM_IF_NOT_MOVED_TO_NEW_ACCOMMODATION"
+        ]
+      }
+    }
+  }
+}
