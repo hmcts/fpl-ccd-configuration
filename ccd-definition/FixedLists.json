@@ -350,13 +350,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "EPOReasons",
-    "ListElementCode": "POSSIBLE_HARM_IF_NOT_PLACED_IN_PROVIDED_ACCOMMODATION",
+    "ListElementCode": "HARM_IF_NOT_MOVED_TO_NEW_ACCOMMODATION",
     "ListElement": "There's reasonable cause to believe the child is likely to suffer significant harm if they're not moved to accommodation provided by you, or on your behalf"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "EPOReasons",
-    "ListElementCode": "POSSIBLE_HARM_IF_KEPT_IN_CURRENT_ACCOMMODATION",
+    "ListElementCode": "HARM_IF_KEPT_IN_CURRENT_ACCOMMODATION",
     "ListElement": "There's reasonable cause to believe the child is likely to suffer significant harm if they don't stay in their current accommodation"
   },
   {
