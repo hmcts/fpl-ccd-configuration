@@ -3,25 +3,13 @@
     "id": "2313",
     "case_data": {
       "caseLocalAuthority": "example",
-      "groundsForEPO": {
-        "reason": [
-          "PLACED_IN_PROVIDED_ACCOMMODATION"
-        ]
-      }
-    }
-  },
-  "case_details_before": {
-    "id": "2313",
-    "case_data": {
-      "caseLocalAuthority": "example",
+      "EPO_REASONING_SHOW": "SHOW_FIELD",
       "orders": {
-        "orderType": [
-          "EMERGENCY_PROTECTION_ORDER"
-        ]
+        "orderType": []
       },
       "groundsForEPO": {
         "reason": [
-          "PLACED_IN_PROVIDED_ACCOMMODATION"
+          "POSSIBLE_HARM_IF_NOT_PLACED_IN_PROVIDED_ACCOMMODATION"
         ]
       }
     }

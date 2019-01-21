@@ -95,8 +95,8 @@
     },
     "groundsForEPO": {
       "reason": [
-        "PLACED_IN_PROVIDED_ACCOMMODATION",
-        "KEPT_IN_CURRENT_ACCOMMODATION"
+        "POSSIBLE_HARM_IF_NOT_PLACED_IN_PROVIDED_ACCOMMODATION",
+        "POSSIBLE_HARM_IF_KEPT_IN_CURRENT_ACCOMMODATION"
       ]
     },
     "hearing": {

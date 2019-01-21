@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,14 +26,22 @@ public class OrdersNeededAboutToSubmitCallbackController {
         String epo = "EMERGENCY_PROTECTION_ORDER";
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
+
         Optional<List<String>> orderType = Optional.ofNullable((Map<String, Object>) data.get("orders"))
             .map(orders -> (List<String>) orders.get("orderType"));
 
-        if (orderType.toString().contains(epo)) {
-            data.put("EPO_REASONING_SHOW", new String[]{"SHOW_FIELD"});
-        }
+        if (orderType.isPresent()) {
+            orderType.ifPresent(orderTypes -> {
+                if (orderTypes.contains(epo)) {
+                    data.put("EPO_REASONING_SHOW", ImmutableList.of("SHOW_FIELD"));
 
-        if (!orderType.toString().contains(epo)) {
+                } else if (data.containsKey("EPO_REASONING_SHOW")) {
+                    data.remove("groundsForEPO");
+                    data.remove("EPO_REASONING_SHOW");
+                }
+            });
+
+        } else {
             data.remove("groundsForEPO");
             data.remove("EPO_REASONING_SHOW");
         }

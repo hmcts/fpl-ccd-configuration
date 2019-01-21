@@ -9,11 +9,5 @@
         ]
       }
     }
-  },
-  "case_details_before": {
-    "id": "2313",
-    "case_data": {
-      "caseLocalAuthority": "example"
-    }
   }
 }

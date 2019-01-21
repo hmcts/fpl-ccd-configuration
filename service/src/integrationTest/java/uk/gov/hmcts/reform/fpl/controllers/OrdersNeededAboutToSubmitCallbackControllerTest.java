@@ -11,6 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -27,6 +29,7 @@ class OrdersNeededAboutToSubmitCallbackControllerTest {
     private MockMvc mockMvc;
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldAddEPOReasoningShowValueToCaseDataWhenCallbackContainsEPO() throws Exception {
         MvcResult response = mockMvc
             .perform(post("/callback/orders-needed/about-to-submit")
@@ -38,7 +41,7 @@ class OrdersNeededAboutToSubmitCallbackControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        assertThat(callbackResponse.getData().get("EPO_REASONING_SHOW").toString()).isEqualTo("[SHOW_FIELD]");
+        assertThat((List<String>) callbackResponse.getData().get("EPO_REASONING_SHOW")).contains("SHOW_FIELD");
     }
 
     @Test
@@ -54,5 +57,6 @@ class OrdersNeededAboutToSubmitCallbackControllerTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getData().get("groundsForEPO")).isEqualTo(null);
+        assertThat(callbackResponse.getData().get("EPO_REASONING_SHOW")).isEqualTo(null);
     }
 }
