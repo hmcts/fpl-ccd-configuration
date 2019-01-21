@@ -18,7 +18,7 @@ module.exports = {
     country: '#Country',
   },
   findAddressButton: 'Find address',
-  cantEnterPostcodeLink: locate('span').withText('I can\'t enter a UK postcode'),
+  cantEnterPostcodeLink: locate('a').withText('I can\'t enter a UK postcode'),
 
   lookupPostcode(address) {
     I.fillField(this.fields.postcodeLookup, address.postcode);
