@@ -23,7 +23,8 @@ public class OrdersNeededAboutToSubmitCallbackController {
     @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
         @RequestBody CallbackRequest callbackrequest) {
-        String epo = "EMERGENCY_PROTECTION_ORDER";
+        final String epo = "EMERGENCY_PROTECTION_ORDER";
+        final String showEpoFieldId = "EPO_REASONING_SHOW";
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
 
@@ -33,17 +34,17 @@ public class OrdersNeededAboutToSubmitCallbackController {
         if (orderType.isPresent()) {
             orderType.ifPresent(orderTypes -> {
                 if (orderTypes.contains(epo)) {
-                    data.put("EPO_REASONING_SHOW", ImmutableList.of("SHOW_FIELD"));
+                    data.put(showEpoFieldId, ImmutableList.of("SHOW_FIELD"));
 
-                } else if (data.containsKey("EPO_REASONING_SHOW")) {
+                } else if (data.containsKey(showEpoFieldId)) {
                     data.remove("groundsForEPO");
-                    data.remove("EPO_REASONING_SHOW");
+                    data.remove(showEpoFieldId);
                 }
             });
 
         } else {
             data.remove("groundsForEPO");
-            data.remove("EPO_REASONING_SHOW");
+            data.remove(showEpoFieldId);
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
