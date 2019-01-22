@@ -19,7 +19,7 @@ public class HearingTypeMappingFilterTest {
         "STANDARD_CASE_HEARING, 'Standard case management hearing'",
         "URGENT_PRELIMINARY_HEARING, 'Urgent preliminary case management hearing'",
         "EMERGENCY_PROTECTION_HEARING, 'Emergency protection order hearing'",
-        "CONTESTED_INTERIM_HEARING, 'Contested interim care order'"
+        "CONTESTED_INTERIM_HEARING, 'Contested interim care order hearing'"
     })
     void shouldReturnCorrectLabel(String code, String label) {
         assertThat(filter.apply(code, NO_ARGS)).isEqualTo(label);
