@@ -93,6 +93,12 @@
       ],
       "thresholdDetails": "grounds for application criteria"
     },
+    "groundsForEPO": {
+      "reason": [
+        "HARM_IF_NOT_MOVED_TO_NEW_ACCOMMODATION",
+        "HARM_IF_KEPT_IN_CURRENT_ACCOMMODATION"
+      ]
+    },
     "hearing": {
       "type": [
         "STANDARD_CASE_HEARING"

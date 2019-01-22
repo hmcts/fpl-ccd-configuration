@@ -8,7 +8,7 @@ Reason: Notice without hearing needed
 YesWithout notice
 Reason: Standard case management hearing
 Standard case management hearingHearing type
-Reason: Baby will be discharged from hospital on 21 June
+Reason: Baby will be discharged from hospital on 21 June 
 2018
 Same dayHearing date requested
 Yes
@@ -21,13 +21,13 @@ Date issued
 Case number
 The family court sitting at
 C110A
-Application for a care or supervision
-order and other orders under Part 4 of
-the Children Act 1989 or an
-emergency protection order under
+Application for a care or supervision 
+order and other orders under Part 4 of 
+the Children Act 1989 or an 
+emergency protection order under 
 section 44 of the Children Act 1989
 For court use
-Application from London Borough of Southwark submitted on 26 November
+Application from London Borough of Southwark submitted on 26 November 
 2018
 Orders
 Hearing needed
@@ -190,10 +190,6 @@ London Borough of SouthwarkName
 Applicant
 Other 1
 Other 2
-history of domestic violence
-YesDomestic violence
-history of drug abuse
-YesAlcohol or drug abuse
 Yes
 Future risk of harm
 Past harm
@@ -210,11 +206,19 @@ Yes
 Future risk of harm
 Past harm
 Physical harm including non-accidental injury
+grounds for application criteria
 Beyond parental control.
-Not receiving care that would be reasonably expected
+Not receiving care that would be reasonably expected 
 from a parent.
-Threshold is met as the child is suffering or is likely to
+Threshold is met as the child is suffering or is likely to 
 suffer significant harm because they are
+There’s reasonable cause to believe the child is likely to 
+suffer significant harm if they don’t stay in their current 
+accommodation 
+There’s reasonable cause to believe the child is likely to 
+suffer significant harm if they’re not moved to 
+accommodation provided by you, or on your behalf 
+Grounds for emergency protection order
 Yes
 Other two hide from parties
 Confidential contact details
@@ -234,9 +238,7 @@ LisburnPlace of birth
 MaleGender
 Grounds for the application
 Threshold evidence
-grounds for application criteria
 Risk and harm to children
-Factors affecting parenting
 To follow
 some text
 Care plan
@@ -258,7 +260,7 @@ Supervision orderOrders made
 02-02-2002Started
 12345Case number
 YesOngoing or previous proceedings
--Government or central authority in another country
+-Government or central authority in another country 
 been involved
 Outside of the UK
 YesProceedings outside the UK
@@ -269,6 +271,11 @@ YesSignificant events outside the UK
 Aunt outside UK
 YesSuitable carer outside the UK
 NoAnything else
+history of domestic violence
+YesDomestic violence
+history of drug abuse
+YesAlcohol or drug abuse
+Factors affecting parenting
 International element
 Other proceedings
 Annex Documents

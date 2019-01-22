@@ -2,7 +2,12 @@
   "case_details": {
     "id": "2313",
     "case_data": {
-      "caseLocalAuthority": "example"
+      "caseLocalAuthority": "example",
+      "orders": {
+        "orderType": [
+          "EMERGENCY_PROTECTION_ORDER"
+        ]
+      }
     }
   }
 }

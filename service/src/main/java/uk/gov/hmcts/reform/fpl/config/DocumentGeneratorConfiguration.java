@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.fpl.pebble.EmergencyProtectionOrderDirectionMappingFilter;
 import uk.gov.hmcts.reform.fpl.pebble.EmergencyProtectionOrderMappingFilter;
 import uk.gov.hmcts.reform.fpl.pebble.HearingTypeMappingFilter;
+import uk.gov.hmcts.reform.fpl.pebble.EmergencyProtectionOrderReasonMappingFilter;
 import uk.gov.hmcts.reform.fpl.pebble.OrderMappingFilter;
 import uk.gov.hmcts.reform.pdf.generator.HTMLTemplateProcessor;
 import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
@@ -33,6 +34,7 @@ public class DocumentGeneratorConfiguration {
             new HTMLTemplateProcessor(buildEngine(new TodayFilter(clock), new AgeFilter(clock),
                 new OrderMappingFilter(), new EmergencyProtectionOrderMappingFilter(),
                 new HearingTypeMappingFilter(),
+                new EmergencyProtectionOrderReasonMappingFilter(),
                 new EmergencyProtectionOrderDirectionMappingFilter())),
             new PDFGenerator(),
             new XMLContentSanitizer()

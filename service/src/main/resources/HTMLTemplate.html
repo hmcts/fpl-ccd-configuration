@@ -82,6 +82,7 @@
     .data-list__definition {
       width: 50%;
       margin: 0;
+      word-wrap: break-word;
     }
 
     .data-list__title {
@@ -116,6 +117,7 @@
       display: block;
       width: 100%;
       float: left;
+      white-space: pre-line;
     }
 
     .u-margin-top-5 {
@@ -124,6 +126,14 @@
 
     .u-margin-bottom-10 {
       margin-bottom: 10px;
+    }
+
+    .u-block--space-below {
+      margin-bottom: 5px;
+    }
+
+     .u-block--space-below:last-of-type {
+      margin-bottom: 0;
     }
   </style>
 </head>
@@ -204,17 +214,18 @@
     <div class="data-list__row">
       <dt class="data-list__title">Orders needed</dt>
       <dd class="data-list__definition">
-        {% if case_data.orders is not empty and case_data.orders.orderType is not empty %}
+        {% if case_data.orders is not empty and
+        case_data.orders.orderType is not empty %}
           {% for type in case_data.orders.orderType %}
             <span class="u-block">{{ type | orderMapping }}</span>
-        {% endfor %}
+          {% endfor %}
           {% if case_data.orders.otherOrder is not empty %}
             <span class="u-block">{{ case_data.orders.otherOrder }}</span>
           {% endif %}
           {% if case_data.orders.emergencyProtectionOrders is not empty %}
             {% for order in case_data.orders.emergencyProtectionOrders %}
               <span class="u-block">{{ order | emergencyProtectionOrderMapping }}</span>
-        {% endfor %}
+            {% endfor %}
             {% if case_data.orders.emergencyProtectionOrderDetails is not empty %}
               <span class="u-block">{{ case_data.orders.emergencyProtectionOrderDetails }}</span>
             {% endif %}
@@ -232,7 +243,7 @@
             {% if case_data.orders.emergencyProtectionOrderDirections is not empty %}
               {% for epo in case_data.orders.emergencyProtectionOrderDirections %}
                 <span class="u-block">{{ epo | emergencyProtectionOrderDirectionMapping }}</span>
-        {% endfor %}
+              {% endfor %}
             {% endif %}
             {% if case_data.orders.emergencyProtectionOrderDirectionDetails is not empty %}
               <span class="u-block">{{ case_data.orders.emergencyProtectionOrderDirectionDetails }}</span>
@@ -256,7 +267,8 @@
     <div class="data-list__row">
       <dt class="data-list__title">Hearing date requested</dt>
       <dd class="data-list__definition">
-        {% if case_data.hearing is not empty and case_data.hearing.timeFrame is not empty %}
+        {% if case_data.hearing is not empty and
+        case_data.hearing.timeFrame is not empty %}
           <span class="u-block">{{ case_data.hearing.timeFrame }}</span>
           {% if case_data.hearing.reason is not empty %}
             <span class="u-block">Reason: {{ case_data.hearing.reason }}</span>
@@ -285,7 +297,8 @@
     <div class="data-list__row">
       <dt class="data-list__title">Without notice</dt>
       <dd class="data-list__definition">
-        {% if case_data.hearing is not empty and case_data.hearing.withoutNotice is not empty %}
+        {% if case_data.hearing is not empty and
+        case_data.hearing.withoutNotice is not empty %}
           <span class="u-block">{{ case_data.hearing.withoutNotice }}</span>
           {% if case_data.hearing.withoutNoticeReason is not empty %}
             <span class="u-block">Reason: {{ case_data.hearing.withoutNoticeReason }}</span>
@@ -298,7 +311,8 @@
     <div class="data-list__row">
       <dt class="data-list__title">Reduced notice</dt>
       <dd class="data-list__definition">
-        {% if case_data.hearing is not empty and case_data.hearing.reducedNotice is not empty %}
+        {% if case_data.hearing is not empty and
+        case_data.hearing.reducedNotice is not empty %}
           <span class="u-block">{{ case_data.hearing.reducedNotice }}</span>
           {% if case_data.hearing.reducedNoticeReason is not empty %}
             <span class="u-block">Reason: {{ case_data.hearing.reducedNoticeReason }}</span>
@@ -311,8 +325,9 @@
     <div class="data-list__row">
       <dt class="data-list__title">Respondents aware of proceedings</dt>
       <dd class="data-list__definition">
-        {% if case_data.hearing is not empty and case_data.hearing.respondentsAware is not empty %}
-          {{ case_data.hearing.respondentsAware }}
+        {% if case_data.hearing is not empty and
+        case_data.hearing.respondentsAware is not empty %}
+          <span class="u-block">{{ case_data.hearing.respondentsAware }}</span>
         {% else %}
           -
         {% endif %}
@@ -321,8 +336,9 @@
     <div class="data-list__row">
       <dt class="data-list__title">Respondents' view on proceedings</dt>
       <dd class="data-list__definition">
-        {% if case_data.hearing is not empty and case_data.hearing.respondentsAwareReason is not empty %}
-          {{ case_data.hearing.respondentsAwareReason }}
+        {% if case_data.hearing is not empty and
+        case_data.hearing.respondentsAwareReason is not empty %}
+          <span class="u-block">{{ case_data.hearing.respondentsAwareReason }}</span>
         {% else %}
           -
         {% endif %}
@@ -335,8 +351,9 @@
     <div class="data-list__row">
       <dt class="data-list__title">Proposal by applicant</dt>
       <dd class="data-list__definition">
-        {% if case_data.allocationProposal is not empty and case_data.allocationProposal.proposal is not empty %}
-          {{ case_data.allocationProposal.proposal }}
+        {% if case_data.allocationProposal is not empty and
+        case_data.allocationProposal.proposal is not empty %}
+          <span class="u-block">{{ case_data.allocationProposal.proposal }}</span>
         {% else %}
           -
         {% endif %}
@@ -345,8 +362,9 @@
     <div class="data-list__row">
       <dt class="data-list__title">Reason</dt>
       <dd class="data-list__definition">
-        {% if case_data.allocationProposal is not empty and case_data.allocationProposal.proposalReason is not empty %}
-          {{ case_data.allocationProposal.proposalReason }}
+        {% if case_data.allocationProposal is not empty and
+        case_data.allocationProposal.proposalReason is not empty %}
+          <span class="u-block">{{ case_data.allocationProposal.proposalReason }}</span>
         {% else %}
           -
         {% endif %}
@@ -359,7 +377,8 @@
     <div class="data-list__row">
       <dt class="data-list__title">Interpreter</dt>
       <dd class="data-list__definition">
-        {% if case_data.hearingPreferences is not empty and case_data.hearingPreferences.interpreter is not empty %}
+        {% if case_data.hearingPreferences is not empty and
+        case_data.hearingPreferences.interpreter is not empty %}
           {{ case_data.hearingPreferences.interpreter }}
           {% if case_data.hearingPreferences.interpreter == 'Yes' %}
             <span class="u-block">{{ case_data.hearingPreferences.interpreterDetails }}</span>
@@ -372,7 +391,8 @@
     <div class="data-list__row">
       <dt class="data-list__title">Spoken or written Welsh</dt>
       <dd class="data-list__definition">
-        {% if case_data.hearingPreferences is not empty and case_data.hearingPreferences.welsh is not empty %}
+        {% if case_data.hearingPreferences is not empty and
+        case_data.hearingPreferences.welsh is not empty %}
           {{ case_data.hearingPreferences.welsh }}
           {% if case_data.hearingPreferences.welsh == 'Yes' %}
             <span class="u-block">{{ case_data.hearingPreferences.welshDetails }}</span>
@@ -385,7 +405,8 @@
     <div class="data-list__row">
       <dt class="data-list__title">Intermediary</dt>
       <dd class="data-list__definition">
-        {% if case_data.hearingPreferences is not empty and case_data.hearingPreferences.intermediary is not empty %}
+        {% if case_data.hearingPreferences is not empty and
+        case_data.hearingPreferences.intermediary is not empty %}
           {{ case_data.hearingPreferences.intermediary }}
           {% if case_data.hearingPreferences.intermediary == 'Yes' %}
             <span class="u-block">{{ case_data.hearingPreferences.intermediaryDetails }}</span>
@@ -398,7 +419,8 @@
     <div class="data-list__row">
       <dt class="data-list__title">Facilities or assistance for a disability</dt>
       <dd class="data-list__definition">
-        {% if case_data.hearingPreferences is not empty and case_data.hearingPreferences.learningDisability is not empty %}
+        {% if case_data.hearingPreferences is not empty and
+        case_data.hearingPreferences.learningDisability is not empty %}
           {{ case_data.hearingPreferences.learningDisability }}
           {% if case_data.hearingPreferences.learningDisability == 'Yes' %}
             <span class="u-block">{{ case_data.hearingPreferences.learningDisabilityDetails }}</span>
@@ -411,7 +433,8 @@
     <div class="data-list__row">
       <dt class="data-list__title">Separate waiting room or other security measures</dt>
       <dd class="data-list__definition">
-        {% if case_data.hearingPreferences is not empty and case_data.hearingPreferences.extraSecurityMeasures is not empty %}
+        {% if case_data.hearingPreferences is not empty and
+        case_data.hearingPreferences.extraSecurityMeasures is not empty %}
           {{ case_data.hearingPreferences.extraSecurityMeasures }}
           {% if case_data.hearingPreferences.extraSecurityMeasures == 'Yes' %}
             <span class="u-block">{{ case_data.hearingPreferences.extraSecurityMeasuresDetails }}</span>
@@ -474,9 +497,9 @@
         case_data.children.firstChild.childGender is not empty %}
           {% if case_data.children.firstChild.childGender == 'They identify in another way'
           and case_data.children.firstChild.childGenderIdentification is not empty %}
-            {{ case_data.children.firstChild.childGenderIdentification }}
+            <span class="u-block">{{ case_data.children.firstChild.childGenderIdentification }}</span>
           {% else %}
-            {{ case_data.children.firstChild.childGender }}
+            <span class="u-block">{{ case_data.children.firstChild.childGender }}</span>
           {% endif %}
         {% else %}
           -
@@ -530,7 +553,7 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.keyDates is not empty %}
-          {{ case_data.children.firstChild.keyDates }}
+          <span class="u-block">{{ case_data.children.firstChild.keyDates }}</span>
         {% else %}
           -
         {% endif %}
@@ -542,7 +565,7 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.careAndContact is not empty %}
-          {{ case_data.children.firstChild.careAndContact }}
+          <span class="u-block">{{ case_data.children.firstChild.careAndContact }}</span>
         {% else %}
           -
         {% endif %}
@@ -554,7 +577,7 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.adoption is not empty %}
-          {{ case_data.children.firstChild.adoption }}
+          <span class="u-block">{{ case_data.children.firstChild.adoption }}</span>
         {% else %}
           -
         {% endif %}
@@ -567,7 +590,7 @@
         <dt class="data-list__title">Submitting application for a placement order</dt>
         <dd class="data-list__definition">
           {% if case_data.children.firstChild.placementOrderApplication is not empty %}
-            {{ case_data.children.firstChild.placementOrderApplication }}
+            <span class="u-block">{{ case_data.children.firstChild.placementOrderApplication }}</span>
           {% else %}
             -
           {% endif %}
@@ -579,7 +602,7 @@
           <dt class="data-list__title">Court applying for</dt>
           <dd class="data-list__definition">
             {% if case_data.children.firstChild.placementCourt is not empty %}
-              {{ case_data.children.firstChild.placementCourt }}
+              <span class="u-block">{{ case_data.children.firstChild.placementCourt }}</span>
             {% else %}
               -
             {% endif %}
@@ -750,9 +773,9 @@
               {% if child.value.childGender is not empty %}
                 {% if child.value.childGender == 'They identify in another way'
                 and child.value.childGenderIdentification is not empty %}
-                  {{ child.value.childGenderIdentification }}
+                  <span class="u-block">{{ child.value.childGenderIdentification }}</span>
                 {% else %}
-                  {{ child.value.childGender }}
+                  <span class="u-block">{{ child.value.childGender }}</span>
                 {% endif %}
               {% else %}
                 -
@@ -802,7 +825,7 @@
             <dt class="data-list__title">Key dates</dt>
             <dd class="data-list__definition">
               {% if child.value.keyDates is not empty %}
-                {{ child.value.keyDates }}
+                <span class="u-block">{{ child.value.keyDates }}</span>
               {% else %}
                 -
               {% endif %}
@@ -812,7 +835,7 @@
             <dt class="data-list__title">Care and contact plan</dt>
             <dd class="data-list__definition">
               {% if child.value.careAndContact is not empty %}
-                {{ child.value.careAndContact }}
+                <span class="u-block">{{ child.value.careAndContact }}</span>
               {% else %}
                 -
               {% endif %}
@@ -822,7 +845,7 @@
             <dt class="data-list__title">Considering adoption</dt>
             <dd class="data-list__definition">
               {% if child.value.adoption is not empty %}
-                {{ child.value.adoption }}
+                <span class="u-block">{{ child.value.adoption }}</span>
               {% else %}
                 -
               {% endif %}
@@ -833,7 +856,7 @@
               <dt class="data-list__title">Submitting application for a placement order</dt>
               <dd class="data-list__definition">
                 {% if child.value.placementOrderApplication is not empty %}
-                  {{ child.value.placementOrderApplication }}
+                  <span class="u-block">{{ child.value.placementOrderApplication }}</span>
                 {% else %}
                   -
                 {% endif %}
@@ -845,7 +868,7 @@
                 <dt class="data-list__title">Court applying for</dt>
                 <dd class="data-list__definition">
                   {% if child.value.placementCourt is not empty %}
-                    {{ child.value.placementCourt }}
+                    <span class="u-block">{{ child.value.placementCourt }}</span>
                   {% else %}
                     -
                   {% endif %}
@@ -1007,9 +1030,9 @@
           case_data.respondents.firstRespondent.gender is not empty %}
           {% if case_data.respondents.firstRespondent.gender == 'They identify in another way'
           and case_data.respondents.firstRespondent.genderIdentify is not empty %}
-            {{ case_data.respondents.firstRespondent.genderIdentify }}
+            <span class="u-block">{{ case_data.respondents.firstRespondent.genderIdentify }}</span>
           {% else %}
-            {{ case_data.respondents.firstRespondent.gender }}
+            <span class="u-block">{{ case_data.respondents.firstRespondent.gender }}</span>
           {% endif %}
         {% else %}
           -
@@ -1078,7 +1101,7 @@
         {% if case_data.respondents is not empty and
         case_data.respondents.firstRespondent is not empty and
         case_data.respondents.firstRespondent.relationshipToChild is not empty %}
-          {{ case_data.respondents.firstRespondent.relationshipToChild }}
+          <span class="u-block">{{ case_data.respondents.firstRespondent.relationshipToChild }}</span>
         {% else %}
           -
         {% endif %}
@@ -1194,7 +1217,7 @@
             {% if respondent.value.gender is not empty %}
               {% if respondent.value.gender == 'They identify in another way'
               and respondent.value.genderIdentify is not empty %}
-                {{ respondent.value.genderIdentify }}
+                <span class="u-block">{{ respondent.value.genderIdentify }}</span>
               {% else %}
                 {{ respondent.value.gender }}
               {% endif %}
@@ -1257,7 +1280,7 @@
           <dt class="data-list__title">Relationship to the child or children</dt>
           <dd class="data-list__definition">
             {% if respondent.value.relationshipToChild is not empty %}
-              {{ respondent.value.relationshipToChild }}
+              <span class="u-block">{{ respondent.value.relationshipToChild }}</span>
             {% else %}
               -
             {% endif %}
@@ -1603,7 +1626,7 @@
         {% if case_data.others is not empty and
         case_data.others.firstOther is not empty and
         case_data.others.firstOther.childInformation is not empty %}
-          {{ case_data.others.firstOther.childInformation }}
+          <span class="u-block">{{ case_data.others.firstOther.childInformation }}</span>
         {% else %}
           -
         {% endif %}
@@ -1772,7 +1795,7 @@
             <dt class="data-list__title">Relationship to the child</dt>
             <dd class="data-list__definition">
               {% if other.value is not empty and other.value.childInformation is not empty %}
-                {{ other.value.childInformation }}
+                <span class="u-block">{{ other.value.childInformation }}</span>
               {% else %}
                 -
               {% endif %}
@@ -1843,6 +1866,25 @@
 
   <h3 class="heading heading--two">Grounds for the application</h3>
   <dl class="data-list">
+    {% if case_data.orders is not empty and
+    case_data.orders.orderType is not empty and
+    case_data.orders.orderType contains 'EMERGENCY_PROTECTION_ORDER' %}
+      <div class="data-list__row">
+        <dt class="data-list__title">Grounds for emergency protection order</dt>
+        <dd class="data-list__definition">
+          {% if case_data.groundsForEPO is not empty and
+          case_data.groundsForEPO.reason is not empty %}
+            {% for reason in case_data.groundsForEPO.reason %}
+              <span class="u-block u-block--space-below">
+                {{ reason | emergencyProtectionOrderReasonMapping }}
+              </span>
+            {% endfor %}
+          {% else %}
+            -
+          {% endif %}
+        </dd>
+      </div>
+    {% endif %}
     <div class="data-list__row">
       <dt class="data-list__title">Threshold is met as the child is suffering or is likely to suffer significant harm because they are</dt>
       <dd class="data-list__definition">
@@ -1865,7 +1907,7 @@
   <p>
     {% if case_data.grounds is not empty and
     case_data.grounds.thresholdDetails is not empty %}
-      {{ case_data.grounds.thresholdDetails }}
+      <span class="u-block">{{ case_data.grounds.thresholdDetails }}</span>
     {% else %}
       -
     {% endif %}
