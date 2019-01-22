@@ -21,6 +21,11 @@ module.exports = {
       yes: '#internationalElement_proceedings-Yes',
       textField: '#internationalElement_proceedingsReason',
     },
+
+    internationalAuthorityInvolvement: {
+      yes: '#internationalElement_internationalAuthorityInvolvement-Yes',
+      textField: '#internationalElement_internationalAuthorityInvolvementDetails',
+    },
   },
 
   halfFillForm() {
@@ -38,5 +43,7 @@ module.exports = {
     I.click(this.fields.issues.no);
     I.click(this.fields.proceedings.yes);
     I.fillField(this.fields.proceedings.textField, 'test');
+    I.click(this.fields.internationalAuthorityInvolvement.yes);
+    I.fillField(this.fields.internationalAuthorityInvolvement.textField, 'International involvement reason');
   },
 };

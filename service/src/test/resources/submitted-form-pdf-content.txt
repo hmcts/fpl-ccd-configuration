@@ -11,8 +11,8 @@ Contested interim care orderHearing type
 Reason: Baby will be discharged from hospital on 21 June
 2018
 Same dayHearing date requested
-Contact with any named personDirection needed
 Yes
+Contact with any named personDirection needed
 Emergency protection orderOrders needed
 , Another, James SmithPaul SmithRespondents
 London Borough of SouthwarkApplicant
@@ -32,7 +32,6 @@ Application from London Borough of Southwark submitted on 26 November
 Orders
 Hearing needed
 Allocation proposal
-GirlGender
 2002-02-02Date of birth
 16 years oldAge
 Sarah ReevesName
@@ -116,6 +115,7 @@ Date this began: 2 February 2002
 , BT66 7RR, MK10 1SA, MK
 , Milton Keynes, Central Milton KeynesCarnegie House
 Living with respondentsChild's living situation
+GirlGender
 Respondent 1
 -Confidential contact details
 -Anything else to help take part in proceedings
@@ -155,7 +155,6 @@ UnknownGender
 James SmithName
 Respondent 2
 Respondent 3
-MaleGender
 2 February 2000Date of birth
 Peter LaveryName
 NoConfidential contact details
@@ -191,11 +190,6 @@ London Borough of SouthwarkName
 Applicant
 Other 1
 Other 2
-NoAnything else
-history of domestic violence
-YesDomestic violence
-history of drug abuse
-YesAlcohol or drug abuse
 Yes
 Future risk of harm
 Past harm
@@ -217,6 +211,13 @@ Not receiving care that would be reasonably expected
 from a parent.
 Threshold is met as the child is suffering or is likely to
 suffer significant harm because they are
+There’s reasonable cause to believe the child is likely to
+suffer significant harm if they don’t stay in their current
+accommodation
+There’s reasonable cause to believe the child is likely to
+suffer significant harm if they’re not moved to
+accommodation provided by you, or on your behalf
+Grounds for emergency protection order
 Yes
 Other two hide from parties
 Confidential contact details
@@ -233,11 +234,11 @@ Friend of familyRelationship to the child
 , Northern Ireland, Cork, BTTT TTT
 , Newcastle, Newcastle street, Newcastle roadFlat 29Current address
 LisburnPlace of birth
+MaleGender
 Grounds for the application
 Threshold evidence
 grounds for application criteria
 Risk and harm to children
-Factors affecting parenting
 To follow
 some text
 Care plan
@@ -259,7 +260,8 @@ Supervision orderOrders made
 02-02-2002Started
 12345Case number
 YesOngoing or previous proceedings
--Government or central authority in another country
+YesGovernment or central authority in another country
+French authorities were involved
 been involved
 Outside of the UK
 YesProceedings outside the UK
@@ -268,7 +270,13 @@ YesIssues with jurisdiction
 Something happened in France
 YesSignificant events outside the UK
 Aunt outside UK
-YesSuitable carer outside the UK
+YesSuitable carers outside of the UK
+NoAnything else
+history of domestic violence
+YesDomestic violence
+history of drug abuse
+YesAlcohol or drug abuse
+Factors affecting parenting
 International element
 Other proceedings
 Annex Documents

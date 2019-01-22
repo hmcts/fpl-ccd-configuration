@@ -93,6 +93,12 @@
       ],
       "thresholdDetails": "grounds for application criteria"
     },
+    "groundsForEPO": {
+      "reason": [
+        "HARM_IF_NOT_MOVED_TO_NEW_ACCOMMODATION",
+        "HARM_IF_KEPT_IN_CURRENT_ACCOMMODATION"
+      ]
+    },
     "hearing": {
       "type": "Contested interim care order",
       "reason": "Baby will be discharged from hospital on 21 June 2018",
@@ -318,7 +324,9 @@
       "proceedingsReason": "Outside of the UK",
       "significantEvents": "Yes",
       "possibleCarerReason": "Aunt outside UK",
-      "significantEventsReason": "Something happened in France"
+      "significantEventsReason": "Something happened in France",
+      "internationalAuthorityInvolvement": "Yes",
+      "internationalAuthorityInvolvementDetails": "French authorities were involved"
     },
     "documents_socialWorkOther": [
       {
