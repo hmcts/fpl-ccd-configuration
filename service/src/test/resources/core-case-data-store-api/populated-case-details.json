@@ -93,6 +93,12 @@
       ],
       "thresholdDetails": "grounds for application criteria"
     },
+    "groundsForEPO": {
+      "reason": [
+        "HARM_IF_NOT_MOVED_TO_NEW_ACCOMMODATION",
+        "HARM_IF_KEPT_IN_CURRENT_ACCOMMODATION"
+      ]
+    },
     "hearing": {
       "type": "Contested interim care order",
       "reason": "Baby will be discharged from hospital on 21 June 2018",
