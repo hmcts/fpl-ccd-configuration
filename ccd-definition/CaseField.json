@@ -259,9 +259,6 @@
     "FieldType": "Text",
     "SecurityClassification": "Public"
   },
-
-
-
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
@@ -279,9 +276,6 @@
     "FieldTypeParameter": "StandardDirectionsOther",
     "SecurityClassification": "Public"
   },
-
-
-
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
