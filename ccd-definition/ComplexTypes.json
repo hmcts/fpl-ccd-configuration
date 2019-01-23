@@ -202,7 +202,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Child",
-    "ListElementCode": "socialWorkerTelMigrateTo",
+    "ListElementCode": "socialWorkerTelephone",
     "FieldType": "Text",
     "RegularExpression": "^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[\\s0-9]{0,16}$",
     "ElementLabel": "Social worker's telephone number",
@@ -340,7 +340,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Applicant",
-    "ListElementCode": "mobileMigrateTo",
+    "ListElementCode": "mobilePhone",
     "FieldType": "Text",
     "RegularExpression": "^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[\\s0-9]{0,16}$",
     "ElementLabel": "Mobile number",
@@ -359,7 +359,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Applicant",
-    "ListElementCode": "telephoneMigrateTo",
+    "ListElementCode": "telephoneNumber",
     "FieldType": "Text",
     "RegularExpression": "^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[\\s0-9]{0,16}$",
     "ElementLabel": "Telephone number",
@@ -404,7 +404,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Solicitor",
-    "ListElementCode": "mobileMigrateTo",
+    "ListElementCode": "mobilePhone",
     "FieldType": "Text",
     "RegularExpression": "^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[\\s0-9]{0,16}$",
     "ElementLabel": "Solicitor's mobile number",
@@ -423,7 +423,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Solicitor",
-    "ListElementCode": "telephoneMigrateTo",
+    "ListElementCode": "telephoneNumber",
     "FieldType": "Text",
     "RegularExpression": "^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[\\s0-9]{0,16}$",
     "ElementLabel": "Solicitor's telephone number",
@@ -1114,7 +1114,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Others",
-    "ListElementCode": "telephoneMigrateTo",
+    "ListElementCode": "telephoneNumber",
     "FieldType": "Text",
     "RegularExpression": "^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[\\s0-9]{0,16}$",
     "ElementLabel": "Telephone number",
@@ -1252,7 +1252,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
-    "ListElementCode": "telephoneMigrateTo",
+    "ListElementCode": "telephoneNumber",
     "FieldType": "Text",
     "RegularExpression": "^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[\\s0-9]{0,16}$",
     "ElementLabel": "Telephone number",
