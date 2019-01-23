@@ -20,7 +20,7 @@ module.exports = {
   populateForm() {
     I.selectOption(this.fields.jurisdiction, 'Family Public Law');
     I.selectOption(this.fields.caseType, 'Care, supervision and EPOs');
-    I.selectOption(this.fields.event, 'Open case');
+    I.selectOption(this.fields.event, 'Start application');
     I.click(this.startButton);
     this.enterCaseName();
   },
