@@ -5,7 +5,7 @@
     <!-- Collect remote dependency data -->
     <BuiltIn enabled="true">
       <HTTP enabled="true"/>
-      <JDBC enabled="true"/>
+      <JDBC enabled="false"/>
     </BuiltIn>
   </Instrumentation>
 </ApplicationInsightsAgent>
