@@ -80,7 +80,6 @@ public class Child {
         return keyDates;
     }
 
-
     public String getCareAndContact() {
         return careAndContact;
     }
@@ -124,6 +123,5 @@ public class Child {
     public Address getAddress() {
         return address;
     }
-
 
 }

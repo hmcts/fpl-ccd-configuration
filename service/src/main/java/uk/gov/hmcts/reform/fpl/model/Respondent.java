@@ -75,5 +75,4 @@ public class Respondent {
         return address;
     }
 
-
 }

@@ -49,12 +49,13 @@ public class ChildSubmissionController {
                 if (dateOfBirthIsInFuture(childIterator.next().getChild().getChildDOB())) {
                     addError = true;
                 }
-
             }
         }
+
         if (addError) {
             errorsList.add(DOB_IN_FUTURE_ERROR_MESSAGE);
         }
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(callbackrequest.getCaseDetails().getData())
             .errors(Collections.unmodifiableList(errorsList))

@@ -27,6 +27,4 @@ public class AdditionalRespondent {
         return respondent;
     }
 
-
-
 }

@@ -17,20 +17,18 @@ public class RespondentMapperService {
     private final Logger logger = LoggerFactory.getLogger(RespondentMapperService.class);
 
     @Autowired
-    public RespondentMapperService(ObjectMapper mapper){
+    public RespondentMapperService(ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
     public Optional<Respondents> mapRespondents(final Map<String, Object> respondentsMaps) {
         try {
             String json = mapper.writeValueAsString(respondentsMaps);
-            logger.error("json is "+json.toString());
             return Optional.of(mapper.readValue(json, Respondents.class));
-        }catch(Exception e){
-            logger.error("Exception parsing respondents data "+e.toString());
+        } catch (Exception e) {
+            logger.error("Exception parsing respondents data " + e.toString());
             return Optional.empty();
         }
-
     }
 
 }

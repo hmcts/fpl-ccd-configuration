@@ -48,9 +48,9 @@ public class RespondentSubmissionController {
                 if (dateOfBirthIsInFuture(respondentIterator.next().getRespondent().getDob())) {
                     addError = true;
                 }
-
             }
         }
+
         if (addError) {
             errorsList.add(DOB_IN_FUTURE_ERROR_MESSAGE);
         }
@@ -60,4 +60,5 @@ public class RespondentSubmissionController {
             .errors(Collections.unmodifiableList(errorsList))
             .build();
     }
+
 }

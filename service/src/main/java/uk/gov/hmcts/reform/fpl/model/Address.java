@@ -33,7 +33,6 @@ public class Address {
         this.country = country;
     }
 
-
     public String getAddressLine1() {
         return addressLine1;
     }
@@ -61,7 +60,5 @@ public class Address {
     public String getCountry() {
         return country;
     }
-
-
 
 }

@@ -31,7 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class RespondentSubmissionControllerTest {
 
-
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -69,7 +68,6 @@ public class RespondentSubmissionControllerTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getErrors()).contains("Date of birth cannot be in the future");
-
     }
 
     @Test
@@ -103,7 +101,6 @@ public class RespondentSubmissionControllerTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getErrors()).doesNotContain("Date of birth cannot be in the future");
-
     }
 
     @Test
@@ -137,8 +134,6 @@ public class RespondentSubmissionControllerTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getErrors()).contains("Date of birth cannot be in the future");
-
     }
-
 
 }
