@@ -33,6 +33,19 @@ withPipeline(type, product, component) {
 
   env.POSTCODE_PLACEHOLDER = '${postcode}'
 
+  after('checkout') {
+    onMaster {
+      try {
+        sh """
+          git fetch origin demo:demo
+          git push --force origin HEAD:demo
+        """
+      } catch (err) {
+        notifyBuildEvent channel: '#fpl-tech', color: 'warning', message: 'Failed to update demo branch'
+      }
+    }
+  }
+
   after('aksdeploy') {
     def subscription = env.SUBSCRIPTION_NAME
     def aksServiceName = "${product}-${component}-${env.BRANCH_NAME}".toLowerCase()
