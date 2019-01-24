@@ -2,31 +2,31 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "TimeFrameList",
-    "ListElementCode": "Same day",
+    "ListElementCode": "SAME_DAY",
     "ListElement": "Same day"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "TimeFrameList",
-    "ListElementCode": "Within 2 days",
+    "ListElementCode": "WITHIN_2_DAYS",
     "ListElement": "Within 2 days"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "TimeFrameList",
-    "ListElementCode": "Within 7 days",
+    "ListElementCode": "WITHIN_7_DAYS",
     "ListElement": "Within 7 days"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "TimeFrameList",
-    "ListElementCode": "Within 12 days",
+    "ListElementCode": "WITHIN_12_DAYS",
     "ListElement": "Within 12 days"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "TimeFrameList",
-    "ListElementCode": "Within 18 days",
+    "ListElementCode": "WITHIN_18_DAYS",
     "ListElement": "Within 18 days"
   },
   {
@@ -44,73 +44,73 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GroundsList",
-    "ListElementCode": "noCare",
+    "ListElementCode": "NO_CARE",
     "ListElement": "Not receiving care that would be reasonably expected from a parent"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "GroundsList",
-    "ListElementCode": "beyondControl",
+    "ListElementCode": "BEYOND_CONTROL",
     "ListElement": "Beyond parental control"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingTypeFixedList",
-    "ListElementCode": "Contested interim care order",
+    "ListElementCode": "CONTESTED_INTERIM_CARE_ORDER",
     "ListElement": "Contested interim care order"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingTypeFixedList",
-    "ListElementCode": "Urgent preliminary case management heari",
+    "ListElementCode": "URGENT_PRELIMINARY_CASE_MANAGEMENT_HEARI",
     "ListElement": "Urgent preliminary case management hearing"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingTypeFixedList",
-    "ListElementCode": "Standard case management hearing",
+    "ListElementCode": "STANDARD_CASE_MANAGEMENT_HEARING",
     "ListElement": "Standard case management hearing"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "attachedToFollowOption",
-    "ListElementCode": "Attached",
+    "ListElementCode": "ATTACHED",
     "ListElement": "Attached"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "attachedToFollowOption",
-    "ListElementCode": "To follow",
+    "ListElementCode": "TO_FOLLOW",
     "ListElement": "To follow"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildGenderList",
-    "ListElementCode": "Boy",
+    "ListElementCode": "BOY",
     "ListElement": "Boy"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildGenderList",
-    "ListElementCode": "Girl",
+    "ListElementCode": "GIRL",
     "ListElement": "Girl"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildGenderList",
-    "ListElementCode": "They identify in another way",
+    "ListElementCode": "THEY_IDENTIFY_IN_ANOTHER_WAY",
     "ListElement": "They identify in another way"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "LivingSituationList",
-    "ListElementCode": "Living with respondents",
+    "ListElementCode": "LIVING_WITH_RESPONDENTS",
     "ListElement": "Living with respondents"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "LivingSituationList",
-    "ListElementCode": "Living with other family or friends",
+    "ListElementCode": "LIVING_WITH_OTHER_FAMILY_OR_FRIENDS",
     "ListElement": "Living with other family or friends"
   },
   {
@@ -122,109 +122,109 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "LivingSituationList",
-    "ListElementCode": "Voluntarily in section 20 care order",
+    "ListElementCode": "VOLUNTARILY_IN_SECTION_20_CARE_ORDER",
     "ListElement": "Voluntarily in section 20 care order"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "LivingSituationList",
-    "ListElementCode": "In hospital and soon to be discharged",
+    "ListElementCode": "IN_HOSPITAL_AND_SOON_TO_BE_DISCHARGED",
     "ListElement": "In hospital and soon to be discharged"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "LivingSituationList",
-    "ListElementCode": "Other",
+    "ListElementCode": "OTHER",
     "ListElement": "Other"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "FathersResponsibilityList",
-    "ListElementCode": "Yes",
+    "ListElementCode": "YES",
     "ListElement": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "FathersResponsibilityList",
-    "ListElementCode": "No",
+    "ListElementCode": "NO",
     "ListElement": "No"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "FathersResponsibilityList",
-    "ListElementCode": "Don't know",
+    "ListElementCode": "DON'T_KNOW",
     "ListElement": "Don't know"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "PastOrFutureHarmSelect",
-    "ListElementCode": "Past harm",
+    "ListElementCode": "PAST_HARM",
     "ListElement": "Past harm"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "PastOrFutureHarmSelect",
-    "ListElementCode": "Future risk of harm",
+    "ListElementCode": "FUTURE_RISK_OF_HARM",
     "ListElement": "Future risk of harm"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ProceedingStatus",
-    "ListElementCode": "Ongoing",
+    "ListElementCode": "ONGOING",
     "ListElement": "Ongoing"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ProceedingStatus",
-    "ListElementCode": "Previous",
+    "ListElementCode": "PREVIOUS",
     "ListElement": "Previous"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationProposalList",
-    "ListElementCode": "Lay justices",
+    "ListElementCode": "LAY_JUSTICES",
     "ListElement": "Lay justices"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationProposalList",
-    "ListElementCode": "District judge",
+    "ListElementCode": "DISTRICT_JUDGE",
     "ListElement": "District judge"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationProposalList",
-    "ListElementCode": "Circuit judge",
+    "ListElementCode": "CIRCUIT_JUDGE",
     "ListElement": "Circuit judge"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationProposalList",
-    "ListElementCode": "Section 9 circuit judge",
+    "ListElementCode": "SECTION_9_CIRCUIT_JUDGE",
     "ListElement": "Section 9 circuit judge"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationProposalList",
-    "ListElementCode": "High Court judge",
+    "ListElementCode": "HIGH_COURT_JUDGE",
     "ListElement": "High Court judge"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "GenderList",
-    "ListElementCode": "Male",
+    "ListElementCode": "MALE",
     "ListElement": "Male"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "GenderList",
-    "ListElementCode": "Female",
+    "ListElementCode": "FEMALE",
     "ListElement": "Female"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "GenderList",
-    "ListElementCode": "They identify in another way",
+    "ListElementCode": "THEY_IDENTIFY_IN_ANOTHER_WAY",
     "ListElement": "They identify in another way"
   },
   {
@@ -326,7 +326,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Consent",
-    "ListElementCode": "agree",
+    "ListElementCode": "AGREE",
     "ListElement": "I agree with this statement"
   },
   {
