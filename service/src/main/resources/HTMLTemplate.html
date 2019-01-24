@@ -661,8 +661,8 @@
       <dd class="data-list__definition">
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
-        case_data.children.firstChild.socialWorkerTel is not empty %}
-          {{ case_data.children.firstChild.socialWorkerTel }}
+        case_data.children.firstChild.socialWorkerTelephone is not empty %}
+          {{ case_data.children.firstChild.socialWorkerTelephone }}
         {% else %}
           -
         {% endif %}
@@ -917,8 +917,8 @@
           <div class="data-list__row">
             <dt class="data-list__title">Social worker's telephone number</dt>
             <dd class="data-list__definition">
-              {% if child.value.socialWorkerTel is not empty %}
-                {{ child.value.socialWorkerTel }}
+              {% if child.value.socialWorkerTelephone is not empty %}
+                {{ child.value.socialWorkerTelephone }}
               {% else %}
                 -
               {% endif %}
@@ -1086,8 +1086,8 @@
       <dd class="data-list__definition">
         {% if case_data.respondents is not empty and
         case_data.respondents.firstRespondent is not empty and
-        case_data.respondents.firstRespondent.telephone is not empty %}
-          {{ case_data.respondents.firstRespondent.telephone }}
+        case_data.respondents.firstRespondent.telephoneNumber is not empty %}
+          {{ case_data.respondents.firstRespondent.telephoneNumber }}
         {% else %}
           -
         {% endif %}
@@ -1267,8 +1267,8 @@
         <div class="data-list__row">
           <dt class="data-list__title">Telephone number</dt>
           <dd class="data-list__definition">
-            {% if respondent.value.telephone is not empty %}
-              {{ respondent.value.telephone }}
+            {% if respondent.value.telephoneNumber is not empty %}
+              {{ respondent.value.telephoneNumber }}
             {% else %}
               -
             {% endif %}
@@ -1416,8 +1416,8 @@
       <dt class="data-list__title">Mobile number</dt>
       <dd class="data-list__definition">
         {% if case_data.applicant is not empty and
-        case_data.applicant.mobile is not empty %}
-          {{ case_data.applicant.mobile }}
+        case_data.applicant.mobilePhone is not empty %}
+          {{ case_data.applicant.mobilePhone }}
         {% else %}
          -
         {% endif %}
@@ -1427,8 +1427,8 @@
       <dt class="data-list__title">Telephone number</dt>
       <dd class="data-list__definition">
         {% if case_data.applicant is not empty and
-        case_data.applicant.telephone is not empty %}
-          {{ case_data.applicant.telephone }}
+        case_data.applicant.telephoneNumber is not empty %}
+          {{ case_data.applicant.telephoneNumber }}
         {% else %}
           -
         {% endif %}
@@ -1460,8 +1460,8 @@
       <dt class="data-list__title">Solicitor's mobile number</dt>
       <dd class="data-list__definition">
         {% if case_data.solicitor is not empty and
-        case_data.solicitor.mobile is not empty %}
-          {{ case_data.solicitor.mobile }}
+        case_data.solicitor.mobilePhone is not empty %}
+          {{ case_data.solicitor.mobilePhone }}
         {% else %}
           -
         {% endif %}
@@ -1471,8 +1471,8 @@
       <dt class="data-list__title">Solicitor's telephone number</dt>
       <dd class="data-list__definition">
         {% if case_data.solicitor is not empty and
-        case_data.solicitor.telephone is not empty %}
-          {{ case_data.solicitor.telephone }}
+        case_data.solicitor.telephoneNumber is not empty %}
+          {{ case_data.solicitor.telephoneNumber }}
         {% else %}
           -
         {% endif %}
@@ -1611,8 +1611,8 @@
       <dd class="data-list__definition">
         {% if case_data.others is not empty and
         case_data.others.firstOther is not empty and
-        case_data.others.firstOther.telephone is not empty %}
-          {{ case_data.others.firstOther.telephone }}
+        case_data.others.firstOther.telephoneNumber is not empty %}
+          {{ case_data.others.firstOther.telephoneNumber }}
         {% else %}
           -
         {% endif %}
@@ -1782,8 +1782,8 @@
           <div class="data-list__row">
             <dt class="data-list__title">Telephone number</dt>
             <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.telephone is not empty %}
-                {{ other.value.telephone }}
+              {% if other.value is not empty and other.value.telephoneNumber is not empty %}
+                {{ other.value.telephoneNumber }}
               {% else %}
                 -
               {% endif %}
