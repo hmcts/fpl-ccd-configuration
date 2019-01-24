@@ -6,7 +6,6 @@ management:
     web:
       base-path: /
 
-#If you use a database then uncomment below lines and update db properties accordingly leaving tomcat connection settings unchanged.
 spring:
   application:
     name: fpl-service
