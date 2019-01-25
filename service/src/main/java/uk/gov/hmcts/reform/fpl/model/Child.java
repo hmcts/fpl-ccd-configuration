@@ -3,11 +3,32 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Data;
 
 import java.util.Date;
 
+@Data
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Child {
+
+    private final String childName;
+    private final Date childDOB;
+    private final String childGender;
+    private final String livingSituation;
+    private final String keyDates;
+    private final String careAndContact;
+    private final String adoption;
+    private final String mothersName;
+    private final String fathersName;
+    private final String fathersResponsibility;
+    private final String socialWorkerName;
+    private final String socialWorkerTel;
+    private final String additionalNeeds;
+    private final String detailsHidden;
+    private final String litigationIssues;
+    private final Address address;
 
     @JsonCreator
     public Child(@JsonProperty("childName") final String childName,
@@ -42,87 +63,6 @@ public class Child {
         this.detailsHidden = detailsHidden;
         this.litigationIssues = litigationIssues;
         this.address = address;
-    }
-
-    private String childName;
-    private Date childDOB;
-    private String childGender;
-    private String livingSituation;
-    private String keyDates;
-    private String careAndContact;
-    private String adoption;
-    private String mothersName;
-    private String fathersName;
-    private String fathersResponsibility;
-    private String socialWorkerName;
-    private String socialWorkerTel;
-    private String additionalNeeds;
-    private String detailsHidden;
-    private String litigationIssues;
-    private Address address;
-
-    public String getChildName() {
-        return childName;
-    }
-
-    public Date getChildDOB() {
-        return childDOB;
-    }
-
-    public String getChildGender() {
-        return childGender;
-    }
-
-    public String getLivingSituation() {
-        return livingSituation;
-    }
-
-    public String getKeyDates() {
-        return keyDates;
-    }
-
-    public String getCareAndContact() {
-        return careAndContact;
-    }
-
-    public String getAdoption() {
-        return adoption;
-    }
-
-    public String getMothersName() {
-        return mothersName;
-    }
-
-    public String getFathersName() {
-        return fathersName;
-    }
-
-    public String getFathersResponsibility() {
-        return fathersResponsibility;
-    }
-
-    public String getSocialWorkerName() {
-        return socialWorkerName;
-    }
-
-    public String getSocialWorkerTel() {
-        return socialWorkerTel;
-    }
-
-    public String getAdditionalNeeds() {
-        return additionalNeeds;
-    }
-
-    public String getDetailsHidden() {
-        return detailsHidden;
-    }
-
-    public String getLitigationIssues() {
-        return litigationIssues;
-    }
-
-    public Address getAddress() {
-        return address;
     }
 
 }

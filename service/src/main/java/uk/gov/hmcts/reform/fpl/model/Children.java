@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,12 +12,13 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("unchecked")
+@Data
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Children {
 
-    private Child firstChild;
-    private List<AdditionalEntries<Child>> additionalChildren;
+    private final Child firstChild;
+    private final List<AdditionalEntries<Child>> additionalChildren;
 
     @JsonCreator
     public Children(@JsonProperty("firstChild") Child firstChild,
@@ -28,14 +31,6 @@ public class Children {
         this(firstChild, Arrays.stream(additionalChildren)
             .map(child -> new AdditionalEntries<>(UUID.randomUUID(), child))
             .collect(Collectors.toList()));
-    }
-
-    public Child getFirstChild() {
-        return firstChild;
-    }
-
-    public List<AdditionalEntries<Child>> getAdditionalChildren() {
-        return additionalChildren;
     }
 
     public List<Child> getAllChildren() {

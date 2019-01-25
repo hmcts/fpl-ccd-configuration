@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,16 +12,17 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("unchecked")
+@Data
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Respondents {
 
-    private Respondent firstRespondent;
-    private List<AdditionalEntries<Respondent>> additionalRespondents;
+    private final Respondent firstRespondent;
+    private final List<AdditionalEntries<Respondent>> additionalRespondents;
 
     @JsonCreator
     public Respondents(@JsonProperty("firstRespondent") Respondent firstRespondent,
-                    @JsonProperty("additionalRespondents") List<AdditionalEntries<Respondent>> additionalRespondents) {
+                       @JsonProperty("additionalRespondents") List<AdditionalEntries<Respondent>> additionalRespondents) {
         this.firstRespondent = firstRespondent;
         this.additionalRespondents = additionalRespondents;
     }
