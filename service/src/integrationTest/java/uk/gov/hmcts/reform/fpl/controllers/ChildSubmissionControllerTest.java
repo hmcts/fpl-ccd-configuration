@@ -19,7 +19,10 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Children;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -51,7 +54,8 @@ public class ChildSubmissionControllerTest {
         Children children = new Children(firstChild, Arrays.asList(additionalChild));
 
         ObjectMapper mapper = new ObjectMapper();
-        HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(children), new TypeReference<Map<String, Object>>() {
+        HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(children),
+            new TypeReference<Map<String, Object>>() {
         });
 
         CallbackRequest request = CallbackRequest.builder()
@@ -87,7 +91,8 @@ public class ChildSubmissionControllerTest {
         Children children = new Children(firstChild, Arrays.asList(additionalChild));
 
         ObjectMapper mapper = new ObjectMapper();
-        HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(children), new TypeReference<Map<String, Object>>() {
+        HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(children),
+            new TypeReference<Map<String, Object>>() {
         });
 
         CallbackRequest request = CallbackRequest.builder()
@@ -121,7 +126,8 @@ public class ChildSubmissionControllerTest {
         Children children = new Children(value, Arrays.asList(additionalChild));
 
         ObjectMapper mapper = new ObjectMapper();
-        HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(children), new TypeReference<Map<String, Object>>() {
+        HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(children),
+            new TypeReference<Map<String, Object>>() {
         });
 
         CallbackRequest request = CallbackRequest.builder()

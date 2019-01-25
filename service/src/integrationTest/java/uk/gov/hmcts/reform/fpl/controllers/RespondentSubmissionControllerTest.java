@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Respondents;
 
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,7 +50,8 @@ public class RespondentSubmissionControllerTest {
         Respondents respondents = new Respondents(respondent, Arrays.asList(additionalRespondent));
 
         ObjectMapper mapper = new ObjectMapper();
-        HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(respondents), new TypeReference<Map<String, Object>>(){});
+        HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(respondents),
+            new TypeReference<Map<String, Object>>(){});
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -86,7 +86,8 @@ public class RespondentSubmissionControllerTest {
         Respondents respondents = new Respondents(firstRespondent, Arrays.asList(additionalRespondent));
 
         ObjectMapper mapper = new ObjectMapper();
-        HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(respondents), new TypeReference<Map<String, Object>>(){});
+        HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(respondents),
+            new TypeReference<Map<String, Object>>(){});
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -121,7 +122,8 @@ public class RespondentSubmissionControllerTest {
         Respondents respondents = new Respondents(firstRespondent, Arrays.asList(additionalRespondent));
 
         ObjectMapper mapper = new ObjectMapper();
-        HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(respondents), new TypeReference<Map<String, Object>>(){});
+        HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(respondents),
+            new TypeReference<Map<String, Object>>(){});
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
