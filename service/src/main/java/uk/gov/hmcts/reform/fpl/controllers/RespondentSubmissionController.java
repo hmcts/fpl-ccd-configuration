@@ -15,11 +15,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondents;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 
 @Api
 @RestController
@@ -28,7 +28,6 @@ import java.util.ArrayList;
 public class RespondentSubmissionController {
 
     private final MapperService mapperService;
-    private final String DOB_IN_FUTURE_ERROR_MESSAGE = "Date of birth cannot be in the future";
     private final Logger logger = LoggerFactory.getLogger(RespondentSubmissionController.class);
 
     @Autowired
@@ -45,11 +44,12 @@ public class RespondentSubmissionController {
         List<String> errorsList = new ArrayList<>();
 
         try {
-            Respondents respondents = mapperService.mapObject((Map<String, Object>) caseDetails.getData().get("respondents"), Respondents.class);
+            Respondents respondents = mapperService.mapObject((Map<String, Object>)
+                caseDetails.getData().get("respondents"), Respondents.class);
             if (respondents.getAllRespondents().stream().anyMatch(respondent ->
                 respondent.getDob().after(new Date())
             )) {
-                errorsList.add(DOB_IN_FUTURE_ERROR_MESSAGE);
+                errorsList.add("Date of birth cannot be in the future");
             }
         } catch (Exception e) {
             logger.error("exception mapping respondents data " + e.toString());
