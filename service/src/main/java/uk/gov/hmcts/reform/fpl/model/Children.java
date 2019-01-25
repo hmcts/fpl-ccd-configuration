@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableList;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -18,28 +20,31 @@ import java.util.stream.Collectors;
 public class Children {
 
     private final Child firstChild;
-    private final List<AdditionalEntries<Child>> additionalChildren;
+    private final List<Element<Child>> additionalChildren;
 
     @JsonCreator
     public Children(@JsonProperty("firstChild") Child firstChild,
-                    @JsonProperty("additionalChildren") List<AdditionalEntries<Child>> additionalChildren) {
+                    @JsonProperty("additionalChildren") List<Element<Child>> additionalChildren) {
         this.firstChild = firstChild;
         this.additionalChildren = additionalChildren;
     }
 
     public Children(Child firstChild, Child... additionalChildren) {
         this(firstChild, Arrays.stream(additionalChildren)
-            .map(child -> new AdditionalEntries<>(UUID.randomUUID(), child))
+            .map(child -> new Element<>(UUID.randomUUID(), child))
             .collect(Collectors.toList()));
     }
 
+    @JsonIgnore
     public List<Child> getAllChildren() {
-        List<Child> allChildren = new ArrayList<>();
-        allChildren.add(firstChild);
-        additionalChildren.stream().forEach(additionalEntry -> {
-            allChildren.add(additionalEntry.getValue());
-        });
-        return allChildren;
+        ImmutableList.Builder<Child> builder = ImmutableList.builder();
+        if (firstChild != null) {
+            builder.add(firstChild);
+        }
+        if (additionalChildren != null) {
+            builder.addAll(additionalChildren.stream().map(Element::getValue).collect(Collectors.toList()));
+        }
+        return builder.build();
     }
 
 }

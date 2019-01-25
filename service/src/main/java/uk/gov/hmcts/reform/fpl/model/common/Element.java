@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.model;
+package uk.gov.hmcts.reform.fpl.model.common;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -11,14 +11,14 @@ import java.util.UUID;
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AdditionalEntries<T> {
+public class Element<T> {
 
     private final UUID id;
     private final T value;
 
     @JsonCreator
-    public AdditionalEntries(@JsonProperty("id") final UUID id,
-                             @JsonProperty("value") final T value) {
+    public Element(@JsonProperty("id") final UUID id,
+                   @JsonProperty("value") final T value) {
         this.id = id;
         this.value = value;
     }
