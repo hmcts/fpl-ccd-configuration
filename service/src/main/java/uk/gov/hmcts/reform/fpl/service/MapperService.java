@@ -19,9 +19,9 @@ public class MapperService {
         this.mapper = mapper;
     }
 
-    public <T> T mapObject(final Map<String, Object> respondentsMaps, Class<T> valueType) throws Exception {
+    public <T> T mapObject(final Map<String, Object> map, Class<T> valueType) throws Exception {
         try {
-            String json = mapper.writeValueAsString(respondentsMaps);
+            String json = mapper.writeValueAsString(map);
             return mapper.readValue(json, valueType);
         } catch (Exception e) {
             logger.error("Exception mapping " + e.toString());

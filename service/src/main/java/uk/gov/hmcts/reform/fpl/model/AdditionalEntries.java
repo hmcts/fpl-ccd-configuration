@@ -7,24 +7,24 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.UUID;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AdditionalChild {
+public class AdditionalEntries<T> {
 
     private UUID id;
-    private Child child;
+    private T value;
 
     @JsonCreator
-    public AdditionalChild(@JsonProperty("id") final UUID id,
-                           @JsonProperty("value") final Child child) {
+    public AdditionalEntries(@JsonProperty("id") final UUID id,
+                           @JsonProperty("value") final T value) {
         this.id = id;
-        this.child = child;
+        this.value = value;
     }
 
     public UUID getId() {
         return id;
     }
 
-    public Child getChild() {
-        return child;
+    public T getValue() {
+        return value;
     }
 
 }

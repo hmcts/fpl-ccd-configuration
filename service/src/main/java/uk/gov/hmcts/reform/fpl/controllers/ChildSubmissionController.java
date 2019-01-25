@@ -12,17 +12,14 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.AdditionalChild;
 import uk.gov.hmcts.reform.fpl.model.Children;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-
+import java.util.List;
+import java.util.ArrayList;
 
 @Api
 @RestController
@@ -30,9 +27,8 @@ import java.util.Map;
 @SuppressWarnings("unchecked")
 public class ChildSubmissionController {
 
-    private static final String DOB_IN_FUTURE_ERROR_MESSAGE = "Date of birth cannot be in the future";
-
     private final MapperService mapperService;
+    private final String DOB_IN_FUTURE_ERROR_MESSAGE = "Date of birth cannot be in the future";
     private final Logger logger = LoggerFactory.getLogger(ChildSubmissionController.class);
 
     @Autowired
@@ -45,29 +41,18 @@ public class ChildSubmissionController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestBody CallbackRequest callbackrequest) {
 
-        boolean addError = false;
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         List<String> errorsList = new ArrayList<>();
 
         try {
-            Map<String, Object> childrenData = (Map<String, Object>) caseDetails.getData().get("children");
-            Children children = mapperService.mapObject(childrenData, Children.class);
-            if (children.getFirstChild().getChildDOB().after(new Date())) {
-                addError = true;
-            } else {
-                Iterator<AdditionalChild> childIterator = children.getAdditionalChildren().iterator();
-                while (childIterator.hasNext()) {
-                    if (childIterator.next().getChild().getChildDOB().after(new Date())) {
-                        addError = true;
-                    }
-                }
+            Children children = mapperService.mapObject((Map<String, Object>) caseDetails.getData().get("children"), Children.class);
+            if (children.getAllChildren().stream().anyMatch(child ->
+                child.getChildDOB().after(new Date())
+            )) {
+                errorsList.add(DOB_IN_FUTURE_ERROR_MESSAGE);
             }
         } catch (Exception e) {
-            logger.error("exception mapping " + e.toString());
-        }
-
-        if (addError) {
-            errorsList.add(DOB_IN_FUTURE_ERROR_MESSAGE);
+            logger.error("exception mapping children data " + e.toString());
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
