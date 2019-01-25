@@ -14,20 +14,20 @@
         "physicalHarm": "Yes",
         "emotionalHarm": "Yes",
         "neglectOccurrences": [
-          "Past harm",
-          "Future risk of harm"
+          "PAST_HARM",
+          "FUTURE_RISK_OF_HARM"
         ],
         "sexualAbuseOccurrences": [
-          "Past harm",
-          "Future risk of harm"
+          "PAST_HARM",
+          "FUTURE_RISK_OF_HARM"
         ],
         "physicalHarmOccurrences": [
-          "Past harm",
-          "Future risk of harm"
+          "PAST_HARM",
+          "FUTURE_RISK_OF_HARM"
         ],
         "emotionalHarmOccurrences": [
-          "Past harm",
-          "Future risk of harm"
+          "PAST_HARM",
+          "FUTURE_RISK_OF_HARM"
         ]
       },
       "orders": {
@@ -65,7 +65,7 @@
             "value": {
               "DOB": "2000-02-02",
               "name": "Peter Lavery",
-              "gender": "Male",
+              "gender": "MALE",
               "address": {
                 "County": "Cork",
                 "Country": "Northern Ireland",
@@ -88,15 +88,15 @@
       },
       "grounds": {
         "thresholdReason": [
-          "noCare",
-          "beyondControl"
+          "NOT_RECEIVING_CARE",
+          "BEYOND_PARENTAL_CONTROL"
         ],
         "thresholdDetails": "grounds for application criteria"
       },
       "hearing": {
         "type": "Contested interim care order",
         "reason": "Baby will be discharged from hospital on 21 June 2018",
-        "timeFrame": "Same day",
+        "timeFrame": "SAME_DAY",
         "reducedNotice": "Yes",
         "withoutNotice": "Yes",
         "type_GiveReason": "Standard case management hearing",
@@ -121,7 +121,7 @@
           "childDOB": "2018-06-15",
           "keyDates": "child starting primary school or taking GCSEs",
           "childName": "Tom Reeves",
-          "childGender": "They identify in another way",
+          "childGender": "IDENTIFIED_IN_ANOTHER_WAY",
           "fathersName": "Rob Reeves",
           "mothersName": "Isbella Reeves",
           "detailsHidden": "Yes",
@@ -156,7 +156,7 @@
               "childDOB": "2002-02-02",
               "keyDates": "test child two key date",
               "childName": "Sarah Reeves",
-              "childGender": "Girl",
+              "childGender": "GIRL",
               "fathersName": "Scott Simpson",
               "mothersName": "Sarah Simpson",
               "detailsHidden": "Yes",
@@ -222,7 +222,7 @@
             "value": {
               "dob": "1933-04-02",
               "name": "James Smith",
-              "gender": "They identify in another way",
+              "gender": "IDENTIFIED_IN_ANOTHER_WAY",
               "address": {
                 "County": "Down",
                 "Country": "United Kingdom",
@@ -247,7 +247,7 @@
             "value": {
               "dob": "1933-04-02",
               "name": "Another",
-              "gender": "Male",
+              "gender": "MALE",
               "address": {
                 "County": "Croydon",
                 "Country": "UK",
@@ -266,7 +266,7 @@
         "firstRespondent": {
           "dob": "1944-05-02",
           "name": "Paul Smith",
-          "gender": "Male",
+          "gender": "MALE",
           "address": {
             "County": "Gloucester",
             "Country": "Isle of man",
@@ -293,7 +293,7 @@
         "domesticViolenceReason": "history of domestic violence"
       },
       "allocationProposal": {
-        "proposal": "Section 9 circuit judge",
+        "proposal": "SECTION_9_CIRCUIT_JUDGE",
         "proposalReason": "allocation proposal reason"
       },
       "hearingPreferences": {
@@ -335,7 +335,7 @@
       ],
       "documents_socialWorkCarePlan_document": {
         "statusReason": "some text",
-        "documentStatus": "To follow",
+        "documentStatus": "TO_FOLLOW",
         "typeOfDocument": {
           "document_url": "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55",
           "document_filename": "form.pdf",
@@ -344,7 +344,7 @@
       },
       "documents_socialWorkStatement_document": {
         "statusReason": "Social work statement and genogram text",
-        "documentStatus": "To follow",
+        "documentStatus": "TO_FOLLOW",
         "typeOfDocument": {
           "document_url": "http://dm-store:8080/documents/0d26676f-b8d8-410d-ad2d-40290e478127",
           "document_filename": "form.pdf",
@@ -353,7 +353,7 @@
       },
       "documents_socialWorkAssessment_document": {
         "statusReason": "Social work assessment text",
-        "documentStatus": "To follow",
+        "documentStatus": "TO_FOLLOW",
         "typeOfDocument": {
           "document_url": "http://dm-store:8080/documents/91434306-7283-46a1-9901-a64d30d1fb8e",
           "document_filename": "form.pdf",
@@ -362,7 +362,7 @@
       },
       "documents_socialWorkChronology_document": {
         "statusReason": "Social work chronology text",
-        "documentStatus": "To follow",
+        "documentStatus": "TO_FOLLOW",
         "typeOfDocument": {
           "document_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e",
           "document_filename": "form.pdf",

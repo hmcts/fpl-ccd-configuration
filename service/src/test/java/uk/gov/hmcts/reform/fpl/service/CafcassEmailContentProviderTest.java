@@ -10,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.utils.HearingTimeFrameType;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 
 import java.io.IOException;
@@ -50,7 +51,7 @@ class CafcassEmailContentProviderTest {
             .put("fullStop", "No")
             .put("ordersAndDirections", ordersAndDirections)
             .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "Same day")
+            .put("timeFrameValue", HearingTimeFrameType.SAME_DAY.getLabel())
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();

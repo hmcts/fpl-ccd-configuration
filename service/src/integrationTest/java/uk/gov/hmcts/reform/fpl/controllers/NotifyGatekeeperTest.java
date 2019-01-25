@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.fpl.config.utils.HearingTimeFrameType;
 import uk.gov.service.notify.NotificationClient;
 
 import java.util.List;
@@ -49,7 +50,7 @@ class NotifyGatekeeperTest {
             .put("fullStop", "No")
             .put("ordersAndDirections", ordersAndDirections)
             .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "Same day")
+            .put("timeFrameValue", HearingTimeFrameType.SAME_DAY.getLabel())
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();

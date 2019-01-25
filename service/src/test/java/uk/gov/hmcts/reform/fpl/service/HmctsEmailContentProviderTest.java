@@ -10,6 +10,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.utils.HearingTimeFrameType;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 
 import java.io.IOException;
@@ -50,7 +51,7 @@ class HmctsEmailContentProviderTest {
             .put("fullStop", "No")
             .put("ordersAndDirections", ordersAndDirections)
             .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "Same day")
+            .put("timeFrameValue", HearingTimeFrameType.SAME_DAY.getLabel())
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();

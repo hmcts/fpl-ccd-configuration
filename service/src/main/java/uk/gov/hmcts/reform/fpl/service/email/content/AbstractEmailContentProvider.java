@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
+import uk.gov.hmcts.reform.fpl.config.utils.HearingTimeFrameType;
 import uk.gov.hmcts.reform.fpl.config.utils.OrderType;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public abstract class AbstractEmailContentProvider {
         List<String> ordersAndDirections = buildOrdersAndDirections((Map<String, Object>) caseDetails.getData().get("orders"));
 
         Optional<String> timeFrame = Optional.ofNullable((Map<String, Object>) caseDetails.getData().get("hearing"))
-            .map(hearing -> (String) hearing.get("timeFrame"));
+            .map(hearing -> HearingTimeFrameType.valueOf((String) hearing.get("timeFrame")).getLabel());
 
         return ImmutableMap.<String, Object>builder()
             .put("ordersAndDirections", !ordersAndDirections.isEmpty() ? ordersAndDirections : "")

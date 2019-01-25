@@ -1,5 +1,6 @@
 allocation proposal reasonReason
-Section 9 circuit judgeProposal by applicant
+Section 9 circuit judge
+Proposal by applicant
 They seek to care for baby in mother and baby unitRespondents' view on proceedings
 YesRespondents aware of proceedings
 Reason: Baby needs to be discharged from the hospital
@@ -206,9 +207,9 @@ Yes
 Future risk of harm
 Past harm
 Physical harm including non-accidental injury
-Beyond parental control.
+Beyond parental control
 Not receiving care that would be reasonably expected
-from a parent.
+from a parent
 Threshold is met as the child is suffering or is likely to
 suffer significant harm because they are
 There’s reasonable cause to believe the child is likely to

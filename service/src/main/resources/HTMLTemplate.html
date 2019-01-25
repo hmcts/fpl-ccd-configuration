@@ -269,7 +269,7 @@
       <dd class="data-list__definition">
         {% if case_data.hearing is not empty and
         case_data.hearing.timeFrame is not empty %}
-          <span class="u-block">{{ case_data.hearing.timeFrame }}</span>
+          <span class="u-block">{{ case_data.hearing.timeFrame | hearingTimeFrameMapping }}</span>
           {% if case_data.hearing.reason is not empty %}
             <span class="u-block">Reason: {{ case_data.hearing.reason }}</span>
           {% endif %}
@@ -351,7 +351,9 @@
       <dd class="data-list__definition">
         {% if case_data.allocationProposal is not empty and
         case_data.allocationProposal.proposal is not empty %}
-          <span class="u-block">{{ case_data.allocationProposal.proposal }}</span>
+          <span class="u-block">
+            {{ case_data.allocationProposal.proposal | allocationProposalMapping }}
+          </span>
         {% else %}
           -
         {% endif %}
@@ -493,11 +495,11 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.childGender is not empty %}
-          {% if case_data.children.firstChild.childGender == 'They identify in another way'
+          {% if case_data.children.firstChild.childGender == 'IDENTIFIED_IN_ANOTHER_WAY'
           and case_data.children.firstChild.childGenderIdentification is not empty %}
             <span class="u-block">{{ case_data.children.firstChild.childGenderIdentification }}</span>
           {% else %}
-            <span class="u-block">{{ case_data.children.firstChild.childGender }}</span>
+            <span class="u-block">{{ case_data.children.firstChild.childGender | childGenderMapping }}</span>
           {% endif %}
         {% else %}
           -
@@ -510,7 +512,7 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.livingSituation is not empty %}
-          <span class="u-block">{{ case_data.children.firstChild.livingSituation }}</span>
+          <span class="u-block">{{ case_data.children.firstChild.livingSituation | livingSituationMapping }}</span>
           {% if case_data.children.firstChild.address is not empty %}
             {% if case_data.children.firstChild.address.AddressLine1 is not empty %}
               <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine1 }}</span>
@@ -638,7 +640,7 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.fathersResponsibility is not empty %}
-          {{ case_data.children.firstChild.fathersResponsibility }}
+          {{ case_data.children.firstChild.fathersResponsibility | yesNoDoNotKnowMapping }}
         {% else %}
           -
         {% endif %}
@@ -769,11 +771,11 @@
             <dt class="data-list__title">Gender</dt>
             <dd class="data-list__definition">
               {% if child.value.childGender is not empty %}
-                {% if child.value.childGender == 'They identify in another way'
+                {% if child.value.childGender == 'IDENTIFIED_IN_ANOTHER_WAY'
                 and child.value.childGenderIdentification is not empty %}
                   <span class="u-block">{{ child.value.childGenderIdentification }}</span>
                 {% else %}
-                  <span class="u-block">{{ child.value.childGender }}</span>
+                  <span class="u-block">{{ child.value.childGender | childGenderMapping }}</span>
                 {% endif %}
               {% else %}
                 -
@@ -784,7 +786,7 @@
             <dt class="data-list__title">Child's living situation</dt>
             <dd class="data-list__definition">
               {% if child.value.livingSituation is not empty %}
-                <span class="u-block">{{child.value.livingSituation}}</span>
+                <span class="u-block">{{ child.value.livingSituation | livingSituationMapping }}</span>
                 {% if child.value.address is not empty %}
                   {% if child.value.address.AddressLine1 is not empty %}
                     <span class="u-comma-before">{{ child.value.address.AddressLine1 }}</span>
@@ -898,7 +900,7 @@
             <dt class="data-list__title">Father has parental responsibility</dt>
             <dd class="data-list__definition">
               {% if child.value.fathersResponsibility is not empty %}
-                {{ child.value.fathersResponsibility }}
+                {{ child.value.fathersResponsibility | yesNoDoNotKnowMapping }}
               {% else %}
                 -
               {% endif %}
@@ -1026,11 +1028,11 @@
         {% if case_data.respondents is not empty and
           case_data.respondents.firstRespondent is not empty and
           case_data.respondents.firstRespondent.gender is not empty %}
-          {% if case_data.respondents.firstRespondent.gender == 'They identify in another way'
+          {% if case_data.respondents.firstRespondent.gender == 'IDENTIFIED_IN_ANOTHER_WAY'
           and case_data.respondents.firstRespondent.genderIdentify is not empty %}
             <span class="u-block">{{ case_data.respondents.firstRespondent.genderIdentify }}</span>
           {% else %}
-            <span class="u-block">{{ case_data.respondents.firstRespondent.gender }}</span>
+            <span class="u-block">{{ case_data.respondents.firstRespondent.gender | genderMapping }}</span>
           {% endif %}
         {% else %}
           -
@@ -1213,11 +1215,11 @@
           <dt class="data-list__title">Gender</dt>
           <dd class="data-list__definition">
             {% if respondent.value.gender is not empty %}
-              {% if respondent.value.gender == 'They identify in another way'
+              {% if respondent.value.gender == 'IDENTIFIED_IN_ANOTHER_WAY'
               and respondent.value.genderIdentify is not empty %}
                 <span class="u-block">{{ respondent.value.genderIdentify }}</span>
               {% else %}
-                {{ respondent.value.gender }}
+                {{ respondent.value.gender | genderMapping }}
               {% endif %}
             {% else %}
               -
@@ -1887,13 +1889,9 @@
       <dt class="data-list__title">Threshold is met as the child is suffering or is likely to suffer significant harm because they are</dt>
       <dd class="data-list__definition">
         {% if case_data.grounds is not empty and case_data.grounds.thresholdReason is not empty %}
-          {% for reason in case_data.grounds.thresholdReason %}
-            {% if reason == 'noCare' %}
-              <span class="u-block">Not receiving care that would be reasonably expected from a parent.</span>
-            {% elseif reason == 'beyondControl' %}
-              <span class="u-block">Beyond parental control.</span>
-            {% endif %}
-          {% endfor %}
+        {% for reason in case_data.grounds.thresholdReason %}
+        <span class="u-block"> {{ reason | groundsForApplicationMapping }} </span>
+        {% endfor %}
         {% else %}
           -
         {% endif %}
@@ -1922,7 +1920,7 @@
             Yes
             {% if case_data.risks.physicalHarmOccurrences is not empty %}
               {% for occurrence in case_data.risks.physicalHarmOccurrences %}
-                <span class="u-block">{{ occurrence }}</span>
+                <span class="u-block">{{ occurrence | futureOrPastHarmSelectMapping }}</span>
               {% endfor %}
             {% endif %}
           {% else %}
@@ -1942,7 +1940,7 @@
           Yes
             {% if case_data.risks.emotionalHarmOccurrences is not empty %}
             {% for occurrence in case_data.risks.emotionalHarmOccurrences %}
-              <span class="u-block">{{ occurrence }}</span>
+              <span class="u-block">{{ occurrence | futureOrPastHarmSelectMapping }}</span>
             {% endfor %}
           {% endif %}
           {% else %}
@@ -1962,7 +1960,7 @@
           Yes
             {% if case_data.risks.sexualAbuseOccurrences is not empty %}
               {% for occurrence in case_data.risks.sexualAbuseOccurrences %}
-                <span class="u-block">{{ occurrence }}</span>
+                <span class="u-block">{{ occurrence | futureOrPastHarmSelectMapping }}</span>
               {% endfor %}
             {% endif %}
             {% else %}
@@ -1982,7 +1980,7 @@
             Yes
             {% if case_data.risks.neglectOccurrences is not empty %}
             {% for occurrence in case_data.risks.neglectOccurrences %}
-              <span class="u-block">{{ occurrence }}</span>
+              <span class="u-block">{{ occurrence | futureOrPastHarmSelectMapping }}</span>
             {% endfor %}
           {% endif %}
           {% else %}
@@ -2220,8 +2218,8 @@
       <dd class="data-list__definition">
         {% if case_data.documents_socialWorkChronology_document is not empty
         and case_data.documents_socialWorkChronology_document.documentStatus is not empty %}
-          {{ case_data.documents_socialWorkChronology_document.documentStatus }}
-          {% if case_data.documents_socialWorkChronology_document.documentStatus != 'Attached'
+          {{ case_data.documents_socialWorkChronology_document.documentStatus | attachedToFollowOptionMapping }}
+          {% if case_data.documents_socialWorkChronology_document.documentStatus != 'ATTACHED'
           and case_data.documents_socialWorkChronology_document.statusReason is not empty %}
             <span class="u-block">{{ case_data.documents_socialWorkChronology_document.statusReason }}</span>
           {% endif %}
@@ -2235,8 +2233,8 @@
       <dd class="data-list__definition">
         {% if case_data.documents_socialWorkStatement_document is not empty
         and case_data.documents_socialWorkStatement_document.documentStatus is not empty %}
-        {{ case_data.documents_socialWorkStatement_document.documentStatus }}
-        {% if case_data.documents_socialWorkStatement_document.documentStatus != 'Attached'
+        {{ case_data.documents_socialWorkStatement_document.documentStatus | attachedToFollowOptionMapping}}
+        {% if case_data.documents_socialWorkStatement_document.documentStatus != 'ATTACHED'
         and case_data.documents_socialWorkStatement_document.statusReason is not empty %}
           <span class="u-block">{{ case_data.documents_socialWorkStatement_document.statusReason }}</span>
         {% endif %}
@@ -2250,8 +2248,8 @@
       <dd class="data-list__definition">
         {% if case_data.documents_socialWorkAssessment_document is not empty
         and case_data.documents_socialWorkAssessment_document.documentStatus is not empty %}
-          {{ case_data.documents_socialWorkAssessment_document.documentStatus }}
-          {% if case_data.documents_socialWorkAssessment_document.documentStatus != 'Attached'
+          {{ case_data.documents_socialWorkAssessment_document.documentStatus | attachedToFollowOptionMapping }}
+          {% if case_data.documents_socialWorkAssessment_document.documentStatus != 'ATTACHED'
           and case_data.documents_socialWorkAssessment_document.statusReason is not empty %}
             <span class="u-block">{{ case_data.documents_socialWorkAssessment_document.statusReason }}</span>
           {% endif %}
@@ -2265,8 +2263,8 @@
       <dd class="data-list__definition">
         {% if case_data.documents_socialWorkCarePlan_document is not empty
         and case_data.documents_socialWorkCarePlan_document.documentStatus is not empty %}
-          {{ case_data.documents_socialWorkCarePlan_document.documentStatus }}
-          {% if case_data.documents_socialWorkCarePlan_document.documentStatus != 'Attached'
+          {{ case_data.documents_socialWorkCarePlan_document.documentStatus | attachedToFollowOptionMapping }}
+          {% if case_data.documents_socialWorkCarePlan_document.documentStatus != 'ATTACHED'
           and case_data.documents_socialWorkCarePlan_document.statusReason is not empty %}
             <span class="u-block">{{ case_data.documents_socialWorkCarePlan_document.statusReason }}</span>
           {% endif %}
