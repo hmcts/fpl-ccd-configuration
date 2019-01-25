@@ -4,7 +4,10 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Respondents {
@@ -13,10 +16,16 @@ public class Respondents {
     private List<AdditionalRespondent> additionalRespondents;
 
     @JsonCreator
-    public Respondents(@JsonProperty("firstRespondent") final Respondent firstRespondent,
-                    @JsonProperty("additional") final List<AdditionalRespondent> additionalRespondents) {
+    public Respondents(@JsonProperty("firstRespondent") Respondent firstRespondent,
+                       @JsonProperty("additional") List<AdditionalRespondent> additionalRespondents) {
         this.firstRespondent = firstRespondent;
         this.additionalRespondents = additionalRespondents;
+    }
+
+    public Respondents(Respondent firstRespondent, Respondent... additionalRespondents) {
+        this(firstRespondent, Arrays.stream(additionalRespondents)
+            .map(child -> new AdditionalRespondent(UUID.randomUUID(), child))
+            .collect(Collectors.toList()));
     }
 
     public Respondent getFirstRespondent() {

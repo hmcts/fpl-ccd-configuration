@@ -14,17 +14,13 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.AdditionalRespondent;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Respondents;
 
-import java.util.Arrays;
-import java.util.Calendar;
+import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,115 +29,57 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("integration-test")
 @WebMvcTest(RespondentSubmissionController.class)
 @OverrideAutoConfiguration(enabled = true)
-
-public class RespondentSubmissionControllerTest {
+class RespondentSubmissionControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    private static final String ERROR_MESSAGE = "Date of birth cannot be in the future";
+
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    void shouldReturnErrorWhenFirstRespondentDobIsInFuture() throws Exception {
+    void shouldReturnErrorWhenFirstRespondentDateOfBirthIsInFuture() throws Exception {
+        ZonedDateTime today = ZonedDateTime.now();
+        ZonedDateTime tomorrow = today.plusDays(1);
 
-        Date tomorrow = new Date();
-        Calendar c = Calendar.getInstance();
-        c.setTime(tomorrow);
-        c.add(Calendar.DATE, 1);
-        tomorrow = c.getTime();
-
-        Address address = new Address("", "", "", "", "", "", "");
-        Respondent respondent = new Respondent("", tomorrow, "", "", "", "",
-            "", "", address);
-        AdditionalRespondent additionalRespondent = new AdditionalRespondent(UUID.randomUUID(), respondent);
-        Respondents respondents = new Respondents(respondent, Arrays.asList(additionalRespondent));
-
-        ObjectMapper mapper = new ObjectMapper();
-        HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(respondents),
-            new TypeReference<Map<String, Object>>() {
-            });
-
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.<String, Object>builder().put("respondents", map).build())
-                .build())
-            .build();
-
-        MvcResult response = mockMvc
-            .perform(post("/callback/enter-respondents/mid-event")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        assertThat(callbackResponse.getErrors()).contains("Date of birth cannot be in the future");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
+            new Respondents(createRespondent(tomorrow), createRespondent(today))
+        );
+        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldReturnNoErrorsWhenFirstRespondentDobIsInPast() throws Exception {
+    void shouldReturnErrorsWhenAdditionalRespondentDateOfBirthIsInFuture() throws Exception {
+        ZonedDateTime today = ZonedDateTime.now();
+        ZonedDateTime tomorrow = today.plusDays(1);
 
-        Address address = new Address("", "", "", "", "", "", "");
-        Respondent firstRespondent = new Respondent("", new Date(), "", "", "",
-            "", "", "", address);
-        Respondent secondRespondent = new Respondent("", new Date(), "", "", "",
-            "", "", "", address);
-        AdditionalRespondent additionalRespondent = new AdditionalRespondent(UUID.randomUUID(), secondRespondent);
-        Respondents respondents = new Respondents(firstRespondent, Arrays.asList(additionalRespondent));
-
-        ObjectMapper mapper = new ObjectMapper();
-        HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(respondents),
-            new TypeReference<Map<String, Object>>() {
-            });
-
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.<String, Object>builder().put("respondents", map).build())
-                .build())
-            .build();
-
-        MvcResult response = mockMvc
-            .perform(post("/callback/enter-respondents/mid-event")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        assertThat(callbackResponse.getErrors()).doesNotContain("Date of birth cannot be in the future");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
+            new Respondents(createRespondent(today), createRespondent(tomorrow))
+        );
+        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldReturnErrorsWhenAdditionalRespondentDobIsInFuture() throws Exception {
+    void shouldReturnNoErrorsWhenAllDatesOfBirthAreTodayOrInPast() throws Exception {
+        ZonedDateTime today = ZonedDateTime.now();
+        ZonedDateTime yesterday = today.minusDays(1);
 
-        Date tomorrow = new Date();
-        Calendar c = Calendar.getInstance();
-        c.setTime(tomorrow);
-        c.add(Calendar.DATE, 1);
-        tomorrow = c.getTime();
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
+            new Respondents(createRespondent(today), createRespondent(yesterday))
+        );
+        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+    }
 
-        Address address = new Address("", "", "", "", "", "", "");
-        Respondent firstRespondent = new Respondent("", new Date(), "", "", "",
-            "", "", "", address);
-        Respondent secondRespondent = new Respondent("", tomorrow, "", "", "",
-            "", "", "", address);
-        AdditionalRespondent additionalRespondent = new AdditionalRespondent(UUID.randomUUID(), secondRespondent);
-        Respondents respondents = new Respondents(firstRespondent, Arrays.asList(additionalRespondent));
+    private Respondent createRespondent(ZonedDateTime dateOfBirth) {
+        return new Respondent(null, Date.from(dateOfBirth.toInstant()), null, null, null,
+            null, null, null, null);
+    }
 
-        ObjectMapper mapper = new ObjectMapper();
-        HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(respondents),
+    private AboutToStartOrSubmitCallbackResponse makeRequest(Respondents respondents) throws Exception {
+        HashMap<String, Object> map = MAPPER.readValue(MAPPER.writeValueAsString(respondents),
             new TypeReference<Map<String, Object>>() {
             });
 
@@ -161,10 +99,8 @@ public class RespondentSubmissionControllerTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+        return MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        assertThat(callbackResponse.getErrors()).contains("Date of birth cannot be in the future");
     }
 
 }
