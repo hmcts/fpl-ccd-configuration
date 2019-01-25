@@ -44,13 +44,13 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GroundsList",
-    "ListElementCode": "NO_CARE",
+    "ListElementCode": "NOT_RECEIVING_CARE",
     "ListElement": "Not receiving care that would be reasonably expected from a parent"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "GroundsList",
-    "ListElementCode": "BEYOND_CONTROL",
+    "ListElementCode": "BEYOND_PARENTAL_CONTROL",
     "ListElement": "Beyond parental control"
   },
   {
@@ -62,7 +62,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingTypeFixedList",
-    "ListElementCode": "URGENT_PRELIMINARY_CASE_MANAGEMENT_HEARI",
+    "ListElementCode": "URGENT_PRELIMINARY_CASE_MGMT_HEARING",
     "ListElement": "Urgent preliminary case management hearing"
   },
   {
@@ -98,7 +98,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildGenderList",
-    "ListElementCode": "THEY_IDENTIFY_IN_ANOTHER_WAY",
+    "ListElementCode": "IDENTIFIED_IN_ANOTHER_WAY",
     "ListElement": "They identify in another way"
   },
   {
@@ -152,7 +152,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "FathersResponsibilityList",
-    "ListElementCode": "DON'T_KNOW",
+    "ListElementCode": "DO_NOT_KNOW",
     "ListElement": "Don't know"
   },
   {
@@ -224,7 +224,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GenderList",
-    "ListElementCode": "THEY_IDENTIFY_IN_ANOTHER_WAY",
+    "ListElementCode": "IDENTIFIED_IN_ANOTHER_WAY",
     "ListElement": "They identify in another way"
   },
   {
