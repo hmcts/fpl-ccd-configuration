@@ -29,7 +29,7 @@ public class Respondent {
                       @JsonProperty("contactDetailsHidden") final String contactDetailsHidden,
                       @JsonProperty("litigationIssues") final String litigationIssues,
                       @JsonProperty("address") final Address address
-                      ){
+    ) {
         this.name = name;
         this.dob = dob;
         this.gender = gender;

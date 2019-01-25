@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -13,12 +16,12 @@ import uk.gov.hmcts.reform.fpl.model.AdditionalRespondent;
 import uk.gov.hmcts.reform.fpl.model.Respondents;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 @Api
 @RestController
@@ -26,8 +29,9 @@ import java.util.Iterator;
 @SuppressWarnings("unchecked")
 public class RespondentSubmissionController {
 
+    private static final String DOB_IN_FUTURE_ERROR_MESSAGE = "Date of birth cannot be in the future";
+
     private final MapperService mapperService;
-    private final String DOB_IN_FUTURE_ERROR_MESSAGE = "Date of birth cannot be in the future";
     private final Logger logger = LoggerFactory.getLogger(RespondentSubmissionController.class);
 
     @Autowired
@@ -45,7 +49,8 @@ public class RespondentSubmissionController {
         List<String> errorsList = new ArrayList<>();
 
         try {
-            Respondents respondents = mapperService.mapObject((Map<String, Object>) caseDetails.getData().get("respondents"), Respondents.class);
+            Map<String, Object> respondentsData = (Map<String, Object>) caseDetails.getData().get("respondents");
+            Respondents respondents = mapperService.mapObject(respondentsData, Respondents.class);
             if (respondents.getFirstRespondent().getDob().after(new Date())) {
                 addError = true;
             } else {
