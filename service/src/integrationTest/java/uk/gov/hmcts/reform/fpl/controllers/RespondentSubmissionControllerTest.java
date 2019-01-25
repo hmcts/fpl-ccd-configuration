@@ -14,7 +14,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.*;
+import uk.gov.hmcts.reform.fpl.model.AdditionalRespondent;
+import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.Respondents;
+
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,7 +45,8 @@ public class RespondentSubmissionControllerTest {
     @Test
     void shouldReturnErrorWhenFirstRespondentDobIsInFuture() throws Exception {
         Address address = new Address("","","","","","","");
-        Respondent respondent = new Respondent("","2040-10-01","","","","","","",address);
+        Respondent respondent = new Respondent("","2040-10-01","","","","",
+            "","",address);
         AdditionalRespondent additionalRespondent = new AdditionalRespondent(UUID.randomUUID(), respondent);
         Respondents respondents = new Respondents(respondent, Arrays.asList(additionalRespondent));
 
@@ -73,8 +78,10 @@ public class RespondentSubmissionControllerTest {
     @Test
     void shouldReturnNoErrorsWhenFirstRespondentDobIsInPast() throws Exception {
         Address address = new Address("","","","","","","");
-        Respondent firstRespondent = new Respondent("","1900-10-01","","","","","","",address);
-        Respondent secondRespondent = new Respondent("","1900-10-01","","","","","","",address);
+        Respondent firstRespondent = new Respondent("","1900-10-01","","","",
+            "","","",address);
+        Respondent secondRespondent = new Respondent("","1900-10-01","","","",
+            "","","",address);
         AdditionalRespondent additionalRespondent = new AdditionalRespondent(UUID.randomUUID(), secondRespondent);
         Respondents respondents = new Respondents(firstRespondent, Arrays.asList(additionalRespondent));
 
@@ -106,8 +113,10 @@ public class RespondentSubmissionControllerTest {
     @Test
     void shouldReturnErrorsWhenAdditionalRespondentDobIsInFuture() throws Exception {
         Address address = new Address("","","","","","","");
-        Respondent firstRespondent = new Respondent("","1900-10-01","","","","","","",address);
-        Respondent secondRespondent = new Respondent("","2050-10-01","","","","","","",address);
+        Respondent firstRespondent = new Respondent("","1900-10-01","","","",
+            "","","",address);
+        Respondent secondRespondent = new Respondent("","2050-10-01","","","",
+            "","","",address);
         AdditionalRespondent additionalRespondent = new AdditionalRespondent(UUID.randomUUID(), secondRespondent);
         Respondents respondents = new Respondents(firstRespondent, Arrays.asList(additionalRespondent));
 

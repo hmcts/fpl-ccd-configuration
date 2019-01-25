@@ -41,8 +41,12 @@ public class ChildSubmissionControllerTest {
     @Test
     void shouldReturnErrorWhenFirstChildDobIsInFuture() throws Exception {
         Address address = new Address("", "", "", "", "", "", "");
-        Child firstChild = new Child("", "2040-10-01", "", "", "", "", "", "", "", "", "", "", "", "", "", address);
-        Child secondChild = new Child("", "1999-10-01", "", "", "", "", "", "", "", "", "", "", "", "", "", address);
+        Child firstChild = new Child("", "2040-10-01", "", "", "",
+            "", "", "", "", "", "", "",
+            "", "", "", address);
+        Child secondChild = new Child("", "1999-10-01", "", "", "", "",
+            "", "", "", "", "", "", "",
+            "", "", address);
         AdditionalChild additionalChild = new AdditionalChild(UUID.randomUUID(), secondChild);
         Children children = new Children(firstChild, Arrays.asList(additionalChild));
 
@@ -75,8 +79,10 @@ public class ChildSubmissionControllerTest {
     @Test
     void shouldReturnErrorWhenAdditionalChildDobIsInFuture() throws Exception {
         Address address = new Address("", "", "", "", "", "", "");
-        Child firstChild = new Child("", "1999-10-01", "", "", "", "", "", "", "", "", "", "", "", "", "", address);
-        Child secondChild = new Child("", "2040-10-01", "", "", "", "", "", "", "", "", "", "", "", "", "", address);
+        Child firstChild = new Child("", "1999-10-01", "", "", "", "", "", "",
+            "", "", "", "", "", "", "", address);
+        Child secondChild = new Child("", "2040-10-01", "", "", "", "", "", "",
+            "", "", "", "", "", "", "", address);
         AdditionalChild additionalChild = new AdditionalChild(UUID.randomUUID(), secondChild);
         Children children = new Children(firstChild, Arrays.asList(additionalChild));
 
@@ -109,7 +115,8 @@ public class ChildSubmissionControllerTest {
     @Test
     void shouldReturnNoErrorsWhenAllDobsAreInPast() throws Exception {
         Address address = new Address("", "", "", "", "", "", "");
-        Child value = new Child("", "1999-10-01", "", "", "", "", "", "", "", "", "", "", "", "", "", address);
+        Child value = new Child("", "1999-10-01", "", "", "", "", "",
+            "", "", "", "", "", "", "", "", address);
         AdditionalChild additionalChild = new AdditionalChild(UUID.randomUUID(), value);
         Children children = new Children(value, Arrays.asList(additionalChild));
 
