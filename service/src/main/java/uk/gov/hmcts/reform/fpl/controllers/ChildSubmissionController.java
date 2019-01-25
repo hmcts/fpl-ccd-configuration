@@ -10,11 +10,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.AdditionalChild;
 import uk.gov.hmcts.reform.fpl.model.Children;
-import uk.gov.hmcts.reform.fpl.service.ChildrenMapperService;
+import uk.gov.hmcts.reform.fpl.service.MapperService;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-import static uk.gov.hmcts.reform.fpl.validators.DateOfBirthValidator.dateOfBirthIsInFuture;
 
 @Api
 @RestController
@@ -22,13 +26,13 @@ import static uk.gov.hmcts.reform.fpl.validators.DateOfBirthValidator.dateOfBirt
 @SuppressWarnings("unchecked")
 public class ChildSubmissionController {
 
-    private final ChildrenMapperService childrenMapperService;
+    private final MapperService mapperService;
     private final String DOB_IN_FUTURE_ERROR_MESSAGE = "Date of birth cannot be in the future";
     private final Logger logger = LoggerFactory.getLogger(ChildSubmissionController.class);
 
     @Autowired
-    public ChildSubmissionController(final ChildrenMapperService childrenMapperService) {
-        this.childrenMapperService = childrenMapperService;
+    public ChildSubmissionController(final MapperService mapperService) {
+        this.mapperService = mapperService;
     }
 
     @PostMapping("/mid-event")
@@ -40,16 +44,20 @@ public class ChildSubmissionController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         List<String> errorsList = new ArrayList<>();
 
-        Optional<Children> children = childrenMapperService.mapChildren((Map<String, Object>) caseDetails.getData().get("children"));
-        if (dateOfBirthIsInFuture(children.get().getFirstChild().getChildDOB())) {
-            addError = true;
-        } else {
-            Iterator<AdditionalChild> childIterator = children.get().getAdditionalChildren().iterator();
-            while (childIterator.hasNext()) {
-                if (dateOfBirthIsInFuture(childIterator.next().getChild().getChildDOB())) {
-                    addError = true;
+        try {
+            Children children = mapperService.mapObject((Map<String, Object>) caseDetails.getData().get("children"), Children.class);
+            if (children.getFirstChild().getChildDOB().after(new Date())) {
+                addError = true;
+            } else {
+                Iterator<AdditionalChild> childIterator = children.getAdditionalChildren().iterator();
+                while (childIterator.hasNext()) {
+                    if (childIterator.next().getChild().getChildDOB().after(new Date())) {
+                        addError = true;
+                    }
                 }
             }
+        } catch (Exception e) {
+            logger.error("exception mapping " + e.toString());
         }
 
         if (addError) {

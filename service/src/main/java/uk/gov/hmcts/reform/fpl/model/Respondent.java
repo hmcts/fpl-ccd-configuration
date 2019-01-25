@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Date;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Respondent {
 
     private String name;
-    private String dob;
+    private Date dob;
     private String gender;
     private String placeOfBirth;
     private String telephone;
@@ -19,7 +21,7 @@ public class Respondent {
 
     @JsonCreator
     public Respondent(@JsonProperty("name") final String name,
-                      @JsonProperty("dob") final String dob,
+                      @JsonProperty("dob") final Date dob,
                       @JsonProperty("gender") final String gender,
                       @JsonProperty("placeOfBirth") final String placeOfBirth,
                       @JsonProperty("telephone") final String telephone,
@@ -43,7 +45,7 @@ public class Respondent {
         return name;
     }
 
-    public String getDob() {
+    public Date getDob() {
         return dob;
     }
 

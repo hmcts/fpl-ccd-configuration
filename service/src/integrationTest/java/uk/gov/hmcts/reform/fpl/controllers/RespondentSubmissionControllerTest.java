@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Respondents;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -29,7 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(ChildSubmissionController.class)
+@WebMvcTest(RespondentSubmissionController.class)
 @OverrideAutoConfiguration(enabled = true)
 
 public class RespondentSubmissionControllerTest {
@@ -43,15 +45,23 @@ public class RespondentSubmissionControllerTest {
 
     @Test
     void shouldReturnErrorWhenFirstRespondentDobIsInFuture() throws Exception {
-        Address address = new Address("","","","","","","");
-        Respondent respondent = new Respondent("","2040-10-01","","","","",
-            "","",address);
+
+        Date tomorrow = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(tomorrow);
+        c.add(Calendar.DATE, 1);
+        tomorrow = c.getTime();
+
+        Address address = new Address("", "", "", "", "", "", "");
+        Respondent respondent = new Respondent("", tomorrow, "", "", "", "",
+            "", "", address);
         AdditionalRespondent additionalRespondent = new AdditionalRespondent(UUID.randomUUID(), respondent);
         Respondents respondents = new Respondents(respondent, Arrays.asList(additionalRespondent));
 
         ObjectMapper mapper = new ObjectMapper();
         HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(respondents),
-            new TypeReference<Map<String, Object>>(){});
+            new TypeReference<Map<String, Object>>() {
+            });
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -77,17 +87,19 @@ public class RespondentSubmissionControllerTest {
 
     @Test
     void shouldReturnNoErrorsWhenFirstRespondentDobIsInPast() throws Exception {
-        Address address = new Address("","","","","","","");
-        Respondent firstRespondent = new Respondent("","1900-10-01","","","",
-            "","","",address);
-        Respondent secondRespondent = new Respondent("","1900-10-01","","","",
-            "","","",address);
+
+        Address address = new Address("", "", "", "", "", "", "");
+        Respondent firstRespondent = new Respondent("", new Date(), "", "", "",
+            "", "", "", address);
+        Respondent secondRespondent = new Respondent("", new Date(), "", "", "",
+            "", "", "", address);
         AdditionalRespondent additionalRespondent = new AdditionalRespondent(UUID.randomUUID(), secondRespondent);
         Respondents respondents = new Respondents(firstRespondent, Arrays.asList(additionalRespondent));
 
         ObjectMapper mapper = new ObjectMapper();
         HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(respondents),
-            new TypeReference<Map<String, Object>>(){});
+            new TypeReference<Map<String, Object>>() {
+            });
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -113,17 +125,25 @@ public class RespondentSubmissionControllerTest {
 
     @Test
     void shouldReturnErrorsWhenAdditionalRespondentDobIsInFuture() throws Exception {
-        Address address = new Address("","","","","","","");
-        Respondent firstRespondent = new Respondent("","1900-10-01","","","",
-            "","","",address);
-        Respondent secondRespondent = new Respondent("","2050-10-01","","","",
-            "","","",address);
+
+        Date tomorrow = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(tomorrow);
+        c.add(Calendar.DATE, 1);
+        tomorrow = c.getTime();
+
+        Address address = new Address("", "", "", "", "", "", "");
+        Respondent firstRespondent = new Respondent("", new Date(), "", "", "",
+            "", "", "", address);
+        Respondent secondRespondent = new Respondent("", tomorrow, "", "", "",
+            "", "", "", address);
         AdditionalRespondent additionalRespondent = new AdditionalRespondent(UUID.randomUUID(), secondRespondent);
         Respondents respondents = new Respondents(firstRespondent, Arrays.asList(additionalRespondent));
 
         ObjectMapper mapper = new ObjectMapper();
         HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(respondents),
-            new TypeReference<Map<String, Object>>(){});
+            new TypeReference<Map<String, Object>>() {
+            });
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()

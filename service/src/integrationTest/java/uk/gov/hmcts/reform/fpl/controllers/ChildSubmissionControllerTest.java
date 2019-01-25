@@ -20,6 +20,8 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Children;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -43,11 +45,18 @@ public class ChildSubmissionControllerTest {
 
     @Test
     void shouldReturnErrorWhenFirstChildDobIsInFuture() throws Exception {
+
+        Date tomorrow = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(tomorrow);
+        c.add(Calendar.DATE, 1);
+        tomorrow = c.getTime();
+
         Address address = new Address("", "", "", "", "", "", "");
-        Child firstChild = new Child("", "2040-10-01", "", "", "",
+        Child firstChild = new Child("", tomorrow, "", "", "",
             "", "", "", "", "", "", "",
             "", "", "", address);
-        Child secondChild = new Child("", "1999-10-01", "", "", "", "",
+        Child secondChild = new Child("", new Date(), "", "", "", "",
             "", "", "", "", "", "", "",
             "", "", address);
         AdditionalChild additionalChild = new AdditionalChild(UUID.randomUUID(), secondChild);
@@ -56,7 +65,7 @@ public class ChildSubmissionControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(children),
             new TypeReference<Map<String, Object>>() {
-        });
+            });
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -82,10 +91,17 @@ public class ChildSubmissionControllerTest {
 
     @Test
     void shouldReturnErrorWhenAdditionalChildDobIsInFuture() throws Exception {
+
+        Date tomorrow = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(tomorrow);
+        c.add(Calendar.DATE, 1);
+        tomorrow = c.getTime();
+
         Address address = new Address("", "", "", "", "", "", "");
-        Child firstChild = new Child("", "1999-10-01", "", "", "", "", "", "",
+        Child firstChild = new Child("", new Date(), "", "", "", "", "", "",
             "", "", "", "", "", "", "", address);
-        Child secondChild = new Child("", "2040-10-01", "", "", "", "", "", "",
+        Child secondChild = new Child("", tomorrow, "", "", "", "", "", "",
             "", "", "", "", "", "", "", address);
         AdditionalChild additionalChild = new AdditionalChild(UUID.randomUUID(), secondChild);
         Children children = new Children(firstChild, Arrays.asList(additionalChild));
@@ -93,7 +109,7 @@ public class ChildSubmissionControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(children),
             new TypeReference<Map<String, Object>>() {
-        });
+            });
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -120,7 +136,7 @@ public class ChildSubmissionControllerTest {
     @Test
     void shouldReturnNoErrorsWhenAllDobsAreInPast() throws Exception {
         Address address = new Address("", "", "", "", "", "", "");
-        Child value = new Child("", "1999-10-01", "", "", "", "", "",
+        Child value = new Child("", new Date(), "", "", "", "", "",
             "", "", "", "", "", "", "", "", address);
         AdditionalChild additionalChild = new AdditionalChild(UUID.randomUUID(), value);
         Children children = new Children(value, Arrays.asList(additionalChild));
@@ -128,7 +144,7 @@ public class ChildSubmissionControllerTest {
         ObjectMapper mapper = new ObjectMapper();
         HashMap<String, Object> map = mapper.readValue(mapper.writeValueAsString(children),
             new TypeReference<Map<String, Object>>() {
-        });
+            });
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()

@@ -5,12 +5,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Date;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Child {
 
     @JsonCreator
     public Child(@JsonProperty("childName") final String childName,
-                 @JsonProperty("childDOB") final String childDOB,
+                 @JsonProperty("childDOB") final Date childDOB,
                  @JsonProperty("childGender") final String childGender,
                  @JsonProperty("livingSituation") final String livingSituation,
                  @JsonProperty("keyDates") final String keyDates,
@@ -44,7 +46,7 @@ public class Child {
     }
 
     private String childName;
-    private String childDOB;
+    private Date childDOB;
     private String childGender;
     private String livingSituation;
     private String keyDates;
@@ -64,7 +66,7 @@ public class Child {
         return childName;
     }
 
-    public String getChildDOB() {
+    public Date getChildDOB() {
         return childDOB;
     }
 
