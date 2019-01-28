@@ -273,7 +273,7 @@
     "ID": "otherCourtAdminDocuments",
     "Label": "Other documents",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CourtAdminDocuments",
+    "FieldTypeParameter": "CourtAdminDocument",
     "SecurityClassification": "Public"
   },
   {

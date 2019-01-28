@@ -1417,7 +1417,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CourtAdminDocuments",
+    "ID": "CourtAdminDocument",
     "ListElementCode": "documentTitle",
     "FieldType": "Text",
     "ElementLabel": "Document title",
@@ -1425,7 +1425,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CourtAdminDocuments",
+    "ID": "CourtAdminDocument",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "Upload a file",
