@@ -20,17 +20,17 @@ import java.util.stream.Collectors;
 public class Respondents {
 
     private final Respondent firstRespondent;
-    private final List<Element<Respondent>> additionalRespondents;
+    private final List<Element<Respondent>> additional;
 
     @JsonCreator
     public Respondents(@JsonProperty("firstRespondent") Respondent firstRespondent,
-                       @JsonProperty("additionalRespondents") List<Element<Respondent>> additionalRespondents) {
+                       @JsonProperty("additional") List<Element<Respondent>> additional) {
         this.firstRespondent = firstRespondent;
-        this.additionalRespondents = additionalRespondents;
+        this.additional = additional;
     }
 
-    public Respondents(Respondent firstRespondent, Respondent... additionalRespondents) {
-        this(firstRespondent, Arrays.stream(additionalRespondents)
+    public Respondents(Respondent firstRespondent, Respondent... additional) {
+        this(firstRespondent, Arrays.stream(additional)
             .map(respondent -> new Element<>(UUID.randomUUID(), respondent))
             .collect(Collectors.toList()));
     }
@@ -41,8 +41,8 @@ public class Respondents {
         if (firstRespondent != null) {
             builder.add(firstRespondent);
         }
-        if (additionalRespondents != null) {
-            builder.addAll(additionalRespondents.stream().map(Element::getValue).collect(Collectors.toList()));
+        if (additional != null) {
+            builder.addAll(additional.stream().map(Element::getValue).collect(Collectors.toList()));
         }
         return builder.build();
     }

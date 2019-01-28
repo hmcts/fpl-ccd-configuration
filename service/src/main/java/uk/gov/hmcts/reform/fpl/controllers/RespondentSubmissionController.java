@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Respondents;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Api
 @RestController
@@ -45,7 +47,10 @@ public class RespondentSubmissionController {
 
         Map<String, Object> respondentsData = (Map<String, Object>) caseDetails.getData().get("respondents");
         Respondents respondents = mapper.mapObject(respondentsData, Respondents.class);
-        if (respondents.getAllRespondents().stream().anyMatch(respondent -> respondent.getDob().after(new Date()))) {
+        if (respondents.getAllRespondents().stream()
+            .map(Respondent::getDob)
+            .filter(Objects::nonNull)
+            .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
             errors.add("Date of birth cannot be in the future");
         }
 
