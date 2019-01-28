@@ -25,7 +25,7 @@ public class ChildSubmissionController {
     private final MapperService mapperService;
 
     @Autowired
-    public ChildSubmissionController(final MapperService mapperService) {
+    public ChildSubmissionController(MapperService mapperService) {
         this.mapperService = mapperService;
     }
 
