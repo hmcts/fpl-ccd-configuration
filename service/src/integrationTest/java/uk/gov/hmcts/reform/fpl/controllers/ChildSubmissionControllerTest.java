@@ -103,5 +103,4 @@ class ChildSubmissionControllerTest {
         return MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
-
 }

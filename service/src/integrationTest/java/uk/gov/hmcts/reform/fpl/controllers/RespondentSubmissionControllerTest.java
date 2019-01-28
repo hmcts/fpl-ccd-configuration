@@ -34,7 +34,6 @@ class RespondentSubmissionControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final ObjectMapper MAPPER = new ObjectMapper();
-
     private static final String ERROR_MESSAGE = "Date of birth cannot be in the future";
 
     @Autowired
@@ -102,5 +101,4 @@ class RespondentSubmissionControllerTest {
         return MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
-
 }

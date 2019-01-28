@@ -22,5 +22,4 @@ public class Element<T> {
         this.id = id;
         this.value = value;
     }
-
 }

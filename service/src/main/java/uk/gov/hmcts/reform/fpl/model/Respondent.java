@@ -32,8 +32,7 @@ public class Respondent {
                       @JsonProperty("relationshipToChild") final String relationshipToChild,
                       @JsonProperty("contactDetailsHidden") final String contactDetailsHidden,
                       @JsonProperty("litigationIssues") final String litigationIssues,
-                      @JsonProperty("address") final Address address
-    ) {
+                      @JsonProperty("address") final Address address) {
         this.name = name;
         this.dob = dob;
         this.gender = gender;
@@ -44,5 +43,4 @@ public class Respondent {
         this.litigationIssues = litigationIssues;
         this.address = address;
     }
-
 }

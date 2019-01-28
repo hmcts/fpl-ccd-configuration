@@ -46,5 +46,4 @@ public class Respondents {
         }
         return builder.build();
     }
-
 }

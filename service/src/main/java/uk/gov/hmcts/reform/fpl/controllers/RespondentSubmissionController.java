@@ -34,7 +34,6 @@ public class RespondentSubmissionController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(callbackrequest.getCaseDetails().getData())
             .errors(validate(caseDetails))
@@ -44,7 +43,6 @@ public class RespondentSubmissionController {
     @SuppressWarnings("unchecked")
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
-
         Map<String, Object> respondentsData = (Map<String, Object>) caseDetails.getData().get("respondents");
         Respondents respondents = mapper.mapObject(respondentsData, Respondents.class);
         if (respondents.getAllRespondents().stream()
@@ -53,8 +51,6 @@ public class RespondentSubmissionController {
             .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
             errors.add("Date of birth cannot be in the future");
         }
-
         return errors.build();
     }
-
 }

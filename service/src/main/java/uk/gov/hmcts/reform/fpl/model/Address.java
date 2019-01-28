@@ -26,8 +26,7 @@ public class Address {
                    @JsonProperty("PostTown") final String postTown,
                    @JsonProperty("County") final String county,
                    @JsonProperty("PostCode") final String postcode,
-                   @JsonProperty("Country") final String country
-    ) {
+                   @JsonProperty("Country") final String country) {
         this.addressLine1 = addressLine1;
         this.addressLine2 = addressLine2;
         this.addressLine3 = addressLine3;
@@ -36,5 +35,4 @@ public class Address {
         this.postcode = postcode;
         this.country = country;
     }
-
 }
