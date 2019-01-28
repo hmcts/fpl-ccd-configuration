@@ -247,7 +247,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 4,
     "CaseFieldID": "standardDirectionsOther",
-    "TabFieldDisplayOrder": 8
+    "TabFieldDisplayOrder": 9
   },
   {
     "LiveFrom": "01/01/2017",
@@ -257,6 +257,6 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 4,
     "CaseFieldID": "courtBundle",
-    "TabFieldDisplayOrder": 9
+    "TabFieldDisplayOrder": 10
   }
 ]
