@@ -64,5 +64,4 @@ public class Child {
         this.litigationIssues = litigationIssues;
         this.address = address;
     }
-
 }
