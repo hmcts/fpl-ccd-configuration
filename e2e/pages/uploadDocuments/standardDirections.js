@@ -5,13 +5,13 @@ module.exports = {
 
   documents: {
     standardDirections: locate('input').withAttr({id:'standardDirections_standardDirections'}),
-    otherDocument1: '#standardDirectionsOther_0_otherDocuments',
-    otherDocument2: '#standardDirectionsOther_1_otherDocuments',
+    otherDocument1: '#otherCourtAdminDocuments_0_document',
+    otherDocument2: '#otherCourtAdminDocuments_1_document',
   },
 
   fields: {
-    otherDocumentTitle1: '#standardDirectionsOther_0_otherDocumentsTitle',
-    otherDocumentTitle2: '#standardDirectionsOther_1_otherDocumentsTitle',
+    otherDocumentTitle1: '#otherCourtAdminDocuments_0_documentTitle',
+    otherDocumentTitle2: '#otherCourtAdminDocuments_1_documentTitle',
   },
 
   uploadStandardDirections(file) {

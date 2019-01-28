@@ -246,7 +246,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "standardDirectionsOther",
+    "CaseFieldID": "otherCourtAdminDocuments",
     "TabFieldDisplayOrder": 9
   },
   {
