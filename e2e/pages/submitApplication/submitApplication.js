@@ -3,7 +3,7 @@ const I = actor();
 module.exports = {
 
   fields: {
-    consentCheckbox: '#submissionConsent-agree',
+    consentCheckbox: '#submissionConsent-AGREE',
   },
 
   giveConsent() {

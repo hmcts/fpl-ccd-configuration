@@ -5,7 +5,7 @@ module.exports = {
   fields: {
     thresholdReason: {
       notReceivingCare: 'Not receiving care that would be reasonably expected from a parent',
-      beyondControl: 'Beyond parental control',
+      beyondControl: 'BEYOND_PARENTAL_CONTROL',
     },
     thresholdDetails: '#grounds_thresholdDetails',
     groundsForApplication: {

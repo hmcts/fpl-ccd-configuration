@@ -22,7 +22,7 @@
     "ListElementCode": "statusReason",
     "FieldType": "TextArea",
     "ElementLabel": "Explain why the document isn't included and when you expect to provide it.",
-    "FieldShowCondition": "documentStatus=\"To follow\"",
+    "FieldShowCondition": "documentStatus=\"TO_FOLLOW\"",
     "SecurityClassification": "Public"
   },
   {
@@ -179,7 +179,7 @@
     "ID": "Child",
     "ListElementCode": "fathersResponsibility",
     "FieldType": "FixedList",
-    "FieldTypeParameter": "FathersResponsibilityList",
+    "FieldTypeParameter": "YesNoDoNotKnowType",
     "ElementLabel": "Does the father have parental responsibility?",
     "SecurityClassification": "Public"
   },
@@ -247,7 +247,7 @@
     "ID": "Child",
     "ListElementCode": "litigationIssues",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "LitigationCapacityIssues",
+    "FieldTypeParameter": "YesNoDoNotKnowType",
     "ElementLabel": "Do you believe this child will have problems with litigation capacity (understanding what's happening in the case)?",
     "SecurityClassification": "Public"
   },
@@ -754,7 +754,7 @@
     "ListElementCode": "reason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "timeFrame=\"Same day\"",
+    "FieldShowCondition": "timeFrame=\"SAME_DAY\"",
     "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
     "SecurityClassification": "Public"
   },
@@ -764,7 +764,7 @@
     "ListElementCode": "reason2Days",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason and proposed dates",
-    "FieldShowCondition": "timeFrame=\"Within 2 days\"",
+    "FieldShowCondition": "timeFrame=\"WITHIN_2_DAYS\"",
     "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
     "SecurityClassification": "Public"
   },
@@ -774,7 +774,7 @@
     "ListElementCode": "reason7Days",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason and proposed dates",
-    "FieldShowCondition": "timeFrame=\"Within 7 days\"",
+    "FieldShowCondition": "timeFrame=\"WITHIN_7_DAYS\"",
     "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
     "SecurityClassification": "Public"
   },
@@ -784,7 +784,7 @@
     "ListElementCode": "reason12Days",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason and proposed dates",
-    "FieldShowCondition": "timeFrame=\"Within 12 days\"",
+    "FieldShowCondition": "timeFrame=\"WITHIN_12_DAYS\"",
     "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
     "SecurityClassification": "Public"
   },
@@ -1101,7 +1101,7 @@
     "ID": "Others",
     "ListElementCode": "litigationIssues",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "LitigationCapacityIssues",
+    "FieldTypeParameter": "YesNoDoNotKnowType",
     "ElementLabel": "Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
     "SecurityClassification": "Public"
   },
@@ -1254,7 +1254,7 @@
     "ID": "RespondentType",
     "ListElementCode": "litigationIssues",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "LitigationCapacityIssues",
+    "FieldTypeParameter": "YesNoDoNotKnowType",
     "ElementLabel": "Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
     "SecurityClassification": "Public"
   },

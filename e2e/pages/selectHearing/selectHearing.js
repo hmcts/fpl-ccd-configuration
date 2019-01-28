@@ -5,13 +5,13 @@ module.exports = {
   fields: {
     timeFrame: {
       dropdown: {id: 'hearing_timeFrame'},
-      sameDay: 'Same day',
+      sameDay: 'SAME_DAY',
       reason: '#hearing_reason',
     },
 
     hearingType: {
       dropdown: '#hearing_type',
-      contestedICO: 'Contested interim care order',
+      contestedICO: 'CONTESTED_INTERIM_CARE_ORDER',
     },
 
     noticeWithoutHearing: {

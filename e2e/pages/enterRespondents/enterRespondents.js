@@ -27,7 +27,7 @@ module.exports = {
         litigationIssues: {
           yes: `#respondents_${id}_litigationIssues-YES`,
           no: `#respondents_${id}_litigationIssues-NO`,
-          dont_know: `#respondents_${id}_litigationIssues-DONT_KNOW`,
+          dont_know: `#respondents_${id}_litigationIssues-DO_NOT_KNOW`,
         },
         litigationIssuesDetails: `#respondents_${id}_litigationIssuesDetails`,
       },

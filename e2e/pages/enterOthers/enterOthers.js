@@ -24,7 +24,7 @@ module.exports = {
       litigationIssues: {
         yes: `#others_${otherNo}_litigationIssues-YES`,
         no: `#others_${otherNo}_litigationIssues-NO`,
-        dont_know: `#others_${otherNo}_litigationIssues-DONT_KNOW`,
+        dont_know: `#others_${otherNo}_litigationIssues-DO_NOT_KNOW`,
       },
       litigationIssuesDetails: `#others_${otherNo}_litigationIssuesDetails`,
       detailsHidden: (option) => {

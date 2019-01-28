@@ -39,7 +39,7 @@ module.exports = {
       litigationIssues: {
         yes: `#children_${childNo}_litigationIssues-YES`,
         no: `#children_${childNo}_litigationIssues-NO`,
-        dont_know: `#children_${childNo}_litigationIssues-DONT_KNOW`,
+        dont_know: `#children_${childNo}_litigationIssues-DO_NOT_KNOW`,
       },
       litigationIssuesDetails: `#children_${childNo}_litigationIssuesDetails`,
     };

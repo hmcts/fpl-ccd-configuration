@@ -139,19 +139,19 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "FathersResponsibilityList",
+    "ID": "YesNoDoNotKnowType",
     "ListElementCode": "YES",
     "ListElement": "Yes"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "FathersResponsibilityList",
+    "ID": "YesNoDoNotKnowType",
     "ListElementCode": "NO",
     "ListElement": "No"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "FathersResponsibilityList",
+    "ID": "YesNoDoNotKnowType",
     "ListElementCode": "DO_NOT_KNOW",
     "ListElement": "Don't know"
   },
@@ -328,24 +328,6 @@
     "ID": "Consent",
     "ListElementCode": "AGREE",
     "ListElement": "I agree with this statement"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "LitigationCapacityIssues",
-    "ListElementCode": "YES",
-    "ListElement": "Yes"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "LitigationCapacityIssues",
-    "ListElementCode": "NO",
-    "ListElement": "No"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "LitigationCapacityIssues",
-    "ListElementCode": "DONT_KNOW",
-    "ListElement": "Don't know"
   },
   {
     "LiveFrom": "01/01/2017",
