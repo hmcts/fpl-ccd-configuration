@@ -1401,22 +1401,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "StandardDirections",
-    "ListElementCode": "standardDirectionsLabel",
-    "FieldType": "Label",
-    "ElementLabel": "Upload standard directions and other relevant documents, for example the C6 Notice of Proceedings or C9 statement of service.",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "StandardDirections",
-    "ListElementCode": "standardDirections",
-    "FieldType": "Document",
-    "ElementLabel": "Upload a file",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "ID": "CourtAdminDocument",
     "ListElementCode": "documentTitle",
     "FieldType": "Text",

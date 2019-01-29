@@ -262,9 +262,25 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "standardDirections",
-    "Label": "1. Standard directions",
-    "FieldType": "StandardDirections",
+    "ID": "standardDirectionsLabel",
+    "Label": "Upload standard directions and other relevant documents, for example the C6 Notice of Proceedings or C9 statement of service.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "standardDirectionsTitle",
+    "Label": "## 1. Standard directions",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "standardDirectionsDocument",
+    "Label": "Upload a file",
+    "FieldType": "Document",
     "SecurityClassification": "Public"
   },
   {

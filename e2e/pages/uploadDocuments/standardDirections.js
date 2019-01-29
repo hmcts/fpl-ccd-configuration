@@ -4,7 +4,7 @@ const I = actor();
 module.exports = {
 
   documents: {
-    standardDirections: locate('input').withAttr({id:'standardDirections_standardDirections'}),
+    standardDirections: locate('input').withAttr({id:'standardDirectionsDocument'}),
     otherDocument1: '#otherCourtAdminDocuments_0_document',
     otherDocument2: '#otherCourtAdminDocuments_1_document',
   },

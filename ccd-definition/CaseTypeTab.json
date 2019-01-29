@@ -236,7 +236,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "standardDirections",
+    "CaseFieldID": "standardDirectionsDocument",
     "TabFieldDisplayOrder": 8
   },
   {

@@ -22,7 +22,7 @@ Scenario('HMCTS admin upload standard directions with other documents and see th
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeAnswerInTab('1', '1. Standard directions', 'Upload a file', 'mockFile.txt');
+  I.see('mockFile.txt');
   I.seeAnswerInTab('1', 'Other documents 1', 'Document title', 'Document 1');
   I.seeAnswerInTab('2', 'Other documents 1', 'Upload a file', 'mockFile.txt');
   I.seeAnswerInTab('1', 'Other documents 2', 'Document title', 'Document 2');
@@ -39,7 +39,7 @@ Scenario('Local authority can see standard directions in documents tab', (I, cas
   loginPage.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   I.navigateToCaseDetails(caseId);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
-  I.seeAnswerInTab('1', '1. Standard directions', 'Upload a file', 'mockFile.txt');
+  I.see( 'mockFile.txt');
   I.seeAnswerInTab('1', 'Other documents 1', 'Document title', 'Document 1');
   I.seeAnswerInTab('2', 'Other documents 1', 'Upload a file', 'mockFile.txt');
   I.seeAnswerInTab('1', 'Other documents 2', 'Document title', 'Document 2');
