@@ -81,16 +81,6 @@ withPipeline(type, product, component) {
     env.URL = "https://ccd-case-management-web-aat.service.core-compute-aat.internal"
   }
 
-  after('deploy:prod') {
-    env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
-
-    env.IDAM_API_BASE_URL = "https://idam-api.platform.hmcts.net"
-    env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-prod.service.core-compute-prod.internal"
-    env.CCD_DEFINITION_STORE_API_BASE_URL = "http://ccd-definition-store-api-prod.service.core-compute-prod.internal"
-    env.CCD_USER_PROFILE_API_BASE_URL = "http://ccd-user-profile-api-prod.service.core-compute-prod.internal"
-    env.URL = "https://ccd-case-management-web-prod.service.core-compute-prod.internal"
-  }
-
   after('deploy:demo') {
     env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
 
@@ -123,14 +113,6 @@ withPipeline(type, product, component) {
     sh """
       ./kubernetes/configurer/configure-ccd.sh
     """
-  }
-
-  before('smoketest:prod-staging') {
-    env.SKIP_SMOKE_TESTS = 'true'
-  }
-
-  before('smoketest:prod') {
-    env.SKIP_SMOKE_TESTS = 'true'
   }
 
   before('smoketest:demo-staging') {
