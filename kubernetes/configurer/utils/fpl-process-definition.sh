@@ -15,5 +15,5 @@ docker run --rm --name json2xlsx \
   -v ${definition_input_dir}:/tmp/ccd-definition \
   -v ${definition_output_file}:/tmp/ccd-definition.xlsx \
   -e CCD_DEF_CASE_SERVICE_BASE_URL \
-  docker.artifactory.reform.hmcts.net/ccd/ccd-definition-processor:c480382 \
+  hmcts/ccd-definition-processor:ad86c95 \
   json2xlsx -D /tmp/ccd-definition -o /tmp/ccd-definition.xlsx
