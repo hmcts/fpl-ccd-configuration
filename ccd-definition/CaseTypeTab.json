@@ -236,7 +236,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "standardDirections",
+    "CaseFieldID": "standardDirectionsDocument",
     "TabFieldDisplayOrder": 8
   },
   {
@@ -246,7 +246,17 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "courtBundle",
+    "CaseFieldID": "otherCourtAdminDocuments",
     "TabFieldDisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "courtBundle",
+    "TabFieldDisplayOrder": 10
   }
 ]

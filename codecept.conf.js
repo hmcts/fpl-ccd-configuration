@@ -68,6 +68,7 @@ exports.config = {
     changeCaseNamePage: './e2e/pages/changeCaseName/changeCaseName.js',
     submitApplicationPage: './e2e/pages/submitApplication/submitApplication.js',
     sendToGatekeeperPage: './e2e/pages/sendToGatekeeper/sendToGatekeeper.js',
+    standardDirectionsPage: './e2e/pages/uploadDocuments/standardDirections.js',
   },
   plugins: {
     autoDelay: {
