@@ -69,12 +69,6 @@ task awaitApplicationReadiness(type: Exec, description: 'Awaits until applicatio
 }
 
 task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
-  onlyIf(new Spec<Task>() {
-    boolean isSatisfiedBy(Task task) {
-      String skipTestsEnvironmentVariable = System.env.SKIP_SMOKE_TESTS
-      return skipTestsEnvironmentVariable == null || skipTestsEnvironmentVariable == 'false'
-    }
-  })
   commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
 }
 
