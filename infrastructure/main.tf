@@ -3,6 +3,9 @@ provider "azurerm" {}
 locals {
   ase_name = "${data.terraform_remote_state.core_apps_compute.ase_name[0]}"
 
+  instance_size = "${var.env == "prod" || var.env == "sprod" || var.env == "aat" ? "I2" : "I1"}"
+  capacity = "${var.env == "prod" || var.env == "sprod" || var.env == "aat" ? 2 : 1}"
+
   local_env = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "aat" : "saat" : var.env}"
   local_ase = "${(var.env == "preview" || var.env == "spreview") ? (var.env == "preview") ? "core-compute-aat" : "core-compute-saat" : local.ase_name}"
 
@@ -67,7 +70,8 @@ module "case-service" {
   env                 = "${var.env}"
   ilbIp               = "${var.ilbIp}"
   subscription        = "${var.subscription}"
-  capacity            = "${var.capacity}"
+  instance_size       = "${local.instance_size}"
+  capacity            = "${local.capacity}"
   common_tags         = "${var.common_tags}"
 
   app_settings = {
