@@ -1398,5 +1398,21 @@
     "FieldType": "Document",
     "ElementLabel": "Upload a file",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtAdminDocument",
+    "ListElementCode": "documentTitle",
+    "FieldType": "Text",
+    "ElementLabel": "Document title",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtAdminDocument",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Upload a file",
+    "SecurityClassification": "Public"
   }
 ]

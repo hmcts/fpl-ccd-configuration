@@ -9,7 +9,6 @@ module.exports = {
     carePlan: '#documents_socialWorkCarePlan_document_typeOfDocument',
     otherDocuments_1: '#documents_socialWorkOther_0_typeOfDocument',
     otherDocuments_2: '#documents_socialWorkOther_1_typeOfDocument',
-    standardDirections: '#standardDirections',
     courtBundle: '#courtBundle_document',
   },
 
@@ -54,9 +53,5 @@ module.exports = {
   selectSocialWorkChronologyToFollow() {
     I.selectOption(this.fields.socialWorkChronologyStatus, 'To follow');
     I.fillField(this.fields.socialWorkChronologyReason, 'mock reason');
-  },
-
-  uploadStandardDirections(file) {
-    I.attachFile(this.documents.standardDirections, file);
   },
 };
