@@ -1,0 +1,27 @@
+#!groovy
+
+@Library("Infrastructure") _
+
+properties([
+		parameters([
+      choice(name: 'ENVIRONMENT', choices: 'saat\nsprod', description: 'Environment where code should be build and deployed')
+		])
+])
+
+List<Map<String, Object>> secrets = [
+  secret('ccd-configurer-s2s-secret', 'CCD_CONFIGURER_S2S_SECRET'),
+  secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN'),
+  secret('notify-api-key', 'NOTIFY_API_KEY')
+]
+
+static Map<String, Object> secret(String secretName, String envVariable) {
+  [ $class: 'AzureKeyVaultSecret',
+    secretType: 'Secret',
+    name: secretName,
+    envVariable: envVariable
+  ]
+}
+
+withParameterizedPipeline('java', 'fpl', 'case-service', params.ENVIRONMENT, 'sandbox') {
+  loadVaultSecrets(secrets)
+}
