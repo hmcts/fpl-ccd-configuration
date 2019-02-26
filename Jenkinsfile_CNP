@@ -71,6 +71,16 @@ withPipeline(type, product, component) {
     env.URL = "https://ccd-case-management-web-${aksServiceName}.${aksDomain}"
   }
 
+  after('deploy:saat') {
+    env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
+
+    env.IDAM_API_BASE_URL = "http://idam-api-idam-saat.service.core-compute-idam-saat.internal"
+    env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-saat.service.core-compute-saat.internal"
+    env.CCD_DEFINITION_STORE_API_BASE_URL = "http://ccd-definition-store-api-saat.service.core-compute-saat.internal"
+    env.CCD_USER_PROFILE_API_BASE_URL = "http://ccd-user-profile-api-saat.service.core-compute-saat.internal"
+    env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
+  }
+
   after('deploy:aat') {
     env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
 
@@ -96,6 +106,22 @@ withPipeline(type, product, component) {
 
     sh """
       CCD_CONFIGURER_S2S_SECRET=AABBCCDDEEFFGGHH ./kubernetes/configurer/configure-ccd.sh
+    """
+  }
+
+  before('smoketest:saat-staging') {
+    env.CCD_DEF_CASE_SERVICE_BASE_URL = env.TEST_URL.replace('https', 'http')
+
+    sh """
+      ./kubernetes/configurer/configure-ccd.sh
+    """
+  }
+
+  before('smoketest:saat') {
+    env.CCD_DEF_CASE_SERVICE_BASE_URL = env.TEST_URL.replace('https', 'http')
+
+    sh """
+      ./kubernetes/configurer/configure-ccd.sh
     """
   }
 
@@ -131,6 +157,14 @@ withPipeline(type, product, component) {
     """
   }
 
+  after('smoketest:saat-staging') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
+
+  after('smoketest:saat') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
+
   after('smoketest:aat-staging') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
@@ -147,12 +181,20 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
+  before('functionalTest:saat') {
+    env.SKIP_FUNCTIONAL_TESTS = 'true'
+  }
+
   before('functionalTest:aat') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
   }
 
   before('functionalTest:demo') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
+  }
+
+  after('functionalTest:saat') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
   after('functionalTest:aat') {
