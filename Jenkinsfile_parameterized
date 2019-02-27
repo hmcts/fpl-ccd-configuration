@@ -11,7 +11,11 @@ properties([
 List<Map<String, Object>> secrets = [
   secret('ccd-configurer-s2s-secret', 'CCD_CONFIGURER_S2S_SECRET'),
   secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN'),
-  secret('notify-api-key', 'NOTIFY_API_KEY')
+  secret('notify-api-key', 'NOTIFY_API_KEY'),
+  // Secrets used in smoke tests
+  secret('smoke-test-la-username', 'LA_USER_USERNAME'),
+  secret('smoke-test-ca-username', 'CA_USER_USERNAME'),
+  secret('smoke-test-cafcass-username', 'CAFCASS_USER_USERNAME')
 ]
 
 static Map<String, Object> secret(String secretName, String envVariable) {
@@ -24,4 +28,31 @@ static Map<String, Object> secret(String secretName, String envVariable) {
 
 withParameterizedPipeline('java', 'fpl', 'case-service', params.ENVIRONMENT, 'sandbox') {
   loadVaultSecrets(secrets)
+
+  after('deploy:saat') {
+    env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
+
+    env.IDAM_API_BASE_URL = "http://idam-api-idam-saat.service.core-compute-idam-saat.internal"
+    env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-saat.service.core-compute-saat.internal"
+    env.CCD_DEFINITION_STORE_API_BASE_URL = "http://ccd-definition-store-api-saat.service.core-compute-saat.internal"
+    env.CCD_USER_PROFILE_API_BASE_URL = "http://ccd-user-profile-api-saat.service.core-compute-saat.internal"
+    env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
+  }
+
+  after('smoketest:saat-staging') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
+
+  after('smoketest:saat') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
+
+  before('functionalTest:saat') {
+    env.SKIP_FUNCTIONAL_TESTS = 'true'
+  }
+
+  after('functionalTest:saat') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
+
 }
