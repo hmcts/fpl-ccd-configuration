@@ -187,7 +187,7 @@ dependencies {
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.14.0-RELEASE'
 
-  compile group: 'com.google.guava', name: 'guava', version: '27.0.1-jre'
+  compile group: 'com.google.guava', name: 'guava', version: '27.1-jre'
   compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
   testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot) {
