@@ -61,6 +61,7 @@ module "key-vault" {
   object_id = "${var.jenkins_AAD_objectId}"
   resource_group_name = "${module.case-service.resource_group_name}"
   product_group_object_id = "bb778c38-9e7a-4d03-8dad-4fe0b207e8a3"
+  common_tags = "${var.common_tags}"
 }
 
 module "case-service" {
