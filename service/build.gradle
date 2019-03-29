@@ -181,7 +181,7 @@ dependencies {
 
   compile group: 'uk.gov.hmcts.reform', name: 'pdf-generator', version: '1.0.2'
   compile group: 'uk.gov.hmcts.reform', name: 'idam-client', version: '0.0.2'
-  compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '4.0.2'
+  compile group: 'uk.gov.hmcts.reform', name: 'document-management-client', version: '5.0.0'
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.5.0'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '2.0.0'
 
