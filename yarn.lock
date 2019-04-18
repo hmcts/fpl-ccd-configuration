@@ -441,16 +441,16 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codeceptjs@^2.0.7:
-  version "2.0.7"
-  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.0.7.tgz#d97e3e73981482deb5ae21073cc4c46ab98b1c10"
-  integrity sha512-SUKA5KY9tF0Nb+5B0CvURlvPTDki25IaRMC227yRCliAoWQ6LDW0GEcVqVXkllIUw6WiaPiZFV2JPs4Lq5efoQ==
+codeceptjs@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.1.0.tgz#761e4a02b598702ead4c35e0dcba10eebbfdc30c"
+  integrity sha512-cDwr3Dgdefs105ugQjVzdS9GcJSvomNlL6TbdLUxr5dkzCyR3Rh6ZVr7MXYAgUjK7PRhfqPwmootUK+47VJcSg==
   dependencies:
     allure-js-commons "^1.3.2"
     archiver "^3.0.0"
     axios "^0.18.0"
     chalk "^1.1.3"
-    commander "^2.18.0"
+    commander "^2.20.0"
     css-to-xpath "^0.1.0"
     cucumber-expressions "^6.0.1"
     escape-string-regexp "^1.0.3"
@@ -459,7 +459,7 @@ codeceptjs@^2.0.7:
     gherkin "^5.1.0"
     glob "^6.0.1"
     inquirer "^6.2.2"
-    js-beautify "^1.8.9"
+    js-beautify "^1.9.1"
     lodash.merge "^4.6.1"
     mkdirp "^0.5.1"
     mocha "^4.1.0"
@@ -485,10 +485,10 @@ commander@2.11.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.11.0.tgz#157152fd1e7a6c8d98a5b715cf376df928004563"
   integrity sha512-b0553uYA5YAEGgyYIGYROzKQ7X5RAqedkfjiZxwi0kL1g3bOaBNNZfYkzt/CL0umgD5wc9Jec2FbB98CjkMRvQ==
 
-commander@^2.18.0, commander@^2.19.0:
-  version "2.19.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-2.19.0.tgz#f6198aa84e5b83c46054b94ddedbfed5ee9ff12a"
-  integrity sha512-6tvAOO+D6OENvRAh524Dh9jcfKTYDQAqvqezbCW82xj5X0pSrcpxtvRKHLG0yBY6SD7PSDrJaj+0AiOcKVd1Xg==
+commander@^2.19.0, commander@^2.20.0:
+  version "2.20.0"
+  resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
+  integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
 
 compress-commons@^1.2.0:
   version "1.2.2"
@@ -1308,10 +1308,10 @@ isobject@^3.0.1:
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
   integrity sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
 
-js-beautify@^1.8.9:
-  version "1.8.9"
-  resolved "https://registry.yarnpkg.com/js-beautify/-/js-beautify-1.8.9.tgz#08e3c05ead3ecfbd4f512c3895b1cda76c87d523"
-  integrity sha512-MwPmLywK9RSX0SPsUJjN7i+RQY9w/yC17Lbrq9ViEefpLRgqAR2BgrMN2AbifkUuhDV8tRauLhLda/9+bE0YQA==
+js-beautify@^1.9.1:
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/js-beautify/-/js-beautify-1.9.1.tgz#6f9ef915f5d8d92b9f907606fce63795884c8040"
+  integrity sha512-oxxvVZdOdUfzk8IOLBF2XUZvl2GoBEfA+b0of4u2EBY/46NlXasi8JdFvazA5lCrf9/lQhTjyVy2QCUW7iq0MQ==
   dependencies:
     config-chain "^1.1.12"
     editorconfig "^0.15.2"
