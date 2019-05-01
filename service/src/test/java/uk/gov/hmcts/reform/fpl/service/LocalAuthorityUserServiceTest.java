@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import feign.Request;
 import feign.RetryableException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -101,7 +102,8 @@ class LocalAuthorityUserServiceTest {
                 .add(CREATOR_USER_ID, firstAdditionalUserId, secondAdditionalUserId)
                 .build()
         );
-        willThrow(new RetryableException("Some error", null)).given(caseAccessApi).grantAccessToCase(
+        willThrow(new RetryableException("Some error", Request.HttpMethod.POST, null))
+            .given(caseAccessApi).grantAccessToCase(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CREATOR_USER_ID), eq(JURISDICTION),
             eq(CASE_TYPE), eq(CASE_ID), refEq(new UserId(firstAdditionalUserId)));
 
