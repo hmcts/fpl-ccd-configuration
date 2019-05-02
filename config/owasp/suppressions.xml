@@ -32,4 +32,16 @@
     <cve>CVE-2013-2566</cve>
     <cve>CVE-2015-2808</cve>
   </suppress>
+  <suppress>
+    <notes>
+      <![CDATA[
+        insecure randomness vulnerability when using SecureRandomFactoryBean#setSeed to configure a SecureRandom
+        instance. In order to be impacted, an honest application must provide a seed and make the resulting random
+        material available to an attacker for inspection. Waiting for an update of org.springframework.boot to address
+        this issue.
+      ]]>
+    </notes>
+    <gav regex="true">^org\.springframework\.security:.*$</gav>
+    <cve>CVE-2018-1258</cve>
+  </suppress>
 </suppressions>
