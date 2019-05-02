@@ -28,7 +28,7 @@ withPipeline(type, product, component) {
   setVaultName('fpl')
   loadVaultSecrets(secrets)
   enableDockerBuild()
-//  enableDeployToAKS()
+  enableDeployToAKS()
   enableSlackNotifications('#fpl-tech')
 
   env.POSTCODE_PLACEHOLDER = '${postcode}'
@@ -53,9 +53,9 @@ withPipeline(type, product, component) {
 
     def kubectl = new Kubectl(this, subscription, aksServiceName)
 
-    def ingressIP = kubectl.getServiceLoadbalancerIP("traefik", "kube-system")
+    def ingressIP = kubectl.getServiceLoadbalancerIP("traefik", "admin")
 
-    def consul = new Consul(this)
+    def consul = new Consul(this, env.SUBSCRIPTION_NAME in ['nonprod', 'prod'] ? 'preview' : 'saat')
     consul.registerDns("service-auth-provider-api-${aksServiceName}", ingressIP)
     consul.registerDns("idam-authentication-web-${aksServiceName}", ingressIP)
     consul.registerDns("idam-api-${aksServiceName}", ingressIP)
@@ -101,7 +101,7 @@ withPipeline(type, product, component) {
     env.URL = "https://ccd-case-management-web-demo.service.core-compute-demo.internal"
   }
 
-  before('smoketest:aks') {
+  before('smoketest:preview') {
     env.CCD_DEF_CASE_SERVICE_BASE_URL = env.TEST_URL.replace('https', 'http')
 
     sh """
