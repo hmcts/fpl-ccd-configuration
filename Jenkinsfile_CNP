@@ -53,7 +53,7 @@ withPipeline(type, product, component) {
 
     def kubectl = new Kubectl(this, subscription, aksServiceName)
 
-    def ingressIP = kubectl.getServiceLoadbalancerIP("traefik", "amdin")
+    def ingressIP = kubectl.getServiceLoadbalancerIP("traefik", "admin")
 
     def consul = new Consul(this)
     consul.registerDns("service-auth-provider-api-${aksServiceName}", ingressIP)
