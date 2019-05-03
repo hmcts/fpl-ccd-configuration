@@ -44,13 +44,4 @@
     <gav regex="true">^org\.springframework\.security:.*$</gav>
     <cve>CVE-2018-1258</cve>
   </suppress>
-  <!-- Temporary suppression until dependencies are upgraded -->
-  <suppress>
-    <notes><![CDATA[file name: spring-security-rsa-1.0.7.RELEASE.jar]]></notes>
-    <gav regex="true">^org\.springframework\.security:spring-security-rsa:.*$</gav>
-    <cve>CVE-2011-2731</cve>
-    <cve>CVE-2011-2732</cve>
-    <cve>CVE-2012-5055</cve>
-    <cve>CVE-2018-1260</cve>
-  </suppress>
 </suppressions>
