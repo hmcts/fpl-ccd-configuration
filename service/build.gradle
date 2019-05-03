@@ -3,10 +3,10 @@ plugins {
   id 'checkstyle'
   id 'pmd'
   id 'jacoco'
-  id 'io.spring.dependency-management' version '1.0.6.RELEASE'
+  id 'io.spring.dependency-management' version '1.0.7.RELEASE'
   id 'org.springframework.boot' version '2.1.4.RELEASE'
-  id 'org.owasp.dependencycheck' version '4.0.1'
-  id 'com.github.ben-manes.versions' version '0.20.0'
+  id 'org.owasp.dependencycheck' version '4.0.2'
+  id 'com.github.ben-manes.versions' version '0.21.0'
   id 'org.sonarqube' version '2.7'
 }
 
@@ -92,13 +92,13 @@ task functional(description: 'Runs the functional tests.') {
 
 checkstyle {
   maxWarnings = 0
-  toolVersion = '8.18'
+  toolVersion = '8.20'
   // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
   configDir = new File(rootDir, 'config/checkstyle')
 }
 
 pmd {
-  toolVersion = "6.10.0"
+  toolVersion = "6.14.0"
   ignoreFailures = true
   sourceSets = [sourceSets.main, sourceSets.test, sourceSets.functionalTest, sourceSets.integrationTest, sourceSets.smokeTest]
   reportsDir = file("$project.buildDir/reports/pmd")
@@ -233,7 +233,7 @@ integration {
 }
 
 pitest {
-  pitestVersion = '1.4.3'
+  pitestVersion = '1.4.7'
   testPlugin = 'junit5'
   targetClasses = ['uk.gov.hmcts.reform.fpl.*']
   testSourceSets = [sourceSets.test, sourceSets.integrationTest]

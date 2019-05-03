@@ -759,7 +759,7 @@
             <dt class="data-list__title">Date of birth</dt>
             <dd class="data-list__definition">
               {% if child.value.childDOB is not empty %}
-                {{ child.value.childDOB }}
+                {{ child.value.childDOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
               {% else %}
                 -
               {% endif %}
