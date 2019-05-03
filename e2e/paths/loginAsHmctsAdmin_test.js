@@ -5,7 +5,7 @@ Feature('Login as hmcts admin').retry(2);
 
 Before(async (I, caseViewPage, submitApplicationPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-  caseId = await I.grabTextFrom('.heading-medium');
+  caseId = await I.grabTextFrom('.heading-h1');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationPage.giveConsent();
   I.continueAndSubmit();
