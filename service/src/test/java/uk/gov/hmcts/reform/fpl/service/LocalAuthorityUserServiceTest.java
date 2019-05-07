@@ -101,7 +101,7 @@ class LocalAuthorityUserServiceTest {
                 .add(CREATOR_USER_ID, firstAdditionalUserId, secondAdditionalUserId)
                 .build()
         );
-        willThrow(new RetryableException("Some error", null)).given(caseAccessApi).grantAccessToCase(
+        willThrow(new RetryableException(500, "Some error", null, null)).given(caseAccessApi).grantAccessToCase(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CREATOR_USER_ID), eq(JURISDICTION),
             eq(CASE_TYPE), eq(CASE_ID), refEq(new UserId(firstAdditionalUserId)));
 
