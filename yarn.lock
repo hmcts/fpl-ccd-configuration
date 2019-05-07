@@ -431,10 +431,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codeceptjs@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.1.0.tgz#761e4a02b598702ead4c35e0dcba10eebbfdc30c"
-  integrity sha512-cDwr3Dgdefs105ugQjVzdS9GcJSvomNlL6TbdLUxr5dkzCyR3Rh6ZVr7MXYAgUjK7PRhfqPwmootUK+47VJcSg==
+codeceptjs@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.1.1.tgz#cac492015e1e139b8804108013d37bc9ff144688"
+  integrity sha512-O8HtIUUx/K/ZtATfyfiJveupmPN1GwoDZM7qf5Bzh53itw/FNWEMKA9r1CrhQEx64OfbhOiMZR/Gi4HR3dJ05A==
   dependencies:
     allure-js-commons "^1.3.2"
     archiver "^3.0.0"
@@ -475,12 +475,7 @@ commander@2.11.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.11.0.tgz#157152fd1e7a6c8d98a5b715cf376df928004563"
   integrity sha512-b0553uYA5YAEGgyYIGYROzKQ7X5RAqedkfjiZxwi0kL1g3bOaBNNZfYkzt/CL0umgD5wc9Jec2FbB98CjkMRvQ==
 
-commander@^2.19.0:
-  version "2.19.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-2.19.0.tgz#f6198aa84e5b83c46054b94ddedbfed5ee9ff12a"
-  integrity sha512-6tvAOO+D6OENvRAh524Dh9jcfKTYDQAqvqezbCW82xj5X0pSrcpxtvRKHLG0yBY6SD7PSDrJaj+0AiOcKVd1Xg==
-
-commander@^2.20.0:
+commander@^2.19.0, commander@^2.20.0:
   version "2.20.0"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
   integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
