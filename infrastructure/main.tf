@@ -74,6 +74,7 @@ module "case-service" {
   instance_size       = "${local.instance_size}"
   capacity            = "${local.capacity}"
   common_tags         = "${var.common_tags}"
+  java_version        = "11"
 
   app_settings = {
     IDAM_API_URL = "${var.idam_api_url}"

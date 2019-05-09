@@ -15,8 +15,8 @@ apply plugin: 'info.solidsoft.pitest'
 group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 11
+targetCompatibility = 11
 
 sourceSets {
   functionalTest {
@@ -195,6 +195,8 @@ dependencies {
 
   compile group: 'com.google.guava', name: 'guava', version: '27.1-jre'
   compile group: 'commons-io', name: 'commons-io', version: '2.6'
+
+  compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
   testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot) {
     exclude group: 'junit', module: 'junit'
