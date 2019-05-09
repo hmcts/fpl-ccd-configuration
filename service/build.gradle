@@ -15,8 +15,8 @@ apply plugin: 'info.solidsoft.pitest'
 group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
 
-sourceCompatibility = 11
-targetCompatibility = 11
+sourceCompatibility = '11'
+targetCompatibility = '11'
 
 sourceSets {
   functionalTest {
