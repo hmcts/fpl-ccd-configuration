@@ -23,17 +23,7 @@ services:
       - NOTIFY_API_KEY
       - CCD_UI_BASE_URL=http://localhost:3451
       # these environment variables are used by java-logging library
-      - ROOT_APPENDER
-      - JSON_CONSOLE_PRETTY_PRINT
-      - ROOT_LOGGING_LEVEL
-      - REFORM_SERVICE_TYPE
-      - REFORM_SERVICE_NAME
-      - REFORM_TEAM
-      - REFORM_ENVIRONMENT
-      - LOGBACK_DATE_FORMAT
-      - LOGBACK_REQUIRE_THREAD
-      - LOGBACK_REQUIRE_ALERT_LEVEL=false
-      - LOGBACK_REQUIRE_ERROR_CODE=false
+      - APPINSIGHTS_INSTRUMENTATIONKEY=fake-key
     ports:
       - $SERVER_PORT:$SERVER_PORT
     networks:
