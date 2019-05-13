@@ -39,6 +39,14 @@ services:
     networks:
       - default
       - ccd
+  docmosis:
+    image: alexisgayte/docmosis
+    volumes:
+      - ./docker/docmosis/prefs.xml:/root/.java/.userPrefs/com/docmosis/webserver/prefs.xml:ro
+      - ./docker/docmosis/templates:/tmp/working/templates:rw
+    ports:
+      - 80:80
+
 networks:
   ccd:
     external:
