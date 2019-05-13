@@ -325,5 +325,132 @@
     "FieldType": "Email",
     "HintText": "For example, joe.bloggs@la.gov.uk",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtName",
+    "Label": "Court name",
+    "FieldType": "Text",
+    "HintText": "Name of the court",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "childrenNames",
+    "Label": "Child[ren] Name[s]",
+    "FieldType": "Text",
+    "HintText": "Name of children",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "languages",
+    "Label": "Language[s]",
+    "FieldType": "Text",
+    "HintText": "Languages spoken by party",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "gender",
+    "Label": "Gender",
+    "FieldType": "Text",
+    "HintText": "For male enter M or female enter F",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "dateOfBirth",
+    "Label": "DOB",
+    "FieldType": "Date",
+    "HintText": "Date of birth",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nameOfJudge",
+    "Label": "Name of Judge",
+    "FieldType": "Text",
+    "HintText": "Name of judge for this case",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtDate",
+    "Label": "Court Date",
+    "FieldType": "Date",
+    "HintText": "Date of court case",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthority",
+    "Label": "Local Authority",
+    "FieldType": "Text",
+    "HintText": "Local Authority dealing with case",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "parents",
+    "Label": "Parent[s] Name[s]",
+    "FieldType": "Text",
+    "HintText": "Name of parents",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "time",
+    "Label": "Time of case",
+    "FieldType": "Text",
+    "HintText": "Time of the case",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "judgeType",
+    "Label": "Judge Type",
+    "FieldType": "Text",
+    "HintText": "Type of judge required",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "country",
+    "Label": "Country of case",
+    "FieldType": "Text",
+    "HintText": "Country the case will take place",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondentDetails",
+    "Label": "Respondent",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "RespondentDetails",
+    "HintText": "Information of the respondent",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "personName",
+    "Label": "Name of person",
+    "FieldType": "Text",
+    "HintText": "Name of the person relating to the case",
+    "SecurityClassification": "Public"
   }
 ]
