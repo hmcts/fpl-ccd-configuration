@@ -172,8 +172,8 @@ dependencies {
     exclude module: "spring-boot-starter-tomcat" 
   }
   compile 'org.apache.tomcat.embed:tomcat-embed-core:9.0.20'
-  compile 'org.apache.tomcat.embed:tomcat-embed-el:9.0.19'
-  compile 'org.apache.tomcat.embed:tomcat-embed-websocket:9.0.19'
+  compile 'org.apache.tomcat.embed:tomcat-embed-el:9.0.20'
+  compile 'org.apache.tomcat.embed:tomcat-embed-websocket:9.0.20'
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
 
