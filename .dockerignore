@@ -4,4 +4,7 @@
 
 # exceptions from `exclude all` rule
 
+!lib/applicationinsights-agent-*.jar
+!lib/AI-Agent.xml
+
 !build/libs/*.jar

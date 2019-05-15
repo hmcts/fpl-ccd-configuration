@@ -44,6 +44,7 @@ data:
   FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING: "SA=>Swansea Family Court:FamilyPublicLaw+sa@gmail.com;HN=>Portsmouth Combined Court:FamilyPublicLaw+hn@gmail.com"
   FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING: "SA=>Cafcass Cymru:FamilyPublicLaw+cafcass@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcass@gmail.com"
   NOTIFY_API_KEY: ${NOTIFY_API_KEY}
+  APPINSIGHTS_INSTRUMENTATIONKEY: "fake-key"
 
 ---
 
