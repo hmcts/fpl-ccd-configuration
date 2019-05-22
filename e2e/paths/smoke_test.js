@@ -19,3 +19,11 @@ Scenario('Sign in as CAFCASS', (I, loginPage) => {
   I.see('Create new case');
   I.signOut();
 });
+
+Scenario('Sign in as gatekeeper', (I, loginPage) => {
+  loginPage.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
+  I.see('Create new case');
+  I.signOut();
+});
+
+
