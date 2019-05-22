@@ -408,6 +408,94 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "PartyTelephone",
+    "ListElementCode": "telephone",
+    "FieldType": "Text",
+    "ElementLabel": "Telephone number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PartyTelephone",
+    "ListElementCode": "mobile",
+    "FieldType": "Text",
+    "ElementLabel": "Mobile number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PartyEmail",
+    "ListElementCode": "email",
+    "FieldType": "Text",
+    "ElementLabel": "Email address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Party",
+    "ListElementCode": "partyType",
+    "FieldType": "Text",
+    "ElementLabel": "Party type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Party",
+    "ListElementCode": "firstName",
+    "FieldType": "Text",
+    "ElementLabel": "First name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Party",
+    "ListElementCode": "lastName",
+    "FieldType": "Text",
+    "ElementLabel": "Last name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Party",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Party",
+    "ListElementCode": "personToContact",
+    "FieldType": "Text",
+    "ElementLabel": "Person to contact",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Party",
+    "ListElementCode": "jobTitle",
+    "FieldType": "Text",
+    "ElementLabel": "Job title",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Party",
+    "ListElementCode": "telephone",
+    "FieldType": "PartyTelephone",
+    "ElementLabel": "Telephone",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Party",
+    "ListElementCode": "email",
+    "FieldType": "PartyEmail",
+    "ElementLabel": "Email",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "RiskAndHarm",
     "ListElementCode": "evidenceQuestion",
     "FieldType": "Label",

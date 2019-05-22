@@ -226,6 +226,17 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterApplicants",
+    "CaseFieldID": "applicants",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "enterApplicant",
     "CaseFieldID": "solicitor",
     "PageFieldDisplayOrder": 2,

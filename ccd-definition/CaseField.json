@@ -325,5 +325,14 @@
     "FieldType": "Email",
     "HintText": "For example, joe.bloggs@la.gov.uk",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicants",
+    "Label": "Applicants",
+    "FieldType": "Party",
+    "HintText": "Collection of applicants",
+    "SecurityClassification": "Public"
   }
 ]
