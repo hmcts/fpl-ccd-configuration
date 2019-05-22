@@ -38,7 +38,7 @@ public class dataMigrationController {
         // Get case data
         Map<String, Object> data = caseDetails.getData();
 
-        // Oringal applicant
+        // Orginal applicant
         Map<String, Object> applicant = oMapper.convertValue(data.get("applicant"), Map.class);
 
         // Init applicant party map

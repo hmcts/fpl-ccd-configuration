@@ -331,7 +331,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "applicants",
     "Label": "Applicants",
-    "FieldType": "Party",
+    "FieldType": "Applicants",
     "HintText": "Collection of applicants",
     "SecurityClassification": "Public"
   }
