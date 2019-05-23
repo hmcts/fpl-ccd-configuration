@@ -743,7 +743,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "timeFrame",
-    "FieldType": "FixedList",
+    "FieldType": "FixedRadioList",
     "FieldTypeParameter": "TimeFrameList",
     "ElementLabel": "When do you need a hearing?",
     "SecurityClassification": "Public"
@@ -792,7 +792,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "type",
-    "FieldType": "FixedList",
+    "FieldType": "FixedRadioList",
     "FieldTypeParameter": "HearingTypeFixedList",
     "ElementLabel": "What type of hearing do you need?",
     "SecurityClassification": "Public"
