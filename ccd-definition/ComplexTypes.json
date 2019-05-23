@@ -496,15 +496,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Applicants",
-    "ListElementCode": "applicants",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Party",
-    "ElementLabel": "Applicants",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "ID": "RiskAndHarm",
     "ListElementCode": "evidenceQuestion",
     "FieldType": "Label",

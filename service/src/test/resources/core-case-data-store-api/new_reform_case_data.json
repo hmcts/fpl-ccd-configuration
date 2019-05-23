@@ -1,0 +1,712 @@
+{
+  "gatekeeperEmail": "FamilyPublicLaw+gatekeeper@gmail.com",
+  "caseLocalAuthority": "example",
+  "previousServiceCaseReference": "1234...",
+  "risks": {
+    "neglect": "Yes",
+    "sexualAbuse": "Yes",
+    "physicalHarm": "Yes",
+    "emotionalHarm": "Yes",
+    "neglectOccurrences": [
+      "Past harm",
+      "Future risk of harm"
+    ],
+    "sexualAbuseOccurrences": [
+      "Past harm",
+      "Future risk of harm"
+    ],
+    "physicalHarmOccurrences": [
+      "Past harm",
+      "Future risk of harm"
+    ],
+    "emotionalHarmOccurrences": [
+      "Past harm",
+      "Future risk of harm"
+    ]
+  },
+  "orders": {
+    "orderType": [
+      "EMERGENCY_PROTECTION_ORDER"
+    ],
+    "directions": "Yes",
+    "emergencyProtectionOrderDirections": [
+      "CONTACT_WITH_NAMED_PERSON"
+    ]
+  },
+  "thirdParties": [
+    {
+      "party": {
+        "partyID": "f683a361-f1a4-4f44-b49f-154a54a27900", //required
+        "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+        "partyType": "Individual", //required
+        "title": "Mr", 
+        "firstName": "Json",
+        "lastName": "Lavery",
+        "dateOfBirth": "1999-02-02",
+        "gender": "Male",
+        "birthPlace": "Armagh",
+        "detailsHidden": "Yes",
+        "detailsHiddenReason": "",
+        "childInformation": "Cousin",
+        "litigationIssues": "Yes",
+        "litigationIssuesDetails": "details",
+        "genderIdentification": "Unknown",
+        "address": {
+          "AddressLine1": "Flat 13", //required
+          "AddressLine2": "Portadown street",
+          "AddressLine3": "Portadown road",
+          "PostTown": "Portadown",
+          "PostCode": "BT43 343",
+          "County": "Armagh",
+          "Country": "N.Ire"
+        },
+        "email": {
+          "email": "williampeters@wpeters.net", //required
+          "emailUsageType": "correspondence"
+        },
+        "telephoneNumber": {
+          "telephoneNumber": "07749972245", //required
+          "telephoneUsageType": "Personal" //required
+        }
+      },
+      "thirdPartyType": "Other"
+    }, 
+    {
+      "party": {
+        "partyID": "34c97e1a-eed9-499b-9693-e92496a1f54d", //required
+        "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+        "partyType": "Individual", //required
+        "title": "Mr", 
+        "firstName": "Peter",
+        "lastName": "Lavery",
+        "dateOfBirth": "1999-02-02",
+        "gender": "Male",
+        "birthPlace": "Armagh",
+        "detailsHidden": "No",
+        "childInformation": "Cousin",
+        "litigationIssues": "NO",
+        "genderIdentification": "Unknown",
+        "address": {
+          "AddressLine1": "Flat 29", //required
+          "AddressLine2": "Newcastle road",
+          "AddressLine3": "Newcastle street",
+          "PostTown": "Newcastle",
+          "PostCode": "BTTT TTT",
+          "County": "Cork",
+          "Country": "Northern Ireland"
+        },
+        "email": {
+          "email": "williampeters@wpeters.net", //required
+          "emailUsageType": "correspondence"
+        },
+        "telephoneNumber": {
+          "telephoneNumber": "07749972245", //required
+          "telephoneUsageType": "Personal" //required
+        }
+      },
+      "thirdPartyType": "Other"
+    }
+  ],
+  "grounds": {
+    "thresholdReason": [
+      "noCare",
+      "beyondControl"
+    ],
+    "thresholdDetails": "grounds for application criteria"
+  },
+  "groundsForEPO": {
+    "reason": [
+      "HARM_IF_NOT_MOVED_TO_NEW_ACCOMMODATION",
+      "HARM_IF_KEPT_IN_CURRENT_ACCOMMODATION"
+    ]
+  },
+  "hearing": {
+    "hearingId": "f683a361-f1a4-4f44-b49f-154a54a27855",
+    "hearingDescription": "Case management hearing for James Nelson",
+    "hearingDate": "2018-12-06",
+    "type": "Contested interim care order",
+    "reason": "Baby will be discharged from hospital on 21 June 2018",
+    "timeFrame": "Same day",
+    "reducedNotice": "Yes",
+    "withoutNotice": "Yes",
+    "type_GiveReason": "Standard case management hearing",
+    "respondentsAware": "Yes",
+    "reducedNoticeReason": "Baby needs to be discharged from the hospital",
+    "withoutNoticeReason": "Notice without hearing needed",
+    "respondentsAwareReason": "They seek to care for baby in mother and baby unit",
+    "bundles": [
+      {
+        "bundleId": "unique id for the bundle", //required
+        "bundleName": "Meaningful name for the bundle", //required
+        "locked": "Locked means that the bundle can no longer be edited. Once locked can not be unlocked", //required
+        "lockedBy": "The user who locked the bundle",
+        "lockedDateTime": "The datetime the bundle was locked.",
+        "stichedDocument": {
+          "documentURI": "The document URI" // required
+        },
+        "bundleDocuments": [
+          {
+            "caseDocument": {
+              "documentName": "Meaningful name for the document", //required
+              "documentType": "Certificate and Financial statement are different types of documents. Fixed list which needs to be defined.", //required
+              "documentLink": { //required
+                "documentURI": "uuid" //required
+              },
+              "authoredDate": "The date that the document is considered live in the case",
+              "createdDateTime": "The date the document was uploaded up to the service.", //required
+              "receivedDateTime": "This date is the date that the document was received in the post. Eg documents that are received in the post by Bulk Scanning.",
+              "createdBy": "The person who uploaded the document.", //required
+              "AssociatedPartyIDs": [
+                "A unique id that has to be unique to Reform. This is a system id not to be viewed by users"
+              ]
+            },
+            "folder": {
+              "folderID": "unique id for the Folder", // required
+              "folderName": "Meaningful name for the Folder",
+              "createdDate": "The date the bundle was created", //required
+              "createdBy": "The person who created the bundle", //required
+              "updatedData": "The date the bundle was modified",
+              "updatedBy": "The person who modified the bundle"
+            },
+            "includeInBundle": "Is used by basic bundling to drive document selection"
+          }
+        ],
+        "folder": [
+          {
+            "folderID": "unique id for the Folder", // required
+            "folderName": "Meaningful name for the Folder",
+            "createdDate": "The date the bundle was created", //required
+            "createdBy": "The person who created the bundle", //required
+            "updatedData": "The date the bundle was modified",
+            "updatedBy": "The person who modified the bundle"
+          }
+        ],
+        "createdDate": "The date the bundle was created", //required
+        "createdBy": "The person who created the bundle", //required
+        "updatedDatetime": "The date the bundle was modified", //required
+        "updatedBy": "The person who modified the bundle" // required
+      }
+    ],
+    "judge": {
+      "party": {
+        "partyID": "f683a361-f1a4-4f44-b49f-154a54a27900", //required
+        "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+        "partyType": "Individual", //required
+        "title": "Mr", 
+        "firstName": "William",
+        "lastName": "Peters",
+        "dateOfBirth": "1970-09-06",
+        "address": {
+          "AddressLine1": "12 flat a", //required
+          "AddressLine2": "Clanconnel Gardens",
+          "AddressLine3": "Waringstown",
+          "PostTown": "Craigavon",
+          "PostCode": "BT66 7RR",
+          "County": "Armagh",
+          "Country": "UK"
+        },
+        "email": {
+          "email": "williampeters@wpeters.net", //required
+          "emailUsageType": "correspondence"
+        },
+        "telephoneNumber": {
+          "telephoneNumber": "02838881300", //required
+          "telephoneUsageType": "Buisness", //required
+          "contactDirection": "Ask for William"
+        }
+      },
+      "leadJudgeIndicator": "If the case a has more than one judge, is one judge considered the lead judge. Only in context of a Case. Two possible values. Y for Yes or N for No."
+    },
+    "panelMembers": [
+      {
+        "party": {
+          "partyID": "A unique id that has to be unique to Reform", //required
+          "idamID": "If the party has registered with us then this would be their IdAM Id.",
+          "partyType": "This has two valid values. Individual or Organisation.", //required
+          "title": "How the individual likes to be addressed.",
+          "firstName": "The chosen first name or combination of first name and middle names the party wishes to be known by",
+          "lastName": "The chosen last name that the party wishes to be known by",
+          "dateOfBirth": "The date the party was born on",
+          "address": {
+            "AddressLine1": "Building No, Sub Building Name, Building Name, PO BOX", //required
+            "AddressLine2": "Dependent Thoroughfare Name,Thoroughfare Name",
+            "AddressLine3": "Dependent Locality",
+            "PostTown": "Post Town",
+            "PostCode": "Postcode",
+            "County": "County",
+            "Country": "Country"
+          },
+          "email": {
+            "email": "Email", //required
+            "emailUsageType": "Determines what the email used for. For example correspondence"
+          },
+          "telephoneNumber": {
+            "telephoneNumber": "44 1234 123456. The first two digits are country code", //required
+            "telephoneUsageType": "For example, Home, Mobile etc", //required
+            "contactDirection": "For example, Please ask for Bob"
+          }
+        },
+        "leadPanelMember": "If the Panel has more than one Panel Member, then one Panel Member can be considered the lead Panel member. Two possible values. Y for Yes or N for No."
+      }
+    ],
+    "hearingOutcome": [
+      {
+        "hearingOutcomeId": "unique id for the bundle", //required
+        "hearingOutcome": { //required
+          "documentURI": "The document URI" // required
+        },
+        "hearingOutcomeLines": [
+          {
+            "hearingOutcomeLine": "Outcome overview", //required
+            "assignedTo": {
+              "party": {
+                "partyID": "A unique id that has to be unique to Reform", //required
+                "idamID": "If the party has registered with us then this would be their IdAM Id.",
+                "partyType": "This has two valid values. Individual or Organisation.", //required
+                "title": "How the individual likes to be addressed.",
+                "firstName": "The chosen first name or combination of first name and middle names the party wishes to be known by",
+                "lastName": "The chosen last name that the party wishes to be known by",
+                "dateOfBirth": "The date the party was born on",
+                "address": {
+                  "AddressLine1": "Building No, Sub Building Name, Building Name, PO BOX", //required
+                  "AddressLine2": "Dependent Thoroughfare Name,Thoroughfare Name",
+                  "AddressLine3": "Dependent Locality",
+                  "PostTown": "Post Town",
+                  "PostCode": "Postcode",
+                  "County": "County",
+                  "Country": "Country"
+                },
+                "email": {
+                  "email": "Email", //required
+                  "emailUsageType": "Determines what the email used for. For example correspondence"
+                },
+                "telephoneNumber": {
+                  "telephoneNumber": "44 1234 123456. The first two digits are country code", //required
+                  "telephoneUsageType": "For example, Home, Mobile etc", //required
+                  "contactDirection": "For example, Please ask for Bob"
+                }
+              }
+            },
+            "dateToBeCompletedBy": "The date that the task must be completed by.",
+            "closedBy": "The person who closed this task",
+            "closedDatetime": "The date the task was closed",
+            "createdDateTime": "The date the hearing was created", //required
+            "createdBy": "The person who created the hearing", //required
+            "updatedDatetime": "The date the hearing was modified",
+            "updatedBy": "The date the hearing was modified"
+          }
+        ],
+        "approvedBy": "The legal person who has approved this outcome",
+        "approvedDateTime": "The date and time the hearing outcome was approved",
+        "createdBy": "The person who created the hearing", //required
+        "createdDatetime": "datetime", //required
+        "updatedDateTime": "The date the hearing was modified",
+        "updatedBy": "The date the hearing was modified"
+      }
+    ],
+    "createdDate": "The date the hearing was created", //required
+    "createdBy": "The person who created the hearing", //required
+    "updatedDate": "The date the hearing was modified",
+    "updatedBy": "The person who modified the hearing"
+  },
+  "children": [
+    {
+      "party": {
+        "partyID": "f683a361-f1a4-4f44-b49f-154a54a27900", //required
+        "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+        "partyType": "Individual", //required
+        "name": "London Borough of Southwark",
+        "firstName": "Tom",
+        "lastName": "Reeves",
+        "dateOfBirth": "2018-06-15",   
+        "childGender": "They identify in another way",
+        "childGenderIdentification": "Boy",          
+        "address": {
+          "AddressLine1": "Appartment 21", //required
+          "AddressLine2": "22 Wesley Drive",
+          "AddressLine3": "Wesley",
+          "PostTown": "BT11 1234",
+          "PostCode": "SE22 6SB",
+          "County": "Omagh",
+          "Country": "Northern Ireland"
+        },
+        "adoption": "Yes",
+        "placementOrderApplication": "Yes",
+        "keyDates": "child starting primary school or taking GCSEs",
+        "fathersName": "Rob Reeves",
+        "fathersResponsibility": "Yes",
+        "mothersName": "Isbella Reeves",
+        "detailsHidden": "Yes",
+        "detailsHiddenReason": "History of domestic violence with relatives",
+        "situationDate": "2018-11-08",
+        "careAndContact": "Place baby in local authority foster care",
+        "placementCourt": "Central London County Court",
+        "additionalNeeds": "Yes",
+        "additionalNeedsDetails": "Autism",
+        "livingSituation": "Living with respondents",
+        "socialWorkerTel": "0123456789",
+        "socialWorkerName": "Helen Green",
+        "litigationIssues": "YES",
+        "litigationIssuesDetails": ""
+      },
+      "firstChildIndicator": "Y"
+    },
+    {
+      "party": {
+        "partyID": "3b0b9640-2894-41eb-bef2-a031d18c8453", //required
+        "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+        "partyType": "Individual", //required
+        "name": "London Borough of Southwark",
+        "firstName": "Sarah",
+        "lastName": "Reeves",
+        "dateOfBirth": "2018-06-15",   
+        "childGender": "Female",
+        "address": {
+          "AddressLine1": "Carnegie House", //required
+          "AddressLine2": "Central Milton Keynes",
+          "AddressLine3": "Milton Keynes",
+          "PostTown": "MK",
+          "PostCode": "MK10 1SA",
+          "County": "London",
+          "Country": "BT66 7RR"
+        },
+        "adoption": "Yes",
+        "keyDates": "test child two key date",
+        "fathersName": "Scott Simpson",
+        "mothersName": "Sarah Simpson",
+        "detailsHidden": "Yes",
+        "situationDate": "2002-02-02",
+        "careAndContact": "test child two care and contact plan",
+        "placementCourt": "test child two court",
+        "additionalNeeds": "Yes",
+        "livingSituation": "Living with respondents",
+        "socialWorkerTel": "07749972242",
+        "litigationIssues": "YES",
+        "socialWorkerName": "Paul Wilsdon",
+        "detailsHiddenReason": "test child two contact details hidden reason",
+        "fathersResponsibility": "Yes",
+        "additionalNeedsDetails": "learning disabilities",
+        "litigationIssuesDetails": "test child two ability to take part in proceedings",
+        "placementOrderApplication": "Yes"
+      },
+      "firstChildIndicator": "N"
+    }
+  ],
+  "applicants": [
+    {
+      "party": {
+        "partyID": "f683a361-f1a4-4f44-b49f-154a54a27900", //required
+        "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+        "partyType": "Organisation",
+        "name": "London Borough of Southwark",
+        "jobTitle": "Legal adviser",          
+        "address": {
+          "AddressLine1": "160 Tooley St", //required
+          "AddressLine2": "Tooley road",
+          "AddressLine3": "Tooley",
+          "PostTown": "Limerick",
+          "PostCode": "SE1 2QH",
+          "County": "Galway",
+          "Country": "Ireland"
+        },
+        "email": {
+          "email": "jane@smith.com", //required
+          "emailUsageType": "correspondence"
+        },
+        "telephoneNumber": {
+          "telephoneNumber": "2020202020", //required
+          "telephoneUsageType": "Mobile", //required
+          "contactDirection": "Ask for Jane"
+        }
+      },
+      "leadApplicantIndicator": "Yes"
+    }
+  ],
+  "respondents": [
+    {
+      "party": {
+        "partyID": "f683a361-f1a4-4f44-b49f-154a54a27900", //required
+        "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+        "partyType": "Individual", //required
+        "title": "Mr", 
+        "firstName": "Paul",
+        "lastName": "Smith",
+        "gender": "They identify in another way",
+        "genderIdentify": "",
+        "dateOfBirth": "1944-05-02",
+        "placeOfBirth": "Crewe", 
+        "litigationIssues": "YES",
+        "litigationIssuesDetails": "respondent one test litigation reason",
+        "relationshipToChild": "Uncle",
+        "contactDetailsHidden": "Yes",
+        "contactDetailsHiddenReason": "Hide from all",         
+        "address": {
+          "AddressLine1": "The Grange", //required
+          "AddressLine2": "Clanconnel Gardens",
+          "AddressLine3": "Waringstown",
+          "PostTown": "Craigavon",
+          "PostCode": "BT66 7RR",
+          "County": "Gloucester",
+          "Country": "Isle of man"
+        },
+        "telephoneNumber": {
+          "telephoneNumber": "07712345678", //required
+          "telephoneUsageType": "Mobile"
+        }
+      },
+      "leadRespondentIndicator": "Y"
+    },
+    {
+      "party": {
+        "partyID": "a5e57424-9b5c-4722-be7e-9d9d9111c2b0", //required
+        "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+        "partyType": "Individual", //required
+        "title": "Mr", 
+        "firstName": "James",
+        "lastName": "Smith",
+        "gender": "They identify in another way",
+        "dateOfBirth": "1933-04-02",
+        "placeOfBirth": "Newry",
+        "genderIdentify": "Unknown",
+        "litigationIssues": "YES",
+        "relationshipToChild": "Brother",
+        "contactDetailsHidden": "Yes",
+        "litigationIssuesDetails": "respondent two litigation capacity reason",
+        "contactDetailsHiddenReason": "respondent two hidden contact details reason",     
+        "address": {
+          "AddressLine1": "Unit 12", //required
+          "AddressLine2": "Transa Way",
+          "AddressLine3": "Hillsborough",
+          "PostTown": "Lurgan",
+          "PostCode": "BT26 6RJ",
+          "County": "Down",
+          "Country": "United Kingdom"
+        },
+        "telephoneNumber": {
+          "telephoneNumber": "02892611016", //required
+          "telephoneUsageType": "Mobile" //required
+        }
+      },
+      "leadRespondentIndicator": "N"
+    },
+    {
+      "party": {
+        "partyID": "0a5d43cc-333a-4c03-adcf-c6e0d5fbb035", //required
+        "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+        "partyType": "Individual",
+        "title": "Mr", 
+        "lastName": "Another",
+        "gender": "Male",
+        "dateOfBirth": "1933-04-02",
+        "placeOfBirth": "Reading",
+        "genderIdentify": "Unknown",
+        "litigationIssues": "No",    
+        "address": {
+          "AddressLine1": "Flat 90", //required
+          "AddressLine2": "Surrey street",
+          "AddressLine3": "Surrey road",
+          "PostTown": "Surrey",
+          "PostCode": "BT22 2345",
+          "County": "Croydon",
+          "Country": "UK"
+        },
+        "telephoneNumber": {
+          "telephoneNumber": "0987654321", //required
+          "telephoneUsageType": "Mobile" //required
+        }
+      },
+      "leadRespondentIndicator": "N"
+    }
+  ],
+  "solicitor": {
+    "party": {
+      "partyID": "f683a361-f1a4-4f44-b49f-154a54a27900", //required
+      "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+      "partyType": "Individual", //required
+      "title": "Mr", 
+      "firstName": "Brian",
+      "lastName": "Banks",
+      "dateOfBirth": "1999-02-02",
+      "email": {
+        "email": "brian@banks.com", //required
+        "emailUsageType": "correspondence" //required
+      },
+      "telephoneNumber": {
+        "telephoneNumber": "020 2772 5772", //required
+        "telephoneUsageType": "Personal"
+      },
+      "mobile": "7665545327",      
+      "dx": "106 Southwark &",
+      "reference": "12345"
+    }
+  },
+  "proceeding": {
+    "ended": "02-02-2006",
+    "judge": "William Peters",
+    "started": "02-02-2002",
+    "children": "children subject to proceedings",
+    "guardian": "Mark Watson",
+    "caseNumber": "12345",
+    "ordersMade": "Supervision order",
+    "proceedingStatus": "Ongoing",
+    "onGoingProceeding": "Yes",
+    "sameGuardianNeeded": "No",
+    "sameGuardianDetails": "Some guardian not needed"
+  },
+  "factorsParenting": {
+    "anythingElse": "No",
+    "alcoholDrugAbuse": "Yes",
+    "domesticViolence": "Yes",
+    "alcoholDrugAbuseReason": "history of drug abuse",
+    "domesticViolenceReason": "history of domestic violence"
+  },
+  "allocationProposal": {
+    "proposal": "Section 9 circuit judge",
+    "proposalReason": "allocation proposal reason"
+  },
+  "hearingPreferences": {
+    "welsh": "Yes",
+    "litigation": "Yes",
+    "interpreter": "Yes",
+    "intermediary": "Yes",
+    "welshDetails": "welsh proceedings",
+    "litigationDetails": "litigation",
+    "interpreterDetails": "interpreter required",
+    "learningDisability": "Yes",
+    "intermediaryDetails": "intermediary hearing required",
+    "extraSecurityMeasures": "Yes",
+    "learningDisabilityDetails": "learning disability",
+    "extraSecurityMeasuresDetails": "security needed"
+  },
+  "internationalElement": {
+    "issues": "Yes",
+    "proceedings": "Yes",
+    "issuesReason": "Brussels 2 regulation",
+    "possibleCarer": "Yes",
+    "proceedingsReason": "Outside of the UK",
+    "significantEvents": "Yes",
+    "possibleCarerReason": "Aunt outside UK",
+    "significantEventsReason": "Something happened in France",
+    "internationalAuthorityInvolvement": "Yes",
+    "internationalAuthorityInvolvementDetails": "French authorities were involved"
+  },
+  "caseDocuments": [
+    {
+      "documentName": "Additional document one",
+      "documentType": "Social Work Other",
+      "documentLink": {
+        "documentURI": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8"
+      },
+      "document_filename": "form.pdf",
+      "document_binary_url": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8/binary",
+      "authoredDate": "23/02/2019 22:46:17",
+      "createdDateTime": "23/02/2019 22:46:17",
+      "receivedDatetime": "23/02/2019 22:46:17",
+      "createdBy": "James Nelson",
+      "AssociatedPartyIDs": []
+    },
+    {
+      "documentName": "documents_socialWorkPlan_document",
+      "documentType": "Social Work Plan",
+      "documentStatus": "To follow",   
+      "statusReason": "some text",      
+      "documentLink": {
+        "documentURI": "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55"
+      },
+      "document_filename": "form.pdf",
+      "document_binary_url": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8/binary",
+      "authoredDate": "23/02/2019 22:46:17",
+      "createdDateTime": "23/02/2019 22:46:17",
+      "receivedDatetime": "23/02/2019 22:46:17",
+      "createdBy": "James Nelson",
+      "AssociatedPartyIDs": []
+    },
+    {
+      "documentName": "documents_socialWorkStatement_document",
+      "documentType": "Social Work Statement",
+      "documentStatus": "To follow",   
+      "statusReason": "Social work statement and genogram text",
+      "documentLink": {
+        "documentURI": "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55"
+      },
+      "document_filename": "form.pdf",
+      "document_binary_url": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8/binary",
+      "authoredDate": "23/02/2019 22:46:17",
+      "createdDateTime": "23/02/2019 22:46:17",
+      "receivedDatetime": "23/02/2019 22:46:17",
+      "createdBy": "James Nelson",
+      "AssociatedPartyIDs": []
+    },
+    {
+      "documentName": "documents_socialWorkAssessment_document",
+      "documentType": "Social Work assessment",
+      "documentStatus": "To follow",   
+      "documentLink": {
+        "documentURI": "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55"
+      },
+      "document_filename": "form.pdf",
+      "document_binary_url": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8/binary",
+      "authoredDate": "23/02/2019 22:46:17",
+      "createdDateTime": "23/02/2019 22:46:17",
+      "receivedDatetime": "23/02/2019 22:46:17",
+      "createdBy": "James Nelson",
+      "AssociatedPartyIDs": []
+    },
+    {
+      "documentName": "documents_socialWorkChronology_document",
+      "documentType": "Social Work Chronology",
+      "documentStatus": "To follow",   
+      "documentLink": {
+        "documentURI": "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55"
+      },
+      "document_filename": "form.pdf",
+      "document_binary_url": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8/binary",
+      "authoredDate": "23/02/2019 22:46:17",
+      "createdDateTime": "23/02/2019 22:46:17",
+      "receivedDatetime": "23/02/2019 22:46:17",
+      "createdBy": "James Nelson",
+      "AssociatedPartyIDs": []
+    }
+  ],
+  "caseComments": [
+    {
+      "commentType": "Description of the comment", // required
+      "contentSummary": "One or two lines describing the comment", // required
+      "commentDetail": "The full comment description", // required
+      "commentCreatedDateTime": "Date and Time comment was created", // required
+      "commentCreatedBy": "Comment created by" // required
+    }
+  ],
+  "linkedCases": [
+    {
+      "Linked Case ID": "A 16 digit number generated by CCD", //required
+      "Case Linkded Date": "Provides the date the case was linked", //required
+      "Case Linked By": "The name of the person making the link", // required
+      "Linked Description": "The reason for making the link" // required
+    }
+  ],
+  "judges": [
+    {
+      "party": {
+        "partyID": "A unique id that has to be unique to Reform. This is a system id not to be viewed by users", //required
+        "idamID": "If the party has registered with us then this would be their IdAM Id.",
+        "partyType": "This has two valid values. Individual or Organisation.", //required
+        "title": "How the individual likes to be addressed.", 
+        "firstName": "The chosen first name or combination of first name and middle names the party wishes to be known by",
+        "lastName": "The chosen last name that the party wishes to be known by",
+        "dateOfBirth": "The date the party was born on",
+        "email": {
+          "email": "There are two accepted formats for a valid email address. They are user@domainname or user@domainname.extension", // required
+          "emailUsageType": "Determines what the email used for. For example correspondence"
+        },
+        "telephoneNumber": {
+          "telephoneNumber": "44 1234 123456. The first two digits are country code", //required
+          "telephoneUsageType": "For example, Home, Mobile etc", // required
+          "contactDirection": "For example, Please ask for Bob" 
+        }
+      },
+      "leadJudgeIndicator": "If the case a has more than one judge, is one judge considered the lead judge" //required
+    }
+
+  ]
+}

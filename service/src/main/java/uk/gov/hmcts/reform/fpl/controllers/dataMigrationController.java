@@ -44,6 +44,21 @@ public class dataMigrationController {
         // Init applicant party map
         Map<String, Object> party = new HashMap<String, Object>();
 
+        // Init applicant party prop (matches CCD collection structure)
+        Map<String, Object> value = new HashMap<String, Object>();
+
+        /*
+        applicant: {
+          name: ""
+        }
+        applicants: [
+            {
+                // party
+            }
+        ]
+         */
+
+
         // Build new applicant party object
         party.putAll(GetFullName(applicant.get("name").toString()));
         party.put("partyType", "Indivdual");
@@ -59,17 +74,18 @@ public class dataMigrationController {
         // Misc applicant data
         party.put("jobTitle", applicant.get("jobTitle"));
         party.put("personToContact", applicant.get("personToContact"));
-        party.put("isMigrated", true);
+
+        // Mandatory structure of a CCD collection
+        value.put("value", party);
+        value.put("id", "123");
 
         // Appending new applicants object to case data
         data.put("applicants", ImmutableList.builder()
-            .add(party)
+            .add(value)
             .build());
 
         // Remove orginal applicant key
         data.remove("applicant");
-
-        System.out.println(data);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -80,7 +96,7 @@ public class dataMigrationController {
         String[] names = name.trim().split("\\s+");
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("firstName", names[0]);
-        map.put("secondName", names[1]);
+        map.put("lastName", names[1]);
         return map;
     }
 }

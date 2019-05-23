@@ -264,20 +264,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "enterApplicants",
-    "Name": "Applicants",
-    "Description": "New applicants",
-    "DisplayOrder": 18,
-    "PreConditionState(s)": "Open",
-    "PostConditionState": "Open",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
-    "SecurityClassification": "Public",
-    "EndButtonLabel": "Save data"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "dataMigration",
     "Name": "Migrate data",
     "Description": "Migrate from old case structure to the new",
