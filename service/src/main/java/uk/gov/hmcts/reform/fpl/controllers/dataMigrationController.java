@@ -47,18 +47,6 @@ public class dataMigrationController {
         // Init applicant party prop (matches CCD collection structure)
         Map<String, Object> value = new HashMap<String, Object>();
 
-        /*
-        applicant: {
-          name: ""
-        }
-        applicants: [
-            {
-                // party
-            }
-        ]
-         */
-
-
         // Build new applicant party object
         party.putAll(GetFullName(applicant.get("name").toString()));
         party.put("partyType", "Indivdual");
@@ -86,6 +74,8 @@ public class dataMigrationController {
 
         // Remove orginal applicant key
         data.remove("applicant");
+
+        data.put("migrated", "Yes");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
