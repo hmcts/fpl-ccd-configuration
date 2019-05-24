@@ -15,8 +15,12 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Api
 @RestController
@@ -38,44 +42,64 @@ public class dataMigrationController {
         // Get case data
         Map<String, Object> data = caseDetails.getData();
 
-        // Orginal applicant
-        Map<String, Object> applicant = oMapper.convertValue(data.get("applicant"), Map.class);
+        Map<String, Object> respondents = oMapper.convertValue(data.get("respondents"), Map.class);
 
-        // Init applicant party map
-        Map<String, Object> party = new HashMap<String, Object>();
+        Map<String, Object> firstRespondent = oMapper.convertValue(respondents.get("firstRespondent"), Map.class);
 
-        // Init applicant party prop (matches CCD collection structure)
-        Map<String, Object> value = new HashMap<String, Object>();
+        Map<String, Object> transformedFirstRespondent = new HashMap<String, Object>();
 
-        // Build new applicant party object
-        party.putAll(GetFullName(applicant.get("name").toString()));
-        party.put("partyType", "Indivdual");
-        party.put("address", oMapper.convertValue(applicant.get("address"), Map.class));
-        party.put("email", ImmutableMap.builder()
-            .put("email", applicant.get("email"))
-            .build());
-        party.put("telephone", ImmutableMap.builder()
-            .put("telephone", applicant.get("telephone"))
-            .put("mobile", applicant.get("mobile"))
-            .build());
+        firstRespondent.put("id", "12345");
 
-        // Misc applicant data
-        party.put("jobTitle", applicant.get("jobTitle"));
-        party.put("personToContact", applicant.get("personToContact"));
+        // Reformat name
+        firstRespondent.putAll(GetFullName(firstRespondent.get("name").toString()));
+        firstRespondent.remove("name");
 
-        // Mandatory structure of a CCD collection
-        value.put("value", party);
-        value.put("id", "123");
+        // Reformat DOB
+        firstRespondent.put("dateOfBirth", firstRespondent.get("dob").toString());
+        firstRespondent.remove("dob");
 
-        // Appending new applicants object to case data
-        data.put("applicants", ImmutableList.builder()
-            .add(value)
+        // Reformat Telephone
+        String tempTelephone = firstRespondent.get("telephone").toString();
+        firstRespondent.remove("telephone");
+        firstRespondent.put("telephone", ImmutableMap.builder()
+            .put("telephone", tempTelephone)
             .build());
 
-        // Remove orginal applicant key
-        data.remove("applicant");
+        transformedFirstRespondent.put("value", firstRespondent);
+        transformedFirstRespondent.put("id", "12345");
 
+        List<Map<String, Object>> additionalRespondents = (List<Map<String, Object>>) oMapper.convertValue(respondents.get("additional"), List.class);
+
+        // additionalRespondents collection
+        List<Map<String, Object>> migratedRespondentCollection = additionalRespondents.stream().map(respondent -> {
+
+            // Reference to value
+            Map<String, Object> value = oMapper.convertValue(respondent.get("value"), Map.class);
+
+            // Reformat name
+            value.putAll(GetFullName(value.get("name").toString()));
+            value.remove("name");
+
+            // Reformat DOB
+            value.put("dateOfBirth", value.get("dob").toString());
+            value.remove("dob");
+
+            // Reformat Telephone
+            String tempRespondentTelephone = value.get("telephone").toString();
+            value.remove("telephone");
+            value.put("telephone", ImmutableMap.builder()
+                .put("telephone", tempRespondentTelephone)
+                .build());
+
+            return respondent;
+        }).collect(Collectors.toList());
+
+        // Adds first respondent to array
+        migratedRespondentCollection.add(0, transformedFirstRespondent);
+
+        data.remove("respondents");
         data.put("migrated", "Yes");
+        data.put("respondents", migratedRespondentCollection);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
