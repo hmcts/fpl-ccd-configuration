@@ -3,7 +3,7 @@ const config = require('../config.js');
 let caseId;
 let hillingdonCaseId;
 
-Feature('Cases visible only to respective local authority and admin');//.retry(2);
+Feature('Cases visible only to respective local authority and admin').retry(2);
 
 Before(async (I, caseViewPage, submitApplicationPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
