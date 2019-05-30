@@ -4,6 +4,7 @@ set -eu
 
 dir=$(dirname ${0})
 
+${dir}/utils/idam-add-role.sh caseworker-publiclaw-gatekeeper "Case Worker Public Law Gatekeeper"
 ${dir}/utils/idam-create-caseworker.sh damian@swansea.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor "(local-authority)"
 ${dir}/utils/idam-create-caseworker.sh kurt@swansea.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor "(local-authority)"
 ${dir}/utils/idam-create-caseworker.sh james@swansea.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor "(local-authority)"
