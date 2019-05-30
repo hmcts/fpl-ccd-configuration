@@ -234,7 +234,7 @@ integration {
 }
 
 pitest {
-  pitestVersion = '1.4.7'
+  pitestVersion = '1.4.8'
   testPlugin = 'junit5'
   targetClasses = ['uk.gov.hmcts.reform.fpl.*']
   testSourceSets = [sourceSets.test, sourceSets.integrationTest]
