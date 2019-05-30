@@ -25,5 +25,3 @@ Scenario('Sign in as gatekeeper', (I, loginPage) => {
   I.see('Create new case');
   I.signOut();
 });
-
-
