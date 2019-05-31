@@ -16,7 +16,7 @@ public class PBANumberHelper {
     }
 
     public static String updatePBANumber(String pbaNumber) {
-        if(pbaNumber.startsWith("PBA")){
+        if (pbaNumber.startsWith("PBA")) {
             return pbaNumber;
         }
 
