@@ -9,8 +9,6 @@ public class PBANumberHelper {
 
     private static final Pattern PBA_NUMBER_REGEX = Pattern.compile("[0-9]{7}");
 
-    private static final Pattern PBA_AT_START_REGEX = Pattern.compile("PBA(.*)");
-
     private static final String PBA_NUMBER_FIELD_ERROR = "Payment by account (PBA) number must include 7 numbers";
 
     private PBANumberHelper() {
@@ -18,12 +16,11 @@ public class PBANumberHelper {
     }
 
     public static String updatePBANumber(String pbaNumber) {
-        Matcher startsWithPBA = PBA_AT_START_REGEX.matcher(pbaNumber);
-        if (!startsWithPBA.matches()) {
-            return "PBA" + pbaNumber;
-        } else {
+        if(pbaNumber.startsWith("PBA")){
             return pbaNumber;
         }
+
+        return "PBA" + pbaNumber;
     }
 
     public static List<String> validatePBANumber(String pbaNumber) {

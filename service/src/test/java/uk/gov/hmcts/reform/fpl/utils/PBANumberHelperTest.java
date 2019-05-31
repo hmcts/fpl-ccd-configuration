@@ -16,7 +16,7 @@ public class PBANumberHelperTest {
         // when I enter it
         String actual = PBANumberHelper.updatePBANumber(input);
 
-        // then PBA is added to the start of  number.
+        // then PBA is added to the start of number.
         assertThat(actual).isEqualTo("PBA1234567");
     }
 
@@ -40,7 +40,7 @@ public class PBANumberHelperTest {
         // when I enter it
         String actual = PBANumberHelper.updatePBANumber(input);
 
-        // then PBA is unchanged.
+        // then PBA has PBA added to the start.
         assertThat(actual).isEqualTo("PBApba1234567");
     }
 
@@ -48,6 +48,18 @@ public class PBANumberHelperTest {
     public void givenPBAAnd7DigitNumber_whenIValidateIt_thenThereAreNoValidationErrors() {
         // given PBA and a 7 digit number
         String input = "PBA1234567";
+
+        // when I enter it
+        List<String> actual = PBANumberHelper.validatePBANumber(input);
+
+        // then PBA number is valid and there are no validation errors
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void givenpbaAnd7DigitNumber_whenIValidateIt_thenThereAreNoValidationErrors() {
+        // given pba and a 7 digit number
+        String input = "pba1234567";
 
         // when I enter it
         List<String> actual = PBANumberHelper.validatePBANumber(input);
