@@ -128,21 +128,23 @@ withPipeline(type, product, component) {
 //  Temporarily disable CCD configuration in AAT and DEMO environment after pointing to SIDAM
 //  Reason: SIDAM does not have testing endpoint used by current version of CCD configurer scripts
 //
-//  before('smoketest:aat-staging') {
+  before('smoketest:aat-staging') {
+    env.GATEKEEPER_USER_USERNAME = 'gatekeeper@mailnesia.com'
 //    env.CCD_DEF_CASE_SERVICE_BASE_URL = env.TEST_URL.replace('https', 'http')
 //
 //    sh """
 //      ./kubernetes/configurer/configure-ccd.sh
 //    """
-//  }
-//
-//  before('smoketest:aat') {
+  }
+
+  before('smoketest:aat') {
+    env.GATEKEEPER_USER_USERNAME = 'gatekeeper@mailnesia.com'
 //    env.CCD_DEF_CASE_SERVICE_BASE_URL = env.TEST_URL.replace('https', 'http')
 //
 //    sh """
 //      ./kubernetes/configurer/configure-ccd.sh
 //    """
-//  }
+  }
 //
 //  before('smoketest:demo-staging') {
 //    env.CCD_DEF_CASE_SERVICE_BASE_URL = env.TEST_URL.replace('https', 'http')
