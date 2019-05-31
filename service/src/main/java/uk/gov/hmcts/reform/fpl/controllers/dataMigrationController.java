@@ -1,26 +1,22 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableList;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import org.springframework.web.bind.annotation.*;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.SubmittedCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.Event;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Api
 @RestController
@@ -28,16 +24,32 @@ import java.util.stream.Stream;
 public class dataMigrationController {
     private final MapperService mapperService;
     private ObjectMapper oMapper = new ObjectMapper();
+    private final AuthTokenGenerator authTokenGenerator;
+    private final CoreCaseDataApi coreCaseDataApi;
 
     @Autowired
-    public dataMigrationController(MapperService mapperService) {
+    public dataMigrationController(
+        MapperService mapperService,
+        AuthTokenGenerator authTokenGenerator,
+        CoreCaseDataApi coreCaseDataApi
+    ) {
         this.mapperService = mapperService;
+        this.authTokenGenerator = authTokenGenerator;
+        this.coreCaseDataApi = coreCaseDataApi;
     }
 
-    @PostMapping("/submitted")
+    @PostMapping("/submitted/{id}")
     @SuppressWarnings("unchecked")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+    public void handleAboutToSubmitEvent(
+        @PathVariable("id") String caseID,
+        @RequestHeader(value = "user-id") String userID,
+        @RequestHeader(value = "authorization") String authorization) {
+
+        // Init service token
+        String serviceToken = this.authTokenGenerator.generate();
+
+        // Get caseDetails from CCD
+        CaseDetails caseDetails = this.coreCaseDataApi.getCase(authorization, serviceToken, caseID);
 
         // Get case data
         Map<String, Object> data = caseDetails.getData();
@@ -47,8 +59,6 @@ public class dataMigrationController {
         Map<String, Object> firstRespondent = oMapper.convertValue(respondents.get("firstRespondent"), Map.class);
 
         Map<String, Object> transformedFirstRespondent = new HashMap<String, Object>();
-
-        firstRespondent.put("id", "12345");
 
         // Reformat name
         firstRespondent.putAll(GetFullName(firstRespondent.get("name").toString()));
@@ -62,7 +72,7 @@ public class dataMigrationController {
         String tempTelephone = firstRespondent.get("telephone").toString();
         firstRespondent.remove("telephone");
         firstRespondent.put("telephone", ImmutableMap.builder()
-            .put("telephone", tempTelephone)
+            .put("telephoneNumber", tempTelephone)
             .build());
 
         transformedFirstRespondent.put("value", firstRespondent);
@@ -88,7 +98,7 @@ public class dataMigrationController {
             String tempRespondentTelephone = value.get("telephone").toString();
             value.remove("telephone");
             value.put("telephone", ImmutableMap.builder()
-                .put("telephone", tempRespondentTelephone)
+                .put("telephoneNumber", tempRespondentTelephone)
                 .build());
 
             return respondent;
@@ -97,13 +107,33 @@ public class dataMigrationController {
         // Adds first respondent to array
         migratedRespondentCollection.add(0, transformedFirstRespondent);
 
-        data.remove("respondents");
         data.put("migrated", "Yes");
-        data.put("respondents", migratedRespondentCollection);
+        data.put("respondents1", migratedRespondentCollection);
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
+        StartEventResponse startEventResponse = this.coreCaseDataApi
+            .startEventForCaseWorker(
+                authorization,
+                serviceToken,
+                userID,
+                "PUBLICLAW",
+                "CARE_SUPERVISION_EPO",
+                caseID,
+                "dataMigration"
+        );
+
+        CaseDataContent caseData = CaseDataContent.builder()
+            .eventToken(startEventResponse.getToken())
+            .event(Event.builder()
+                .id(startEventResponse.getEventId())
+                .build()
+            ).data(data)
             .build();
+
+        CaseDetails updatedCaseDetails = this.coreCaseDataApi.submitEventForCaseWorker(
+            authorization, serviceToken, userID, "PUBLICLAW",
+            "CARE_SUPERVISION_EPO", caseID, true, caseData);
+
+        System.out.println(updatedCaseDetails.getCallbackResponseStatus());
     }
 
     private Map<String, Object> GetFullName(String name)  {

@@ -273,7 +273,6 @@
     "ShowSummary": "N",
     "ShowEventNotes": "N",
     "SecurityClassification": "Public",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/migration/submitted",
     "EndButtonLabel": "Migrate data"
   },
   {

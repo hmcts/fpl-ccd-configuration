@@ -310,7 +310,32 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/mid-event"
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-respondents/mid-event",
+    "FieldShowCondition": "migrated CONTAINS \"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "migrated",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "respondents CONTAINS \"12345\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "migrated CONTAINS \"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",

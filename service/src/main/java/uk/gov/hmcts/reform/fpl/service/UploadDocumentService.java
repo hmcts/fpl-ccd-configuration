@@ -31,8 +31,12 @@ public class UploadDocumentService {
     public Document uploadPDF(String userId, String authorization, byte[] pdf, String fileName) {
         MultipartFile file = new InMemoryMultipartFile("files", fileName, MediaType.APPLICATION_PDF_VALUE, pdf);
 
+        String serviceToken = authTokenGenerator.generate();
+        System.out.println(authorization);
+        System.out.println(serviceToken);
+
         UploadResponse response = documentUploadClient.upload(authorization,
-            authTokenGenerator.generate(), userId, newArrayList(file));
+            serviceToken, userId, newArrayList(file));
 
         Document document = response.getEmbedded().getDocuments().stream()
             .findFirst()
