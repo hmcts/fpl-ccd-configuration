@@ -8,7 +8,6 @@ module.exports = {
     casePeople: 'People in the case',
     legalBasis: 'Legal basis',
     documents: 'cut-tabs>div>ul>li>a[href*=Documents]',
-    attachedPdf: 'ccd-read-document-field>a',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',

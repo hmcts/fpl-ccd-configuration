@@ -1,7 +1,9 @@
 const config = require('../config.js');
+const fields = {
+  documentLink: 'ccd-read-document-field>a',
+};
 
 Feature('Submit Case').retry(2);
-
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   I.selectOption(caseViewPage.actionsDropdown, config.applicationActions.submitCase);
@@ -16,6 +18,7 @@ Scenario('Can give consent and submit the case', (I, caseViewPage, submitApplica
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.reloadPage();
   I.waitForElement(caseViewPage.tabs.attachedPdf, 5);
+  I.waitForElement(fields.documentLink, 5);
   I.see('Barnet_Council_v_Smith.pdf');
 });
 
