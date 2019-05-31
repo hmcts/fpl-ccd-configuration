@@ -1002,6 +1002,7 @@ metadata:
   labels:
     app: shared-database
 spec:
+  type: LoadBalancer
   ports:
     - port: 5432
   selector:
