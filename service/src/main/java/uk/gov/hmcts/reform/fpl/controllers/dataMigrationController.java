@@ -71,9 +71,7 @@ public class dataMigrationController {
         // Reformat Telephone
         String tempTelephone = firstRespondent.get("telephone").toString();
         firstRespondent.remove("telephone");
-        firstRespondent.put("telephone", ImmutableMap.builder()
-            .put("telephoneNumber", tempTelephone)
-            .build());
+        firstRespondent.put("telephone", tempTelephone);
 
         transformedFirstRespondent.put("value", firstRespondent);
         transformedFirstRespondent.put("id", "12345");
@@ -97,9 +95,7 @@ public class dataMigrationController {
             // Reformat Telephone
             String tempRespondentTelephone = value.get("telephone").toString();
             value.remove("telephone");
-            value.put("telephone", ImmutableMap.builder()
-                .put("telephoneNumber", tempRespondentTelephone)
-                .build());
+            value.put("telephone", tempRespondentTelephone);
 
             return respondent;
         }).collect(Collectors.toList());
@@ -107,7 +103,7 @@ public class dataMigrationController {
         // Adds first respondent to array
         migratedRespondentCollection.add(0, transformedFirstRespondent);
 
-        data.put("migrated", "Yes");
+        data.remove("respondents");
         data.put("respondents1", migratedRespondentCollection);
 
         StartEventResponse startEventResponse = this.coreCaseDataApi
@@ -118,7 +114,7 @@ public class dataMigrationController {
                 "PUBLICLAW",
                 "CARE_SUPERVISION_EPO",
                 caseID,
-                "dataMigration"
+                "enterRespondentsNew"
         );
 
         CaseDataContent caseData = CaseDataContent.builder()

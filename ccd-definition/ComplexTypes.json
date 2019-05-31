@@ -1133,6 +1133,126 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "partyType",
+    "FieldType": "Text",
+    "ElementLabel": "Party type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "firstName",
+    "FieldType": "Text",
+    "ElementLabel": "First name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "lastName",
+    "FieldType": "Text",
+    "ElementLabel": "Last name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "dateOfBirth",
+    "FieldType": "Date",
+    "ElementLabel": "Date of birth",
+    "HintText": "For example, 31 3 1980",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "gender",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "GenderList",
+    "ElementLabel": "Gender",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "genderIdentify",
+    "FieldType": "Text",
+    "ElementLabel": "What gender do they identify with?",
+    "FieldShowCondition": "gender=\"They identify in another way\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "placeOfBirth",
+    "FieldType": "Text",
+    "ElementLabel": "Place of birth",
+    "HintText": "For example, town or city",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Current address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "telephone",
+    "FieldType": "Text",
+    "ElementLabel": "Telephone number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "relationshipToChild",
+    "FieldType": "TextArea",
+    "ElementLabel": "What is the respondent’s relationship to the child or children in this case?",
+    "HintText": "Include: the name of the child or children, the respondent’s relationship to them and any details if you’re not sure this person has parental responsibility",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "contactDetailsHidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Do you need contact details hidden from anyone?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "contactDetailsHiddenReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "contactDetailsHidden=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "litigationIssues",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LitigationCapacityIssues",
+    "ElementLabel": "Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "litigationIssuesDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
+    "FieldShowCondition": "litigationIssues=\"YES\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "name",
     "FieldType": "Text",
@@ -1187,7 +1307,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "telephone",
-    "FieldType": "PhoneUK",
+    "FieldType": "Text",
     "ElementLabel": "Telephone number",
     "SecurityClassification": "Public"
   },
