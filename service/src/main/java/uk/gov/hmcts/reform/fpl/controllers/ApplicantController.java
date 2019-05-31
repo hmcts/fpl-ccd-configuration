@@ -37,7 +37,7 @@ public class ApplicantController {
         // if pba number is entered, ensure it always starts with PBA before its validated
         String pbaNumberData = (String) caseDetails.getData().get(PBA_NUMBER_CCD_KEY);
         if (pbaNumberData != null) {
-            String newPbaNumberData = PBANumberHelper.updatePBANumber(caseDetails);
+            String newPbaNumberData = PBANumberHelper.updatePBANumber(pbaNumberData);
             caseDetails.getData().put(PBA_NUMBER_CCD_KEY, newPbaNumberData);
         }
 

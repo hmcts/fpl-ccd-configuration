@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -11,9 +9,7 @@ public class PBANumberHelper {
 
     private static final Pattern PBA_NUMBER_REGEX = Pattern.compile("[0-9]{7}");
 
-    private static final Pattern PBA_AT_START_REGEX = Pattern.compile("^PBA");
-
-    private static final String PBA_NUMBER_CCD_KEY = "pbaNumber";
+    private static final Pattern PBA_AT_START_REGEX = Pattern.compile("PBA(.*)");
 
     private static final String PBA_NUMBER_FIELD_ERROR = "Payment by account (PBA) number must include 7 numbers";
 
@@ -21,14 +17,12 @@ public class PBANumberHelper {
         // NO-OP
     }
 
-    public static String updatePBANumber(CaseDetails caseDetails) {
-        String pbaNumberData = (String) caseDetails.getData().get(PBA_NUMBER_CCD_KEY);
-
-        Matcher startsWithPBA = PBA_AT_START_REGEX.matcher(pbaNumberData);
+    public static String updatePBANumber(String pbaNumber) {
+        Matcher startsWithPBA = PBA_AT_START_REGEX.matcher(pbaNumber);
         if (!startsWithPBA.matches()) {
-            return "PBA" + pbaNumberData;
+            return "PBA" + pbaNumber;
         } else {
-            return pbaNumberData;
+            return pbaNumber;
         }
     }
 
