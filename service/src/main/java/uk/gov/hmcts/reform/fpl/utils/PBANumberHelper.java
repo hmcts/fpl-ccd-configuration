@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
-import java.util.ArrayList;
+import com.google.common.collect.ImmutableList;
+
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,16 +25,17 @@ public class PBANumberHelper {
     }
 
     public static List<String> validatePBANumber(String pbaNumber) {
-        List<String> pbaNumberErrors = new ArrayList<String>();
+        ImmutableList.Builder<String> pbaNumberErrors = ImmutableList.builder();
 
         String remaining = pbaNumber.substring(3);
         Matcher sevenDigits = PBA_NUMBER_REGEX.matcher(remaining);
 
         if (!sevenDigits.matches()) {
+            System.out.println("ADDING PBA NUMBER ERROR");
             pbaNumberErrors.add(PBA_NUMBER_FIELD_ERROR);
         }
 
-        return pbaNumberErrors;
+        return pbaNumberErrors.build();
     }
 
 }
