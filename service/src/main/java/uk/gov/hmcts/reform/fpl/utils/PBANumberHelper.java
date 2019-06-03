@@ -31,7 +31,6 @@ public class PBANumberHelper {
         Matcher sevenDigits = PBA_NUMBER_REGEX.matcher(remaining);
 
         if (!sevenDigits.matches()) {
-            System.out.println("ADDING PBA NUMBER ERROR");
             pbaNumberErrors.add(PBA_NUMBER_FIELD_ERROR);
         }
 

@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,6 +71,9 @@ public class ApplicantControllerTest {
 
         // then
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+
+        String actualPbaNumber = extractPbaNumberFromApplicant(callbackResponse);
+        assertThat(actualPbaNumber).isEqualTo("PBA1234567");
     }
 
     @Test
@@ -84,6 +86,8 @@ public class ApplicantControllerTest {
 
         // then
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+        String actualPbaNumber = extractPbaNumberFromApplicant(callbackResponse);
+        assertThat(actualPbaNumber).isEqualTo("PBA1234567");
     }
 
     @Test
@@ -96,6 +100,16 @@ public class ApplicantControllerTest {
 
         // then
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+        String actualPbaNumber = extractPbaNumberFromApplicant(callbackResponse);
+        assertThat(actualPbaNumber).isNull();
+    }
+
+    @SuppressWarnings("unchecked")
+    private String extractPbaNumberFromApplicant(AboutToStartOrSubmitCallbackResponse callbackResponse) {
+        Map<String, Object> map = callbackResponse.getData();
+        Map<String, Object> applicantMap = (Map<String, Object>) map.get("applicant");
+        String actualPbaNumber = (String) applicantMap.get("pbaNumber");
+        return actualPbaNumber;
     }
 
     private Applicant createApplicant(String pbaNumber) {

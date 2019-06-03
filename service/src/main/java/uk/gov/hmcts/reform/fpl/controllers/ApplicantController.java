@@ -28,24 +28,24 @@ public class ApplicantController {
     @SuppressWarnings("unchecked")
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
-        System.out.println("START: ENTER APPLICANT: MID EVENT");
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-
-        Map<String, Object> ccdata = (Map<String, Object>) caseDetails.getData();
-        for (Map.Entry<String, Object> entry : ccdata.entrySet()) {
-            System.out.println("ccd data keys=" + entry.getKey());
-        }
 
         Map<String, Object> applicantData = (Map<String, Object>) caseDetails.getData().get("applicant");
         Applicant applicant = mapperService.mapObject(applicantData, Applicant.class);
-        String pbaNumberData = applicant.getPbaNumber();
         List<String> validationErrors = new ArrayList<String>();
 
         // if pba number is entered, ensure it always starts with PBA before its validated
-        if (pbaNumberData != null) {
-            System.out.println("PBA NUMBER ENTERED");
-            String newPbaNumberData = PBANumberHelper.updatePBANumber(pbaNumberData);
+        // unless it already has PBA at the start
+        if (applicant.getPbaNumber() != null) {
+            String newPbaNumberData = PBANumberHelper.updatePBANumber(applicant.getPbaNumber());
             validationErrors = PBANumberHelper.validatePBANumber(newPbaNumberData);
+            // only save a valid pbanumber back to ccd.
+            if (validationErrors.isEmpty()) {
+                // update applicant map of the updated applicant pba number
+                // put back to ccd
+                applicantData.put("pbaNumber", newPbaNumberData);
+                caseDetails.getData().put("applicant", applicantData);
+            }
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
