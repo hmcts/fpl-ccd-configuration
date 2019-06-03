@@ -1,12 +1,10 @@
-FROM hmcts/cnp-java-base:openjdk-8u181-jre-alpine3.8-1.0
+FROM hmcts/cnp-java-base:openjdk-11-distroless-1.0-beta
 
-# Mandatory!
-ENV APP service.jar
-ENV APPLICATION_TOTAL_MEMORY 512M
-ENV APPLICATION_SIZE_ON_DISK_IN_MB 40
-
-COPY build/libs/${APP} /opt/app/
+EXPOSE 4000
 
 HEALTHCHECK --interval=10s --timeout=10s --retries=10 CMD http_proxy="" curl --silent --fail http://localhost:4000/health
 
-EXPOSE 4000
+COPY lib/applicationinsights-agent-2.4.0-BETA-SNAPSHOT.jar lib/AI-Agent.xml /opt/app/
+COPY build/libs/service.jar /opt/app/
+
+CMD ["service.jar"]

@@ -17,23 +17,13 @@ services:
       - IDAM_S2S_AUTH_TOTP_SECRET=AABBCCDDEEFFGGHH
       - FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING=swansea.gov.uk=>SA;hillingdon.gov.uk=>HN
       - FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING=SA=>Swansea City Council;HN=>London Borough Hillingdon;PCC=>Portsmouth City Council;STF=>Staffordshire County Council;SCC=>Southampton City Council
-      - FPL_LOCAL_AUTHORITY_USER_MAPPING=SA=>29,30,31;HN=>32,33
+      - FPL_LOCAL_AUTHORITY_USER_MAPPING=SA=>22,23,24;HN=>25,26
       - FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING=SA=>Swansea Family Court:FamilyPublicLaw+sa@gmail.com;HN=>Portsmouth Combined Court:FamilyPublicLaw+hn@gmail.com
       - FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING=SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com
       - NOTIFY_API_KEY
       - CCD_UI_BASE_URL=http://localhost:3451
       # these environment variables are used by java-logging library
-      - ROOT_APPENDER
-      - JSON_CONSOLE_PRETTY_PRINT
-      - ROOT_LOGGING_LEVEL
-      - REFORM_SERVICE_TYPE
-      - REFORM_SERVICE_NAME
-      - REFORM_TEAM
-      - REFORM_ENVIRONMENT
-      - LOGBACK_DATE_FORMAT
-      - LOGBACK_REQUIRE_THREAD
-      - LOGBACK_REQUIRE_ALERT_LEVEL=false
-      - LOGBACK_REQUIRE_ERROR_CODE=false
+      - APPINSIGHTS_INSTRUMENTATIONKEY=fake-key
     ports:
       - $SERVER_PORT:$SERVER_PORT
     networks:
