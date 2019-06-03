@@ -8,15 +8,18 @@ module.exports = {
       details: '#hearingPreferences_interpreterDetails',
     },
     intermediaryNo: '#hearingPreferences_intermediary-No',
-    litigationCapacityNo: '#hearingPreferences_litigation-No',
-    learningDisability: {
-      yes: '#hearingPreferences_learningDisability-Yes',
-      details: '#hearingPreferences_learningDisabilityDetails',
+    disabilityAssistance: {
+      yes: '#hearingPreferences_disabilityAssistance-Yes',
+      details: '#hearingPreferences_disabilityAssistanceDetails',
     },
     welshNo: '#hearingPreferences_welsh-No',
-    security: {
+    extraSecurityMeasures: {
       yes: '#hearingPreferences_extraSecurityMeasures-Yes',
       details: '#hearingPreferences_extraSecurityMeasuresDetails',
+    },
+    somethingElse: {
+      yes: '#hearingPreferences_somethingElse-Yes',
+      details: '#hearingPreferences_somethingElseDetails',
     },
   },
 
@@ -29,13 +32,9 @@ module.exports = {
     I.click(this.fields.intermediaryNo);
   },
 
-  enterLitigationIssues() {
-    I.click(this.fields.litigationCapacityNo);
-  },
-
-  enterLearningDisability(details = 'learning difficulty') {
-    I.click(this.fields.learningDisability.yes);
-    I.fillField(this.fields.learningDisability.details, details);
+  enterDisabilityAssistance(details = 'learning difficulty') {
+    I.click(this.fields.disabilityAssistance.yes);
+    I.fillField(this.fields.disabilityAssistance.details, details);
   },
 
   enterWelshProceedings() {
@@ -43,7 +42,12 @@ module.exports = {
   },
 
   enterExtraSecurityMeasures(details = 'Separate waiting rooms') {
-    I.click(this.fields.security.yes);
-    I.fillField(this.fields.security.details, details);
+    I.click(this.fields.extraSecurityMeasures.yes);
+    I.fillField(this.fields.extraSecurityMeasures.details, details);
+  },
+
+  enterSomethingElse(details = 'I need this for this person') {
+    I.click(this.fields.somethingElse.yes);
+    I.fillField(this.fields.somethingElse.details, details);
   },
 };
