@@ -7,7 +7,7 @@ module.exports = {
     ordersHearing: 'Orders and hearing',
     casePeople: 'People in the case',
     legalBasis: 'Legal basis',
-    documents: 'Documents',
+    documents: 'cut-tabs>div>ul>li>a[href*=Documents]',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
