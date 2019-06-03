@@ -32,7 +32,6 @@ Application from London Borough of Southwark submitted on 26 November
 Orders
 Hearing needed
 Allocation proposal
-2 February 2002Date of birth
 16 years oldAge
 Sarah ReevesName
 History of domestic violence with relatives
@@ -59,6 +58,9 @@ BoyGender
 5 months oldAge
 Tom ReevesName
 Yes
+I need this from someone
+Something else
+Yes
 security needed
 Separate waiting room or other security measures
 Yes
@@ -76,7 +78,6 @@ Interpreter
 Attending the hearing
 Child 1
 Child 2
-Hide from all
 YesConfidential contact details
 -Anything else to help take part in proceedings
 respondent one test litigation reason
@@ -116,8 +117,8 @@ Date this began: 2 February 2002
 , Milton Keynes, Central Milton KeynesCarnegie House
 Living with respondentsChild's living situation
 GirlGender
+2 February 2002Date of birth
 Respondent 1
--Confidential contact details
 -Anything else to help take part in proceedings
 NoLitigation capacity issues
 -Separate waiting room or other security measures
@@ -153,9 +154,9 @@ UnknownGender
 2 April 1933Date of birth
 85 years oldAge
 James SmithName
+Hide from all
 Respondent 2
 Respondent 3
-2 February 2000Date of birth
 Peter LaveryName
 NoConfidential contact details
 -Anything else to help take part in the proceedings
@@ -187,11 +188,11 @@ jane@smith.comEmail address
 Legal adviserJob title
 Jane SmithContact name
 London Borough of SouthwarkName
+-Confidential contact details
 Applicant
 Other 1
 Other 2
 Yes
-Future risk of harm
 Past harm
 Neglect
 Yes
@@ -206,6 +207,7 @@ Yes
 Future risk of harm
 Past harm
 Physical harm including non-accidental injury
+grounds for application criteria
 Beyond parental control.
 Not receiving care that would be reasonably expected
 from a parent.
@@ -235,9 +237,9 @@ Friend of familyRelationship to the child
 , Newcastle, Newcastle street, Newcastle roadFlat 29Current address
 LisburnPlace of birth
 MaleGender
+2 February 2000Date of birth
 Grounds for the application
 Threshold evidence
-grounds for application criteria
 Risk and harm to children
 To follow
 some text
@@ -260,8 +262,8 @@ Supervision orderOrders made
 02-02-2002Started
 12345Case number
 YesOngoing or previous proceedings
-YesGovernment or central authority in another country
 French authorities were involved
+YesGovernment or central authority in another country
 been involved
 Outside of the UK
 YesProceedings outside the UK
@@ -276,6 +278,7 @@ history of domestic violence
 YesDomestic violence
 history of drug abuse
 YesAlcohol or drug abuse
+Future risk of harm
 Factors affecting parenting
 International element
 Other proceedings

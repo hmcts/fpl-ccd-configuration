@@ -418,10 +418,10 @@
       <dt class="data-list__title">Facilities or assistance for a disability</dt>
       <dd class="data-list__definition">
         {% if case_data.hearingPreferences is not empty and
-        case_data.hearingPreferences.learningDisability is not empty %}
-          {{ case_data.hearingPreferences.learningDisability }}
-          {% if case_data.hearingPreferences.learningDisability == 'Yes' %}
-            <span class="u-block">{{ case_data.hearingPreferences.learningDisabilityDetails }}</span>
+        case_data.hearingPreferences.disabilityAssistance is not empty %}
+          {{ case_data.hearingPreferences.disabilityAssistance }}
+          {% if case_data.hearingPreferences.disabilityAssistance == 'Yes' %}
+            <span class="u-block">{{ case_data.hearingPreferences.disabilityAssistanceDetails }}</span>
           {% endif %}
         {% else %}
           -
@@ -437,6 +437,20 @@
           {% if case_data.hearingPreferences.extraSecurityMeasures == 'Yes' %}
             <span class="u-block">{{ case_data.hearingPreferences.extraSecurityMeasuresDetails }}</span>
           {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Something else</dt>
+      <dd class="data-list__definition">
+        {% if case_data.hearingPreferences is not empty and
+        case_data.hearingPreferences.somethingElse is not empty %}
+          {{ case_data.hearingPreferences.somethingElse }}
+        {% if case_data.hearingPreferences.somethingElse == 'Yes' %}
+          <span class="u-block">{{ case_data.hearingPreferences.somethingElseDetails }}</span>
+        {% endif %}
         {% else %}
           -
         {% endif %}
