@@ -201,7 +201,8 @@
     "ID": "hearingPreferences",
     "Label": "Attending the hearing",
     "FieldType": "HearingPreferences",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "HintText": "Is any of the following needed to help someone take part in a hearing?"
   },
   {
     "LiveFrom": "01/01/2017",
