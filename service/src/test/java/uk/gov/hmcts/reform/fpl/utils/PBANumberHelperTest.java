@@ -41,7 +41,7 @@ public class PBANumberHelperTest {
         String actual = PBANumberHelper.updatePBANumber(input);
 
         // then PBA has PBA added to the start.
-        assertThat(actual).isEqualTo("PBApba1234567");
+        assertThat(actual).isEqualTo("PBA1234567");
     }
 
     @Test

@@ -19,9 +19,11 @@ public class PBANumberHelper {
     public static String updatePBANumber(String pbaNumber) {
         if (pbaNumber.startsWith("PBA")) {
             return pbaNumber;
+        } else if (pbaNumber.startsWith("pba")) {
+            return pbaNumber.replace("pba", "PBA");
+        } else {
+            return "PBA" + pbaNumber;
         }
-
-        return "PBA" + pbaNumber;
     }
 
     public static List<String> validatePBANumber(String pbaNumber) {

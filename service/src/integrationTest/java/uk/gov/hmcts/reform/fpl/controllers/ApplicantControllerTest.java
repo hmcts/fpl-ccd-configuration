@@ -50,7 +50,7 @@ public class ApplicantControllerTest {
     }
 
     @Test
-    void shouldReturnErrorWhenPbaNumberDoesNotStartWithPBAAndIsSevenDigits() throws Exception {
+    void shouldReturnNoErrorsWhenPbaNumberStartsWithpbaAndIsSevenDigits() throws Exception {
         // given
         String pbaNumber = "pba1234567";
 
@@ -58,7 +58,10 @@ public class ApplicantControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createApplicant(pbaNumber));
 
         // then
-        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+
+        String actualPbaNumber = extractPbaNumberFromApplicant(callbackResponse);
+        assertThat(actualPbaNumber).isEqualTo("PBA1234567");
     }
 
     @Test
