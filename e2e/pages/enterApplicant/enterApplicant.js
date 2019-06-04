@@ -12,6 +12,7 @@ module.exports = {
       mobileNumber: '#applicant_mobile',
       telephoneNumber: '#applicant_telephone',
       email: '#applicant_email',
+      pbaNumber: '#applicant_pbaNumber',
     },
     solicitor: {
       name: '#solicitor_name',
@@ -33,6 +34,7 @@ module.exports = {
     I.fillField(this.fields.applicant.mobileNumber, applicant.mobileNumber);
     I.fillField(this.fields.applicant.telephoneNumber, applicant.telephoneNumber);
     I.fillField(this.fields.applicant.email, applicant.email);
+    I.fillField(this.fields.applicant.pbaNumber, applicant.pbaNumber);
   },
 
   enterSolicitorDetails(solicitor) {

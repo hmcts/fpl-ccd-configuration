@@ -16,4 +16,5 @@ module.exports = {
   mobileNumber: '07000000000',
   telephoneNumber: '00000000000',
   email: 'applicant@email.com',
+  pbaNumber: 'PBA1234567',
 };
