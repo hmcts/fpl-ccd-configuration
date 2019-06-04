@@ -608,7 +608,7 @@
     "ID": "HearingPreferences",
     "ListElementCode": "interpreterDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "Give details",
+    "ElementLabel": "Give details including person, language and dialect",
     "FieldShowCondition": "interpreter=\"Yes\"",
     "SecurityClassification": "Public"
   },
