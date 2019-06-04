@@ -22,7 +22,7 @@ module.exports = {
   hmctsAdminPassword: process.env.CA_USER_PASSWORD || 'Password12',
   cafcassEmail: 'cafcass@example.com',
   cafcassPassword: process.env.CAFCASS_USER_PASSWORD || 'Password12',
-  gateKeeperEmail: process.env.GATEKEEPER_USER_USERNAME || 'gatekeeper@example.com',
+  gateKeeperEmail: process.env.GATEKEEPER_USER_USERNAME || 'gatekeeper@mailnesia.com',
   gateKeeperPassword: process.env.GATEKEEPER_USER_PASSWORD || 'Password12',
   definition: {
     jurisdiction: 'PUBLICLAW',

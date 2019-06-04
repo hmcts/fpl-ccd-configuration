@@ -24,7 +24,6 @@ withNightlyPipeline(type, product, component) {
   before('fullFunctionalTest') {
     env.URL = 'http://ccd-case-management-web-aat.service.core-compute-aat.internal'
     env.PROXY_SERVER = 'proxyout.reform.hmcts.net:8080'
-    env.GATEKEEPER_USER_USERNAME = 'gatekeeper@mailnesia.com'
 
     try {
       sh('./gradlew --no-daemon --info --rerun-tasks functional')
