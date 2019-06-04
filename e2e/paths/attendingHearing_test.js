@@ -16,7 +16,7 @@ Scenario('completing half of the attending hearing section of the c110a applicat
     I.seeEventSubmissionConfirmation(config.applicationActions.attendingHearing);
     caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
     I.seeAnswerInTab(1, 'Attending the hearing', 'Interpreter', 'Yes');
-    I.seeAnswerInTab(2, 'Attending the hearing', 'Give details', 'French' +
+    I.seeAnswerInTab(2, 'Attending the hearing', 'Give details including person, language and dialect', 'French' +
       ' translator');
     I.seeAnswerInTab(3, 'Attending the hearing', 'Spoken or written Welsh', 'No');
     I.seeAnswerInTab(4, 'Attending the hearing', 'Intermediary', 'No');
@@ -34,7 +34,7 @@ Scenario('completing the attending hearing section of the c110a application',
     I.seeEventSubmissionConfirmation(config.applicationActions.attendingHearing);
     caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
     I.seeAnswerInTab(1, 'Attending the hearing', 'Interpreter', 'Yes');
-    I.seeAnswerInTab(2, 'Attending the hearing', 'Give details', 'French translator');
+    I.seeAnswerInTab(2, 'Attending the hearing', 'Give details including person, language and dialect', 'French translator');
     I.seeAnswerInTab(3, 'Attending the hearing', 'Spoken or written Welsh', 'No');
     I.seeAnswerInTab(4, 'Attending the hearing', 'Intermediary', 'No');
     I.seeAnswerInTab(5, 'Attending the hearing', 'Facilities or assistance for a disability', 'Yes');
