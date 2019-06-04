@@ -12,7 +12,7 @@ ${dir}/utils/idam-create-caseworker.sh sam@hillingdon.gov.uk caseworker,casework
 ${dir}/utils/idam-create-caseworker.sh siva@hillingdon.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor "(local-authority)"
 ${dir}/utils/idam-create-caseworker.sh hmcts-admin@example.com caseworker,caseworker-publiclaw,caseworker-publiclaw-courtadmin "(hmcts-admin)"
 ${dir}/utils/idam-create-caseworker.sh cafcass@example.com caseworker,caseworker-publiclaw,caseworker-publiclaw-cafcass "(cafcass)"
-${dir}/utils/idam-create-caseworker.sh gatekeeper@example.com caseworker,caseworker-publiclaw,caseworker-publiclaw-gatekeeper "(gatekeeper)"
+${dir}/utils/idam-create-caseworker.sh gatekeeper@mailnesia.com caseworker,caseworker-publiclaw,caseworker-publiclaw-gatekeeper "(gatekeeper)"
 ${dir}/utils/ccd-add-role.sh caseworker-publiclaw-solicitor
 ${dir}/utils/ccd-add-role.sh caseworker-publiclaw-courtadmin
 ${dir}/utils/ccd-add-role.sh caseworker-publiclaw-cafcass
