@@ -34,6 +34,7 @@ Scenario('Filling in the full section for enter applicants', (I, enterApplicantP
   I.seeAnswerInTab(5, 'Applicant', 'Mobile number', '7000000000');
   I.seeAnswerInTab(6, 'Applicant', 'Telephone number', '00000000000');
   I.seeAnswerInTab(7, 'Applicant', 'Email', 'applicant@email.com');
+  I.seeAnswerInTab(8, 'Applicant', 'Payment by account (PBA) number', 'PBA1234567');
   I.seeAnswerInTab(1, 'Solicitor', 'Solicitor\'s full name', 'John Smith');
   I.seeAnswerInTab(2, 'Solicitor', 'Solicitor\'s mobile number', '7000000000');
   I.seeAnswerInTab(3, 'Solicitor', 'Solicitor\'s telephone number', '00000000000');
