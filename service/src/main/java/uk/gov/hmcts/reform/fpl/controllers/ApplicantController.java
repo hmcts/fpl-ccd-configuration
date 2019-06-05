@@ -34,15 +34,10 @@ public class ApplicantController {
         Applicant applicant = mapperService.mapObject(applicantData, Applicant.class);
         List<String> validationErrors = new ArrayList<String>();
 
-        // if pba number is entered, ensure it always starts with PBA before its validated
-        // unless it already has PBA at the start
         if (applicant.getPbaNumber() != null) {
             String newPbaNumberData = PBANumberHelper.updatePBANumber(applicant.getPbaNumber());
             validationErrors = PBANumberHelper.validatePBANumber(newPbaNumberData);
-            // only save a valid pbanumber back to ccd.
             if (validationErrors.isEmpty()) {
-                // update applicant map of the updated applicant pba number
-                // put back to ccd
                 applicantData.put("pbaNumber", newPbaNumberData);
                 caseDetails.getData().put("applicant", applicantData);
             }
