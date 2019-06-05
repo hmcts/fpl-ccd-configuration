@@ -45,8 +45,6 @@ class DocumentGeneratorServiceTest {
             Pair.of("userFullName", "Emma Taylor"))
         );
 
-        System.out.println(content);
-
         String expectedContent = ResourceReader.readString("submitted-form-pdf-content.txt");
 
         assertThat(splitContentIntoTrimmedLines(content))

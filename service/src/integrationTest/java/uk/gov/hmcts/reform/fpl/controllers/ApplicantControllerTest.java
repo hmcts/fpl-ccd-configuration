@@ -39,55 +39,41 @@ public class ApplicantControllerTest {
 
     @Test
     void shouldReturnErrorWhenPbaNumberIsNotSevenDigits() throws Exception {
-        // given
         String pbaNumber = "123";
 
-        // when
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createApplicant(pbaNumber));
 
-        // then
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
     void shouldReturnNoErrorsWhenPbaNumberStartsWithpbaAndIsSevenDigits() throws Exception {
-        // given
         String pbaNumber = "pba1234567";
 
-        // when
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createApplicant(pbaNumber));
 
-        // then
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
-
         String actualPbaNumber = extractPbaNumberFromApplicant(callbackResponse);
         assertThat(actualPbaNumber).isEqualTo("PBA1234567");
     }
 
     @Test
     void shouldReturnNoErrorsWhenPbaNumberIsSevenDigits() throws Exception {
-        // given
         String pbaNumber = "1234567";
 
-        // when
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createApplicant(pbaNumber));
 
-        // then
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
-
         String actualPbaNumber = extractPbaNumberFromApplicant(callbackResponse);
         assertThat(actualPbaNumber).isEqualTo("PBA1234567");
     }
 
     @Test
     void shouldReturnNoErrorsWhenPbaNumberStartsWithPBAAndIsSevenDigits() throws Exception {
-        // given
         String pbaNumber = "PBA1234567";
-
-        // when
+        
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createApplicant(pbaNumber));
-
-        // then
+        
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
         String actualPbaNumber = extractPbaNumberFromApplicant(callbackResponse);
         assertThat(actualPbaNumber).isEqualTo("PBA1234567");
@@ -95,13 +81,10 @@ public class ApplicantControllerTest {
 
     @Test
     void shouldReturnNoErrorsWhenPbaNumberIsNotEntered() throws Exception {
-        // given
         String pbaNumber = null;
 
-        // when
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createApplicant(pbaNumber));
 
-        // then
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
         String actualPbaNumber = extractPbaNumberFromApplicant(callbackResponse);
         assertThat(actualPbaNumber).isNull();
@@ -144,7 +127,5 @@ public class ApplicantControllerTest {
         return MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
+
 }
-
-
-
