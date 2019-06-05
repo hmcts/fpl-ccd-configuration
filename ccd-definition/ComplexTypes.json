@@ -488,20 +488,114 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "proceedingStatus",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ProceedingStatus",
+    "ElementLabel": "Proceeding status",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "caseNumber",
+    "FieldType": "Text",
+    "ElementLabel": "Case number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "started",
+    "FieldType": "Text",
+    "ElementLabel": "Started",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "ended",
+    "FieldType": "Text",
+    "ElementLabel": "Ended",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "ordersMade",
+    "FieldType": "Text",
+    "ElementLabel": "Orders made",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "judge",
+    "FieldType": "Text",
+    "ElementLabel": "Judge",
+    "HintText": "For example, District Judge Martin Brown",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "children",
+    "FieldType": "TextArea",
+    "ElementLabel": "Children subject to proceedings",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "guardian",
+    "FieldType": "Text",
+    "ElementLabel": "Guardian",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "sameGuardianNeeded",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Same guardian needed?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "sameGuardianDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "sameGuardianNeeded=\"No\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "onGoingProceeding",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Are you aware of any ongoing or previous proceedings?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "RelevantProceedings",
+    "ElementLabel": "Are there any past or ongoing proceedings relevant to this case?",
+    "HintText": "This should include any criminal proceedings involving respondents",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Proceeding",
+    "ListElementCode": "proceedingLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## Other proceeding 1",
+    "FieldShowCondition": "onGoingProceeding=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "proceedingStatus",
-    "FieldType": "FixedList",
+    "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ProceedingStatus",
     "ElementLabel": "Proceeding status",
-    "FieldShowCondition": "onGoingProceeding=\"Yes\"",
+    "FieldShowCondition": "onGoingProceeding=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
@@ -510,7 +604,7 @@
     "ListElementCode": "caseNumber",
     "FieldType": "Text",
     "ElementLabel": "Case number",
-    "FieldShowCondition": "onGoingProceeding=\"Yes\"",
+    "FieldShowCondition": "onGoingProceeding=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
@@ -519,7 +613,7 @@
     "ListElementCode": "started",
     "FieldType": "Text",
     "ElementLabel": "Started",
-    "FieldShowCondition": "onGoingProceeding=\"Yes\"",
+    "FieldShowCondition": "onGoingProceeding=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
@@ -528,7 +622,7 @@
     "ListElementCode": "ended",
     "FieldType": "Text",
     "ElementLabel": "Ended",
-    "FieldShowCondition": "onGoingProceeding=\"Yes\"",
+    "FieldShowCondition": "onGoingProceeding=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
@@ -537,7 +631,7 @@
     "ListElementCode": "ordersMade",
     "FieldType": "Text",
     "ElementLabel": "Orders made",
-    "FieldShowCondition": "onGoingProceeding=\"Yes\"",
+    "FieldShowCondition": "onGoingProceeding=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
@@ -546,7 +640,7 @@
     "ListElementCode": "judge",
     "FieldType": "Text",
     "ElementLabel": "Judge",
-    "FieldShowCondition": "onGoingProceeding=\"Yes\"",
+    "FieldShowCondition": "onGoingProceeding=\"YES\"",
     "HintText": "For example, District Judge Martin Brown",
     "SecurityClassification": "Public"
   },
@@ -556,7 +650,7 @@
     "ListElementCode": "children",
     "FieldType": "TextArea",
     "ElementLabel": "Children subject to proceedings",
-    "FieldShowCondition": "onGoingProceeding=\"Yes\"",
+    "FieldShowCondition": "onGoingProceeding=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
@@ -565,7 +659,7 @@
     "ListElementCode": "guardian",
     "FieldType": "Text",
     "ElementLabel": "Guardian",
-    "FieldShowCondition": "onGoingProceeding=\"Yes\"",
+    "FieldShowCondition": "onGoingProceeding=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
@@ -574,7 +668,7 @@
     "ListElementCode": "sameGuardianNeeded",
     "FieldType": "YesOrNo",
     "ElementLabel": "Same guardian needed?",
-    "FieldShowCondition": "onGoingProceeding=\"Yes\"",
+    "FieldShowCondition": "onGoingProceeding=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
@@ -584,6 +678,16 @@
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
     "FieldShowCondition": "sameGuardianNeeded=\"No\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Proceeding",
+    "ListElementCode": "additionalProceedings",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProceedingType",
+    "ElementLabel": "Additional proceedings",
+    "FieldShowCondition": "onGoingProceeding=\"YES\"",
     "SecurityClassification": "Public"
   },
   {
