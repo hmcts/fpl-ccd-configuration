@@ -48,5 +48,4 @@ public class ApplicantController {
             .errors(validationErrors)
             .build();
     }
-
 }

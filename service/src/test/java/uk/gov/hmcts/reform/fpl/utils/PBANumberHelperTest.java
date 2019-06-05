@@ -92,6 +92,4 @@ public class PBANumberHelperTest {
         assertThat(actual).isNotEmpty();
         assertThat(actual).containsExactly("Payment by account (PBA) number must include 7 numbers");
     }
-
-
 }

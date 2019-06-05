@@ -45,5 +45,4 @@ public class Applicant {
     public void setPbaNumber(String pbaNumber) {
         this.pbaNumber = pbaNumber;
     }
-
 }
