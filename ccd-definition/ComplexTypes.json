@@ -348,6 +348,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "Applicant",
+    "ListElementCode": "pbaNumber",
+    "FieldType": "Text",
+    "ElementLabel": "Payment by account (PBA) number",
+    "HintText": "For example, PBA1234567",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "Solicitor",
     "ListElementCode": "solicitorLabel",
     "FieldType": "Label",
