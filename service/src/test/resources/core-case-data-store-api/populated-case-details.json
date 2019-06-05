@@ -198,7 +198,8 @@
       },
       "jobTitle": "Legal adviser",
       "telephone": "02120202020",
-      "personToContact": "Jane Smith"
+      "personToContact": "Jane Smith",
+      "pbaNumber": "PBA1234567"
     },
     "solicitor": {
       "dx": "106 Southwark &",

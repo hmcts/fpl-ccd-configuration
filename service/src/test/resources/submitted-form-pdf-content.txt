@@ -187,6 +187,7 @@ jane@smith.comEmail address
 , SE1 2QH, Limerick, Tooley, Tooley road160 Tooley StAddress
 Legal adviserJob title
 Jane SmithContact name
+PBA1234567Payment by account (PBA) number
 London Borough of SouthwarkName
 -Confidential contact details
 Applicant

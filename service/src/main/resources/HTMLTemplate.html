@@ -1460,6 +1460,17 @@
       </dd>
     </div>
     <div class="data-list__row">
+      <dt class="data-list__title">Payment by account (PBA) number</dt>
+      <dd class="data-list__definition">
+        {% if case_data.applicant is not empty and
+        case_data.applicant.pbaNumber is not empty %}
+        {{ case_data.applicant.pbaNumber }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
       <dt class="data-list__title">Solicitor's Name</dt>
       <dd class="data-list__definition">
         {% if case_data.solicitor is not empty and
