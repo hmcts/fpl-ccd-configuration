@@ -34,18 +34,23 @@ public class ApplicantController {
         Applicant applicant = mapperService.mapObject(applicantData, Applicant.class);
         List<String> validationErrors = new ArrayList<String>();
 
-        if (applicant.getPbaNumber() != null) {
+        if (applicant.getPbaNumber() == null || applicant.getPbaNumber().isBlank()) {
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(caseDetails.getData())
+                .errors(validationErrors)
+                .build();
+        } else {
             String newPbaNumberData = PBANumberHelper.updatePBANumber(applicant.getPbaNumber());
             validationErrors = PBANumberHelper.validatePBANumber(newPbaNumberData);
             if (validationErrors.isEmpty()) {
                 applicantData.put("pbaNumber", newPbaNumberData);
                 caseDetails.getData().put("applicant", applicantData);
             }
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(caseDetails.getData())
+                .errors(validationErrors)
+                .build();
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(validationErrors)
-            .build();
     }
 }

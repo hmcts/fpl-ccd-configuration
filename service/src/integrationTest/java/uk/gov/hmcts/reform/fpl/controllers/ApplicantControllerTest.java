@@ -80,6 +80,18 @@ public class ApplicantControllerTest {
     }
 
     @Test
+    void shouldReturnNoErrorsWhenPbaNumberIsAnEmptyString() throws Exception {
+        String pbaNumber = "";
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createApplicant(pbaNumber));
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
+        String actualPbaNumber = extractPbaNumberFromApplicant(callbackResponse);
+        assertThat(actualPbaNumber).isEqualTo("");
+        assertThat(actualPbaNumber).isBlank();
+    }
+
+    @Test
     void shouldReturnNoErrorsWhenPbaNumberIsNotEntered() throws Exception {
         String pbaNumber = null;
 
