@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(CaseInitiationController.class)
+@WebMvcTest(ApplicantController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class ApplicantControllerTest {
 
