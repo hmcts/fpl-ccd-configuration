@@ -593,7 +593,7 @@
     "ID": "Proceeding",
     "ListElementCode": "proceedingLabel",
     "FieldType": "Label",
-    "ElementLabel": "## Other proceeding 1",
+    "ElementLabel": "## Other proceedings 1",
     "FieldShowCondition": "onGoingProceeding=\"YES\"",
     "SecurityClassification": "Public"
   },
