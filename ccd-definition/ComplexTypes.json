@@ -598,10 +598,18 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
+    "ListElementCode": "hearingPreferencesLabel",
+    "FieldType": "Label",
+    "ElementLabel": "Is any of the following needed to help someone take part in a hearing?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
     "ListElementCode": "interpreter",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Any Interpreter required?",
-    "HintText": "Give language (and any dialect, if known)",
+    "ElementLabel": "Interpreter",
+    "HintText": "Including sign language",
     "SecurityClassification": "Public"
   },
   {
@@ -609,62 +617,8 @@
     "ID": "HearingPreferences",
     "ListElementCode": "interpreterDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "Give details",
+    "ElementLabel": "Give details including person, language and dialect",
     "FieldShowCondition": "interpreter=\"Yes\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingPreferences",
-    "ListElementCode": "intermediary",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Any intermediary required?",
-    "HintText": "For example, Welsh proceedings required with interpreter",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingPreferences",
-    "ListElementCode": "intermediaryDetails",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give details",
-    "FieldShowCondition": "intermediary=\"Yes\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingPreferences",
-    "ListElementCode": "litigation",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Litigation capacity issues",
-    "HintText": "For example, Respondent has mental health issues",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingPreferences",
-    "ListElementCode": "litigationDetails",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give details",
-    "FieldShowCondition": "litigation=\"Yes\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingPreferences",
-    "ListElementCode": "learningDisability",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Learning disability issues",
-    "HintText": "For example, Respondent has learning disability",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingPreferences",
-    "ListElementCode": "learningDisabilityDetails",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give details",
-    "FieldShowCondition": "learningDisability=\"Yes\"",
     "SecurityClassification": "Public"
   },
   {
@@ -672,8 +626,7 @@
     "ID": "HearingPreferences",
     "ListElementCode": "welsh",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Do you need Welsh proceedings?",
-    "HintText": "For example, Welsh proceedings reqired with interpreter",
+    "ElementLabel": "Spoken or written Welsh",
     "SecurityClassification": "Public"
   },
   {
@@ -688,10 +641,44 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
+    "ListElementCode": "intermediary",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Intermediary",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "intermediaryDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "intermediary=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "disabilityAssistance",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Facilities or assistance for a disability",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "disabilityAssistanceDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "disabilityAssistance=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
     "ListElementCode": "extraSecurityMeasures",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Any security needed?",
-    "HintText": "For example, Need separate waiting rooms due to domestic violence",
+    "ElementLabel": "Separate waiting room or other security measures",
+    "HintText": "For example, mother and father need to be in separate waiting rooms as history of domestic violence",
     "SecurityClassification": "Public"
   },
   {
@@ -701,6 +688,23 @@
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
     "FieldShowCondition": "extraSecurityMeasures=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "somethingElse",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Something else",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "somethingElseDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "somethingElse=\"Yes\"",
     "SecurityClassification": "Public"
   },
   {
