@@ -125,6 +125,30 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documents_socialWorkEvidenceTemplate_document",
+    "Label": "5. Social work evidence template (SWET)",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documents_threshold_document",
+    "Label": "6. Threshold document",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documents_checklist_document",
+    "Label": "7. Checklist document",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documents_socialWorkOther_border_top",
     "Label": "-------------------------------------------------------------------------------------------------------------",
     "FieldType": "Label",
