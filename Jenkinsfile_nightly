@@ -1,7 +1,12 @@
 #!groovy
 
 properties([
-  pipelineTriggers([cron('20 21 * * *')])
+  pipelineTriggers([cron('20 21 * * *')]),
+  parameters([
+      string(name: 'SecurityRules',
+      defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
+      description: 'The URL you want to run these tests against'),
+  ])
 ])
 
 @Library('Infrastructure')
@@ -30,5 +35,10 @@ withNightlyPipeline(type, product, component) {
     } finally {
       archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
     }
+  }
+
+  before('securityScan') {
+    env.Rules = params.SecurityRules
+    env.URL = 'http://ccd-case-management-web-aat.service.core-compute-aat.internal'
   }
 }
