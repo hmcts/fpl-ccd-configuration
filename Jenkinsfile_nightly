@@ -17,6 +17,7 @@ def product = 'fpl'
 def component = 'case-service'
 
 withNightlyPipeline(type, product, component) {
+  enableSecurityScan()
   enableMutationTest()
   enableFullFunctionalTest()
 
