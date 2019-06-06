@@ -87,7 +87,6 @@ public class ApplicantControllerTest {
 
         assertThat(callbackResponse.getErrors()).isEmpty();
         String actualPbaNumber = extractPbaNumberFromApplicant(callbackResponse);
-        assertThat(actualPbaNumber).isEqualTo("");
         assertThat(actualPbaNumber).isBlank();
     }
 
