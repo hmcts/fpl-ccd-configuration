@@ -305,17 +305,17 @@
     },
     "hearingPreferences": {
       "welsh": "Yes",
-      "litigation": "Yes",
       "interpreter": "Yes",
       "intermediary": "Yes",
       "welshDetails": "welsh proceedings",
-      "litigationDetails": "litigation",
       "interpreterDetails": "interpreter required",
-      "learningDisability": "Yes",
+      "disabilityAssistance": "Yes",
       "intermediaryDetails": "intermediary hearing required",
       "extraSecurityMeasures": "Yes",
-      "learningDisabilityDetails": "learning disability",
-      "extraSecurityMeasuresDetails": "security needed"
+      "disabilityAssistanceDetails": "learning disability",
+      "extraSecurityMeasuresDetails": "security needed",
+      "somethingElse": "Yes",
+      "somethingElseDetails": "I need this from someone"
     },
     "internationalElement": {
       "issues": "Yes",
