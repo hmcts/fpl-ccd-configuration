@@ -91,6 +91,18 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "SwetDocumentList",
+    "ListElementCode": "Attached",
+    "ListElement": "Attached"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SwetDocumentList",
+    "ListElementCode": "To follow",
+    "ListElement": "To follow"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "attachedToFollowOption",
     "ListElementCode": "Attached",
     "ListElement": "Attached"
@@ -100,6 +112,12 @@
     "ID": "attachedToFollowOption",
     "ListElementCode": "To follow",
     "ListElement": "To follow"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "attachedToFollowOption",
+    "ListElementCode": "Included in social work evidence template (SWET)",
+    "ListElement": "Included in social work evidence template (SWET)"
   },
   {
     "LiveFrom": "01/01/2017",

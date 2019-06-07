@@ -18,6 +18,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "UploadSwetDocument",
+    "ListElementCode": "documentStatus",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "SwetDocumentList",
+    "ElementLabel": "Document status",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "UploadDocument",
     "ListElementCode": "statusReason",
     "FieldType": "TextArea",
