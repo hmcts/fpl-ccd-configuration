@@ -127,7 +127,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documents_socialWorkEvidenceTemplate_document",
     "Label": "5. Social work evidence template (SWET)",
-    "FieldType": "UploadDocument",
+    "FieldType": "UploadSwetDocument",
     "SecurityClassification": "Public"
   },
   {
