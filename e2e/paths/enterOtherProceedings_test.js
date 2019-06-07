@@ -26,19 +26,19 @@ Scenario('Select yes for ongoing or previous proceedings and fill in other proce
     caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
     I.seeAnswerInTab(1, 'Other proceedings', 'Are there any past or ongoing' +
       ' proceedings relevant to this case?', 'Yes');
-    I.seeAnswerInTab(2, 'Other proceedings', 'Proceeding status', 'Ongoing');
+    I.seeAnswerInTab(2, 'Other proceedings', 'Are there previous or ongoing proceedings?', 'Ongoing');
     I.seeAnswerInTab(3, 'Other proceedings', 'Case number', '000000');
-    I.seeAnswerInTab(4, 'Other proceedings', 'Started', '01/01/01');
-    I.seeAnswerInTab(5, 'Other proceedings', 'Ended', '02/01/01');
+    I.seeAnswerInTab(4, 'Other proceedings', 'Date started', '01/01/01');
+    I.seeAnswerInTab(5, 'Other proceedings', 'Date ended', '02/01/01');
     I.seeAnswerInTab(6, 'Other proceedings', 'Orders made', 'Yes');
     I.seeAnswerInTab(7, 'Other proceedings', 'Judge', 'District Judge Martin' +
       ' Brown');
-    I.seeAnswerInTab(8, 'Other proceedings', 'Children subject to proceedings', 'Joe Bloggs');
-    I.seeAnswerInTab(9, 'Other proceedings', 'Guardian', 'John Smith');
-    I.seeAnswerInTab(10, 'Other proceedings', 'Same guardian needed?', 'Yes');
+    I.seeAnswerInTab(8, 'Other proceedings', 'Names of children involved', 'Joe Bloggs');
+    I.seeAnswerInTab(9, 'Other proceedings', 'Name of guardian', 'John Smith');
+    I.seeAnswerInTab(10, 'Other proceedings', 'Is the same guardian needed?', 'Yes');
   });
 
-Scenario('Select yes for ongoing or previous proceedings and fill in multiple other proceedings',
+Scenario('Select yes for ongoing or previous proceedings and fill in multiple proceedings',
   (I, enterOtherProceedingsPage, caseViewPage) => {
     enterOtherProceedingsPage.selectYesForProceeding();
     enterOtherProceedingsPage.enterProceedingInformation(otherProceedingData[0]);
@@ -49,24 +49,24 @@ Scenario('Select yes for ongoing or previous proceedings and fill in multiple ot
     caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
     I.seeAnswerInTab(1, 'Other proceedings', 'Are there any past or ongoing' +
       ' proceedings relevant to this case?', 'Yes');
-    I.seeAnswerInTab(2, 'Other proceedings', 'Proceeding status', 'Ongoing');
+    I.seeAnswerInTab(2, 'Other proceedings', 'Are there previous or ongoing proceedings?', 'Ongoing');
     I.seeAnswerInTab(3, 'Other proceedings', 'Case number', '000000');
-    I.seeAnswerInTab(4, 'Other proceedings', 'Started', '01/01/01');
-    I.seeAnswerInTab(5, 'Other proceedings', 'Ended', '02/01/01');
+    I.seeAnswerInTab(4, 'Other proceedings', 'Date started', '01/01/01');
+    I.seeAnswerInTab(5, 'Other proceedings', 'Date ended', '02/01/01');
     I.seeAnswerInTab(6, 'Other proceedings', 'Orders made', 'Yes');
     I.seeAnswerInTab(7, 'Other proceedings', 'Judge', 'District Judge Martin' +
       ' Brown');
-    I.seeAnswerInTab(8, 'Other proceedings', 'Children subject to proceedings', 'Joe Bloggs');
-    I.seeAnswerInTab(9, 'Other proceedings', 'Guardian', 'John Smith');
-    I.seeAnswerInTab(10, 'Other proceedings', 'Same guardian needed?', 'Yes');
-    I.seeAnswerInTab(1, 'Additional proceedings 1', 'Proceeding status', 'Previous');
+    I.seeAnswerInTab(8, 'Other proceedings', 'Names of children involved', 'Joe Bloggs');
+    I.seeAnswerInTab(9, 'Other proceedings', 'Name of guardian', 'John Smith');
+    I.seeAnswerInTab(10, 'Other proceedings', 'Is the same guardian needed?', 'Yes');
+    I.seeAnswerInTab(1, 'Additional proceedings 1', 'Are there previous or ongoing proceedings?', 'Previous');
     I.seeAnswerInTab(2, 'Additional proceedings 1', 'Case number', '000123');
-    I.seeAnswerInTab(3, 'Additional proceedings 1', 'Started', '02/02/02');
-    I.seeAnswerInTab(4, 'Additional proceedings 1', 'Ended', '03/03/03');
+    I.seeAnswerInTab(3, 'Additional proceedings 1', 'Date started', '02/02/02');
+    I.seeAnswerInTab(4, 'Additional proceedings 1', 'Date ended', '03/03/03');
     I.seeAnswerInTab(5, 'Additional proceedings 1', 'Orders made', 'Yes');
     I.seeAnswerInTab(6, 'Additional proceedings 1', 'Judge', 'District Judge Martin' +
       ' Brown');
-    I.seeAnswerInTab(7, 'Additional proceedings 1', 'Children subject to proceedings', 'James Simpson');
-    I.seeAnswerInTab(8, 'Additional proceedings 1', 'Guardian', 'David Burns');
-    I.seeAnswerInTab(9, 'Additional proceedings 1', 'Same guardian needed?', 'Yes');
+    I.seeAnswerInTab(7, 'Additional proceedings 1', 'Names of children involved', 'James Simpson');
+    I.seeAnswerInTab(8, 'Additional proceedings 1', 'Name of guardian', 'David Burns');
+    I.seeAnswerInTab(9, 'Additional proceedings 1', 'Is the same guardian needed?', 'Yes');
   });
