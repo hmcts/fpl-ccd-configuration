@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +19,6 @@ import java.util.Map;
 public class OtherProceedingsController {
 
     private static final String ERROR_MESSAGE = "You must say if there are any other proceedings relevant to this case";
-
-    @Autowired
 
     @SuppressWarnings("unchecked")
     @PostMapping("/mid-event")
