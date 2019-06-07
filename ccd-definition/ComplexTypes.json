@@ -19,9 +19,17 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "UploadSwetDocument",
+    "ListElementCode": "typeOfDocument",
+    "FieldType": "Document",
+    "ElementLabel": "Upload a file",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadSwetDocument",
     "ListElementCode": "documentStatus",
     "FieldType": "FixedList",
-    "FieldTypeParameter": "SwetDocumentList",
+    "FieldTypeParameter": "swetDocumentOptions",
     "ElementLabel": "Document status",
     "SecurityClassification": "Public"
   },
