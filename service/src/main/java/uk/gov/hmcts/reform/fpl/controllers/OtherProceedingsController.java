@@ -27,7 +27,7 @@ public class OtherProceedingsController {
 
         Map<String, Object> proceedingData = (Map<String, Object>) caseDetails.getData().get("proceeding");
         List<String> validationErrors = new ArrayList<String>();
-        String onGoingProceeding = (String)proceedingData.get("onGoingProceeding");
+        String onGoingProceeding = (String) proceedingData.get("onGoingProceeding");
 
         if (onGoingProceeding == null || "".equals(onGoingProceeding)) {
             validationErrors.add(ERROR_MESSAGE);

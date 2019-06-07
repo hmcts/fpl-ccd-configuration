@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(CaseInitiationController.class)
+@WebMvcTest(OtherProceedingsController.class)
 @OverrideAutoConfiguration(enabled = true)
 
 public class OtherProceedingsControllerTest {
@@ -47,8 +47,26 @@ public class OtherProceedingsControllerTest {
     }
 
     @Test
-    void shouldReturnNoErrorsWhenPOnGoingProceedingIsPresent() throws Exception {
+    void shouldReturnNoErrorsWhenPOnGoingProceedingIsYes() throws Exception {
         String onGoingProceeding = "Yes";
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createProceeding(onGoingProceeding));
+
+        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnNoErrorsWhenPOnGoingProceedingIsNo() throws Exception {
+        String onGoingProceeding = "No";
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createProceeding(onGoingProceeding));
+
+        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnNoErrorsWhenPOnGoingProceedingIsDontKnow() throws Exception {
+        String onGoingProceeding = "Don't know";
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createProceeding(onGoingProceeding));
 
