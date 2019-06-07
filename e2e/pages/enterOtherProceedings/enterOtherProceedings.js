@@ -10,9 +10,9 @@ module.exports = {
 
     return {
       onGoingProceeding: {
-        yes: '#proceeding_onGoingProceeding-YES',
-        no: '#proceeding_onGoingProceeding-NO',
-        dontKnow: '#proceeding_onGoingProceeding-DONT_KNOW',
+        yes: '#proceeding_onGoingProceeding-Yes',
+        no: '#proceeding_onGoingProceeding-No',
+        dontKnow: '#proceeding_onGoingProceeding-DontKnow',
       },
       proceedingStatus: {
         previous: `#proceeding_${prefix}proceedingStatus-Previous`,
