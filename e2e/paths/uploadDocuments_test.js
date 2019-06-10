@@ -20,6 +20,9 @@ Scenario('Uploading all files in the c110a application', (I, uploadDocumentsPage
   uploadDocumentsPage.uploadSocialWorkStatement(config.testFile);
   uploadDocumentsPage.uploadSocialWorkAssessment(config.testFile);
   uploadDocumentsPage.uploadCarePlan(config.testFile);
+  uploadDocumentsPage.uploadSWET(config.testFile);
+  uploadDocumentsPage.uploadThresholdDocument(config.testFile);
+  uploadDocumentsPage.uploadChecklistDocument(config.testFile);
   uploadDocumentsPage.uploadAdditionalDocuments(config.testFile);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
