@@ -32,7 +32,6 @@ Application from London Borough of Southwark submitted on 26 November
 Orders
 Hearing needed
 Allocation proposal
-2 February 2002Date of birth
 16 years oldAge
 Sarah ReevesName
 History of domestic violence with relatives
@@ -59,6 +58,9 @@ BoyGender
 5 months oldAge
 Tom ReevesName
 Yes
+I need this from someone
+Something else
+Yes
 security needed
 Separate waiting room or other security measures
 Yes
@@ -76,7 +78,6 @@ Interpreter
 Attending the hearing
 Child 1
 Child 2
-Hide from all
 YesConfidential contact details
 -Anything else to help take part in proceedings
 respondent one test litigation reason
@@ -116,8 +117,8 @@ Date this began: 2 February 2002
 , Milton Keynes, Central Milton KeynesCarnegie House
 Living with respondentsChild's living situation
 GirlGender
+2 February 2002Date of birth
 Respondent 1
--Confidential contact details
 -Anything else to help take part in proceedings
 NoLitigation capacity issues
 -Separate waiting room or other security measures
@@ -153,10 +154,9 @@ UnknownGender
 2 April 1933Date of birth
 85 years oldAge
 James SmithName
+Hide from all
 Respondent 2
 Respondent 3
-2 February 2000Date of birth
-Peter LaveryName
 NoConfidential contact details
 -Anything else to help take part in the proceedings
 NoLitigation capacity issues
@@ -179,6 +179,7 @@ brian@banks.comSolicitor's email address
 020 2772 5772Solicitor's telephone number
 7665545327Solicitor's mobile number
 Brian BanksSolicitor's Name
+PBA1234567Payment by account (PBA) number
 jane@smith.comEmail address
 02120202020Telephone number
 2020202020Mobile number
@@ -187,13 +188,11 @@ jane@smith.comEmail address
 Legal adviserJob title
 Jane SmithContact name
 London Borough of SouthwarkName
+-Confidential contact details
 Applicant
 Other 1
 Other 2
-Yes
-Future risk of harm
-Past harm
-Neglect
+YesNeglect
 Yes
 Future risk of harm
 Past harm
@@ -206,6 +205,7 @@ Yes
 Future risk of harm
 Past harm
 Physical harm including non-accidental injury
+grounds for application criteria
 Beyond parental control.
 Not receiving care that would be reasonably expected
 from a parent.
@@ -235,33 +235,29 @@ Friend of familyRelationship to the child
 , Newcastle, Newcastle street, Newcastle roadFlat 29Current address
 LisburnPlace of birth
 MaleGender
+2 February 2000Date of birth
+Peter LaveryName
 Grounds for the application
 Threshold evidence
-grounds for application criteria
 Risk and harm to children
-To follow
-some text
-Care plan
-To follow
-Social work assessment text
-Social work assessment
-To follow
-Social work statement and genogram text
-Social work statement and genogram
-To follow
-Social work chronology text
-Social work chronology
+Peters WilliamsJudge
+Supervision orderOrders made
+02-02-2009Date ended
+02-02-2008Date started
+12345Case number
+OngoingPrevious or ongoing
 Some guardian not needed
 NoSame guardian needed
 Mark WatsonGuardian
+children subject to proceedingsChildren involved
 William PetersJudge
 Supervision orderOrders made
-02-02-2006Ended
-02-02-2002Started
+02-02-2006Date ended
+02-02-2002Date started
 12345Case number
-YesOngoing or previous proceedings
-YesGovernment or central authority in another country
+OngoingPrevious or ongoing
 French authorities were involved
+YesGovernment or central authority in another country
 been involved
 Outside of the UK
 YesProceedings outside the UK
@@ -276,8 +272,27 @@ history of domestic violence
 YesDomestic violence
 history of drug abuse
 YesAlcohol or drug abuse
+Future risk of harm
+Past harm
 Factors affecting parenting
 International element
-Other proceedings
+Other proceedings 1
+Other proceedings 2
+To follow
+some text
+Care plan
+To follow
+Social work assessment text
+Social work assessment
+To follow
+Social work statement and genogram text
+Social work statement and genogram
+To follow
+Social work chronology text
+Social work chronology
+Some guardian not needed
+NoSame guardian needed
+John WatsonGuardian
+children subject to proceedingsChildren involved
 Annex Documents
 I, Emma Taylor, believe that the facts stated in this application are true.

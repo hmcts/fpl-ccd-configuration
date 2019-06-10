@@ -198,7 +198,8 @@
       },
       "jobTitle": "Legal adviser",
       "telephone": "02120202020",
-      "personToContact": "Jane Smith"
+      "personToContact": "Jane Smith",
+      "pbaNumber": "PBA1234567"
     },
     "solicitor": {
       "dx": "106 Southwark &",
@@ -219,7 +220,25 @@
       "proceedingStatus": "Ongoing",
       "onGoingProceeding": "Yes",
       "sameGuardianNeeded": "No",
-      "sameGuardianDetails": "Some guardian not needed"
+      "sameGuardianDetails": "Some guardian not needed",
+      "additionalProceedings": [
+        {
+          "id": "a5e57424-9b5c-4722-be7e-9d9d9111c2b9",
+          "value": {
+            "ended": "02-02-2009",
+            "judge": "Peters Williams",
+            "started": "02-02-2008",
+            "children": "children subject to proceedings",
+            "guardian": "John Watson",
+            "caseNumber": "12345",
+            "ordersMade": "Supervision order",
+            "proceedingStatus": "Ongoing",
+            "onGoingProceeding": "Yes",
+            "sameGuardianNeeded": "No",
+            "sameGuardianDetails": "Some guardian not needed"
+          }
+        }
+      ]
     },
     "respondents": {
       "additional": [
@@ -304,17 +323,17 @@
     },
     "hearingPreferences": {
       "welsh": "Yes",
-      "litigation": "Yes",
       "interpreter": "Yes",
       "intermediary": "Yes",
       "welshDetails": "welsh proceedings",
-      "litigationDetails": "litigation",
       "interpreterDetails": "interpreter required",
-      "learningDisability": "Yes",
+      "disabilityAssistance": "Yes",
       "intermediaryDetails": "intermediary hearing required",
       "extraSecurityMeasures": "Yes",
-      "learningDisabilityDetails": "learning disability",
-      "extraSecurityMeasuresDetails": "security needed"
+      "disabilityAssistanceDetails": "learning disability",
+      "extraSecurityMeasuresDetails": "security needed",
+      "somethingElse": "Yes",
+      "somethingElseDetails": "I need this from someone"
     },
     "internationalElement": {
       "issues": "Yes",

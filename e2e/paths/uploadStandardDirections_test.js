@@ -38,6 +38,7 @@ Scenario('Local authority can see standard directions in documents tab', (I, cas
   I.signOut();
   loginPage.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   I.navigateToCaseDetails(caseId);
+  I.waitForElement(caseViewPage.tabs.documents, 5);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.see( 'mockFile.txt');
   I.seeAnswerInTab('1', 'Other documents 1', 'Document title', 'Document 1');

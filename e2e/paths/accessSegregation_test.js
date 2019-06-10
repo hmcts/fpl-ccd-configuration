@@ -36,3 +36,9 @@ Scenario('CAFCASS user can see the case', (I, loginPage) => {
   I.navigateToCaseDetails(caseId);
   I.see(caseId);
 });
+
+Scenario('Gatekeeper user can see the case', (I, loginPage) => {
+  loginPage.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
+  I.navigateToCaseDetails(caseId);
+  I.see(caseId);
+});
