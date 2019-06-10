@@ -19,7 +19,10 @@ import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
+
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
@@ -76,12 +79,20 @@ public class CaseSubmissionController {
 
         Document document = uploadDocumentService.uploadPDF(userId, authorization, pdf, buildFileName(caseDetails));
 
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+
+        Date newDate = new Date(System.currentTimeMillis());
+
+        System.out.println("newDate = " + formatter.format(newDate));
+
         Map<String, Object> data = caseDetails.getData();
+        data.put("dateSubmitted", formatter.format(newDate));
         data.put("submittedForm", ImmutableMap.<String, String>builder()
             .put("document_url", document.links.self.href)
             .put("document_binary_url", document.links.binary.href)
             .put("document_filename", document.originalDocumentName)
-            .build());
+            .build()
+        );
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)

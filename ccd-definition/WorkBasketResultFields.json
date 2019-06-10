@@ -30,8 +30,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "[CREATED_DATE]",
-    "Label": "Case creation date",
+    "CaseFieldID": "dateSubmitted",
+    "Label": "Date Submitted",
     "DisplayOrder": 5
   }
 ]
