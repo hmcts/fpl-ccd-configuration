@@ -236,10 +236,10 @@ async@^2.0.0:
   dependencies:
     lodash "^4.17.10"
 
-axios@^0.18.0:
-  version "0.18.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.18.1.tgz#ff3f0de2e7b5d180e757ad98000f1081b87bcea3"
-  integrity sha512-0BfJq4NSfQXd+SkFdrvFbG7addhYSBA2mQwISr46pD6E5iqkWg02RAs8vyTT/j0RTnoYmeXauBuSv1qKwR179g==
+axios@^0.19.0:
+  version "0.19.0"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.19.0.tgz#8e09bff3d9122e133f7b8101c8fbdd00ed3d2ab8"
+  integrity sha512-1uvKqKQta3KBxIz14F2v06AEHZ/dIoeKfbTRkK1E5oqjDnuEerLmYTgJB5AiQZHJcljpg1TuRzdjDR06qNk0DQ==
   dependencies:
     follow-redirects "1.5.10"
     is-buffer "^2.0.2"
@@ -436,14 +436,14 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codeceptjs@^2.1.3:
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.1.3.tgz#0caf06ba0ccd18c5e28ebe5abdaeb2d9ed5a6e49"
-  integrity sha512-TvJa0mhBlYDR+sEcpgIpyl2qcqp3bkDd8tSxfML2Rwm6HkB7mupntFxM3xq/FQjYHcx/uB5XyF7SGyx57EKETA==
+codeceptjs@^2.1.4:
+  version "2.1.4"
+  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.1.4.tgz#d594aade5c443174c6f9e9e318997c410ab08e6e"
+  integrity sha512-4sw8+U2PNKIXjEOPz/IYT+4VAuGlbjet/iZDx8XZIS036vYVuibhiFkumZz8h3bdb/7uZkRUw2Z9IgBxWtkhYw==
   dependencies:
     allure-js-commons "^1.3.2"
     archiver "^3.0.0"
-    axios "^0.18.0"
+    axios "^0.19.0"
     chalk "^1.1.3"
     commander "^2.20.0"
     css-to-xpath "^0.1.0"
@@ -451,6 +451,7 @@ codeceptjs@^2.1.3:
     escape-string-regexp "^1.0.3"
     figures "^2.0.0"
     fn-args "^4.0.0"
+    fs-extra "^8.0.1"
     gherkin "^5.1.0"
     glob "^6.0.1"
     inquirer "^6.3.1"
@@ -462,6 +463,7 @@ codeceptjs@^2.1.3:
     parse-function "^5.2.10"
     promise-retry "^1.1.1"
     requireg "^0.1.8"
+    resq "^1.5.0"
     sprintf-js "^1.1.1"
 
 color-convert@^1.9.0:
@@ -975,6 +977,15 @@ fs-extra@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-6.0.1.tgz#8abc128f7946e310135ddc93b98bddb410e7a34b"
   integrity sha512-GnyIkKhhzXZUWFCaJzvyDLEEgDkPfb4/TPvJCJVuS8MWZgoSsErf++QpiAlDnKFcqhRlm+tIOcencCjyJE6ZCA==
+  dependencies:
+    graceful-fs "^4.1.2"
+    jsonfile "^4.0.0"
+    universalify "^0.1.0"
+
+fs-extra@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-8.0.1.tgz#90294081f978b1f182f347a440a209154344285b"
+  integrity sha512-W+XLrggcDzlle47X/XnS7FXrXu9sDo+Ze9zpndeBxdgv88FHLm1HtmkhEwavruS6koanBjp098rUpHs65EmG7A==
   dependencies:
     graceful-fs "^4.1.2"
     jsonfile "^4.0.0"
@@ -2031,6 +2042,13 @@ resolve@~1.7.1:
   integrity sha512-c7rwLofp8g1U+h1KNyHL/jicrKg1Ek4q+Lr33AL65uZTinUZHe30D5HlyN5V9NW0JX1D5dXQ4jqW5l7Sy/kGfw==
   dependencies:
     path-parse "^1.0.5"
+
+resq@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/resq/-/resq-1.5.0.tgz#a5f238e0c90f4e32ad0bfe3f36f041fae8b90f1d"
+  integrity sha512-6US6oo2fQ/vgs7wBwqq1w9901Z5VEDgxQH0LrNaN8HcHUZInhtrIt1a0Icysu0vuoK26Bt+SR1dIYeR9+ftMxA==
+  dependencies:
+    fast-deep-equal "^2.0.1"
 
 restore-cursor@^2.0.0:
   version "2.0.0"
