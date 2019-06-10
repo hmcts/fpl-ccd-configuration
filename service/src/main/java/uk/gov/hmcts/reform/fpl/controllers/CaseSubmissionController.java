@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.validation.constraints.NotNull;
 
@@ -80,10 +81,8 @@ public class CaseSubmissionController {
         Document document = uploadDocumentService.uploadPDF(userId, authorization, pdf, buildFileName(caseDetails));
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
+        formatter.setTimeZone(TimeZone.getTimeZone("Europe/London"));
         Date newDate = new Date(System.currentTimeMillis());
-
-        System.out.println("newDate = " + formatter.format(newDate));
 
         Map<String, Object> data = caseDetails.getData();
         data.put("dateSubmitted", formatter.format(newDate));
