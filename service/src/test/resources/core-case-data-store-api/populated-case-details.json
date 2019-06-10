@@ -220,7 +220,25 @@
       "proceedingStatus": "Ongoing",
       "onGoingProceeding": "Yes",
       "sameGuardianNeeded": "No",
-      "sameGuardianDetails": "Some guardian not needed"
+      "sameGuardianDetails": "Some guardian not needed",
+      "additionalProceedings": [
+        {
+          "id": "a5e57424-9b5c-4722-be7e-9d9d9111c2b9",
+          "value": {
+            "ended": "02-02-2009",
+            "judge": "Peters Williams",
+            "started": "02-02-2008",
+            "children": "children subject to proceedings",
+            "guardian": "John Watson",
+            "caseNumber": "12345",
+            "ordersMade": "Supervision order",
+            "proceedingStatus": "Ongoing",
+            "onGoingProceeding": "Yes",
+            "sameGuardianNeeded": "No",
+            "sameGuardianDetails": "Some guardian not needed"
+          }
+        }
+      ]
     },
     "respondents": {
       "additional": [
