@@ -72,13 +72,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "uploadDocuments_paragraph_2",
-    "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkChronology_document",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRU"
@@ -325,13 +318,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "uploadDocuments_paragraph_1",
-    "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "uploadDocuments_paragraph_2",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
@@ -590,13 +576,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "uploadDocuments_paragraph_2",
-    "UserRole": "caseworker-publiclaw-cafcass",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkChronology_document",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
@@ -815,13 +794,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "uploadDocuments_paragraph_1",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "R"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "uploadDocuments_paragraph_2",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "R"
   },
