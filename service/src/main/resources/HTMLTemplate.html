@@ -2286,6 +2286,69 @@
         {% endif %}
       </dd>
     </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Social work evidence template (SWET)</dt>
+      <dd class="data-list__definition">
+        {% if case_data.documents_socialWorkEvidenceTemplate_document is not empty
+        and case_data.documents_socialWorkEvidenceTemplate_document.documentStatus is not empty %}
+          {{ case_data.documents_socialWorkEvidenceTemplate_document.documentStatus }}
+          {% if case_data.documents_socialWorkEvidenceTemplate_document.documentStatus != 'Attached'
+          and case_data.documents_socialWorkEvidenceTemplate_document.statusReason is not empty %}
+            <span class="u-block">{{ case_data.documents_socialWorkEvidenceTemplate_document.statusReason }}</span>
+          {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Threshold document</dt>
+      <dd class="data-list__definition">
+        {% if case_data.documents_threshold_document is not empty
+        and case_data.documents_threshold_document.documentStatus is not empty %}
+          {{ case_data.documents_threshold_document.documentStatus }}
+          {% if case_data.documents_threshold_document.documentStatus != 'Attached'
+          and case_data.documents_threshold_document.statusReason is not empty %}
+            <span class="u-block">{{ case_data.documents_threshold_document.statusReason }}</span>
+          {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Checklist document</dt>
+      <dd class="data-list__definition">
+        {% if case_data.documents_checklist_document is not empty
+        and case_data.documents_checklist_document.documentStatus is not empty %}
+          {{ case_data.documents_checklist_document.documentStatus }}
+          {% if case_data.documents_checklist_document.documentStatus != 'Attached'
+          and case_data.documents_checklist_document.statusReason is not empty %}
+            <span class="u-block">{{ case_data.documents_checklist_document.statusReason }}</span>
+          {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    {% if case_data.documents_socialWorkOther is not empty %}
+      {% for document in case_data.documents_socialWorkOther %}
+        {% if document is not empty and document.value is not empty %}
+        {% set counter = 1 %}
+          <div class="data-list__row">
+            <dt class="data-list__title">Additional document {{ counter }}</dt>
+            <dd class="data-list__definition">
+            {% if document.value.documentTitle is not empty %}
+              {{ document.value.documentTitle }}
+            {% else %}
+              -
+            {% endif %}
+            </dd>
+          </div>
+        {% endif %}
+      {% set counter = counter + 1 %}
+      {% endfor %}
+    {% endif %}
   </dl>
   <p class="consent">I, {{ userFullName }}, believe that the facts stated in this application are true.</p>
 </main>
