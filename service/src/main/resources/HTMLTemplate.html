@@ -418,10 +418,10 @@
       <dt class="data-list__title">Facilities or assistance for a disability</dt>
       <dd class="data-list__definition">
         {% if case_data.hearingPreferences is not empty and
-        case_data.hearingPreferences.learningDisability is not empty %}
-          {{ case_data.hearingPreferences.learningDisability }}
-          {% if case_data.hearingPreferences.learningDisability == 'Yes' %}
-            <span class="u-block">{{ case_data.hearingPreferences.learningDisabilityDetails }}</span>
+        case_data.hearingPreferences.disabilityAssistance is not empty %}
+          {{ case_data.hearingPreferences.disabilityAssistance }}
+          {% if case_data.hearingPreferences.disabilityAssistance == 'Yes' %}
+            <span class="u-block">{{ case_data.hearingPreferences.disabilityAssistanceDetails }}</span>
           {% endif %}
         {% else %}
           -
@@ -437,6 +437,20 @@
           {% if case_data.hearingPreferences.extraSecurityMeasures == 'Yes' %}
             <span class="u-block">{{ case_data.hearingPreferences.extraSecurityMeasuresDetails }}</span>
           {% endif %}
+        {% else %}
+          -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Something else</dt>
+      <dd class="data-list__definition">
+        {% if case_data.hearingPreferences is not empty and
+        case_data.hearingPreferences.somethingElse is not empty %}
+          {{ case_data.hearingPreferences.somethingElse }}
+        {% if case_data.hearingPreferences.somethingElse == 'Yes' %}
+          <span class="u-block">{{ case_data.hearingPreferences.somethingElseDetails }}</span>
+        {% endif %}
         {% else %}
           -
         {% endif %}
@@ -2134,94 +2148,244 @@
     </div>
   </dl>
 
-  {% if case_data.proceeding is not empty and case_data.proceeding.onGoingProceeding is not empty and
-  case_data.proceeding.onGoingProceeding == "Yes" %}
-    <h3 class="heading heading--two">Other proceedings</h3>
+  {% if case_data.proceeding is not empty
+  and case_data.proceeding.onGoingProceeding is not empty %}
+    <h3 class="heading heading--two">
+      Other proceedings
+      {% if case_data.proceeding.additionalProceedings is not empty %}
+        1
+      {% endif %}
+    </h3>
     <dl class="data-list">
-      <div class="data-list__row">
-        <dt class="data-list__title">Ongoing or previous proceedings</dt>
-        <dd class="data-list__definition">
-          {% if case_data.proceeding.onGoingProceeding is not empty %}
-            {{ case_data.proceeding.onGoingProceeding }}
-          {% else %}
-            -
-          {% endif %}
-        </dd>
-      </div>
-      <div class="data-list__row data-list__row--no-border">
-        <dt class="data-list__title data-list__title--indent">Case number</dt>
-        <dd class="data-list__definition">
-          {% if case_data.proceeding.caseNumber is not empty %}
-            {{ case_data.proceeding.caseNumber }}
-          {% else %}
-            -
-          {% endif %}
-        </dd>
-      </div>
-      <div class="data-list__row data-list__row--no-border">
-        <dt class="data-list__title data-list__title--indent">Started</dt>
-        <dd class="data-list__definition">
-          {% if case_data.proceeding.started is not empty %}
+      {% if case_data.proceeding.onGoingProceeding != "Yes" %}
+        <div class="data-list__row">
+          <dt class="data-list__title">Other relevant proceedings</dt>
+          <dd class="data-list__definition">
+            {% if case_data.proceeding.onGoingProceeding == "No" %}
+              No
+            {% elseif case_data.proceeding.onGoingProceeding == "DontKnow" %}
+              Don't know
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+      {% endif %}
+      {% if case_data.proceeding.onGoingProceeding == "Yes" %}
+        <div class="data-list__row">
+          <dt class="data-list__title">Previous or ongoing</dt>
+          <dd class="data-list__definition">
+            {% if case_data.proceeding.proceedingStatus is not empty %}
+              {{ case_data.proceeding.proceedingStatus }}
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Case number</dt>
+          <dd class="data-list__definition">
+            {% if case_data.proceeding.caseNumber is not empty %}
+              {{ case_data.proceeding.caseNumber }}
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Date started</dt>
+          <dd class="data-list__definition">
+            {% if case_data.proceeding.started is not empty %}
             {{ case_data.proceeding.started }}
-          {% else %}
+            {% else %}
             -
-          {% endif %}
-        </dd>
-      </div>
-      <div class="data-list__row data-list__row--no-border">
-        <dt class="data-list__title data-list__title--indent">Ended</dt>
-        <dd class="data-list__definition">
-          {% if case_data.proceeding.ended is not empty %}
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Date ended</dt>
+          <dd class="data-list__definition">
+            {% if case_data.proceeding.ended is not empty %}
             {{ case_data.proceeding.ended }}
-          {% else %}
+            {% else %}
             -
-          {% endif %}
-        </dd>
-      </div>
-      <div class="data-list__row data-list__row--no-border">
-        <dt class="data-list__title data-list__title--indent">Orders made</dt>
-        <dd class="data-list__definition">
-          {% if case_data.proceeding.ordersMade is not empty %}
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Orders made</dt>
+          <dd class="data-list__definition">
+            {% if case_data.proceeding.ordersMade is not empty %}
             {{ case_data.proceeding.ordersMade }}
-          {% else %}
+            {% else %}
             -
-          {% endif %}
-        </dd>
-      </div>
-      <div class="data-list__row data-list__row--no-border">
-        <dt class="data-list__title data-list__title--indent">Judge</dt>
-        <dd class="data-list__definition">
-          {% if case_data.proceeding.judge is not empty %}
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Judge</dt>
+          <dd class="data-list__definition">
+            {% if case_data.proceeding.judge is not empty %}
             {{ case_data.proceeding.judge }}
-          {% else %}
+            {% else %}
             -
-          {% endif %}
-        </dd>
-      </div>
-      <div class="data-list__row data-list__row--no-border">
-        <dt class="data-list__title data-list__title--indent">Guardian</dt>
-        <dd class="data-list__definition">
-          {% if case_data.proceeding.guardian is not empty %}
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Children involved</dt>
+          <dd class="data-list__definition">
+            {% if case_data.proceeding.children is not empty %}
+              {{ case_data.proceeding.children }}
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Guardian</dt>
+          <dd class="data-list__definition">
+            {% if case_data.proceeding.guardian is not empty %}
             {{ case_data.proceeding.guardian }}
-          {% else %}
+            {% else %}
             -
-          {% endif %}
-        </dd>
-      </div>
-      <div class="data-list__row data-list__row--no-border">
-        <dt class="data-list__title data-list__title--indent">Same guardian needed</dt>
-        <dd class="data-list__definition">
-          {% if case_data.proceeding.sameGuardianNeeded is not empty %}
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Same guardian needed</dt>
+          <dd class="data-list__definition">
+            {% if case_data.proceeding.sameGuardianNeeded is not empty %}
             <span class="u-block">{{ case_data.proceeding.sameGuardianNeeded }}</span>
             {% if case_data.proceeding.sameGuardianNeeded == "No" and case_data.proceeding.sameGuardianDetails is not empty %}
-              <span class="u-block">{{ case_data.proceeding.sameGuardianDetails }}</span>
+            <span class="u-block">{{ case_data.proceeding.sameGuardianDetails }}</span>
             {% endif %}
-          {% else %}
+            {% else %}
             -
-          {% endif %}
-        </dd>
-      </div>
+            {% endif %}
+          </dd>
+        </div>
+      {% endif %}
     </dl>
+  {% endif %}
+
+  {% if case_data.proceeding is not empty and
+  case_data.proceeding.onGoingProceeding is not empty and
+  case_data.proceeding.onGoingProceeding == "Yes" and
+  case_data.proceeding.additionalProceedings is not empty %}
+    {% if case_data.proceeding.onGoingProceeding is not empty
+    or case_data.proceeding.caseNumber is not empty
+    or case_data.proceeding.started is not empty
+    or case_data.proceeding.ended is not empty
+    or case_data.proceeding.ordersMade is not empty
+    or case_data.proceeding.judge is not empty
+    or case_data.proceeding.guardian is not empty
+    or case_data.proceeding.sameGuardianNeeded is not empty %}
+      {% set counter = 2 %}
+    {% else %}
+      {% set counter = 1 %}
+    {% endif %}
+    {% for proceeding in case_data.proceeding.additionalProceedings %}
+      {% if proceeding is not empty and proceeding.value is not empty %}
+        <h3 class="heading heading--two">Other proceedings {{ counter }}</h3>
+        <dl class="data-list">
+          <div class="data-list__row">
+            <dt class="data-list__title">Previous or ongoing</dt>
+            <dd class="data-list__definition">
+              {% if proceeding.value.proceedingStatus is not empty %}
+                {{ proceeding.value.proceedingStatus }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Case number</dt>
+            <dd class="data-list__definition">
+              {% if proceeding.value.caseNumber is not empty %}
+                {{ proceeding.value.caseNumber }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Date started</dt>
+            <dd class="data-list__definition">
+              {% if proceeding.value.started is not empty %}
+                {{ proceeding.value.started }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Date ended</dt>
+            <dd class="data-list__definition">
+              {% if proceeding.value.ended is not empty %}
+                {{ proceeding.value.ended }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Orders made</dt>
+            <dd class="data-list__definition">
+              {% if proceeding.value.ordersMade is not empty %}
+                {{ proceeding.value.ordersMade }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Judge</dt>
+            <dd class="data-list__definition">
+              {% if proceeding.value.judge is not empty %}
+                {{ proceeding.value.judge }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Children involved</dt>
+            <dd class="data-list__definition">
+              {% if proceeding.value.children is not empty %}
+              {{ proceeding.value.children }}
+              {% else %}
+              -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Guardian</dt>
+            <dd class="data-list__definition">
+              {% if proceeding.value.guardian is not empty %}
+                {{ proceeding.value.guardian }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Same guardian needed</dt>
+            <dd class="data-list__definition">
+              {% if proceeding.value.sameGuardianNeeded is not empty %}
+                <span class="u-block">{{ proceeding.value.sameGuardianNeeded }}</span>
+                {% if proceeding.value.sameGuardianNeeded == "No" and proceeding.value.sameGuardianDetails is not empty %}
+                <span class="u-block">{{ proceeding.value.sameGuardianDetails }}</span>
+                {% endif %}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+        </dl>
+      {% endif %}
+      {% set counter = counter + 1 %}
+    {% endfor %}
   {% endif %}
 
   <h3 class="heading heading--two">Annex Documents</h3>

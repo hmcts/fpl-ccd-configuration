@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(CaseInitiationController.class)
+@WebMvcTest(ApplicantController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class ApplicantControllerTest {
 
@@ -77,6 +77,17 @@ public class ApplicantControllerTest {
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
         String actualPbaNumber = extractPbaNumberFromApplicant(callbackResponse);
         assertThat(actualPbaNumber).isEqualTo("PBA1234567");
+    }
+
+    @Test
+    void shouldReturnNoErrorsWhenPbaNumberIsAnEmptyString() throws Exception {
+        String pbaNumber = "";
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createApplicant(pbaNumber));
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
+        String actualPbaNumber = extractPbaNumberFromApplicant(callbackResponse);
+        assertThat(actualPbaNumber).isBlank();
     }
 
     @Test

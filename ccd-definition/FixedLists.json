@@ -406,5 +406,23 @@
     "ID": "ShowHide",
     "ListElementCode": "SHOW_FIELD",
     "ListElement": "SHOW_FIELD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RelevantProceedings",
+    "ListElementCode": "DontKnow",
+    "ListElement": "Don't know"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RelevantProceedings",
+    "ListElementCode": "No",
+    "ListElement": "No"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RelevantProceedings",
+    "ListElementCode": "Yes",
+    "ListElement": "Yes"
   }
 ]

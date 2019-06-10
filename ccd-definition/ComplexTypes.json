@@ -522,19 +522,113 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "proceedingStatus",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "ProceedingStatus",
+    "ElementLabel": "Are there previous or ongoing proceedings?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "caseNumber",
+    "FieldType": "Text",
+    "ElementLabel": "Case number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "started",
+    "FieldType": "Text",
+    "ElementLabel": "Date started",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "ended",
+    "FieldType": "Text",
+    "ElementLabel": "Date ended",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "ordersMade",
+    "FieldType": "Text",
+    "ElementLabel": "Orders made",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "judge",
+    "FieldType": "Text",
+    "ElementLabel": "Judge",
+    "HintText": "For example, District Judge Martin Brown",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "children",
+    "FieldType": "TextArea",
+    "ElementLabel": "Names of children involved",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "guardian",
+    "FieldType": "Text",
+    "ElementLabel": "Name of guardian",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "sameGuardianNeeded",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is the same guardian needed?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingType",
+    "ListElementCode": "sameGuardianDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "sameGuardianNeeded=\"No\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "onGoingProceeding",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Are you aware of any ongoing or previous proceedings?",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "RelevantProceedings",
+    "ElementLabel": "Are there any past or ongoing proceedings relevant to this case?",
+    "HintText": "This should include any criminal proceedings involving respondents",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Proceeding",
+    "ListElementCode": "proceedingLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## Other proceedings 1",
+    "FieldShowCondition": "onGoingProceeding=\"Yes\"",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "Proceeding",
     "ListElementCode": "proceedingStatus",
-    "FieldType": "FixedList",
+    "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ProceedingStatus",
-    "ElementLabel": "Proceeding status",
+    "ElementLabel": "Are there previous or ongoing proceedings?",
     "FieldShowCondition": "onGoingProceeding=\"Yes\"",
     "SecurityClassification": "Public"
   },
@@ -552,7 +646,7 @@
     "ID": "Proceeding",
     "ListElementCode": "started",
     "FieldType": "Text",
-    "ElementLabel": "Started",
+    "ElementLabel": "Date started",
     "FieldShowCondition": "onGoingProceeding=\"Yes\"",
     "SecurityClassification": "Public"
   },
@@ -561,7 +655,7 @@
     "ID": "Proceeding",
     "ListElementCode": "ended",
     "FieldType": "Text",
-    "ElementLabel": "Ended",
+    "ElementLabel": "Date ended",
     "FieldShowCondition": "onGoingProceeding=\"Yes\"",
     "SecurityClassification": "Public"
   },
@@ -581,7 +675,7 @@
     "FieldType": "Text",
     "ElementLabel": "Judge",
     "FieldShowCondition": "onGoingProceeding=\"Yes\"",
-    "HintText": "For example, District Judge Martin Brown",
+    "HintText": "Include level, for example District Judge Martin Brown",
     "SecurityClassification": "Public"
   },
   {
@@ -589,7 +683,7 @@
     "ID": "Proceeding",
     "ListElementCode": "children",
     "FieldType": "TextArea",
-    "ElementLabel": "Children subject to proceedings",
+    "ElementLabel": "Names of children involved",
     "FieldShowCondition": "onGoingProceeding=\"Yes\"",
     "SecurityClassification": "Public"
   },
@@ -598,7 +692,7 @@
     "ID": "Proceeding",
     "ListElementCode": "guardian",
     "FieldType": "Text",
-    "ElementLabel": "Guardian",
+    "ElementLabel": "Name of guardian",
     "FieldShowCondition": "onGoingProceeding=\"Yes\"",
     "SecurityClassification": "Public"
   },
@@ -607,7 +701,7 @@
     "ID": "Proceeding",
     "ListElementCode": "sameGuardianNeeded",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Same guardian needed?",
+    "ElementLabel": "Is the same guardian needed?",
     "FieldShowCondition": "onGoingProceeding=\"Yes\"",
     "SecurityClassification": "Public"
   },
@@ -622,11 +716,29 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "Proceeding",
+    "ListElementCode": "additionalProceedings",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ProceedingType",
+    "ElementLabel": "Additional proceedings",
+    "FieldShowCondition": "onGoingProceeding=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "hearingPreferencesLabel",
+    "FieldType": "Label",
+    "ElementLabel": "Is any of the following needed to help someone take part in a hearing?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
     "ListElementCode": "interpreter",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Any Interpreter required?",
-    "HintText": "Give language (and any dialect, if known)",
+    "ElementLabel": "Interpreter",
+    "HintText": "Including sign language",
     "SecurityClassification": "Public"
   },
   {
@@ -634,62 +746,8 @@
     "ID": "HearingPreferences",
     "ListElementCode": "interpreterDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "Give details",
+    "ElementLabel": "Give details including person, language and dialect",
     "FieldShowCondition": "interpreter=\"Yes\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingPreferences",
-    "ListElementCode": "intermediary",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Any intermediary required?",
-    "HintText": "For example, Welsh proceedings required with interpreter",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingPreferences",
-    "ListElementCode": "intermediaryDetails",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give details",
-    "FieldShowCondition": "intermediary=\"Yes\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingPreferences",
-    "ListElementCode": "litigation",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Litigation capacity issues",
-    "HintText": "For example, Respondent has mental health issues",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingPreferences",
-    "ListElementCode": "litigationDetails",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give details",
-    "FieldShowCondition": "litigation=\"Yes\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingPreferences",
-    "ListElementCode": "learningDisability",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Learning disability issues",
-    "HintText": "For example, Respondent has learning disability",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingPreferences",
-    "ListElementCode": "learningDisabilityDetails",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give details",
-    "FieldShowCondition": "learningDisability=\"Yes\"",
     "SecurityClassification": "Public"
   },
   {
@@ -697,8 +755,7 @@
     "ID": "HearingPreferences",
     "ListElementCode": "welsh",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Do you need Welsh proceedings?",
-    "HintText": "For example, Welsh proceedings reqired with interpreter",
+    "ElementLabel": "Spoken or written Welsh",
     "SecurityClassification": "Public"
   },
   {
@@ -713,10 +770,44 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingPreferences",
+    "ListElementCode": "intermediary",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Intermediary",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "intermediaryDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "intermediary=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "disabilityAssistance",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Facilities or assistance for a disability",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "disabilityAssistanceDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "disabilityAssistance=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
     "ListElementCode": "extraSecurityMeasures",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Any security needed?",
-    "HintText": "For example, Need separate waiting rooms due to domestic violence",
+    "ElementLabel": "Separate waiting room or other security measures",
+    "HintText": "For example, mother and father need to be in separate waiting rooms as history of domestic violence",
     "SecurityClassification": "Public"
   },
   {
@@ -726,6 +817,23 @@
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
     "FieldShowCondition": "extraSecurityMeasures=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "somethingElse",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Something else",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "somethingElseDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "somethingElse=\"Yes\"",
     "SecurityClassification": "Public"
   },
   {
