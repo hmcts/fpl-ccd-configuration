@@ -501,7 +501,7 @@
     "ListElementCode": "proceedingStatus",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ProceedingStatus",
-    "ElementLabel": "Are there previous or ongoing proceedings?",
+    "ElementLabel": "Are these previous or ongoing proceedings?",
     "SecurityClassification": "Public"
   },
   {
@@ -603,7 +603,7 @@
     "ListElementCode": "proceedingStatus",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ProceedingStatus",
-    "ElementLabel": "Are there previous or ongoing proceedings?",
+    "ElementLabel": "Are these previous or ongoing proceedings?",
     "FieldShowCondition": "onGoingProceeding=\"Yes\"",
     "SecurityClassification": "Public"
   },
