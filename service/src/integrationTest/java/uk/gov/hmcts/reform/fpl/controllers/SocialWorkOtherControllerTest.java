@@ -46,9 +46,9 @@ public class SocialWorkOtherControllerTest {
 
     @Test
     void shouldReturnWithErrorsIfDocumentTitleIsNotPopulated() throws Exception {
-        CallbackRequest request = CreateCallbackRequest("");
+        CallbackRequest request = createCallbackRequest("");
 
-        MvcResult response = PerformResponseCallBack(request);
+        MvcResult response = performResponseCallBack(request);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -58,9 +58,9 @@ public class SocialWorkOtherControllerTest {
 
     @Test
     void shouldReturnWithNoErrorsIfDocumentTitleIsPopulated() throws Exception {
-        CallbackRequest request = CreateCallbackRequest("123");
+        CallbackRequest request = createCallbackRequest("123");
 
-        MvcResult response = PerformResponseCallBack(request);
+        MvcResult response = performResponseCallBack(request);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -68,7 +68,7 @@ public class SocialWorkOtherControllerTest {
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
-    private CallbackRequest CreateCallbackRequest(String documentTitle) {
+    private CallbackRequest createCallbackRequest(String documentTitle) {
         return CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
                 .put("documents_socialWorkOther", ImmutableList.builder()
@@ -83,7 +83,7 @@ public class SocialWorkOtherControllerTest {
             .build();
     }
 
-    private MvcResult PerformResponseCallBack(CallbackRequest request) throws Exception {
+    private MvcResult performResponseCallBack(CallbackRequest request) throws Exception {
         return mockMvc
             .perform(post("/callback/enter-social-work-other/mid-event")
                 .header("authorization", AUTH_TOKEN)

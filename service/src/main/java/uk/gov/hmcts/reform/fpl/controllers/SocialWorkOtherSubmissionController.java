@@ -10,8 +10,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -24,7 +24,8 @@ public class SocialWorkOtherSubmissionController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        List<Map<String, Object>> socialWorkOtherData = (List<Map<String, Object>>) caseDetails.getData().get("documents_socialWorkOther");
+        List<Map<String, Object>> socialWorkOtherData = (List<Map<String, Object>>) caseDetails
+            .getData().get("documents_socialWorkOther");
         List<String> validationErrors = new ArrayList<String>();
 
         if (!socialWorkOtherData.isEmpty()) {
