@@ -688,10 +688,10 @@ escape-string-regexp@1.0.5, escape-string-regexp@^1.0.2, escape-string-regexp@^1
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
 
-eslint-plugin-codeceptjs@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-codeceptjs/-/eslint-plugin-codeceptjs-0.4.0.tgz#4ad6835a2750d20a4e5682776c18fdca2434159b"
-  integrity sha512-/ZH47wF45lZKYFtOmmmrQCbROwmqPq3OmR1HIFYYpcnnnKxH9D90aSEEz6uYFsXJe2gvXyoksDARtSB19Q2VFg==
+eslint-plugin-codeceptjs@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-codeceptjs/-/eslint-plugin-codeceptjs-0.5.0.tgz#cf63755ee7d6bcfb30c4a63296445d195668d02d"
+  integrity sha512-H3TTCpw8eMVAbsjsfC6pwNDh6UW5d8HIgk23fiMMGN44uUB0+xnIORCJs1RG54TzCml/nK0wuUyZTLZbwhbqwA==
   dependencies:
     requireindex "~1.1.0"
 
