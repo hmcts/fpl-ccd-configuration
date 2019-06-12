@@ -35,7 +35,7 @@ public class SocialWorkOtherSubmissionController {
                 Map<String, Object> documentValue = (Map<String, Object>) document.get("value");
                 Optional documentTitle = Optional.ofNullable(documentValue.get("documentTitle"));
 
-                if (documentTitle.isEmpty()) {
+                if (documentTitle.isEmpty() || "".equals(documentValue.get("documentTitle"))) {
                     validationErrors.add(String.format("You must give additional document %s a name.", i.get()));
                 }
 
