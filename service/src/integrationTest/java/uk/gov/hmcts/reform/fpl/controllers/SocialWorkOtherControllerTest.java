@@ -53,7 +53,36 @@ public class SocialWorkOtherControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        assertThat(callbackResponse.getErrors()).doesNotContain("You must give additional document 1 a name.");
+        assertThat(callbackResponse.getErrors()).contains("You must give additional document 1 a name.");
+    }
+
+    @Test
+    void shouldReturnWithErrorsIfMultipleDocumentTitlesHaveNotBeenProvided() throws Exception {
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .data(ImmutableMap.<String, Object>builder()
+                .put("documents_socialWorkOther", ImmutableList.builder()
+                    .add(ImmutableMap.builder()
+                        .put("id", "12345")
+                        .put("value", ImmutableMap.builder()
+                            .put("documentTitle", "Document title one")
+                            .build())
+                        .build())
+                    .add(ImmutableMap.builder()
+                        .put("id", "12346")
+                        .put("value", ImmutableMap.builder()
+                            .put("documentTitle", "Document title two")
+                            .build())
+                        .build())
+                    .build())
+                .build()).build())
+            .build();
+
+        MvcResult response = performResponseCallBack(request);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(callbackResponse.getErrors()).contains("You must give additional document 1 a name. You must give additional document 2 a name.");
     }
 
     @Test
