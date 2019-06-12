@@ -26,7 +26,7 @@ Scenario('Select yes for ongoing or previous proceedings and fill in other proce
     caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
     I.seeAnswerInTab(1, 'Other proceedings', 'Are there any past or ongoing' +
       ' proceedings relevant to this case?', 'Yes');
-    I.seeAnswerInTab(2, 'Other proceedings', 'Are there previous or ongoing proceedings?', 'Ongoing');
+    I.seeAnswerInTab(2, 'Other proceedings', 'Are these previous or ongoing proceedings?', 'Ongoing');
     I.seeAnswerInTab(3, 'Other proceedings', 'Case number', '000000');
     I.seeAnswerInTab(4, 'Other proceedings', 'Date started', '01/01/01');
     I.seeAnswerInTab(5, 'Other proceedings', 'Date ended', '02/01/01');
@@ -49,7 +49,7 @@ Scenario('Select yes for ongoing or previous proceedings and fill in multiple pr
     caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
     I.seeAnswerInTab(1, 'Other proceedings', 'Are there any past or ongoing' +
       ' proceedings relevant to this case?', 'Yes');
-    I.seeAnswerInTab(2, 'Other proceedings', 'Are there previous or ongoing proceedings?', 'Ongoing');
+    I.seeAnswerInTab(2, 'Other proceedings', 'Are these previous or ongoing proceedings?', 'Ongoing');
     I.seeAnswerInTab(3, 'Other proceedings', 'Case number', '000000');
     I.seeAnswerInTab(4, 'Other proceedings', 'Date started', '01/01/01');
     I.seeAnswerInTab(5, 'Other proceedings', 'Date ended', '02/01/01');
@@ -59,7 +59,7 @@ Scenario('Select yes for ongoing or previous proceedings and fill in multiple pr
     I.seeAnswerInTab(8, 'Other proceedings', 'Names of children involved', 'Joe Bloggs');
     I.seeAnswerInTab(9, 'Other proceedings', 'Name of guardian', 'John Smith');
     I.seeAnswerInTab(10, 'Other proceedings', 'Is the same guardian needed?', 'Yes');
-    I.seeAnswerInTab(1, 'Additional proceedings 1', 'Are there previous or ongoing proceedings?', 'Previous');
+    I.seeAnswerInTab(1, 'Additional proceedings 1', 'Are these previous or ongoing proceedings?', 'Previous');
     I.seeAnswerInTab(2, 'Additional proceedings 1', 'Case number', '000123');
     I.seeAnswerInTab(3, 'Additional proceedings 1', 'Date started', '02/02/02');
     I.seeAnswerInTab(4, 'Additional proceedings 1', 'Date ended', '03/03/03');
