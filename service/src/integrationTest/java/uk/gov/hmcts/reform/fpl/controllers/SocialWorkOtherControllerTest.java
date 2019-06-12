@@ -64,13 +64,13 @@ public class SocialWorkOtherControllerTest {
                     .add(ImmutableMap.builder()
                         .put("id", "12345")
                         .put("value", ImmutableMap.builder()
-                            .put("documentTitle", "Document title one")
+                            .put("documentTitle", "")
                             .build())
                         .build())
                     .add(ImmutableMap.builder()
                         .put("id", "12346")
                         .put("value", ImmutableMap.builder()
-                            .put("documentTitle", "Document title two")
+                            .put("documentTitle", "")
                             .build())
                         .build())
                     .build())
@@ -82,7 +82,11 @@ public class SocialWorkOtherControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        assertThat(callbackResponse.getErrors()).contains("You must give additional document 1 a name. You must give additional document 2 a name.");
+        assertThat(callbackResponse.getErrors())
+            .contains("You must give additional document 1 a name.");
+        
+        assertThat(callbackResponse.getErrors())
+            .contains("You must give additional document 2 a name.");
     }
 
     @Test
