@@ -216,7 +216,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "documents_socialWorkOther",
+    "CaseFieldID": "standardDirectionsDocument",
     "TabFieldDisplayOrder": 6
   },
   {
@@ -226,7 +226,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "submittedForm",
+    "CaseFieldID": "otherCourtAdminDocuments",
     "TabFieldDisplayOrder": 7
   },
   {
@@ -236,7 +236,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "standardDirectionsDocument",
+    "CaseFieldID": "courtBundle",
     "TabFieldDisplayOrder": 8
   },
   {
@@ -246,7 +246,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "otherCourtAdminDocuments",
+    "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
     "TabFieldDisplayOrder": 9
   },
   {
@@ -256,7 +256,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "courtBundle",
+    "CaseFieldID": "documents_threshold_document",
     "TabFieldDisplayOrder": 10
   },
   {
@@ -266,7 +266,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
+    "CaseFieldID": "documents_checklist_document",
     "TabFieldDisplayOrder": 11
   },
   {
@@ -276,7 +276,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "documents_threshold_document",
+    "CaseFieldID": "documents_socialWorkOther",
     "TabFieldDisplayOrder": 12
   },
   {
@@ -286,7 +286,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "documents_checklist_document",
+    "CaseFieldID": "submittedForm",
     "TabFieldDisplayOrder": 13
   }
 ]
