@@ -32,14 +32,12 @@ Scenario('Cannot submit a case unless consent is given', I => {
   I.seeInCurrentUrl('/submitApplication');
 });
 
-Scenario('Can submit a case and see date submitted', (I, caseViewPage, caseListPage, submitApplicationPage) => {
+xScenario('Can submit a case and see date submitted', (I, caseViewPage, caseListPage, submitApplicationPage) => {
   submitApplicationPage.giveConsent();
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   caseViewPage.goToCaseList();
   caseListPage.changeStateFilter('Submitted');
-  const row = locate('.//tr').withChild(`.//td/a[text()='${caseId.slice(1)}']`);
-  let currentDate = new Date();
-
-  I.seeElement(locate(row.withChild('.//td[4]').withText(currentDate.getDate() + ' ' + monthNames[currentDate.getMonth()] + ' ' + currentDate.getFullYear())));
+  row = caseListPage.findCase(caseId);
+  caseListPage.seeSubmissionDate(row);
 });
