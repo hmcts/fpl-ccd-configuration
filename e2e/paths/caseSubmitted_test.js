@@ -1,3 +1,4 @@
+/* global locate*/
 const config = require('../config.js');
 const fields = {
   documentLink: 'ccd-read-document-field>a',
@@ -38,8 +39,6 @@ Scenario('Can submit a case and see date submitted', (I, caseViewPage, caseListP
   caseViewPage.goToCaseList();
   caseListPage.changeStateFilter('Submitted');
   const row = locate('.//tr').withChild(`.//td/a[text()='${caseId.slice(1)}']`);
-  I.seeElement(row);
-
   let currentDate = new Date();
 
   I.seeElement(locate(row.withChild('.//td[4]').withText(currentDate.getDate() + ' ' + monthNames[currentDate.getMonth()] + ' ' + currentDate.getFullYear())));
