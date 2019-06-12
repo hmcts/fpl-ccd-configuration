@@ -11,7 +11,6 @@
 # 3. Deployments & Services
 # 4. Ingresses
 #
-
 ---
 
 #
@@ -41,10 +40,11 @@ data:
   CCD_UI_BASE_URL: "https://ccd-case-management-web-${SERVICE_FQDN}"
   FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING: "swansea.gov.uk=>SA;hillingdon.gov.uk=>HN"
   FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING: "SA=>Swansea City Council;HN=>London Borough Hillingdon;PCC=>Portsmouth City Council;STF=>Staffordshire County Council;SCC=>Southampton City Council"
-  FPL_LOCAL_AUTHORITY_USER_MAPPING: "SA=>29,30,31;HN=>32,33"
+  FPL_LOCAL_AUTHORITY_USER_MAPPING: "SA=>22,23,24;HN=>25,26"
   FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING: "SA=>Swansea Family Court:FamilyPublicLaw+sa@gmail.com;HN=>Portsmouth Combined Court:FamilyPublicLaw+hn@gmail.com"
   FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING: "SA=>Cafcass Cymru:FamilyPublicLaw+cafcass@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcass@gmail.com"
   NOTIFY_API_KEY: ${NOTIFY_API_KEY}
+  APPINSIGHTS_INSTRUMENTATIONKEY: "fake-key"
 
 ---
 
@@ -386,7 +386,7 @@ spec:
     spec:
       containers:
         - name: idam-authentication-web
-          image: docker.artifactory.reform.hmcts.net/auth/authentication-web:latest
+          image: hmcts.azurecr.io/hmcts/tidam-authentication-web:latest
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
@@ -457,7 +457,7 @@ spec:
           command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
       containers:
         - name: idam-api
-          image: docker.artifactory.reform.hmcts.net/auth/idam-api:latest
+          image: hmcts.azurecr.io/hmcts/tidam-api:latest
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
@@ -1002,6 +1002,7 @@ metadata:
   labels:
     app: shared-database
 spec:
+  type: LoadBalancer
   ports:
     - port: 5432
   selector:

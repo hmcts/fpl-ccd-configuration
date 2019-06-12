@@ -8,3 +8,12 @@ buildscript {
     pitest group: 'org.pitest', name: 'pitest-junit5-plugin', version: '0.8'
   }
 }
+
+plugins {
+  id 'java'
+}
+
+allprojects {
+  sourceCompatibility = '11'
+  targetCompatibility = '11'
+}
