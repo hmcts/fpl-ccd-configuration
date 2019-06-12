@@ -22,4 +22,8 @@ module.exports = {
   selectTab(tab) {
     I.click(tab);
   },
+
+  goToCaseList(){
+    I.click('Case List');
+  },
 };

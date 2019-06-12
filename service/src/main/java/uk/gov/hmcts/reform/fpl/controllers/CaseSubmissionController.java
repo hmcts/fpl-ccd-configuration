@@ -82,16 +82,14 @@ public class CaseSubmissionController {
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         formatter.setTimeZone(TimeZone.getTimeZone("Europe/London"));
-        Date newDate = new Date(System.currentTimeMillis());
 
         Map<String, Object> data = caseDetails.getData();
-        data.put("dateSubmitted", formatter.format(newDate));
+        data.put("dateSubmitted", formatter.format(new Date(System.currentTimeMillis())));
         data.put("submittedForm", ImmutableMap.<String, String>builder()
             .put("document_url", document.links.self.href)
             .put("document_binary_url", document.links.binary.href)
             .put("document_filename", document.originalDocumentName)
-            .build()
-        );
+            .build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
