@@ -56,7 +56,7 @@
     "ID": "OtherDocument",
     "ListElementCode": "documentTitle",
     "FieldType": "Text",
-    "ElementLabel": "Document title",
+    "ElementLabel": "Document name",
     "SecurityClassification": "Public"
   },
   {
@@ -1546,7 +1546,7 @@
     "ID": "CourtAdminDocument",
     "ListElementCode": "documentTitle",
     "FieldType": "Text",
-    "ElementLabel": "Document title",
+    "ElementLabel": "Document name",
     "SecurityClassification": "Public"
   },
   {
