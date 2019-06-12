@@ -1,5 +1,6 @@
 /* global locate, process */
 const config = require('./config');
+const monthOfYear = require('./fixtures/monthOfYear');
 
 const logIn = require('./pages/login/loginPage');
 const createCasePage = require('./pages/createCase/createCase');
@@ -73,5 +74,11 @@ module.exports = function () {
       const href = `${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${caseId.replace(/\D/g, '')}`;
       this.navigateToUrl(href);
     },
+
+    seeSubmissionDate(row){
+      let currentDate = new Date();
+      this.seeElement(locate(row.withChild('.//td[4]').withText(currentDate.getDate() + ' ' + monthOfYear[currentDate.getMonth()] + ' ' + currentDate.getFullYear())));
+    },
+
   });
 };

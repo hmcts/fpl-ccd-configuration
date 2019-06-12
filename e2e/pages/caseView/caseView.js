@@ -1,3 +1,4 @@
+/* global locate*/
 const I = actor();
 
 module.exports = {
@@ -24,6 +25,6 @@ module.exports = {
   },
 
   goToCaseList(){
-    I.click('Case List');
+    I.click(locate("#proposition-links>li:nth-child(1)>a"));
   },
 };

@@ -1,13 +1,11 @@
-/* global locate*/
+/* global xScenario */
 const config = require('../config.js');
 const fields = {
   documentLink: 'ccd-read-document-field>a',
 };
-const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 let caseId;
 
-Feature('Submit Case');
+Feature('Submit Case').retry(2);
 Before(async(I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseId = await I.grabTextFrom('.heading-h1');
@@ -32,12 +30,13 @@ Scenario('Cannot submit a case unless consent is given', I => {
   I.seeInCurrentUrl('/submitApplication');
 });
 
+//test skipped for now as after number of tests go on to next page to un-skip remove x from before scenario, clear volumes and run test
 xScenario('Can submit a case and see date submitted', (I, caseViewPage, caseListPage, submitApplicationPage) => {
   submitApplicationPage.giveConsent();
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   caseViewPage.goToCaseList();
   caseListPage.changeStateFilter('Submitted');
-  row = caseListPage.findCase(caseId);
-  caseListPage.seeSubmissionDate(row);
+  let row = caseListPage.findCase(caseId);
+  I.seeSubmissionDate(row);
 });

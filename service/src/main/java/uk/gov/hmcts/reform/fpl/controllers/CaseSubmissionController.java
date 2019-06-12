@@ -80,11 +80,11 @@ public class CaseSubmissionController {
 
         Document document = uploadDocumentService.uploadPDF(userId, authorization, pdf, buildFileName(caseDetails));
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        formatter.setTimeZone(TimeZone.getTimeZone("Europe/London"));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
 
         Map<String, Object> data = caseDetails.getData();
-        data.put("dateSubmitted", formatter.format(new Date(System.currentTimeMillis())));
+        data.put("dateSubmitted", sdf.format(new Date(System.currentTimeMillis())));
         data.put("submittedForm", ImmutableMap.<String, String>builder()
             .put("document_url", document.links.self.href)
             .put("document_binary_url", document.links.binary.href)
