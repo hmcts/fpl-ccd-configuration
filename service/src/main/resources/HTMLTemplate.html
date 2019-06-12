@@ -2496,9 +2496,9 @@
       </dd>
     </div>
     {% if case_data.documents_socialWorkOther is not empty %}
-      {% for document in case_data.documents_socialWorkOther %}
+    {% set counter = 1 %}
+    {% for document in case_data.documents_socialWorkOther %}
         {% if document is not empty and document.value is not empty %}
-        {% set counter = 1 %}
           <div class="data-list__row">
             <dt class="data-list__title">Additional document {{ counter }}</dt>
             <dd class="data-list__definition">
