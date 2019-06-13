@@ -58,24 +58,24 @@ public class SocialWorkOtherControllerTest {
 
     @Test
     void shouldReturnWithErrorsIfMultipleDocumentTitlesHaveNotBeenProvided() throws Exception {
+
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
-                .put("documents_socialWorkOther", ImmutableList.builder()
-                    .add(ImmutableMap.builder()
-                        .put("id", "12345")
-                        .put("value", ImmutableMap.builder()
-                            .put("documentTitle", "")
-                            .build())
-                        .build())
-                    .add(ImmutableMap.builder()
-                        .put("id", "12346")
-                        .put("value", ImmutableMap.builder()
-                            .put("documentTitle", "")
-                            .build())
-                        .build())
-                    .build())
-                .build()).build())
-            .build();
+                .put("documents_socialWorkOther", ImmutableList.of(
+                    ImmutableMap.of(
+                        "id", "12345",
+                        "value", ImmutableMap.of(
+                            "documentTitle", ""
+                        )
+                    ),
+                    ImmutableMap.of(
+                        "id", "12345",
+                        "value", ImmutableMap.of(
+                            "documentTitle", ""
+                        )
+                    )
+                )).build())
+            .build()).build();
 
         MvcResult response = performResponseCallBack(request);
 
@@ -84,7 +84,7 @@ public class SocialWorkOtherControllerTest {
 
         assertThat(callbackResponse.getErrors())
             .contains("You must give additional document 1 a name.");
-        
+
         assertThat(callbackResponse.getErrors())
             .contains("You must give additional document 2 a name.");
     }
@@ -104,16 +104,15 @@ public class SocialWorkOtherControllerTest {
     private CallbackRequest createCallbackRequest(String documentTitle) {
         return CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
-                .put("documents_socialWorkOther", ImmutableList.builder()
-                    .add(ImmutableMap.builder()
-                        .put("id", "12345")
-                        .put("value", ImmutableMap.builder()
-                            .put("documentTitle", documentTitle)
-                            .build())
-                        .build())
-                    .build())
-                .build()).build())
-            .build();
+                .put("documents_socialWorkOther", ImmutableList.of(
+                    ImmutableMap.of(
+                        "id", "12345",
+                        "value", ImmutableMap.of(
+                            "documentTitle", documentTitle
+                        )
+                    )
+                )).build())
+            .build()).build();
     }
 
     private MvcResult performResponseCallBack(CallbackRequest request) throws Exception {
