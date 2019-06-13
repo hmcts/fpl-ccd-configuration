@@ -25,6 +25,6 @@ module.exports = {
   },
 
   goToCaseList(){
-    I.click(locate("#proposition-links>li:nth-child(1)>a"));
+    I.click(locate('#proposition-links>li:nth-child(1)>a'));
   },
 };

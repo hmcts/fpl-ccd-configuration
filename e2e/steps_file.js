@@ -1,6 +1,6 @@
 /* global locate, process */
 const config = require('./config');
-const monthOfYear = require('./fixtures/monthOfYear');
+const months = require('./fixtures/months');
 
 const logIn = require('./pages/login/loginPage');
 const createCasePage = require('./pages/createCase/createCase');
@@ -77,8 +77,7 @@ module.exports = function () {
 
     seeSubmissionDate(row){
       let currentDate = new Date();
-      this.seeElement(locate(row.withChild('.//td[4]').withText(currentDate.getDate() + ' ' + monthOfYear[currentDate.getMonth()] + ' ' + currentDate.getFullYear())));
+      this.seeElement(locate(row.withChild('.//td[4]').withText(currentDate.getDate() + ' ' + months[currentDate.getMonth()] + ' ' + currentDate.getFullYear())));
     },
-
   });
 };

@@ -30,13 +30,12 @@ Scenario('Cannot submit a case unless consent is given', I => {
   I.seeInCurrentUrl('/submitApplication');
 });
 
-//test skipped for now as after number of tests go on to next page to un-skip remove x from before scenario, clear volumes and run test
+//we are awaiting the search functionality. When those changes are made we will search for a specific case and the pagination stops being an issue
 xScenario('Can submit a case and see date submitted', (I, caseViewPage, caseListPage, submitApplicationPage) => {
   submitApplicationPage.giveConsent();
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   caseViewPage.goToCaseList();
   caseListPage.changeStateFilter('Submitted');
-  let row = caseListPage.findCase(caseId);
-  I.seeSubmissionDate(row);
+  I.seeSubmissionDate(caseListPage.findCase(caseId));
 });
