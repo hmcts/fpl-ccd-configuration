@@ -58,24 +58,25 @@ public class SocialWorkOtherControllerTest {
 
     @Test
     void shouldReturnWithErrorsIfMultipleDocumentTitlesHaveNotBeenProvided() throws Exception {
-
-        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
-            .data(ImmutableMap.<String, Object>builder()
-                .put("documents_socialWorkOther", ImmutableList.of(
-                    ImmutableMap.of(
-                        "id", "12345",
-                        "value", ImmutableMap.of(
-                            "documentTitle", ""
-                        )
-                    ),
-                    ImmutableMap.of(
-                        "id", "12345",
-                        "value", ImmutableMap.of(
-                            "documentTitle", ""
+        CallbackRequest request = CallbackRequest.builder().caseDetails(
+            CaseDetails.builder()
+                .data(ImmutableMap.of(
+                    "documents_socialWorkOther", ImmutableList.of(
+                        ImmutableMap.of(
+                            "id", "12345",
+                            "value", ImmutableMap.of(
+                                "documentTitle", ""
+                            )
+                        ),
+                        ImmutableMap.of(
+                            "id", "12345",
+                            "value", ImmutableMap.of(
+                                "documentTitle", ""
+                            )
                         )
                     )
-                )).build())
-            .build()).build();
+                )).build()
+        ).build();
 
         MvcResult response = performResponseCallBack(request);
 
@@ -83,10 +84,8 @@ public class SocialWorkOtherControllerTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getErrors())
-            .contains("You must give additional document 1 a name.");
-
-        assertThat(callbackResponse.getErrors())
-            .contains("You must give additional document 2 a name.");
+            .containsExactly("You must give additional document 1 a name.",
+                "You must give additional document 2 a name.");
     }
 
     @Test
@@ -101,18 +100,21 @@ public class SocialWorkOtherControllerTest {
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
+
     private CallbackRequest createCallbackRequest(String documentTitle) {
-        return CallbackRequest.builder().caseDetails(CaseDetails.builder()
-            .data(ImmutableMap.<String, Object>builder()
-                .put("documents_socialWorkOther", ImmutableList.of(
-                    ImmutableMap.of(
-                        "id", "12345",
-                        "value", ImmutableMap.of(
-                            "documentTitle", documentTitle
+        return CallbackRequest.builder().caseDetails(
+            CaseDetails.builder()
+                .data(ImmutableMap.of(
+                    "documents_socialWorkOther", ImmutableList.of(
+                        ImmutableMap.of(
+                            "id", "12345",
+                            "value", ImmutableMap.of(
+                                "documentTitle", documentTitle
+                            )
                         )
                     )
-                )).build())
-            .build()).build();
+                )).build()
+        ).build();
     }
 
     private MvcResult performResponseCallBack(CallbackRequest request) throws Exception {
