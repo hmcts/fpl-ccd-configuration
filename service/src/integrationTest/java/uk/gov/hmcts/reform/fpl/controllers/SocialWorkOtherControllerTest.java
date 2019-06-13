@@ -53,7 +53,7 @@ public class SocialWorkOtherControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        assertThat(callbackResponse.getErrors()).contains("You must give additional document 1 a name.");
+        assertThat(callbackResponse.getErrors()).containsExactly("You must give additional document 1 a name.");
     }
 
     @Test
