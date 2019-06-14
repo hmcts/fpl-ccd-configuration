@@ -1,14 +1,11 @@
-/* global xScenario */
 const config = require('../config.js');
 const fields = {
   documentLink: 'ccd-read-document-field>a',
 };
-let caseId;
 
 Feature('Submit Case').retry(2);
 Before(async(I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-  caseId = await I.grabTextFrom('.heading-h1');
   I.selectOption(caseViewPage.actionsDropdown, config.applicationActions.submitCase);
   I.click(caseViewPage.goButton);
 });
