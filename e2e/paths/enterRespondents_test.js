@@ -1,3 +1,4 @@
+/* global xScenario */
 const config = require('../config.js');
 const respondents = require('../fixtures/respondents.js');
 
@@ -15,7 +16,8 @@ Scenario('Entering information for respondent and submitting', (I, enterResponde
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
 
-Scenario('Entering all information for first respondent and an additional respondent', (I, enterRespondentsPage, caseViewPage) => {
+//Skipped due to post code lookup expiring and assertion no longer valid.
+xScenario('Entering all information for first respondent and an additional respondent', (I, enterRespondentsPage, caseViewPage) => {
   enterRespondentsPage.enterRespondent(respondents[0]);
   enterRespondentsPage.enterRelationshipToChild('mock reason');
   enterRespondentsPage.enterContactDetailsHidden('Yes', 'mock reason');
