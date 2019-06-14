@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import uk.gov.hmcts.reform.fpl.model.common.Email;
-import uk.gov.hmcts.reform.fpl.model.common.TelephoneNumber;
+import lombok.Builder;
+import lombok.Data;
 
 import java.util.Date;
 
+@Data
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Party {
     private final String partyID;

@@ -42,6 +42,8 @@ public class CaseInitiationController {
         Map<String, Object> data = caseDetails.getData();
         data.put("caseLocalAuthority", caseLocalAuthority);
 
+        System.out.println("authorization = " + authorization);
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
