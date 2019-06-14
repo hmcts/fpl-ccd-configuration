@@ -83,7 +83,7 @@ public class CaseSubmissionController {
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
         Map<String, Object> data = caseDetails.getData();
-        data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(zonedDateTime));
+        data.put("dateSubmitted", DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(zonedDateTime));
         data.put("submittedForm", ImmutableMap.<String, String>builder()
             .put("document_url", document.links.self.href)
             .put("document_binary_url", document.links.binary.href)

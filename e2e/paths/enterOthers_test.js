@@ -1,4 +1,3 @@
-/* global xScenario */
 const config = require('../config.js');
 const others = require('../fixtures/others.js');
 
@@ -16,8 +15,7 @@ Scenario('Enter other\'s details in c110a application', (I, enterOthersPage, cas
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
 
-//Skipped due to post code lookup expiring and assertion no longer valid.
-xScenario('Complete entering others details in the c110a application', (I, enterOthersPage, caseViewPage) => {
+Scenario('Complete entering others details in the c110a application', (I, enterOthersPage, caseViewPage) => {
   enterOthersPage.enterOtherDetails(others[0]);
   enterOthersPage.enterRelationshipToChild('Tim Smith');
   enterOthersPage.enterContactDetailsHidden('Yes');

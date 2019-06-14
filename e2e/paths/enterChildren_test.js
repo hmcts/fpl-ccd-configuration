@@ -1,4 +1,3 @@
-/* global xScenario */
 const config = require('../config.js');
 
 const addresses = [
@@ -42,8 +41,7 @@ Scenario('completing half of the enter children in the c110a application', (I, e
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
 
-//Skipped due to post code lookup expiring and assertion no longer valid.
-xScenario('completing entering child information in the c110a application', (I, enterChildrenPage, caseViewPage) => {
+Scenario('completing entering child information in the c110a application', (I, enterChildrenPage, caseViewPage) => {
   enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
   enterChildrenPage.defineChildSituation('01', '11', '2017');
   enterChildrenPage.enterAddress(addresses[0]);
