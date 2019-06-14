@@ -4,7 +4,7 @@ const fields = {
 };
 
 Feature('Submit Case').retry(2);
-Before(async(I, caseViewPage) => {
+Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   I.selectOption(caseViewPage.actionsDropdown, config.applicationActions.submitCase);
   I.click(caseViewPage.goButton);
