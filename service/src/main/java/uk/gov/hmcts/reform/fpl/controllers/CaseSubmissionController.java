@@ -19,10 +19,10 @@ import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.validation.constraints.NotNull;
 
@@ -80,11 +80,10 @@ public class CaseSubmissionController {
 
         Document document = uploadDocumentService.uploadPDF(userId, authorization, pdf, buildFileName(caseDetails));
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("Europe/London"));
+        LocalDateTime localDateTime = LocalDateTime.now(ZoneId.of("Europe/London"));
 
         Map<String, Object> data = caseDetails.getData();
-        data.put("dateSubmitted", sdf.format(new Date(System.currentTimeMillis())));
+        data.put("dateSubmitted", DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(localDateTime));
         data.put("submittedForm", ImmutableMap.<String, String>builder()
             .put("document_url", document.links.self.href)
             .put("document_binary_url", document.links.binary.href)
