@@ -85,14 +85,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadDocuments_paragraph_2",
-    "Label": "If you have a Social Work Evidence Template (SWET), add it under ‘Other documents’.",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documents_socialWorkChronology_document",
     "Label": "1. Social work chronology",
     "FieldType": "UploadDocument",
@@ -119,6 +111,30 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "documents_socialWorkCarePlan_document",
     "Label": "4. Care plan",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documents_socialWorkEvidenceTemplate_document",
+    "Label": "5. Social work evidence template (SWET)",
+    "FieldType": "UploadSwetDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documents_threshold_document",
+    "Label": "6. Threshold document",
+    "FieldType": "UploadDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "documents_checklist_document",
+    "Label": "7. Checklist document",
     "FieldType": "UploadDocument",
     "SecurityClassification": "Public"
   },

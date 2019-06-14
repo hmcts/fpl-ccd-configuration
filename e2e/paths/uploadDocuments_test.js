@@ -20,14 +20,20 @@ Scenario('Uploading all files in the c110a application', (I, uploadDocumentsPage
   uploadDocumentsPage.uploadSocialWorkStatement(config.testFile);
   uploadDocumentsPage.uploadSocialWorkAssessment(config.testFile);
   uploadDocumentsPage.uploadCarePlan(config.testFile);
+  uploadDocumentsPage.uploadSWET(config.testFile);
+  uploadDocumentsPage.uploadThresholdDocument(config.testFile);
+  uploadDocumentsPage.uploadChecklistDocument(config.testFile);
   uploadDocumentsPage.uploadAdditionalDocuments(config.testFile);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeDocument('Social work chronology', '', 'To follow', 'mock reason');
-  I.seeDocument('Social work statement', 'mockFile.txt', 'Attached');
+  I.seeDocument('Social work statement and genogram', 'mockFile.txt', 'Attached');
   I.seeDocument('Social work assessment', 'mockFile.txt', 'Attached');
   I.seeDocument('Care plan', 'mockFile.txt', 'Attached');
+  I.seeDocument('Social work evidence template (SWET)', 'mockFile.txt', 'Attached');
+  I.seeDocument('Threshold document', 'mockFile.txt', 'Attached');
+  I.seeDocument('Checklist document', 'mockFile.txt', 'Attached');
 });
 
 Scenario('As a local authority I have the ability to upload a document after submission of a case', (I, uploadDocumentsPage, submitApplicationPage, caseViewPage) => {
