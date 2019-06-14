@@ -29,13 +29,3 @@ Scenario('Cannot submit a case unless consent is given', I => {
   I.click('Continue');
   I.seeInCurrentUrl('/submitApplication');
 });
-
-//we are awaiting the search functionality. When those changes are made we will search for a specific case and the pagination stops being an issue
-xScenario('Can submit a case and see date submitted', (I, caseViewPage, caseListPage, submitApplicationPage) => {
-  submitApplicationPage.giveConsent();
-  I.continueAndSubmit();
-  I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
-  caseViewPage.goToCaseList();
-  caseListPage.changeStateFilter('Submitted');
-  I.seeSubmissionDate(caseListPage.findCase(caseId));
-});

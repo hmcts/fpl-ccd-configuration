@@ -290,7 +290,6 @@ declare namespace CodeceptJS {
     signOut() : void,
     say(msg: string) : void,
     retryStep(opts: string) : void,
-    seeSubmissionDate(row: string) : void,
   }
 
   export interface config {

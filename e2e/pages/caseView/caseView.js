@@ -23,8 +23,4 @@ module.exports = {
   selectTab(tab) {
     I.click(tab);
   },
-
-  goToCaseList(){
-    I.click(locate('#proposition-links>li:nth-child(1)>a'));
-  },
 };
