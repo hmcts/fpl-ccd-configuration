@@ -14,5 +14,13 @@
     "Name": "Submitted",
     "Description": "Submitted case state - LA can no longer edit",
     "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "Deleted",
+    "Name": "Deleted",
+    "Description": "Delete case state - LA can no longer see the case",
+    "DisplayOrder": 3
   }
 ]
