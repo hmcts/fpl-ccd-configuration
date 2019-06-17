@@ -6,16 +6,19 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.fpl.events.DeletedCaseEvent;
 import uk.gov.hmcts.reform.fpl.events.InitiatedCaseEvent;
+import uk.gov.hmcts.reform.fpl.service.CaseService;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityUserService;
 
 @Component
 public class CaseAccessHandler {
 
     private final LocalAuthorityUserService localAuthorityUserService;
+    private final CaseService caseService;
 
     @Autowired
-    public CaseAccessHandler(LocalAuthorityUserService localAuthorityUserService) {
+    public CaseAccessHandler(LocalAuthorityUserService localAuthorityUserService, CaseService caseService) {
         this.localAuthorityUserService = localAuthorityUserService;
+        this.caseService = caseService;
     }
 
     @Async
@@ -36,11 +39,6 @@ public class CaseAccessHandler {
         String userId = event.getUserId();
         String authorization = event.getAuthorization();
         String caseId = Long.toString(event.getCallbackRequest().getCaseDetails().getId());
-        //String caseLocalAuthority = (String) event.getCallbackRequest().getCaseDetails().getData()
-        //    .get("caseLocalAuthority");
-
-        // TODO - delete event in CCD
-
-        //localAuthorityUserService.grantUserAccess(authorization, userId, caseId, caseLocalAuthority);
+        caseService.deleteCase(authorization, userId, caseId);
     }
 }
