@@ -49,7 +49,7 @@ public class CaseDeletionController {
         String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
 
         Map<String, Object> data = caseDetails.getData();
-        data.put("deletionConsentLabel", label);
+        data.put("deleteConsentLabel", label);
 
         System.out.println("******** END: CASE DELETION: ABOUT TO START ***********");
 
