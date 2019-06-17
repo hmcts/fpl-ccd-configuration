@@ -328,6 +328,23 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "deleteConsentLabel",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "deleteConsent",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "Consent",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "gateKeeperLabel",
     "Label": "Let the gatekeeper know there's a new case",
     "FieldType": "Label",
