@@ -10,6 +10,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class CaseService {
 
@@ -27,23 +30,34 @@ public class CaseService {
         this.authTokenGenerator = authTokenGenerator;
     }
 
-    public void deleteCase(String authorization, String creatorUserId, String caseId, String eventId) {
+    public void deleteCase(String authorization, String creatorUserId, String caseId) {
+
         StartEventResponse ccdStartEventResponse = null;
         try {
+            System.out.println("START: Calling CCD: Start Event for Caseworker");
             ccdStartEventResponse = coreCaseDataApi.startEventForCaseWorker(authorization,
-                authTokenGenerator.generate(), creatorUserId, JURISDICTION, CASE_TYPE, caseId, eventId);
+                authTokenGenerator.generate(), creatorUserId, JURISDICTION, CASE_TYPE, caseId, "anevent");
         } catch (Exception ex) {
             logger.warn("Could not start event for user {} to case {}", creatorUserId, caseId, ex);
         }
 
+        System.out.println("END: Calling CCD: Submit Event for Caseworker");
+
         // remove all data
         CaseDataContent caseDataContentToSubmit = CaseDataContent.builder().build();
-        caseDataContentToSubmit.setData(new Object());
+        System.out.println("Setting case data to be empty");
+        Map<String, Object> emptyMap = new HashMap<String, Object>();
+        // must have at least one field
+        emptyMap.put("", "");
+        caseDataContentToSubmit.setData(emptyMap);
 
         // submit the empty one
+        System.out.println("START: Calling CCD: Submit Event for Caseworker");
         CaseDetails ccdSubmissionResponse = coreCaseDataApi.submitEventForCaseWorker(authorization,
             authTokenGenerator.generate(),
             creatorUserId,
             JURISDICTION, CASE_TYPE, caseId, true, caseDataContentToSubmit);
+        System.out.println("END: Calling CCD: Submit Event for Caseworker");
     }
+
 }
