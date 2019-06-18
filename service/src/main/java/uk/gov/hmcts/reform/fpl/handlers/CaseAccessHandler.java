@@ -39,6 +39,7 @@ public class CaseAccessHandler {
         String userId = event.getUserId();
         String authorization = event.getAuthorization();
         String caseId = Long.toString(event.getCallbackRequest().getCaseDetails().getId());
-        caseService.deleteCase(authorization, userId, caseId);
+        String eventId = "an eventid ";
+        caseService.deleteCase(authorization, userId, caseId, eventId);
     }
 }
