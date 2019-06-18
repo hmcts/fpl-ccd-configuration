@@ -349,5 +349,13 @@
     "Label": "Date submitted",
     "FieldType": "DateTime",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "dateSubmittedOnly",
+    "Label": "Date submitted",
+    "FieldType": "Date",
+    "SecurityClassification": "Public"
   }
 ]
