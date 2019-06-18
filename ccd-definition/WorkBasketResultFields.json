@@ -2,22 +2,22 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseIDReference",
-    "Label": "Case reference",
+    "CaseFieldID": "caseName",
+    "Label": "Case name",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "caseName",
-    "Label": "Case name",
+    "CaseFieldID": "[CASE_REFERENCE]",
+    "Label": "Case ID",
     "DisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "familyManCaseNumber",
-    "Label": "FamilyMan case number",
+    "CaseFieldID": "[STATE]",
+    "Label": "State",
     "DisplayOrder": 3
   },
   {

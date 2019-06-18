@@ -5,5 +5,26 @@
     "CaseFieldID": "caseLocalAuthority",
     "Label": "Local authority",
     "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseName",
+    "Label": "Case Name",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "[CASE_REFERENCE]",
+    "Label": "Case ID",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "dateSubmittedOnly",
+    "Label": "Date submitted",
+    "DisplayOrder": 4
   }
 ]
