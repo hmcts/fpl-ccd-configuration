@@ -18,6 +18,32 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "UploadSwetDocument",
+    "ListElementCode": "typeOfDocument",
+    "FieldType": "Document",
+    "ElementLabel": "Upload a file",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadSwetDocument",
+    "ListElementCode": "documentStatus",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "swetDocumentOptions",
+    "ElementLabel": "Document status",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "UploadSwetDocument",
+    "ListElementCode": "statusReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Explain why the document isn't included and when you expect to provide it.",
+    "FieldShowCondition": "documentStatus=\"To follow\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "UploadDocument",
     "ListElementCode": "statusReason",
     "FieldType": "TextArea",
@@ -30,8 +56,7 @@
     "ID": "OtherDocument",
     "ListElementCode": "documentTitle",
     "FieldType": "Text",
-    "ElementLabel": "Document title",
-    "HintText": "For example, SWET",
+    "ElementLabel": "Document name",
     "SecurityClassification": "Public"
   },
   {
@@ -501,7 +526,7 @@
     "ListElementCode": "proceedingStatus",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ProceedingStatus",
-    "ElementLabel": "Are there previous or ongoing proceedings?",
+    "ElementLabel": "Are these previous or ongoing proceedings?",
     "SecurityClassification": "Public"
   },
   {
@@ -603,7 +628,7 @@
     "ListElementCode": "proceedingStatus",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "ProceedingStatus",
-    "ElementLabel": "Are there previous or ongoing proceedings?",
+    "ElementLabel": "Are these previous or ongoing proceedings?",
     "FieldShowCondition": "onGoingProceeding=\"Yes\"",
     "SecurityClassification": "Public"
   },
@@ -1641,7 +1666,7 @@
     "ID": "CourtAdminDocument",
     "ListElementCode": "documentTitle",
     "FieldType": "Text",
-    "ElementLabel": "Document title",
+    "ElementLabel": "Document name",
     "SecurityClassification": "Public"
   },
   {

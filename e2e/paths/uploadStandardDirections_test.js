@@ -23,9 +23,9 @@ Scenario('HMCTS admin upload standard directions with other documents and see th
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.see('mockFile.txt');
-  I.seeAnswerInTab('1', 'Other documents 1', 'Document title', 'Document 1');
+  I.seeAnswerInTab('1', 'Other documents 1', 'Document name', 'Document 1');
   I.seeAnswerInTab('2', 'Other documents 1', 'Upload a file', 'mockFile.txt');
-  I.seeAnswerInTab('1', 'Other documents 2', 'Document title', 'Document 2');
+  I.seeAnswerInTab('1', 'Other documents 2', 'Document name', 'Document 2');
   I.seeAnswerInTab('2', 'Other documents 2', 'Upload a file', 'mockFile.txt');
 });
 
@@ -41,8 +41,8 @@ Scenario('Local authority can see standard directions in documents tab', (I, cas
   I.waitForElement(caseViewPage.tabs.documents, 5);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.see( 'mockFile.txt');
-  I.seeAnswerInTab('1', 'Other documents 1', 'Document title', 'Document 1');
+  I.seeAnswerInTab('1', 'Other documents 1', 'Document name', 'Document 1');
   I.seeAnswerInTab('2', 'Other documents 1', 'Upload a file', 'mockFile.txt');
-  I.seeAnswerInTab('1', 'Other documents 2', 'Document title', 'Document 2');
+  I.seeAnswerInTab('1', 'Other documents 2', 'Document name', 'Document 2');
   I.seeAnswerInTab('2', 'Other documents 2', 'Upload a file', 'mockFile.txt');
 });
