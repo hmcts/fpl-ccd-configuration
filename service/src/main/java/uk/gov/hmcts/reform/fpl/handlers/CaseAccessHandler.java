@@ -32,16 +32,4 @@ public class CaseAccessHandler {
 
         localAuthorityUserService.grantUserAccess(authorization, userId, caseId, caseLocalAuthority);
     }
-
-    @Async
-    @EventListener
-    public void deleteCase(DeletedCaseEvent event) {
-        String userId = event.getUserId();
-        String authorization = event.getAuthorization();
-        String caseId = Long.toString(event.getCallbackRequest().getCaseDetails().getId());
-
-        // get all the eventIds for a given case
-        // for each event id delete it
-        caseService.deleteCase(authorization, userId, caseId);
-    }
 }

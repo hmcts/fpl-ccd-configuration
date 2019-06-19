@@ -275,8 +275,6 @@
     "RetriesTimeoutAboutToStartEvent": "1,2,3,4,5",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-deletion/about-to-submit",
     "RetriesTimeoutURLAboutToSubmitEvent": "1,2,3,4,5",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-deletion/submitted",
-    "RetriesTimeoutURLSubmittedEvent": "1,2,3,4,5",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Delete"
