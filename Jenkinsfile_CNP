@@ -93,8 +93,6 @@ withPipeline(type, product, component) {
   }
 
   before('smoketest:preview') {
-    archiveCoreCaseDataDefinitions('aat')
-
     env.CCD_DEF_CASE_SERVICE_BASE_URL = env.TEST_URL.replace('https', 'http')
 
     sh """
