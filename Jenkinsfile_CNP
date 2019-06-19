@@ -24,6 +24,11 @@ static Map<String, Object> secret(String secretName, String envVariable) {
   ]
 }
 
+def archiveCoreCaseDataDefinitions(env) {
+  sh "./bin/build-release-ccd-definition.sh ${env}"
+  steps.archiveArtifacts artifacts: "build/ccd-release-config/ccd-fpl-${env}.xlsx"
+}
+
 withPipeline(type, product, component) {
   setVaultName('fpl')
   loadVaultSecrets(secrets)
@@ -32,6 +37,7 @@ withPipeline(type, product, component) {
   enableSlackNotifications('#fpl-tech')
 
   env.POSTCODE_PLACEHOLDER = '${postcode}'
+  env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
 
   after('checkout') {
     onMaster {
@@ -71,34 +77,24 @@ withPipeline(type, product, component) {
     env.URL = "https://ccd-case-management-web-${aksServiceName}.${aksDomain}"
   }
 
-  after('deploy:saat') {
-    env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
-
-    env.IDAM_API_BASE_URL = "http://idam-api-idam-saat.service.core-compute-idam-saat.internal"
-    env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-saat.service.core-compute-saat.internal"
-    env.CCD_DEFINITION_STORE_API_BASE_URL = "http://ccd-definition-store-api-saat.service.core-compute-saat.internal"
-    env.CCD_USER_PROFILE_API_BASE_URL = "http://ccd-user-profile-api-saat.service.core-compute-saat.internal"
+  before('smoketest:saat-staging') {
     env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
+    archiveCoreCaseDataDefinitions('saat')
   }
 
-  after('deploy:aat') {
-    env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
-
-    env.IDAM_API_BASE_URL = "https://idam-api.aat.platform.hmcts.net"
-    env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
-    env.CCD_DEFINITION_STORE_API_BASE_URL = "http://ccd-definition-store-api-aat.service.core-compute-aat.internal"
-    env.CCD_USER_PROFILE_API_BASE_URL = "http://ccd-user-profile-api-aat.service.core-compute-aat.internal"
+  before('smoketest:aat-staging') {
     env.URL = "https://ccd-case-management-web-aat.service.core-compute-aat.internal"
+    archiveCoreCaseDataDefinitions('aat')
   }
 
-  after('deploy:demo') {
-    env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
+  before('smoketest:prod-staging') {
+    env.URL = "https://ccd-case-management-web-prod.service.core-compute-prod.internal"
+    archiveCoreCaseDataDefinitions('prod')
+  }
 
-    env.IDAM_API_BASE_URL = "https://idam-api.demo.platform.hmcts.net"
-    env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "http://rpe-service-auth-provider-demo.service.core-compute-demo.internal"
-    env.CCD_DEFINITION_STORE_API_BASE_URL = "http://ccd-definition-store-api-demo.service.core-compute-demo.internal"
-    env.CCD_USER_PROFILE_API_BASE_URL = "http://ccd-user-profile-api-demo.service.core-compute-demo.internal"
+  before('smoketest:demo-staging') {
     env.URL = "https://ccd-case-management-web-demo.service.core-compute-demo.internal"
+    archiveCoreCaseDataDefinitions('demo')
   }
 
   before('smoketest:preview') {
@@ -108,57 +104,6 @@ withPipeline(type, product, component) {
       CCD_CONFIGURER_S2S_SECRET=AABBCCDDEEFFGGHH ./kubernetes/configurer/configure-ccd.sh
     """
   }
-
-  before('smoketest:saat-staging') {
-    env.CCD_DEF_CASE_SERVICE_BASE_URL = env.TEST_URL.replace('https', 'http')
-
-    sh """
-      ./kubernetes/configurer/configure-ccd.sh
-    """
-  }
-
-  before('smoketest:saat') {
-    env.CCD_DEF_CASE_SERVICE_BASE_URL = env.TEST_URL.replace('https', 'http')
-
-    sh """
-      ./kubernetes/configurer/configure-ccd.sh
-    """
-  }
-
-//  Temporarily disable CCD configuration in AAT and DEMO environment after pointing to SIDAM
-//  Reason: SIDAM does not have testing endpoint used by current version of CCD configurer scripts
-//
-  before('smoketest:aat-staging') {
-//    env.CCD_DEF_CASE_SERVICE_BASE_URL = env.TEST_URL.replace('https', 'http')
-//
-//    sh """
-//      ./kubernetes/configurer/configure-ccd.sh
-//    """
-  }
-
-  before('smoketest:aat') {
-//    env.CCD_DEF_CASE_SERVICE_BASE_URL = env.TEST_URL.replace('https', 'http')
-//
-//    sh """
-//      ./kubernetes/configurer/configure-ccd.sh
-//    """
-  }
-//
-//  before('smoketest:demo-staging') {
-//    env.CCD_DEF_CASE_SERVICE_BASE_URL = env.TEST_URL.replace('https', 'http')
-//
-//    sh """
-//      ./kubernetes/configurer/configure-ccd.sh
-//    """
-//  }
-//
-//  before('smoketest:demo') {
-//    env.CCD_DEF_CASE_SERVICE_BASE_URL = env.TEST_URL.replace('https', 'http')
-//
-//    sh """
-//      ./kubernetes/configurer/configure-ccd.sh
-//    """
-//  }
 
   after('smoketest:saat-staging') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
@@ -194,17 +139,5 @@ withPipeline(type, product, component) {
 
   before('functionalTest:demo') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
-  }
-
-  after('functionalTest:saat') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-  }
-
-  after('functionalTest:aat') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-  }
-
-  after('functionalTest:preview') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 }
