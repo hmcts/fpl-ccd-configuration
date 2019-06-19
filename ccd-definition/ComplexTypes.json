@@ -1275,126 +1275,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
-    "ListElementCode": "partyType",
-    "FieldType": "Text",
-    "ElementLabel": "Party type",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
-    "ListElementCode": "firstName",
-    "FieldType": "Text",
-    "ElementLabel": "First name",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
-    "ListElementCode": "lastName",
-    "FieldType": "Text",
-    "ElementLabel": "Last name",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
-    "ListElementCode": "dateOfBirth",
-    "FieldType": "Date",
-    "ElementLabel": "Date of birth",
-    "HintText": "For example, 31 3 1980",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
-    "ListElementCode": "gender",
-    "FieldType": "FixedList",
-    "FieldTypeParameter": "GenderList",
-    "ElementLabel": "Gender",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
-    "ListElementCode": "genderIdentify",
-    "FieldType": "Text",
-    "ElementLabel": "What gender do they identify with?",
-    "FieldShowCondition": "gender=\"They identify in another way\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
-    "ListElementCode": "placeOfBirth",
-    "FieldType": "Text",
-    "ElementLabel": "Place of birth",
-    "HintText": "For example, town or city",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
-    "ListElementCode": "address",
-    "FieldType": "AddressUK",
-    "ElementLabel": "Current address",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
-    "ListElementCode": "telephone",
-    "FieldType": "Text",
-    "ElementLabel": "Telephone number",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
-    "ListElementCode": "relationshipToChild",
-    "FieldType": "TextArea",
-    "ElementLabel": "What is the respondent’s relationship to the child or children in this case?",
-    "HintText": "Include: the name of the child or children, the respondent’s relationship to them and any details if you’re not sure this person has parental responsibility",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
-    "ListElementCode": "contactDetailsHidden",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Do you need contact details hidden from anyone?",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
-    "ListElementCode": "contactDetailsHiddenReason",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
-    "FieldShowCondition": "contactDetailsHidden=\"Yes\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
-    "ListElementCode": "litigationIssues",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "LitigationCapacityIssues",
-    "ElementLabel": "Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
-    "ListElementCode": "litigationIssuesDetails",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
-    "FieldShowCondition": "litigationIssues=\"YES\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "name",
     "FieldType": "Text",
@@ -1675,6 +1555,215 @@
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "Upload a file",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "telephone",
+    "ListElementCode": "telephoneNumber",
+    "FieldType": "Text",
+    "ElementLabel": "Telephone",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "partyId",
+    "FieldType": "Text",
+    "ElementLabel": "Party ID",
+    "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "partyType",
+    "FieldType": "Text",
+    "ElementLabel": "Party type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "title",
+    "FieldType": "Text",
+    "ElementLabel": "Title",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "firstName",
+    "FieldType": "Text",
+    "ElementLabel": "First name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "lastName",
+    "FieldType": "Text",
+    "ElementLabel": "Last name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "dateOfBirth",
+    "FieldType": "Date",
+    "ElementLabel": "Date of birth",
+    "HintText": "For example, 31 3 1980",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Current address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "telephoneNumber",
+    "FieldType": "telephone",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "gender",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "GenderList",
+    "ElementLabel": "Gender",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "genderIdentification",
+    "FieldType": "Text",
+    "ElementLabel": "What gender do they identify with?",
+    "FieldShowCondition": "gender=\"They identify in another way\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "placeOfBirth",
+    "FieldType": "Text",
+    "ElementLabel": "Place of birth",
+    "HintText": "For example, town or city",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "respondent_border_1",
+    "FieldType": "Label",
+    "ElementLabel": "-------------------------------------------------------------------------------------------------------------",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "relationshipLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## Relationship to the child",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "relationshipToChild",
+    "FieldType": "TextArea",
+    "ElementLabel": "What is the respondent’s relationship to the child or children in this case?",
+    "HintText": "Include: the name of the child or children, the respondent’s relationship to them and any details if you’re not sure this person has parental responsibility",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "respondent_border_2",
+    "FieldType": "Label",
+    "ElementLabel": "-------------------------------------------------------------------------------------------------------------",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "contactDetailsHidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Do you need contact details hidden from anyone?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "contactDetailsHiddenReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "contactDetailsHidden=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "proceedingsLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## Ability to take part in proceedings",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "litigationIssues",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LitigationCapacityIssues",
+    "ElementLabel": "Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "litigationIssuesDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
+    "FieldShowCondition": "litigationIssues=\"YES\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "respondent_border_3",
+    "FieldType": "Label",
+    "ElementLabel": "-------------------------------------------------------------------------------------------------------------",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "party",
+    "FieldType": "party",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "leadRespondentIndicator",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Lead Respondent Indicator",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyRespondent",
+    "ListElementCode": "respondent_border_4",
+    "FieldType": "Label",
+    "ElementLabel": "-------------------------------------------------------------------------------------------------------------",
     "SecurityClassification": "Public"
   }
 ]
