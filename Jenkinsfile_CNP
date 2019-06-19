@@ -74,6 +74,8 @@ withPipeline(type, product, component) {
     env.CCD_DEFINITION_STORE_API_BASE_URL = "https://ccd-definition-store-api-${aksServiceName}.${aksDomain}"
     env.CCD_USER_PROFILE_API_BASE_URL = "https://ccd-user-profile-api-${aksServiceName}.${aksDomain}"
     env.URL = "https://ccd-case-management-web-${aksServiceName}.${aksDomain}"
+
+    archiveCoreCaseDataDefinitions('aat')
   }
 
   after('deploy:saat') {
