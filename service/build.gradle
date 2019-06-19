@@ -4,7 +4,7 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.8.RELEASE'
-  id 'org.springframework.boot' version '2.1.5.RELEASE'
+  id 'org.springframework.boot' version '2.1.6.RELEASE'
   id 'org.owasp.dependencycheck' version '4.0.2'
   id 'com.github.ben-manes.versions' version '0.21.0'
   id 'org.sonarqube' version '2.7.1'
@@ -169,12 +169,7 @@ dependencies {
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.8'
   
-  compile (group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot) {
-    exclude module: "spring-boot-starter-tomcat" 
-  }
-  compile 'org.apache.tomcat.embed:tomcat-embed-core:9.0.20'
-  compile 'org.apache.tomcat.embed:tomcat-embed-el:9.0.20'
-  compile 'org.apache.tomcat.embed:tomcat-embed-websocket:9.0.20'
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
 
@@ -194,7 +189,7 @@ dependencies {
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.14.2-RELEASE'
 
-  compile group: 'com.google.guava', name: 'guava', version: '27.1-jre'
+  compile group: 'com.google.guava', name: 'guava', version: '28.0-jre'
   compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
   compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
