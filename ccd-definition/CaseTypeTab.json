@@ -37,7 +37,7 @@
     "TabLabel": "People in the case",
     "TabDisplayOrder": 2,
     "CaseFieldID": "respondents",
-    "TabFieldDisplayOrder": 3
+    "TabFieldDisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
@@ -47,7 +47,7 @@
     "TabLabel": "People in the case",
     "TabDisplayOrder": 2,
     "CaseFieldID": "respondents1",
-    "TabFieldDisplayOrder": 4
+    "TabFieldDisplayOrder": 3
   },
   {
     "LiveFrom": "01/01/2017",
@@ -57,7 +57,7 @@
     "TabLabel": "People in the case",
     "TabDisplayOrder": 2,
     "CaseFieldID": "applicant",
-    "TabFieldDisplayOrder": 5
+    "TabFieldDisplayOrder": 4
   },
   {
     "LiveFrom": "01/01/2017",
@@ -67,7 +67,7 @@
     "TabLabel": "People in the case",
     "TabDisplayOrder": 2,
     "CaseFieldID": "solicitor",
-    "TabFieldDisplayOrder": 6
+    "TabFieldDisplayOrder": 5
   },
   {
     "LiveFrom": "01/01/2017",
@@ -77,7 +77,7 @@
     "TabLabel": "People in the case",
     "TabDisplayOrder": 2,
     "CaseFieldID": "others",
-    "TabFieldDisplayOrder": 7
+    "TabFieldDisplayOrder": 6
   },
   {
     "LiveFrom": "01/01/2017",
