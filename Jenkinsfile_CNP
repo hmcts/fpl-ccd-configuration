@@ -37,6 +37,7 @@ withPipeline(type, product, component) {
   enableSlackNotifications('#fpl-tech')
 
   env.POSTCODE_PLACEHOLDER = '${postcode}'
+  env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
 
   after('checkout') {
     onMaster {
@@ -77,18 +78,22 @@ withPipeline(type, product, component) {
   }
 
   before('smoketest:saat-staging') {
+    env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
     archiveCoreCaseDataDefinitions('saat')
   }
 
   before('smoketest:aat-staging') {
+    env.URL = "https://ccd-case-management-web-aat.service.core-compute-aat.internal"
     archiveCoreCaseDataDefinitions('aat')
   }
 
   before('smoketest:prod-staging') {
+    env.URL = "https://ccd-case-management-web-prod.service.core-compute-prod.internal"
     archiveCoreCaseDataDefinitions('prod')
   }
 
   before('smoketest:demo-staging') {
+    env.URL = "https://ccd-case-management-web-demo.service.core-compute-demo.internal"
     archiveCoreCaseDataDefinitions('demo')
   }
 
