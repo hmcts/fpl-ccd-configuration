@@ -254,14 +254,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "dateSubmitted",
+    "CaseFieldID": "dateAndTimeSubmitted",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "dateSubmittedOnly",
+    "CaseFieldID": "dateSubmitted",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
   },
@@ -513,14 +513,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "dateSubmitted",
+    "CaseFieldID": "dateAndTimeSubmitted",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "dateSubmittedOnly",
+    "CaseFieldID": "dateSubmitted",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
   },
@@ -814,14 +814,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "dateSubmitted",
+    "CaseFieldID": "dateAndTimeSubmitted",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "dateSubmittedOnly",
+    "CaseFieldID": "dateSubmitted",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
   },
@@ -1073,14 +1073,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "dateSubmitted",
+    "CaseFieldID": "dateAndTimeSubmitted",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "dateSubmittedOnly",
+    "CaseFieldID": "dateSubmitted",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "R"
   }
