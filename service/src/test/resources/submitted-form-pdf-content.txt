@@ -14,7 +14,7 @@ Same dayHearing date requested
 Yes
 Contact with any named personDirection needed
 Emergency protection orderOrders needed
-, Another, James SmithPaul SmithRespondents
+, An Other, James SmithPaul SmithRespondents
 London Borough of SouthwarkApplicant
 Fee charged
 Date issued
@@ -134,7 +134,7 @@ ReadingPlace of birth
 MaleGender
 2 April 1933Date of birth
 85 years oldAge
-AnotherName
+An OtherName
 respondent two hidden contact details reason
 YesConfidential contact details
 -Anything else to help take part in proceedings
