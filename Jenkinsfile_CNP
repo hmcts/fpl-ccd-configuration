@@ -41,13 +41,19 @@ withPipeline(type, product, component) {
 
   after('checkout') {
     onMaster {
-      try {
-        sh """
-          git fetch origin demo:demo
-          git push --force origin HEAD:demo
-        """
-      } catch (err) {
-        notifyBuildEvent channel: '#fpl-tech', color: 'warning', message: 'Failed to update demo branch'
+      withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', usernameVariable: 'USERNAME', passwordVariable: 'BEARER_TOKEN')]) {
+        try {
+          sh '''
+            set -e
+
+            git remote set-url origin $(git config remote.origin.url | sed "s/github.com/${BEARER_TOKEN}@github.com/g")
+
+            git fetch origin demo:demo
+            git push --force origin HEAD:demo
+          '''
+        } catch (err) {
+          notifyBuildEvent channel: '#fpl-tech', color: 'warning', message: 'Failed to update demo branch'
+        }
       }
     }
   }
