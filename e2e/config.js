@@ -1,5 +1,7 @@
 /*global process*/
 
+const defaultPassword = 'Password12';
+
 module.exports = {
   // users
   swanseaLocalAuthorityUserOne: {
@@ -17,13 +19,15 @@ module.exports = {
   swanseaLocalAuthorityEmailUserOne: 'kurt@swansea.gov.uk',
   swanseaLocalAuthorityEmailUserTwo: 'damian@swansea.gov.uk',
   hillingdonLocalAuthorityEmailUserOne: 'sam@hillingdon.gov.uk',
-  localAuthorityPassword: process.env.LA_USER_PASSWORD || 'Password12',
+  localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
   hmctsAdminEmail: 'hmcts-admin@example.com',
-  hmctsAdminPassword: process.env.CA_USER_PASSWORD || 'Password12',
+  hmctsAdminPassword: process.env.CA_USER_PASSWORD || defaultPassword,
   cafcassEmail: 'cafcass@example.com',
-  cafcassPassword: process.env.CAFCASS_USER_PASSWORD || 'Password12',
+  cafcassPassword: process.env.CAFCASS_USER_PASSWORD || defaultPassword,
   gateKeeperEmail: 'gatekeeper@mailnesia.com',
-  gateKeeperPassword: process.env.GATEKEEPER_USER_PASSWORD || 'Password12',
+  gateKeeperPassword: process.env.GATEKEEPER_USER_PASSWORD || defaultPassword,
+  smokeTestLocalAuthorityEmail: process.env.SMOKE_TEST_LA_USER_USERNAME || 'james@swansea.gov.uk',
+  smokeTestLocalAuthorityPassword: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
   definition: {
     jurisdiction: 'PUBLICLAW',
     caseType: 'CARE_SUPERVISION_EPO',
