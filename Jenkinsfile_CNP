@@ -13,7 +13,9 @@ def component = "case-service"
 List<Map<String, Object>> secrets = [
   secret('ccd-configurer-s2s-secret', 'CCD_CONFIGURER_S2S_SECRET'),
   secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN'),
-  secret('notify-api-key', 'NOTIFY_API_KEY')
+  secret('notify-api-key', 'NOTIFY_API_KEY'),
+  secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
+  secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD')
 ]
 
 static Map<String, Object> secret(String secretName, String envVariable) {
@@ -41,13 +43,19 @@ withPipeline(type, product, component) {
 
   after('checkout') {
     onMaster {
-      try {
-        sh """
-          git fetch origin demo:demo
-          git push --force origin HEAD:demo
-        """
-      } catch (err) {
-        notifyBuildEvent channel: '#fpl-tech', color: 'warning', message: 'Failed to update demo branch'
+      withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', usernameVariable: 'USERNAME', passwordVariable: 'BEARER_TOKEN')]) {
+        try {
+          sh '''
+            set -e
+
+            git remote set-url origin $(git config remote.origin.url | sed "s/github.com/${BEARER_TOKEN}@github.com/g")
+
+            git fetch origin demo:demo
+            git push --force origin HEAD:demo
+          '''
+        } catch (err) {
+          notifyBuildEvent channel: '#fpl-tech', color: 'warning', message: 'Failed to update demo branch'
+        }
       }
     }
   }
