@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import com.google.j2objc.annotations.AutoreleasePool;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.service.RespondentMigrationService;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +34,9 @@ class RespondentAboutToStartControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private RespondentMigrationService respondentMigrationService;
+
     @MockBean
     private IdamApi idamApi;
 
@@ -39,32 +44,13 @@ class RespondentAboutToStartControllerTest {
     private ServiceAuthorisationApi serviceAuthorisationApi;
 
     @Test
-    void shouldAddRespondentMigratedYesValueToDataWhenRespondents1IsPresent() throws Exception {
-        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
-            .data(ImmutableMap.<String, Object>builder()
-                .put("respondents1", "populated")
-                .build()).build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
-
-        assertThat(callbackResponse.getData()).containsEntry("respondentsMigrated", "Yes");
-    }
-
-    @Test
-    void shouldAddRespondentMigratedNoValueToDataWhenRespondents1IsNotPresent() throws Exception {
+    void shouldAddRespondentMigratedValueToData() throws Exception {
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
                 .put("data", "some data")
                 .build()).build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
-
-        assertThat(callbackResponse.getData()).containsEntry("respondentsMigrated", "No");
-    }
-
-    private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request) throws Exception {
         MvcResult response = mockMvc
             .perform(post("/callback/enter-respondents/about-to-start")
                 .header("authorization", AUTH_TOKEN)
@@ -73,7 +59,9 @@ class RespondentAboutToStartControllerTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        return MAPPER.readValue(response.getResponse()
+        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(callbackResponse.getData()).containsEntry("respondentsMigrated", "Yes");
     }
 }

@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondents;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.migration.MigratedRespondent;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
+import uk.gov.hmcts.reform.fpl.service.RespondentMigrationService;
 
 import java.util.Date;
 import java.util.List;
@@ -29,32 +30,21 @@ import static java.util.stream.Collectors.toList;
 public class RespondentController {
 
     private final MapperService mapper;
+    private final RespondentMigrationService respondentMigrationService;
+
 
     @Autowired
-    public RespondentController(MapperService mapper) {
+    public RespondentController(MapperService mapper,
+                                RespondentMigrationService respondentMigrationService) {
         this.mapper = mapper;
+        this.respondentMigrationService = respondentMigrationService;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
 
-        System.out.println("data = " + data);
-
-        if (caseDetails.getData().containsKey("respondents1")) {
-            data.put("respondentsMigrated", "Yes");
-
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .build();
-        } else {
-            data.put("respondentsMigrated", "No");
-
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .build();
-        }
+        return respondentMigrationService.setMigratedValue(caseDetails);
     }
 
     @PostMapping("/mid-event")
