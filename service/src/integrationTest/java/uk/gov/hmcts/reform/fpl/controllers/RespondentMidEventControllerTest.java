@@ -27,9 +27,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(RespondentSubmissionController.class)
+@WebMvcTest(RespondentController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RespondentSubmissionControllerTest {
+class RespondentMidEventControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";

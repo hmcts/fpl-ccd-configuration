@@ -26,13 +26,35 @@ import static java.util.stream.Collectors.toList;
 @Api
 @RestController
 @RequestMapping("/callback/enter-respondents")
-public class RespondentSubmissionController {
+public class RespondentController {
 
     private final MapperService mapper;
 
     @Autowired
-    public RespondentSubmissionController(MapperService mapper) {
+    public RespondentController(MapperService mapper) {
         this.mapper = mapper;
+    }
+
+    @PostMapping("/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+
+        System.out.println("data = " + data);
+
+        if (caseDetails.getData().containsKey("respondents1")) {
+            data.put("respondentsMigrated", "Yes");
+
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(data)
+                .build();
+        } else {
+            data.put("respondentsMigrated", "No");
+
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(data)
+                .build();
+        }
     }
 
     @PostMapping("/mid-event")
