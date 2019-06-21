@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Api
 @RestController
@@ -60,7 +61,9 @@ public class RespondentController {
     @SuppressWarnings("unchecked")
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
-        Map<String, Object> respondentsData = (Map<String, Object>) caseDetails.getData().get("respondents");
+
+        Map<String, Object> respondentsData =
+            (Map<String, Object>) defaultIfNull(caseDetails.getData().get("respondents"), null);
 
         if (caseDetails.getData().containsKey("respondents1")) {
 
@@ -79,14 +82,15 @@ public class RespondentController {
                 .anyMatch(dob -> dob.after(new Date()))) {
                 errors.add("Date of birth cannot be in the future");
             }
-        }
+        } else {
 
-        Respondents respondents = mapper.mapObject(respondentsData, Respondents.class);
-        if (respondents.getAllRespondents().stream()
-            .map(Respondent::getDob)
-            .filter(Objects::nonNull)
-            .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
-            errors.add("Date of birth cannot be in the future");
+            Respondents respondents = mapper.mapObject(respondentsData, Respondents.class);
+            if (respondents.getAllRespondents().stream()
+                .map(Respondent::getDob)
+                .filter(Objects::nonNull)
+                .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
+                errors.add("Date of birth cannot be in the future");
+            }
         }
         return errors.build();
     }

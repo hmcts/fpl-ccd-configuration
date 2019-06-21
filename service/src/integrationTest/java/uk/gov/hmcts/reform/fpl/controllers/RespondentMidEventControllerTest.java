@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,10 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.PartyExtended;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Respondents;
+import uk.gov.hmcts.reform.fpl.model.migration.MigratedRespondent;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -70,6 +73,41 @@ class RespondentMidEventControllerTest {
             new Respondents(createRespondent(today), createRespondent(yesterday))
         );
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnErrorsWhenThereIsNewRespondentAndNoOldRespondent() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of(
+                    "respondents1", ImmutableList.of(
+                        ImmutableMap.of(
+                            "id", "",
+                            "value", MigratedRespondent.builder()
+                                .party(PartyExtended.builder()
+                                    .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
+                                    .build())
+                                .build()
+                        )
+                    )
+                ))
+                .build())
+            .build();
+
+        MvcResult response = mockMvc
+            .perform(post("/callback/enter-respondents/mid-event")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(MAPPER.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
     private Respondent createRespondent(ZonedDateTime dateOfBirth) {
