@@ -9,7 +9,6 @@ Before((I, caseViewPage) => {
 });
 
 Scenario('Entering information for respondent and submitting', (I, enterRespondentsPage, caseViewPage) => {
-  enterRespondentsPage.addRespondent();
   enterRespondentsPage.enterRespondent(respondents[0]);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
@@ -17,7 +16,6 @@ Scenario('Entering information for respondent and submitting', (I, enterResponde
 });
 
 Scenario('Entering all information for first respondent and an additional respondent', (I, enterRespondentsPage, caseViewPage) => {
-  enterRespondentsPage.addRespondent();
   enterRespondentsPage.enterRespondent(respondents[0]);
   enterRespondentsPage.enterRelationshipToChild('mock reason');
   enterRespondentsPage.enterContactDetailsHidden('Yes', 'mock reason');

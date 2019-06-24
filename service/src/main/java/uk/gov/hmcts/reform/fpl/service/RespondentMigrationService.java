@@ -1,10 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class RespondentMigrationService {
@@ -14,6 +18,19 @@ public class RespondentMigrationService {
 
         if (caseDetails.getData().containsKey("respondents1") || !caseDetails.getData().containsKey("respondents")) {
             data.put("respondentsMigrated", "Yes");
+
+            if (!caseDetails.getData().containsKey("respondents1")) {
+                List<Map<String, Object>> populatedRespondent = new ArrayList<>();
+                populatedRespondent.add(ImmutableMap.of(
+                    "id", UUID.randomUUID().toString(),
+                    "value", ImmutableMap.of(
+                        "party", ImmutableMap.of(
+                            "partyId", UUID.randomUUID().toString()
+                        )
+                    ))
+                );
+                data.put("respondents1", populatedRespondent);
+            }
 
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(data)

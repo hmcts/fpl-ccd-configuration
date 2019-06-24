@@ -4,7 +4,7 @@ const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 module.exports = {
 
   state: {
-    context: -1,
+    context: 0,
   },
 
   fields: function () {
