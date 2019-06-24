@@ -142,7 +142,8 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:aat') {
-    env.SKIP_FUNCTIONAL_TESTS = 'true'
+    env.SKIP_FUNCTIONAL_TESTS = 'false'
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
   before('functionalTest:demo') {
