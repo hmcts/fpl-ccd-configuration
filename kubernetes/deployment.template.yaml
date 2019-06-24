@@ -457,7 +457,7 @@ spec:
           command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
       containers:
         - name: idam-api
-          image: hmcts.azurecr.io/hmcts/tidam-api:backup
+          image: hmcts.azurecr.io/hmcts/tidam-api:latest
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
