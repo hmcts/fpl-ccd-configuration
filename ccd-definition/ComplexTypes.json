@@ -1628,7 +1628,7 @@
     "ID": "party",
     "ListElementCode": "telephoneNumber",
     "FieldType": "telephone",
-    "ElementLabel": " ",
+    "ElementLabel": "Telephone",
     "SecurityClassification": "Public"
   },
   {
@@ -1747,7 +1747,7 @@
     "ID": "partyRespondent",
     "ListElementCode": "party",
     "FieldType": "party",
-    "ElementLabel": " ",
+    "ElementLabel": "Party",
     "SecurityClassification": "Public"
   },
   {
