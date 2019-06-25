@@ -1618,22 +1618,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "party",
-    "ListElementCode": "address",
-    "FieldType": "AddressUK",
-    "ElementLabel": "Current address",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "party",
-    "ListElementCode": "telephoneNumber",
-    "FieldType": "telephone",
-    "ElementLabel": "Telephone",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "party",
     "ListElementCode": "gender",
     "FieldType": "FixedList",
     "FieldTypeParameter": "GenderList",
@@ -1656,6 +1640,22 @@
     "FieldType": "Text",
     "ElementLabel": "Place of birth",
     "HintText": "For example, town or city",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Current address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "telephoneNumber",
+    "FieldType": "telephone",
+    "ElementLabel": "Telephone",
     "SecurityClassification": "Public"
   },
   {
@@ -1745,14 +1745,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "partyRespondent",
-    "ListElementCode": "party",
-    "FieldType": "party",
-    "ElementLabel": "Party",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
     "ListElementCode": "leadRespondentIndicator",
     "FieldType": "YesOrNo",
     "ElementLabel": "Lead Respondent Indicator",
@@ -1761,9 +1753,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "partyRespondent",
-    "ListElementCode": "respondent_border_4",
-    "FieldType": "Label",
-    "ElementLabel": "-------------------------------------------------------------------------------------------------------------",
+    "ListElementCode": "party",
+    "FieldType": "party",
+    "ElementLabel": "Party",
     "SecurityClassification": "Public"
   }
 ]
