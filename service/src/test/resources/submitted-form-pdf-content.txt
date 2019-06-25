@@ -90,7 +90,7 @@ YesLitigation capacity issues
 UncleRelationship to the child or children
 07712345678Telephone number
 , Isle of man, Gloucester, BT66 7RR, Craigavon
-, Waringstown, Clanconnel GardensThe GrangeCurrent address
+, Waringstown, Clanconnel GardensThe GrangeCurrent Address
 CrewePlace of birth
 MaleGender
 2 May 1944Date of birth
@@ -129,7 +129,7 @@ NoLitigation capacity issues
 -Relationship to the child or children
 0987654321Telephone number
 , UK, Croydon
-, BT22 2345, Surrey, Surrey road, Surrey streetFlat 90Address
+, BT22 2345, Surrey, Surrey road, Surrey streetFlat 90Current Address
 ReadingPlace of birth
 MaleGender
 2 April 1933Date of birth
@@ -148,7 +148,7 @@ YesLitigation capacity issues
 BrotherRelationship to the child or children
 02892611016Telephone number
 , United Kingdom, Down
-, BT26 6RJ, Lurgan, Hillsborough, Transa WayUnit 12Address
+, BT26 6RJ, Lurgan, Hillsborough, Transa WayUnit 12Current Address
 NewryPlace of birth
 UnknownGender
 2 April 1933Date of birth
