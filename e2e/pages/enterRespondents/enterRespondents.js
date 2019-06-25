@@ -36,8 +36,6 @@ module.exports = {
           litigationIssuesDetails: `#respondents1_${id}_party_litigationIssuesDetails`,
         },
       },
-
-
       contactDetailsHidden: (option) => {
         return {
           option: `#respondents1_${id}_party_contactDetailsHidden-${option}`,
@@ -53,7 +51,7 @@ module.exports = {
     this.state.context++;
   },
 
-  enterRespondent (respondent) {
+  enterRespondent(respondent) {
     I.fillField(this.fields().respondent.party.partyType, respondent.partyType);
     I.fillField(this.fields().respondent.party.title, respondent.title);
     I.fillField(this.fields().respondent.party.firstName, respondent.firstName);

@@ -1329,7 +1329,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "RespondentType",
     "ListElementCode": "telephone",
-    "FieldType": "Text",
+    "FieldType": "PhoneUK",
     "ElementLabel": "Telephone number",
     "SecurityClassification": "Public"
   },

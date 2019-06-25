@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import uk.gov.hmcts.reform.fpl.model.common.Address;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.TelephoneNumber;

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.model.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.model.Address;
 
 import java.util.Date;
 
