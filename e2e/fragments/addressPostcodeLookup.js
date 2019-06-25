@@ -5,8 +5,8 @@ const I = actor();
 module.exports = {
 
   fields: {
-    postcodeLookup: '#postcodeInput',
-    addressList: '#addressList',
+    postcodeLookup: 'input[id$="postcodeInput"]',
+    addressList: 'select[id$="addressList"]',
     buildingAndStreet: {
       lineOne: 'input[id$="AddressLine1"]',
       lineTwo: 'input[id$="AddressLine2"]',
