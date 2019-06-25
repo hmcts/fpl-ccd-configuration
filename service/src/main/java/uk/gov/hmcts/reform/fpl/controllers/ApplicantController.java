@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.service.ApplicantMigrationService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.utils.PBANumberHelper;
 
@@ -24,6 +25,21 @@ public class ApplicantController {
 
     @Autowired
     private MapperService mapperService;
+    private final ApplicantMigrationService applicantMigrationService;
+
+    @Autowired
+    public ApplicantController(MapperService mapperService,
+                               ApplicantMigrationService applicantMigrationService) {
+        this.mapperService = mapperService;
+        this.applicantMigrationService = applicantMigrationService;
+    }
+
+    @PostMapping("/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+
+        return applicantMigrationService.setMigratedValue(caseDetails);
+    }
 
     @SuppressWarnings("unchecked")
     @PostMapping("/mid-event")
@@ -34,7 +50,7 @@ public class ApplicantController {
         Applicant applicant = mapperService.mapObject(applicantData, Applicant.class);
         List<String> validationErrors = new ArrayList<String>();
 
-        if (applicant.getPbaNumber() == null || applicant.getPbaNumber().isBlank()) {
+        if (applicant.getPbaNumber() == null || applicant.getPbaNumber().isEmpty()) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(caseDetails.getData())
                 .errors(validationErrors)
@@ -51,6 +67,5 @@ public class ApplicantController {
                 .errors(validationErrors)
                 .build();
         }
-
     }
 }

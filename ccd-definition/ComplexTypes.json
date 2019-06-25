@@ -1556,5 +1556,126 @@
     "FieldType": "Document",
     "ElementLabel": "Upload a file",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "emailAddress",
+    "ListElementCode": "email",
+    "FieldType": "Text",
+    "ElementLabel": "Email Address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "telephone",
+    "ListElementCode": "telephoneNumber",
+    "FieldType": "Text",
+    "ElementLabel": "Telephone",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "mobileNumber",
+    "ListElementCode": "telephoneNumber",
+    "FieldType": "Text",
+    "ElementLabel": "Mobile Number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "telephone",
+    "ListElementCode": "contactDirection",
+    "FieldType": "Text",
+    "ElementLabel": "Person to contact",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "partyId",
+    "FieldType": "Text",
+    "ElementLabel": "Party ID",
+    "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "partyType",
+    "FieldType": "Text",
+    "ElementLabel": "Party type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "name",
+    "FieldType": "Text",
+    "ElementLabel": "Name ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Address ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "emailAddress",
+    "FieldType": "emailAddress",
+    "ElementLabel": "Email ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "telephoneNumber",
+    "FieldType": "telephone",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "mobileNumber",
+    "FieldType": "mobileNumber",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "jobTitle",
+    "FieldType": "Text",
+    "ElementLabel": "Job Title",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "party",
+    "ListElementCode": "pbaNumber",
+    "FieldType": "Text",
+    "ElementLabel": "PBA Number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyApplicant",
+    "ListElementCode": "party",
+    "FieldType": "party",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "partyApplicant",
+    "ListElementCode": "leadApplicantIndicator",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Lead Applicant Indicator",
+    "SecurityClassification": "Public"
   }
 ]
