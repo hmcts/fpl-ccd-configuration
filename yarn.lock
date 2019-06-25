@@ -418,10 +418,10 @@ cliui@^5.0.0:
     strip-ansi "^5.2.0"
     wrap-ansi "^5.1.0"
 
-codeceptjs@^2.1.4:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.1.4.tgz#d594aade5c443174c6f9e9e318997c410ab08e6e"
-  integrity sha512-4sw8+U2PNKIXjEOPz/IYT+4VAuGlbjet/iZDx8XZIS036vYVuibhiFkumZz8h3bdb/7uZkRUw2Z9IgBxWtkhYw==
+codeceptjs@^2.1.5:
+  version "2.1.5"
+  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.1.5.tgz#e93954f31d4cd8816f8df754723cd021d35ac007"
+  integrity sha512-Tij/12dtq8YlZfuVrdX1o9WJqznX2T3OwhpphBg+l7M7iVI92zlPY7LEY3zCH5f8+AFEp17JcqCGLNcCYO2ZhQ==
   dependencies:
     allure-js-commons "^1.3.2"
     archiver "^3.0.0"
