@@ -42,9 +42,7 @@ withPipeline(type, product, component) {
   env.POSTCODE_PLACEHOLDER = '${postcode}'
   env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
 
-
   after('checkout') {
-    slackSend channel: '#fpla-tech', color: '#a142f4', message: 'Notification is successful', tokenCredentialId: 'slack-token'
     onMaster {
       withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', usernameVariable: 'USERNAME', passwordVariable: 'BEARER_TOKEN')]) {
         try {
@@ -57,7 +55,7 @@ withPipeline(type, product, component) {
             git push --force origin HEAD:demo
           '''
         } catch (err) {
-          notifyBuildEvent channel: '#fpl-tech', color: 'warning', message: 'Failed to update demo branch'
+          notifyBuildEvent channel: '#fpla-tech', color: 'warning', message: 'Failed to update demo branch'
         }
       }
     }
