@@ -43,7 +43,7 @@ withPipeline(type, product, component) {
 
 
   after('checkout') {
-    notifyBuildEvent channel: 'fpla-tech', color: 'warning', message: 'Failed to update demo branch'
+    notifyBuildEvent channel: '#fpl-tech', color: 'warning', message: 'Failed to update demo branch'
     onMaster {
       withCredentials([usernamePassword(credentialsId: 'jenkins-github-hmcts-api-token', usernameVariable: 'USERNAME', passwordVariable: 'BEARER_TOKEN')]) {
         try {
