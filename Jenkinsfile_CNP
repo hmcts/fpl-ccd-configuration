@@ -1,6 +1,5 @@
 #!groovy
-@Library("Infrastructure")
-import uk.gov.hmcts.contino.Consul
+
 @Library("Infrastructure")
 
 import uk.gov.hmcts.contino.Consul
@@ -20,10 +19,10 @@ List<Map<String, Object>> secrets = [
 ]
 
 static Map<String, Object> secret(String secretName, String envVariable) {
-  [$class     : 'AzureKeyVaultSecret',
-   secretType : 'Secret',
-   name       : secretName,
-   envVariable: envVariable
+  [ $class: 'AzureKeyVaultSecret',
+    secretType: 'Secret',
+    name: secretName,
+    envVariable: envVariable
   ]
 }
 
