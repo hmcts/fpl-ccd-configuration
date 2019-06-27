@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Children;
+import uk.gov.hmcts.reform.fpl.service.ChildrenMigrationService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
 import java.util.Date;
@@ -25,10 +26,20 @@ import java.util.Objects;
 public class ChildSubmissionController {
 
     private final MapperService mapperService;
+    private final ChildrenMigrationService childrenMigrationService;
 
     @Autowired
-    public ChildSubmissionController(MapperService mapperService) {
+    public ChildSubmissionController(MapperService mapperService,
+                                     ChildrenMigrationService childrenMigrationService) {
         this.mapperService = mapperService;
+        this.childrenMigrationService = childrenMigrationService;
+    }
+
+    @PostMapping("/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+
+        return childrenMigrationService.setMigratedValue(caseDetails);
     }
 
     @PostMapping("/mid-event")
