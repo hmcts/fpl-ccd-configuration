@@ -12,29 +12,27 @@ module.exports = {
 
     return {
       respondent: {
-        party: {
-          partyType: `#respondents1_${id}_party_partyType`,
-          title: `#respondents1_${id}_party_title`,
-          firstName: `#respondents1_${id}_party_firstName`,
-          lastName: `#respondents1_${id}_party_lastName`,
-          dateOfBirth: {
-            day: `#respondents1_${id}_party_dateOfBirth-day`,
-            month: `#respondents1_${id}_party_dateOfBirth-month`,
-            year: `#respondents1_${id}_party_dateOfBirth-year`,
-          },
-          address: `#respondents1_${id}_party_address_address`,
-          telephone: `input[id="respondents1_${id}_party_telephoneNumber_telephoneNumber"]`,
-          gender: `#respondents1_${id}_party_gender`,
-          genderIdentification: `#respondents1_${id}_party_genderIdentification`,
-          placeOfBirth: `#respondents1_${id}_party_placeOfBirth`,
-          relationshipToChild: `#respondents1_${id}_party_relationshipToChild`,
-          litigationIssues: {
-            yes: `#respondents1_${id}_party_litigationIssues-YES`,
-            no: `#respondents1_${id}_party_litigationIssues-NO`,
-            dont_know: `#respondents1_${id}_party_litigationIssues-DONT_KNOW`,
-          },
-          litigationIssuesDetails: `#respondents1_${id}_party_litigationIssuesDetails`,
+        partyType: `#respondents1_${id}_party_partyType`,
+        title: `#respondents1_${id}_party_title`,
+        firstName: `#respondents1_${id}_party_firstName`,
+        lastName: `#respondents1_${id}_party_lastName`,
+        dateOfBirth: {
+          day: `#respondents1_${id}_party_dateOfBirth-day`,
+          month: `#respondents1_${id}_party_dateOfBirth-month`,
+          year: `#respondents1_${id}_party_dateOfBirth-year`,
         },
+        address: `#respondents1_${id}_party_address_address`,
+        telephone: `input[id="respondents1_${id}_party_telephoneNumber_telephoneNumber"]`,
+        gender: `#respondents1_${id}_party_gender`,
+        genderIdentification: `#respondents1_${id}_party_genderIdentification`,
+        placeOfBirth: `#respondents1_${id}_party_placeOfBirth`,
+        relationshipToChild: `#respondents1_${id}_party_relationshipToChild`,
+        litigationIssues: {
+          yes: `#respondents1_${id}_party_litigationIssues-YES`,
+          no: `#respondents1_${id}_party_litigationIssues-NO`,
+          dont_know: `#respondents1_${id}_party_litigationIssues-DONT_KNOW`,
+        },
+        litigationIssuesDetails: `#respondents1_${id}_party_litigationIssuesDetails`,
       },
       contactDetailsHidden: (option) => {
         return {
@@ -52,26 +50,26 @@ module.exports = {
   },
 
   enterRespondent(respondent) {
-    I.fillField(this.fields().respondent.party.partyType, respondent.partyType);
-    I.fillField(this.fields().respondent.party.title, respondent.title);
-    I.fillField(this.fields().respondent.party.firstName, respondent.firstName);
-    I.fillField(this.fields().respondent.party.lastName, respondent.lastName);
-    I.fillField(this.fields().respondent.party.dateOfBirth.day, respondent.dob.day);
-    I.fillField(this.fields().respondent.party.dateOfBirth.month, respondent.dob.month);
-    I.fillField(this.fields().respondent.party.dateOfBirth.year, respondent.dob.year);
-    within(this.fields().respondent.party.address, () => {
+    I.fillField(this.fields().respondent.partyType, respondent.partyType);
+    I.fillField(this.fields().respondent.title, respondent.title);
+    I.fillField(this.fields().respondent.firstName, respondent.firstName);
+    I.fillField(this.fields().respondent.lastName, respondent.lastName);
+    I.fillField(this.fields().respondent.dateOfBirth.day, respondent.dob.day);
+    I.fillField(this.fields().respondent.dateOfBirth.month, respondent.dob.month);
+    I.fillField(this.fields().respondent.dateOfBirth.year, respondent.dob.year);
+    within(this.fields().respondent.address, () => {
       postcodeLookup.enterAddressManually(respondent.address);
     });
-    I.fillField(this.fields().respondent.party.telephone, respondent.telephone);
-    I.selectOption(this.fields().respondent.party.gender, respondent.gender);
+    I.fillField(this.fields().respondent.telephone, respondent.telephone);
+    I.selectOption(this.fields().respondent.gender, respondent.gender);
     if (respondent.gender === 'They identify in another way') {
-      I.fillField(this.fields().respondent.party.genderIdentification, '');
+      I.fillField(this.fields().respondent.genderIdentification, '');
     }
-    I.fillField(this.fields().respondent.party.placeOfBirth, respondent.placeOfBirth);
+    I.fillField(this.fields().respondent.placeOfBirth, respondent.placeOfBirth);
   },
 
   enterRelationshipToChild(relationship) {
-    I.fillField(this.fields().respondent.party.relationshipToChild, relationship);
+    I.fillField(this.fields().respondent.relationshipToChild, relationship);
   },
 
   enterContactDetailsHidden(option, reason = '') {
@@ -85,17 +83,17 @@ module.exports = {
     litigationIssue = litigationIssue.toLowerCase();
     switch (litigationIssue) {
       case 'yes':
-        I.checkOption(this.fields().respondent.party.litigationIssues.yes);
+        I.checkOption(this.fields().respondent.litigationIssues.yes);
         break;
       case 'no':
-        I.checkOption(this.fields().respondent.party.litigationIssues.no);
+        I.checkOption(this.fields().respondent.litigationIssues.no);
         break;
       case 'dont know':
-        I.checkOption(this.fields().respondent.party.litigationIssues.dont_know);
+        I.checkOption(this.fields().respondent.litigationIssues.dont_know);
         break;
     }
     if (litigationIssue === 'yes') {
-      I.fillField(this.fields().respondent.party.litigationIssuesDetails, litigationIssueDetail);
+      I.fillField(this.fields().respondent.litigationIssuesDetails, litigationIssueDetail);
     }
   },
 };

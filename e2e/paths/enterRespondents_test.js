@@ -45,6 +45,7 @@ Scenario('Entering all information for multiple respondents', (I, enterResponden
   I.seeAnswerInTab(10, 'Party', 'What is the respondent’s relationship to the child or children in this case?', 'mock reason');
   I.seeAnswerInTab(11, 'Party', 'Do you need contact details hidden from anyone?', 'Yes');
   I.seeAnswerInTab(12, 'Party', 'Give reason', 'mock reason');
+
   I.seeAnswerInTab(13, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'Yes');
   I.seeAnswerInTab(14, 'Party', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
 

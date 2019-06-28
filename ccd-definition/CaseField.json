@@ -257,7 +257,7 @@
     "ID": "respondents1",
     "Label": "Respondent",
     "FieldType": "Collection",
-    "FieldTypeParameter": "partyRespondent",
+    "FieldTypeParameter": "RespondentNew",
     "SecurityClassification": "Public"
   },
   {

@@ -1559,7 +1559,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "telephone",
+    "ID": "Telephone",
     "ListElementCode": "telephoneNumber",
     "FieldType": "Text",
     "ElementLabel": "Telephone",
@@ -1567,7 +1567,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "partyId",
     "FieldType": "Text",
     "ElementLabel": "Party ID",
@@ -1576,7 +1576,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "partyType",
     "FieldType": "Text",
     "ElementLabel": "Party type",
@@ -1584,7 +1584,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "title",
     "FieldType": "Text",
     "ElementLabel": "Title",
@@ -1592,7 +1592,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "firstName",
     "FieldType": "Text",
     "ElementLabel": "First name",
@@ -1600,7 +1600,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "lastName",
     "FieldType": "Text",
     "ElementLabel": "Last name",
@@ -1608,7 +1608,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "dateOfBirth",
     "FieldType": "Date",
     "ElementLabel": "Date of birth",
@@ -1617,7 +1617,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "gender",
     "FieldType": "FixedList",
     "FieldTypeParameter": "GenderList",
@@ -1626,7 +1626,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "genderIdentification",
     "FieldType": "Text",
     "ElementLabel": "What gender do they identify with?",
@@ -1635,7 +1635,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "placeOfBirth",
     "FieldType": "Text",
     "ElementLabel": "Place of birth",
@@ -1644,7 +1644,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "address",
     "FieldType": "AddressUK",
     "ElementLabel": "Current address",
@@ -1652,23 +1652,23 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "telephoneNumber",
-    "FieldType": "telephone",
+    "FieldType": "Telephone",
     "ElementLabel": "Telephone",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "respondent_border_1",
     "FieldType": "Label",
-    "ElementLabel": "-------------------------------------------------------------------------------------------------------------",
+    "ElementLabel": "---",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "relationshipLabel",
     "FieldType": "Label",
     "ElementLabel": "## Relationship to the child",
@@ -1676,7 +1676,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "relationshipToChild",
     "FieldType": "TextArea",
     "ElementLabel": "What is the respondent’s relationship to the child or children in this case?",
@@ -1685,15 +1685,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "respondent_border_2",
     "FieldType": "Label",
-    "ElementLabel": "-------------------------------------------------------------------------------------------------------------",
+    "ElementLabel": "---",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "contactDetailsHidden",
     "FieldType": "YesOrNo",
     "ElementLabel": "Do you need contact details hidden from anyone?",
@@ -1701,7 +1701,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "contactDetailsHiddenReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
@@ -1710,7 +1710,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "proceedingsLabel",
     "FieldType": "Label",
     "ElementLabel": "## Ability to take part in proceedings",
@@ -1718,7 +1718,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "litigationIssues",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "LitigationCapacityIssues",
@@ -1727,7 +1727,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "litigationIssuesDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
@@ -1736,15 +1736,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "RespondentParty",
     "ListElementCode": "respondent_border_3",
     "FieldType": "Label",
-    "ElementLabel": "-------------------------------------------------------------------------------------------------------------",
+    "ElementLabel": "---",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
+    "ID": "RespondentNew",
     "ListElementCode": "leadRespondentIndicator",
     "FieldType": "YesOrNo",
     "ElementLabel": "Lead Respondent Indicator",
@@ -1752,9 +1752,9 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "partyRespondent",
+    "ID": "RespondentNew",
     "ListElementCode": "party",
-    "FieldType": "party",
+    "FieldType": "RespondentParty",
     "ElementLabel": "Party",
     "SecurityClassification": "Public"
   }
