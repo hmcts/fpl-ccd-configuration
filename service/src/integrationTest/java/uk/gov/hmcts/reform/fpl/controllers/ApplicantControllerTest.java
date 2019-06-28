@@ -127,7 +127,7 @@ public class ApplicantControllerTest {
             .build();
 
         MvcResult response = mockMvc
-            .perform(post("/callback/enter-Applicant/mid-event")
+            .perform(post("/callback/enter-applicant/mid-event")
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
