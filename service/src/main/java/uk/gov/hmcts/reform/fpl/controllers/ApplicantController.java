@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.utils.PBANumberHelper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.PBANumberHelper.validatePBANumber;
@@ -62,10 +63,10 @@ public class ApplicantController {
 
             migratedApplicantsObject.stream()
                 .map(applicant ->
-                    mapperService.mapObject(applicant, Applicant.class))
+                    mapperService.mapObject((Map<String, Object>) applicant.get("value"), Applicant.class))
                 .map(Applicant::getParty)
                 .map(PartyApplicant::getPbaNumber)
-                .filter(String::isBlank)
+                .filter(Objects::nonNull)
                 .forEach(pbaNumber -> {
                     System.out.println("pbaNumber = " + pbaNumber);
                     String newPbaNumberData = PBANumberHelper.updatePBANumber(pbaNumber);
