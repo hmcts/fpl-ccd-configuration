@@ -31,16 +31,12 @@ public class RespondentMigrationService {
                 );
                 data.put("respondents1", populatedRespondent);
             }
-
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .build();
         } else {
             data.put("respondentsMigrated", "No");
-
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .build();
         }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .build();
     }
 }

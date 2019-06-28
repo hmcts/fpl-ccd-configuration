@@ -15,8 +15,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.PartyExtended;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Respondents;
 import uk.gov.hmcts.reform.fpl.model.migration.MigratedRespondent;
 
@@ -76,7 +76,7 @@ class RespondentMidEventControllerTest {
     }
 
     @Test
-    void shouldReturnErrorsWhenThereIsNewRespondentAndNoOldRespondent() throws Exception {
+    void shouldReturnDateOfBirthErrorsForNewRespondentWhenFutureDateOfBirth() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -85,7 +85,7 @@ class RespondentMidEventControllerTest {
                         ImmutableMap.of(
                             "id", "",
                             "value", MigratedRespondent.builder()
-                                .party(PartyExtended.builder()
+                                .party(RespondentParty.builder()
                                     .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
                                     .build())
                                 .build()
@@ -95,19 +95,67 @@ class RespondentMidEventControllerTest {
                 .build())
             .build();
 
-        MvcResult response = mockMvc
-            .perform(post("/callback/enter-respondents/mid-event")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
 
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnDateOfBirthErrorsForNewRespondentWhenThereIsMultipleRespondents() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of(
+                    "respondents1", ImmutableList.of(
+                        ImmutableMap.of(
+                            "id", "",
+                            "value", MigratedRespondent.builder()
+                                .party(RespondentParty.builder()
+                                    .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
+                                    .build())
+                                .build()
+                        ),
+                        ImmutableMap.of(
+                            "id", "",
+                            "value", MigratedRespondent.builder()
+                                .party(RespondentParty.builder()
+                                    .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
+                                    .build())
+                                .build()
+                        )
+                    )
+                ))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
+
+        assertThat(callbackResponse.getErrors()).containsExactly(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnNoDateOfBirthErrorsForNewRespondentWhenValidDateOfBirth() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of(
+                    "respondents1", ImmutableList.of(
+                        ImmutableMap.of(
+                            "id", "",
+                            "value", MigratedRespondent.builder()
+                                .party(RespondentParty.builder()
+                                    .dateOfBirth(Date.from(ZonedDateTime.now().minusDays(1).toInstant()))
+                                    .build())
+                                .build()
+                        )
+                    )
+                ))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     private Respondent createRespondent(ZonedDateTime dateOfBirth) {
@@ -127,6 +175,20 @@ class RespondentMidEventControllerTest {
                 .build())
             .build();
 
+        MvcResult response = mockMvc
+            .perform(post("/callback/enter-respondents/mid-event")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(MAPPER.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        return MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+    }
+
+    private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request) throws Exception {
         MvcResult response = mockMvc
             .perform(post("/callback/enter-respondents/mid-event")
                 .header("authorization", AUTH_TOKEN)

@@ -10,8 +10,8 @@ import uk.gov.hmcts.reform.fpl.model.common.TelephoneNumber;
 import java.util.Date;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
-public final class PartyExtended extends Party {
+@EqualsAndHashCode(callSuper = true)
+public final class RespondentParty extends Party {
 
     private final String gender;
     private final String genderIdentification;
@@ -22,24 +22,24 @@ public final class PartyExtended extends Party {
     private final String litigationIssuesDetails;
 
     @Builder
-    private PartyExtended(String partyID,
-                          String idamID,
-                          String partyType,
-                          String title,
-                          String firstName,
-                          String lastName,
-                          String organisationName,
-                          Date dateOfBirth,
-                          Address address,
-                          EmailAddress email,
-                          TelephoneNumber telephoneNumber,
-                          String gender,
-                          String genderIdentification,
-                          String placeOfBirth,
-                          String relationshipToChild,
-                          String contactDetailsHidden,
-                          String litigationIssues,
-                          String litigationIssuesDetails) {
+    private RespondentParty(String partyID,
+                            String idamID,
+                            String partyType,
+                            String title,
+                            String firstName,
+                            String lastName,
+                            String organisationName,
+                            Date dateOfBirth,
+                            Address address,
+                            EmailAddress email,
+                            TelephoneNumber telephoneNumber,
+                            String gender,
+                            String genderIdentification,
+                            String placeOfBirth,
+                            String relationshipToChild,
+                            String contactDetailsHidden,
+                            String litigationIssues,
+                            String litigationIssuesDetails) {
         super(partyID, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address, email,
             telephoneNumber);
 

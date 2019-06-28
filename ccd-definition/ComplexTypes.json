@@ -1578,16 +1578,9 @@
     "LiveFrom": "01/01/2017",
     "ID": "RespondentParty",
     "ListElementCode": "partyType",
-    "FieldType": "Text",
-    "ElementLabel": "Party type",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "RespondentParty",
-    "ListElementCode": "title",
-    "FieldType": "Text",
-    "ElementLabel": "Title",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "PartyType",
+    "ElementLabel": " ",
     "SecurityClassification": "Public"
   },
   {
@@ -1747,7 +1740,7 @@
     "ID": "RespondentNew",
     "ListElementCode": "leadRespondentIndicator",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Lead Respondent Indicator",
+    "ElementLabel": "Is this the first respondent?",
     "SecurityClassification": "Public"
   },
   {
