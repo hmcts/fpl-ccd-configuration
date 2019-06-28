@@ -19,7 +19,7 @@ public class LocalAuthorityCodeLookupConfiguration {
     }
 
     public String getLocalAuthorityCode(String emailDomain) {
-        checkNotNull(emailDomain, "Email domain cannot be null");
+        checkNotNull(emailDomain, "EmailAddress domain cannot be null");
 
         if (mapping.get(emailDomain) == null) {
             throw new UnknownLocalAuthorityDomainException(emailDomain + " not found");

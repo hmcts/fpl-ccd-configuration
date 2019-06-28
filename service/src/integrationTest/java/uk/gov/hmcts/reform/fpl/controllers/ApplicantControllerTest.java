@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.OldApplicant;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -109,12 +109,12 @@ public class ApplicantControllerTest {
         return actualPbaNumber;
     }
 
-    private Applicant createApplicant(String pbaNumber) {
-        return new Applicant("","", "", "", null,
+    private OldApplicant createApplicant(String pbaNumber) {
+        return new OldApplicant("","", "", "", null,
             "", "", "", pbaNumber);
     }
 
-    private AboutToStartOrSubmitCallbackResponse makeRequest(Applicant applicant) throws Exception {
+    private AboutToStartOrSubmitCallbackResponse makeRequest(OldApplicant applicant) throws Exception {
         HashMap<String, Object> map = MAPPER.readValue(MAPPER.writeValueAsString(applicant),
             new TypeReference<Map<String, Object>>() {
             });
@@ -127,7 +127,7 @@ public class ApplicantControllerTest {
             .build();
 
         MvcResult response = mockMvc
-            .perform(post("/callback/enter-applicant/mid-event")
+            .perform(post("/callback/enter-Applicant/mid-event")
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
