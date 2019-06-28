@@ -233,6 +233,7 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
+    "FieldShowCondition": "childrenMigrated=\"No\"",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/mid-event"
   },
   {

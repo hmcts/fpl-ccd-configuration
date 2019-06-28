@@ -57,7 +57,7 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "CallBackURLAboutToStartEvent”: “${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/about-to-start”,
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/about-to-start",
     "EndButtonLabel": "Save and continue"
   },
   {
