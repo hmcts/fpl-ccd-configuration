@@ -42,3 +42,9 @@ Scenario('Gatekeeper user can see the case', (I, loginPage) => {
   I.navigateToCaseDetails(caseId);
   I.see(caseId);
 });
+
+Scenario('Judiciary user can see the case', (I, loginPage) => {
+  loginPage.signIn(config.judiciaryEmail, config.judiciaryPassword);
+  I.navigateToCaseDetails(caseId);
+  I.see(caseId);
+});
