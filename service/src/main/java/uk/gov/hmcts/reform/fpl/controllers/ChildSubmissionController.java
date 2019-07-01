@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.Children;
+import uk.gov.hmcts.reform.fpl.model.OldChild;
+import uk.gov.hmcts.reform.fpl.model.OldChildren;
 import uk.gov.hmcts.reform.fpl.service.ChildrenMigrationService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
@@ -57,9 +57,9 @@ public class ChildSubmissionController {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
 
         Map<String, Object> childrenData = (Map<String, Object>) caseDetails.getData().get("children");
-        Children children = mapperService.mapObject(childrenData, Children.class);
-        if (children.getAllChildren().stream()
-            .map(Child::getChildDOB)
+        OldChildren oldChildren = mapperService.mapObject(childrenData, OldChildren.class);
+        if (oldChildren.getAllChildren().stream()
+            .map(OldChild::getChildDOB)
             .filter(Objects::nonNull)
             .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
             errors.add("Date of birth cannot be in the future");

@@ -145,66 +145,66 @@
   </h1>
   <div class="box box--grey">
     <p class="heading heading--three u-margin-top-5">For court use</p>
-      <dl class="data-list">
-        <div class="data-list__row data-list__row--no-border">
-          <dt class="data-list__title">The family court sitting at</dt>
-          <dd class="data-list__definition"></dd>
-        </div>
-        <div class="data-list__row data-list__row--no-border">
-          <dt class="data-list__title">Case number</dt>
-          <dd class="data-list__definition"></dd>
-        </div>
-        <div class="data-list__row data-list__row--no-border">
-          <dt class="data-list__title">Date issued</dt>
-          <dd class="data-list__definition"></dd>
-        </div>
-        <div class="data-list__row data-list__row--no-border">
-          <dt class="data-list__title">Fee charged</dt>
-          <dd class="data-list__definition"></dd>
-        </div>
-        <div class="data-list__row data-list__row--no-border">
-          <dt class="data-list__title">Applicant</dt>
-          <dd class="data-list__definition">
-            {% if case_data.applicant is not empty and case_data.applicant.name is not empty %}
-              {{ case_data.applicant.name }}
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row data-list__row--no-border">
-          <dt class="data-list__title">Respondents</dt>
-          <dd class="data-list__definition">
-            {% if case_data.respondents is not empty %}
-              {% if case_data.respondents.firstRespondent is not empty %}
-                <span class="u-comma-before">{{ case_data.respondents.firstRespondent.name }}</span>
-              {% elseif case_data.respondents.firstRespondent is empty
-              and case_data.respondents.additional is not empty %}
-                // No op
-              {% else %}
-                -
-              {% endif %}
-              {% if case_data.respondents.additional is not empty %}
-                {% for additionalRespondent in case_data.respondents.additional %}
-                  {% if additionalRespondent.value.name is not empty %}
-                    <span class="u-comma-before">{{ additionalRespondent.value.name }}</span>
-                  {% endif %}
-                {% endfor %}
-              {% endif %}
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
-      </dl>
+    <dl class="data-list">
+      <div class="data-list__row data-list__row--no-border">
+        <dt class="data-list__title">The family court sitting at</dt>
+        <dd class="data-list__definition"></dd>
+      </div>
+      <div class="data-list__row data-list__row--no-border">
+        <dt class="data-list__title">Case number</dt>
+        <dd class="data-list__definition"></dd>
+      </div>
+      <div class="data-list__row data-list__row--no-border">
+        <dt class="data-list__title">Date issued</dt>
+        <dd class="data-list__definition"></dd>
+      </div>
+      <div class="data-list__row data-list__row--no-border">
+        <dt class="data-list__title">Fee charged</dt>
+        <dd class="data-list__definition"></dd>
+      </div>
+      <div class="data-list__row data-list__row--no-border">
+        <dt class="data-list__title">Applicant</dt>
+        <dd class="data-list__definition">
+          {% if case_data.applicant is not empty and case_data.applicant.name is not empty %}
+          {{ case_data.applicant.name }}
+          {% else %}
+          -
+          {% endif %}
+        </dd>
+      </div>
+      <div class="data-list__row data-list__row--no-border">
+        <dt class="data-list__title">Respondents</dt>
+        <dd class="data-list__definition">
+          {% if case_data.respondents is not empty %}
+          {% if case_data.respondents.firstRespondent is not empty %}
+          <span class="u-comma-before">{{ case_data.respondents.firstRespondent.name }}</span>
+          {% elseif case_data.respondents.firstRespondent is empty
+          and case_data.respondents.additional is not empty %}
+          // No op
+          {% else %}
+          -
+          {% endif %}
+          {% if case_data.respondents.additional is not empty %}
+          {% for additionalRespondent in case_data.respondents.additional %}
+          {% if additionalRespondent.value.name is not empty %}
+          <span class="u-comma-before">{{ additionalRespondent.value.name }}</span>
+          {% endif %}
+          {% endfor %}
+          {% endif %}
+          {% else %}
+          -
+          {% endif %}
+        </dd>
+      </div>
+    </dl>
   </div>
 </header>
 <main>
   <h2 class="heading heading--two u-margin-bottom-10">
     {% if case_data.applicant is empty or case_data.applicant.name is empty %}
-      Application
+    Application
     {% else %}
-      Application from {{ case_data.applicant.name }}
+    Application from {{ case_data.applicant.name }}
     {% endif %}
     submitted on {{ null | today | date("d MMMM yyyy") }}
   </h2>
@@ -216,22 +216,22 @@
       <dd class="data-list__definition">
         {% if case_data.orders is not empty and
         case_data.orders.orderType is not empty %}
-          {% for type in case_data.orders.orderType %}
-            <span class="u-block">{{ type | orderMapping }}</span>
-          {% endfor %}
-          {% if case_data.orders.otherOrder is not empty %}
-            <span class="u-block">{{ case_data.orders.otherOrder }}</span>
-          {% endif %}
-          {% if case_data.orders.emergencyProtectionOrders is not empty %}
-            {% for order in case_data.orders.emergencyProtectionOrders %}
-              <span class="u-block">{{ order | emergencyProtectionOrderMapping }}</span>
-            {% endfor %}
-            {% if case_data.orders.emergencyProtectionOrderDetails is not empty %}
-              <span class="u-block">{{ case_data.orders.emergencyProtectionOrderDetails }}</span>
-            {% endif %}
-          {% endif %}
+        {% for type in case_data.orders.orderType %}
+        <span class="u-block">{{ type | orderMapping }}</span>
+        {% endfor %}
+        {% if case_data.orders.otherOrder is not empty %}
+        <span class="u-block">{{ case_data.orders.otherOrder }}</span>
+        {% endif %}
+        {% if case_data.orders.emergencyProtectionOrders is not empty %}
+        {% for order in case_data.orders.emergencyProtectionOrders %}
+        <span class="u-block">{{ order | emergencyProtectionOrderMapping }}</span>
+        {% endfor %}
+        {% if case_data.orders.emergencyProtectionOrderDetails is not empty %}
+        <span class="u-block">{{ case_data.orders.emergencyProtectionOrderDetails }}</span>
+        {% endif %}
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -239,24 +239,24 @@
       <dt class="data-list__title">Direction needed</dt>
       <dd class="data-list__definition">
         {% if case_data.orders is not empty %}
-          {% if case_data.orders.orderType is not empty or case_data.orders.directions is not empty %}
-            {% if case_data.orders.emergencyProtectionOrderDirections is not empty %}
-              {% for epo in case_data.orders.emergencyProtectionOrderDirections %}
-                <span class="u-block">{{ epo | emergencyProtectionOrderDirectionMapping }}</span>
-              {% endfor %}
-            {% endif %}
-            {% if case_data.orders.emergencyProtectionOrderDirectionDetails is not empty %}
-              <span class="u-block">{{ case_data.orders.emergencyProtectionOrderDirectionDetails }}</span>
-            {% endif %}
-            {% if case_data.orders.directions is not empty %}
-              {{ case_data.orders.directions }}
-            {% endif %}
-            {% if case_data.orders.directionDetails is not empty %}
-              <span class="u-block">{{ case_data.orders.directionDetails }}</span>
-            {% endif %}
-          {% else %}
-            -
-          {% endif %}
+        {% if case_data.orders.orderType is not empty or case_data.orders.directions is not empty %}
+        {% if case_data.orders.emergencyProtectionOrderDirections is not empty %}
+        {% for epo in case_data.orders.emergencyProtectionOrderDirections %}
+        <span class="u-block">{{ epo | emergencyProtectionOrderDirectionMapping }}</span>
+        {% endfor %}
+        {% endif %}
+        {% if case_data.orders.emergencyProtectionOrderDirectionDetails is not empty %}
+        <span class="u-block">{{ case_data.orders.emergencyProtectionOrderDirectionDetails }}</span>
+        {% endif %}
+        {% if case_data.orders.directions is not empty %}
+        {{ case_data.orders.directions }}
+        {% endif %}
+        {% if case_data.orders.directionDetails is not empty %}
+        <span class="u-block">{{ case_data.orders.directionDetails }}</span>
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
         {% endif %}
       </dd>
     </div>
@@ -269,12 +269,12 @@
       <dd class="data-list__definition">
         {% if case_data.hearing is not empty and
         case_data.hearing.timeFrame is not empty %}
-          <span class="u-block">{{ case_data.hearing.timeFrame }}</span>
-          {% if case_data.hearing.reason is not empty %}
-            <span class="u-block">Reason: {{ case_data.hearing.reason }}</span>
-          {% endif %}
+        <span class="u-block">{{ case_data.hearing.timeFrame }}</span>
+        {% if case_data.hearing.reason is not empty %}
+        <span class="u-block">Reason: {{ case_data.hearing.reason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -283,12 +283,12 @@
       <dd class="data-list__definition">
         {% if case_data.hearing is not empty and
         case_data.hearing.type is not empty %}
-          <span class="u-block">{{ case_data.hearing.type }}</span>
-          {% if case_data.hearing.type_GiveReason is not empty %}
-            <span class="u-block">Reason: {{ case_data.hearing.type_GiveReason }}</span>
-          {% endif %}
+        <span class="u-block">{{ case_data.hearing.type }}</span>
+        {% if case_data.hearing.type_GiveReason is not empty %}
+        <span class="u-block">Reason: {{ case_data.hearing.type_GiveReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -297,12 +297,12 @@
       <dd class="data-list__definition">
         {% if case_data.hearing is not empty and
         case_data.hearing.withoutNotice is not empty %}
-          <span class="u-block">{{ case_data.hearing.withoutNotice }}</span>
-          {% if case_data.hearing.withoutNoticeReason is not empty %}
-            <span class="u-block">Reason: {{ case_data.hearing.withoutNoticeReason }}</span>
-          {% endif %}
+        <span class="u-block">{{ case_data.hearing.withoutNotice }}</span>
+        {% if case_data.hearing.withoutNoticeReason is not empty %}
+        <span class="u-block">Reason: {{ case_data.hearing.withoutNoticeReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -311,12 +311,12 @@
       <dd class="data-list__definition">
         {% if case_data.hearing is not empty and
         case_data.hearing.reducedNotice is not empty %}
-          <span class="u-block">{{ case_data.hearing.reducedNotice }}</span>
-          {% if case_data.hearing.reducedNoticeReason is not empty %}
-            <span class="u-block">Reason: {{ case_data.hearing.reducedNoticeReason }}</span>
-          {% endif %}
+        <span class="u-block">{{ case_data.hearing.reducedNotice }}</span>
+        {% if case_data.hearing.reducedNoticeReason is not empty %}
+        <span class="u-block">Reason: {{ case_data.hearing.reducedNoticeReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -325,9 +325,9 @@
       <dd class="data-list__definition">
         {% if case_data.hearing is not empty and
         case_data.hearing.respondentsAware is not empty %}
-          <span class="u-block">{{ case_data.hearing.respondentsAware }}</span>
+        <span class="u-block">{{ case_data.hearing.respondentsAware }}</span>
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -336,9 +336,9 @@
       <dd class="data-list__definition">
         {% if case_data.hearing is not empty and
         case_data.hearing.respondentsAwareReason is not empty %}
-          <span class="u-block">{{ case_data.hearing.respondentsAwareReason }}</span>
+        <span class="u-block">{{ case_data.hearing.respondentsAwareReason }}</span>
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -351,9 +351,9 @@
       <dd class="data-list__definition">
         {% if case_data.allocationProposal is not empty and
         case_data.allocationProposal.proposal is not empty %}
-          <span class="u-block">{{ case_data.allocationProposal.proposal }}</span>
+        <span class="u-block">{{ case_data.allocationProposal.proposal }}</span>
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -362,9 +362,9 @@
       <dd class="data-list__definition">
         {% if case_data.allocationProposal is not empty and
         case_data.allocationProposal.proposalReason is not empty %}
-          <span class="u-block">{{ case_data.allocationProposal.proposalReason }}</span>
+        <span class="u-block">{{ case_data.allocationProposal.proposalReason }}</span>
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -377,12 +377,12 @@
       <dd class="data-list__definition">
         {% if case_data.hearingPreferences is not empty and
         case_data.hearingPreferences.interpreter is not empty %}
-          {{ case_data.hearingPreferences.interpreter }}
-          {% if case_data.hearingPreferences.interpreter == 'Yes' %}
-            <span class="u-block">{{ case_data.hearingPreferences.interpreterDetails }}</span>
-          {% endif %}
+        {{ case_data.hearingPreferences.interpreter }}
+        {% if case_data.hearingPreferences.interpreter == 'Yes' %}
+        <span class="u-block">{{ case_data.hearingPreferences.interpreterDetails }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -391,12 +391,12 @@
       <dd class="data-list__definition">
         {% if case_data.hearingPreferences is not empty and
         case_data.hearingPreferences.welsh is not empty %}
-          {{ case_data.hearingPreferences.welsh }}
-          {% if case_data.hearingPreferences.welsh == 'Yes' %}
-            <span class="u-block">{{ case_data.hearingPreferences.welshDetails }}</span>
-          {% endif %}
+        {{ case_data.hearingPreferences.welsh }}
+        {% if case_data.hearingPreferences.welsh == 'Yes' %}
+        <span class="u-block">{{ case_data.hearingPreferences.welshDetails }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -405,12 +405,12 @@
       <dd class="data-list__definition">
         {% if case_data.hearingPreferences is not empty and
         case_data.hearingPreferences.intermediary is not empty %}
-          {{ case_data.hearingPreferences.intermediary }}
-          {% if case_data.hearingPreferences.intermediary == 'Yes' %}
-            <span class="u-block">{{ case_data.hearingPreferences.intermediaryDetails }}</span>
-          {% endif %}
+        {{ case_data.hearingPreferences.intermediary }}
+        {% if case_data.hearingPreferences.intermediary == 'Yes' %}
+        <span class="u-block">{{ case_data.hearingPreferences.intermediaryDetails }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -419,12 +419,12 @@
       <dd class="data-list__definition">
         {% if case_data.hearingPreferences is not empty and
         case_data.hearingPreferences.disabilityAssistance is not empty %}
-          {{ case_data.hearingPreferences.disabilityAssistance }}
-          {% if case_data.hearingPreferences.disabilityAssistance == 'Yes' %}
-            <span class="u-block">{{ case_data.hearingPreferences.disabilityAssistanceDetails }}</span>
-          {% endif %}
+        {{ case_data.hearingPreferences.disabilityAssistance }}
+        {% if case_data.hearingPreferences.disabilityAssistance == 'Yes' %}
+        <span class="u-block">{{ case_data.hearingPreferences.disabilityAssistanceDetails }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -433,12 +433,12 @@
       <dd class="data-list__definition">
         {% if case_data.hearingPreferences is not empty and
         case_data.hearingPreferences.extraSecurityMeasures is not empty %}
-          {{ case_data.hearingPreferences.extraSecurityMeasures }}
-          {% if case_data.hearingPreferences.extraSecurityMeasures == 'Yes' %}
-            <span class="u-block">{{ case_data.hearingPreferences.extraSecurityMeasuresDetails }}</span>
-          {% endif %}
+        {{ case_data.hearingPreferences.extraSecurityMeasures }}
+        {% if case_data.hearingPreferences.extraSecurityMeasures == 'Yes' %}
+        <span class="u-block">{{ case_data.hearingPreferences.extraSecurityMeasuresDetails }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -447,12 +447,12 @@
       <dd class="data-list__definition">
         {% if case_data.hearingPreferences is not empty and
         case_data.hearingPreferences.somethingElse is not empty %}
-          {{ case_data.hearingPreferences.somethingElse }}
+        {{ case_data.hearingPreferences.somethingElse }}
         {% if case_data.hearingPreferences.somethingElse == 'Yes' %}
-          <span class="u-block">{{ case_data.hearingPreferences.somethingElseDetails }}</span>
+        <span class="u-block">{{ case_data.hearingPreferences.somethingElseDetails }}</span>
         {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -461,7 +461,7 @@
   <h3 class="heading heading--two">Child
     {% if case_data.children is not empty and
     case_data.children.additionalChildren is not empty %}
-      1
+    1
     {% endif %}
   </h3>
   <dl class="data-list">
@@ -471,9 +471,9 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.childName is not empty %}
-          {{ case_data.children.firstChild.childName }}
+        {{ case_data.children.firstChild.childName }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -483,9 +483,9 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.childDOB is not empty %}
-          {{ case_data.children.firstChild.childDOB | age }}
+        {{ case_data.children.firstChild.childDOB | age }}
         {% else %}
-         -
+        -
         {% endif %}
       </dd>
     </div>
@@ -495,9 +495,9 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.childDOB is not empty %}
-          {{ case_data.children.firstChild.childDOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
+        {{ case_data.children.firstChild.childDOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -507,14 +507,14 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.childGender is not empty %}
-          {% if case_data.children.firstChild.childGender == 'They identify in another way'
-          and case_data.children.firstChild.childGenderIdentification is not empty %}
-            <span class="u-block">{{ case_data.children.firstChild.childGenderIdentification }}</span>
-          {% else %}
-            <span class="u-block">{{ case_data.children.firstChild.childGender }}</span>
-          {% endif %}
+        {% if case_data.children.firstChild.childGender == 'They identify in another way'
+        and case_data.children.firstChild.childGenderIdentification is not empty %}
+        <span class="u-block">{{ case_data.children.firstChild.childGenderIdentification }}</span>
         {% else %}
-          -
+        <span class="u-block">{{ case_data.children.firstChild.childGender }}</span>
+        {% endif %}
+        {% else %}
+        -
         {% endif %}
       </dd>
     </div>
@@ -524,38 +524,38 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.livingSituation is not empty %}
-          <span class="u-block">{{ case_data.children.firstChild.livingSituation }}</span>
-          {% if case_data.children.firstChild.address is not empty %}
-            {% if case_data.children.firstChild.address.AddressLine1 is not empty %}
-              <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine1 }}</span>
-            {% endif %}
-            {% if case_data.children.firstChild.address.AddressLine2 is not empty %}
-              <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine2 }}</span>
-            {% endif %}
-            {% if case_data.children.firstChild.address.AddressLine3 is not empty %}
-              <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine3 }}</span>
-            {% endif %}
-            {% if case_data.children.firstChild.address.PostTown is not empty %}
-              <span class="u-comma-before">{{ case_data.children.firstChild.address.PostTown }}</span>
-            {% endif %}
-            {% if case_data.children.firstChild.address.PostCode is not empty %}
-              <span class="u-comma-before">{{ case_data.children.firstChild.address.PostCode }}</span>
-            {% endif %}
-            {% if case_data.children.firstChild.address.Country is not empty %}
-              <span class="u-comma-before">{{ case_data.children.firstChild.address.Country }}</span>
-            {% endif %}
-          {% endif %}
-          {% if case_data.children.firstChild.situationDate is not empty %}
-            {% if case_data.children.firstChild.livingSituation == 'In hospital and soon to be discharged' %}
-              <span class="u-block">Discharge date: {{ case_data.children.firstChild.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
-            {% elseif case_data.children.firstChild.livingSituation == 'Removed by Police, powers end soon' %}
-              <span class="u-block">Date powers end: {{ case_data.children.firstChild.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
-            {% else %}
-              <span class="u-block">Date this began: {{ case_data.children.firstChild.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
-            {% endif %}
-          {% endif %}
+        <span class="u-block">{{ case_data.children.firstChild.livingSituation }}</span>
+        {% if case_data.children.firstChild.address is not empty %}
+        {% if case_data.children.firstChild.address.AddressLine1 is not empty %}
+        <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine1 }}</span>
+        {% endif %}
+        {% if case_data.children.firstChild.address.AddressLine2 is not empty %}
+        <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine2 }}</span>
+        {% endif %}
+        {% if case_data.children.firstChild.address.AddressLine3 is not empty %}
+        <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine3 }}</span>
+        {% endif %}
+        {% if case_data.children.firstChild.address.PostTown is not empty %}
+        <span class="u-comma-before">{{ case_data.children.firstChild.address.PostTown }}</span>
+        {% endif %}
+        {% if case_data.children.firstChild.address.PostCode is not empty %}
+        <span class="u-comma-before">{{ case_data.children.firstChild.address.PostCode }}</span>
+        {% endif %}
+        {% if case_data.children.firstChild.address.Country is not empty %}
+        <span class="u-comma-before">{{ case_data.children.firstChild.address.Country }}</span>
+        {% endif %}
+        {% endif %}
+        {% if case_data.children.firstChild.situationDate is not empty %}
+        {% if case_data.children.firstChild.livingSituation == 'In hospital and soon to be discharged' %}
+        <span class="u-block">Discharge date: {{ case_data.children.firstChild.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
+        {% elseif case_data.children.firstChild.livingSituation == 'Removed by Police, powers end soon' %}
+        <span class="u-block">Date powers end: {{ case_data.children.firstChild.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
         {% else %}
-          -
+        <span class="u-block">Date this began: {{ case_data.children.firstChild.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
+        {% endif %}
+        {% endif %}
+        {% else %}
+        -
         {% endif %}
       </dd>
     </div>
@@ -565,9 +565,9 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.keyDates is not empty %}
-          <span class="u-block">{{ case_data.children.firstChild.keyDates }}</span>
+        <span class="u-block">{{ case_data.children.firstChild.keyDates }}</span>
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -577,9 +577,9 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.careAndContact is not empty %}
-          <span class="u-block">{{ case_data.children.firstChild.careAndContact }}</span>
+        <span class="u-block">{{ case_data.children.firstChild.careAndContact }}</span>
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -589,38 +589,38 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.adoption is not empty %}
-          <span class="u-block">{{ case_data.children.firstChild.adoption }}</span>
+        <span class="u-block">{{ case_data.children.firstChild.adoption }}</span>
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
     {% if case_data.children is not empty
     and case_data.children.firstChild is not empty
     and case_data.children.firstChild.adoption == 'Yes' %}
-      <div class="data-list__row">
-        <dt class="data-list__title">Submitting application for a placement order</dt>
-        <dd class="data-list__definition">
-          {% if case_data.children.firstChild.placementOrderApplication is not empty %}
-            <span class="u-block">{{ case_data.children.firstChild.placementOrderApplication }}</span>
-          {% else %}
-            -
-          {% endif %}
-        </dd>
-      </div>
-      {% if case_data.children.firstChild.placementOrderApplication is not empty and
-      case_data.children.firstChild.placementOrderApplication == 'Yes' %}
-        <div class="data-list__row">
-          <dt class="data-list__title">Court applying for</dt>
-          <dd class="data-list__definition">
-            {% if case_data.children.firstChild.placementCourt is not empty %}
-              <span class="u-block">{{ case_data.children.firstChild.placementCourt }}</span>
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
-      {% endif %}
+    <div class="data-list__row">
+      <dt class="data-list__title">Submitting application for a placement order</dt>
+      <dd class="data-list__definition">
+        {% if case_data.children.firstChild.placementOrderApplication is not empty %}
+        <span class="u-block">{{ case_data.children.firstChild.placementOrderApplication }}</span>
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    {% if case_data.children.firstChild.placementOrderApplication is not empty and
+    case_data.children.firstChild.placementOrderApplication == 'Yes' %}
+    <div class="data-list__row">
+      <dt class="data-list__title">Court applying for</dt>
+      <dd class="data-list__definition">
+        {% if case_data.children.firstChild.placementCourt is not empty %}
+        <span class="u-block">{{ case_data.children.firstChild.placementCourt }}</span>
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    {% endif %}
     {% endif %}
     <div class="data-list__row">
       <dt class="data-list__title">Mother's name</dt>
@@ -628,9 +628,9 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.mothersName is not empty %}
-          {{ case_data.children.firstChild.mothersName }}
+        {{ case_data.children.firstChild.mothersName }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -640,9 +640,9 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.fathersName is not empty %}
-          {{ case_data.children.firstChild.fathersName }}
+        {{ case_data.children.firstChild.fathersName }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -652,9 +652,9 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.fathersResponsibility is not empty %}
-          {{ case_data.children.firstChild.fathersResponsibility }}
+        {{ case_data.children.firstChild.fathersResponsibility }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -664,9 +664,9 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.socialWorkerName is not empty %}
-          {{ case_data.children.firstChild.socialWorkerName }}
+        {{ case_data.children.firstChild.socialWorkerName }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -676,9 +676,9 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.socialWorkerTel is not empty %}
-          {{ case_data.children.firstChild.socialWorkerTel }}
+        {{ case_data.children.firstChild.socialWorkerTel }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -688,13 +688,13 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.additionalNeeds is not empty %}
-          <span class="u-block">{{ case_data.children.firstChild.additionalNeeds }}</span>
-          {% if case_data.children.firstChild.additionalNeedsDetails is not empty
-          and case_data.children.firstChild.additionalNeeds != 'No' %}
-            <span class="u-block">{{ case_data.children.firstChild.additionalNeedsDetails }}</span>
-          {% endif %}
+        <span class="u-block">{{ case_data.children.firstChild.additionalNeeds }}</span>
+        {% if case_data.children.firstChild.additionalNeedsDetails is not empty
+        and case_data.children.firstChild.additionalNeeds != 'No' %}
+        <span class="u-block">{{ case_data.children.firstChild.additionalNeedsDetails }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -704,18 +704,18 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.litigationIssues is not empty %}
-          {% if case_data.children.firstChild.litigationIssues == 'YES' %}
-          <span class="u-block">Yes</span>
-            {% if case_data.children.firstChild.litigationIssuesDetails is not empty %}
-              <span class="u-block">{{ case_data.children.firstChild.litigationIssuesDetails }}</span>
-            {% endif %}
-          {% elseif case_data.children.firstChild.litigationIssues == 'NO' %}
-            <span class="u-block">No</span>
-          {% else %}
-            <span class="u-block">Don't know</span>
-          {% endif %}
+        {% if case_data.children.firstChild.litigationIssues == 'YES' %}
+        <span class="u-block">Yes</span>
+        {% if case_data.children.firstChild.litigationIssuesDetails is not empty %}
+        <span class="u-block">{{ case_data.children.firstChild.litigationIssuesDetails }}</span>
+        {% endif %}
+        {% elseif case_data.children.firstChild.litigationIssues == 'NO' %}
+        <span class="u-block">No</span>
         {% else %}
-          -
+        <span class="u-block">Don't know</span>
+        {% endif %}
+        {% else %}
+        -
         {% endif %}
       </dd>
     </div>
@@ -725,13 +725,13 @@
         {% if case_data.children is not empty and
         case_data.children.firstChild is not empty and
         case_data.children.firstChild.detailsHidden is not empty %}
-          <span class="u-block">{{ case_data.children.firstChild.detailsHidden }}</span>
+        <span class="u-block">{{ case_data.children.firstChild.detailsHidden }}</span>
         {% if case_data.children.firstChild.detailsHiddenReason is not empty
         and case_data.children.firstChild.detailsHidden != 'No' %}
-          <span class="u-block">{{ case_data.children.firstChild.detailsHiddenReason }}</span>
+        <span class="u-block">{{ case_data.children.firstChild.detailsHiddenReason }}</span>
         {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -739,262 +739,262 @@
 
   {% if case_data.children is not empty and
   case_data.children.additionalChildren is not empty %}
-    {% if case_data.children is not empty and case_data.children.firstChild is not empty %}
-      {% set counter = 2 %}
-    {% else %}
-      {% set counter = 1 %}
-    {% endif %}
+  {% if case_data.children is not empty and case_data.children.firstChild is not empty %}
+  {% set counter = 2 %}
+  {% else %}
+  {% set counter = 1 %}
+  {% endif %}
 
-    {% for child in case_data.children.additionalChildren %}
-      {% if child is not empty and child.value is not empty %}
-        <h3 class="heading heading--two">Child {{ counter }}</h3>
-        <dl class="data-list">
-          <div class="data-list__row">
-            <dt class="data-list__title">Name</dt>
-            <dd class="data-list__definition">
-              {% if child.value.childName is not empty %}
-                {{ child.value.childName }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Age</dt>
-            <dd class="data-list__definition">
-              {% if child.value.childDOB is not empty %}
-                {{ child.value.childDOB | age }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Date of birth</dt>
-            <dd class="data-list__definition">
-              {% if child.value.childDOB is not empty %}
-                {{ child.value.childDOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Gender</dt>
-            <dd class="data-list__definition">
-              {% if child.value.childGender is not empty %}
-                {% if child.value.childGender == 'They identify in another way'
-                and child.value.childGenderIdentification is not empty %}
-                  <span class="u-block">{{ child.value.childGenderIdentification }}</span>
-                {% else %}
-                  <span class="u-block">{{ child.value.childGender }}</span>
-                {% endif %}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Child's living situation</dt>
-            <dd class="data-list__definition">
-              {% if child.value.livingSituation is not empty %}
-                <span class="u-block">{{child.value.livingSituation}}</span>
-                {% if child.value.address is not empty %}
-                  {% if child.value.address.AddressLine1 is not empty %}
-                    <span class="u-comma-before">{{ child.value.address.AddressLine1 }}</span>
-                  {% endif %}
-                  {% if child.value.address.AddressLine2 is not empty %}
-                    <span class="u-comma-before">{{ child.value.address.AddressLine2 }}</span>
-                  {% endif %}
-                  {% if child.value.address.AddressLine3 is not empty %}
-                    <span class="u-comma-before">{{ child.value.address.AddressLine3 }}</span>
-                  {% endif %}
-                  {% if child.value.address.PostTown is not empty %}
-                    <span class="u-comma-before">{{ child.value.address.PostTown }}</span>
-                  {% endif %}
-                  {% if child.value.address.PostCode is not empty %}
-                    <span class="u-comma-before">{{ child.value.address.PostCode }}</span>
-                  {% endif %}
-                  {% if child.value.address.Country is not empty %}
-                    <span class="u-comma-before">{{ child.value.address.Country }}</span>
-                  {% endif %}
-                {% endif %}
-                {% if child.value.situationDate is not empty %}
-                  {% if child.value.livingSituation == 'In hospital and soon to be discharged' %}
-                    <span class="u-block">Discharge date: {{ child.value.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
-                  {% elseif child.value.livingSituation == 'Removed by Police, powers end soon' %}
-                    <span class="u-block">Date powers end: {{ child.value.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
-                  {% else %}
-                    <span class="u-block">Date this began: {{ child.value.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
-                  {% endif %}
-                {% endif %}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Key dates</dt>
-            <dd class="data-list__definition">
-              {% if child.value.keyDates is not empty %}
-                <span class="u-block">{{ child.value.keyDates }}</span>
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Care and contact plan</dt>
-            <dd class="data-list__definition">
-              {% if child.value.careAndContact is not empty %}
-                <span class="u-block">{{ child.value.careAndContact }}</span>
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Considering adoption</dt>
-            <dd class="data-list__definition">
-              {% if child.value.adoption is not empty %}
-                <span class="u-block">{{ child.value.adoption }}</span>
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          {% if child.value.adoption == 'Yes' %}
-            <div class="data-list__row">
-              <dt class="data-list__title">Submitting application for a placement order</dt>
-              <dd class="data-list__definition">
-                {% if child.value.placementOrderApplication is not empty %}
-                  <span class="u-block">{{ child.value.placementOrderApplication }}</span>
-                {% else %}
-                  -
-                {% endif %}
-              </dd>
-            </div>
-            {% if child.value.placementOrderApplication is not empty and
-            child.value.placementOrderApplication == 'Yes' %}
-              <div class="data-list__row">
-                <dt class="data-list__title">Court applying for</dt>
-                <dd class="data-list__definition">
-                  {% if child.value.placementCourt is not empty %}
-                    <span class="u-block">{{ child.value.placementCourt }}</span>
-                  {% else %}
-                    -
-                  {% endif %}
-                </dd>
-              </div>
-            {% endif %}
-          {% endif %}
-          <div class="data-list__row">
-            <dt class="data-list__title">Mother's name</dt>
-            <dd class="data-list__definition">
-              {% if child.value.mothersName is not empty %}
-                {{ child.value.mothersName }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Father's name</dt>
-            <dd class="data-list__definition">
-              {% if child.value.fathersName is not empty %}
-                {{ child.value.fathersName }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Father has parental responsibility</dt>
-            <dd class="data-list__definition">
-              {% if child.value.fathersResponsibility is not empty %}
-                {{ child.value.fathersResponsibility }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Social worker's name</dt>
-            <dd class="data-list__definition">
-              {% if child.value.socialWorkerName is not empty %}
-                {{ child.value.socialWorkerName }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Social worker's telephone number</dt>
-            <dd class="data-list__definition">
-              {% if child.value.socialWorkerTel is not empty %}
-                {{ child.value.socialWorkerTel }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Additional needs</dt>
-            <dd class="data-list__definition">
-              {% if child.value.additionalNeeds is not empty %}
-                <span class="u-block">{{child.value.additionalNeeds}}</span>
-                {% if child.value.additionalNeedsDetails is not empty
-                and child.value.additionalNeeds != 'No' %}
-                  <span class="u-block">{{ child.value.additionalNeedsDetails }}</span>
-                {% endif %}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Litigation capacity issues</dt>
-            <dd class="data-list__definition">
-              {% if child.value.litigationIssues is not empty %}
-                {% if child.value.litigationIssues == 'YES' %}
-                  <span class="u-block">Yes</span>
-                  {% if child.value.litigationIssuesDetails is not empty %}
-                    <span class="u-block">{{ child.value.litigationIssuesDetails }}</span>
-                  {% endif %}
-                {% elseif child.value.litigationIssues == 'NO' %}
-                  <span class="u-block">No</span>
-                {% else %}
-                  <span class="u-block">Don't know</span>
-                {% endif %}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Confidential contact details</dt>
-            <dd class="data-list__definition">
-              {% if child.value.detailsHidden is not empty %}
-                <span class="u-block">{{ child.value.detailsHidden }}</span>
-                {% if child.value.detailsHiddenReason is not empty
-                and child.value.detailsHidden != 'No' %}
-                  <span class="u-block">{{ child.value.detailsHiddenReason }}</span>
-                {% endif %}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-        </dl>
-      {% endif %}
-    {% set counter = counter + 1 %}
-    {% endfor %}
+  {% for child in case_data.children.additionalChildren %}
+  {% if child is not empty and child.value is not empty %}
+  <h3 class="heading heading--two">Child {{ counter }}</h3>
+  <dl class="data-list">
+    <div class="data-list__row">
+      <dt class="data-list__title">Name</dt>
+      <dd class="data-list__definition">
+        {% if child.value.childName is not empty %}
+        {{ child.value.childName }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Age</dt>
+      <dd class="data-list__definition">
+        {% if child.value.childDOB is not empty %}
+        {{ child.value.childDOB | age }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Date of birth</dt>
+      <dd class="data-list__definition">
+        {% if child.value.childDOB is not empty %}
+        {{ child.value.childDOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Gender</dt>
+      <dd class="data-list__definition">
+        {% if child.value.childGender is not empty %}
+        {% if child.value.childGender == 'They identify in another way'
+        and child.value.childGenderIdentification is not empty %}
+        <span class="u-block">{{ child.value.childGenderIdentification }}</span>
+        {% else %}
+        <span class="u-block">{{ child.value.childGender }}</span>
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Child's living situation</dt>
+      <dd class="data-list__definition">
+        {% if child.value.livingSituation is not empty %}
+        <span class="u-block">{{child.value.livingSituation}}</span>
+        {% if child.value.address is not empty %}
+        {% if child.value.address.AddressLine1 is not empty %}
+        <span class="u-comma-before">{{ child.value.address.AddressLine1 }}</span>
+        {% endif %}
+        {% if child.value.address.AddressLine2 is not empty %}
+        <span class="u-comma-before">{{ child.value.address.AddressLine2 }}</span>
+        {% endif %}
+        {% if child.value.address.AddressLine3 is not empty %}
+        <span class="u-comma-before">{{ child.value.address.AddressLine3 }}</span>
+        {% endif %}
+        {% if child.value.address.PostTown is not empty %}
+        <span class="u-comma-before">{{ child.value.address.PostTown }}</span>
+        {% endif %}
+        {% if child.value.address.PostCode is not empty %}
+        <span class="u-comma-before">{{ child.value.address.PostCode }}</span>
+        {% endif %}
+        {% if child.value.address.Country is not empty %}
+        <span class="u-comma-before">{{ child.value.address.Country }}</span>
+        {% endif %}
+        {% endif %}
+        {% if child.value.situationDate is not empty %}
+        {% if child.value.livingSituation == 'In hospital and soon to be discharged' %}
+        <span class="u-block">Discharge date: {{ child.value.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
+        {% elseif child.value.livingSituation == 'Removed by Police, powers end soon' %}
+        <span class="u-block">Date powers end: {{ child.value.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
+        {% else %}
+        <span class="u-block">Date this began: {{ child.value.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
+        {% endif %}
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Key dates</dt>
+      <dd class="data-list__definition">
+        {% if child.value.keyDates is not empty %}
+        <span class="u-block">{{ child.value.keyDates }}</span>
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Care and contact plan</dt>
+      <dd class="data-list__definition">
+        {% if child.value.careAndContact is not empty %}
+        <span class="u-block">{{ child.value.careAndContact }}</span>
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Considering adoption</dt>
+      <dd class="data-list__definition">
+        {% if child.value.adoption is not empty %}
+        <span class="u-block">{{ child.value.adoption }}</span>
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    {% if child.value.adoption == 'Yes' %}
+    <div class="data-list__row">
+      <dt class="data-list__title">Submitting application for a placement order</dt>
+      <dd class="data-list__definition">
+        {% if child.value.placementOrderApplication is not empty %}
+        <span class="u-block">{{ child.value.placementOrderApplication }}</span>
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    {% if child.value.placementOrderApplication is not empty and
+    child.value.placementOrderApplication == 'Yes' %}
+    <div class="data-list__row">
+      <dt class="data-list__title">Court applying for</dt>
+      <dd class="data-list__definition">
+        {% if child.value.placementCourt is not empty %}
+        <span class="u-block">{{ child.value.placementCourt }}</span>
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    {% endif %}
+    {% endif %}
+    <div class="data-list__row">
+      <dt class="data-list__title">Mother's name</dt>
+      <dd class="data-list__definition">
+        {% if child.value.mothersName is not empty %}
+        {{ child.value.mothersName }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Father's name</dt>
+      <dd class="data-list__definition">
+        {% if child.value.fathersName is not empty %}
+        {{ child.value.fathersName }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Father has parental responsibility</dt>
+      <dd class="data-list__definition">
+        {% if child.value.fathersResponsibility is not empty %}
+        {{ child.value.fathersResponsibility }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Social worker's name</dt>
+      <dd class="data-list__definition">
+        {% if child.value.socialWorkerName is not empty %}
+        {{ child.value.socialWorkerName }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Social worker's telephone number</dt>
+      <dd class="data-list__definition">
+        {% if child.value.socialWorkerTel is not empty %}
+        {{ child.value.socialWorkerTel }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Additional needs</dt>
+      <dd class="data-list__definition">
+        {% if child.value.additionalNeeds is not empty %}
+        <span class="u-block">{{child.value.additionalNeeds}}</span>
+        {% if child.value.additionalNeedsDetails is not empty
+        and child.value.additionalNeeds != 'No' %}
+        <span class="u-block">{{ child.value.additionalNeedsDetails }}</span>
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Litigation capacity issues</dt>
+      <dd class="data-list__definition">
+        {% if child.value.litigationIssues is not empty %}
+        {% if child.value.litigationIssues == 'YES' %}
+        <span class="u-block">Yes</span>
+        {% if child.value.litigationIssuesDetails is not empty %}
+        <span class="u-block">{{ child.value.litigationIssuesDetails }}</span>
+        {% endif %}
+        {% elseif child.value.litigationIssues == 'NO' %}
+        <span class="u-block">No</span>
+        {% else %}
+        <span class="u-block">Don't know</span>
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Confidential contact details</dt>
+      <dd class="data-list__definition">
+        {% if child.value.detailsHidden is not empty %}
+        <span class="u-block">{{ child.value.detailsHidden }}</span>
+        {% if child.value.detailsHiddenReason is not empty
+        and child.value.detailsHidden != 'No' %}
+        <span class="u-block">{{ child.value.detailsHiddenReason }}</span>
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+  </dl>
+  {% endif %}
+  {% set counter = counter + 1 %}
+  {% endfor %}
   {% endif %}
 
   <h3 class="heading heading--two">Respondent
     {% if case_data.respondents is not empty
     and case_data.respondents.additional is not empty %}
-      1
+    1
     {% endif %}
   </h3>
   <dl class="data-list">
@@ -1004,9 +1004,9 @@
         {% if case_data.respondents is not empty and
         case_data.respondents.firstRespondent is not empty and
         case_data.respondents.firstRespondent.name is not empty %}
-          {{ case_data.respondents.firstRespondent.name }}
+        {{ case_data.respondents.firstRespondent.name }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1016,9 +1016,9 @@
         {% if case_data.respondents is not empty and
         case_data.respondents.firstRespondent is not empty and
         case_data.respondents.firstRespondent.dob is not empty %}
-          {{ case_data.respondents.firstRespondent.dob | age }}
+        {{ case_data.respondents.firstRespondent.dob | age }}
         {% else %}
-         -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1028,9 +1028,9 @@
         {% if case_data.respondents is not empty and
         case_data.respondents.firstRespondent is not empty and
         case_data.respondents.firstRespondent.dob is not empty %}
-          {{ case_data.respondents.firstRespondent.dob | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
+        {{ case_data.respondents.firstRespondent.dob | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1038,16 +1038,16 @@
       <dt class="data-list__title">Gender</dt>
       <dd class="data-list__definition">
         {% if case_data.respondents is not empty and
-          case_data.respondents.firstRespondent is not empty and
-          case_data.respondents.firstRespondent.gender is not empty %}
-          {% if case_data.respondents.firstRespondent.gender == 'They identify in another way'
-          and case_data.respondents.firstRespondent.genderIdentify is not empty %}
-            <span class="u-block">{{ case_data.respondents.firstRespondent.genderIdentify }}</span>
-          {% else %}
-            <span class="u-block">{{ case_data.respondents.firstRespondent.gender }}</span>
-          {% endif %}
+        case_data.respondents.firstRespondent is not empty and
+        case_data.respondents.firstRespondent.gender is not empty %}
+        {% if case_data.respondents.firstRespondent.gender == 'They identify in another way'
+        and case_data.respondents.firstRespondent.genderIdentify is not empty %}
+        <span class="u-block">{{ case_data.respondents.firstRespondent.genderIdentify }}</span>
         {% else %}
-          -
+        <span class="u-block">{{ case_data.respondents.firstRespondent.gender }}</span>
+        {% endif %}
+        {% else %}
+        -
         {% endif %}
       </dd>
     </div>
@@ -1057,9 +1057,9 @@
         {% if case_data.respondents is not empty and
         case_data.respondents.firstRespondent is not empty and
         case_data.respondents.firstRespondent.placeOfBirth is not empty %}
-          {{ case_data.respondents.firstRespondent.placeOfBirth }}
+        {{ case_data.respondents.firstRespondent.placeOfBirth }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1069,29 +1069,29 @@
         {% if case_data.respondents is not empty and
         case_data.respondents.firstRespondent is not empty and
         case_data.respondents.firstRespondent.address is not empty %}
-          {% if case_data.respondents.firstRespondent.address.AddressLine1 is not empty %}
-            <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.AddressLine1 }}</span>
-          {% endif %}
-          {% if case_data.respondents.firstRespondent.address.AddressLine2 is not empty %}
-            <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.AddressLine2 }}</span>
-          {% endif %}
-          {% if case_data.respondents.firstRespondent.address.AddressLine3 is not empty %}
-            <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.AddressLine3 }}</span>
-          {% endif %}
-          {% if case_data.respondents.firstRespondent.address.PostTown is not empty %}
-            <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.PostTown }}</span>
-          {% endif %}
-          {% if case_data.respondents.firstRespondent.address.PostCode is not empty %}
-            <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.PostCode }}</span>
-          {% endif %}
-          {% if case_data.respondents.firstRespondent.address.County is not empty %}
-            <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.County }}</span>
-          {% endif %}
-          {% if case_data.respondents.firstRespondent.address.Country is not empty %}
-            <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.Country }}</span>
-          {% endif %}
+        {% if case_data.respondents.firstRespondent.address.AddressLine1 is not empty %}
+        <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.AddressLine1 }}</span>
+        {% endif %}
+        {% if case_data.respondents.firstRespondent.address.AddressLine2 is not empty %}
+        <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.AddressLine2 }}</span>
+        {% endif %}
+        {% if case_data.respondents.firstRespondent.address.AddressLine3 is not empty %}
+        <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.AddressLine3 }}</span>
+        {% endif %}
+        {% if case_data.respondents.firstRespondent.address.PostTown is not empty %}
+        <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.PostTown }}</span>
+        {% endif %}
+        {% if case_data.respondents.firstRespondent.address.PostCode is not empty %}
+        <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.PostCode }}</span>
+        {% endif %}
+        {% if case_data.respondents.firstRespondent.address.County is not empty %}
+        <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.County }}</span>
+        {% endif %}
+        {% if case_data.respondents.firstRespondent.address.Country is not empty %}
+        <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.Country }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1101,9 +1101,9 @@
         {% if case_data.respondents is not empty and
         case_data.respondents.firstRespondent is not empty and
         case_data.respondents.firstRespondent.telephone is not empty %}
-          {{ case_data.respondents.firstRespondent.telephone }}
+        {{ case_data.respondents.firstRespondent.telephone }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1113,9 +1113,9 @@
         {% if case_data.respondents is not empty and
         case_data.respondents.firstRespondent is not empty and
         case_data.respondents.firstRespondent.relationshipToChild is not empty %}
-          <span class="u-block">{{ case_data.respondents.firstRespondent.relationshipToChild }}</span>
+        <span class="u-block">{{ case_data.respondents.firstRespondent.relationshipToChild }}</span>
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1145,18 +1145,18 @@
         {% if case_data.respondents is not empty and
         case_data.respondents.firstRespondent is not empty and
         case_data.respondents.firstRespondent.litigationIssues is not empty %}
-          {% if case_data.respondents.firstRespondent.litigationIssues == 'YES' %}
-            <span class="u-block">Yes</span>
-            {% if case_data.respondents.firstRespondent.litigationIssuesDetails is not empty %}
-              <span class="u-block">{{ case_data.respondents.firstRespondent.litigationIssuesDetails }}</span>
-            {% endif %}
-          {% elseif case_data.respondents.firstRespondent.litigationIssues == 'NO' %}
-            <span class="u-block">No</span>
-          {% else %}
-            <span class="u-block">Don't know</span>
-          {% endif %}
+        {% if case_data.respondents.firstRespondent.litigationIssues == 'YES' %}
+        <span class="u-block">Yes</span>
+        {% if case_data.respondents.firstRespondent.litigationIssuesDetails is not empty %}
+        <span class="u-block">{{ case_data.respondents.firstRespondent.litigationIssuesDetails }}</span>
+        {% endif %}
+        {% elseif case_data.respondents.firstRespondent.litigationIssues == 'NO' %}
+        <span class="u-block">No</span>
         {% else %}
-          -
+        <span class="u-block">Don't know</span>
+        {% endif %}
+        {% else %}
+        -
         {% endif %}
       </dd>
     </div>
@@ -1170,12 +1170,12 @@
         {% if case_data.respondents is not empty and
         case_data.respondents.firstRespondent is not empty and
         case_data.respondents.firstRespondent.contactDetailsHidden is not empty %}
-          <span class="u-block">{{ case_data.respondents.firstRespondent.contactDetailsHidden }}</span>
-          {% if case_data.respondents.firstRespondent.contactDetailsHiddenReason is not empty %}
-            <span class="u-block">{{ case_data.respondents.firstRespondent.contactDetailsHiddenReason }}</span>
-          {% endif %}
+        <span class="u-block">{{ case_data.respondents.firstRespondent.contactDetailsHidden }}</span>
+        {% if case_data.respondents.firstRespondent.contactDetailsHiddenReason is not empty %}
+        <span class="u-block">{{ case_data.respondents.firstRespondent.contactDetailsHiddenReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1183,181 +1183,181 @@
 
   {% if case_data.respondents is not empty and
   case_data.respondents.additional is not empty %}
-    {% if case_data.respondents is not empty and case_data.respondents.firstRespondent is not empty %}
-      {% set counter = 2 %}
-    {% else %}
-      {% set counter = 1 %}
-    {% endif %}
-    {% for respondent in case_data.respondents.additional %}
-      {% if respondent is not empty and respondent.value is not empty %}
-      <h3 class="heading heading--two">Respondent {{counter}}</h3>
-      <dl class="data-list">
-        <div class="data-list__row">
-          <dt class="data-list__title">Name</dt>
-          <dd class="data-list__definition">
-          {% if respondent.value.name is not empty %}
-            {{ respondent.value.name }}
-          {% else %}
-            -
-          {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Age</dt>
-          <dd class="data-list__definition">
-            {% if respondent.value.dob is not empty %}
-              {{ respondent.value.dob | age }}
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Date of birth</dt>
-          <dd class="data-list__definition">
-            {% if respondent.value.dob is not empty %}
-              {{ respondent.value.dob | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
+  {% if case_data.respondents is not empty and case_data.respondents.firstRespondent is not empty %}
+  {% set counter = 2 %}
+  {% else %}
+  {% set counter = 1 %}
+  {% endif %}
+  {% for respondent in case_data.respondents.additional %}
+  {% if respondent is not empty and respondent.value is not empty %}
+  <h3 class="heading heading--two">Respondent {{counter}}</h3>
+  <dl class="data-list">
+    <div class="data-list__row">
+      <dt class="data-list__title">Name</dt>
+      <dd class="data-list__definition">
+        {% if respondent.value.name is not empty %}
+        {{ respondent.value.name }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Age</dt>
+      <dd class="data-list__definition">
+        {% if respondent.value.dob is not empty %}
+        {{ respondent.value.dob | age }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Date of birth</dt>
+      <dd class="data-list__definition">
+        {% if respondent.value.dob is not empty %}
+        {{ respondent.value.dob | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
 
-        <div class="data-list__row">
-          <dt class="data-list__title">Gender</dt>
-          <dd class="data-list__definition">
-            {% if respondent.value.gender is not empty %}
-              {% if respondent.value.gender == 'They identify in another way'
-              and respondent.value.genderIdentify is not empty %}
-                <span class="u-block">{{ respondent.value.genderIdentify }}</span>
-              {% else %}
-                {{ respondent.value.gender }}
-              {% endif %}
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Place of birth</dt>
-          <dd class="data-list__definition">
-            {% if respondent.value.placeOfBirth is not empty %}
-              {{ respondent.value.placeOfBirth }}
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Address</dt>
-          <dd class="data-list__definition">
-            {% if respondent.value.address is not empty %}
-              {% if respondent.value.address.AddressLine1 is not empty %}
-                <span class="u-comma-before">{{ respondent.value.address.AddressLine1 }}</span>
-              {% endif %}
-              {% if respondent.value.address.AddressLine2 is not empty %}
-                <span class="u-comma-before">{{ respondent.value.address.AddressLine2 }}</span>
-              {% endif %}
-              {% if respondent.value.address.AddressLine3 is not empty %}
-                <span class="u-comma-before">{{ respondent.value.address.AddressLine3 }}</span>
-              {% endif %}
-              {% if respondent.value.address.PostTown is not empty %}
-                <span class="u-comma-before">{{ respondent.value.address.PostTown }}</span>
-              {% endif %}
-              {% if respondent.value.address.PostCode is not empty %}
-                <span class="u-comma-before">{{ respondent.value.address.PostCode }}</span>
-              {% endif %}
-              {% if respondent.value.address.County is not empty %}
-                <span class="u-comma-before">{{ respondent.value.address.County }}</span>
-              {% endif %}
-              {% if respondent.value.address.Country is not empty %}
-                <span class="u-comma-before">{{ respondent.value.address.Country }}</span>
-              {% endif %}
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Telephone number</dt>
-          <dd class="data-list__definition">
-            {% if respondent.value.telephone is not empty %}
-              {{ respondent.value.telephone }}
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Relationship to the child or children</dt>
-          <dd class="data-list__definition">
-            {% if respondent.value.relationshipToChild is not empty %}
-              <span class="u-block">{{ respondent.value.relationshipToChild }}</span>
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Interpreter</dt>
-          <dd class="data-list__definition">-</dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Spoken or written Welsh</dt>
-          <dd class="data-list__definition">-</dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Intermediary</dt>
-          <dd class="data-list__definition">-</dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Facilities or assistance for a disability</dt>
-          <dd class="data-list__definition">-</dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Separate waiting room or other security measures</dt>
-          <dd class="data-list__definition">-</dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Litigation capacity issues</dt>
-          <dd class="data-list__definition">
-            {% if respondent.value.litigationIssues is not empty %}
-              {% if respondent.value.litigationIssues == 'YES' %}
-                <span class="u-block">Yes</span>
-                {% if respondent.value.litigationIssuesDetails is not empty %}
-                  <span class="u-block">{{ respondent.value.litigationIssuesDetails }}</span>
-                {% endif %}
-              {% elseif respondent.value.litigationIssues == 'NO' %}
-                <span class="u-block">No</span>
-              {% else %}
-                <span class="u-block">Don't know</span>
-              {% endif %}
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Anything else to help take part in proceedings</dt>
-          <dd class="data-list__definition">-</dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Confidential contact details</dt>
-          <dd class="data-list__definition">
-            {% if respondent.value.contactDetailsHidden is not empty %}
-              <span class="u-block">{{ respondent.value.contactDetailsHidden }}</span>
-            {% if case_data.respondents.firstRespondent.contactDetailsHiddenReason is not empty %}
-              <span class="u-block">{{ respondent.value.contactDetailsHiddenReason }}</span>
-            {% endif %}
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
-      </dl>
-      {% endif %}
-    {% set counter = counter + 1 %}
-    {% endfor %}
+    <div class="data-list__row">
+      <dt class="data-list__title">Gender</dt>
+      <dd class="data-list__definition">
+        {% if respondent.value.gender is not empty %}
+        {% if respondent.value.gender == 'They identify in another way'
+        and respondent.value.genderIdentify is not empty %}
+        <span class="u-block">{{ respondent.value.genderIdentify }}</span>
+        {% else %}
+        {{ respondent.value.gender }}
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Place of birth</dt>
+      <dd class="data-list__definition">
+        {% if respondent.value.placeOfBirth is not empty %}
+        {{ respondent.value.placeOfBirth }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Address</dt>
+      <dd class="data-list__definition">
+        {% if respondent.value.address is not empty %}
+        {% if respondent.value.address.AddressLine1 is not empty %}
+        <span class="u-comma-before">{{ respondent.value.address.AddressLine1 }}</span>
+        {% endif %}
+        {% if respondent.value.address.AddressLine2 is not empty %}
+        <span class="u-comma-before">{{ respondent.value.address.AddressLine2 }}</span>
+        {% endif %}
+        {% if respondent.value.address.AddressLine3 is not empty %}
+        <span class="u-comma-before">{{ respondent.value.address.AddressLine3 }}</span>
+        {% endif %}
+        {% if respondent.value.address.PostTown is not empty %}
+        <span class="u-comma-before">{{ respondent.value.address.PostTown }}</span>
+        {% endif %}
+        {% if respondent.value.address.PostCode is not empty %}
+        <span class="u-comma-before">{{ respondent.value.address.PostCode }}</span>
+        {% endif %}
+        {% if respondent.value.address.County is not empty %}
+        <span class="u-comma-before">{{ respondent.value.address.County }}</span>
+        {% endif %}
+        {% if respondent.value.address.Country is not empty %}
+        <span class="u-comma-before">{{ respondent.value.address.Country }}</span>
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Telephone number</dt>
+      <dd class="data-list__definition">
+        {% if respondent.value.telephone is not empty %}
+        {{ respondent.value.telephone }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Relationship to the child or children</dt>
+      <dd class="data-list__definition">
+        {% if respondent.value.relationshipToChild is not empty %}
+        <span class="u-block">{{ respondent.value.relationshipToChild }}</span>
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Interpreter</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Spoken or written Welsh</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Intermediary</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Facilities or assistance for a disability</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Separate waiting room or other security measures</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Litigation capacity issues</dt>
+      <dd class="data-list__definition">
+        {% if respondent.value.litigationIssues is not empty %}
+        {% if respondent.value.litigationIssues == 'YES' %}
+        <span class="u-block">Yes</span>
+        {% if respondent.value.litigationIssuesDetails is not empty %}
+        <span class="u-block">{{ respondent.value.litigationIssuesDetails }}</span>
+        {% endif %}
+        {% elseif respondent.value.litigationIssues == 'NO' %}
+        <span class="u-block">No</span>
+        {% else %}
+        <span class="u-block">Don't know</span>
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Anything else to help take part in proceedings</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Confidential contact details</dt>
+      <dd class="data-list__definition">
+        {% if respondent.value.contactDetailsHidden is not empty %}
+        <span class="u-block">{{ respondent.value.contactDetailsHidden }}</span>
+        {% if case_data.respondents.firstRespondent.contactDetailsHiddenReason is not empty %}
+        <span class="u-block">{{ respondent.value.contactDetailsHiddenReason }}</span>
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+  </dl>
+  {% endif %}
+  {% set counter = counter + 1 %}
+  {% endfor %}
   {% endif %}
 
   <h3 class="heading heading--two">Applicant</h3>
@@ -1367,9 +1367,9 @@
       <dd class="data-list__definition">
         {% if case_data.applicant is not empty and
         case_data.applicant.name is not empty %}
-          {{ case_data.applicant.name }}
+        {{ case_data.applicant.name }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1378,9 +1378,9 @@
       <dd class="data-list__definition">
         {% if case_data.applicant is not empty and
         case_data.applicant.personToContact is not empty %}
-          {{ case_data.applicant.personToContact }}
+        {{ case_data.applicant.personToContact }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1389,9 +1389,9 @@
       <dd class="data-list__definition">
         {% if case_data.applicant is not empty and
         case_data.applicant.jobTitle is not empty %}
-          {{ case_data.applicant.jobTitle }}
+        {{ case_data.applicant.jobTitle }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1399,30 +1399,30 @@
       <dt class="data-list__title">Address</dt>
       <dd class="data-list__definition">
         {% if case_data.applicant is not empty and
-          case_data.applicant.address is not empty %}
-          {% if case_data.applicant.address.AddressLine1 is not empty %}
-            <span class="u-comma-before">{{ case_data.applicant.address.AddressLine1 }}</span>
-          {% endif %}
-          {% if case_data.applicant.address.AddressLine2 is not empty %}
-            <span class="u-comma-before">{{ case_data.applicant.address.AddressLine2 }}</span>
-          {% endif %}
-          {% if case_data.applicant.address.AddressLine3 is not empty %}
-            <span class="u-comma-before">{{ case_data.applicant.address.AddressLine3 }}</span>
-          {% endif %}
-          {% if case_data.applicant.address.PostTown is not empty %}
-            <span class="u-comma-before">{{ case_data.applicant.address.PostTown }}</span>
-          {% endif %}
-          {% if case_data.applicant.address.PostCode is not empty %}
-            <span class="u-comma-before">{{ case_data.applicant.address.PostCode }}</span>
-          {% endif %}
-          {% if case_data.applicant.address.County is not empty %}
-            <span class="u-comma-before">{{ case_data.applicant.address.County }}</span>
-          {% endif %}
-          {% if case_data.applicant.address.Country is not empty %}
-            <span class="u-comma-before">{{ case_data.applicant.address.Country }}</span>
-          {% endif %}
+        case_data.applicant.address is not empty %}
+        {% if case_data.applicant.address.AddressLine1 is not empty %}
+        <span class="u-comma-before">{{ case_data.applicant.address.AddressLine1 }}</span>
+        {% endif %}
+        {% if case_data.applicant.address.AddressLine2 is not empty %}
+        <span class="u-comma-before">{{ case_data.applicant.address.AddressLine2 }}</span>
+        {% endif %}
+        {% if case_data.applicant.address.AddressLine3 is not empty %}
+        <span class="u-comma-before">{{ case_data.applicant.address.AddressLine3 }}</span>
+        {% endif %}
+        {% if case_data.applicant.address.PostTown is not empty %}
+        <span class="u-comma-before">{{ case_data.applicant.address.PostTown }}</span>
+        {% endif %}
+        {% if case_data.applicant.address.PostCode is not empty %}
+        <span class="u-comma-before">{{ case_data.applicant.address.PostCode }}</span>
+        {% endif %}
+        {% if case_data.applicant.address.County is not empty %}
+        <span class="u-comma-before">{{ case_data.applicant.address.County }}</span>
+        {% endif %}
+        {% if case_data.applicant.address.Country is not empty %}
+        <span class="u-comma-before">{{ case_data.applicant.address.Country }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1431,9 +1431,9 @@
       <dd class="data-list__definition">
         {% if case_data.applicant is not empty and
         case_data.applicant.mobile is not empty %}
-          {{ case_data.applicant.mobile }}
+        {{ case_data.applicant.mobile }}
         {% else %}
-         -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1442,9 +1442,9 @@
       <dd class="data-list__definition">
         {% if case_data.applicant is not empty and
         case_data.applicant.telephone is not empty %}
-          {{ case_data.applicant.telephone }}
+        {{ case_data.applicant.telephone }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1453,9 +1453,9 @@
       <dd class="data-list__definition">
         {% if case_data.applicant is not empty and
         case_data.applicant.email is not empty %}
-          {{ case_data.applicant.email }}
+        {{ case_data.applicant.email }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1475,9 +1475,9 @@
       <dd class="data-list__definition">
         {% if case_data.solicitor is not empty and
         case_data.solicitor.name is not empty %}
-          {{ case_data.solicitor.name }}
+        {{ case_data.solicitor.name }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1486,9 +1486,9 @@
       <dd class="data-list__definition">
         {% if case_data.solicitor is not empty and
         case_data.solicitor.mobile is not empty %}
-          {{ case_data.solicitor.mobile }}
+        {{ case_data.solicitor.mobile }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1497,9 +1497,9 @@
       <dd class="data-list__definition">
         {% if case_data.solicitor is not empty and
         case_data.solicitor.telephone is not empty %}
-          {{ case_data.solicitor.telephone }}
+        {{ case_data.solicitor.telephone }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1508,9 +1508,9 @@
       <dd class="data-list__definition">
         {% if case_data.solicitor is not empty and
         case_data.solicitor.email is not empty %}
-          {{ case_data.solicitor.email }}
+        {{ case_data.solicitor.email }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1519,9 +1519,9 @@
       <dd class="data-list__definition">
         {% if case_data.solicitor is not empty and
         case_data.solicitor.dx is not empty %}
-          {{ case_data.solicitor.dx }}
+        {{ case_data.solicitor.dx }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1530,9 +1530,9 @@
       <dd class="data-list__definition">
         {% if case_data.solicitor is not empty and
         case_data.solicitor.reference is not empty %}
-          {{ case_data.solicitor.reference }}
+        {{ case_data.solicitor.reference }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1542,7 +1542,7 @@
     Other
     {% if case_data.others is not empty and
     case_data.others.additionalOthers is not empty %}
-     1
+    1
     {% endif %}
   </h3>
   <dl class="data-list">
@@ -1552,9 +1552,9 @@
         {% if case_data.others is not empty and
         case_data.others.firstOther is not empty and
         case_data.others.firstOther.name is not empty %}
-          {{ case_data.others.firstOther.name }}
+        {{ case_data.others.firstOther.name }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1564,9 +1564,9 @@
         {% if case_data.others is not empty and
         case_data.others.firstOther is not empty and
         case_data.others.firstOther.DOB is not empty %}
-          {{ case_data.others.firstOther.DOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
+        {{ case_data.others.firstOther.DOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1576,14 +1576,14 @@
         {% if case_data.others is not empty and
         case_data.others.firstOther is not empty and
         case_data.others.firstOther.gender is not empty %}
-          {% if case_data.others.firstOther.gender == 'They identify in another way'
-          and case_data.others.firstOther.genderIdentification is not empty %}
-            {{ case_data.others.firstOther.genderIdentification }}
-          {% else %}
-            {{ case_data.others.firstOther.gender }}
-          {% endif %}
+        {% if case_data.others.firstOther.gender == 'They identify in another way'
+        and case_data.others.firstOther.genderIdentification is not empty %}
+        {{ case_data.others.firstOther.genderIdentification }}
         {% else %}
-          -
+        {{ case_data.others.firstOther.gender }}
+        {% endif %}
+        {% else %}
+        -
         {% endif %}
       </dd>
     </div>
@@ -1593,9 +1593,9 @@
         {% if case_data.others is not empty and
         case_data.others.firstOther is not empty and
         case_data.others.firstOther.birthPlace is not empty %}
-          {{ case_data.others.firstOther.birthPlace }}
+        {{ case_data.others.firstOther.birthPlace }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1605,29 +1605,29 @@
         {% if case_data.others is not empty and
         case_data.others.firstOther is not empty and
         case_data.others.firstOther.address is not empty %}
-          {% if case_data.others.firstOther.address.AddressLine1 is not empty %}
-            <span class="u-comma-before">{{ case_data.others.firstOther.address.AddressLine1 }}</span>
-          {% endif %}
-          {% if case_data.others.firstOther.address.AddressLine2 is not empty %}
-            <span class="u-comma-before">{{ case_data.others.firstOther.address.AddressLine2 }}</span>
-          {% endif %}
-          {% if case_data.others.firstOther.address.AddressLine3 is not empty %}
-            <span class="u-comma-before">{{ case_data.others.firstOther.address.AddressLine3 }}</span>
-          {% endif %}
-          {% if case_data.others.firstOther.address.PostTown is not empty %}
-            <span class="u-comma-before">{{ case_data.others.firstOther.address.PostTown }}</span>
-          {% endif %}
-          {% if case_data.others.firstOther.address.PostCode is not empty %}
-            <span class="u-comma-before">{{ case_data.others.firstOther.address.PostCode }}</span>
-          {% endif %}
-          {% if case_data.others.firstOther.address.County is not empty %}
-            <span class="u-comma-before">{{ case_data.others.firstOther.address.County }}</span>
-          {% endif %}
-          {% if case_data.others.firstOther.address.Country is not empty %}
-            <span class="u-comma-before">{{ case_data.others.firstOther.address.Country }}</span>
-          {% endif %}
+        {% if case_data.others.firstOther.address.AddressLine1 is not empty %}
+        <span class="u-comma-before">{{ case_data.others.firstOther.address.AddressLine1 }}</span>
+        {% endif %}
+        {% if case_data.others.firstOther.address.AddressLine2 is not empty %}
+        <span class="u-comma-before">{{ case_data.others.firstOther.address.AddressLine2 }}</span>
+        {% endif %}
+        {% if case_data.others.firstOther.address.AddressLine3 is not empty %}
+        <span class="u-comma-before">{{ case_data.others.firstOther.address.AddressLine3 }}</span>
+        {% endif %}
+        {% if case_data.others.firstOther.address.PostTown is not empty %}
+        <span class="u-comma-before">{{ case_data.others.firstOther.address.PostTown }}</span>
+        {% endif %}
+        {% if case_data.others.firstOther.address.PostCode is not empty %}
+        <span class="u-comma-before">{{ case_data.others.firstOther.address.PostCode }}</span>
+        {% endif %}
+        {% if case_data.others.firstOther.address.County is not empty %}
+        <span class="u-comma-before">{{ case_data.others.firstOther.address.County }}</span>
+        {% endif %}
+        {% if case_data.others.firstOther.address.Country is not empty %}
+        <span class="u-comma-before">{{ case_data.others.firstOther.address.Country }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1637,9 +1637,9 @@
         {% if case_data.others is not empty and
         case_data.others.firstOther is not empty and
         case_data.others.firstOther.telephone is not empty %}
-          {{ case_data.others.firstOther.telephone }}
+        {{ case_data.others.firstOther.telephone }}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1649,9 +1649,9 @@
         {% if case_data.others is not empty and
         case_data.others.firstOther is not empty and
         case_data.others.firstOther.childInformation is not empty %}
-          <span class="u-block">{{ case_data.others.firstOther.childInformation }}</span>
+        <span class="u-block">{{ case_data.others.firstOther.childInformation }}</span>
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1681,18 +1681,18 @@
         {% if case_data.others is not empty and
         case_data.others.firstOther is not empty and
         case_data.others.firstOther.litigationIssues is not empty %}
-          {% if case_data.others.firstOther.litigationIssues == 'YES' %}
-            <span class="u-block">Yes</span>
-            {% if case_data.others.firstOther.litigationIssuesDetails is not empty %}
-              <span class="u-block">{{ case_data.others.firstOther.litigationIssuesDetails }}</span>
-            {% endif %}
-          {% elseif case_data.others.firstOther.litigationIssues == 'NO' %}
-            <span class="u-block">No</span>
-          {% else %}
-            <span class="u-block">Don't know</span>
-          {% endif %}
+        {% if case_data.others.firstOther.litigationIssues == 'YES' %}
+        <span class="u-block">Yes</span>
+        {% if case_data.others.firstOther.litigationIssuesDetails is not empty %}
+        <span class="u-block">{{ case_data.others.firstOther.litigationIssuesDetails }}</span>
+        {% endif %}
+        {% elseif case_data.others.firstOther.litigationIssues == 'NO' %}
+        <span class="u-block">No</span>
         {% else %}
-          -
+        <span class="u-block">Don't know</span>
+        {% endif %}
+        {% else %}
+        -
         {% endif %}
       </dd>
     </div>
@@ -1706,12 +1706,12 @@
         {% if case_data.others is not empty and
         case_data.others.firstOther is not empty and
         case_data.others.firstOther.detailsHidden is not empty %}
-          {{ case_data.others.firstOther.detailsHidden }}
+        {{ case_data.others.firstOther.detailsHidden }}
         {% if case_data.others.firstOther.detailsHiddenReason is not empty %}
-          <span class="u-block">{{ case_data.others.firstOther.detailsHiddenReason }}</span>
+        <span class="u-block">{{ case_data.others.firstOther.detailsHiddenReason }}</span>
         {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1719,172 +1719,172 @@
 
   {% if case_data.others is not empty and
   case_data.others.additionalOthers is not empty %}
-    {% if case_data.others is not empty and case_data.others.firstOther is not empty %}
-      {% set counter = 2 %}
-    {% else %}
-      {% set counter = 1 %}
-    {% endif %}
-    {% for other in case_data.others.additionalOthers %}
-      {% if other is not empty and other.value is not empty %}
-        <h3 class="heading heading--two">Other {{ counter }}</h3>
-        <dl class="data-list">
-          <div class="data-list__row">
-            <dt class="data-list__title">Name</dt>
-            <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.name is not empty %}
-                {{ other.value.name }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Date of birth</dt>
-            <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.DOB is not empty %}
-                {{ other.value.DOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Gender</dt>
-            <dd class="data-list__definition">
-              {% if other.value is not empty and
-              other.value.gender is not empty %}
-                {% if other.value.gender == 'They identify in another way'
-                and other.value.genderIdentification is not empty %}
-                  {{ other.value.genderIdentification }}
-                {% else %}
-                  {{ other.value.gender }}
-                {% endif %}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Place of birth</dt>
-            <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.birthPlace is not empty %}
-                {{ other.value.birthPlace }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Current address</dt>
-            <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.address is not empty %}
-                {% if other.value.address.AddressLine1 is not empty %}
-                  <span class="u-comma-before">{{ other.value.address.AddressLine1 }}</span>
-                {% endif %}
-                {% if other.value.address.AddressLine2 is not empty %}
-                  <span class="u-comma-before">{{ other.value.address.AddressLine2 }}</span>
-                {% endif %}
-                {% if other.value.address.AddressLine3 is not empty %}
-                  <span class="u-comma-before">{{ other.value.address.AddressLine3 }}</span>
-                {% endif %}
-                {% if other.value.address.PostTown is not empty %}
-                  <span class="u-comma-before">{{ other.value.address.PostTown }}</span>
-                {% endif %}
-                {% if other.value.address.PostCode is not empty %}
-                  <span class="u-comma-before">{{ other.value.address.PostCode }}</span>
-                {% endif %}
-                {% if other.value.address.County is not empty %}
-                  <span class="u-comma-before">{{ other.value.address.County }}</span>
-                {% endif %}
-                {% if other.value.address.Country is not empty %}
-                  <span class="u-comma-before">{{ other.value.address.Country }}</span>
-                {% endif %}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Telephone number</dt>
-            <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.telephone is not empty %}
-                {{ other.value.telephone }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Relationship to the child</dt>
-            <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.childInformation is not empty %}
-                <span class="u-block">{{ other.value.childInformation }}</span>
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Interpreter</dt>
-            <dd class="data-list__definition">-</dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Spoken or written Welsh</dt>
-            <dd class="data-list__definition">-</dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Intermediary</dt>
-            <dd class="data-list__definition">-</dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Facilities or assistance for a disability</dt>
-            <dd class="data-list__definition">-</dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Separate waiting room or other security measures</dt>
-            <dd class="data-list__definition">-</dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Litigation capacity issues</dt>
-            <dd class="data-list__definition">
-              {% if other.value is not empty and
-              other.value.litigationIssues  is not empty %}
-                {% if other.value.litigationIssues == 'YES' %}
-                  <span class="u-block">Yes</span>
-                  {% if other.value.litigationIssuesDetails is not empty %}
-                    <span class="u-block">{{ other.value.litigationIssuesDetails }}</span>
-                  {% endif %}
-                {% elseif other.value.litigationIssues == 'NO' %}
-                  <span class="u-block">No</span>
-                {% else %}
-                  <span class="u-block">Don't know</span>
-                {% endif %}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Anything else to help take part in the proceedings</dt>
-            <dd class="data-list__definition">-</dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Confidential contact details</dt>
-            <dd class="data-list__definition">
-              {% if other.value is not empty and other.value.detailsHidden is not empty %}
-                {{ other.value.detailsHidden }}
-              {% if other.value.detailsHiddenReason is not empty %}
-                <span class="u-block">{{ other.value.detailsHiddenReason }}</span>
-              {% endif %}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-        </dl>
+  {% if case_data.others is not empty and case_data.others.firstOther is not empty %}
+  {% set counter = 2 %}
+  {% else %}
+  {% set counter = 1 %}
+  {% endif %}
+  {% for other in case_data.others.additionalOthers %}
+  {% if other is not empty and other.value is not empty %}
+  <h3 class="heading heading--two">Other {{ counter }}</h3>
+  <dl class="data-list">
+    <div class="data-list__row">
+      <dt class="data-list__title">Name</dt>
+      <dd class="data-list__definition">
+        {% if other.value is not empty and other.value.name is not empty %}
+        {{ other.value.name }}
+        {% else %}
+        -
         {% endif %}
-      {% set counter = counter + 1 %}
-    {% endfor %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Date of birth</dt>
+      <dd class="data-list__definition">
+        {% if other.value is not empty and other.value.DOB is not empty %}
+        {{ other.value.DOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Gender</dt>
+      <dd class="data-list__definition">
+        {% if other.value is not empty and
+        other.value.gender is not empty %}
+        {% if other.value.gender == 'They identify in another way'
+        and other.value.genderIdentification is not empty %}
+        {{ other.value.genderIdentification }}
+        {% else %}
+        {{ other.value.gender }}
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Place of birth</dt>
+      <dd class="data-list__definition">
+        {% if other.value is not empty and other.value.birthPlace is not empty %}
+        {{ other.value.birthPlace }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Current address</dt>
+      <dd class="data-list__definition">
+        {% if other.value is not empty and other.value.address is not empty %}
+        {% if other.value.address.AddressLine1 is not empty %}
+        <span class="u-comma-before">{{ other.value.address.AddressLine1 }}</span>
+        {% endif %}
+        {% if other.value.address.AddressLine2 is not empty %}
+        <span class="u-comma-before">{{ other.value.address.AddressLine2 }}</span>
+        {% endif %}
+        {% if other.value.address.AddressLine3 is not empty %}
+        <span class="u-comma-before">{{ other.value.address.AddressLine3 }}</span>
+        {% endif %}
+        {% if other.value.address.PostTown is not empty %}
+        <span class="u-comma-before">{{ other.value.address.PostTown }}</span>
+        {% endif %}
+        {% if other.value.address.PostCode is not empty %}
+        <span class="u-comma-before">{{ other.value.address.PostCode }}</span>
+        {% endif %}
+        {% if other.value.address.County is not empty %}
+        <span class="u-comma-before">{{ other.value.address.County }}</span>
+        {% endif %}
+        {% if other.value.address.Country is not empty %}
+        <span class="u-comma-before">{{ other.value.address.Country }}</span>
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Telephone number</dt>
+      <dd class="data-list__definition">
+        {% if other.value is not empty and other.value.telephone is not empty %}
+        {{ other.value.telephone }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Relationship to the child</dt>
+      <dd class="data-list__definition">
+        {% if other.value is not empty and other.value.childInformation is not empty %}
+        <span class="u-block">{{ other.value.childInformation }}</span>
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Interpreter</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Spoken or written Welsh</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Intermediary</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Facilities or assistance for a disability</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Separate waiting room or other security measures</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Litigation capacity issues</dt>
+      <dd class="data-list__definition">
+        {% if other.value is not empty and
+        other.value.litigationIssues  is not empty %}
+        {% if other.value.litigationIssues == 'YES' %}
+        <span class="u-block">Yes</span>
+        {% if other.value.litigationIssuesDetails is not empty %}
+        <span class="u-block">{{ other.value.litigationIssuesDetails }}</span>
+        {% endif %}
+        {% elseif other.value.litigationIssues == 'NO' %}
+        <span class="u-block">No</span>
+        {% else %}
+        <span class="u-block">Don't know</span>
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Anything else to help take part in the proceedings</dt>
+      <dd class="data-list__definition">-</dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Confidential contact details</dt>
+      <dd class="data-list__definition">
+        {% if other.value is not empty and other.value.detailsHidden is not empty %}
+        {{ other.value.detailsHidden }}
+        {% if other.value.detailsHiddenReason is not empty %}
+        <span class="u-block">{{ other.value.detailsHiddenReason }}</span>
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+  </dl>
+  {% endif %}
+  {% set counter = counter + 1 %}
+  {% endfor %}
   {% endif %}
 
   <h3 class="heading heading--two">Grounds for the application</h3>
@@ -1892,35 +1892,35 @@
     {% if case_data.orders is not empty and
     case_data.orders.orderType is not empty and
     case_data.orders.orderType contains 'EMERGENCY_PROTECTION_ORDER' %}
-      <div class="data-list__row">
-        <dt class="data-list__title">Grounds for emergency protection order</dt>
-        <dd class="data-list__definition">
-          {% if case_data.groundsForEPO is not empty and
-          case_data.groundsForEPO.reason is not empty %}
-            {% for reason in case_data.groundsForEPO.reason %}
-              <span class="u-block u-block--space-below">
+    <div class="data-list__row">
+      <dt class="data-list__title">Grounds for emergency protection order</dt>
+      <dd class="data-list__definition">
+        {% if case_data.groundsForEPO is not empty and
+        case_data.groundsForEPO.reason is not empty %}
+        {% for reason in case_data.groundsForEPO.reason %}
+        <span class="u-block u-block--space-below">
                 {{ reason | emergencyProtectionOrderReasonMapping }}
               </span>
-            {% endfor %}
-          {% else %}
-            -
-          {% endif %}
-        </dd>
-      </div>
+        {% endfor %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
     {% endif %}
     <div class="data-list__row">
       <dt class="data-list__title">Threshold is met as the child is suffering or is likely to suffer significant harm because they are</dt>
       <dd class="data-list__definition">
         {% if case_data.grounds is not empty and case_data.grounds.thresholdReason is not empty %}
-          {% for reason in case_data.grounds.thresholdReason %}
-            {% if reason == 'noCare' %}
-              <span class="u-block">Not receiving care that would be reasonably expected from a parent.</span>
-            {% elseif reason == 'beyondControl' %}
-              <span class="u-block">Beyond parental control.</span>
-            {% endif %}
-          {% endfor %}
+        {% for reason in case_data.grounds.thresholdReason %}
+        {% if reason == 'noCare' %}
+        <span class="u-block">Not receiving care that would be reasonably expected from a parent.</span>
+        {% elseif reason == 'beyondControl' %}
+        <span class="u-block">Beyond parental control.</span>
+        {% endif %}
+        {% endfor %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -1930,9 +1930,9 @@
   <p>
     {% if case_data.grounds is not empty and
     case_data.grounds.thresholdDetails is not empty %}
-      <span class="u-block">{{ case_data.grounds.thresholdDetails }}</span>
+    <span class="u-block">{{ case_data.grounds.thresholdDetails }}</span>
     {% else %}
-      -
+    -
     {% endif %}
   </p>
 
@@ -1943,18 +1943,18 @@
       <dd class="data-list__definition">
         {% if case_data.risks is not empty
         and case_data.risks.physicalHarm is not empty %}
-          {% if case_data.risks.physicalHarm == 'Yes' %}
-            Yes
-            {% if case_data.risks.physicalHarmOccurrences is not empty %}
-              {% for occurrence in case_data.risks.physicalHarmOccurrences %}
-                <span class="u-block">{{ occurrence }}</span>
-              {% endfor %}
-            {% endif %}
-          {% else %}
-            No
-          {% endif %}
+        {% if case_data.risks.physicalHarm == 'Yes' %}
+        Yes
+        {% if case_data.risks.physicalHarmOccurrences is not empty %}
+        {% for occurrence in case_data.risks.physicalHarmOccurrences %}
+        <span class="u-block">{{ occurrence }}</span>
+        {% endfor %}
+        {% endif %}
         {% else %}
-          -
+        No
+        {% endif %}
+        {% else %}
+        -
         {% endif %}
       </dd>
     </div>
@@ -1963,18 +1963,18 @@
       <dd class="data-list__definition">
         {% if case_data.risks is not empty
         and case_data.risks.emotionalHarm is not empty %}
-          {% if case_data.risks.emotionalHarm == 'Yes' %}
-          Yes
-            {% if case_data.risks.emotionalHarmOccurrences is not empty %}
-            {% for occurrence in case_data.risks.emotionalHarmOccurrences %}
-              <span class="u-block">{{ occurrence }}</span>
-            {% endfor %}
-          {% endif %}
-          {% else %}
-            No
-          {% endif %}
+        {% if case_data.risks.emotionalHarm == 'Yes' %}
+        Yes
+        {% if case_data.risks.emotionalHarmOccurrences is not empty %}
+        {% for occurrence in case_data.risks.emotionalHarmOccurrences %}
+        <span class="u-block">{{ occurrence }}</span>
+        {% endfor %}
+        {% endif %}
         {% else %}
-          -
+        No
+        {% endif %}
+        {% else %}
+        -
         {% endif %}
       </dd>
     </div>
@@ -1983,18 +1983,18 @@
       <dd class="data-list__definition">
         {% if case_data.risks is not empty
         and case_data.risks.sexualAbuse is not empty %}
-          {% if case_data.risks.sexualAbuse == 'Yes' %}
-          Yes
-            {% if case_data.risks.sexualAbuseOccurrences is not empty %}
-              {% for occurrence in case_data.risks.sexualAbuseOccurrences %}
-                <span class="u-block">{{ occurrence }}</span>
-              {% endfor %}
-            {% endif %}
-            {% else %}
-            No
-          {% endif %}
+        {% if case_data.risks.sexualAbuse == 'Yes' %}
+        Yes
+        {% if case_data.risks.sexualAbuseOccurrences is not empty %}
+        {% for occurrence in case_data.risks.sexualAbuseOccurrences %}
+        <span class="u-block">{{ occurrence }}</span>
+        {% endfor %}
+        {% endif %}
         {% else %}
-          -
+        No
+        {% endif %}
+        {% else %}
+        -
         {% endif %}
       </dd>
     </div>
@@ -2003,18 +2003,18 @@
       <dd class="data-list__definition">
         {% if case_data.risks is not empty
         and case_data.risks.neglect is not empty %}
-          {% if case_data.risks.neglect == 'Yes' %}
-            Yes
-            {% if case_data.risks.neglectOccurrences is not empty %}
-            {% for occurrence in case_data.risks.neglectOccurrences %}
-              <span class="u-block">{{ occurrence }}</span>
-            {% endfor %}
-          {% endif %}
-          {% else %}
-            No
-          {% endif %}
-          {% else %}
-          -
+        {% if case_data.risks.neglect == 'Yes' %}
+        Yes
+        {% if case_data.risks.neglectOccurrences is not empty %}
+        {% for occurrence in case_data.risks.neglectOccurrences %}
+        <span class="u-block">{{ occurrence }}</span>
+        {% endfor %}
+        {% endif %}
+        {% else %}
+        No
+        {% endif %}
+        {% else %}
+        -
         {% endif %}
       </dd>
     </div>
@@ -2027,13 +2027,13 @@
       <dd class="data-list__definition">
         {% if case_data.factorsParenting is not empty
         and case_data.factorsParenting.alcoholDrugAbuse is not empty %}
-          <span class="u-block">{{ case_data.factorsParenting.alcoholDrugAbuse }}</span>
-          {% if case_data.factorsParenting.alcoholDrugAbuse == 'Yes'
-          and case_data.factorsParenting.alcoholDrugAbuseReason is not empty %}
-            <span class="u-block">{{ case_data.factorsParenting.alcoholDrugAbuseReason }}</span>
-          {% endif %}
+        <span class="u-block">{{ case_data.factorsParenting.alcoholDrugAbuse }}</span>
+        {% if case_data.factorsParenting.alcoholDrugAbuse == 'Yes'
+        and case_data.factorsParenting.alcoholDrugAbuseReason is not empty %}
+        <span class="u-block">{{ case_data.factorsParenting.alcoholDrugAbuseReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -2041,14 +2041,14 @@
       <dt class="data-list__title">Domestic violence</dt>
       <dd class="data-list__definition">
         {% if case_data.factorsParenting is not empty
-          and case_data.factorsParenting.domesticViolence is not empty %}
-          <span class="u-block">{{ case_data.factorsParenting.domesticViolence }}</span>
-          {% if case_data.factorsParenting.domesticViolence == 'Yes'
-            and case_data.factorsParenting.domesticViolenceReason is not empty %}
-              <span class="u-block">{{ case_data.factorsParenting.domesticViolenceReason }}</span>
-          {% endif %}
+        and case_data.factorsParenting.domesticViolence is not empty %}
+        <span class="u-block">{{ case_data.factorsParenting.domesticViolence }}</span>
+        {% if case_data.factorsParenting.domesticViolence == 'Yes'
+        and case_data.factorsParenting.domesticViolenceReason is not empty %}
+        <span class="u-block">{{ case_data.factorsParenting.domesticViolenceReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -2056,14 +2056,14 @@
       <dt class="data-list__title">Anything else</dt>
       <dd class="data-list__definition">
         {% if case_data.factorsParenting is not empty
-          and case_data.factorsParenting.anythingElse is not empty %}
-          <span class="u-block">{{ case_data.factorsParenting.anythingElse }}</span>
-          {% if case_data.factorsParenting.anythingElse == 'Yes'
-          and case_data.factorsParenting.anythingElseReason is not empty %}
-            <span class="u-block">{{ case_data.factorsParenting.anythingElseReason }}</span>
-          {% endif %}
+        and case_data.factorsParenting.anythingElse is not empty %}
+        <span class="u-block">{{ case_data.factorsParenting.anythingElse }}</span>
+        {% if case_data.factorsParenting.anythingElse == 'Yes'
+        and case_data.factorsParenting.anythingElseReason is not empty %}
+        <span class="u-block">{{ case_data.factorsParenting.anythingElseReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -2076,13 +2076,13 @@
       <dd class="data-list__definition">
         {% if case_data.internationalElement is not empty
         and case_data.internationalElement.possibleCarer is not empty %}
-          <span class="u-block">{{ case_data.internationalElement.possibleCarer }}</span>
-          {% if case_data.internationalElement.possibleCarer == 'Yes'
-          and case_data.internationalElement.possibleCarerReason is not empty %}
-            <span class="u-block">{{ case_data.internationalElement.possibleCarerReason }}</span>
-          {% endif %}
+        <span class="u-block">{{ case_data.internationalElement.possibleCarer }}</span>
+        {% if case_data.internationalElement.possibleCarer == 'Yes'
+        and case_data.internationalElement.possibleCarerReason is not empty %}
+        <span class="u-block">{{ case_data.internationalElement.possibleCarerReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -2090,14 +2090,14 @@
       <dt class="data-list__title">Significant events outside the UK</dt>
       <dd class="data-list__definition">
         {% if case_data.internationalElement is not empty
-          and case_data.internationalElement.significantEvents is not empty %}
-          <span class="u-block">{{ case_data.internationalElement.significantEvents }}</span>
-          {% if case_data.internationalElement.significantEvents == 'Yes'
-          and case_data.internationalElement.significantEventsReason is not empty %}
-            <span class="u-block">{{ case_data.internationalElement.significantEventsReason }}</span>
-          {% endif %}
+        and case_data.internationalElement.significantEvents is not empty %}
+        <span class="u-block">{{ case_data.internationalElement.significantEvents }}</span>
+        {% if case_data.internationalElement.significantEvents == 'Yes'
+        and case_data.internationalElement.significantEventsReason is not empty %}
+        <span class="u-block">{{ case_data.internationalElement.significantEventsReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -2106,13 +2106,13 @@
       <dd class="data-list__definition">
         {% if case_data.internationalElement is not empty
         and case_data.internationalElement.issues is not empty %}
-          <span class="u-block">{{ case_data.internationalElement.issues }}</span>
-          {% if case_data.internationalElement.issues == 'Yes'
-          and case_data.internationalElement.issuesReason is not empty %}
-          <span class="u-block">{{ case_data.internationalElement.issuesReason }}</span>
-          {% endif %}
+        <span class="u-block">{{ case_data.internationalElement.issues }}</span>
+        {% if case_data.internationalElement.issues == 'Yes'
+        and case_data.internationalElement.issuesReason is not empty %}
+        <span class="u-block">{{ case_data.internationalElement.issuesReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -2121,13 +2121,13 @@
       <dd class="data-list__definition">
         {% if case_data.internationalElement is not empty
         and case_data.internationalElement.proceedings is not empty %}
-          <span class="u-block">{{ case_data.internationalElement.proceedings }}</span>
-          {% if case_data.internationalElement.proceedings == 'Yes'
-          and case_data.internationalElement.proceedingsReason is not empty %}
-            <span class="u-block">{{ case_data.internationalElement.proceedingsReason }}</span>
-          {% endif %}
-          {% else %}
-          -
+        <span class="u-block">{{ case_data.internationalElement.proceedings }}</span>
+        {% if case_data.internationalElement.proceedings == 'Yes'
+        and case_data.internationalElement.proceedingsReason is not empty %}
+        <span class="u-block">{{ case_data.internationalElement.proceedingsReason }}</span>
+        {% endif %}
+        {% else %}
+        -
         {% endif %}
       </dd>
     </div>
@@ -2136,11 +2136,11 @@
       <dd class="data-list__definition">
         {% if case_data.internationalElement is not empty
         and case_data.internationalElement.internationalAuthorityInvolvement is not empty %}
-          <span class="u-block">{{ case_data.internationalElement.internationalAuthorityInvolvement }}</span>
-          {% if case_data.internationalElement.internationalAuthorityInvolvement == 'Yes'
-          and case_data.internationalElement.internationalAuthorityInvolvementDetails is not empty %}
-            <span class="u-block">{{ case_data.internationalElement.internationalAuthorityInvolvementDetails }}</span>
-          {% endif %}
+        <span class="u-block">{{ case_data.internationalElement.internationalAuthorityInvolvement }}</span>
+        {% if case_data.internationalElement.internationalAuthorityInvolvement == 'Yes'
+        and case_data.internationalElement.internationalAuthorityInvolvementDetails is not empty %}
+        <span class="u-block">{{ case_data.internationalElement.internationalAuthorityInvolvementDetails }}</span>
+        {% endif %}
         {% else %}
         -
         {% endif %}
@@ -2150,242 +2150,242 @@
 
   {% if case_data.proceeding is not empty
   and case_data.proceeding.onGoingProceeding is not empty %}
-    <h3 class="heading heading--two">
-      Other proceedings
-      {% if case_data.proceeding.additionalProceedings is not empty %}
-        1
-      {% endif %}
-    </h3>
-    <dl class="data-list">
-      {% if case_data.proceeding.onGoingProceeding != "Yes" %}
-        <div class="data-list__row">
-          <dt class="data-list__title">Other relevant proceedings</dt>
-          <dd class="data-list__definition">
-            {% if case_data.proceeding.onGoingProceeding == "No" %}
-              No
-            {% elseif case_data.proceeding.onGoingProceeding == "DontKnow" %}
-              Don't know
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
-      {% endif %}
-      {% if case_data.proceeding.onGoingProceeding == "Yes" %}
-        <div class="data-list__row">
-          <dt class="data-list__title">Previous or ongoing</dt>
-          <dd class="data-list__definition">
-            {% if case_data.proceeding.proceedingStatus is not empty %}
-              {{ case_data.proceeding.proceedingStatus }}
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Case number</dt>
-          <dd class="data-list__definition">
-            {% if case_data.proceeding.caseNumber is not empty %}
-              {{ case_data.proceeding.caseNumber }}
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Date started</dt>
-          <dd class="data-list__definition">
-            {% if case_data.proceeding.started is not empty %}
-            {{ case_data.proceeding.started }}
-            {% else %}
-            -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Date ended</dt>
-          <dd class="data-list__definition">
-            {% if case_data.proceeding.ended is not empty %}
-            {{ case_data.proceeding.ended }}
-            {% else %}
-            -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Orders made</dt>
-          <dd class="data-list__definition">
-            {% if case_data.proceeding.ordersMade is not empty %}
-            {{ case_data.proceeding.ordersMade }}
-            {% else %}
-            -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Judge</dt>
-          <dd class="data-list__definition">
-            {% if case_data.proceeding.judge is not empty %}
-            {{ case_data.proceeding.judge }}
-            {% else %}
-            -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Children involved</dt>
-          <dd class="data-list__definition">
-            {% if case_data.proceeding.children is not empty %}
-              {{ case_data.proceeding.children }}
-            {% else %}
-              -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Guardian</dt>
-          <dd class="data-list__definition">
-            {% if case_data.proceeding.guardian is not empty %}
-            {{ case_data.proceeding.guardian }}
-            {% else %}
-            -
-            {% endif %}
-          </dd>
-        </div>
-        <div class="data-list__row">
-          <dt class="data-list__title">Same guardian needed</dt>
-          <dd class="data-list__definition">
-            {% if case_data.proceeding.sameGuardianNeeded is not empty %}
-            <span class="u-block">{{ case_data.proceeding.sameGuardianNeeded }}</span>
-            {% if case_data.proceeding.sameGuardianNeeded == "No" and case_data.proceeding.sameGuardianDetails is not empty %}
-            <span class="u-block">{{ case_data.proceeding.sameGuardianDetails }}</span>
-            {% endif %}
-            {% else %}
-            -
-            {% endif %}
-          </dd>
-        </div>
-      {% endif %}
-    </dl>
+  <h3 class="heading heading--two">
+    Other proceedings
+    {% if case_data.proceeding.additionalProceedings is not empty %}
+    1
+    {% endif %}
+  </h3>
+  <dl class="data-list">
+    {% if case_data.proceeding.onGoingProceeding != "Yes" %}
+    <div class="data-list__row">
+      <dt class="data-list__title">Other relevant proceedings</dt>
+      <dd class="data-list__definition">
+        {% if case_data.proceeding.onGoingProceeding == "No" %}
+        No
+        {% elseif case_data.proceeding.onGoingProceeding == "DontKnow" %}
+        Don't know
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    {% endif %}
+    {% if case_data.proceeding.onGoingProceeding == "Yes" %}
+    <div class="data-list__row">
+      <dt class="data-list__title">Previous or ongoing</dt>
+      <dd class="data-list__definition">
+        {% if case_data.proceeding.proceedingStatus is not empty %}
+        {{ case_data.proceeding.proceedingStatus }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Case number</dt>
+      <dd class="data-list__definition">
+        {% if case_data.proceeding.caseNumber is not empty %}
+        {{ case_data.proceeding.caseNumber }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Date started</dt>
+      <dd class="data-list__definition">
+        {% if case_data.proceeding.started is not empty %}
+        {{ case_data.proceeding.started }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Date ended</dt>
+      <dd class="data-list__definition">
+        {% if case_data.proceeding.ended is not empty %}
+        {{ case_data.proceeding.ended }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Orders made</dt>
+      <dd class="data-list__definition">
+        {% if case_data.proceeding.ordersMade is not empty %}
+        {{ case_data.proceeding.ordersMade }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Judge</dt>
+      <dd class="data-list__definition">
+        {% if case_data.proceeding.judge is not empty %}
+        {{ case_data.proceeding.judge }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Children involved</dt>
+      <dd class="data-list__definition">
+        {% if case_data.proceeding.children is not empty %}
+        {{ case_data.proceeding.children }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Guardian</dt>
+      <dd class="data-list__definition">
+        {% if case_data.proceeding.guardian is not empty %}
+        {{ case_data.proceeding.guardian }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Same guardian needed</dt>
+      <dd class="data-list__definition">
+        {% if case_data.proceeding.sameGuardianNeeded is not empty %}
+        <span class="u-block">{{ case_data.proceeding.sameGuardianNeeded }}</span>
+        {% if case_data.proceeding.sameGuardianNeeded == "No" and case_data.proceeding.sameGuardianDetails is not empty %}
+        <span class="u-block">{{ case_data.proceeding.sameGuardianDetails }}</span>
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    {% endif %}
+  </dl>
   {% endif %}
 
   {% if case_data.proceeding is not empty and
   case_data.proceeding.onGoingProceeding is not empty and
   case_data.proceeding.onGoingProceeding == "Yes" and
   case_data.proceeding.additionalProceedings is not empty %}
-    {% if case_data.proceeding.onGoingProceeding is not empty
-    or case_data.proceeding.caseNumber is not empty
-    or case_data.proceeding.started is not empty
-    or case_data.proceeding.ended is not empty
-    or case_data.proceeding.ordersMade is not empty
-    or case_data.proceeding.judge is not empty
-    or case_data.proceeding.guardian is not empty
-    or case_data.proceeding.sameGuardianNeeded is not empty %}
-      {% set counter = 2 %}
-    {% else %}
-      {% set counter = 1 %}
-    {% endif %}
-    {% for proceeding in case_data.proceeding.additionalProceedings %}
-      {% if proceeding is not empty and proceeding.value is not empty %}
-        <h3 class="heading heading--two">Other proceedings {{ counter }}</h3>
-        <dl class="data-list">
-          <div class="data-list__row">
-            <dt class="data-list__title">Previous or ongoing</dt>
-            <dd class="data-list__definition">
-              {% if proceeding.value.proceedingStatus is not empty %}
-                {{ proceeding.value.proceedingStatus }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Case number</dt>
-            <dd class="data-list__definition">
-              {% if proceeding.value.caseNumber is not empty %}
-                {{ proceeding.value.caseNumber }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Date started</dt>
-            <dd class="data-list__definition">
-              {% if proceeding.value.started is not empty %}
-                {{ proceeding.value.started }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Date ended</dt>
-            <dd class="data-list__definition">
-              {% if proceeding.value.ended is not empty %}
-                {{ proceeding.value.ended }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Orders made</dt>
-            <dd class="data-list__definition">
-              {% if proceeding.value.ordersMade is not empty %}
-                {{ proceeding.value.ordersMade }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Judge</dt>
-            <dd class="data-list__definition">
-              {% if proceeding.value.judge is not empty %}
-                {{ proceeding.value.judge }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Children involved</dt>
-            <dd class="data-list__definition">
-              {% if proceeding.value.children is not empty %}
-              {{ proceeding.value.children }}
-              {% else %}
-              -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Guardian</dt>
-            <dd class="data-list__definition">
-              {% if proceeding.value.guardian is not empty %}
-                {{ proceeding.value.guardian }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Same guardian needed</dt>
-            <dd class="data-list__definition">
-              {% if proceeding.value.sameGuardianNeeded is not empty %}
-                <span class="u-block">{{ proceeding.value.sameGuardianNeeded }}</span>
-                {% if proceeding.value.sameGuardianNeeded == "No" and proceeding.value.sameGuardianDetails is not empty %}
-                <span class="u-block">{{ proceeding.value.sameGuardianDetails }}</span>
-                {% endif %}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-        </dl>
-      {% endif %}
-      {% set counter = counter + 1 %}
-    {% endfor %}
+  {% if case_data.proceeding.onGoingProceeding is not empty
+  or case_data.proceeding.caseNumber is not empty
+  or case_data.proceeding.started is not empty
+  or case_data.proceeding.ended is not empty
+  or case_data.proceeding.ordersMade is not empty
+  or case_data.proceeding.judge is not empty
+  or case_data.proceeding.guardian is not empty
+  or case_data.proceeding.sameGuardianNeeded is not empty %}
+  {% set counter = 2 %}
+  {% else %}
+  {% set counter = 1 %}
+  {% endif %}
+  {% for proceeding in case_data.proceeding.additionalProceedings %}
+  {% if proceeding is not empty and proceeding.value is not empty %}
+  <h3 class="heading heading--two">Other proceedings {{ counter }}</h3>
+  <dl class="data-list">
+    <div class="data-list__row">
+      <dt class="data-list__title">Previous or ongoing</dt>
+      <dd class="data-list__definition">
+        {% if proceeding.value.proceedingStatus is not empty %}
+        {{ proceeding.value.proceedingStatus }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Case number</dt>
+      <dd class="data-list__definition">
+        {% if proceeding.value.caseNumber is not empty %}
+        {{ proceeding.value.caseNumber }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Date started</dt>
+      <dd class="data-list__definition">
+        {% if proceeding.value.started is not empty %}
+        {{ proceeding.value.started }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Date ended</dt>
+      <dd class="data-list__definition">
+        {% if proceeding.value.ended is not empty %}
+        {{ proceeding.value.ended }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Orders made</dt>
+      <dd class="data-list__definition">
+        {% if proceeding.value.ordersMade is not empty %}
+        {{ proceeding.value.ordersMade }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Judge</dt>
+      <dd class="data-list__definition">
+        {% if proceeding.value.judge is not empty %}
+        {{ proceeding.value.judge }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Children involved</dt>
+      <dd class="data-list__definition">
+        {% if proceeding.value.children is not empty %}
+        {{ proceeding.value.children }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Guardian</dt>
+      <dd class="data-list__definition">
+        {% if proceeding.value.guardian is not empty %}
+        {{ proceeding.value.guardian }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Same guardian needed</dt>
+      <dd class="data-list__definition">
+        {% if proceeding.value.sameGuardianNeeded is not empty %}
+        <span class="u-block">{{ proceeding.value.sameGuardianNeeded }}</span>
+        {% if proceeding.value.sameGuardianNeeded == "No" and proceeding.value.sameGuardianDetails is not empty %}
+        <span class="u-block">{{ proceeding.value.sameGuardianDetails }}</span>
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+  </dl>
+  {% endif %}
+  {% set counter = counter + 1 %}
+  {% endfor %}
   {% endif %}
 
   <h3 class="heading heading--two">Annex Documents</h3>
@@ -2395,13 +2395,13 @@
       <dd class="data-list__definition">
         {% if case_data.documents_socialWorkChronology_document is not empty
         and case_data.documents_socialWorkChronology_document.documentStatus is not empty %}
-          {{ case_data.documents_socialWorkChronology_document.documentStatus }}
-          {% if case_data.documents_socialWorkChronology_document.documentStatus != 'Attached'
-          and case_data.documents_socialWorkChronology_document.statusReason is not empty %}
-            <span class="u-block">{{ case_data.documents_socialWorkChronology_document.statusReason }}</span>
-          {% endif %}
+        {{ case_data.documents_socialWorkChronology_document.documentStatus }}
+        {% if case_data.documents_socialWorkChronology_document.documentStatus != 'Attached'
+        and case_data.documents_socialWorkChronology_document.statusReason is not empty %}
+        <span class="u-block">{{ case_data.documents_socialWorkChronology_document.statusReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -2413,10 +2413,10 @@
         {{ case_data.documents_socialWorkStatement_document.documentStatus }}
         {% if case_data.documents_socialWorkStatement_document.documentStatus != 'Attached'
         and case_data.documents_socialWorkStatement_document.statusReason is not empty %}
-          <span class="u-block">{{ case_data.documents_socialWorkStatement_document.statusReason }}</span>
+        <span class="u-block">{{ case_data.documents_socialWorkStatement_document.statusReason }}</span>
         {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -2425,13 +2425,13 @@
       <dd class="data-list__definition">
         {% if case_data.documents_socialWorkAssessment_document is not empty
         and case_data.documents_socialWorkAssessment_document.documentStatus is not empty %}
-          {{ case_data.documents_socialWorkAssessment_document.documentStatus }}
-          {% if case_data.documents_socialWorkAssessment_document.documentStatus != 'Attached'
-          and case_data.documents_socialWorkAssessment_document.statusReason is not empty %}
-            <span class="u-block">{{ case_data.documents_socialWorkAssessment_document.statusReason }}</span>
-          {% endif %}
+        {{ case_data.documents_socialWorkAssessment_document.documentStatus }}
+        {% if case_data.documents_socialWorkAssessment_document.documentStatus != 'Attached'
+        and case_data.documents_socialWorkAssessment_document.statusReason is not empty %}
+        <span class="u-block">{{ case_data.documents_socialWorkAssessment_document.statusReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -2440,13 +2440,13 @@
       <dd class="data-list__definition">
         {% if case_data.documents_socialWorkCarePlan_document is not empty
         and case_data.documents_socialWorkCarePlan_document.documentStatus is not empty %}
-          {{ case_data.documents_socialWorkCarePlan_document.documentStatus }}
-          {% if case_data.documents_socialWorkCarePlan_document.documentStatus != 'Attached'
-          and case_data.documents_socialWorkCarePlan_document.statusReason is not empty %}
-            <span class="u-block">{{ case_data.documents_socialWorkCarePlan_document.statusReason }}</span>
-          {% endif %}
+        {{ case_data.documents_socialWorkCarePlan_document.documentStatus }}
+        {% if case_data.documents_socialWorkCarePlan_document.documentStatus != 'Attached'
+        and case_data.documents_socialWorkCarePlan_document.statusReason is not empty %}
+        <span class="u-block">{{ case_data.documents_socialWorkCarePlan_document.statusReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -2455,13 +2455,13 @@
       <dd class="data-list__definition">
         {% if case_data.documents_socialWorkEvidenceTemplate_document is not empty
         and case_data.documents_socialWorkEvidenceTemplate_document.documentStatus is not empty %}
-          {{ case_data.documents_socialWorkEvidenceTemplate_document.documentStatus }}
-          {% if case_data.documents_socialWorkEvidenceTemplate_document.documentStatus != 'Attached'
-          and case_data.documents_socialWorkEvidenceTemplate_document.statusReason is not empty %}
-            <span class="u-block">{{ case_data.documents_socialWorkEvidenceTemplate_document.statusReason }}</span>
-          {% endif %}
+        {{ case_data.documents_socialWorkEvidenceTemplate_document.documentStatus }}
+        {% if case_data.documents_socialWorkEvidenceTemplate_document.documentStatus != 'Attached'
+        and case_data.documents_socialWorkEvidenceTemplate_document.statusReason is not empty %}
+        <span class="u-block">{{ case_data.documents_socialWorkEvidenceTemplate_document.statusReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -2470,13 +2470,13 @@
       <dd class="data-list__definition">
         {% if case_data.documents_threshold_document is not empty
         and case_data.documents_threshold_document.documentStatus is not empty %}
-          {{ case_data.documents_threshold_document.documentStatus }}
-          {% if case_data.documents_threshold_document.documentStatus != 'Attached'
-          and case_data.documents_threshold_document.statusReason is not empty %}
-            <span class="u-block">{{ case_data.documents_threshold_document.statusReason }}</span>
-          {% endif %}
+        {{ case_data.documents_threshold_document.documentStatus }}
+        {% if case_data.documents_threshold_document.documentStatus != 'Attached'
+        and case_data.documents_threshold_document.statusReason is not empty %}
+        <span class="u-block">{{ case_data.documents_threshold_document.statusReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
@@ -2485,33 +2485,33 @@
       <dd class="data-list__definition">
         {% if case_data.documents_checklist_document is not empty
         and case_data.documents_checklist_document.documentStatus is not empty %}
-          {{ case_data.documents_checklist_document.documentStatus }}
-          {% if case_data.documents_checklist_document.documentStatus != 'Attached'
-          and case_data.documents_checklist_document.statusReason is not empty %}
-            <span class="u-block">{{ case_data.documents_checklist_document.statusReason }}</span>
-          {% endif %}
+        {{ case_data.documents_checklist_document.documentStatus }}
+        {% if case_data.documents_checklist_document.documentStatus != 'Attached'
+        and case_data.documents_checklist_document.statusReason is not empty %}
+        <span class="u-block">{{ case_data.documents_checklist_document.statusReason }}</span>
+        {% endif %}
         {% else %}
-          -
+        -
         {% endif %}
       </dd>
     </div>
     {% if case_data.documents_socialWorkOther is not empty %}
     {% set counter = 1 %}
     {% for document in case_data.documents_socialWorkOther %}
-        {% if document is not empty and document.value is not empty %}
-          <div class="data-list__row">
-            <dt class="data-list__title">Additional document {{ counter }}</dt>
-            <dd class="data-list__definition">
-            {% if document.value.documentTitle is not empty %}
-              {{ document.value.documentTitle }}
-            {% else %}
-              -
-            {% endif %}
-            </dd>
-          </div>
+    {% if document is not empty and document.value is not empty %}
+    <div class="data-list__row">
+      <dt class="data-list__title">Additional document {{ counter }}</dt>
+      <dd class="data-list__definition">
+        {% if document.value.documentTitle is not empty %}
+        {{ document.value.documentTitle }}
+        {% else %}
+        -
         {% endif %}
-      {% set counter = counter + 1 %}
-      {% endfor %}
+      </dd>
+    </div>
+    {% endif %}
+    {% set counter = counter + 1 %}
+    {% endfor %}
     {% endif %}
   </dl>
   <p class="consent">I, {{ userFullName }}, believe that the facts stated in this application are true.</p>

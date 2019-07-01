@@ -14,8 +14,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.Children;
+import uk.gov.hmcts.reform.fpl.model.OldChild;
+import uk.gov.hmcts.reform.fpl.model.OldChildren;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("integration-test")
 @WebMvcTest(ChildSubmissionController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ChildSubmissionControllerTest {
+class OldChildSubmissionControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
@@ -46,7 +46,7 @@ class ChildSubmissionControllerTest {
         ZonedDateTime tomorrow = today.plusDays(1);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
-            new Children(createChild(tomorrow), createChild(today))
+            new OldChildren(createChild(tomorrow), createChild(today))
         );
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
@@ -57,7 +57,7 @@ class ChildSubmissionControllerTest {
         ZonedDateTime tomorrow = today.plusDays(1);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
-            new Children(createChild(today), createChild(tomorrow))
+            new OldChildren(createChild(today), createChild(tomorrow))
         );
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
@@ -68,31 +68,31 @@ class ChildSubmissionControllerTest {
         ZonedDateTime yesterday = today.minusDays(1);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
-            new Children(createChild(today), createChild(yesterday))
+            new OldChildren(createChild(today), createChild(yesterday))
         );
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
-    private Child createChild(ZonedDateTime dateOfBirth) {
-        return new Child(null, Date.from(dateOfBirth.toInstant()), null, null, null,
+    private OldChild createChild(ZonedDateTime dateOfBirth) {
+        return new OldChild(null, Date.from(dateOfBirth.toInstant()), null, null, null,
             null, null, null, null, null, null,
             null, null, null, null, null);
     }
 
-    private AboutToStartOrSubmitCallbackResponse makeRequest(Children children) throws Exception {
-        HashMap<String, Object> map = MAPPER.readValue(MAPPER.writeValueAsString(children),
+    private AboutToStartOrSubmitCallbackResponse makeRequest(OldChildren oldChildren) throws Exception {
+        HashMap<String, Object> map = MAPPER.readValue(MAPPER.writeValueAsString(oldChildren),
             new TypeReference<Map<String, Object>>() {
             });
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
-                .data(ImmutableMap.<String, Object>builder().put("children", map).build())
+                .data(ImmutableMap.<String, Object>builder().put("oldChildren", map).build())
                 .build())
             .build();
 
         MvcResult response = mockMvc
-            .perform(post("/callback/enter-children/mid-event")
+            .perform(post("/callback/enter-oldChildren/mid-event")
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
