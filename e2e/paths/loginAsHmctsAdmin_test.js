@@ -15,6 +15,7 @@ Before(async (I, caseViewPage, submitApplicationPage) => {
 Scenario('HMCTS admin can login and add a FamilyMan case number to a submitted case', (I, caseViewPage, loginPage, caseListPage, enterFamilyManPage) => {
   loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   I.navigateToCaseDetails(caseId);
+  I.waitForText(caseId, 5, '.heading-h1');
   I.see(caseId);
   caseViewPage.goToNewActions(config.addFamilyManCaseNumber);
   enterFamilyManPage.enterCaseID();
