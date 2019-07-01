@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("integration-test")
 @WebMvcTest(ChildSubmissionController.class)
 @OverrideAutoConfiguration(enabled = true)
-class OldChildSubmissionControllerTest {
+class ChildSubmissionControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
@@ -76,7 +76,9 @@ class OldChildSubmissionControllerTest {
     private OldChild createChild(ZonedDateTime dateOfBirth) {
         return new OldChild(null, Date.from(dateOfBirth.toInstant()), null, null, null,
             null, null, null, null, null, null,
-            null, null, null, null, null);
+            null, null, null, null, null, null,
+            null, null, null, null, null, null,
+            null);
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(OldChildren oldChildren) throws Exception {
