@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.TelephoneNumber;
+import uk.gov.hmcts.reform.fpl.model.common.Address;
 
 import java.util.Date;
 
