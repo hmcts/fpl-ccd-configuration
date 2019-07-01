@@ -73,6 +73,16 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
+    "TabID": "CasePeopleTab",
+    "TabLabel": "People in the case",
+    "TabDisplayOrder": 2,
+    "CaseFieldID": "applicants",
+    "TabFieldDisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 3,
@@ -288,16 +298,5 @@
     "TabDisplayOrder": 4,
     "CaseFieldID": "submittedForm",
     "TabFieldDisplayOrder": 13
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "CasePeopleTab",
-    "TabLabel": "People in the case",
-    "TabDisplayOrder": 2,
-    "CaseFieldID": "applicants",
-    "TabFieldDisplayOrder": 4
   }
-
 ]

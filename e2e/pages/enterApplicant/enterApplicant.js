@@ -3,25 +3,38 @@ const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
 
-  fields: {
-    applicant: {
-      name: '#applicant_name',
-      nameOfPersonToContact: '#applicant_personToContact',
-      jobTitle: '#applicant_jobTitle',
-      address: '#applicant_address_address',
-      mobileNumber: '#applicant_mobile',
-      telephoneNumber: '#applicant_telephone',
-      email: '#applicant_email',
-      pbaNumber: '#applicant_pbaNumber',
-    },
-    solicitor: {
-      name: '#solicitor_name',
-      mobileNumber: '#solicitor_mobile',
-      telephoneNumber: '#solicitor_telephone',
-      email: '#solicitor_email',
-      dx: '#solicitor_dx',
-      reference: '#solicitor_reference',
-    },
+  state: {
+    context: 0,
+  },
+
+  fields: function () {
+    const id = this.state.context;
+
+    return {
+      applicant: {
+        partyType: `#applicants_${id}_party_partyType`,
+        name: `#applicants_${id}_party_name`,
+        address: `#applicants_${id}_party_address_address`,
+        email: `#applicants_${id}_party_emailAddress_email`,
+        telephone: `input[id="applicants_${id}_party_telephoneNumber_telephoneNumber"]`,
+        nameOfPersonToContact: `#applicants_${id}_party_telephoneNumber_contactDirection`,
+        mobileNumber: `#applicants_${id}_party_mobileNumber_telephoneNumber`,
+        jobTitle: `#applicants_${id}_party_jobTitle`,
+        pbaNumber: `#applicants_${id}_party_pbaNumber`,
+        leadApplicant: {
+          yes: `#applicants_${id}_leadApplicantIndicator-Yes`,
+          no: `#applicants_${id}_leadApplicantindictor-No`,
+        },
+      },
+      solicitor: {
+        name: '#solicitor_name',
+        mobileNumber: '#solicitor_mobile',
+        telephoneNumber: '#solicitor_telephone',
+        email: '#solicitor_email',
+        dx: '#solicitor_dx',
+        reference: '#solicitor_reference',
+      },
+    };
   },
 
   enterApplicantDetails(applicant) {

@@ -26,7 +26,7 @@ class LocalAuthorityCodeLookupConfigurationTest {
     void shouldThrowNullPointerExceptionWhenLocalAuthorityEmailDomainIsNull() {
         Assertions.assertThatThrownBy(() -> configuration.getLocalAuthorityCode(null))
             .isInstanceOf(NullPointerException.class)
-            .hasMessage("EmailAddress domain cannot be null");
+            .hasMessage("Email domain cannot be null");
     }
 
     @Test

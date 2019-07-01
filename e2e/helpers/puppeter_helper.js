@@ -1,3 +1,5 @@
+/* global Helper */
+
 module.exports = class MyHelpers extends Helper {
 
   clickBrowserBack() {

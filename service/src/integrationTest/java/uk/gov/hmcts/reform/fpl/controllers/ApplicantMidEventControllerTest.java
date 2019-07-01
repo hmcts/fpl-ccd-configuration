@@ -16,13 +16,12 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.PartyApplicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-//TESTS ARE NOT READY YET
 @ActiveProfiles("integration-test")
 @WebMvcTest(ApplicantController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -36,7 +35,7 @@ public class ApplicantMidEventControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldReturnErrorsWhenThereIsNewApplicantAndNoOldApplicant() throws Exception {
+    void shouldReturnErrorsWhenThereIsNewApplicantAndNoPbaNumber() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -45,7 +44,8 @@ public class ApplicantMidEventControllerTest {
                         ImmutableMap.of(
                             "id", "",
                             "value", Applicant.builder()
-                                .party(PartyApplicant.builder()
+                                .party(ApplicantParty.builder()
+                                    .pbaNumber("")
                                     .build())
                                 .build()
                         )
@@ -67,9 +67,5 @@ public class ApplicantMidEventControllerTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         Assertions.assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
-    }
-
-    private Applicant createApplicant() {
-        return new Applicant(null, null);
     }
 }

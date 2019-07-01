@@ -12,8 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.OldApplicant;
-import uk.gov.hmcts.reform.fpl.model.PartyApplicant;
-import uk.gov.hmcts.reform.fpl.model.common.Party;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.service.ApplicantMigrationService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.utils.PBANumberHelper;
@@ -65,10 +64,9 @@ public class ApplicantController {
                 .map(applicant ->
                     mapperService.mapObject((Map<String, Object>) applicant.get("value"), Applicant.class))
                 .map(Applicant::getParty)
-                .map(PartyApplicant::getPbaNumber)
+                .map(ApplicantParty::getPbaNumber)
                 .filter(Objects::nonNull)
                 .forEach(pbaNumber -> {
-                    System.out.println("pbaNumber = " + pbaNumber);
                     String newPbaNumberData = PBANumberHelper.updatePBANumber(pbaNumber);
                     validationErrors.addAll(validatePBANumber(newPbaNumberData));
                 });

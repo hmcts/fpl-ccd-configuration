@@ -18,8 +18,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.ApplicantMigrationService;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 
-import java.net.http.HttpRequest;
-
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,10 +43,10 @@ public class ApplicantAboutToStartControllerTest {
 
     @Test
     void shouldAddApplicanttMigratedValueToData() throws Exception {
-        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
-            .data(ImmutableMap.<String, Object>builder()
-                .put("data", "some data")
-                .build()).build())
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of("data", "some data"))
+                .build())
             .build();
 
         MvcResult response = mockMvc

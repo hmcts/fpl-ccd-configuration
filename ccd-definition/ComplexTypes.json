@@ -1575,14 +1575,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "mobileNumber",
-    "ListElementCode": "telephoneNumber",
-    "FieldType": "Text",
-    "ElementLabel": "Mobile Number",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "ID": "telephone",
     "ListElementCode": "contactDirection",
     "FieldType": "Text",
@@ -1591,7 +1583,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "mobileNumber",
+    "ListElementCode": "telephoneNumber",
+    "FieldType": "Text",
+    "ElementLabel": "Mobile Number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ApplicantParty",
     "ListElementCode": "partyId",
     "FieldType": "Text",
     "ElementLabel": "Party ID",
@@ -1600,7 +1600,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "ApplicantParty",
     "ListElementCode": "partyType",
     "FieldType": "Text",
     "ElementLabel": "Party type",
@@ -1608,7 +1608,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "ApplicantParty",
     "ListElementCode": "name",
     "FieldType": "Text",
     "ElementLabel": "Name ",
@@ -1616,7 +1616,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "ApplicantParty",
     "ListElementCode": "address",
     "FieldType": "AddressUK",
     "ElementLabel": "Address ",
@@ -1624,7 +1624,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "ApplicantParty",
     "ListElementCode": "emailAddress",
     "FieldType": "emailAddress",
     "ElementLabel": "Email ",
@@ -1632,7 +1632,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "ApplicantParty",
     "ListElementCode": "telephoneNumber",
     "FieldType": "telephone",
     "ElementLabel": " ",
@@ -1640,7 +1640,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "ApplicantParty",
     "ListElementCode": "mobileNumber",
     "FieldType": "mobileNumber",
     "ElementLabel": " ",
@@ -1648,7 +1648,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "ApplicantParty",
     "ListElementCode": "jobTitle",
     "FieldType": "Text",
     "ElementLabel": "Job Title",
@@ -1656,7 +1656,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "party",
+    "ID": "ApplicantParty",
     "ListElementCode": "pbaNumber",
     "FieldType": "Text",
     "ElementLabel": "PBA Number",
@@ -1664,18 +1664,18 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "partyApplicant",
+    "ID": "Applicants",
     "ListElementCode": "party",
-    "FieldType": "party",
-    "ElementLabel": " ",
+    "FieldType": "ApplicantParty",
+    "ElementLabel": "Party",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "partyApplicant",
+    "ID": "Applicants",
     "ListElementCode": "leadApplicantIndicator",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Lead Applicant Indicator",
+    "ElementLabel": "Is this the lead applicant?",
     "SecurityClassification": "Public"
   }
 ]

@@ -11,16 +11,15 @@ import uk.gov.hmcts.reform.fpl.model.common.TelephoneNumber;
 import java.util.Date;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class PartyApplicant extends Party {
+@EqualsAndHashCode(callSuper = true)
+public class ApplicantParty extends Party {
     private final String name;
     private final TelephoneNumber mobileNumber;
     private final String jobTitle;
-    @JsonProperty("pbaNumber")
     private final String pbaNumber;
 
     @Builder
-    private PartyApplicant(String partyID,
+    private ApplicantParty(String partyID,
                            String idamID,
                            String partyType,
                            String title,
@@ -29,13 +28,13 @@ public class PartyApplicant extends Party {
                            String organisationName,
                            Date dateOfBirth,
                            Address address,
-                           EmailAddress email,
+                           EmailAddress emailAddress,
                            TelephoneNumber telephoneNumber,
                            String name,
                            TelephoneNumber mobileNumber,
                            String jobTitle,
                            String pbaNumber) {
-        super(partyID, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address, email,
+        super(partyID, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address, emailAddress,
             telephoneNumber);
 
         this.name = name;
