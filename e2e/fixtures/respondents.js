@@ -31,9 +31,9 @@ module.exports = [
     gender: 'Male',
     placeOfBirth: 'London',
     address: {
-      lookupOption: '1 Three Tuns Wynd, High Street, Stokesley, Middlesbrough',
+      lookupOption: '2 Three Tuns Wynd, High Street, Stokesley, Middlesbrough',
       buildingAndStreet: {
-        lineOne: '1 Three Tuns Wynd',
+        lineOne: '2 Three Tuns Wynd',
         lineTwo: 'High Street',
         lineThree: 'Stokesley',
       },
