@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.MigratedChildren;
 import uk.gov.hmcts.reform.fpl.model.OldChild;
 import uk.gov.hmcts.reform.fpl.model.OldChildren;
 
@@ -81,20 +84,59 @@ class ChildSubmissionControllerTest {
             null);
     }
 
-    private AboutToStartOrSubmitCallbackResponse makeRequest(OldChildren oldChildren) throws Exception {
-        HashMap<String, Object> map = MAPPER.readValue(MAPPER.writeValueAsString(oldChildren),
+    @Test
+    void shouldReturnDateOfBirthErrorsForNewRespondentWhenFutureDateOfBirth() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of(
+                    "children1", ImmutableList.of(
+                        ImmutableMap.of(
+                            "id", "123",
+                            "value", MigratedChildren.builder()
+                                .party(ChildParty.builder()
+                                    .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
+                                    .build())
+                                .build()
+                        )
+                    )
+                ))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
+
+        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+    }
+
+    private AboutToStartOrSubmitCallbackResponse makeRequest(OldChildren children) throws Exception {
+        HashMap<String, Object> map = MAPPER.readValue(MAPPER.writeValueAsString(children),
             new TypeReference<Map<String, Object>>() {
             });
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
-                .data(ImmutableMap.<String, Object>builder().put("oldChildren", map).build())
+                .data(ImmutableMap.<String, Object>builder().put("children", map).build())
                 .build())
             .build();
 
         MvcResult response = mockMvc
-            .perform(post("/callback/enter-oldChildren/mid-event")
+            .perform(post("/callback/enter-children/mid-event")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(MAPPER.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        return MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+    }
+
+    private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request) throws Exception {
+        MvcResult response = mockMvc
+            .perform(post("/callback/enter-children/mid-event")
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)

@@ -15,10 +15,11 @@ public class ChildrenMigrationService {
     public AboutToStartOrSubmitCallbackResponse setMigratedValue(CaseDetails caseDetails) {
         Map<String, Object> data = caseDetails.getData();
 
-        if(caseDetails.getData().containsKey("children1") || !caseDetails.getData().containsKey("children")) {
+        if (caseDetails.getData().containsKey("children1")
+            || !caseDetails.getData().containsKey("children")) {
             data.put("childrenMigrated", "Yes");
 
-            if(!caseDetails.getData().containsKey("children1")) {
+            if (!caseDetails.getData().containsKey("children1")) {
                 List<Map<String, Object>> populatedChild = new ArrayList<>();
                 populatedChild.add(ImmutableMap.of(
                     "id", UUID.randomUUID().toString(),

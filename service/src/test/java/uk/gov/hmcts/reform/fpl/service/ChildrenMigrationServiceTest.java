@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ChildrenMigrationServiceTest {
     private final ChildrenMigrationService service = new ChildrenMigrationService();
+    private static final String ERROR_MESSAGE = "Date of birth cannot be in the future";
 
     @Test
     void shouldSetMigratedChildrenToYesWhenNoChildrenDataPresent() {
@@ -30,6 +31,7 @@ public class ChildrenMigrationServiceTest {
         AboutToStartOrSubmitCallbackResponse response = service.setMigratedValue(caseDetails);
         assertThat(response.getData()).containsEntry("childrenMigrated", "Yes");
     }
+
     @Test
     void shouldSetMigratedChildrenToNoWhenOldChildrenExists() {
         CaseDetails caseDetails = CaseDetails.builder()
@@ -38,6 +40,7 @@ public class ChildrenMigrationServiceTest {
         AboutToStartOrSubmitCallbackResponse response = service.setMigratedValue(caseDetails);
         assertThat(response.getData()).containsEntry("childrenMigrated", "No");
     }
+
     private Map<String, Object> createData(String key, String value) {
         Map<String, Object> data = new HashMap<>();
         data.put(key, value);

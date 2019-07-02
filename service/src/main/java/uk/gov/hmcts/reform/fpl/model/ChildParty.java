@@ -6,18 +6,17 @@ import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.TelephoneNumber;
-import uk.gov.hmcts.reform.fpl.model.common.Address;
 
 import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ChildParty extends Party {
+public final class ChildParty extends Party {
     private final String gender;
     private final String genderIdentification;
     private final String livingSituation;
     private final String situationDetails;
-    private final String situationDate;
+    private final Date situationDate;
     private final String keyDates;
     private final String careAndContact;
     private final String adoption;
@@ -39,8 +38,8 @@ public class ChildParty extends Party {
     private ChildParty(String partyID,
                        String idamID,
                        String partyType,
-                       String title,
                        String firstName,
+                       String title,
                        String lastName,
                        String organisationName,
                        Date dateOfBirth,
@@ -51,7 +50,7 @@ public class ChildParty extends Party {
                        String genderIdentification,
                        String livingSituation,
                        String situationDetails,
-                       String situationDate,
+                       Date situationDate,
                        String keyDates,
                        String careAndContact,
                        String adoption,
@@ -68,8 +67,8 @@ public class ChildParty extends Party {
                        String detailsHiddenReason,
                        String litigationIssues,
                        String litigationIssuesDetails) {
-        super(partyID, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address, email,
-            telephoneNumber);
+        super(partyID, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address,
+            email, telephoneNumber);
 
         this.gender = gender;
         this.genderIdentification = genderIdentification;

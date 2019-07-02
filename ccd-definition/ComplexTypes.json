@@ -1560,7 +1560,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "partyChild",
-    "ListElementCode": "partyId",
+    "ListElementCode": "partyID",
     "FieldType": "Text",
     "ElementLabel": "Party ID",
     "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",
