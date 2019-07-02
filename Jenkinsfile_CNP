@@ -36,7 +36,7 @@ withPipeline(type, product, component) {
   loadVaultSecrets(secrets)
   enableDockerBuild()
   enableDeployToAKS()
-  enableSlackNotifications('#fpl-tech')
+  enableSlackNotifications('#fpla-tech')
 
   env.POSTCODE_PLACEHOLDER = '${postcode}'
   env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
@@ -54,7 +54,7 @@ withPipeline(type, product, component) {
             git push --force origin HEAD:demo
           '''
         } catch (err) {
-          notifyBuildEvent channel: '#fpl-tech', color: 'warning', message: 'Failed to update demo branch'
+          notifyBuildEvent channel: '#fpla-tech', color: 'warning', message: 'Failed to update demo branch'
         }
       }
     }
