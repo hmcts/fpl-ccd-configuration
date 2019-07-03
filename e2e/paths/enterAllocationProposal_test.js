@@ -1,3 +1,5 @@
+/* global xScenario */
+
 const config = require('../config.js');
 
 Feature('Enter Allocation Proposal').retry(2);
