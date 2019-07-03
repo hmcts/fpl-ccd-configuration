@@ -85,7 +85,7 @@ class ChildSubmissionControllerTest {
     }
 
     @Test
-    void shouldReturnDateOfBirthErrorsForNewRespondentWhenFutureDateOfBirth() throws Exception {
+    void shouldReturnDateOfBirthErrorsForNewChildWhenFutureDateOfBirth() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -126,7 +126,7 @@ class ChildSubmissionControllerTest {
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsString(request)))
+                .content(MAPPER.writeValueAsBytes(request)))
             .andExpect(status().isOk())
             .andReturn();
 
@@ -140,7 +140,7 @@ class ChildSubmissionControllerTest {
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsString(request)))
+                .content(MAPPER.writeValueAsBytes(request)))
             .andExpect(status().isOk())
             .andReturn();
 

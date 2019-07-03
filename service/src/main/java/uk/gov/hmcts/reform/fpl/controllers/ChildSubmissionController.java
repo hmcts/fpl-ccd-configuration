@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -53,7 +52,7 @@ public class ChildSubmissionController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(callbackrequest.getCaseDetails().getData())
             .errors(validate(caseDetails))
             .build();
     }
@@ -66,7 +65,6 @@ public class ChildSubmissionController {
             (Map<String, Object>) defaultIfNull(caseDetails.getData().get("children"), null);
 
         if (caseDetails.getData().containsKey("children1")) {
-
             List<Map<String, Object>> migratedChildrenObject =
                 (List<Map<String, Object>>) caseDetails.getData().get("children1");
 
@@ -79,7 +77,7 @@ public class ChildSubmissionController {
                 .map(MigratedChildren::getParty)
                 .map(Party::getDateOfBirth)
                 .filter(Objects::nonNull)
-                .anyMatch(dob -> dob.after(new Date()))) {
+                .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
                 errors.add("Date of birth cannot be in the future");
             }
         } else {
