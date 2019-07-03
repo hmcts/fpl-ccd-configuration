@@ -11,7 +11,7 @@ public class EmailAddress {
     private final String email;
 
     @JsonCreator
-    public EmailAddress(@JsonProperty("email") String email) {
+    private EmailAddress(@JsonProperty("email") String email) {
         this.email = email;
     }
 }

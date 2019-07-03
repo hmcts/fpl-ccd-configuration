@@ -15,12 +15,12 @@ module.exports = {
         partyType: `#applicants_${id}_party_partyType`,
         name: `#applicants_${id}_party_name`,
         address: `#applicants_${id}_party_address_address`,
-        email: `#applicants_${id}_party_emailAddress_email`,
+        email: `input[id="applicants_${id}_party_emailAddress_email"]`,
         telephone: `input[id="applicants_${id}_party_telephoneNumber_telephoneNumber"]`,
-        nameOfPersonToContact: `#applicants_${id}_party_telephoneNumber_contactDirection`,
+        nameOfPersonToContact: `input[id="applicants_${id}_party_telephoneNumber_contactDirection"]`,
         mobileNumber: `#applicants_${id}_party_mobileNumber_telephoneNumber`,
         jobTitle: `#applicants_${id}_party_jobTitle`,
-        pbaNumber: `#applicants_${id}_party_pbaNumber`,
+        pbaNumber: `input[id="applicants_${id}_party_pbaNumber"]`,
         leadApplicant: {
           yes: `#applicants_${id}_leadApplicantIndicator-Yes`,
           no: `#applicants_${id}_leadApplicantindictor-No`,
@@ -38,24 +38,25 @@ module.exports = {
   },
 
   enterApplicantDetails(applicant) {
-    I.fillField(this.fields.applicant.name, applicant.name);
-    I.fillField(this.fields.applicant.nameOfPersonToContact, applicant.nameOfPersonToContact);
-    I.fillField(this.fields.applicant.jobTitle, applicant.jobTitle);
-    within(this.fields.applicant.address, () => {
+    I.fillField(this.fields().applicant.partyType, applicant.partyType);
+    I.fillField(this.fields().applicant.name, applicant.name);
+    I.fillField(this.fields().applicant.nameOfPersonToContact, applicant.nameOfPersonToContact);
+    I.fillField(this.fields().applicant.jobTitle, applicant.jobTitle);
+    within(this.fields().applicant.address, () => {
       postcodeLookup.enterAddressManually(applicant.address);
     });
-    I.fillField(this.fields.applicant.mobileNumber, applicant.mobileNumber);
-    I.fillField(this.fields.applicant.telephoneNumber, applicant.telephoneNumber);
-    I.fillField(this.fields.applicant.email, applicant.email);
-    I.fillField(this.fields.applicant.pbaNumber, applicant.pbaNumber);
+    I.fillField(this.fields().applicant.mobileNumber, applicant.mobileNumber);
+    I.fillField(this.fields().applicant.telephone, applicant.telephoneNumber);
+    I.fillField(this.fields().applicant.email, applicant.email);
+    I.fillField(this.fields().applicant.pbaNumber, applicant.pbaNumber);
   },
 
   enterSolicitorDetails(solicitor) {
-    I.fillField(this.fields.solicitor.name, solicitor.name);
-    I.fillField(this.fields.solicitor.mobileNumber, solicitor.mobileNumber);
-    I.fillField(this.fields.solicitor.telephoneNumber, solicitor.telephoneNumber);
-    I.fillField(this.fields.solicitor.email, solicitor.email);
-    I.fillField(this.fields.solicitor.dx, solicitor.dx);
-    I.fillField(this.fields.solicitor.reference, solicitor.reference);
+    I.fillField(this.fields().solicitor.name, solicitor.name);
+    I.fillField(this.fields().solicitor.mobileNumber, solicitor.mobileNumber);
+    I.fillField(this.fields().solicitor.telephoneNumber, solicitor.telephoneNumber);
+    I.fillField(this.fields().solicitor.email, solicitor.email);
+    I.fillField(this.fields().solicitor.dx, solicitor.dx);
+    I.fillField(this.fields().solicitor.reference, solicitor.reference);
   },
 };
