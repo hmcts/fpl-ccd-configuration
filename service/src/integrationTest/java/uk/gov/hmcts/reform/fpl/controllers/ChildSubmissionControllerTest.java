@@ -109,6 +109,65 @@ class ChildSubmissionControllerTest {
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
+    @Test
+    void shouldReturnDateOfBirthErrorsForNewChildrenWhenThereIsMultipleRespondents() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of(
+                    "children1", ImmutableList.of(
+                        ImmutableMap.of(
+                            "id", "",
+                            "value", MigratedChildren.builder()
+                                .party(ChildParty.builder()
+                                    .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
+                                    .build())
+                                .build()
+                        ),
+                        ImmutableMap.of(
+                            "id", "",
+                            "value", MigratedChildren.builder()
+                                .party(ChildParty.builder()
+                                    .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
+                                    .build())
+                                .build()
+                        )
+                    )
+                ))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
+
+        assertThat(callbackResponse.getErrors()).containsExactly(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnNoDateOfBirthErrorsForNewChildrenWhenValidDateOfBirth() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of(
+                    "children1", ImmutableList.of(
+                        ImmutableMap.of(
+                            "id", "",
+                            "value", MigratedChildren.builder()
+                                .party(ChildParty.builder()
+                                    .dateOfBirth(Date.from(ZonedDateTime.now().minusDays(1).toInstant()))
+                                    .build())
+                                .build()
+                        )
+                    )
+                ))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+
     private AboutToStartOrSubmitCallbackResponse makeRequest(OldChildren children) throws Exception {
         HashMap<String, Object> map = MAPPER.readValue(MAPPER.writeValueAsString(children),
             new TypeReference<Map<String, Object>>() {
