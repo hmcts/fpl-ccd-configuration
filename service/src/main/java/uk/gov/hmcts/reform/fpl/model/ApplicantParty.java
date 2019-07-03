@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,8 +33,8 @@ public class ApplicantParty extends Party {
                            TelephoneNumber mobileNumber,
                            String jobTitle,
                            String pbaNumber) {
-        super(partyID, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address, emailAddress,
-            telephoneNumber);
+        super(partyID, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth,
+            address, emailAddress, telephoneNumber);
 
         this.name = name;
         this.mobileNumber = mobileNumber;

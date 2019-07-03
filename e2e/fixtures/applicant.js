@@ -1,4 +1,5 @@
 module.exports = {
+  partyType: 'Individual',
   name: 'John Smith',
   nameOfPersonToContact: 'Jonathon Walker',
   jobTitle: 'Legal adviser',
@@ -8,6 +9,7 @@ module.exports = {
       lineOne: 'Flat 2',
       lineTwo: 'Caversham House 15-17',
       lineThree: 'Church Road',
+      county: 'county'
     },
     town: 'Reading',
     postcode: 'RG4 7AA',

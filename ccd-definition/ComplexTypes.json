@@ -1635,7 +1635,7 @@
     "ID": "ApplicantParty",
     "ListElementCode": "telephoneNumber",
     "FieldType": "telephone",
-    "ElementLabel": " ",
+    "ElementLabel": "Telephone Number",
     "SecurityClassification": "Public"
   },
   {
@@ -1643,7 +1643,7 @@
     "ID": "ApplicantParty",
     "ListElementCode": "mobileNumber",
     "FieldType": "mobileNumber",
-    "ElementLabel": " ",
+    "ElementLabel": "Mobile Number",
     "SecurityClassification": "Public"
   },
   {

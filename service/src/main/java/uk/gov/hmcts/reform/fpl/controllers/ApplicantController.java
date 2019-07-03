@@ -11,8 +11,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.OldApplicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.OldApplicant;
 import uk.gov.hmcts.reform.fpl.service.ApplicantMigrationService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.utils.PBANumberHelper;
