@@ -1,14 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class HearingMigrationService {
@@ -18,20 +14,6 @@ public class HearingMigrationService {
 
         if (caseDetails.getData().containsKey("hearing1") || !caseDetails.getData().containsKey("hearing")) {
             data.put("hearingMigrated", "Yes");
-
-            // TODO - CHANGE TO HEARING CODE
-            if (!caseDetails.getData().containsKey("hearing1")) {
-                List<Map<String, Object>> populatedRespondent = new ArrayList<>();
-                populatedRespondent.add(ImmutableMap.of(
-                    "id", UUID.randomUUID().toString(),
-                    "value", ImmutableMap.of(
-                        "party", ImmutableMap.of(
-                            "partyId", UUID.randomUUID().toString()
-                        )
-                    ))
-                );
-                data.put("hearing1", populatedRespondent);
-            }
         } else {
             data.put("hearingMigrated", "No");
         }
@@ -40,4 +22,5 @@ public class HearingMigrationService {
             .data(data)
             .build();
     }
+
 }

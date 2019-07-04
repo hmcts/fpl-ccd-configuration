@@ -11,6 +11,7 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Hearing {
 
+    private final String hearingID;
     private final String hearingDescription;
     private final String reason;
     private final String timeFrame;
@@ -27,7 +28,8 @@ public class Hearing {
     private final String updatedBy;
 
     @JsonCreator
-    public Hearing(@JsonProperty("hearingDescription") final String hearingDescription,
+    public Hearing(@JsonProperty("hearingID") final String hearingID,
+                   @JsonProperty("hearingDescription") final String hearingDescription,
                    @JsonProperty("reason") final String reason,
                    @JsonProperty("timeFrame") final String timeFrame,
                    @JsonProperty("sameDayHearingReason") final String sameDayHearingReason,
@@ -41,6 +43,7 @@ public class Hearing {
                    @JsonProperty("createdBy") final String createdBy,
                    @JsonProperty("updatedDate") final String updatedDate,
                    @JsonProperty("updatedBy") final String updatedBy) {
+        this.hearingID = hearingID;
         this.hearingDescription = hearingDescription;
         this.reason = reason;
         this.timeFrame = timeFrame;

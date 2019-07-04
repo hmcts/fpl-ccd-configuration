@@ -14,9 +14,12 @@ import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.migration.MigratedHearing;
 import uk.gov.hmcts.reform.fpl.service.HearingMigrationService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
+import uk.gov.hmcts.reform.fpl.utils.DateUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
@@ -43,12 +46,13 @@ public class HearingController {
         return hearingMigrationService.setMigratedValue(caseDetails);
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(callbackrequest.getCaseDetails().getData())
+            .data(caseDetails.getData())
             .errors(validate(caseDetails))
             .build();
     }
@@ -73,10 +77,26 @@ public class HearingController {
 
         } else {
             Hearing hearing = mapper.mapObject(hearingData, Hearing.class);
+
+            // only check for description with the post migration code.
             if (hearing.getHearingDescription() == null || hearing.getHearingDescription().isBlank()) {
                 errors.add("Hearing description cannot be empty");
             }
+
+            // new fields post migration
+            // id, created by and created on are added in code.
+            // id
+            String newId = UUID.randomUUID().toString();
+            hearingData.put("id", newId);
+            // created by
+            String userIdWhoCreatedThis = Integer.toString(caseDetails.getLockedBy());
+            hearingData.put("createdBy", userIdWhoCreatedThis);
+            // created on
+            String currentDateAsAString = DateUtils.convertLocalDateTimeToString(LocalDateTime.now());
+            hearingData.put("createdOn", currentDateAsAString);
+
         }
+
         return errors.build();
     }
 
