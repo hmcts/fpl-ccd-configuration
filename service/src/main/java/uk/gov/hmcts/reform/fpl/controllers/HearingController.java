@@ -67,13 +67,13 @@ public class HearingController {
             MigratedHearing migratedHearing = mapper.mapObject((Map<String, Object>)
                 migratedHearingObject.get("value"), MigratedHearing.class);
 
-            if(migratedHearing.getHearingDescription() == null || migratedHearing.getHearingDescription().isBlank()) {
+            if (migratedHearing.getHearingDescription() == null || migratedHearing.getHearingDescription().isBlank()) {
                 errors.add("Hearing description cannot be empty");
             }
 
         } else {
             Hearing hearing = mapper.mapObject(hearingData, Hearing.class);
-            if(hearing.getHearingDescription() == null || hearing.getHearingDescription().isBlank()) {
+            if (hearing.getHearingDescription() == null || hearing.getHearingDescription().isBlank()) {
                 errors.add("Hearing description cannot be empty");
             }
         }
