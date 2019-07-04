@@ -3,60 +3,63 @@ const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
   state: {
-    context: 'firstChild',
+    context: 0,
   },
   
   fields: function() {
-    const childNo = this.state.context;
+    const id = this.state.context;
     
     return {
-      fullName: `#children_${childNo}_childName`,
+      partyType: `#children1_${id}_party_partyType`,
+      firstName: `#children1_${id}_party_firstName`,
+      lastName: `#children1_${id}_party_lastName`,
       DOB: {
-        day: `#children_${childNo}_childDOB-day`,
-        month: `#children_${childNo}_childDOB-month`,
-        year: `#children_${childNo}_childDOB-year`,
+        day: `#children1_${id}_party_dateOfBirth-day`,
+        month: `#children1_${id}_party_dateOfBirth-month`,
+        year: `#children1_${id}_party_dateOfBirth-year`,
       },
-      gender: `#children_${childNo}_childGender`,
+      address: `#children1_${id}_party_address_address`,
+      gender: `select[id="children1_${id}_party_gender"]`,
+      genderIdentification: `#children1_${id}_party_genderIdentification`,
       situation: {
-        selector: `#children_${childNo}_livingSituation`,
+        selector: `select[id="children1_${id}_party_livingSituation"]`,
+        situationDetails: `#children1_${id}_party_situationDetails`,
         dateStartedStaying: {
-          day: `#children_${childNo}_situationDate-day`,
-          month: `#children_${childNo}_situationDate-month`,
-          year: `#children_${childNo}_situationDate-year`,
+          day: `#children1_${id}_party_situationDate-day`,
+          month: `#children1_${id}_party_situationDate-month`,
+          year: `#children1_${id}_party_situationDate-year`,
         },
-        addressOfChild: `#children_${childNo}_address_address`,
+        addressOfChild: `div[id="children1_${id}_party_address_address"]`,
       },
-      keyDates: `#children_${childNo}_keyDates`,
-      careAndContactPlan: `#children_${childNo}_careAndContact`,
-      adoptionNo: `#children_${childNo}_adoption-No`,
-      mothersName: `#children_${childNo}_mothersName`,
-      fathersName: `#children_${childNo}_fathersName`,
-      fatherResponsible: `#children_${childNo}_fathersResponsibility`,
-      socialWorkerName: `#children_${childNo}_socialWorkerName`,
-      socialWorkerTel: `#children_${childNo}_socialWorkerTel`,
-      additionalNeedsNo: `#children_${childNo}_additionalNeeds-No`,
-      contactHiddenNo: `#children_${childNo}_detailsHidden-No`,
+      keyDates: `#children1_${id}_party_keyDates`,
+      careAndContactPlan: `#children1_${id}_party_careAndContact`,
+      adoptionNo: `#children1_${id}_party_adoption-No`,
+      mothersName: `#children1_${id}_party_mothersName`,
+      fathersName: `#children1_${id}_party_fathersName`,
+      fatherResponsible: `#children1_${id}_party_fathersResponsibility`,
+      socialWorkerName: `#children1_${id}_party_socialWorkerName`,
+      socialWorkerTel: `#children1_${id}_party_socialWorkerTel`,
+      additionalNeedsNo: `#children1_${id}_party_additionalNeeds-No`,
+      contactHiddenNo: `#children1_${id}_party_detailsHidden-No`,
       litigationIssues: {
-        yes: `#children_${childNo}_litigationIssues-YES`,
-        no: `#children_${childNo}_litigationIssues-NO`,
-        dont_know: `#children_${childNo}_litigationIssues-DONT_KNOW`,
+        yes: `#children1_${id}_party_litigationIssues-YES`,
+        no: `#children1_${id}_party_litigationIssues-NO`,
+        dont_know: `#children1_${id}_party_litigationIssues-DONT_KNOW`,
       },
-      litigationIssuesDetails: `#children_${childNo}_litigationIssuesDetails`,
+      litigationIssuesDetails: `#children1_${id}_party_litigationIssuesDetails`,
     };
   },
-  addChildButton: 'Add new',
+  addChildButton: '#children1 > div:nth-child(1) > button:nth-child(2)',
 
   addChild() {
-    if (this.state.context === 'additionalChildren_0') {
-      throw new Error('Adding more children is not supported in the test');
-    }
-
     I.click(this.addChildButton);
-    this.state.context = 'additionalChildren_0';
+    this.state.context++;
   },
 
-  enterChildDetails(name, day, month, year, gender = 'Boy') {
-    I.fillField(this.fields().fullName, name);
+  enterChildDetails(firstName, surname, day, month, year, gender = 'Male', partyType = 'Individual') {
+    I.fillField(this.fields().partyType, partyType);
+    I.fillField(this.fields().firstName, firstName);
+    I.fillField(this.fields().lastName, surname);
     I.click(this.fields().DOB.day);
     I.fillField(this.fields().DOB.day, day);
     I.fillField(this.fields().DOB.month, month);
@@ -73,7 +76,7 @@ module.exports = {
 
   enterAddress(address) {
     within(this.fields().situation.addressOfChild, () => {
-      postcodeLookup.lookupPostcode(address);
+      postcodeLookup.enterAddressManually(address);
     });
   },
 
