@@ -50,7 +50,7 @@ Scenario('Entering all information for first respondent and an additional respon
   I.seeAnswerInTab(2, 'Additional respondents 1', 'Date of birth', '1 Jan 1955');
   I.seeAnswerInTab(3, 'Additional respondents 1', 'Gender', 'Male');
   I.seeAnswerInTab(4, 'Additional respondents 1', 'Place of birth', 'London');
-  I.seeAnswerInTab(1, 'Current address', 'Building and Street', '1 Three Tuns Wynd');
+  I.seeAnswerInTab(1, 'Current address', 'Building and Street', '2 Three Tuns Wynd');
   I.seeAnswerInTab(2, 'Current address', '', 'High Street');
   I.seeAnswerInTab(3, 'Current address', '', 'Stokesley');
   I.seeAnswerInTab(4, 'Current address', 'Town or City', 'Middlesbrough');
