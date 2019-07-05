@@ -199,6 +199,7 @@ dependencies {
   }
   testCompile group: 'org.junit.jupiter', name :'junit-jupiter', version: '5.4.2'
   testCompile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.16'
+  testCompile 'org.mockito:mockito-junit-jupiter:2.23.0'
 
   integrationTestCompile configurations.testRuntime {
     exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
