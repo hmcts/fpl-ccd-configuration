@@ -48,7 +48,7 @@ Scenario('Complete entering others details in the c110a application', (I, enterO
   I.seeAnswerInTab(2, 'Other person 1', 'Date of birth', '1 Jan 1984');
   I.seeAnswerInTab(3, 'Other person 1', 'Gender', 'Male');
   I.seeAnswerInTab(4, 'Other person 1', 'Place of birth', 'Wales');
-  I.seeAnswerInTab(1, 'Current address', 'Building and Street', '1 Three Tuns Wynd');
+  I.seeAnswerInTab(1, 'Current address', 'Building and Street', '2 Three Tuns Wynd');
   I.seeAnswerInTab(2, 'Current address', '', 'High Street');
   I.seeAnswerInTab(3, 'Current address', '', 'Stokesley');
   I.seeAnswerInTab(4, 'Current address', 'Town or City', 'Middlesbrough');

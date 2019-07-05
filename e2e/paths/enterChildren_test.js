@@ -13,9 +13,9 @@ const addresses = [
     country: 'United Kingdom',
   },
   {
-    lookupOption: '1 Three Tuns Wynd, High Street, Stokesley, Middlesbrough',
+    lookupOption: '2 Three Tuns Wynd, High Street, Stokesley, Middlesbrough',
     buildingAndStreet: {
-      lineOne: '1 Three Tuns Wynd',
+      lineOne: '2 Three Tuns Wynd',
       lineTwo: 'High Street',
       lineThree: 'Stokesley',
     },
@@ -101,7 +101,7 @@ Scenario('completing entering child information in the c110a application', (I, e
   I.seeAnswerInTab(3, 'Party', 'Last name', 'Wilson');
   I.seeAnswerInTab(4, 'Party', 'Date of birth', '1 Jul 2016');
   I.seeAnswerInTab(5, 'Party', 'Gender', 'Girl');
-  I.seeAnswerInTab(1, 'Current address', 'Building and Street', '1 Three Tuns Wynd');
+  I.seeAnswerInTab(1, 'Current address', 'Building and Street', '2 Three Tuns Wynd');
   I.seeAnswerInTab(2, 'Current address', '', 'High Street');
   I.seeAnswerInTab(3, 'Current address', '', 'Stokesley');
   I.seeAnswerInTab(4, 'Current address', 'Town or City', 'Middlesbrough');
