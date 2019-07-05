@@ -25,6 +25,11 @@ public class CoreCaseDataStoreLoader {
         return mapper.readValue(response, CaseDetails.class);
     }
 
+    public static CaseDetails reformMigratedCaseDetails() throws IOException {
+        String response = ResourceReader.readString("core-case-data-store-api/reform-migrated-case-details.json");
+        return mapper.readValue(response, CaseDetails.class);
+    }
+
     public static CallbackRequest callbackRequest() throws IOException {
         String response = ResourceReader.readString("core-case-data-store-api/callback-request.json");
         return mapper.readValue(response, CallbackRequest.class);

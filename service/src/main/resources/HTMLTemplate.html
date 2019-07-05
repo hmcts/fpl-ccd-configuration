@@ -999,20 +999,10 @@
   <h3 class="heading heading--two">Child {{ counter }}</h3>
   <dl class="data-list">
     <div class="data-list__row">
-      <dt class="data-list__title">First name</dt>
+      <dt class="data-list__title">Name</dt>
       <dd class="data-list__definition">
-        {% if child.value.party.firstName is not empty %}
-        {{ child.value.party.firstName }}
-        {% else %}
-        -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Last name</dt>
-      <dd class="data-list__definition">
-        {% if child.value.party.lastName is not empty %}
-        {{ child.value.party.lastName }}
+        {% if child.value.party.firstName is not empty and child.value.party.lastName is not empty %}
+        {{ child.value.party.firstName }} {{ child.value.party.lastName }}
         {% else %}
         -
         {% endif %}
