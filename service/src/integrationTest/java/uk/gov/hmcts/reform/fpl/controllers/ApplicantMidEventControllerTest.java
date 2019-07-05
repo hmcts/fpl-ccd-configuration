@@ -54,18 +54,164 @@ public class ApplicantMidEventControllerTest {
                 .build())
             .build();
 
-        MvcResult response = mockMvc
-            .perform(post("/callback/enter-applicant/mid-event")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
+        MvcResult response = getMvcResult(request);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         Assertions.assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnErrorsWhenThereIsNewApplicantAndNoPbaNumberIsNull() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of(
+                    "applicants", ImmutableList.of(
+                        ImmutableMap.of(
+                            "id", "",
+                            "value", Applicant.builder()
+                                .party(ApplicantParty.builder()
+                                    .pbaNumber(null)
+                                    .build())
+                                .build()
+                        )
+                    )
+                ))
+                .build())
+            .build();
+
+        MvcResult response = getMvcResult(request);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        Assertions.assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnErrorsWhenThereIsNewApplicantAndPbaNumberIsNotSevenDigits() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of(
+                    "applicants", ImmutableList.of(
+                        ImmutableMap.of(
+                            "id", "",
+                            "value", Applicant.builder()
+                                .party(ApplicantParty.builder()
+                                    .pbaNumber("123")
+                                    .build())
+                                .build()
+                        )
+                    )
+                ))
+                .build())
+            .build();
+
+        MvcResult response = getMvcResult(request);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        Assertions.assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnNoErrorsWhenThereIsNewApplicantAndPbaNumberIsSevenDigits() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of(
+                    "applicants", ImmutableList.of(
+                        ImmutableMap.of(
+                            "id", "",
+                            "value", Applicant.builder()
+                                .party(ApplicantParty.builder()
+                                    .pbaNumber("1234567")
+                                    .build())
+                                .build()
+                        )
+                    )
+                ))
+                .build())
+            .build();
+
+        MvcResult response = getMvcResult(request);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        Assertions.assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnNoErrorsWhenThereIsNewApplicantAndPbaNumberWithpbaAndSevenDigits() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of(
+                    "applicants", ImmutableList.of(
+                        ImmutableMap.of(
+                            "id", "",
+                            "value", Applicant.builder()
+                                .party(ApplicantParty.builder()
+                                    .pbaNumber("pba1234567")
+                                    .build())
+                                .build()
+                        )
+                    )
+                ))
+                .build())
+            .build();
+
+        MvcResult response = getMvcResult(request);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        Assertions.assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnNoErrorsWhenThereIsNewApplicantAndPbaNumberWithPBAAndSevenDigits() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of(
+                    "applicants", ImmutableList.of(
+                        ImmutableMap.of(
+                            "id", "",
+                            "value", Applicant.builder()
+                                .party(ApplicantParty.builder()
+                                    .pbaNumber("PBA1234567")
+                                    .build())
+                                .build()
+                        )
+                    )
+                ))
+                .build())
+            .build();
+
+        MvcResult response = getMvcResult(request);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        Assertions.assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+    }
+
+
+
+    private MvcResult getMvcResult(CallbackRequest request) throws Exception {
+        return mockMvc
+                .perform(post("/callback/enter-applicant/mid-event")
+                    .header("authorization", AUTH_TOKEN)
+                    .header("user-id", USER_ID)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(MAPPER.writeValueAsString(request)))
+                .andExpect(status().isOk())
+                .andReturn();
     }
 }
