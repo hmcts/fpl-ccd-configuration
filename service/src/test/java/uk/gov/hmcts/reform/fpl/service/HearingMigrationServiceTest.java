@@ -38,7 +38,7 @@ public class HearingMigrationServiceTest {
     }
 
     @Test
-    void shouldSetMigratedHearingToNoWhenOldHearingExists() {
+    void shouldSetMigratedHearingToNoWhenMigratedHearingExists() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(createData("hearing", "some value"))
             .build();

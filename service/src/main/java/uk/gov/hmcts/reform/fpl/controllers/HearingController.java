@@ -61,21 +61,21 @@ public class HearingController {
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
 
-        Map<String, Object> hearingData =
-            (Map<String, Object>) defaultIfNull(caseDetails.getData().get("hearing"), null);
-
         if (caseDetails.getData().containsKey("hearing1")) {
 
             Map<String, Object> migratedHearingObject = (Map<String, Object>) caseDetails.getData().get("hearing1");
 
             MigratedHearing migratedHearing = mapper.mapObject((Map<String, Object>)
-                migratedHearingObject.get("value"), MigratedHearing.class);
+                migratedHearingObject, MigratedHearing.class);
 
             if (migratedHearing.getHearingDescription() == null || migratedHearing.getHearingDescription().isBlank()) {
                 errors.add("Hearing description cannot be empty");
             }
 
         } else {
+            Map<String, Object> hearingData =
+                (Map<String, Object>) defaultIfNull(caseDetails.getData().get("hearing"), null);
+
             Hearing hearing = mapper.mapObject(hearingData, Hearing.class);
 
             // only check for description with the post migration code.
