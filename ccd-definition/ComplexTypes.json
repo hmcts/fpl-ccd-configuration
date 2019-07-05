@@ -1570,8 +1570,9 @@
     "LiveFrom": "01/01/2017",
     "ID": "partyChild",
     "ListElementCode": "partyType",
-    "FieldType": "Text",
-    "ElementLabel": "Party type",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "PartyType",
+    "ElementLabel": " ",
     "SecurityClassification": "Public"
   },
   {
