@@ -67,7 +67,7 @@ module.exports = {
   },
 
   selectPartyType() {
-    I.click(this.fields().partyTypeIndividual)
+    I.click(this.fields().partyTypeIndividual);
   },
 
   defineChildSituation(day, month, year, situation = 'Living with respondents') {
