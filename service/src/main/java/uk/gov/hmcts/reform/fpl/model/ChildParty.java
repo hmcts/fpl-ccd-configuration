@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,21 +9,9 @@ import uk.gov.hmcts.reform.fpl.model.common.TelephoneNumber;
 
 import java.util.Date;
 
-@Builder
 @Data
 @EqualsAndHashCode(callSuper = true)
 public final class ChildParty extends Party {
-    private final String partyID;
-    private final String idamID;
-    private final String partyType;
-    private final String title;
-    private final String firstName;
-    private final String lastName;
-    private final String organisationName;
-    private final Date dateOfBirth;
-    private final Address address;
-    private final EmailAddress email;
-    private final TelephoneNumber telephoneNumber;
     private final String gender;
     private final String genderIdentification;
     private final String livingSituation;
@@ -48,52 +34,41 @@ public final class ChildParty extends Party {
     private final String litigationIssues;
     private final String litigationIssuesDetails;
 
-    @JsonCreator
-    private ChildParty(@JsonProperty("partyID") String partyID,
-                       @JsonProperty("idamID") String idamID,
-                       @JsonProperty("partyType") String partyType,
-                       @JsonProperty("title") String title,
-                       @JsonProperty("firstName") String firstName,
-                       @JsonProperty("lastName") String lastName,
-                       @JsonProperty("organisationName") String organisationName,
-                       @JsonProperty("dateOfBirth") Date dateOfBirth,
-                       @JsonProperty("address") Address address,
-                       @JsonProperty("email") EmailAddress email,
-                       @JsonProperty("telephoneNumber") TelephoneNumber telephoneNumber,
-                       @JsonProperty("gender") String gender,
-                       @JsonProperty("genderIdentification") String genderIdentification,
-                       @JsonProperty("livingSituation") String livingSituation,
-                       @JsonProperty("situationDetails") String situationDetails,
-                       @JsonProperty("situationDate") Date situationDate,
-                       @JsonProperty("keyDates") String keyDates,
-                       @JsonProperty("careAndContact") String careAndContact,
-                       @JsonProperty("adoption") String adoption,
-                       @JsonProperty("placementOrderApplication") String placementOrderApplication,
-                       @JsonProperty("placementCourt") String placementCourt,
-                       @JsonProperty("mothersName") String mothersName,
-                       @JsonProperty("fathersName") String fathersName,
-                       @JsonProperty("fathersResponsibility") String fathersResponsibility,
-                       @JsonProperty("socialWorkerName") String socialWorkerName,
-                       @JsonProperty("socialWorkTel") String socialWorkerTel,
-                       @JsonProperty("additionalNeeds") String additionalNeeds,
-                       @JsonProperty("additionalNeedsDetails") String additionalNeedsDetails,
-                       @JsonProperty("detailsHidden") String detailsHidden,
-                       @JsonProperty("detailsHiddenReason") String detailsHiddenReason,
-                       @JsonProperty("litigationIssues") String litigationIssues,
-                       @JsonProperty("litigationIssuesDetails") String litigationIssuesDetails) {
+    @Builder
+    private ChildParty(String partyID,
+                       String idamID,
+                       String partyType,
+                       String title,
+                       String firstName,
+                       String lastName,
+                       String organisationName,
+                       Date dateOfBirth,
+                       Address address,
+                       EmailAddress email,
+                       TelephoneNumber telephoneNumber,
+                       String gender,
+                       String genderIdentification,
+                       String livingSituation,
+                       String situationDetails,
+                       Date situationDate,
+                       String keyDates,
+                       String careAndContact,
+                       String adoption,
+                       String placementOrderApplication,
+                       String placementCourt,
+                       String mothersName,
+                       String fathersName,
+                       String fathersResponsibility,
+                       String socialWorkerName,
+                       String socialWorkerTel,
+                       String additionalNeeds,
+                       String additionalNeedsDetails,
+                       String detailsHidden,
+                       String detailsHiddenReason,
+                       String litigationIssues,
+                       String litigationIssuesDetails) {
         super(partyID, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address,
             email, telephoneNumber);
-        this.partyID = partyID;
-        this.idamID = idamID;
-        this.partyType = partyType;
-        this.title = title;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.organisationName = organisationName;
-        this.dateOfBirth = dateOfBirth;
-        this.address = address;
-        this.email = email;
-        this.telephoneNumber = telephoneNumber;
         this.gender = gender;
         this.genderIdentification = genderIdentification;
         this.livingSituation = livingSituation;
