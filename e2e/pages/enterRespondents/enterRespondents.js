@@ -12,8 +12,6 @@ module.exports = {
 
     return {
       respondent: {
-        partyType: `#respondents1_${id}_party_partyType`,
-        title: `#respondents1_${id}_party_title`,
         firstName: `#respondents1_${id}_party_firstName`,
         lastName: `#respondents1_${id}_party_lastName`,
         dateOfBirth: {
@@ -50,22 +48,20 @@ module.exports = {
   },
 
   enterRespondent(respondent) {
-    I.fillField(this.fields().respondent.partyType, respondent.partyType);
-    I.fillField(this.fields().respondent.title, respondent.title);
     I.fillField(this.fields().respondent.firstName, respondent.firstName);
     I.fillField(this.fields().respondent.lastName, respondent.lastName);
     I.fillField(this.fields().respondent.dateOfBirth.day, respondent.dob.day);
     I.fillField(this.fields().respondent.dateOfBirth.month, respondent.dob.month);
     I.fillField(this.fields().respondent.dateOfBirth.year, respondent.dob.year);
-    within(this.fields().respondent.address, () => {
-      postcodeLookup.enterAddressManually(respondent.address);
-    });
-    I.fillField(this.fields().respondent.telephone, respondent.telephone);
     I.selectOption(this.fields().respondent.gender, respondent.gender);
     if (respondent.gender === 'They identify in another way') {
       I.fillField(this.fields().respondent.genderIdentification, '');
     }
     I.fillField(this.fields().respondent.placeOfBirth, respondent.placeOfBirth);
+    within(this.fields().respondent.address, () => {
+      postcodeLookup.enterAddressManually(respondent.address);
+    });
+    I.fillField(this.fields().respondent.telephone, respondent.telephone);
   },
 
   enterRelationshipToChild(relationship) {
