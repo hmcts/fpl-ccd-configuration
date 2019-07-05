@@ -42,6 +42,7 @@ Scenario('completing half of the enter children in the c110a application', (I, e
 });
 
 Scenario('completing entering child information in the c110a application', (I, enterChildrenPage, caseViewPage) => {
+  enterChildrenPage.selectPartyType();
   enterChildrenPage.enterChildDetails('Bran', 'Stark', '01', '08', '2015');
   enterChildrenPage.defineChildSituation('01', '11', '2017');
   enterChildrenPage.enterAddress(addresses[0]);
@@ -54,7 +55,8 @@ Scenario('completing entering child information in the c110a application', (I, e
   enterChildrenPage.defineContactDetailsVisibility();
   enterChildrenPage.enterLitigationIssues('Yes', 'mock reason');
   enterChildrenPage.addChild();
-  enterChildrenPage.enterChildDetails('Susan', 'Wilson', '01', '07', '2016', 'Female');
+  enterChildrenPage.selectPartyType();
+  enterChildrenPage.enterChildDetails('Susan', 'Wilson', '01', '07', '2016', 'Girl');
   enterChildrenPage.defineChildSituation('02', '11', '2017');
   enterChildrenPage.enterAddress(addresses[1]);
   enterChildrenPage.enterKeyDatesAffectingHearing();
@@ -72,7 +74,7 @@ Scenario('completing entering child information in the c110a application', (I, e
   I.seeAnswerInTab(3, 'Party', 'First name', 'Bran');
   I.seeAnswerInTab(4, 'Party', 'Last name', 'Stark');
   I.seeAnswerInTab(5, 'Party', 'Date of birth', '1 Aug 2015');
-  I.seeAnswerInTab(6, 'Party', 'Gender', 'Male');
+  I.seeAnswerInTab(6, 'Party', 'Gender', 'Boy');
   I.seeAnswerInTab(1, 'Current address', 'Building and Street', 'Flat 2');
   I.seeAnswerInTab(2, 'Current address', '', 'Caversham House 15-17');
   I.seeAnswerInTab(3, 'Current address', '', 'Church Road');
@@ -98,7 +100,7 @@ Scenario('completing entering child information in the c110a application', (I, e
   I.seeAnswerInTab(2, 'Party', 'First name', 'Susan');
   I.seeAnswerInTab(3, 'Party', 'Last name', 'Wilson');
   I.seeAnswerInTab(4, 'Party', 'Date of birth', '1 Jul 2016');
-  I.seeAnswerInTab(5, 'Party', 'Gender', 'Female');
+  I.seeAnswerInTab(5, 'Party', 'Gender', 'Girl');
   I.seeAnswerInTab(1, 'Current address', 'Building and Street', '1 Three Tuns Wynd');
   I.seeAnswerInTab(2, 'Current address', '', 'High Street');
   I.seeAnswerInTab(3, 'Current address', '', 'Stokesley');

@@ -1572,7 +1572,7 @@
     "ListElementCode": "partyType",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "PartyType",
-    "ElementLabel": " ",
+    "ElementLabel": "Party type",
     "SecurityClassification": "Public"
   },
   {
@@ -1605,7 +1605,7 @@
     "ID": "partyChild",
     "ListElementCode": "gender",
     "FieldType": "FixedList",
-    "FieldTypeParameter": "GenderList",
+    "FieldTypeParameter": "ChildGenderList",
     "ElementLabel": "Gender",
     "SecurityClassification": "Public"
   },
