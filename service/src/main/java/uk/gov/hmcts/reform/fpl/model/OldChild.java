@@ -11,7 +11,7 @@ import java.util.Date;
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-@SuppressWarnings("\"squid:S00107\"")
+@SuppressWarnings("\"all\"")
 public class OldChild {
 
     private final String childName;
