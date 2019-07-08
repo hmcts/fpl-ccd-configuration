@@ -1573,6 +1573,7 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "PartyType",
     "ElementLabel": "Party type",
+    "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {

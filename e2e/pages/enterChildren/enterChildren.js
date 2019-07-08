@@ -10,7 +10,6 @@ module.exports = {
     const id = this.state.context;
     
     return {
-      partyTypeIndividual: `#children1_${id}_party_partyType-INDIVIDUAL`,
       firstName: `#children1_${id}_party_firstName`,
       lastName: `#children1_${id}_party_lastName`,
       DOB: {
@@ -64,10 +63,6 @@ module.exports = {
     I.fillField(this.fields().DOB.month, month);
     I.fillField(this.fields().DOB.year, year);
     I.selectOption(this.fields().gender, gender);
-  },
-
-  selectPartyType() {
-    I.click(this.fields().partyTypeIndividual);
   },
 
   defineChildSituation(day, month, year, situation = 'Living with respondents') {
