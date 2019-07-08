@@ -15,7 +15,7 @@ module.exports = {
         partyType: `#applicants_${id}_party_partyType`,
         name: `#applicants_${id}_party_name`,
         address: `#applicants_${id}_party_address_address`,
-        email: `input[id="applicants_${id}_party_emailAddress_email"]`,
+        email: `input[id="applicants_${id}_party_email_email"]`,
         telephone: `input[id="applicants_${id}_party_telephoneNumber_telephoneNumber"]`,
         nameOfPersonToContact: `input[id="applicants_${id}_party_telephoneNumber_contactDirection"]`,
         mobileNumber: `#applicants_${id}_party_mobileNumber_telephoneNumber`,

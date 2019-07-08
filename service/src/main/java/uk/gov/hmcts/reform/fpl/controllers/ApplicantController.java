@@ -53,9 +53,6 @@ public class ApplicantController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         ImmutableList.Builder<String> validationErrors = ImmutableList.builder();
 
-        Map<String, Object> applicantData = (Map<String, Object>)
-            defaultIfNull(caseDetails.getData().get("applicant"), null);
-
         if (caseDetails.getData().containsKey("applicants")) {
             List<Map<String, Object>> migratedApplicantsObject =
                 (List<Map<String, Object>>) caseDetails.getData().get("applicants");
@@ -74,6 +71,9 @@ public class ApplicantController {
             caseDetails.getData().put("applicants", migratedApplicantsObject);
 
         } else {
+            Map<String, Object> applicantData = (Map<String, Object>)
+                defaultIfNull(caseDetails.getData().get("applicant"), null);
+
             OldApplicant applicant = mapperService.mapObject(applicantData, OldApplicant.class);
 
             if (applicant.getPbaNumber() == null || applicant.getPbaNumber().isBlank()) {

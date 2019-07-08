@@ -1559,7 +1559,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "emailAddress",
+    "ID": "EmailAddress",
     "ListElementCode": "email",
     "FieldType": "Text",
     "ElementLabel": "Email Address",
@@ -1567,7 +1567,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "telephone",
+    "ID": "Telephone",
     "ListElementCode": "telephoneNumber",
     "FieldType": "Text",
     "ElementLabel": "Telephone",
@@ -1575,7 +1575,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "telephone",
+    "ID": "Telephone",
     "ListElementCode": "contactDirection",
     "FieldType": "Text",
     "ElementLabel": "Person to contact",
@@ -1583,7 +1583,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "mobileNumber",
+    "ID": "MobileNumber",
     "ListElementCode": "telephoneNumber",
     "FieldType": "Text",
     "ElementLabel": "Mobile Number",
@@ -1625,8 +1625,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ApplicantParty",
-    "ListElementCode": "emailAddress",
-    "FieldType": "emailAddress",
+    "ListElementCode": "email",
+    "FieldType": "EmailAddress",
     "ElementLabel": "Email ",
     "SecurityClassification": "Public"
   },
@@ -1634,7 +1634,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "ApplicantParty",
     "ListElementCode": "telephoneNumber",
-    "FieldType": "telephone",
+    "FieldType": "Telephone",
     "ElementLabel": "Telephone Number",
     "SecurityClassification": "Public"
   },
@@ -1642,7 +1642,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "ApplicantParty",
     "ListElementCode": "mobileNumber",
-    "FieldType": "mobileNumber",
+    "FieldType": "MobileNumber",
     "ElementLabel": "Mobile Number",
     "SecurityClassification": "Public"
   },
