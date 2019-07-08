@@ -11,7 +11,7 @@ import java.util.Date;
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-@SuppressWarnings("\"all\"")
+@SuppressWarnings({"common-java:DuplicatedBlocks", "squid:S00107"})
 public class OldChild {
 
     private final String childName;
