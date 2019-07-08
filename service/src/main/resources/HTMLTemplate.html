@@ -165,6 +165,9 @@
         <div class="data-list__row data-list__row--no-border">
           <dt class="data-list__title">Applicant</dt>
           <dd class="data-list__definition">
+            {% if case_data.applicant is not empty and case_data.applicant.name is not empty %}
+              {{ case_data.applicant.name }}
+            {% endif %}
             {% if case_data.applicants is not empty %}
               {% for applicant in case_data.applicants %}
                 {% if applicant.value.party.name is not empty %}
@@ -205,15 +208,21 @@
 </header>
 <main>
   <h2 class="heading heading--two u-margin-bottom-10">
+    {% if case_data.applicant is empty or case_data.applicant.name is empty %}
+      Application
+    {% else %}
+      Application from {{ case_data.applicant.name }}
+    {% endif %}
     {% if case_data.applicants is not empty %}
       {% for applicant in case_data.applicants %}
         {% if applicant.value.party.name is empty %}
         Application
         {% else %}
-          Application from {{ applicant.value.party.name }} submitted on {{ null | today | date("d MMMM yyyy") }}
+          Application from {{ applicant.value.party.name }}
         {% endif %}
       {% endfor %}
     {% endif %}
+    submitted on {{ null | today | date("d MMMM yyyy") }}
   </h2>
 
   <h3 class="heading heading--two">Orders</h3>
@@ -1367,10 +1376,120 @@
     {% endfor %}
   {% endif %}
 
-  {% if case_data.applicants is not empty %}
   <h3 class="heading heading--two">Applicant</h3>
+  {% if case_data.applicant is not empty %}
+  <dl class="data-list">
+    <div class="data-list__row">
+      <dt class="data-list__title">Name</dt>
+      <dd class="data-list__definition">
+        {% if case_data.applicant is not empty and
+        case_data.applicant.name is not empty %}
+        {{ case_data.applicant.name }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Contact name</dt>
+      <dd class="data-list__definition">
+        {% if case_data.applicant is not empty and
+        case_data.applicant.personToContact is not empty %}
+        {{ case_data.applicant.personToContact }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Job title</dt>
+      <dd class="data-list__definition">
+        {% if case_data.applicant is not empty and
+        case_data.applicant.jobTitle is not empty %}
+        {{ case_data.applicant.jobTitle }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Address</dt>
+      <dd class="data-list__definition">
+        {% if case_data.applicant is not empty and
+        case_data.applicant.address is not empty %}
+        {% if case_data.applicant.address.AddressLine1 is not empty %}
+        <span class="u-comma-before">{{ case_data.applicant.address.AddressLine1 }}</span>
+        {% endif %}
+        {% if case_data.applicant.address.AddressLine2 is not empty %}
+        <span class="u-comma-before">{{ case_data.applicant.address.AddressLine2 }}</span>
+        {% endif %}
+        {% if case_data.applicant.address.AddressLine3 is not empty %}
+        <span class="u-comma-before">{{ case_data.applicant.address.AddressLine3 }}</span>
+        {% endif %}
+        {% if case_data.applicant.address.PostTown is not empty %}
+        <span class="u-comma-before">{{ case_data.applicant.address.PostTown }}</span>
+        {% endif %}
+        {% if case_data.applicant.address.PostCode is not empty %}
+        <span class="u-comma-before">{{ case_data.applicant.address.PostCode }}</span>
+        {% endif %}
+        {% if case_data.applicant.address.County is not empty %}
+        <span class="u-comma-before">{{ case_data.applicant.address.County }}</span>
+        {% endif %}
+        {% if case_data.applicant.address.Country is not empty %}
+        <span class="u-comma-before">{{ case_data.applicant.address.Country }}</span>
+        {% endif %}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Mobile number</dt>
+      <dd class="data-list__definition">
+        {% if case_data.applicant is not empty and
+        case_data.applicant.mobile is not empty %}
+        {{ case_data.applicant.mobile }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Telephone number</dt>
+      <dd class="data-list__definition">
+        {% if case_data.applicant is not empty and
+        case_data.applicant.telephone is not empty %}
+        {{ case_data.applicant.telephone }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Email address</dt>
+      <dd class="data-list__definition">
+        {% if case_data.applicant is not empty and
+        case_data.applicant.email is not empty %}
+        {{ case_data.applicant.email }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+    <div class="data-list__row">
+      <dt class="data-list__title">Payment by account (PBA) number</dt>
+      <dd class="data-list__definition">
+        {% if case_data.applicant is not empty and
+        case_data.applicant.pbaNumber is not empty %}
+        {{ case_data.applicant.pbaNumber }}
+        {% else %}
+        -
+        {% endif %}
+      </dd>
+    </div>
+  {% endif %}
+  {% if case_data.applicants is not empty %}
   {% for applicant in case_data.applicants %}
-
   <dl class="data-list">
     <div class="data-list__row">
       <dt class="data-list__title">Name</dt>
@@ -1455,8 +1574,8 @@
     <div class="data-list__row">
       <dt class="data-list__title">Email address</dt>
       <dd class="data-list__definition">
-        {% if applicant.value.party.emailAddress is not empty and applicant.value.party.emailAddress.email is not empty %}
-            {{ applicant.value.party.emailAddress.email }}
+        {% if applicant.value.party.email is not empty and applicant.value.party.email.email is not empty %}
+            {{ applicant.value.party.email.email }}
         {% else %}
           -
         {% endif %}
