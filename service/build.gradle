@@ -137,8 +137,8 @@ dependencyCheck {
 }
 
 // Excludes sonar cloud testing to avoid duplication of code warning
-def sonarExclusions = ['**/uk/gov/hmcts/reform/fpl/model/OldChild',
-                       '**/uk/gov/hmcts/reform/fpl/model/ChildParty']
+def sonarExclusions = ['**/model/OldChild.java',
+                       '**/model/ChildParty.java']
 
 sonarqube {
   properties {
