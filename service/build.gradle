@@ -143,7 +143,7 @@ sonarqube {
     property "sonar.jacoco.itReportPath", file("${project.buildDir}/jacoco/integration.exec")
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-    property "sonar.coverage.exclusions", "**/model/**, uk.gov.hmcts.reform.fpl.model.OldChild, uk.gov.hmcts.reform.fpl.model.ChildParty"
+    property "sonar.coverage.exclusions", "**/model/**"
     // Excludes sonar cloud testing to avoid duplication of code warning
     property 'sonar.exclusions', "**/model/OldChild, **/model/ChildParty"
   }
