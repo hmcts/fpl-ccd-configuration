@@ -1556,5 +1556,160 @@
     "FieldType": "Document",
     "ElementLabel": "Upload a file",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Telephone",
+    "ListElementCode": "telephoneNumber",
+    "FieldType": "Text",
+    "ElementLabel": "Telephone Number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "partyId",
+    "FieldType": "Text",
+    "ElementLabel": "Party ID",
+    "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "partyType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "PartyType",
+    "ElementLabel": " ",
+    "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "firstName",
+    "FieldType": "Text",
+    "ElementLabel": "First name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "lastName",
+    "FieldType": "Text",
+    "ElementLabel": "Last name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "dateOfBirth",
+    "FieldType": "Date",
+    "ElementLabel": "Date of birth",
+    "HintText": "For example, 31 3 1980",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "gender",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "GenderList",
+    "ElementLabel": "Gender",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "genderIdentification",
+    "FieldType": "Text",
+    "ElementLabel": "What gender do they identify with?",
+    "FieldShowCondition": "gender=\"They identify in another way\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "birthPlace",
+    "FieldType": "Text",
+    "ElementLabel": "Place of birth",
+    "HintText": "For example, town or city",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Current address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "telephoneNumber",
+    "FieldType": "Telephone",
+    "ElementLabel": "Telephone",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "childInformation",
+    "FieldType": "TextArea",
+    "ElementLabel": "What is this person’s relationship to the child or children in this case?",
+    "HintText": "Include: the name of the child or children, this person’s relationship to them and whether this person has parental responsibility",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "detailsHidden",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Do you need contact details hidden from other parties?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "detailsHiddenReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "FieldShowCondition": "detailsHidden=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "proceedingsLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## Ability to take part in proceedings",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "litigationIssues",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "LitigationCapacityIssues",
+    "ElementLabel": "Do you believe this person will have problems with litigation capacity (understanding what's happening in the case)?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherParty",
+    "ListElementCode": "litigationIssuesDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
+    "FieldShowCondition": "litigationIssues=\"YES\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PersonNew",
+    "ListElementCode": "party",
+    "FieldType": "OtherParty",
+    "ElementLabel": "Party",
+    "SecurityClassification": "Public"
   }
 ]

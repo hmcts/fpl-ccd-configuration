@@ -246,6 +246,23 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "others1",
+    "Label": "Others to be given notice",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "PersonNew",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "othersMigrated",
+    "Label": "Migrated?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respondents",
     "Label": "Respondents",
     "FieldType": "Respondent",
