@@ -92,7 +92,7 @@ Scenario('completing entering child information in the c110a application', (I, e
   I.seeAnswerInTab(18, 'Party', 'Do you need contact details hidden from other parties?', 'No');
   I.seeAnswerInTab(19, 'Party', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'Yes');
   I.seeAnswerInTab(20, 'Party', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
-  
+
   I.seeAnswerInTab(1, 'Party', 'First name', 'Susan');
   I.seeAnswerInTab(2, 'Party', 'Last name', 'Wilson');
   I.seeAnswerInTab(3, 'Party', 'Date of birth', '1 Jul 2016');

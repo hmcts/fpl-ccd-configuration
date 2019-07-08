@@ -11,6 +11,7 @@ import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@SuppressWarnings("\"squid:S00107\"")
 public final class ChildParty extends Party {
     private final String gender;
     private final String genderIdentification;
