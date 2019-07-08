@@ -1655,14 +1655,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentParty",
-    "ListElementCode": "respondent_border_1",
-    "FieldType": "Label",
-    "ElementLabel": "---",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "RespondentParty",
     "ListElementCode": "relationshipLabel",
     "FieldType": "Label",
     "ElementLabel": "## Relationship to the child",
@@ -1675,14 +1667,6 @@
     "FieldType": "TextArea",
     "ElementLabel": "What is the respondent’s relationship to the child or children in this case?",
     "HintText": "Include: the name of the child or children, the respondent’s relationship to them and any details if you’re not sure this person has parental responsibility",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "RespondentParty",
-    "ListElementCode": "respondent_border_2",
-    "FieldType": "Label",
-    "ElementLabel": "---",
     "SecurityClassification": "Public"
   },
   {
