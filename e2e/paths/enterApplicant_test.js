@@ -36,7 +36,7 @@ Scenario('Filling in the full section for enter applicants', (I, enterApplicantP
   I.seeAnswerInTab(4, 'Address', 'Town or City', applicant.address.town);
   I.seeAnswerInTab(5, 'Address', 'Postcode/Zipcode', applicant.address.postcode);
   I.seeAnswerInTab(6, 'Address', 'Country', applicant.address.country);
-  I.seeAnswerInTab(1, 'Email', 'Email Address', applicant.email);
+  I.seeAnswerInTab(1, 'Email', 'Email', applicant.email);
   I.seeAnswerInTab(1, 'Telephone Number', 'Telephone', applicant.telephoneNumber);
   I.seeAnswerInTab(2, 'Telephone Number', 'Person to contact', applicant.nameOfPersonToContact);
   I.seeAnswerInTab(1, 'Mobile Number', 'Mobile Number', applicant.mobileNumber);

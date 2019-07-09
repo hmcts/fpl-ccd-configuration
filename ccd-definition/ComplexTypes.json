@@ -1562,7 +1562,7 @@
     "ID": "EmailAddress",
     "ListElementCode": "email",
     "FieldType": "Text",
-    "ElementLabel": "Email Address",
+    "ElementLabel": "Email",
     "SecurityClassification": "Public"
   },
   {
