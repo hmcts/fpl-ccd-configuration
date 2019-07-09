@@ -55,6 +55,7 @@ public class HearingMidEventControllerTest {
         given(mockHearingMigrationService.setMigratedValue(any(CaseDetails.class))).willCallRealMethod();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldValidateMigrateHearing_whenCaseDataContainsFieldHearing1() throws Exception {
         MigratedHearing migratedHearing = createMigratedHearing();
@@ -79,6 +80,25 @@ public class HearingMidEventControllerTest {
         Set<String> actualDataKeyNames = callbackResponse.getData().keySet();
         assertThat(actualDataKeyNames).contains("hearing1");
         assertThat(actualDataKeyNames).doesNotContain("hearing");
+
+        Map<String, Object> actualMigratedHearingData =
+            (Map<String, Object>) callbackResponse.getData().get("hearing1");
+        assertThat(actualMigratedHearingData).isNotNull();
+
+        MigratedHearing actualMigratedHearing = mapper.mapObject(actualMigratedHearingData, MigratedHearing.class);
+        assertThat(actualMigratedHearing.getHearingDescription()).isEqualTo("this is a migrated hearing description");
+        assertThat(actualMigratedHearing.getReason()).isEqualTo("migrated hearing reason");
+        assertThat(actualMigratedHearing.getTimeFrame()).isEqualTo("migrated hearing timeframe");
+        assertThat(actualMigratedHearing.getSameDayHearingReason())
+            .isEqualTo("migrated hearing same day hearing reason");
+        assertThat(actualMigratedHearing.getWithoutNotice()).isEqualTo("migrated hearing without notice");
+        assertThat(actualMigratedHearing.getReasonForNoNotice()).isEqualTo("migrated hearing reason for no notice");
+        assertThat(actualMigratedHearing.getReducedNotice()).isEqualTo("migrated hearing reduced notice");
+        assertThat(actualMigratedHearing.getReasonForReducedNotice())
+            .isEqualTo("migrated hearing reason for reduced notice");
+        assertThat(actualMigratedHearing.getRespondentsAware()).isEqualTo("migrated hearing respondants aware");
+        assertThat(actualMigratedHearing.getReasonsForRespondentsNotBeingAware())
+            .isEqualTo("migrated hearing reasons for respondants not being aware");
     }
 
     @SuppressWarnings("unchecked")
@@ -107,22 +127,55 @@ public class HearingMidEventControllerTest {
         assertThat(actualDataKeyNames).contains("hearing");
         assertThat(actualDataKeyNames).doesNotContain("hearing1");
 
-        // no hearing1
-
         Map<String, Object> actualHearingData = (Map<String, Object>) callbackResponse.getData().get("hearing");
         assertThat(actualHearingData).isNotNull();
 
         Hearing actualHearing = mapper.mapObject(actualHearingData, Hearing.class);
         assertThat(actualHearing.getHearingDescription()).isEqualTo("this is a hearing description");
+        assertThat(actualHearing.getReason()).isEqualTo("hearing reason");
+        assertThat(actualHearing.getTimeFrame()).isEqualTo("hearing timeframe");
+        assertThat(actualHearing.getSameDayHearingReason()).isEqualTo("hearing same day hearing reason");
+        assertThat(actualHearing.getWithoutNotice()).isEqualTo("hearing without notice");
+        assertThat(actualHearing.getReasonForNoNotice()).isEqualTo("hearing reason for no notice");
+        assertThat(actualHearing.getReducedNotice()).isEqualTo("hearing reduced notice");
+        assertThat(actualHearing.getReasonForReducedNotice()).isEqualTo("hearing reason for reduced notice");
+        assertThat(actualHearing.getRespondentsAware()).isEqualTo("hearing respondants aware");
+        assertThat(actualHearing.getReasonsForRespondentsNotBeingAware())
+            .isEqualTo("hearing reasons for respondants not being aware");
+        assertThat(actualHearing.getCreatedBy()).isEqualTo("32");
+        assertThat(actualHearing.getCreatedDate()).isEqualTo("09-07-2019");
     }
 
-
     private Hearing createHearing() {
-        return Hearing.builder().hearingDescription("this is a hearing description").build();
+        return Hearing.builder()
+            .hearingDescription("this is a hearing description")
+            .reason("hearing reason")
+            .timeFrame("hearing timeframe")
+            .sameDayHearingReason("hearing same day hearing reason")
+            .withoutNotice("hearing without notice")
+            .reasonForNoNotice("hearing reason for no notice")
+            .reducedNotice("hearing reduced notice")
+            .reasonForReducedNotice("hearing reason for reduced notice")
+            .respondentsAware("hearing respondants aware")
+            .reasonsForRespondentsNotBeingAware("hearing reasons for respondants not being aware")
+            .createdBy("12")
+            .createdDate("09-07-2019")
+            .build();
     }
 
     private MigratedHearing createMigratedHearing() {
-        return MigratedHearing.builder().hearingDescription("this is a hearing description").build();
+        return MigratedHearing.builder()
+            .hearingDescription("this is a migrated hearing description")
+            .reason("migrated hearing reason")
+            .timeFrame("migrated hearing timeframe")
+            .sameDayHearingReason("migrated hearing same day hearing reason")
+            .withoutNotice("migrated hearing without notice")
+            .reasonForNoNotice("migrated hearing reason for no notice")
+            .reducedNotice("migrated hearing reduced notice")
+            .reasonForReducedNotice("migrated hearing reason for reduced notice")
+            .respondentsAware("migrated hearing respondants aware")
+            .reasonsForRespondentsNotBeingAware("migrated hearing reasons for respondants not being aware")
+            .build();
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(Hearing hearing) throws Exception {
