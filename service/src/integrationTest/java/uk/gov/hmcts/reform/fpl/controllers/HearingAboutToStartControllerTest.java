@@ -48,7 +48,7 @@ public class HearingAboutToStartControllerTest {
     private HearingMigrationService mockHearingMigrationService;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         given(mockHearingMigrationService.setMigratedValue(any(CaseDetails.class))).willCallRealMethod();
     }
 
@@ -69,7 +69,8 @@ public class HearingAboutToStartControllerTest {
 
         MvcResult response = doRequest(request);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = mapResponse(response.getResponse().getContentAsByteArray());
+        AboutToStartOrSubmitCallbackResponse callbackResponse =
+            mapResponse(response.getResponse().getContentAsByteArray());
 
         assertThat(callbackResponse.getData())
             .containsEntry("hearingMigrated", "Yes");
@@ -94,7 +95,8 @@ public class HearingAboutToStartControllerTest {
 
         MvcResult response = doRequest(request);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = mapResponse(response.getResponse().getContentAsByteArray());
+        AboutToStartOrSubmitCallbackResponse callbackResponse =
+            mapResponse(response.getResponse().getContentAsByteArray());
 
         assertThat(callbackResponse.getData())
             .containsEntry("hearingMigrated", "Yes");
@@ -119,7 +121,8 @@ public class HearingAboutToStartControllerTest {
 
         MvcResult response = doRequest(request);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = mapResponse(response.getResponse().getContentAsByteArray());
+        AboutToStartOrSubmitCallbackResponse callbackResponse =
+            mapResponse(response.getResponse().getContentAsByteArray());
 
         assertThat(callbackResponse.getData())
             .containsEntry("hearingMigrated", "No");
@@ -127,18 +130,18 @@ public class HearingAboutToStartControllerTest {
         verify(mockHearingMigrationService, times(1)).setMigratedValue(any(CaseDetails.class));
     }
 
-   private MvcResult doRequest(CallbackRequest request) throws Exception {
-       return mockMvc
-           .perform(post("/callback/enter-hearing/about-to-start")
-               .header("authorization", AUTH_TOKEN)
-               .header("user-id", USER_ID)
-               .contentType(MediaType.APPLICATION_JSON)
-               .content(MAPPER.writeValueAsBytes(request)))
-           .andExpect(status().isOk())
-           .andReturn();
-   }
+    private MvcResult doRequest(CallbackRequest request) throws Exception {
+        return mockMvc
+            .perform(post("/callback/enter-hearing/about-to-start")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(MAPPER.writeValueAsBytes(request)))
+            .andExpect(status().isOk())
+            .andReturn();
+    }
 
-   private AboutToStartOrSubmitCallbackResponse mapResponse (byte[] response) throws IOException {
-       return MAPPER.readValue(response, AboutToStartOrSubmitCallbackResponse.class);
-   }
+    private AboutToStartOrSubmitCallbackResponse mapResponse(byte[] response) throws IOException {
+        return MAPPER.readValue(response, AboutToStartOrSubmitCallbackResponse.class);
+    }
 }

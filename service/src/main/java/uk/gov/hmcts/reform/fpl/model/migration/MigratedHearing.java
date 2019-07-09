@@ -32,7 +32,8 @@ public class MigratedHearing {
                             @JsonProperty("reducedNotice") final String reducedNotice,
                             @JsonProperty("reasonForReducedNotice") final String reasonForReducedNotice,
                             @JsonProperty("respondentsAware") final String respondentsAware,
-                            @JsonProperty("reasonsForRespondentsNotBeingAware") final String reasonsForRespondentsNotBeingAware) {
+                            @JsonProperty("reasonsForRespondentsNotBeingAware")
+                               final String reasonsForRespondentsNotBeingAware) {
         this.hearingDescription = hearingDescription;
         this.reason = reason;
         this.timeFrame = timeFrame;
