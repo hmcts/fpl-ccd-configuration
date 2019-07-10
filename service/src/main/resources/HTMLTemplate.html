@@ -167,8 +167,7 @@
           <dd class="data-list__definition">
             {% if case_data.applicant is not empty and case_data.applicant.name is not empty %}
               {{ case_data.applicant.name }}
-            {% endif %}
-            {% if case_data.applicants is not empty %}
+            {% elseif case_data.applicants is not empty %}
               {% for applicant in case_data.applicants %}
                 {% if applicant.value.party.name is not empty %}
                   {{ applicant.value.party.name }}
@@ -213,12 +212,11 @@
     {% else %}
       Application from {{ case_data.applicant.name }}
     {% endif %}
+
     {% if case_data.applicants is not empty %}
       {% for applicant in case_data.applicants %}
-        {% if applicant.value.party.name is empty %}
-        Application
-        {% else %}
-          Application from {{ applicant.value.party.name }}
+        {% if applicant.value.party.name is not empty %}
+          from {{ applicant.value.party.name }}
         {% endif %}
       {% endfor %}
     {% endif %}
@@ -1579,9 +1577,8 @@
         <div class="data-list__row">
           <dt class="data-list__title">Email address</dt>
           <dd class="data-list__definition">
-            {% if applicant.value.party.email is not empty and
-            applicant.value.party.email.email is not empty %}
-              {{ applicant.value.party.email.email }}
+            {% if applicant.value.party.emailAddress is not empty%}
+              {{ applicant.value.party.emailAddress.email }}
             {% else %}
               -
             {% endif %}
