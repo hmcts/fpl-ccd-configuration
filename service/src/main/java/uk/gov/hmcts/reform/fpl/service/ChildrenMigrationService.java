@@ -12,28 +12,22 @@ import java.util.UUID;
 
 @Service
 public class ChildrenMigrationService {
-    private static final String MIGRATED_CHILDREN_KEY = "children1";
-
     public AboutToStartOrSubmitCallbackResponse setMigratedValue(CaseDetails caseDetails) {
         Map<String, Object> data = caseDetails.getData();
 
-        if (caseDetails.getData().containsKey(MIGRATED_CHILDREN_KEY)
+        if (caseDetails.getData().containsKey("children1")
             || !caseDetails.getData().containsKey("children")) {
             data.put("childrenMigrated", "Yes");
-
-            if (!caseDetails.getData().containsKey(MIGRATED_CHILDREN_KEY)) {
-                List<Map<String, Object>> populatedChild = new ArrayList<>();
-                populatedChild.add(ImmutableMap.of(
-                    "id", UUID.randomUUID().toString(),
-                    "value", ImmutableMap.of(
-                        "party", ImmutableMap.of(
-                            "partyID", UUID.randomUUID().toString()
-                        )
+            List<Map<String, Object>> populatedChild = new ArrayList<>();
+            populatedChild.add(ImmutableMap.of(
+                "id", UUID.randomUUID().toString(),
+                "value", ImmutableMap.of(
+                    "party", ImmutableMap.of(
+                        "partyID", UUID.randomUUID().toString()
                     )
-                ));
-                data.put(MIGRATED_CHILDREN_KEY, populatedChild);
-            }
-
+                )
+            ));
+            data.put("children1", populatedChild);
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(data)
                 .build();

@@ -11,7 +11,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class ChildrenMigrationServiceTest {
     private final ChildrenMigrationService service = new ChildrenMigrationService();
-    private static final String ERROR_MESSAGE = "Date of birth cannot be in the future";
 
     @Test
     void shouldSetMigratedChildrenToYesWhenNoChildrenDataPresent() {
