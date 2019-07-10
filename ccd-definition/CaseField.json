@@ -185,7 +185,7 @@
     "ID": "children1",
     "Label": "Child",
     "FieldType": "Collection",
-    "FieldTypeParameter": "partyChildren",
+    "FieldTypeParameter": "ChildrenParty",
     "SecurityClassification": "Public"
   },
   {
