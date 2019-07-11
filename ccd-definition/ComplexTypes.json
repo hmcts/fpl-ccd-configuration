@@ -1609,7 +1609,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ApplicantParty",
-    "ListElementCode": "name",
+    "ListElementCode": "organisationName",
     "FieldType": "Text",
     "ElementLabel": "Name ",
     "SecurityClassification": "Public"
