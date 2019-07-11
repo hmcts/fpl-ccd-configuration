@@ -167,6 +167,19 @@ class ChildSubmissionControllerTest {
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
+    @Test
+    void shouldReturnNoDateOfBirthErrorsWhenCaseDataIsEmpty() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of())
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
+
+        assertThat(callbackResponse.getErrors()).isEmpty();
+    }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(OldChildren children) throws Exception {
         HashMap<String, Object> map = MAPPER.readValue(MAPPER.writeValueAsString(children),

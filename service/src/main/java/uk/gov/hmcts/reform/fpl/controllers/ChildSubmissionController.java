@@ -80,7 +80,7 @@ public class ChildSubmissionController {
                 .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
                 errors.add("Date of birth cannot be in the future");
             }
-        } else {
+        } else if (caseDetails.getData().containsKey("children")) {
 
             OldChildren children = mapperService.mapObject(childrenData, OldChildren.class);
             if (children.getAllChildren().stream()
