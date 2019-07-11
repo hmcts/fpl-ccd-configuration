@@ -52,7 +52,7 @@ public class ChildSubmissionController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(callbackrequest.getCaseDetails().getData())
+            .data(caseDetails.getData())
             .errors(validate(caseDetails))
             .build();
     }

@@ -148,7 +148,7 @@ sonarqube {
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     property "sonar.coverage.exclusions", "**/model/**"
-    property "sonar.exclusions", "**/model/**"
+    property "sonar.exclusions", sonarExclusions
   }
 }
 

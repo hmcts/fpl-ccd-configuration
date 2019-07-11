@@ -110,7 +110,7 @@ class ChildSubmissionControllerTest {
     }
 
     @Test
-    void shouldReturnDateOfBirthErrorsForNewChildrenWhenThereIsMultipleRespondents() throws Exception {
+    void shouldReturnDateOfBirthErrorsForNewChildrenWhenThereIsMultipleChildren() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
