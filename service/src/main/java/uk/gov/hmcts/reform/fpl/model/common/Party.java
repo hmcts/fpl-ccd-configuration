@@ -18,3 +18,5 @@ public class Party {
     public final EmailAddress email;
     public final TelephoneNumber telephoneNumber;
 }
+
+

@@ -85,16 +85,23 @@ class RespondentServiceTest {
         assertThat(party.get("partyID")).isNotNull();
     }
 
+
+    //TODO: improve test to feature all parts of PartyRespondent but as a Map<String, Object>
     @SuppressWarnings("unchecked")
     @Test
-    void test() {
+    void shouldMapToParameterNamesToConstructorArguments() {
         Map<String, Object> respondentObject = new HashMap<>();
 
         respondentObject.put("respondents1", ImmutableList.of(
             ImmutableMap.of(
                 "id", "12345",
                 "value", ImmutableMap.of(
-                    "party", ImmutableMap.of("firstName", "James")
+                    "party", ImmutableMap.of(
+                        "firstName", "James",
+                        "lastName", "James",
+                        "dateOfBirth", "",
+                        "telephoneNumber", ImmutableMap.of("telephoneNumber", "00000000000"),
+                        "placeOfBirth", "James")
                 ))));
 
         System.out.println("respondentObject = " + respondentObject);

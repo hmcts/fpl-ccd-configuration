@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,23 +24,27 @@ public final class RespondentParty extends Party {
     private final String litigationIssues;
     private final String litigationIssuesDetails;
 
+    //TODO: remove jsonCreator and property annotations
+    //TODO: toBuilder means that TelephoneNumber and EmailAddress are instantiated.
+
+    @JsonCreator
     @Builder(toBuilder = true)
-    private RespondentParty(String partyID,
-                            String partyType,
-                            String firstName,
-                            String lastName,
-                            Date dateOfBirth,
-                            Address address,
-                            EmailAddress email,
-                            TelephoneNumber telephoneNumber,
-                            String gender,
-                            String genderIdentification,
-                            String placeOfBirth,
-                            String relationshipToChild,
-                            String contactDetailsHidden,
-                            String contactDetailsHiddenReason,
-                            String litigationIssues,
-                            String litigationIssuesDetails) {
+    public RespondentParty(@JsonProperty("partyID") String partyID,
+                           @JsonProperty("partyType") String partyType,
+                           @JsonProperty("firstName") String firstName,
+                           @JsonProperty("lastName") String lastName,
+                           @JsonProperty("dateOfBirth") Date dateOfBirth,
+                           @JsonProperty("address") Address address,
+                           @JsonProperty("email") EmailAddress email,
+                           @JsonProperty("telephoneNumber") TelephoneNumber telephoneNumber,
+                           @JsonProperty("gender") String gender,
+                           @JsonProperty("genderIdentification") String genderIdentification,
+                           @JsonProperty("placeOfBirth") String placeOfBirth,
+                           @JsonProperty("relationshipToChild") String relationshipToChild,
+                           @JsonProperty("contactDetailsHidden") String contactDetailsHidden,
+                           @JsonProperty("contactDetailsHiddenReason") String contactDetailsHiddenReason,
+                           @JsonProperty("litigationIssues") String litigationIssues,
+                           @JsonProperty("litigationIssuesDetails") String litigationIssuesDetails) {
         super(partyID, partyType, firstName, lastName, dateOfBirth, address, email,
             telephoneNumber);
 
