@@ -13,7 +13,7 @@ module.exports = {
     return {
       applicant: {
         partyType: `#applicants_${id}_party_partyType`,
-        name: `#applicants_${id}_party_name`,
+        name: `#applicants_${id}_party_organisationName`,
         address: `#applicants_${id}_party_address_address`,
         email: `input[id="applicants_${id}_party_email_email"]`,
         telephone: `input[id="applicants_${id}_party_telephoneNumber_telephoneNumber"]`,

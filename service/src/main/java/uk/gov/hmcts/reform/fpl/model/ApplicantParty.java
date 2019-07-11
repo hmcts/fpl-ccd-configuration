@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class ApplicantParty extends Party {
-    private final String name;
+    private final String organisationName;
     private final TelephoneNumber mobileNumber;
     private final String jobTitle;
     private final String pbaNumber;
@@ -36,7 +36,7 @@ public class ApplicantParty extends Party {
         super(partyID, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address,
             emailAddress, telephoneNumber);
 
-        this.name = name;
+        this.organisationName = name;
         this.mobileNumber = mobileNumber;
         this.jobTitle = jobTitle;
         this.pbaNumber = pbaNumber;

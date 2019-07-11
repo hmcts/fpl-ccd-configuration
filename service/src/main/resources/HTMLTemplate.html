@@ -171,8 +171,8 @@
           {{ case_data.applicant.name }}
           {% elseif case_data.applicants is not empty %}
           {% for applicant in case_data.applicants %}
-          {% if applicant.value.party.name is not empty %}
-          {{ applicant.value.party.name }}
+          {% if applicant.value.party.organisationName is not empty %}
+          {{ applicant.value.party.organisationName }}
           {% endif %}
           {% endfor %}
           {% else %}
@@ -217,8 +217,8 @@
 
     {% if case_data.applicants is not empty %}
     {% for applicant in case_data.applicants %}
-    {% if applicant.value.party.name is not empty %}
-    from {{ applicant.value.party.name }}
+    {% if applicant.value.party.organisationName is not empty %}
+    from {{ applicant.value.party.organisationName }}
     {% endif %}
     {% endfor %}
     {% endif %}
@@ -1561,8 +1561,8 @@
     <div class="data-list__row">
       <dt class="data-list__title">Name</dt>
       <dd class="data-list__definition">
-        {% if applicant.value.party.name is not empty %}
-        {{ applicant.value.party.name }}
+        {% if applicant.value.party.organisationName is not empty %}
+        {{ applicant.value.party.organisationName }}
         {% else %}
         -
         {% endif %}

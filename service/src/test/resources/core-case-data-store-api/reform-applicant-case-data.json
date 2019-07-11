@@ -190,7 +190,7 @@
         "value": {
           "party": {
             "partyType": "Individual",
-            "name": "London Borough of Southwark",
+            "organisationName": "London Borough of Southwark",
             "address": {
               "County": "Galway",
               "Country": "Ireland",
