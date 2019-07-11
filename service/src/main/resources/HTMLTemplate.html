@@ -192,7 +192,11 @@
               {% endif %}
             {% elseif case_data.respondents1 is not empty %}
               {% for respondent in case_data.respondents1 %}
-                {% if respondent.value.party.firstName is not empty and respondent.value.party.lastName is not empty %}
+                {% if respondent.value.party.firstName is not empty and respondent.value.party.lastName is empty %}
+                  <span class="u-comma-before">{{ respondent.value.party.firstName }}</span>
+                {% else if respondent.value.party.firstName is empty and respondent.value.party.lastName is not empty %}
+                  <span class="u-comma-before">{{ respondent.value.party.lastName }}</span>
+                {% else if respondent.value.party.firstName is not empty and respondent.value.party.lastName is not empty %}
                   <span class="u-comma-before">{{ respondent.value.party.firstName }} {{ respondent.value.party.lastName }}</span>
                 {% endif %}
               {% endfor %}
@@ -1376,8 +1380,12 @@
     <div class="data-list__row">
       <dt class="data-list__title">Name</dt>
       <dd class="data-list__definition">
-        {% if respondent.value.party.firstName is not empty and respondent.value.party.lastName is not empty %}
-        {{ respondent.value.party.firstName }} {{ respondent.value.party.lastName }}
+        {% if respondent.value.party.firstName is not empty and respondent.value.party.lastName is empty %}
+          {{ respondent.value.party.firstName }}
+        {% else if respondent.value.party.firstName is empty and respondent.value.party.lastName is not empty %}
+          {{ respondent.value.party.lastName }}
+        {% else if respondent.value.party.firstName is not empty and respondent.value.party.lastName is not empty %}
+          {{ respondent.value.party.firstName }} {{ respondent.value.party.lastName }}
         {% else %}
         -
         {% endif %}
