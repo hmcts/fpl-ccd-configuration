@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.service.RespondentMigrationService;
+import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +34,7 @@ class RespondentAboutToStartControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private RespondentMigrationService respondentMigrationService;
+    private RespondentService respondentService;
 
     @MockBean
     private IdamApi idamApi;

@@ -18,17 +18,15 @@ public final class RespondentParty extends Party {
     private final String placeOfBirth;
     private final String relationshipToChild;
     private final String contactDetailsHidden;
+    private final String contactDetailsHiddenReason;
     private final String litigationIssues;
     private final String litigationIssuesDetails;
 
-    @Builder
+    @Builder(toBuilder = true)
     private RespondentParty(String partyID,
-                            String idamID,
                             String partyType,
-                            String title,
                             String firstName,
                             String lastName,
-                            String organisationName,
                             Date dateOfBirth,
                             Address address,
                             EmailAddress email,
@@ -38,9 +36,10 @@ public final class RespondentParty extends Party {
                             String placeOfBirth,
                             String relationshipToChild,
                             String contactDetailsHidden,
+                            String contactDetailsHiddenReason,
                             String litigationIssues,
                             String litigationIssuesDetails) {
-        super(partyID, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address, email,
+        super(partyID, partyType, firstName, lastName, dateOfBirth, address, email,
             telephoneNumber);
 
         this.gender = gender;
@@ -48,6 +47,7 @@ public final class RespondentParty extends Party {
         this.placeOfBirth = placeOfBirth;
         this.relationshipToChild = relationshipToChild;
         this.contactDetailsHidden = contactDetailsHidden;
+        this.contactDetailsHiddenReason = contactDetailsHiddenReason;
         this.litigationIssues = litigationIssues;
         this.litigationIssuesDetails = litigationIssuesDetails;
     }

@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondents;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.migration.MigratedRespondent;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
-import uk.gov.hmcts.reform.fpl.service.RespondentMigrationService;
+import uk.gov.hmcts.reform.fpl.service.RespondentService;
 
 import java.util.Date;
 import java.util.List;
@@ -31,21 +31,21 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 public class RespondentController {
 
     private final MapperService mapper;
-    private final RespondentMigrationService respondentMigrationService;
+    private final RespondentService respondentService;
 
 
     @Autowired
     public RespondentController(MapperService mapper,
-                                RespondentMigrationService respondentMigrationService) {
+                                RespondentService respondentService) {
         this.mapper = mapper;
-        this.respondentMigrationService = respondentMigrationService;
+        this.respondentService = respondentService;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
-        return respondentMigrationService.setMigratedValue(caseDetails);
+        return respondentService.setMigratedValue(caseDetails);
     }
 
     @PostMapping("/mid-event")
@@ -56,6 +56,13 @@ public class RespondentController {
             .data(callbackrequest.getCaseDetails().getData())
             .errors(validate(caseDetails))
             .build();
+    }
+
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        return respondentService.addHiddenValues(caseDetails);
     }
 
     @SuppressWarnings("unchecked")

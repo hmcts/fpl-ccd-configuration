@@ -1562,7 +1562,31 @@
     "ID": "Telephone",
     "ListElementCode": "telephoneNumber",
     "FieldType": "Text",
-    "ElementLabel": "Telephone Number",
+    "ElementLabel": "Telephone number",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Telephone",
+    "ListElementCode": "contactDirection",
+    "FieldType": "Text",
+    "ElementLabel": "Contact direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Telephone",
+    "ListElementCode": "telephoneUsageType",
+    "FieldType": "Text",
+    "ElementLabel": "Telephone usage type",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmailAddress",
+    "ListElementCode": "email",
+    "FieldType": "Text",
+    "ElementLabel": "Email Address",
     "SecurityClassification": "Public"
   },
   {
@@ -1581,6 +1605,15 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "PartyType",
     "ElementLabel": " ",
+    "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentParty",
+    "ListElementCode": "email",
+    "FieldType": "EmailAddress",
+    "ElementLabel": "Email Address",
     "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
