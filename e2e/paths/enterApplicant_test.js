@@ -28,8 +28,7 @@ Scenario('Filling in the full section for enter applicants', (I, enterApplicantP
   I.seeAnswerInTab(4, 'Solicitor', 'Solicitor\'s email', 'solicitor@email.com');
   I.seeAnswerInTab(5, 'Solicitor', 'DX number', '160010 Kingsway 7');
   I.seeAnswerInTab(6, 'Solicitor', 'Solicitor\'s reference', 'reference');
-  I.seeAnswerInTab(1, 'Party', 'Party type', applicant.partyType);
-  I.seeAnswerInTab(2, 'Party', 'Name', applicant.name);
+  I.seeAnswerInTab(1, 'Party', 'Name', applicant.name);
   I.seeAnswerInTab(1, 'Address', 'Building and Street', applicant.address.buildingAndStreet.lineOne);
   I.seeAnswerInTab(2, 'Address', '', applicant.address.buildingAndStreet.lineTwo);
   I.seeAnswerInTab(3, 'Address', '', applicant.address.buildingAndStreet.lineThree);
@@ -40,6 +39,6 @@ Scenario('Filling in the full section for enter applicants', (I, enterApplicantP
   I.seeAnswerInTab(1, 'Telephone Number', 'Telephone', applicant.telephoneNumber);
   I.seeAnswerInTab(2, 'Telephone Number', 'Person to contact', applicant.nameOfPersonToContact);
   I.seeAnswerInTab(1, 'Mobile Number', 'Mobile Number', applicant.mobileNumber);
-  I.seeAnswerInTab(7, 'Party', 'Job Title', applicant.jobTitle);
-  I.seeAnswerInTab(8, 'Party', 'PBA Number', applicant.pbaNumber);
+  I.seeAnswerInTab(6, 'Party', 'Job Title', applicant.jobTitle);
+  I.seeAnswerInTab(7, 'Party', 'PBA Number', applicant.pbaNumber);
 });

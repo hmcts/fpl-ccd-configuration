@@ -1602,9 +1602,11 @@
     "LiveFrom": "01/01/2017",
     "ID": "ApplicantParty",
     "ListElementCode": "partyType",
-    "FieldType": "Text",
+    "FieldType": "FixedRadioList",
     "ElementLabel": "Party type",
-    "SecurityClassification": "Public"
+    "FieldTypeParameter": "PartyType",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "partyType=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

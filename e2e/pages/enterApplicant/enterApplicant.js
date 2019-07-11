@@ -12,7 +12,6 @@ module.exports = {
 
     return {
       applicant: {
-        partyType: `#applicants_${id}_party_partyType`,
         name: `#applicants_${id}_party_organisationName`,
         address: `#applicants_${id}_party_address_address`,
         email: `input[id="applicants_${id}_party_email_email"]`,
@@ -38,7 +37,6 @@ module.exports = {
   },
 
   enterApplicantDetails(applicant) {
-    I.fillField(this.fields().applicant.partyType, applicant.partyType);
     I.fillField(this.fields().applicant.name, applicant.name);
     I.fillField(this.fields().applicant.nameOfPersonToContact, applicant.nameOfPersonToContact);
     I.fillField(this.fields().applicant.jobTitle, applicant.jobTitle);
