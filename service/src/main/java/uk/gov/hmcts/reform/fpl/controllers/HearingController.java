@@ -63,9 +63,9 @@ public class HearingController {
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
 
-        if (caseDetails.getData().containsKey("hearing1")) {
+        if (caseDetails.getData().containsKey("hearing")) {
             System.out.println("Validating hearing1 object");
-            Map<String, Object> migratedHearingObject = (Map<String, Object>) caseDetails.getData().get("hearing1");
+            Map<String, Object> migratedHearingObject = (Map<String, Object>) caseDetails.getData().get("hearing");
 
             System.out.println("migratedHearingObject=" + migratedHearingObject.toString());
             MigratedHearing migratedHearing = mapper.mapObject((Map<String, Object>)
@@ -79,7 +79,7 @@ public class HearingController {
         } else {
             System.out.println("Validating hearing object");
             Map<String, Object> hearingData =
-                (Map<String, Object>) defaultIfNull(caseDetails.getData().get("hearing"), null);
+                (Map<String, Object>) defaultIfNull(caseDetails.getData().get("hearing1"), null);
 
             System.out.println("hearingData=" + hearingData.toString());
             Hearing hearing = mapper.mapObject(hearingData, Hearing.class);
