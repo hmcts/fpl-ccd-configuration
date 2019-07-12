@@ -41,18 +41,20 @@ public class HearingController {
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
+        System.out.println("START: ABOUT TO START: HEARING");
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-
+        System.out.println("END: ABOUT TO START: HEARING");
         return hearingMigrationService.setMigratedValue(caseDetails);
     }
 
     @SuppressWarnings("unchecked")
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
+        System.out.println("START: MID EVENT: HEARING");
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-
+        System.out.println("END: MID EVENT: HEARING");
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(callbackrequest.getCaseDetails().getData())
             .errors(validate(caseDetails))
             .build();
     }
@@ -62,21 +64,26 @@ public class HearingController {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
 
         if (caseDetails.getData().containsKey("hearing1")) {
-
+            System.out.println("Validating hearing1 object");
             Map<String, Object> migratedHearingObject = (Map<String, Object>) caseDetails.getData().get("hearing1");
 
+            System.out.println("migratedHearingObject=" + migratedHearingObject.toString());
             MigratedHearing migratedHearing = mapper.mapObject((Map<String, Object>)
                 migratedHearingObject, MigratedHearing.class);
+            System.out.println("migratedHearing=" + migratedHearing.toString());
 
             if (migratedHearing.getHearingDescription() == null || migratedHearing.getHearingDescription().isBlank()) {
                 errors.add("Hearing description cannot be empty");
             }
 
         } else {
+            System.out.println("Validating hearing object");
             Map<String, Object> hearingData =
                 (Map<String, Object>) defaultIfNull(caseDetails.getData().get("hearing"), null);
 
+            System.out.println("hearingData=" + hearingData.toString());
             Hearing hearing = mapper.mapObject(hearingData, Hearing.class);
+            System.out.println("hearing=" + hearing.toString());
 
             // only check for description with the post migration code.
             if (hearing.getHearingDescription() == null || hearing.getHearingDescription().isBlank()) {
