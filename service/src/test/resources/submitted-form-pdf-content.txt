@@ -49,9 +49,8 @@ YesSubmitting application for a placement order
 YesConsidering adoption
 Place baby in local authority foster careCare and contact plan
 child starting primary school or taking GCSEsKey dates
+Confidential
 Date this began: 8 November 2018
-, Northern Ireland, SE22 6SB
-, BT11 1234, Wesley, 22 Wesley DriveAppartment 21
 Living with respondentsChild's living situation
 BoyGender
 15 June 2018Date of birth
@@ -78,7 +77,8 @@ Interpreter
 Attending the hearing
 Child 1
 Child 2
-YesConfidential contact details
+Hide from all
+NoConfidential contact details
 -Anything else to help take part in proceedings
 respondent one test litigation reason
 YesLitigation capacity issues
@@ -96,8 +96,7 @@ MaleGender
 2 May 1944Date of birth
 74 years oldAge
 Paul SmithName
-test child two contact details hidden reason
-YesConfidential contact details
+NoConfidential contact details
 test child two ability to take part in proceedings
 YesLitigation capacity issues
 learning disabilities
@@ -136,7 +135,7 @@ MaleGender
 85 years oldAge
 AnotherName
 respondent two hidden contact details reason
-YesConfidential contact details
+NoConfidential contact details
 -Anything else to help take part in proceedings
 respondent two litigation capacity reason
 YesLitigation capacity issues
@@ -154,10 +153,9 @@ UnknownGender
 2 April 1933Date of birth
 85 years oldAge
 James SmithName
-Hide from all
 Respondent 2
 Respondent 3
-NoConfidential contact details
+-Confidential contact details
 -Anything else to help take part in the proceedings
 NoLitigation capacity issues
 -Separate waiting room or other security measures
@@ -192,7 +190,9 @@ London Borough of SouthwarkName
 Applicant
 Other 1
 Other 2
-YesNeglect
+Yes
+Past harm
+Neglect
 Yes
 Future risk of harm
 Past harm
@@ -230,9 +230,8 @@ YesLitigation capacity issues
 -Spoken or written Welsh
 -Interpreter
 Friend of familyRelationship to the child
-07749972241Telephone number
-, Northern Ireland, Cork, BTTT TTT
-, Newcastle, Newcastle street, Newcastle roadFlat 29Current address
+ConfidentialTelephone number
+ConfidentialCurrent address
 LisburnPlace of birth
 MaleGender
 2 February 2000Date of birth
@@ -273,7 +272,6 @@ YesDomestic violence
 history of drug abuse
 YesAlcohol or drug abuse
 Future risk of harm
-Past harm
 Factors affecting parenting
 International element
 Other proceedings 1

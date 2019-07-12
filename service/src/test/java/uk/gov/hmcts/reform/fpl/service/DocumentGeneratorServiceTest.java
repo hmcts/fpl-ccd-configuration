@@ -22,7 +22,6 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.confidentialAddressCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
@@ -36,19 +35,6 @@ class DocumentGeneratorServiceTest {
         );
 
         assertThat(content).contains("C110A");
-    }
-
-    @Test
-    void shouldGenerateFormWithConfidentialForAddressWhenHiddenDetailsIsSelected() throws IOException {
-        Clock clock = Clock.fixed(Instant.parse("2018-11-26T00:00:00Z"), ZoneId.systemDefault());
-
-        String content = textContentOf(createServiceInstance(clock)
-            .generateSubmittedFormPDF(confidentialAddressCaseDetails()));
-
-        String expectedContent = ResourceReader.readString("confidential-address-form-pdf-content.txt");
-
-        assertThat(splitContentIntoTrimmedLines(content))
-            .containsExactlyInAnyOrderElementsOf(splitContentIntoTrimmedLines(expectedContent));
     }
 
     @Test

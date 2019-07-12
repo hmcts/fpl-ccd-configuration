@@ -54,7 +54,6 @@
         },
         "telephone": "07749972245",
         "birthPlace": "Armagh",
-        "detailsHidden": "No",
         "childInformation": "Cousin",
         "litigationIssues": "NO",
         "genderIdentification": "Unknown"
@@ -165,7 +164,7 @@
             "childGender": "Girl",
             "fathersName": "Scott Simpson",
             "mothersName": "Sarah Simpson",
-            "detailsHidden": "Yes",
+            "detailsHidden": "No",
             "situationDate": "2002-02-02",
             "careAndContact": "test child two care and contact plan",
             "placementCourt": "test child two court",
@@ -262,7 +261,7 @@
             "genderIdentify": "Unknown",
             "litigationIssues": "YES",
             "relationshipToChild": "Brother",
-            "contactDetailsHidden": "Yes",
+            "contactDetailsHidden": "No",
             "litigationIssuesDetails": "respondent two litigation capacity reason",
             "contactDetailsHiddenReason": "respondent two hidden contact details reason"
           }
@@ -305,7 +304,7 @@
         "placeOfBirth": "Crewe",
         "litigationIssues": "YES",
         "relationshipToChild": "Uncle",
-        "contactDetailsHidden": "Yes",
+        "contactDetailsHidden": "No",
         "litigationIssuesDetails": "respondent one test litigation reason",
         "contactDetailsHiddenReason": "Hide from all"
       }
