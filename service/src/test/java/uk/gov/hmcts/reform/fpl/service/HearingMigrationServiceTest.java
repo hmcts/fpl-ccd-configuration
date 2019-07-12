@@ -31,7 +31,7 @@ public class HearingMigrationServiceTest {
     @Test
     void shouldSetMigratedHearingToYesWhenHearing1Exists() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("Hearing1", "some value"))
+            .data(createData("hearing1", "some value"))
             .build();
         AboutToStartOrSubmitCallbackResponse response = classUnderTest.setMigratedValue(caseDetails);
         assertThat(response.getData()).containsEntry("hearingMigrated", "Yes");
