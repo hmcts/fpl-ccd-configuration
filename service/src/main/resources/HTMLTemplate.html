@@ -521,34 +521,32 @@
     <div class="data-list__row">
       <dt class="data-list__title">Child's living situation</dt>
       <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.livingSituation is not empty %}
+        {% if case_data.children is not empty and case_data.children.firstChild is not empty and case_data.children.firstChild.livingSituation is not empty %}
           <span class="u-block">{{ case_data.children.firstChild.livingSituation }}</span>
+        {% if case_data.children.firstChild.address is not empty %}
           {% if case_data.children.firstChild.detailsHidden is not empty and case_data.children.firstChild.detailsHidden == "Yes" %}
             Confidential
           {% else %}
-            {% if case_data.children.firstChild.address is not empty %}
-              {% if case_data.children.firstChild.address.AddressLine1 is not empty %}
-                <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine1 }}</span>
-              {% endif %}
-              {% if case_data.children.firstChild.address.AddressLine2 is not empty %}
-                <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine2 }}</span>
-              {% endif %}
-              {% if case_data.children.firstChild.address.AddressLine3 is not empty %}
-                <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine3 }}</span>
-              {% endif %}
-              {% if case_data.children.firstChild.address.PostTown is not empty %}
-                <span class="u-comma-before">{{ case_data.children.firstChild.address.PostTown }}</span>
-              {% endif %}
-              {% if case_data.children.firstChild.address.PostCode is not empty %}
-                <span class="u-comma-before">{{ case_data.children.firstChild.address.PostCode }}</span>
-              {% endif %}
-              {% if case_data.children.firstChild.address.Country is not empty %}
-                <span class="u-comma-before">{{ case_data.children.firstChild.address.Country }}</span>
-              {% endif %}
+            {% if case_data.children.firstChild.address.AddressLine1 is not empty %}
+              <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine1 }}</span>
+            {% endif %}
+            {% if case_data.children.firstChild.address.AddressLine2 is not empty %}
+              <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine2 }}</span>
+            {% endif %}
+            {% if case_data.children.firstChild.address.AddressLine3 is not empty %}
+              <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine3 }}</span>
+            {% endif %}
+            {% if case_data.children.firstChild.address.PostTown is not empty %}
+              <span class="u-comma-before">{{ case_data.children.firstChild.address.PostTown }}</span>
+            {% endif %}
+            {% if case_data.children.firstChild.address.PostCode is not empty %}
+              <span class="u-comma-before">{{ case_data.children.firstChild.address.PostCode }}</span>
+            {% endif %}
+            {% if case_data.children.firstChild.address.Country is not empty %}
+            <span class="u-comma-before">{{ case_data.children.firstChild.address.Country }}</span>
             {% endif %}
           {% endif %}
+        {% endif %}
           {% if case_data.children.firstChild.situationDate is not empty %}
             {% if case_data.children.firstChild.livingSituation == 'In hospital and soon to be discharged' %}
               <span class="u-block">Discharge date: {{ case_data.children.firstChild.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
@@ -802,31 +800,31 @@
             <dt class="data-list__title">Child's living situation</dt>
             <dd class="data-list__definition">
               {% if child.value.livingSituation is not empty %}
-                <span class="u-block">{{child.value.livingSituation}}</span>
-                {% if child.value.detailsHidden is not empty and child.value.detailsHidden == "Yes"  %}
-                  Confidential
-                {% else %}
+                <span class="u-block">{{ child.value.livingSituation }}</span>
                   {% if child.value.address is not empty %}
-                    {% if child.value.address.AddressLine1 is not empty %}
-                      <span class="u-comma-before">{{ child.value.address.AddressLine1 }}</span>
-                    {% endif %}
-                    {% if child.value.address.AddressLine2 is not empty %}
-                      <span class="u-comma-before">{{ child.value.address.AddressLine2 }}</span>
-                    {% endif %}
-                    {% if child.value.address.AddressLine3 is not empty %}
-                      <span class="u-comma-before">{{ child.value.address.AddressLine3 }}</span>
-                    {% endif %}
-                    {% if child.value.address.PostTown is not empty %}
-                      <span class="u-comma-before">{{ child.value.address.PostTown }}</span>
-                    {% endif %}
-                    {% if child.value.address.PostCode is not empty %}
-                      <span class="u-comma-before">{{ child.value.address.PostCode }}</span>
-                    {% endif %}
-                    {% if child.value.address.Country is not empty %}
-                      <span class="u-comma-before">{{ child.value.address.Country }}</span>
+                    {% if child.value.detailsHidden is not empty and child.value.detailsHidden == "Yes"%}
+                      Confidential
+                    {% else %}
+                      {% if child.value.address.AddressLine1 is not empty %}
+                        <span class="u-comma-before">{{ child.value.address.AddressLine1 }}</span>
+                      {% endif %}
+                      {% if child.value.address.AddressLine2 is not empty %}
+                        <span class="u-comma-before">{{ child.value.address.AddressLine2 }}</span>
+                      {% endif %}
+                      {% if child.value.address.AddressLine3 is not empty %}
+                        <span class="u-comma-before">{{ child.value.address.AddressLine3 }}</span>
+                      {% endif %}
+                      {% if child.value.address.PostTown is not empty %}
+                        <span class="u-comma-before">{{ child.value.address.PostTown }}</span>
+                      {% endif %}
+                      {% if child.value.address.PostCode is not empty %}
+                        <span class="u-comma-before">{{ child.value.address.PostCode }}</span>
+                      {% endif %}
+                      {% if child.value.address.Country is not empty %}
+                        <span class="u-comma-before">{{ child.value.address.Country }}</span>
+                      {% endif %}
                     {% endif %}
                   {% endif %}
-                {% endif %}
                 {% if child.value.situationDate is not empty %}
                   {% if child.value.livingSituation == 'In hospital and soon to be discharged' %}
                     <span class="u-block">Discharge date: {{ child.value.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
@@ -1075,10 +1073,10 @@
       <dt class="data-list__title">Current address</dt>
       <dd class="data-list__definition">
         {% if case_data.respondents is not empty and case_data.respondents.firstRespondent is not empty %}
-          {% if case_data.respondents.contactDetailsHidden is not empty and case_data.respondents.contactDetailsHidden == "Yes" %}
-            Confidential
-          {% else %}
-            {% if case_data.respondents.firstRespondent.address is not empty %}
+          {% if case_data.respondents.firstRespondent.address is not empty %}
+            {% if case_data.respondents.contactDetailsHidden is not empty and case_data.respondents.contactDetailsHidden == "Yes" %}
+              Confidential
+            {% else %}
               {% if case_data.respondents.firstRespondent.address.AddressLine1 is not empty %}
                 <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.AddressLine1 }}</span>
               {% endif %}
@@ -1100,9 +1098,9 @@
               {% if case_data.respondents.firstRespondent.address.Country is not empty %}
                 <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.Country }}</span>
               {% endif %}
-            {% else %}
-              -
             {% endif %}
+          {% else %}
+            -
           {% endif %}
         {% endif %}
       </dd>
@@ -1267,10 +1265,10 @@
         <div class="data-list__row">
           <dt class="data-list__title">Address</dt>
           <dd class="data-list__definition">
-            {% if respondent.value.contactDetailsHidden is not empty and respondent.value.contactDetailsHidden == "Yes" %}
-              Confidential
-            {% else %}
-              {% if respondent.value.address is not empty %}
+            {% if respondent.value.address is not empty %}
+              {% if respondent.value.contactDetailsHidden is not empty and respondent.value.contactDetailsHidden == "Yes" %}
+                Confidential
+              {% else %}
                 {% if respondent.value.address.AddressLine1 is not empty %}
                   <span class="u-comma-before">{{ respondent.value.address.AddressLine1 }}</span>
                 {% endif %}
@@ -1292,9 +1290,9 @@
                 {% if respondent.value.address.Country is not empty %}
                   <span class="u-comma-before">{{ respondent.value.address.Country }}</span>
                 {% endif %}
-              {% else %}
-                -
               {% endif %}
+            {% else %}
+              -
             {% endif %}
           </dd>
         </div>
@@ -1627,10 +1625,10 @@
       <dt class="data-list__title">Current address</dt>
       <dd class="data-list__definition">
         {% if case_data.others is not empty and case_data.others.firstOther is not empty %}
-          {% if case_data.others.firstOther.detailsHidden is not empty and case_data.others.firstOther.detailsHidden == "Yes" %}
-            Confidential
-          {% else %}
-            {% if case_data.others.firstOther.address is not empty %}
+          {% if case_data.others.firstOther.address is not empty %}
+            {% if case_data.others.firstOther.detailsHidden is not empty and case_data.others.firstOther.detailsHidden == "Yes" %}
+              Confidential
+            {% else %}
               {% if case_data.others.firstOther.address.AddressLine1 is not empty %}
                 <span class="u-comma-before">{{ case_data.others.firstOther.address.AddressLine1 }}</span>
               {% endif %}
@@ -1652,9 +1650,9 @@
               {% if case_data.others.firstOther.address.Country is not empty %}
                 <span class="u-comma-before">{{ case_data.others.firstOther.address.Country }}</span>
               {% endif %}
-            {% else %}
-              -
             {% endif %}
+          {% else %}
+            -
           {% endif %}
         {% endif %}
       </dd>
@@ -1809,36 +1807,34 @@
           <div class="data-list__row">
             <dt class="data-list__title">Current address</dt>
             <dd class="data-list__definition">
-              {% if other.value is not empty %}
+              {% if other.value.address is not empty %}
                 {% if other.value.detailsHidden is not empty and other.value.detailsHidden == "Yes" %}
                   Confidential
                 {% else %}
-                  {% if other.value.address is not empty %}
-                    {% if other.value.address.AddressLine1 is not empty %}
-                      <span class="u-comma-before">{{ other.value.address.AddressLine1 }}</span>
-                    {% endif %}
-                    {% if other.value.address.AddressLine2 is not empty %}
-                      <span class="u-comma-before">{{ other.value.address.AddressLine2 }}</span>
-                    {% endif %}
-                    {% if other.value.address.AddressLine3 is not empty %}
-                      <span class="u-comma-before">{{ other.value.address.AddressLine3 }}</span>
-                    {% endif %}
-                    {% if other.value.address.PostTown is not empty %}
-                      <span class="u-comma-before">{{ other.value.address.PostTown }}</span>
-                    {% endif %}
-                    {% if other.value.address.PostCode is not empty %}
-                      <span class="u-comma-before">{{ other.value.address.PostCode }}</span>
-                    {% endif %}
-                    {% if other.value.address.County is not empty %}
-                      <span class="u-comma-before">{{ other.value.address.County }}</span>
-                    {% endif %}
-                    {% if other.value.address.Country is not empty %}
-                      <span class="u-comma-before">{{ other.value.address.Country }}</span>
-                    {% endif %}
-                  {% else %}
-                    -
+                  {% if other.value.address.AddressLine1 is not empty %}
+                    <span class="u-comma-before">{{ other.value.address.AddressLine1 }}</span>
+                  {% endif %}
+                  {% if other.value.address.AddressLine2 is not empty %}
+                    <span class="u-comma-before">{{ other.value.address.AddressLine2 }}</span>
+                  {% endif %}
+                  {% if other.value.address.AddressLine3 is not empty %}
+                    <span class="u-comma-before">{{ other.value.address.AddressLine3 }}</span>
+                  {% endif %}
+                  {% if other.value.address.PostTown is not empty %}
+                    <span class="u-comma-before">{{ other.value.address.PostTown }}</span>
+                  {% endif %}
+                  {% if other.value.address.PostCode is not empty %}
+                    <span class="u-comma-before">{{ other.value.address.PostCode }}</span>
+                  {% endif %}
+                  {% if other.value.address.County is not empty %}
+                    <span class="u-comma-before">{{ other.value.address.County }}</span>
+                  {% endif %}
+                  {% if other.value.address.Country is not empty %}
+                    <span class="u-comma-before">{{ other.value.address.Country }}</span>
                   {% endif %}
                 {% endif %}
+              {% else %}
+                -
               {% endif %}
             </dd>
           </div>
