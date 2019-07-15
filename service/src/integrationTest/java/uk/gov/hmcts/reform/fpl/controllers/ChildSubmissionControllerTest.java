@@ -77,11 +77,9 @@ class ChildSubmissionControllerTest {
     }
 
     private OldChild createChild(ZonedDateTime dateOfBirth) {
-        return new OldChild(null, Date.from(dateOfBirth.toInstant()), null, null, null,
-            null, null, null, null, null, null,
-            null, null, null, null, null, null,
-            null, null, null, null, null, null,
-            null);
+        return OldChild.builder()
+            .childDOB(Date.from(dateOfBirth.toInstant()))
+            .build();
     }
 
     @Test

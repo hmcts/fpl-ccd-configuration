@@ -15,8 +15,7 @@ public class ChildrenMigrationService {
     public AboutToStartOrSubmitCallbackResponse setMigratedValue(CaseDetails caseDetails) {
         Map<String, Object> data = caseDetails.getData();
 
-        if (caseDetails.getData().containsKey("children1")
-            || !caseDetails.getData().containsKey("children")) {
+        if (caseDetails.getData().containsKey("children1") || !caseDetails.getData().containsKey("children")) {
             data.put("childrenMigrated", "Yes");
             List<Map<String, Object>> populatedChild = new ArrayList<>();
             populatedChild.add(ImmutableMap.of(
@@ -27,16 +26,14 @@ public class ChildrenMigrationService {
                     )
                 )
             ));
+
             data.put("children1", populatedChild);
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .build();
         } else {
             data.put("childrenMigrated", "No");
-
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .build();
         }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .build();
     }
 }
