@@ -1622,14 +1622,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildParty",
-    "ListElementCode": "address",
-    "FieldType": "AddressUK",
-    "ElementLabel": "Current address",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ChildParty",
     "ListElementCode": "livingSituation",
     "FieldType": "FixedList",
     "FieldTypeParameter": "LivingSituationList",
@@ -1653,6 +1645,14 @@
     "ElementLabel": "What date did they start staying here?",
     "FieldShowCondition": "livingSituation=\"*\"",
     "HintText": "For example, 31 3 2018",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty",
+    "ListElementCode": "address",
+    "FieldType": "AddressUK",
+    "ElementLabel": "Current address",
     "SecurityClassification": "Public"
   },
   {
