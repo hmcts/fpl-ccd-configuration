@@ -32,6 +32,17 @@ public class HearingController {
     private final HearingMigrationService hearingMigrationService;
 
 
+    // TODO - PROGRESS SO FAR ON FPLA-384
+    // TODO - FIX CCD UI HEARING PAGE (UNKNOWN FIELD)
+    // TODO - FINISH ANY OTHER ISSUES WITH THE NEW PLACEHOLDERS IN THE CCD UI FOR THE NEW HEARING
+    // TODO - FIX CCD UI APPEARANCE - LOOKS ODD
+    // TODO - FIX HEARINGCONTROLLER TEST UNIT TEST (ACTUALLY AN INTEGRATION TEST)
+    // TODO - RUN MIGRATION TOOL THING LOCALLY
+    // TODO - PDF CHANGES FOR HEARING
+    // TODO - E2E TEST CHANGES FOR HEARING
+    // TODO - ALL OF THIS IS IN OTHER ENVIRONMENTS
+    // TODO - ANYTHING ELSE TO DO WITH HEARING MIGRATION
+    // TODO - UPDATE JIRA TICKET FPLA-384
     @Autowired
     public HearingController(MapperService mapper,
                                 HearingMigrationService hearingMigrationService) {
