@@ -136,10 +136,6 @@ dependencyCheck {
   }
 }
 
-// Excludes sonar cloud testing to avoid duplication of code warning
-def sonarExclusions = ['**/model/OldChild.java',
-                       '**/model/ChildParty.java']
-
 sonarqube {
   properties {
     property "sonar.projectName", "FPL :: Service"
@@ -148,7 +144,8 @@ sonarqube {
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     property "sonar.coverage.exclusions", "**/model/**"
-    property "sonar.exclusions", sonarExclusions
+    // Excludes sonar cloud testing to avoid duplication of code warning
+    property "sonar.exclusions", '**/model/OldChild.java', '**/model/ChildParty.java'
   }
 }
 
