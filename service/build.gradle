@@ -10,7 +10,6 @@ plugins {
 }
 
 apply plugin: 'info.solidsoft.pitest'
-apply plugin: 'org.owasp.dependencycheck'
 
 group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
