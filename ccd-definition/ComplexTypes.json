@@ -1003,6 +1003,23 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing1",
+    "ListElementCode": "id",
+    "FieldType": "TextArea",
+    "ElementLabel": "id",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Hearing1",
+    "ListElementCode": "description",
+    "FieldType": "TextArea",
+    "ElementLabel": "???",
+    "HintText": "You can only do this if you're applying for an Emergency Protection Order",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Hearing1",
     "ListElementCode": "timeFrame",
     "FieldType": "FixedList",
     "FieldTypeParameter": "TimeFrameList",
@@ -1012,7 +1029,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing1",
-    "ListElementCode": "reason",
+    "ListElementCode": "sameDayHearingReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
     "FieldShowCondition": "timeFrame=\"Same day\"",
@@ -1022,9 +1039,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing1",
-    "ListElementCode": "reason2Days",
+    "ListElementCode": "twoDayHearingReason",
     "FieldType": "TextArea",
-    "ElementLabel": "Give reason and proposed dates",
+    "ElementLabel": "Give reason",
     "FieldShowCondition": "timeFrame=\"Within 2 days\"",
     "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
     "SecurityClassification": "Public"
@@ -1032,9 +1049,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing1",
-    "ListElementCode": "reason7Days",
+    "ListElementCode": "sevenDayHearingReason",
     "FieldType": "TextArea",
-    "ElementLabel": "Give reason and proposed dates",
+    "ElementLabel": "Give reason",
     "FieldShowCondition": "timeFrame=\"Within 7 days\"",
     "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
     "SecurityClassification": "Public"
@@ -1042,29 +1059,11 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing1",
-    "ListElementCode": "reason12Days",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give reason and proposed dates",
-    "FieldShowCondition": "timeFrame=\"Within 12 days\"",
-    "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Hearing1",
-    "ListElementCode": "hearingDescription",
-    "FieldType": "FixedList",
-    "FieldTypeParameter": "HearingTypeFixedList",
-    "ElementLabel": "What type of hearing do you need?",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "Hearing1",
-    "ListElementCode": "reason",
+    "ListElementCode": "twelveDayHearingReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "FieldShowCondition": "hearingDescription=\"*\"",
+    "FieldShowCondition": "timeFrame=\"Within 12 days\"",
+    "HintText": "For example, need hearing before 30 July 2018 as the child is being released from hospital on 31 July 2018",
     "SecurityClassification": "Public"
   },
   {
@@ -1117,6 +1116,38 @@
     "FieldType": "TextArea",
     "ElementLabel": "Give respondent's views on proceedings",
     "FieldShowCondition": "respondentsAware=\"Yes\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Hearing1",
+    "ListElementCode": "createdBy",
+    "FieldType": "TextArea",
+    "ElementLabel": "created by field label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Hearing1",
+    "ListElementCode": "createdDate",
+    "FieldType": "TextArea",
+    "ElementLabel": "created date field label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Hearing1",
+    "ListElementCode": "updatedBy",
+    "FieldType": "TextArea",
+    "ElementLabel": "updated by field label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Hearing1",
+    "ListElementCode": "updatedDate",
+    "FieldType": "TextArea",
+    "ElementLabel": "updated date field label",
     "SecurityClassification": "Public"
   },
   {

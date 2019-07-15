@@ -63,7 +63,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearing1",
     "Label": "Hearing (New)",
-    "FieldType": "Hearing",
+    "FieldType": "Hearing1",
     "SecurityClassification": "Public"
   },
   {

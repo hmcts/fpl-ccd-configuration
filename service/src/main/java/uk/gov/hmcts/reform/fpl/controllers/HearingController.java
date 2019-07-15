@@ -63,8 +63,10 @@ public class HearingController {
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
 
+        System.out.println("case data keys=" + caseDetails.getData().keySet());
+
         if (caseDetails.getData().containsKey("hearing")) {
-            System.out.println("Validating hearing1 object");
+            System.out.println("Validating hearing object");
             Map<String, Object> migratedHearingObject = (Map<String, Object>) caseDetails.getData().get("hearing");
 
             System.out.println("migratedHearingObject=" + migratedHearingObject.toString());
@@ -77,16 +79,16 @@ public class HearingController {
             }
 
         } else {
-            System.out.println("Validating hearing object");
+            System.out.println("Validating hearing1 object");
             Map<String, Object> hearingData =
                 (Map<String, Object>) defaultIfNull(caseDetails.getData().get("hearing1"), null);
 
-            System.out.println("hearingData=" + hearingData.toString());
+            System.out.println("hearing1Data=" + hearingData.toString());
             Hearing hearing = mapper.mapObject(hearingData, Hearing.class);
-            System.out.println("hearing=" + hearing.toString());
+            System.out.println("hearing1=" + hearing.toString());
 
             // only check for description with the post migration code.
-            if (hearing.getHearingDescription() == null || hearing.getHearingDescription().isBlank()) {
+            if (hearing.getDescription() == null || hearing.getDescription().isBlank()) {
                 errors.add("Hearing description cannot be empty");
             }
 
@@ -96,7 +98,7 @@ public class HearingController {
             String newId = UUID.randomUUID().toString();
             hearingData.put("id", newId);
             // created by
-            String userIdWhoCreatedThis = Integer.toString(caseDetails.getLockedBy());
+            String userIdWhoCreatedThis = "not implemented yet";
             hearingData.put("createdBy", userIdWhoCreatedThis);
             // created on
             String currentDateAsAString = DateUtils.convertLocalDateTimeToString(LocalDateTime.now());

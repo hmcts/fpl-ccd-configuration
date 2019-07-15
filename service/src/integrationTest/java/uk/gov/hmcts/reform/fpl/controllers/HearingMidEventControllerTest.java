@@ -131,7 +131,7 @@ public class HearingMidEventControllerTest {
         assertThat(actualHearingData).isNotNull();
 
         Hearing actualHearing = mapper.mapObject(actualHearingData, Hearing.class);
-        assertThat(actualHearing.getHearingDescription()).isEqualTo("this is a hearing description");
+        assertThat(actualHearing.getDescription()).isEqualTo("this is a hearing description");
         assertThat(actualHearing.getReason()).isEqualTo("hearing reason");
         assertThat(actualHearing.getTimeFrame()).isEqualTo("hearing timeframe");
         assertThat(actualHearing.getSameDayHearingReason()).isEqualTo("hearing same day hearing reason");
@@ -148,7 +148,7 @@ public class HearingMidEventControllerTest {
 
     private Hearing createHearing() {
         return Hearing.builder()
-            .hearingDescription("this is a hearing description")
+            .description("this is a hearing description")
             .reason("hearing reason")
             .timeFrame("hearing timeframe")
             .sameDayHearingReason("hearing same day hearing reason")
