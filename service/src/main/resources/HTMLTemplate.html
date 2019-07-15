@@ -1001,8 +1001,14 @@
           <div class="data-list__row">
             <dt class="data-list__title">Name</dt>
             <dd class="data-list__definition">
-              {% if child.value.party.firstName is not empty and child.value.party.lastName is not empty %}
-                {{ child.value.party.firstName }} {{ child.value.party.lastName }}
+              {% if child.value.party.firstName is not empty or
+              child.value.party.lastName is not empty %}
+                {% if child.value.party.firstName is not empty %}
+                  {{ child.value.party.firstName }} 
+                {% endif %}
+                {% if child.value.party.lastName is not empty %}
+                  {{ child.value.party.lastName }}
+                {% endif %}
               {% else %}
                 -
               {% endif %}
