@@ -200,7 +200,7 @@
               "AddressLine2": "Tooley road",
               "AddressLine3": "Tooley"
             },
-            "emailAddress": {
+            "email": {
               "email": "jane@smith.com"
             },
             "telephoneNumber": {
