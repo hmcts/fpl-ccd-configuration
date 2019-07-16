@@ -992,7 +992,7 @@
       {% set counter = counter + 1 %}
       {% endfor %}
     {% endif %}
-    
+
   {% elseif case_data.children1 is not empty and case_data.children is empty %}
     {% set counter = 1 %}
     {% for child in case_data.children1 %}
@@ -1199,7 +1199,7 @@
             <dt class="data-list__title">Additional needs</dt>
             <dd class="data-list__definition">
               {% if child.value.party.additionalNeeds is not empty %}
-                  <span class="u-block">{{child.value.party.additionalNeeds}}</span>
+                <span class="u-block">{{child.value.party.additionalNeeds}}</span>
                 {% if child.value.party.additionalNeedsDetails is not empty
                 and child.value.party.additionalNeeds != 'No' %}
                   <span class="u-block">{{ child.value.party.additionalNeedsDetails }}</span>
@@ -1215,9 +1215,9 @@
               {% if child.value.party.litigationIssues is not empty %}
                 {% if child.value.party.litigationIssues == 'YES' %}
                   <span class="u-block">Yes</span>
-                {% if child.value.party.litigationIssuesDetails is not empty %}
-                  <span class="u-block">{{ child.value.party.litigationIssuesDetails }}</span>
-                {% endif %}
+                  {% if child.value.party.litigationIssuesDetails is not empty %}
+                    <span class="u-block">{{ child.value.party.litigationIssuesDetails }}</span>
+                  {% endif %}
                 {% elseif child.value.party.litigationIssues == 'NO' %}
                   <span class="u-block">No</span>
                 {% else %}
@@ -1233,10 +1233,10 @@
             <dd class="data-list__definition">
               {% if child.value.party.detailsHidden is not empty %}
                 <span class="u-block">{{ child.value.party.detailsHidden }}</span>
-              {% if child.value.party.detailsHiddenReason is not empty
-              and child.value.party.detailsHidden != 'No' %}
-                <span class="u-block">{{ child.value.party.detailsHiddenReason }}</span>
-              {% endif %}
+                {% if child.value.party.detailsHiddenReason is not empty
+                and child.value.party.detailsHidden != 'No' %}
+                  <span class="u-block">{{ child.value.party.detailsHiddenReason }}</span>
+                {% endif %}
               {% else %}
                 -
               {% endif %}
