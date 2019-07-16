@@ -9,14 +9,14 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 public class Party {
-    private final String partyID;
-    private final String partyType;
-    private final String title;
-    private final String firstName;
-    private final String lastName;
-    private final String organisationName;
-    private final Date dateOfBirth;
-    private final Address address;
-    private final EmailAddress email;
-    private final TelephoneNumber telephoneNumber;
+    public final String partyID;
+    public final String partyType;
+    public final String title;
+    public final String firstName;
+    public final String lastName;
+    public final String organisationName;
+    public final Date dateOfBirth;
+    public final Address address;
+    public final EmailAddress email;
+    public final TelephoneNumber telephoneNumber;
 }

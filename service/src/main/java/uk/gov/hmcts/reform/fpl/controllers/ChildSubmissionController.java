@@ -57,6 +57,13 @@ public class ChildSubmissionController {
             .build();
     }
 
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        return childrenMigrationService.addHiddenValues(caseDetails);
+    }
+
     @SuppressWarnings("unchecked")
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
