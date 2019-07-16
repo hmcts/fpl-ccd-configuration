@@ -41,8 +41,4 @@ public class OldApplicant {
         this.email = email;
         this.pbaNumber = pbaNumber;
     }
-
-    public void setPbaNumber(String pbaNumber) {
-        this.pbaNumber = pbaNumber;
-    }
 }

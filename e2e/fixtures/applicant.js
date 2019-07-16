@@ -1,5 +1,4 @@
 module.exports = {
-  partyType: 'Individual',
   name: 'John Smith',
   nameOfPersonToContact: 'Jonathon Walker',
   jobTitle: 'Legal adviser',
