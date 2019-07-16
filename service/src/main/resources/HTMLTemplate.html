@@ -1188,8 +1188,9 @@
           <div class="data-list__row">
             <dt class="data-list__title">Social worker's telephone number</dt>
             <dd class="data-list__definition">
-              {% if child.value.party.socialWorkerTel is not empty %}
-                {{ child.value.party.socialWorkerTel }}
+              {% if child.value.party.socialWorkerTel is not empty
+              and child.value.party.socialWorkerTel.telephoneNumber is not empty %}
+                {{ child.value.party.socialWorkerTel.telephoneNumber }}
               {% else %}
                 -
               {% endif %}

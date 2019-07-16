@@ -140,7 +140,9 @@
             "placementCourt": "Central London County Court",
             "additionalNeeds": "Yes",
             "livingSituation": "Living with respondents",
-            "socialWorkerTel": "0123456789",
+            "socialWorkerTel": {
+              "telephoneNumber": "0123456789"
+            },
             "litigationIssues": "DONT_KNOW",
             "socialWorkerName": "Helen Green",
             "detailsHiddenReason": "History of domestic violence with relatives",
@@ -178,7 +180,9 @@
             "placementCourt": "test child two court",
             "additionalNeeds": "Yes",
             "livingSituation": "Living with respondents",
-            "socialWorkerTel": "07749972242",
+            "socialWorkerTel": {
+              "telephoneNumber": "07749972242"
+            },
             "litigationIssues": "YES",
             "socialWorkerName": "Paul Wilsdon",
             "detailsHiddenReason": "test child two contact details hidden reason",

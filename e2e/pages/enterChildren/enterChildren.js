@@ -37,7 +37,7 @@ module.exports = {
       fathersName: `#children1_${id}_party_fathersName`,
       fatherResponsible: `#children1_${id}_party_fathersResponsibility`,
       socialWorkerName: `#children1_${id}_party_socialWorkerName`,
-      socialWorkerTel: `#children1_${id}_party_socialWorkerTel`,
+      socialWorkerTel: `#children1_${id}_party_socialWorkerTel_telephoneNumber`,
       additionalNeedsNo: `#children1_${id}_party_additionalNeeds-No`,
       contactHiddenNo: `#children1_${id}_party_detailsHidden-No`,
       litigationIssues: {

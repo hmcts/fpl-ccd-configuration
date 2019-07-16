@@ -26,7 +26,7 @@ public final class ChildParty extends Party {
     private final String fathersName;
     private final String fathersResponsibility;
     private final String socialWorkerName;
-    private final String socialWorkerTel;
+    private final TelephoneNumber socialWorkerTel;
     private final String additionalNeeds;
     private final String additionalNeedsDetails;
     private final String detailsHidden;
@@ -60,7 +60,7 @@ public final class ChildParty extends Party {
                        String fathersName,
                        String fathersResponsibility,
                        String socialWorkerName,
-                       String socialWorkerTel,
+                       TelephoneNumber socialWorkerTel,
                        String additionalNeeds,
                        String additionalNeedsDetails,
                        String detailsHidden,
