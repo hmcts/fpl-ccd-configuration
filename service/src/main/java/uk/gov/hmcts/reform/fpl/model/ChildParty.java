@@ -36,7 +36,6 @@ public final class ChildParty extends Party {
 
     @Builder
     private ChildParty(String partyID,
-                       String idamID,
                        String partyType,
                        String title,
                        String firstName,
@@ -67,7 +66,7 @@ public final class ChildParty extends Party {
                        String detailsHiddenReason,
                        String litigationIssues,
                        String litigationIssuesDetails) {
-        super(partyID, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address,
+        super(partyID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address,
             email, telephoneNumber);
         this.gender = gender;
         this.genderIdentification = genderIdentification;

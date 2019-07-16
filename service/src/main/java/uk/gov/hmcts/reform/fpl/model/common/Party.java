@@ -10,7 +10,6 @@ import java.util.Date;
 @AllArgsConstructor
 public class Party {
     private final String partyID;
-    private final String idamID;
     private final String partyType;
     private final String title;
     private final String firstName;
