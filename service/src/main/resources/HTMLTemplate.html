@@ -168,12 +168,12 @@
           {% if case_data.applicant is not empty
           and case_data.applicants is empty
           and case_data.applicant.name is not empty %}
-          {{ case_data.applicant.name }}
+            {{ case_data.applicant.name }}
           {% elseif case_data.applicants is not empty %}
-          {% for applicant in case_data.applicants %}
-          {% if applicant.value.party.organisationName is not empty %}
-          {{ applicant.value.party.organisationName }}
-          {% endif %}
+            {% for applicant in case_data.applicants %}
+              {% if applicant.value.party.organisationName is not empty %}
+                {{ applicant.value.party.organisationName }}
+            {% endif %}
           {% endfor %}
           {% else %}
           -
