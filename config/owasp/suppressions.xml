@@ -72,11 +72,4 @@
     <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind:.*$</gav>
     <cve>CVE-2019-12086</cve>
   </suppress>
-  <suppress>
-    <notes><![CDATA[
-   file name: jackson-databind-2.9.9.jar
-   ]]></notes>
-    <packageUrl regex="true">^pkg:maven/com\.fasterxml\.jackson\.core/jackson-databind@.*$</packageUrl>
-    <cve>CVE-2019-12814</cve>
-  </suppress>
 </suppressions>
