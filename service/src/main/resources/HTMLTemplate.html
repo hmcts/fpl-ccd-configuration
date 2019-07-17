@@ -802,7 +802,7 @@
               {% if child.value.livingSituation is not empty %}
                 <span class="u-block">{{ child.value.livingSituation }}</span>
                   {% if child.value.address is not empty %}
-                    {% if child.value.detailsHidden is not empty and child.value.detailsHidden == "Yes"%}
+                    {% if child.value.detailsHidden is not empty and child.value.detailsHidden == "Yes" %}
                       Confidential
                     {% else %}
                       {% if child.value.address.AddressLine1 is not empty %}
@@ -1073,7 +1073,7 @@
       <dt class="data-list__title">Current address</dt>
       <dd class="data-list__definition">
         {% if case_data.respondents is not empty and case_data.respondents.firstRespondent is not empty and case_data.respondents.firstRespondent.address is not empty %}
-          {% if case_data.respondents.contactDetailsHidden is not empty and case_data.respondents.contactDetailsHidden == "Yes" %}
+          {% if case_data.respondents.firstRespondent.contactDetailsHidden is not empty and case_data.respondents.firstRespondent.contactDetailsHidden == "Yes" %}
             Confidential
           {% else %}
             {% if case_data.respondents.firstRespondent.address.AddressLine1 is not empty %}
@@ -1107,7 +1107,7 @@
       <dt class="data-list__title">Telephone number</dt>
       <dd class="data-list__definition">
         {% if case_data.respondents is not empty and case_data.respondents.firstRespondent is not empty and case_data.respondents.firstRespondent.telephone is not empty %}
-          {% if case_data.respondents.contactDetailsHidden is not empty and case_data.respondents.contactDetailsHidden == "Yes" %}
+          {% if case_data.respondents.firstRespondent.contactDetailsHidden is not empty and case_data.respondents.firstRespondent.contactDetailsHidden == "Yes" %}
             Confidential
           {% else %}
             {{ case_data.respondents.firstRespondent.telephone }}
