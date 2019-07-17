@@ -23,17 +23,20 @@ public class ChildrenMigrationService {
 
         if (caseDetails.getData().containsKey("children1") || !caseDetails.getData().containsKey("children")) {
             data.put("childrenMigrated", "Yes");
-            List<Map<String, Object>> populatedChild = new ArrayList<>();
-            populatedChild.add(ImmutableMap.of(
-                "id", UUID.randomUUID().toString(),
-                "value", ImmutableMap.of(
-                    "party", ImmutableMap.of(
-                        "partyID", UUID.randomUUID().toString()
-                    )
-                )
-            ));
 
-            data.put("children1", populatedChild);
+            if (!caseDetails.getData().containsKey("children1")) {
+                List<Map<String, Object>> populatedChild = new ArrayList<>();
+                populatedChild.add(ImmutableMap.of(
+                    "id", UUID.randomUUID().toString(),
+                    "value", ImmutableMap.of(
+                        "party", ImmutableMap.of(
+                            "partyID", UUID.randomUUID().toString()
+                        )
+                    )
+                ));
+
+                data.put("children1", populatedChild);
+            }
         } else {
             data.put("childrenMigrated", "No");
         }
