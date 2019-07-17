@@ -1,7 +1,5 @@
 module.exports = [
   {
-    partyType: 'Individual',
-    title: 'Mr',
     firstName: 'Joe',
     lastName: 'Bloggs',
     dob: {
@@ -25,8 +23,6 @@ module.exports = [
     placeOfBirth: 'London',
   },
   {
-    partyType: 'Individual',
-    title: 'Mr',
     firstName: 'Wayne',
     lastName: 'Best',
     dob: {

@@ -1567,14 +1567,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "EmailAddress",
-    "ListElementCode": "email",
-    "FieldType": "Text",
-    "ElementLabel": "Email Address",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "ID": "RespondentParty",
     "ListElementCode": "partyID",
     "FieldType": "Text",
@@ -1589,15 +1581,6 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "PartyType",
     "ElementLabel": " ",
-    "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "RespondentParty",
-    "ListElementCode": "email",
-    "FieldType": "EmailAddress",
-    "ElementLabel": "Email Address",
     "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
