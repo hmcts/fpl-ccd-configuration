@@ -2,11 +2,19 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.controllers.NotifyGatekeeperController;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 
 import java.util.HashMap;
@@ -85,11 +93,10 @@ class RespondentServiceTest {
         assertThat(party.get("partyID")).isNotNull();
     }
 
-
-    //TODO: improve test to feature all parts of PartyRespondent but as a Map<String, Object>
+    @Disabled
     @SuppressWarnings("unchecked")
     @Test
-    void shouldMapToParameterNamesToConstructorArguments() {
+    void shouldMapParameterNamesToConstructorArguments() {
         Map<String, Object> respondentObject = new HashMap<>();
 
         respondentObject.put("respondents1", ImmutableList.of(
@@ -99,12 +106,10 @@ class RespondentServiceTest {
                     "party", ImmutableMap.of(
                         "firstName", "James",
                         "lastName", "James",
-                        "dateOfBirth", "",
+                        "dateOfBirth", "1111-01-01",
                         "telephoneNumber", ImmutableMap.of("telephoneNumber", "00000000000"),
                         "placeOfBirth", "James")
                 ))));
-
-        System.out.println("respondentObject = " + respondentObject);
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(respondentObject)
@@ -184,7 +189,7 @@ class RespondentServiceTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    void shouldKeepExistingPartyID() {
+    void shouldKeepExistingPartyIDWhenAlreadyExists() {
         Map<String, Object> respondentObject = new HashMap<>();
 
         respondentObject.put("respondents1", ImmutableList.of(
@@ -251,7 +256,6 @@ class RespondentServiceTest {
         assertThat(secondParty).containsEntry("firstName", "Lucy");
         assertThat(firstParty.get("partyID")).isNotNull();
     }
-
 
     private Map<String, Object> createData(String key, String value) {
         Map<String, Object> data = new HashMap<>();

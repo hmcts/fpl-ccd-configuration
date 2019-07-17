@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -17,6 +18,7 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class RespondentService {
 
+    @Autowired
     private final ObjectMapper mapper = new ObjectMapper();
 
     public AboutToStartOrSubmitCallbackResponse setMigratedValue(CaseDetails caseDetails) {
@@ -53,14 +55,12 @@ public class RespondentService {
         if (caseDetails.getData().containsKey("respondents1")) {
             List<Map<String, Object>> respondentParties = (List<Map<String, Object>>) data.get("respondents1");
 
-            //TODO: mapper -> RespondentParty currently throws InvalidDefinitionException when no JsonCreator
             List<RespondentParty> respondentPartyList = respondentParties.stream()
                 .map(entry -> mapper.convertValue(entry.get("value"), Map.class))
                 .map(map -> mapper.convertValue(map.get("party"), RespondentParty.class))
                 .map(respondent -> {
                     RespondentParty.RespondentPartyBuilder partyBuilder = respondent.toBuilder();
 
-                    //TODO: toBuilder gives back an incorrect format for dates and ccd ui will error.
                     if (respondent.getPartyID() == null) {
                         partyBuilder.partyID(UUID.randomUUID().toString());
                         partyBuilder.partyType("INDIVIDUAL");
@@ -81,6 +81,8 @@ public class RespondentService {
 
             data.put("respondents1", respondents);
         }
+
+        System.out.println("data after = " + data);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
