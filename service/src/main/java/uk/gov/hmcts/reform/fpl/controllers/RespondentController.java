@@ -33,7 +33,6 @@ public class RespondentController {
     private final MapperService mapper;
     private final RespondentService respondentService;
 
-
     @Autowired
     public RespondentController(MapperService mapper,
                                 RespondentService respondentService) {
