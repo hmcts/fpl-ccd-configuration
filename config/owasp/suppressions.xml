@@ -63,13 +63,8 @@
     <cve>CVE-2018-1260</cve>
   </suppress>
   <suppress>
-    <notes>
-      <![CDATA[
-        file name: jackson-databind-2.9.8.jar
-        reason for exclusion: risk does not exist because one of preconditions is not met - mysql-connector-java library is not used
-      ]]>
-    </notes>
+    <notes><![CDATA[file name: jackson-databind-2.9.9.jar]]></notes>
     <gav regex="true">^com\.fasterxml\.jackson\.core:jackson-databind:.*$</gav>
-    <cve>CVE-2019-12086</cve>
+    <cve>CVE-2019-12814</cve>
   </suppress>
 </suppressions>
