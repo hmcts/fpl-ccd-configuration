@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -76,6 +77,7 @@ public class ChildrenMigrationServiceTest {
         assertThat(party.get("partyID")).isNotNull();
     }
 
+    @Disabled
     @SuppressWarnings("unchecked")
     @Test
     void shouldMapToParameterNamesToConstructorArguments() {

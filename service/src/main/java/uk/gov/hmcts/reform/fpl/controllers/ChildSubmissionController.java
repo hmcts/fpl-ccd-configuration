@@ -68,9 +68,6 @@ public class ChildSubmissionController {
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
 
-        Map<String, Object> childrenData =
-            (Map<String, Object>) defaultIfNull(caseDetails.getData().get("children"), null);
-
         if (caseDetails.getData().containsKey("children1")) {
             List<Map<String, Object>> migratedChildrenObject =
                 (List<Map<String, Object>>) caseDetails.getData().get("children1");
@@ -88,6 +85,8 @@ public class ChildSubmissionController {
                 errors.add("Date of birth cannot be in the future");
             }
         } else if (caseDetails.getData().containsKey("children")) {
+            Map<String, Object> childrenData =
+                (Map<String, Object>) (caseDetails.getData().get("children"));
 
             OldChildren children = mapperService.mapObject(childrenData, OldChildren.class);
             if (children.getAllChildren().stream()
