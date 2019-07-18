@@ -255,7 +255,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "respondents1",
-    "Label": "Respondent",
+    "Label": "Respondents",
     "FieldType": "Collection",
     "FieldTypeParameter": "RespondentNew",
     "SecurityClassification": "Public"

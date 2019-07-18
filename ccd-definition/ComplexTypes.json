@@ -1647,7 +1647,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentParty",
-    "ListElementCode": "telephoneNumber",
+    "ListElementCode": "telephone",
     "FieldType": "Telephone",
     "ElementLabel": "Telephone",
     "SecurityClassification": "Public"
@@ -1715,7 +1715,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentParty",
-    "ListElementCode": "respondent_border_3",
+    "ListElementCode": "respondent_border",
     "FieldType": "Label",
     "ElementLabel": "---",
     "SecurityClassification": "Public"

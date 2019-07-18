@@ -166,7 +166,7 @@ class RespondentServiceTest {
             .containsEntry("firstName", "Lucy")
             .containsEntry("partyType", "INDIVIDUAL");
 
-        assertThat(firstParty.get("partyID")).isNotNull();
+        assertThat(secondParty.get("partyID")).isNotNull();
     }
 
     @Test
@@ -247,7 +247,7 @@ class RespondentServiceTest {
         assertThat(firstParty.get("partyID")).isNotNull();
 
         assertThat(secondParty).containsEntry("firstName", "Lucy");
-        assertThat(firstParty.get("partyID")).isNotNull();
+        assertThat(secondParty.get("partyID")).isNotNull();
     }
 
     private Map<String, Object> createData(String key, String value) {

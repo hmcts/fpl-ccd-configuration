@@ -59,7 +59,7 @@ module.exports = {
     }
     I.fillField(this.fields().respondent.placeOfBirth, respondent.placeOfBirth);
     within(this.fields().respondent.address, () => {
-      postcodeLookup.enterAddressManually(respondent.address);
+      postcodeLookup.lookupPostcode(respondent.address);
     });
     I.fillField(this.fields().respondent.telephone, respondent.telephone);
   },

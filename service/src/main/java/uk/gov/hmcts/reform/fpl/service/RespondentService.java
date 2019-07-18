@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ public class RespondentService {
             data.put("respondentsMigrated", "Yes");
 
             if (!caseDetails.getData().containsKey("respondents1")) {
+                // Populates first respondent so UI contains expanded Respondent Object.
                 List<Map<String, Object>> populatedRespondent = new ArrayList<>();
                 populatedRespondent.add(ImmutableMap.of(
                     "id", UUID.randomUUID().toString(),
@@ -63,7 +65,7 @@ public class RespondentService {
 
                     if (respondent.getPartyID() == null) {
                         partyBuilder.partyID(UUID.randomUUID().toString());
-                        partyBuilder.partyType("INDIVIDUAL");
+                        partyBuilder.partyType(PartyType.INDIVIDUAL);
                     }
 
                     return partyBuilder.build();
@@ -81,8 +83,6 @@ public class RespondentService {
 
             data.put("respondents1", respondents);
         }
-
-        System.out.println("data after = " + data);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
