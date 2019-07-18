@@ -474,6 +474,10 @@ declare namespace CodeceptJS {
 
   }
 
+  export interface deleteCasePage {
+    delete() : void,
+
+  }
 }
 
 declare module "codeceptjs" {

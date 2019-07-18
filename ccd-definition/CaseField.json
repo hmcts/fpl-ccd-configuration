@@ -357,5 +357,14 @@
     "Label": "Date submitted",
     "FieldType": "Date",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "delete",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ApplicationDeletion",
+    "SecurityClassification": "Public"
   }
 ]
