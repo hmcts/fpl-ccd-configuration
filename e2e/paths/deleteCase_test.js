@@ -7,9 +7,11 @@ Before((I, caseViewPage) => {
   I.click(caseViewPage.goButton);
 });
 
-Scenario('Can give delete a case and not have actions within it anymore', (I, caseViewPage, deleteCasePage) => {
+Scenario('Can delete a case and not have actions within it anymore', (I, caseViewPage, deleteCasePage) => {
   deleteCasePage.delete();
-  I.continueAndSubmit();
+  I.click('Continue');
+  I.waitForElement('.check-your-answers');
+  I.click('Delete an application');
   I.seeEventSubmissionConfirmation(config.applicationActions.deleteCase);
   I.dontSee(caseViewPage.actionsDropdown);
 });

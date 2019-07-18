@@ -3,10 +3,10 @@ const I = actor();
 module.exports = {
 
   fields: {
-    consentCheckbox: '#delete-Delete',
+    deleteCheckbox: '#delete-Delete',
   },
 
   delete() {
-    I.checkOption(this.fields.consentCheckbox);
+    I.checkOption(this.fields.deleteCheckbox);
   },
 };
