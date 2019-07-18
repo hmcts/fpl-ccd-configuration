@@ -11,7 +11,7 @@ Scenario('Can delete a case and not have actions within it anymore', (I, caseVie
   deleteCasePage.delete();
   I.click('Continue');
   I.waitForElement('.check-your-answers');
-  I.click('Delete an application');
+  I.click('Delete application');
   I.seeEventSubmissionConfirmation(config.applicationActions.deleteCase);
   I.dontSee(caseViewPage.actionsDropdown);
 });
