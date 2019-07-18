@@ -26,7 +26,7 @@ module.exports = {
   cafcassPassword: process.env.CAFCASS_USER_PASSWORD || defaultPassword,
   gateKeeperEmail: 'gatekeeper@mailnesia.com',
   gateKeeperPassword: process.env.GATEKEEPER_USER_PASSWORD || defaultPassword,
-  judiciaryEmail: 'judiciary@emailnesia.com',
+  judiciaryEmail: 'judiciary@mailnesia.com',
   judiciaryPassword: process.env.JUDICIARY_USER_PASSWORD || defaultPassword,
   smokeTestLocalAuthorityEmail: process.env.SMOKE_TEST_LA_USER_USERNAME || 'james@swansea.gov.uk',
   smokeTestLocalAuthorityPassword: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
