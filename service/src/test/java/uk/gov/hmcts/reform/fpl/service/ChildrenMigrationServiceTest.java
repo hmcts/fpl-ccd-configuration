@@ -77,7 +77,6 @@ public class ChildrenMigrationServiceTest {
         assertThat(party.get("partyID")).isNotNull();
     }
 
-    @Disabled
     @SuppressWarnings("unchecked")
     @Test
     void shouldMapToParameterNamesToConstructorArguments() {
@@ -157,7 +156,7 @@ public class ChildrenMigrationServiceTest {
             .containsEntry("firstName", "Lucy")
             .containsEntry("partyType", "INDIVIDUAL");
 
-        assertThat(firstParty.get("partyID")).isNotNull();
+        assertThat(secondParty.get("partyID")).isNotNull();
     }
 
     @Test
@@ -238,7 +237,7 @@ public class ChildrenMigrationServiceTest {
         assertThat(firstParty.get("partyID")).isNotNull();
 
         assertThat(secondParty).containsEntry("firstName", "Lucy");
-        assertThat(firstParty.get("partyID")).isNotNull();
+        assertThat(secondParty.get("partyID")).isNotNull();
     }
 
     private Map<String, Object> createData(String key, String value) {

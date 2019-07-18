@@ -12,10 +12,8 @@ import java.util.Date;
 public class Party {
     public final String partyID;
     public final String partyType;
-    public final String title;
     public final String firstName;
     public final String lastName;
-    public final String organisationName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     public final Date dateOfBirth;
     public final Address address;

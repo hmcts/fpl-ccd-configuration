@@ -37,12 +37,10 @@ public final class ChildParty extends Party {
     private final String litigationIssuesDetails;
 
     @Builder(toBuilder = true)
-    private ChildParty(String partyID,
+    public ChildParty(String partyID,
                        String partyType,
-                       String title,
                        String firstName,
                        String lastName,
-                       String organisationName,
                        Date dateOfBirth,
                        Address address,
                        EmailAddress email,
@@ -68,8 +66,7 @@ public final class ChildParty extends Party {
                        String detailsHiddenReason,
                        String litigationIssues,
                        String litigationIssuesDetails) {
-        super(partyID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address,
-            email, telephoneNumber);
+        super(partyID, partyType, firstName, lastName, dateOfBirth, address, email, telephoneNumber);
         this.gender = gender;
         this.genderIdentification = genderIdentification;
         this.livingSituation = livingSituation;

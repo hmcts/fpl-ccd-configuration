@@ -76,12 +76,6 @@ class ChildSubmissionControllerTest {
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
-    private OldChild createChild(ZonedDateTime dateOfBirth) {
-        return OldChild.builder()
-            .childDOB(Date.from(dateOfBirth.toInstant()))
-            .build();
-    }
-
     @Test
     void shouldReturnDateOfBirthErrorsForNewChildWhenFutureDateOfBirth() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
@@ -177,6 +171,12 @@ class ChildSubmissionControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
+    }
+
+    private OldChild createChild(ZonedDateTime dateOfBirth) {
+        return OldChild.builder()
+            .childDOB(Date.from(dateOfBirth.toInstant()))
+            .build();
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(OldChildren children) throws Exception {
