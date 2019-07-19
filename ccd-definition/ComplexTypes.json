@@ -1678,6 +1678,7 @@
     "ListElementCode": "leadApplicantIndicator",
     "FieldType": "YesOrNo",
     "ElementLabel": "Is this the lead applicant?",
+    "FieldShowCondition": "party=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   }
 ]

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,13 +12,14 @@ import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApplicantParty extends Party {
     private final String organisationName;
     private final TelephoneNumber mobileNumber;
     private final String jobTitle;
     private final String pbaNumber;
 
-    @Builder
+    @Builder(toBuilder = true)
     private ApplicantParty(String partyID,
                            String idamID,
                            String partyType,
@@ -27,16 +29,15 @@ public class ApplicantParty extends Party {
                            String organisationName,
                            Date dateOfBirth,
                            Address address,
-                           EmailAddress emailAddress,
+                           EmailAddress email,
                            TelephoneNumber telephoneNumber,
-                           String name,
                            TelephoneNumber mobileNumber,
                            String jobTitle,
                            String pbaNumber) {
         super(partyID, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address,
-            emailAddress, telephoneNumber);
+            email, telephoneNumber);
 
-        this.organisationName = name;
+        this.organisationName = organisationName;
         this.mobileNumber = mobileNumber;
         this.jobTitle = jobTitle;
         this.pbaNumber = pbaNumber;

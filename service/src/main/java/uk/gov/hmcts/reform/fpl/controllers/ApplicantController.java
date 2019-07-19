@@ -97,4 +97,11 @@ public class ApplicantController {
             .errors(validationErrors.build())
             .build();
     }
+
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        return applicantMigrationService.addHiddenValues(caseDetails);
+    }
 }
