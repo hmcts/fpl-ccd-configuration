@@ -1,17 +1,19 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
-import uk.gov.hmcts.reform.fpl.model.common.TelephoneNumber;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public final class RespondentParty extends Party {
 
     private final String gender;
@@ -31,7 +33,7 @@ public final class RespondentParty extends Party {
                            Date dateOfBirth,
                            Address address,
                            EmailAddress email,
-                           TelephoneNumber telephone,
+                           Telephone telephoneNumber,
                            String gender,
                            String genderIdentification,
                            String placeOfBirth,
@@ -40,7 +42,7 @@ public final class RespondentParty extends Party {
                            String contactDetailsHiddenReason,
                            String litigationIssues,
                            String litigationIssuesDetails) {
-        super(partyID, partyType, firstName, lastName, dateOfBirth, address, email, telephone);
+        super(partyID, partyType, firstName, lastName, dateOfBirth, address, email, telephoneNumber);
 
         this.gender = gender;
         this.genderIdentification = genderIdentification;

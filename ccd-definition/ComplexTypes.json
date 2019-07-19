@@ -1647,7 +1647,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentParty",
-    "ListElementCode": "telephone",
+    "ListElementCode": "telephoneNumber",
     "FieldType": "Telephone",
     "ElementLabel": "Telephone",
     "SecurityClassification": "Public"

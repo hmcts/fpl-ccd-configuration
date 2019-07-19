@@ -35,6 +35,8 @@ public class RespondentService {
                     "id", UUID.randomUUID().toString(),
                     "value", ImmutableMap.of(
                         "party", ImmutableMap.of(
+                            // Variable within CCD party structure must be set to expand Collection.
+                            // PartyId is a hidden field so setting a value will not persist to the db
                             "partyId", UUID.randomUUID().toString()
                         )
                     ))

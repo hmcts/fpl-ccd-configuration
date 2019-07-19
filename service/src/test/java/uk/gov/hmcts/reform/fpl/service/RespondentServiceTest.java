@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -66,42 +65,6 @@ class RespondentServiceTest {
                     "party", RespondentParty.builder()
                         .firstName("James")
                         .build()
-                ))));
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(respondentObject)
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
-
-        Map<String, Object> data = response.getData();
-        List<Map<String, Object>> respondents = (List<Map<String, Object>>) data.get("respondents1");
-        Map<String, Object> value = (Map<String, Object>) respondents.get(0).get("value");
-        Map<String, Object> party = (Map<String, Object>) value.get("party");
-
-        assertThat(party)
-            .containsEntry("firstName", "James")
-            .containsEntry("partyType", "INDIVIDUAL");
-
-        assertThat(party.get("partyID")).isNotNull();
-    }
-
-    @Disabled
-    @SuppressWarnings("unchecked")
-    @Test
-    void shouldMapParameterNamesToConstructorArguments() {
-        Map<String, Object> respondentObject = new HashMap<>();
-
-        respondentObject.put("respondents1", ImmutableList.of(
-            ImmutableMap.of(
-                "id", "12345",
-                "value", ImmutableMap.of(
-                    "party", ImmutableMap.of(
-                        "firstName", "James",
-                        "lastName", "James",
-                        "dateOfBirth", "1111-01-01",
-                        "telephoneNumber", ImmutableMap.of("telephoneNumber", "00000000000"),
-                        "placeOfBirth", "James")
                 ))));
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -244,7 +207,7 @@ class RespondentServiceTest {
         Map<String, Object> secondParty = (Map<String, Object>) secondValue.get("party");
 
         assertThat(firstParty).containsEntry("firstName", "James");
-        assertThat(firstParty.get("partyID")).isNotNull();
+        assertThat(firstParty.get("partyID")).isEqualTo("123");
 
         assertThat(secondParty).containsEntry("firstName", "Lucy");
         assertThat(secondParty.get("partyID")).isNotNull();
