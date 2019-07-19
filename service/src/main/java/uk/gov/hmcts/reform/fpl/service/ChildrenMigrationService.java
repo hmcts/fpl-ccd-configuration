@@ -55,9 +55,9 @@ public class ChildrenMigrationService {
         Map<String, Object> data = caseDetails.getData();
 
         if (caseDetails.getData().containsKey("children1")) {
-            List<Map<String, Object>> childrenParty = (List<Map<String, Object>>) data.get("children1");
+            List<Map<String, Object>> childrenParties = (List<Map<String, Object>>) data.get("children1");
 
-            List<ChildParty> childrenPartyList = childrenParty.stream()
+            List<ChildParty> childrenPartyList = childrenParties.stream()
                 .map(entry -> mapper.convertValue(entry.get("value"), Map.class))
                 .map(map -> mapper.convertValue(map.get("party"), ChildParty.class))
                 .map(child -> {

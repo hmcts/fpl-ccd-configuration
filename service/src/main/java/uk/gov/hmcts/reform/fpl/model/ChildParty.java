@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,7 @@ public final class ChildParty extends Party {
     private final String genderIdentification;
     private final String livingSituation;
     private final String situationDetails;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private final Date situationDate;
     private final String keyDates;
     private final String careAndContact;

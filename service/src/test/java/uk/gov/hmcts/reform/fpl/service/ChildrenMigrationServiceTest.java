@@ -2,8 +2,9 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -14,7 +15,9 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ChildrenMigrationServiceTest {
+@ExtendWith(SpringExtension.class)
+class ChildrenMigrationServiceTest {
+
     private final ChildrenMigrationService service = new ChildrenMigrationService();
 
     @Test
@@ -68,41 +71,6 @@ public class ChildrenMigrationServiceTest {
         Map<String, Object> data = response.getData();
         List<Map<String, Object>> children = (List<Map<String, Object>>) data.get("children1");
         Map<String, Object> value = (Map<String, Object>) children.get(0).get("value");
-        Map<String, Object> party = (Map<String, Object>) value.get("party");
-
-        assertThat(party)
-            .containsEntry("firstName", "James")
-            .containsEntry("partyType", "INDIVIDUAL");
-
-        assertThat(party.get("partyID")).isNotNull();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    void shouldMapToParameterNamesToConstructorArguments() {
-        Map<String, Object> childObject = new HashMap<>();
-
-        childObject.put("children1", ImmutableList.of(
-            ImmutableMap.of(
-                "id", "12345",
-                "value", ImmutableMap.of(
-                    "party", ImmutableMap.of(
-                        "firstName", "James",
-                        "lastName", "James",
-                        "dateOfBirth", "",
-                        "socialWorkerTel", ImmutableMap.of("telephoneNumber", "00000000000"),
-                        "gender", "Male")
-                ))));
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(childObject)
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
-
-        Map<String, Object> data = response.getData();
-        List<Map<String, Object>> respondents = (List<Map<String, Object>>) data.get("children1");
-        Map<String, Object> value = (Map<String, Object>) respondents.get(0).get("value");
         Map<String, Object> party = (Map<String, Object>) value.get("party");
 
         assertThat(party)
