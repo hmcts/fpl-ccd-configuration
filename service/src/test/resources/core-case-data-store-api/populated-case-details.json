@@ -54,7 +54,6 @@
         },
         "telephone": "07749972245",
         "birthPlace": "Armagh",
-        "detailsHidden": "No",
         "childInformation": "Cousin",
         "litigationIssues": "NO",
         "genderIdentification": "Unknown"
@@ -165,7 +164,7 @@
             "childGender": "Girl",
             "fathersName": "Scott Simpson",
             "mothersName": "Sarah Simpson",
-            "detailsHidden": "Yes",
+            "detailsHidden": "No",
             "situationDate": "2002-02-02",
             "careAndContact": "test child two care and contact plan",
             "placementCourt": "test child two court",
@@ -262,7 +261,7 @@
             "genderIdentify": "Unknown",
             "litigationIssues": "YES",
             "relationshipToChild": "Brother",
-            "contactDetailsHidden": "Yes",
+            "contactDetailsHidden": "No",
             "litigationIssuesDetails": "respondent two litigation capacity reason",
             "contactDetailsHiddenReason": "respondent two hidden contact details reason"
           }
@@ -292,20 +291,12 @@
         "dob": "1944-05-02",
         "name": "Paul Smith",
         "gender": "Male",
-        "address": {
-          "County": "Gloucester",
-          "Country": "Isle of man",
-          "PostCode": "BT66 7RR",
-          "PostTown": "Craigavon",
-          "AddressLine1": "The Grange",
-          "AddressLine2": "Clanconnel Gardens",
-          "AddressLine3": "Waringstown"
-        },
+        "address": {},
         "telephone": "07712345678",
         "placeOfBirth": "Crewe",
         "litigationIssues": "YES",
         "relationshipToChild": "Uncle",
-        "contactDetailsHidden": "Yes",
+        "contactDetailsHidden": "No",
         "litigationIssuesDetails": "respondent one test litigation reason",
         "contactDetailsHiddenReason": "Hide from all"
       }
@@ -396,41 +387,41 @@
         "document_binary_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e/binary"
       }
     },
-    "documents_checklist_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": {
-        "document_url": "http://dm-store:8080/documents/85fc89c0-6841-4964-9d5f-f35c2a465ae1",
-        "document_filename": "Screen Shot 2019-06-10 at 09.10.45.png",
-        "document_binary_url": "http://dm-store:8080/documents/85fc89c0-6841-4964-9d5f-f35c2a465ae1/binary"
+    "documents_checklist_document":{
+      "documentStatus":"Attached",
+      "typeOfDocument":{
+        "document_url":"http://dm-store:8080/documents/85fc89c0-6841-4964-9d5f-f35c2a465ae1",
+        "document_filename":"Screen Shot 2019-06-10 at 09.10.45.png",
+        "document_binary_url":"http://dm-store:8080/documents/85fc89c0-6841-4964-9d5f-f35c2a465ae1/binary"
       }
     },
-    "documents_threshold_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": {
-        "document_url": "http://dm-store:8080/documents/d91ef133-1c98-4e71-9a4c-6da330a97830",
-        "document_filename": "Screen Shot 2019-06-10 at 09.10.45.png",
-        "document_binary_url": "http://dm-store:8080/documents/d91ef133-1c98-4e71-9a4c-6da330a97830/binary"
+    "documents_threshold_document":{
+      "documentStatus":"Attached",
+      "typeOfDocument":{
+        "document_url":"http://dm-store:8080/documents/d91ef133-1c98-4e71-9a4c-6da330a97830",
+        "document_filename":"Screen Shot 2019-06-10 at 09.10.45.png",
+        "document_binary_url":"http://dm-store:8080/documents/d91ef133-1c98-4e71-9a4c-6da330a97830/binary"
       }
     },
-    "documents_socialWorkEvidenceTemplate_document": {
-      "documentStatus": "Attached",
-      "typeOfDocument": {
-        "document_url": "http://dm-store:8080/documents/30f16903-a9de-4bef-8da4-146301e0a350",
-        "document_filename": "Screen Shot 2019-06-10 at 09.10.45.png",
-        "document_binary_url": "http://dm-store:8080/documents/30f16903-a9de-4bef-8da4-146301e0a350/binary"
+    "documents_socialWorkEvidenceTemplate_document":{
+      "documentStatus":"Attached",
+      "typeOfDocument":{
+        "document_url":"http://dm-store:8080/documents/30f16903-a9de-4bef-8da4-146301e0a350",
+        "document_filename":"Screen Shot 2019-06-10 at 09.10.45.png",
+        "document_binary_url":"http://dm-store:8080/documents/30f16903-a9de-4bef-8da4-146301e0a350/binary"
       }
     },
-    "documents_socialWorkOther": [
+    "documents_socialWorkOther":[
       {
-        "id": "633bb807-e3ca-47d1-87d7-3fbd854143a4",
-        "value": {
-          "documentTitle": "document_one"
+        "id":"633bb807-e3ca-47d1-87d7-3fbd854143a4",
+        "value":{
+          "documentTitle":"document_one"
         }
       },
       {
-        "id": "6e427368-875e-408a-b25e-ef93dc8ab3da",
-        "value": {
-          "documentTitle": "document_two"
+        "id":"6e427368-875e-408a-b25e-ef93dc8ab3da",
+        "value":{
+          "documentTitle":"document_two"
         }
       }
     ]
