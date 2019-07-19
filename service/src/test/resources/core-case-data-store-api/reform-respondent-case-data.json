@@ -54,7 +54,6 @@
         },
         "telephone": "07749972245",
         "birthPlace": "Armagh",
-        "detailsHidden": "No",
         "childInformation": "Cousin",
         "litigationIssues": "NO",
         "genderIdentification": "Unknown"
@@ -165,7 +164,7 @@
             "childGender": "Girl",
             "fathersName": "Scott Simpson",
             "mothersName": "Sarah Simpson",
-            "detailsHidden": "Yes",
+            "detailsHidden": "No",
             "situationDate": "2002-02-02",
             "careAndContact": "test child two care and contact plan",
             "placementCourt": "test child two court",
@@ -259,17 +258,9 @@
             "litigationIssues": "YES",
             "litigationIssuesDetails": "respondent one test litigation reason",
             "relationshipToChild": "Uncle",
-            "contactDetailsHidden": "Yes",
+            "contactDetailsHidden": "No",
             "contactDetailsHiddenReason": "Hide from all",
-            "address": {
-              "AddressLine1": "The Grange",
-              "AddressLine2": "Clanconnel Gardens",
-              "AddressLine3": "Waringstown",
-              "PostTown": "Craigavon",
-              "PostCode": "BT66 7RR",
-              "County": "Gloucester",
-              "Country": "Isle of man"
-            },
+            "address": {},
             "telephoneNumber": {
               "telephoneNumber": "07712345678"
             }
@@ -294,7 +285,7 @@
             "litigationIssues": "YES",
             "litigationIssuesDetails": "respondent two litigation capacity reason",
             "relationshipToChild": "Brother",
-            "contactDetailsHidden": "Yes",
+            "contactDetailsHidden": "No",
             "contactDetailsHiddenReason": "respondent two hidden contact details reason",
             "address": {
               "AddressLine1": "Unit 12",
