@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
-import uk.gov.hmcts.reform.fpl.model.common.TelephoneNumber;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.Date;
 
@@ -28,7 +29,7 @@ public final class ChildParty extends Party {
     private final String fathersName;
     private final String fathersResponsibility;
     private final String socialWorkerName;
-    private final TelephoneNumber socialWorkerTel;
+    private final Telephone socialWorkerTel;
     private final String additionalNeeds;
     private final String additionalNeedsDetails;
     private final String detailsHidden;
@@ -38,13 +39,13 @@ public final class ChildParty extends Party {
 
     @Builder(toBuilder = true)
     public ChildParty(String partyID,
-                       String partyType,
+                       PartyType partyType,
                        String firstName,
                        String lastName,
                        Date dateOfBirth,
                        Address address,
                        EmailAddress email,
-                       TelephoneNumber telephoneNumber,
+                       Telephone telephoneNumber,
                        String gender,
                        String genderIdentification,
                        String livingSituation,
@@ -59,7 +60,7 @@ public final class ChildParty extends Party {
                        String fathersName,
                        String fathersResponsibility,
                        String socialWorkerName,
-                       TelephoneNumber socialWorkerTel,
+                       Telephone socialWorkerTel,
                        String additionalNeeds,
                        String additionalNeedsDetails,
                        String detailsHidden,
@@ -67,6 +68,7 @@ public final class ChildParty extends Party {
                        String litigationIssues,
                        String litigationIssuesDetails) {
         super(partyID, partyType, firstName, lastName, dateOfBirth, address, email, telephoneNumber);
+
         this.gender = gender;
         this.genderIdentification = genderIdentification;
         this.livingSituation = livingSituation;

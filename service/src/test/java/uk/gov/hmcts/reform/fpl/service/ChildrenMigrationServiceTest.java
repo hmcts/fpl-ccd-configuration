@@ -90,7 +90,7 @@ public class ChildrenMigrationServiceTest {
                         "firstName", "James",
                         "lastName", "James",
                         "dateOfBirth", "",
-                        "telephoneNumber", ImmutableMap.of("telephoneNumber", "00000000000"),
+                        "socialWorkerTel", ImmutableMap.of("telephoneNumber", "00000000000"),
                         "gender", "Male")
                 ))));
 

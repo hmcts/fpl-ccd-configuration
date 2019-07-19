@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("integration-test")
 @WebMvcTest(ChildSubmissionController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ChildSubmissionControllerTest {
+class ChildSubmissionControllerMidEventTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";

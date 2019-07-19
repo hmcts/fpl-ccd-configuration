@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class ChildrenMigrationService {
 
                     if (child.getPartyID() == null) {
                         partyBuilder.partyID(UUID.randomUUID().toString());
-                        partyBuilder.partyType("INDIVIDUAL");
+                        partyBuilder.partyType(PartyType.INDIVIDUAL);
                     }
 
                     return partyBuilder.build();
