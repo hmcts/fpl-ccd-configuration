@@ -66,8 +66,8 @@ public class ApplicantMigrationService {
                 .map(applicant -> {
                     ApplicantParty.ApplicantPartyBuilder partyBuilder = applicant.toBuilder();
 
-                    if (applicant.getPartyID() == null) {
-                        partyBuilder.partyID(UUID.randomUUID().toString());
+                    if (applicant.getPartyId() == null) {
+                        partyBuilder.partyId(UUID.randomUUID().toString());
                         partyBuilder.partyType(PartyType.ORGANISATION.toString());
                     }
 

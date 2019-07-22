@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Party {
-    public final String partyID;
+    public final String partyId;
     public final String idamID;
     public final String partyType;
     public final String title;

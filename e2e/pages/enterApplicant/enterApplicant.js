@@ -20,10 +20,6 @@ module.exports = {
         mobileNumber: `#applicants_${id}_party_mobileNumber_telephoneNumber`,
         jobTitle: `#applicants_${id}_party_jobTitle`,
         pbaNumber: `input[id="applicants_${id}_party_pbaNumber"]`,
-        leadApplicant: {
-          yes: `#applicants_${id}_leadApplicantIndicator-Yes`,
-          no: `#applicants_${id}_leadApplicantindictor-No`,
-        },
       },
       solicitor: {
         name: '#solicitor_name',
@@ -38,15 +34,15 @@ module.exports = {
 
   enterApplicantDetails(applicant) {
     I.fillField(this.fields().applicant.name, applicant.name);
-    I.fillField(this.fields().applicant.nameOfPersonToContact, applicant.nameOfPersonToContact);
-    I.fillField(this.fields().applicant.jobTitle, applicant.jobTitle);
-    within(this.fields().applicant.address, () => {
-      postcodeLookup.enterAddressManually(applicant.address);
-    });
-    I.fillField(this.fields().applicant.mobileNumber, applicant.mobileNumber);
-    I.fillField(this.fields().applicant.telephone, applicant.telephoneNumber);
-    I.fillField(this.fields().applicant.email, applicant.email);
     I.fillField(this.fields().applicant.pbaNumber, applicant.pbaNumber);
+    within(this.fields().applicant.address, () => {
+      postcodeLookup.lookupPostcode(applicant.address);
+    });
+    I.fillField(this.fields().applicant.telephone, applicant.telephoneNumber);
+    I.fillField(this.fields().applicant.nameOfPersonToContact, applicant.nameOfPersonToContact);
+    I.fillField(this.fields().applicant.mobileNumber, applicant.mobileNumber);
+    I.fillField(this.fields().applicant.jobTitle, applicant.jobTitle);
+    I.fillField(this.fields().applicant.email, applicant.email);
   },
 
   enterSolicitorDetails(solicitor) {

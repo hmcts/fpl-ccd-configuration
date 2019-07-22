@@ -20,7 +20,7 @@ public class ApplicantParty extends Party {
     private final String pbaNumber;
 
     @Builder(toBuilder = true)
-    private ApplicantParty(String partyID,
+    private ApplicantParty(String partyId,
                            String idamID,
                            String partyType,
                            String title,
@@ -34,7 +34,7 @@ public class ApplicantParty extends Party {
                            TelephoneNumber mobileNumber,
                            String jobTitle,
                            String pbaNumber) {
-        super(partyID, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address,
+        super(partyId, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address,
             email, telephoneNumber);
 
         this.organisationName = organisationName;

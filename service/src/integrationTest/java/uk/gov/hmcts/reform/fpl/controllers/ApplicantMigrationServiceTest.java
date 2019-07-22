@@ -89,7 +89,7 @@ public class ApplicantMigrationServiceTest {
             .containsEntry("organisationName", "Beckys Organisation")
             .containsEntry("partyType", "ORGANISATION");
 
-        assertThat(party.get("partyID")).isNotNull();
+        assertThat(party.get("partyId")).isNotNull();
     }
 
     @Test
