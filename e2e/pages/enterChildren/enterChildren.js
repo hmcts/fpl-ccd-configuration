@@ -74,7 +74,7 @@ module.exports = {
 
   enterAddress(address) {
     within(this.fields().situation.addressOfChild, () => {
-      postcodeLookup.lookupPostcode(address);
+      postcodeLookup.enterAddressManually(address);
     });
   },
 
