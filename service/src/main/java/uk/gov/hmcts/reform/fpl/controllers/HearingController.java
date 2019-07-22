@@ -72,6 +72,12 @@ public class HearingController {
             .build();
     }
 
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        return hearingMigrationService.addHiddenValues(caseDetails);
+    }
+
     @SuppressWarnings("unchecked")
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
@@ -101,22 +107,9 @@ public class HearingController {
             System.out.println("hearing1=" + hearing.toString());
 
             // only check for description with the post migration code.
-            if (hearing.getDescription() == null || hearing.getDescription().isBlank()) {
+            if (hearing.getHearingDescription() == null || hearing.getHearingDescription().isBlank()) {
                 errors.add("Hearing description cannot be empty");
             }
-
-            // new fields post migration
-            // id, created by and created on are added in code.
-            // id
-            String newId = UUID.randomUUID().toString();
-            hearingData.put("id", newId);
-            // created by
-            String userIdWhoCreatedThis = "not implemented yet";
-            hearingData.put("createdBy", userIdWhoCreatedThis);
-            // created on
-            String currentDateAsAString = DateUtils.convertLocalDateTimeToString(LocalDateTime.now());
-            hearingData.put("createdOn", currentDateAsAString);
-
         }
 
         return errors.build();

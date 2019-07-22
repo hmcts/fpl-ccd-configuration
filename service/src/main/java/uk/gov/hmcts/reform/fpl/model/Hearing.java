@@ -1,16 +1,20 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 
-@Data
-@Builder
-@AllArgsConstructor
-public class Hearing {
+import java.util.Date;
 
-    private final String id;
-    private final String description;
+@Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@Builder(toBuilder = true)
+public class Hearing {
+    private final String hearingID;
+    private final String hearingDescription;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private final Date hearingDate;
     private final String reason;
     private final String timeFrame;
     private final String sameDayHearingReason;
@@ -24,9 +28,9 @@ public class Hearing {
     private final String respondentsAware;
     private final String reasonsForRespondentsNotBeingAware;
     private final String createdBy;
-    private final String createdDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private final Date createdDate;
     private final String updatedBy;
     private final String updatedOn;
-
 }
 

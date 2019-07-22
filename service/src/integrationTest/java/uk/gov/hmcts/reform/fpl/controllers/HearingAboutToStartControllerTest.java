@@ -63,7 +63,7 @@ public class HearingAboutToStartControllerTest {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
-                .data(ImmutableMap.<String, Object>builder().put("somthing that isn't a hearing", map).build())
+                .data(ImmutableMap.<String, Object>builder().put("something that isn't a hearing", map).build())
                 .build())
             .build();
 

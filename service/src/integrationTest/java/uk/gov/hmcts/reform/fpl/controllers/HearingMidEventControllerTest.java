@@ -21,6 +21,8 @@ import uk.gov.hmcts.reform.fpl.model.migration.MigratedHearing;
 import uk.gov.hmcts.reform.fpl.service.HearingMigrationService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
+import java.sql.Date;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -131,7 +133,7 @@ public class HearingMidEventControllerTest {
         assertThat(actualHearingData).isNotNull();
 
         Hearing actualHearing = mapper.mapObject(actualHearingData, Hearing.class);
-        assertThat(actualHearing.getDescription()).isEqualTo("this is a hearing description");
+        assertThat(actualHearing.getHearingDescription()).isEqualTo("this is a hearing description");
         assertThat(actualHearing.getReason()).isEqualTo("hearing reason");
         assertThat(actualHearing.getTimeFrame()).isEqualTo("hearing timeframe");
         assertThat(actualHearing.getSameDayHearingReason()).isEqualTo("hearing same day hearing reason");
@@ -142,13 +144,11 @@ public class HearingMidEventControllerTest {
         assertThat(actualHearing.getRespondentsAware()).isEqualTo("hearing respondants aware");
         assertThat(actualHearing.getReasonsForRespondentsNotBeingAware())
             .isEqualTo("hearing reasons for respondants not being aware");
-        //assertThat(actualHearing.getCreatedBy()).isEqualTo("32");
-        assertThat(actualHearing.getCreatedDate()).isEqualTo("09-07-2019");
     }
 
     private Hearing createHearing() {
         return Hearing.builder()
-            .description("this is a hearing description")
+            .hearingDescription("this is a hearing description")
             .reason("hearing reason")
             .timeFrame("hearing timeframe")
             .sameDayHearingReason("hearing same day hearing reason")
@@ -158,8 +158,6 @@ public class HearingMidEventControllerTest {
             .reasonForReducedNotice("hearing reason for reduced notice")
             .respondentsAware("hearing respondants aware")
             .reasonsForRespondentsNotBeingAware("hearing reasons for respondants not being aware")
-            .createdBy("12")
-            .createdDate("09-07-2019")
             .build();
     }
 
