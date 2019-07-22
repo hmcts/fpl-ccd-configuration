@@ -245,7 +245,7 @@
         "id": "randomID",
         "value": {
           "party": {
-            "partyID": "f683a361-f1a4-4f44-b49f-154a54a27900",
+            "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
             "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
             "partyType": "Individual",
             "title": "Mr",
@@ -272,7 +272,7 @@
         "id": "a5e57424-9b5c-4722-be7e-9d9d9111c2b0",
         "value": {
           "party": {
-            "partyID": "f683a361-f1a4-4f44-b49f-154a54a27900",
+            "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
             "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
             "partyType": "Individual",
             "title": "Mr",
@@ -307,7 +307,7 @@
         "id": "0a5d43cc-333a-4c03-adcf-c6e0d5fbb035",
         "value": {
           "party": {
-            "partyID": "f683a361-f1a4-4f44-b49f-154a54a27900",
+            "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
             "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
             "partyType": "Individual",
             "title": "Mr",
