@@ -1568,7 +1568,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "RespondentParty",
-    "ListElementCode": "partyID",
+    "ListElementCode": "partyId",
     "FieldType": "Text",
     "ElementLabel": "Party ID",
     "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",

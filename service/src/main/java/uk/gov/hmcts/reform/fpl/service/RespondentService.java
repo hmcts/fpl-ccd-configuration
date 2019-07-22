@@ -65,8 +65,8 @@ public class RespondentService {
                 .map(respondent -> {
                     RespondentParty.RespondentPartyBuilder partyBuilder = respondent.toBuilder();
 
-                    if (respondent.getPartyID() == null) {
-                        partyBuilder.partyID(UUID.randomUUID().toString());
+                    if (respondent.getPartyId() == null) {
+                        partyBuilder.partyId(UUID.randomUUID().toString());
                         partyBuilder.partyType(PartyType.INDIVIDUAL);
                     }
 
