@@ -14,6 +14,9 @@ public class Hearing {
     private final String reason;
     private final String timeFrame;
     private final String sameDayHearingReason;
+    private final String twoDayHearingReason;
+    private final String sevenDayHearingReason;
+    private final String twelveDayHearingReason;
     private final String withoutNotice;
     private final String reasonForNoNotice;
     private final String reducedNotice;
