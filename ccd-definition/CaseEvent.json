@@ -44,6 +44,7 @@
     "ShowSummary": "N",
     "ShowEventNotes": "N",
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-hearing/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-hearing/about-to-submit",
     "EndButtonLabel": "Save and continue"
   },
   {
