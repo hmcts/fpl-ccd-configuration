@@ -14,12 +14,9 @@ import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.migration.MigratedHearing;
 import uk.gov.hmcts.reform.fpl.service.HearingMigrationService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
-import uk.gov.hmcts.reform.fpl.utils.DateUtils;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 

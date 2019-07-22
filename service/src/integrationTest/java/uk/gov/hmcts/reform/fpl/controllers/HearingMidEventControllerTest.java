@@ -21,8 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.migration.MigratedHearing;
 import uk.gov.hmcts.reform.fpl.service.HearingMigrationService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
-import java.sql.Date;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
