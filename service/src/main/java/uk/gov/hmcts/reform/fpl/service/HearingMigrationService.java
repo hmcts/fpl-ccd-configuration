@@ -1,22 +1,27 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
+import uk.gov.hmcts.reform.fpl.utils.DateUtils;
 
-import java.sql.Date;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
 @Service
 public class HearingMigrationService {
 
-    @Autowired
-    private ObjectMapper mapper;
+    private static ObjectMapper MAPPER;
+
+    static {
+        // ensure only this service ignores null fields, rather than change the global objectmapper
+        MAPPER = new ObjectMapper();
+        MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
 
     public AboutToStartOrSubmitCallbackResponse setMigratedValue(CaseDetails caseDetails) {
         Map<String, Object> data = caseDetails.getData();
@@ -36,14 +41,15 @@ public class HearingMigrationService {
         Map<String, Object> data = caseDetails.getData();
 
         if (caseDetails.getData().containsKey("hearing1")) {
-            Hearing hearing = mapper.convertValue(data.get("hearing1"), Hearing.class);
+            Hearing hearing = MAPPER.convertValue(data.get("hearing1"), Hearing.class);
             Hearing.HearingBuilder hearingBuilder = hearing.toBuilder();
 
             if (hearing.getHearingID() == null || hearing.getHearingID().isBlank()) {
+                String now = DateUtils.convertLocalDateTimeToString(LocalDateTime.now());
                 hearingBuilder.hearingID(UUID.randomUUID().toString());
-                hearingBuilder.hearingDate(Date.from(ZonedDateTime.now().plusDays(1).toInstant()));
+                hearingBuilder.hearingDate(now);
                 hearingBuilder.createdBy("");
-                hearingBuilder.createdDate(Date.from(ZonedDateTime.now().plusDays(1).toInstant()));
+                hearingBuilder.createdDate(now);
             }
 
             data.put("hearing1", hearingBuilder.build());
@@ -53,4 +59,5 @@ public class HearingMigrationService {
             .data(data)
             .build();
     }
+
 }
