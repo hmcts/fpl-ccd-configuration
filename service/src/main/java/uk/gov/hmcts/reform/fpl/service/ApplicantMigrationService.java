@@ -75,6 +75,8 @@ public class ApplicantMigrationService {
                 })
                 .collect(toList());
 
+            //Variable within CCD part structure must be set to expand Collection.
+            //partyId and partyType are hidden fields so setting a value will not persist in database.
             List<Map<String, Object>> applicants = applicantPartyList.stream()
                 .map(item -> ImmutableMap.<String, Object>builder()
                     .put("id", UUID.randomUUID().toString())
