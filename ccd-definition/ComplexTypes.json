@@ -1097,7 +1097,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing1",
-    "ListElementCode": "hearingDescriptionReason",
+    "ListElementCode": "reason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
     "FieldShowCondition": "hearingDescription=\"*\"",
