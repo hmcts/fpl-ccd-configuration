@@ -42,7 +42,7 @@ public class ApplicantAboutToStartControllerTest {
     private ServiceAuthorisationApi serviceAuthorisationApi;
 
     @Test
-    void shouldAddApplicanttMigratedValueToData() throws Exception {
+    void shouldAddApplicantMigratedValueToData() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of("data", "some data"))

@@ -89,8 +89,6 @@ public class ApplicantMigrationService {
             data.put("applicants", applicants);
         }
 
-        System.out.println("data after = " + data);
-
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
