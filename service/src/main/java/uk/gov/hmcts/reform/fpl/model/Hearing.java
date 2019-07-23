@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 @Builder(toBuilder = true)
 public class Hearing {
     private final String hearingID;

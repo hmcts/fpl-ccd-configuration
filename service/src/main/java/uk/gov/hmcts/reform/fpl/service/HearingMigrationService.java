@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -15,13 +15,8 @@ import java.util.UUID;
 @Service
 public class HearingMigrationService {
 
-    private static ObjectMapper MAPPER;
-
-    static {
-        // ensure only this service ignores null fields, rather than change the global objectmapper
-        MAPPER = new ObjectMapper();
-        MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-    }
+    @Autowired
+    private final ObjectMapper mapper = new ObjectMapper();
 
     public AboutToStartOrSubmitCallbackResponse setMigratedValue(CaseDetails caseDetails) {
         Map<String, Object> data = caseDetails.getData();
@@ -41,7 +36,7 @@ public class HearingMigrationService {
         Map<String, Object> data = caseDetails.getData();
 
         if (caseDetails.getData().containsKey("hearing1")) {
-            Hearing hearing = MAPPER.convertValue(data.get("hearing1"), Hearing.class);
+            Hearing hearing = mapper.convertValue(data.get("hearing1"), Hearing.class);
             Hearing.HearingBuilder hearingBuilder = hearing.toBuilder();
 
             if (hearing.getHearingID() == null || hearing.getHearingID().isBlank()) {
