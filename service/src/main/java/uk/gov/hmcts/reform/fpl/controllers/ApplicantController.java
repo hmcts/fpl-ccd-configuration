@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.PBANumberHelper.validatePBANumber;
 
@@ -76,7 +77,7 @@ public class ApplicantController {
 
             OldApplicant applicant = mapperService.mapObject(applicantData, OldApplicant.class);
 
-            if (applicant.getPbaNumber() == null || applicant.getPbaNumber().isBlank()) {
+            if (isNullOrEmpty(applicant.getPbaNumber())) {
                 return AboutToStartOrSubmitCallbackResponse.builder()
                     .data(caseDetails.getData())
                     .errors(validationErrors.build())
