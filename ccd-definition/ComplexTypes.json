@@ -1115,7 +1115,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing1",
-    "ListElementCode": "withoutNoticeReason",
+    "ListElementCode": "reasonForNoNotice",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
     "FieldShowCondition": "withoutNotice=\"Yes\"",
@@ -1132,7 +1132,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing1",
-    "ListElementCode": "reducedNoticeReason",
+    "ListElementCode": "reasonForReducedNotice",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
     "FieldShowCondition": "reducedNotice=\"Yes\"",
@@ -1149,7 +1149,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing1",
-    "ListElementCode": "respondentsAwareReason",
+    "ListElementCode": "reasonsForRespondentsNotBeingAware",
     "FieldType": "TextArea",
     "ElementLabel": "Give respondent's views on proceedings",
     "FieldShowCondition": "respondentsAware=\"Yes\"",
