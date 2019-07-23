@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @ActiveProfiles("integration-test")
 @WebMvcTest(ApplicantController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -35,7 +34,7 @@ public class ApplicantMidEventControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldReturnErrorsWhenThereIsNewApplicantAndNoPbaNumber() throws Exception {
+    void shouldReturnErrorsWhenThereIsNewApplicantAndEmptyPbaNumber() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -63,7 +62,7 @@ public class ApplicantMidEventControllerTest {
     }
 
     @Test
-    void shouldReturnErrorsWhenThereIsNewApplicantAndNoPbaNumberIsNull() throws Exception {
+    void shouldReturnErrorsWhenThereIsNewApplicantAndPbaNumberIsNull() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -91,7 +90,7 @@ public class ApplicantMidEventControllerTest {
     }
 
     @Test
-    void shouldReturnErrorsWhenThereIsNewApplicantAndPbaNumberIsNotSevenDigits() throws Exception {
+    void shouldReturnErrorsWhenThereIsNewApplicantAndPbaNumberIsLessThanSevenDigits() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -102,6 +101,34 @@ public class ApplicantMidEventControllerTest {
                             "value", Applicant.builder()
                                 .party(ApplicantParty.builder()
                                     .pbaNumber("123")
+                                    .build())
+                                .build()
+                        )
+                    )
+                ))
+                .build())
+            .build();
+
+        MvcResult response = getMvcResult(request);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        Assertions.assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnErrorsWhenThereIsNewApplicantAndPbaNumberIsMoreThanSevenDigits() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of(
+                    "applicants", ImmutableList.of(
+                        ImmutableMap.of(
+                            "id", "",
+                            "value", Applicant.builder()
+                                .party(ApplicantParty.builder()
+                                    .pbaNumber("12345678")
                                     .build())
                                 .build()
                         )
@@ -147,7 +174,7 @@ public class ApplicantMidEventControllerTest {
     }
 
     @Test
-    void shouldReturnNoErrorsWhenThereIsNewApplicantAndPbaNumberWithpbaAndSevenDigits() throws Exception {
+    void shouldReturnNoErrorsWhenThereIsNewApplicantAndPbaNumberIsLowerCaseAndSevenDigits() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -175,7 +202,7 @@ public class ApplicantMidEventControllerTest {
     }
 
     @Test
-    void shouldReturnNoErrorsWhenThereIsNewApplicantAndPbaNumberWithPBAAndSevenDigits() throws Exception {
+    void shouldReturnNoErrorsWhenThereIsNewApplicantAndPbaNumberIsUpperCaseAndSevenDigits() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -201,8 +228,6 @@ public class ApplicantMidEventControllerTest {
 
         Assertions.assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
-
-
 
     private MvcResult getMvcResult(CallbackRequest request) throws Exception {
         return mockMvc

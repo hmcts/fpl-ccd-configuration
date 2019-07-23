@@ -10,8 +10,6 @@ import lombok.Data;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OldApplicant {
-
-    private final String applicantLabel;
     private final String name;
     private final String personToContact;
     private final String jobTitle;
@@ -22,8 +20,7 @@ public class OldApplicant {
     private String pbaNumber;
 
     @JsonCreator
-    public OldApplicant(@JsonProperty("applicantLabel") final String applicantLabel,
-                        @JsonProperty("name") final String name,
+    public OldApplicant(@JsonProperty("name") final String name,
                         @JsonProperty("personToContact") final String personToContact,
                         @JsonProperty("jobTitle") final String jobTitle,
                         @JsonProperty("address") final Address address,
@@ -31,7 +28,6 @@ public class OldApplicant {
                         @JsonProperty("telephone") final String telephone,
                         @JsonProperty("email") final String email,
                         @JsonProperty("pbaNumber") final String pbaNumber) {
-        this.applicantLabel = applicantLabel;
         this.name = name;
         this.personToContact = personToContact;
         this.jobTitle = jobTitle;

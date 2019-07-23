@@ -32,7 +32,7 @@ public class ApplicantMigrationServiceTest {
     }
 
     @Test
-    void shouldAddMigratedApplicantYesWhenApplicantExists() {
+    void shouldAddMigratedApplicantYesWhenNewApplicantExists() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(createData("applicants", "some value"))
             .build();
@@ -62,7 +62,7 @@ public class ApplicantMigrationServiceTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    void shouldAddPartyIDAndPartyTypeValuesToApplicant() {
+    void shouldAddPartyIdAndPartyTypeValuesToApplicant() {
         Map<String, Object> applicantObject = new HashMap<>();
 
         applicantObject.put("applicants", ImmutableList.of(
@@ -70,7 +70,7 @@ public class ApplicantMigrationServiceTest {
                 "id", "12345",
                 "value", ImmutableMap.of(
                     "party", ApplicantParty.builder()
-                        .organisationName("Beckys Organisation")
+                        .organisationName("Becky's Organisation")
                         .build()
                 ))));
 
@@ -86,14 +86,14 @@ public class ApplicantMigrationServiceTest {
         Map<String, Object> party = (Map<String, Object>) value.get("party");
 
         assertThat(party)
-            .containsEntry("organisationName", "Beckys Organisation")
+            .containsEntry("organisationName", "Becky's Organisation")
             .containsEntry("partyType", "ORGANISATION");
 
         assertThat(party.get("partyId")).isNotNull();
     }
 
     @Test
-    void shouldNotAddPartyIDAndPartyTypeValuesToDataStructureIfNewApplicantIsNotPresent() {
+    void shouldNotAddPartyIdAndPartyTypeValuesToDataStructureIfNewApplicantIsNotPresent() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(createData("applicant", "some value"))
             .build();

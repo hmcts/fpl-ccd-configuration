@@ -110,7 +110,7 @@ public class ApplicantControllerTest {
     }
 
     private OldApplicant createApplicant(String pbaNumber) {
-        return new OldApplicant("","", "", "", null,
+        return new OldApplicant("","", "", null,
             "", "", "", pbaNumber);
     }
 

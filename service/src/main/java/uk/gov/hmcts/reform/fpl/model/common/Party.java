@@ -21,5 +21,5 @@ public class Party {
     public final Date dateOfBirth;
     public final Address address;
     public final EmailAddress email;
-    public final TelephoneNumber telephoneNumber;
+    public final Telephone telephoneNumber;
 }

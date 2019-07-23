@@ -40,17 +40,13 @@ public class ApplicantMigrationService {
                 );
                 data.put("applicants", populatedApplicant);
             }
-
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .build();
         } else {
             data.put("applicantsMigrated", "No");
 
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(data)
-                .build();
         }
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .build();
     }
 
     @SuppressWarnings("unchecked")
@@ -66,6 +62,8 @@ public class ApplicantMigrationService {
                 .map(applicant -> {
                     ApplicantParty.ApplicantPartyBuilder partyBuilder = applicant.toBuilder();
 
+                    //Variable within CCD part structure must be set to expand Collection.
+                    //partyId and partyType are hidden fields so setting a value will not persist in database.
                     if (applicant.getPartyId() == null) {
                         partyBuilder.partyId(UUID.randomUUID().toString());
                         partyBuilder.partyType(PartyType.ORGANISATION.toString());
@@ -75,8 +73,6 @@ public class ApplicantMigrationService {
                 })
                 .collect(toList());
 
-            //Variable within CCD part structure must be set to expand Collection.
-            //partyId and partyType are hidden fields so setting a value will not persist in database.
             List<Map<String, Object>> applicants = applicantPartyList.stream()
                 .map(item -> ImmutableMap.<String, Object>builder()
                     .put("id", UUID.randomUUID().toString())
@@ -93,5 +89,4 @@ public class ApplicantMigrationService {
             .data(data)
             .build();
     }
-
 }

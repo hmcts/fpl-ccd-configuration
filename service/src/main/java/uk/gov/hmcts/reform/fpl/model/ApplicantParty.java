@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
-import uk.gov.hmcts.reform.fpl.model.common.TelephoneNumber;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.Date;
 
@@ -15,7 +15,7 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApplicantParty extends Party {
     private final String organisationName;
-    private final TelephoneNumber mobileNumber;
+    private final Telephone mobileNumber;
     private final String jobTitle;
     private final String pbaNumber;
 
@@ -30,8 +30,8 @@ public class ApplicantParty extends Party {
                            Date dateOfBirth,
                            Address address,
                            EmailAddress email,
-                           TelephoneNumber telephoneNumber,
-                           TelephoneNumber mobileNumber,
+                           Telephone telephoneNumber,
+                           Telephone mobileNumber,
                            String jobTitle,
                            String pbaNumber) {
         super(partyId, idamID, partyType, title, firstName, lastName, organisationName, dateOfBirth, address,

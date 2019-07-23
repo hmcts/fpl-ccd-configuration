@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.PBANumberHelper.validatePBANumber;
 
 @Api
@@ -65,15 +64,15 @@ public class ApplicantController {
                 .map(ApplicantParty::getPbaNumber)
                 .filter(Objects::nonNull)
                 .forEach(pbaNumber -> {
-                    String newPbaNumberData = PBANumberHelper.updatePBANumber(pbaNumber);
-                    validationErrors.addAll(validatePBANumber(newPbaNumberData));
+                    String formattedPbaNumber = PBANumberHelper.updatePBANumber(pbaNumber);
+                    validationErrors.addAll(validatePBANumber(formattedPbaNumber));
                 });
 
             caseDetails.getData().put("applicants", migratedApplicantsObject);
 
         } else {
             Map<String, Object> applicantData = (Map<String, Object>)
-                defaultIfNull(caseDetails.getData().get("applicant"), null);
+                caseDetails.getData().get("applicant");
 
             OldApplicant applicant = mapperService.mapObject(applicantData, OldApplicant.class);
 
