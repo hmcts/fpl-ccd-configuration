@@ -20,7 +20,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "Deleted",
     "Name": "Deleted",
-    "Description": "Deleted case state - All data is removed",
+    "Description": "Deleted case state - all data is removed",
     "DisplayOrder": 3
   }
 ]
