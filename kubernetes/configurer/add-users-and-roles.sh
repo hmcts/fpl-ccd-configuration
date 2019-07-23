@@ -18,8 +18,5 @@ ${dir}/utils/ccd-add-role.sh caseworker-publiclaw-solicitor
 ${dir}/utils/ccd-add-role.sh caseworker-publiclaw-courtadmin
 ${dir}/utils/ccd-add-role.sh caseworker-publiclaw-cafcass
 ${dir}/utils/ccd-add-role.sh caseworker-publiclaw-gatekeeper
-<<<<<<< HEAD
 ${dir}/utils/ccd-add-role.sh caseworker-publiclaw-systemupdate
-=======
 ${dir}/utils/ccd-add-role.sh caseworker-publiclaw-judiciary
->>>>>>> 29772ef215aee439de637b7a07a720222f4ab6eb
