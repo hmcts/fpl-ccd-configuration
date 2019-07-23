@@ -72,7 +72,9 @@ public class HearingController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        return hearingMigrationService.addHiddenValues(caseDetails);
+        AboutToStartOrSubmitCallbackResponse toSubmit = hearingMigrationService.addHiddenValues(caseDetails);
+        System.out.println(toSubmit.getData().get("hearing1").toString());
+        return toSubmit;
     }
 
     @SuppressWarnings("unchecked")

@@ -16,7 +16,7 @@ import java.util.UUID;
 public class HearingMigrationService {
 
     @Autowired
-    private final ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
     public AboutToStartOrSubmitCallbackResponse setMigratedValue(CaseDetails caseDetails) {
         Map<String, Object> data = caseDetails.getData();
@@ -39,7 +39,7 @@ public class HearingMigrationService {
             Hearing hearing = mapper.convertValue(data.get("hearing1"), Hearing.class);
             Hearing.HearingBuilder hearingBuilder = hearing.toBuilder();
 
-            if (hearing.getHearingID() == null) {
+            if (hearing.getHearingID() == null || hearing.getHearingID().isBlank()) {
                 hearingBuilder.hearingID(UUID.randomUUID().toString());
                 hearingBuilder.hearingDate(Date.from(ZonedDateTime.now().plusDays(1).toInstant()));
                 hearingBuilder.createdBy("");
