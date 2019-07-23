@@ -1048,7 +1048,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing1",
-    "ListElementCode": "reason",
+    "ListElementCode": "sameDayHearingReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
     "FieldShowCondition": "timeFrame=\"Same day\"",
@@ -1058,7 +1058,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing1",
-    "ListElementCode": "reason2Days",
+    "ListElementCode": "twoDayHearingReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason and proposed dates",
     "FieldShowCondition": "timeFrame=\"Within 2 days\"",
@@ -1068,7 +1068,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing1",
-    "ListElementCode": "reason7Days",
+    "ListElementCode": "sevenDayHearingReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason and proposed dates",
     "FieldShowCondition": "timeFrame=\"Within 7 days\"",
@@ -1078,7 +1078,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Hearing1",
-    "ListElementCode": "reason12Days",
+    "ListElementCode": "twelveDayHearingReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason and proposed dates",
     "FieldShowCondition": "timeFrame=\"Within 12 days\"",
