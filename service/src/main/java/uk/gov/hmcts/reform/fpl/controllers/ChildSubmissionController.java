@@ -10,16 +10,15 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.OldChild;
-import uk.gov.hmcts.reform.fpl.model.OldChildren;
+import uk.gov.hmcts.reform.fpl.model.*;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ChildrenMigrationService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
@@ -66,29 +65,22 @@ public class ChildSubmissionController {
     @SuppressWarnings("unchecked")
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
+        CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
 
-        if (caseDetails.getData().containsKey("children1")) {
-            List<Map<String, Object>> migratedChildrenObject =
-                (List<Map<String, Object>>) caseDetails.getData().get("children1");
-
-            List<Child> migratedChildren = migratedChildrenObject.stream()
-                .map(child ->
-                    mapperService.mapObject((Map<String, Object>) child.get("value"), Child.class))
+        if (!isEmpty(caseData.getChildren1())) {
+            List<Child> newChildren = caseData.getChildren1().stream()
+                .map(Element::getValue)
                 .collect(toList());
 
-            if (migratedChildren.stream()
+            if (newChildren.stream()
                 .map(Child::getParty)
                 .map(Party::getDateOfBirth)
                 .filter(Objects::nonNull)
                 .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
                 errors.add("Date of birth cannot be in the future");
             }
-        } else if (caseDetails.getData().containsKey("children")) {
-            Map<String, Object> childrenData =
-                (Map<String, Object>) (caseDetails.getData().get("children"));
-
-            OldChildren children = mapperService.mapObject(childrenData, OldChildren.class);
-            if (children.getAllChildren().stream()
+        } else if (!isEmpty(caseData.getChildren())) {
+            if (caseData.getChildren().getAllChildren().stream()
                 .map(OldChild::getChildDOB)
                 .filter(Objects::nonNull)
                 .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
