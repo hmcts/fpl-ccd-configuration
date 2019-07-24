@@ -2,12 +2,12 @@ const config = require('../config.js');
 
 Feature('Delete Case').retry(2);
 
-Before((I, caseViewPage) => {
+Before((I) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-  caseViewPage.goToNewActions(config.applicationActions.deleteApplication);
 });
 
 Scenario('Can delete an application and not have actions within it anymore', (I, caseViewPage, deleteApplicationPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.deleteApplication);
   deleteApplicationPage.tickDeletionConsent();
   I.click('Continue');
   I.waitForElement('.check-your-answers');

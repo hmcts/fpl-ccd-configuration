@@ -475,7 +475,7 @@ declare namespace CodeceptJS {
   }
 
   export interface deleteApplicationPage {
-    delete() : void,
+    tickDeletionConsent() : void,
 
   }
 }
