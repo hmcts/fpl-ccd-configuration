@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Respondents;
+import uk.gov.hmcts.reform.fpl.model.common.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.migration.MigratedRespondent;
-import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 
 import java.util.Date;
@@ -30,21 +32,30 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @RequestMapping("/callback/enter-respondents")
 public class RespondentController {
 
-    private final MapperService mapper;
+    private final ObjectMapper mapper;
     private final RespondentService respondentService;
 
     @Autowired
-    public RespondentController(MapperService mapper,
+    public RespondentController(ObjectMapper mapper,
                                 RespondentService respondentService) {
         this.mapper = mapper;
         this.respondentService = respondentService;
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return respondentService.setMigratedValue(caseDetails);
+        CaseData alteredData = CaseData.builder()
+            .respondentsMigrated(respondentService.setMigratedValue(caseData))
+            .respondents1(respondentService.expandRespondentCollection(caseData))
+            .build();
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(mapper.convertValue(alteredData, Map.class))
+            .build();
     }
 
     @PostMapping("/mid-event")
@@ -57,28 +68,30 @@ public class RespondentController {
             .build();
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        return respondentService.addHiddenValues(caseDetails);
+        CaseData caseData = respondentService.addHiddenValues(caseDetails);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(mapper.convertValue(caseData, Map.class))
+            .build();
     }
 
     @SuppressWarnings("unchecked")
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Map<String, Object> respondentsData =
-            (Map<String, Object>) defaultIfNull(caseDetails.getData().get("respondents"), null);
+        Respondents respondents = defaultIfNull(caseData.getRespondents(), null);
 
-        if (caseDetails.getData().containsKey("respondents1")) {
-
-            List<Map<String, Object>> migratedRespondentObject =
-                (List<Map<String, Object>>) caseDetails.getData().get("respondents1");
+        if (caseData.getRespondents1() != null) {
+            List<Element<MigratedRespondent>> migratedRespondentObject = caseData.getRespondents1();
 
             List<MigratedRespondent> migratedRespondents = migratedRespondentObject.stream()
-                .map(respondent ->
-                    mapper.mapObject((Map<String, Object>) respondent.get("value"), MigratedRespondent.class))
+                .map(Element::getValue)
                 .collect(toList());
 
             if (migratedRespondents.stream()
@@ -88,9 +101,7 @@ public class RespondentController {
                 .anyMatch(dob -> dob.after(new Date()))) {
                 errors.add("Date of birth cannot be in the future");
             }
-        } else {
-
-            Respondents respondents = mapper.mapObject(respondentsData, Respondents.class);
+        } else if (respondents != null) {
             if (respondents.getAllRespondents().stream()
                 .map(Respondent::getDob)
                 .filter(Objects::nonNull)
