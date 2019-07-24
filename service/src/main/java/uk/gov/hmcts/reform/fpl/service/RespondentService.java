@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.CaseData;
@@ -49,12 +48,11 @@ public class RespondentService {
     }
 
     @SuppressWarnings("unchecked")
-    public CaseData addHiddenValues(CaseDetails caseDetails) {
-        CaseData data = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    public CaseData addHiddenValues(CaseData caseData) {
         CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder();
 
-        if (data.getRespondents1() != null) {
-            List<Element<MigratedRespondent>> respondentParties = data.getRespondents1();
+        if (caseData.getRespondents1() != null) {
+            List<Element<MigratedRespondent>> respondentParties = caseData.getRespondents1();
 
             List<RespondentParty> respondentPartyList = respondentParties.stream()
                 .map(Element::getValue)

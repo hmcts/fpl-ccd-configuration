@@ -72,11 +72,12 @@ public class RespondentController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        CaseData caseData = respondentService.addHiddenValues(caseDetails);
+        CaseData alteredData = respondentService.addHiddenValues(caseData);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(mapper.convertValue(caseData, Map.class))
+            .data(mapper.convertValue(alteredData, Map.class))
             .build();
     }
 
