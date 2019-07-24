@@ -25,7 +25,6 @@
       color: #78b1dc;
       border: 1px solid #78b1dc;
     }
-
     .heading {
       display: block;
     }
@@ -1113,8 +1112,8 @@
           <div class="data-list__row">
             <dt class="data-list__title">Care and contact plan</dt>
             <dd class="data-list__definition">
-              {% if child.value.party.careAndContact is not empty %}
-                <span class="u-block">{{ child.value.party.careAndContact }}</span>
+              {% if child.value.party.careAndContactPlan is not empty %}
+                <span class="u-block">{{ child.value.party.careAndContactPlan }}</span>
               {% else %}
                 -
               {% endif %}

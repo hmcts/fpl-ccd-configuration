@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.Children;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.OldChild;
 import uk.gov.hmcts.reform.fpl.model.OldChildren;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
@@ -71,13 +71,13 @@ public class ChildSubmissionController {
             List<Map<String, Object>> migratedChildrenObject =
                 (List<Map<String, Object>>) caseDetails.getData().get("children1");
 
-            List<Children> migratedChildren = migratedChildrenObject.stream()
+            List<Child> migratedChildren = migratedChildrenObject.stream()
                 .map(child ->
-                    mapperService.mapObject((Map<String, Object>) child.get("value"), Children.class))
+                    mapperService.mapObject((Map<String, Object>) child.get("value"), Child.class))
                 .collect(toList());
 
             if (migratedChildren.stream()
-                .map(Children::getParty)
+                .map(Child::getParty)
                 .map(Party::getDateOfBirth)
                 .filter(Objects::nonNull)
                 .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
