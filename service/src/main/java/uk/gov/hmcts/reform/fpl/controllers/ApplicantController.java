@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OldApplicant;
 import uk.gov.hmcts.reform.fpl.service.ApplicantMigrationService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
@@ -32,16 +34,29 @@ public class ApplicantController {
     @Autowired
     private MapperService mapperService;
     private final ApplicantMigrationService applicantMigrationService;
+    private final ObjectMapper mapper;
 
     @Autowired
     public ApplicantController(MapperService mapperService,
-                               ApplicantMigrationService applicantMigrationService) {
+                               ApplicantMigrationService applicantMigrationService, ObjectMapper mapper) {
         this.mapperService = mapperService;
         this.applicantMigrationService = applicantMigrationService;
+        this.mapper = mapper;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
+//        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+//        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+//
+//        CaseData alteredData = CaseData.builder()
+//            .applicantsMigrated(applicantMigrationService.setMigratedValue(caseData))
+//            .applicants(applicantMigrationService.expandApplicantCollection(caseData))
+//            .build();
+//
+//        return AboutToStartOrSubmitCallbackResponse.builder()
+//            .data(mapper.convertValue(alteredData, Map.class))
+//            .build();
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
         return applicantMigrationService.setMigratedValue(caseDetails);

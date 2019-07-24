@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +24,32 @@ public class ApplicantMigrationService {
 
     @Autowired
     private final ObjectMapper mapper = new ObjectMapper();
+
+//    public String setMigratedValue(CaseData caseData){
+//        if(caseData.getApplicants() != null){
+//            return "Yes";
+//        } else {
+//            return "No";
+//        }
+//    }
+//
+//    public List<Element<Applicant>> expandApplicantCollection(CaseData caseData) {
+//        if (caseData.getApplicants() != null) {
+//            List<Element<Applicant>> populatedApplicant = new ArrayList<>();
+//
+//            populatedApplicant.add(Element.<Applicant>builder()
+//                .value(Applicant.builder()
+//                    .party(ApplicantParty.builder()
+//                        .partyId(UUID.randomUUID().toString())
+//                        .build())
+//                    .build())
+//                .build());
+//
+//            return populatedApplicant;
+//        } else {
+//            return caseData.getApplicants();
+//        }
+//    }
 
     public AboutToStartOrSubmitCallbackResponse setMigratedValue(CaseDetails caseDetails) {
         Map<String, Object> data = caseDetails.getData();
@@ -48,6 +77,7 @@ public class ApplicantMigrationService {
             .data(data)
             .build();
     }
+
 
     @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse addHiddenValues(CaseDetails caseDetails) {
