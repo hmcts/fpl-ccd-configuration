@@ -74,13 +74,13 @@ Scenario('completing entering child information in the c110a application', (I, e
   I.seeAnswerInTab(6, 'Party', 'Gender', 'Boy');
   I.seeAnswerInTab(7, 'Party', 'Describe child\'s situation', 'Living with respondents');
   I.seeAnswerInTab(8, 'Party', 'What date did they start staying here?', '1 Nov 2017');
-  I.seeAnswerInTab(10, 'Party', 'Key dates for this child', 'Tuesday the 11th');
   I.seeAnswerInTab(1, 'Current address', 'Building and Street', 'Flat 2');
   I.seeAnswerInTab(2, 'Current address', '', 'Caversham House 15-17');
   I.seeAnswerInTab(3, 'Current address', '', 'Church Road');
   I.seeAnswerInTab(4, 'Current address', 'Town or City', 'Reading');
   I.seeAnswerInTab(5, 'Current address', 'Postcode/Zipcode', 'RG4 7AA');
   I.seeAnswerInTab(6, 'Current address', 'Country', 'United Kingdom');
+  I.seeAnswerInTab(10, 'Party', 'Key dates for this child', 'Tuesday the 11th');
   I.seeAnswerInTab(11, 'Party', 'Brief summary of care and contact plan', 'care plan summary');
   I.seeAnswerInTab(12, 'Party', 'Are you considering adoption at this stage?', 'No');
   I.seeAnswerInTab(13, 'Party', 'Mother\'s full name', 'Laura Smith');
@@ -99,13 +99,13 @@ Scenario('completing entering child information in the c110a application', (I, e
   I.seeAnswerInTab(6, 'Party', 'Gender', 'Girl');
   I.seeAnswerInTab(7, 'Party', 'Describe child\'s situation', 'Living with respondents');
   I.seeAnswerInTab(8, 'Party', 'What date did they start staying here?', '2 Nov 2017');
-  I.seeAnswerInTab(10, 'Party', 'Key dates for this child', 'Tuesday the 11th');
   I.seeAnswerInTab(1, 'Current address', 'Building and Street', '2 Three Tuns Wynd');
   I.seeAnswerInTab(2, 'Current address', '', 'High Street');
   I.seeAnswerInTab(3, 'Current address', '', 'Stokesley');
   I.seeAnswerInTab(4, 'Current address', 'Town or City', 'Middlesbrough');
   I.seeAnswerInTab(5, 'Current address', 'Postcode/Zipcode', 'TS9 5DQ');
   I.seeAnswerInTab(6, 'Current address', 'Country', 'United Kingdom');
+  I.seeAnswerInTab(10, 'Party', 'Key dates for this child', 'Tuesday the 11th');
   I.seeAnswerInTab(11, 'Party', 'Brief summary of care and contact plan', 'care plan summary');
   I.seeAnswerInTab(12, 'Party', 'Are you considering adoption at this stage?', 'No');
   I.seeAnswerInTab(13, 'Party', 'Mother\'s full name', 'Laura Smith');
@@ -115,4 +115,5 @@ Scenario('completing entering child information in the c110a application', (I, e
   I.seeAnswerInTab(1, 'Social worker\'s telephone number', 'Telephone number', '01234567');
   I.seeAnswerInTab(18, 'Party', 'Does the child have any additional needs?', 'No');
   I.seeAnswerInTab(19, 'Party', 'Do you need contact details hidden from other parties?', 'No');
+  I.seeAnswerInTab(20, 'Party', 'Do you believe this child will have problems with litigation capacity (understanding what\'s happening in the case)', 'No');
 });

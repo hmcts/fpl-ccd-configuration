@@ -7,11 +7,11 @@ import lombok.Data;
 
 @Data
 @Builder
-public class MigratedChildren {
+public class Children {
     private final ChildParty party;
 
     @JsonCreator
-    public MigratedChildren(@JsonProperty("party") ChildParty party) {
+    public Children(@JsonProperty("party") ChildParty party) {
         this.party = party;
     }
 }

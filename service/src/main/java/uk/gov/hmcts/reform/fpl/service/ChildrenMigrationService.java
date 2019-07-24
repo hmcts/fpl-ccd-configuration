@@ -30,11 +30,12 @@ public class ChildrenMigrationService {
 
             if (!caseDetails.getData().containsKey("children1")) {
                 List<Map<String, Object>> populatedChild = new ArrayList<>();
+                // Populate partyId to satisfy data requirements of reform. Field is not to be shown in UI
                 populatedChild.add(ImmutableMap.of(
                     "id", UUID.randomUUID().toString(),
                     "value", ImmutableMap.of(
                         "party", ImmutableMap.of(
-                            "partyID", UUID.randomUUID().toString()
+                            "partyId", UUID.randomUUID().toString()
                         )
                     )
                 ));
@@ -63,8 +64,8 @@ public class ChildrenMigrationService {
                 .map(child -> {
                     ChildParty.ChildPartyBuilder partyBuilder = child.toBuilder();
 
-                    if (child.getPartyID() == null) {
-                        partyBuilder.partyID(UUID.randomUUID().toString());
+                    if (child.getPartyId() == null) {
+                        partyBuilder.partyId(UUID.randomUUID().toString());
                         partyBuilder.partyType(PartyType.INDIVIDUAL);
                     }
 

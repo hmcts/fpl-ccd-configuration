@@ -11,7 +11,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 public class Party {
-    public final String partyID;
+    public final String partyId;
     public final PartyType partyType;
     public final String firstName;
     public final String lastName;

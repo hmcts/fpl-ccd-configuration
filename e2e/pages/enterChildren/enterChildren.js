@@ -31,7 +31,7 @@ module.exports = {
         addressOfChild: `div[id="children1_${id}_party_address_address"]`,
       },
       keyDates: `#children1_${id}_party_keyDates`,
-      careAndContactPlan: `#children1_${id}_party_careAndContact`,
+      careAndContactPlan: `#children1_${id}_party_careAndContactPlan`,
       adoptionNo: `#children1_${id}_party_adoption-No`,
       mothersName: `#children1_${id}_party_mothersName`,
       fathersName: `#children1_${id}_party_fathersName`,

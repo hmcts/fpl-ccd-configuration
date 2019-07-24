@@ -30,7 +30,7 @@ class ChildAboutToStartTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldAddChildrenMigratedToValueToDate() throws Exception {
+    void shouldAddChildrenMigratedValueToData() throws Exception {
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
                 .put("data", "some data")

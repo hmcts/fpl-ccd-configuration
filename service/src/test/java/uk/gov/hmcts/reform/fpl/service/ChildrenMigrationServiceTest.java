@@ -77,7 +77,7 @@ class ChildrenMigrationServiceTest {
             .containsEntry("firstName", "James")
             .containsEntry("partyType", "INDIVIDUAL");
 
-        assertThat(party.get("partyID")).isNotNull();
+        assertThat(party.get("partyId")).isNotNull();
     }
 
     @SuppressWarnings("unchecked")
@@ -118,13 +118,13 @@ class ChildrenMigrationServiceTest {
             .containsEntry("firstName", "James")
             .containsEntry("partyType", "INDIVIDUAL");
 
-        assertThat(firstParty.get("partyID")).isNotNull();
+        assertThat(firstParty.get("partyId")).isNotNull();
 
         assertThat(secondParty)
             .containsEntry("firstName", "Lucy")
             .containsEntry("partyType", "INDIVIDUAL");
 
-        assertThat(secondParty.get("partyID")).isNotNull();
+        assertThat(secondParty.get("partyId")).isNotNull();
     }
 
     @Test
@@ -148,7 +148,7 @@ class ChildrenMigrationServiceTest {
                 "id", "12345",
                 "value", ImmutableMap.of(
                     "party", ChildParty.builder()
-                        .partyID("123")
+                        .partyId("123")
                         .build()
                 ))));
 
@@ -163,7 +163,7 @@ class ChildrenMigrationServiceTest {
         Map<String, Object> value = (Map<String, Object>) children.get(0).get("value");
         Map<String, Object> party = (Map<String, Object>) value.get("party");
 
-        assertThat(party.get("partyID")).isEqualTo("123");
+        assertThat(party.get("partyId")).isEqualTo("123");
     }
 
     @SuppressWarnings("unchecked")
@@ -177,7 +177,7 @@ class ChildrenMigrationServiceTest {
                 "value", ImmutableMap.of(
                     "party", ChildParty.builder()
                         .firstName("James")
-                        .partyID("123")
+                        .partyId("123")
                         .build()
                 )),
             ImmutableMap.of(
@@ -202,10 +202,10 @@ class ChildrenMigrationServiceTest {
         Map<String, Object> secondParty = (Map<String, Object>) secondValue.get("party");
 
         assertThat(firstParty).containsEntry("firstName", "James");
-        assertThat(firstParty.get("partyID")).isNotNull();
+        assertThat(firstParty.get("partyId")).isNotNull();
 
         assertThat(secondParty).containsEntry("firstName", "Lucy");
-        assertThat(secondParty.get("partyID")).isNotNull();
+        assertThat(secondParty.get("partyId")).isNotNull();
     }
 
     private Map<String, Object> createData(String key, String value) {

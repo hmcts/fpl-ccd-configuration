@@ -327,7 +327,6 @@
     "DisplayOrder": 1,
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
-    "SecurityClassification": "Public",
-    "EndButtonLabel": "Save and continue"
+    "SecurityClassification": "Public"
   }
 ]

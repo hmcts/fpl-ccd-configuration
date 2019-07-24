@@ -1568,9 +1568,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildParty",
-    "ListElementCode": "partyID",
+    "ListElementCode": "partyId",
     "FieldType": "Text",
-    "ElementLabel": "Party ID",
+    "ElementLabel": "Party Id",
     "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
@@ -1606,7 +1606,7 @@
     "ListElementCode": "dateOfBirth",
     "FieldType": "Date",
     "ElementLabel": "Date of birth",
-    "HintText": "For example, 31 3 1980",
+    "HintText": "For example, 31 3 2016",
     "SecurityClassification": "Public"
   },
   {
@@ -1676,7 +1676,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildParty",
-    "ListElementCode": "careAndContact",
+    "ListElementCode": "careAndContactPlan",
     "FieldType": "TextArea",
     "ElementLabel": "Brief summary of care and contact plan",
     "HintText": "For example, place baby in local authority foster care until further assessments are completed. Supervised contact for parents will be arranged.",
@@ -1812,7 +1812,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "ChildrenParty",
+    "ID": "ChildrenNew",
     "ListElementCode": "party",
     "FieldType": "ChildParty",
     "ElementLabel": "Party",

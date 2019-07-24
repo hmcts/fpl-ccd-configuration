@@ -23,7 +23,7 @@ public final class ChildParty extends Party {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private final Date situationDate;
     private final String keyDates;
-    private final String careAndContact;
+    private final String careAndContactPlan;
     private final String adoption;
     private final String placementOrderApplication;
     private final String placementCourt;
@@ -40,7 +40,7 @@ public final class ChildParty extends Party {
     private final String litigationIssuesDetails;
 
     @Builder(toBuilder = true)
-    public ChildParty(String partyID,
+    public ChildParty(String partyId,
                        PartyType partyType,
                        String firstName,
                        String lastName,
@@ -54,7 +54,7 @@ public final class ChildParty extends Party {
                        String situationDetails,
                        Date situationDate,
                        String keyDates,
-                       String careAndContact,
+                       String careAndContactPlan,
                        String adoption,
                        String placementOrderApplication,
                        String placementCourt,
@@ -69,7 +69,7 @@ public final class ChildParty extends Party {
                        String detailsHiddenReason,
                        String litigationIssues,
                        String litigationIssuesDetails) {
-        super(partyID, partyType, firstName, lastName, dateOfBirth, address, email, telephoneNumber);
+        super(partyId, partyType, firstName, lastName, dateOfBirth, address, email, telephoneNumber);
 
         this.gender = gender;
         this.genderIdentification = genderIdentification;
@@ -77,7 +77,7 @@ public final class ChildParty extends Party {
         this.situationDetails = situationDetails;
         this.situationDate = situationDate;
         this.keyDates = keyDates;
-        this.careAndContact = careAndContact;
+        this.careAndContactPlan = careAndContactPlan;
         this.adoption = adoption;
         this.placementOrderApplication = placementOrderApplication;
         this.placementCourt = placementCourt;
