@@ -1,17 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
@@ -20,47 +19,44 @@ import static java.util.stream.Collectors.toList;
 public class ChildrenMigrationService {
 
     @Autowired
-    private final ObjectMapper mapper = new ObjectMapper();
+    private ObjectMapper mapper;
 
-    public AboutToStartOrSubmitCallbackResponse setMigratedValue(CaseDetails caseDetails) {
-        Map<String, Object> data = caseDetails.getData();
-
-        if (caseDetails.getData().containsKey("children1") || !caseDetails.getData().containsKey("children")) {
-            data.put("childrenMigrated", "Yes");
-
-            if (!caseDetails.getData().containsKey("children1")) {
-                List<Map<String, Object>> populatedChild = new ArrayList<>();
-                // Populate partyId to satisfy data requirements of reform. Field is not to be shown in UI
-                populatedChild.add(ImmutableMap.of(
-                    "id", UUID.randomUUID().toString(),
-                    "value", ImmutableMap.of(
-                        "party", ImmutableMap.of(
-                            "partyId", UUID.randomUUID().toString()
-                        )
-                    )
-                ));
-
-                data.put("children1", populatedChild);
-            }
+    public String setMigratedValue(CaseData caseData) {
+        if (caseData.getChildren1() != null || caseData.getChildren() == null) {
+            return "Yes";
         } else {
-            data.put("childrenMigrated", "No");
+            return "No";
         }
+    }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+    public List<Element<Child>> expandChildrenCollection(CaseData caseData) {
+        if (caseData.getChildren() == null) {
+            List<Element<Child>> populatedRespondent = new ArrayList<>();
+
+            populatedRespondent.add(Element.<Child>builder()
+                .value(Child.builder()
+                    .party(ChildParty.builder()
+                        .partyId(UUID.randomUUID().toString())
+                        .build())
+                    .build())
+                .build());
+
+            return populatedRespondent;
+        } else {
+            return caseData.getChildren1();
+        }
     }
 
     @SuppressWarnings("unchecked")
-    public AboutToStartOrSubmitCallbackResponse addHiddenValues(CaseDetails caseDetails) {
-        Map<String, Object> data = caseDetails.getData();
+    public CaseData addHiddenValues(CaseData caseData) {
+        CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder();
 
-        if (caseDetails.getData().containsKey("children1")) {
-            List<Map<String, Object>> childrenParties = (List<Map<String, Object>>) data.get("children1");
+        if (caseData.getChildren1() != null) {
+            List<Element<Child>> childrenParties = caseData.getChildren1();
 
             List<ChildParty> childrenPartyList = childrenParties.stream()
-                .map(entry -> mapper.convertValue(entry.get("value"), Map.class))
-                .map(map -> mapper.convertValue(map.get("party"), ChildParty.class))
+                .map(Element::getValue)
+                .map(Child::getParty)
                 .map(child -> {
                     ChildParty.ChildPartyBuilder partyBuilder = child.toBuilder();
 
@@ -73,19 +69,18 @@ public class ChildrenMigrationService {
                 })
                 .collect(toList());
 
-            List<Map<String, Object>> children = childrenPartyList.stream()
-                .map(item -> ImmutableMap.<String, Object>builder()
-                    .put("id", UUID.randomUUID().toString())
-                    .put("value", ImmutableMap.of(
-                        "party", mapper.convertValue(item, Map.class)))
+            List<Element<Child>> children = childrenPartyList.stream()
+                .map(item -> Element.<Child>builder()
+                    .id(UUID.randomUUID())
+                    .value(Child.builder()
+                        .party(item)
+                        .build())
                     .build())
                 .collect(toList());
 
-            data.put("children1", children);
+            caseDataBuilder.children1(children);
         }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return caseDataBuilder.build();
     }
 }

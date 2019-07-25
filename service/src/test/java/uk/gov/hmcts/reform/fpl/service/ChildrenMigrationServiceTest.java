@@ -1,17 +1,18 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.PartyType;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.OldChildren;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,195 +23,164 @@ class ChildrenMigrationServiceTest {
 
     @Test
     void shouldSetMigratedChildrenToYesWhenNoChildrenDataPresent() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("data", "some data"))
-            .build();
+        CaseData caseData = CaseData.builder().children(null).build();
+        String migratedValue = service.setMigratedValue(caseData);
 
-        AboutToStartOrSubmitCallbackResponse response = service.setMigratedValue(caseDetails);
-        assertThat(response.getData()).containsEntry("childrenMigrated", "Yes");
+        assertThat(migratedValue).isEqualTo("Yes");
     }
 
     @Test
     void shouldSetMigratedChildrenToYesWhenChildren1Exists() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("children1", "some value"))
+        CaseData caseData = CaseData.builder()
+            .children1(
+                ImmutableList.of(Element.<Child>builder()
+                    .value(
+                        Child.builder()
+                            .build())
+                    .build()))
             .build();
-        AboutToStartOrSubmitCallbackResponse response = service.setMigratedValue(caseDetails);
-        assertThat(response.getData()).containsEntry("childrenMigrated", "Yes");
+
+        String migratedValue = service.setMigratedValue(caseData);
+
+        assertThat(migratedValue).isEqualTo("Yes");
     }
 
     @Test
     void shouldSetMigratedChildrenToNoWhenOldChildrenExists() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("children", "some value"))
+        CaseData caseData = CaseData.builder()
+            .children(OldChildren.builder().build())
             .build();
-        AboutToStartOrSubmitCallbackResponse response = service.setMigratedValue(caseDetails);
-        assertThat(response.getData()).containsEntry("childrenMigrated", "No");
+
+        String migratedValue = service.setMigratedValue(caseData);
+
+        assertThat(migratedValue).isEqualTo("No");
     }
 
     @SuppressWarnings("unchecked")
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToSingleChild() {
-        Map<String, Object> childObject = new HashMap<>();
-
-        childObject.put("children1", ImmutableList.of(
-            ImmutableMap.of(
-                "id", "12345",
-                "value", ImmutableMap.of(
-                    "party", ChildParty.builder()
+        List<Element<Child>> children = ImmutableList.of(
+            Element.<Child>builder()
+                .id(UUID.randomUUID())
+                .value(Child.builder()
+                    .party(ChildParty.builder()
                         .firstName("James")
-                        .build()
-                ))));
+                        .build())
+                    .build())
+                .build());
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(childObject)
+        CaseData caseData = CaseData.builder()
+            .children1(children)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
+        CaseData newData = service.addHiddenValues(caseData);
 
-        Map<String, Object> data = response.getData();
-        List<Map<String, Object>> children = (List<Map<String, Object>>) data.get("children1");
-        Map<String, Object> value = (Map<String, Object>) children.get(0).get("value");
-        Map<String, Object> party = (Map<String, Object>) value.get("party");
-
-        assertThat(party)
-            .containsEntry("firstName", "James")
-            .containsEntry("partyType", "INDIVIDUAL");
-
-        assertThat(party.get("partyId")).isNotNull();
+        assertThat(newData.getChildren1().get(0).getValue().getParty().firstName).isEqualTo("James");
+        assertThat(newData.getChildren1().get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(newData.getChildren1().get(0).getValue().getParty().partyId).isNotNull();
     }
 
     @SuppressWarnings("unchecked")
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToMultipleChildren() {
-        Map<String, Object> childObject = new HashMap<>();
-
-        childObject.put("children1", ImmutableList.of(
-            ImmutableMap.of(
-                "id", "12345",
-                "value", ImmutableMap.of(
-                    "party", ChildParty.builder()
+        List<Element<Child>> children = ImmutableList.of(
+            Element.<Child>builder()
+                .id(UUID.randomUUID())
+                .value(Child.builder()
+                    .party(ChildParty.builder()
                         .firstName("James")
-                        .build()
-                )),
-            ImmutableMap.of(
-                "id", "98765",
-                "value", ImmutableMap.of(
-                    "party", ChildParty.builder()
+                        .build())
+                    .build())
+                .build(),
+            Element.<Child>builder()
+                .id(UUID.randomUUID())
+                .value(Child.builder()
+                    .party(ChildParty.builder()
                         .firstName("Lucy")
-                        .build()
-                ))));
+                        .build())
+                    .build())
+                .build()
+        );
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(childObject)
+        CaseData caseData = CaseData.builder()
+            .children1(children)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
+        CaseData newData = service.addHiddenValues(caseData);
 
-        Map<String, Object> data = response.getData();
-        List<Map<String, Object>> children = (List<Map<String, Object>>) data.get("children1");
-        Map<String, Object> firstValue = (Map<String, Object>) children.get(0).get("value");
-        Map<String, Object> secondValue = (Map<String, Object>) children.get(1).get("value");
-        Map<String, Object> firstParty = (Map<String, Object>) firstValue.get("party");
-        Map<String, Object> secondParty = (Map<String, Object>) secondValue.get("party");
+        assertThat(newData.getChildren1().get(0).getValue().getParty().firstName).isEqualTo("James");
+        assertThat(newData.getChildren1().get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(newData.getChildren1().get(0).getValue().getParty().partyId).isNotNull();
 
-        assertThat(firstParty)
-            .containsEntry("firstName", "James")
-            .containsEntry("partyType", "INDIVIDUAL");
-
-        assertThat(firstParty.get("partyId")).isNotNull();
-
-        assertThat(secondParty)
-            .containsEntry("firstName", "Lucy")
-            .containsEntry("partyType", "INDIVIDUAL");
-
-        assertThat(secondParty.get("partyId")).isNotNull();
+        assertThat(newData.getChildren1().get(1).getValue().getParty().firstName).isEqualTo("Lucy");
+        assertThat(newData.getChildren1().get(1).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(newData.getChildren1().get(1).getValue().getParty().partyId).isNotNull();
     }
 
     @Test
     void shouldNotAddPartyIDAndPartyTypeValuesToDataStructureIfChildren1IsNotPresent() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("children", "data"))
-            .build();
+        CaseData caseData = CaseData.builder().build();
 
-        AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
+        CaseData alteredData = service.addHiddenValues(caseData);
 
-        assertThat(response.getData()).isEqualTo(caseDetails.getData());
+        assertThat(alteredData).isEqualTo(caseData);
     }
 
     @SuppressWarnings("unchecked")
     @Test
     void shouldKeepExistingPartyID() {
-        Map<String, Object> childObject = new HashMap<>();
-
-        childObject.put("children1", ImmutableList.of(
-            ImmutableMap.of(
-                "id", "12345",
-                "value", ImmutableMap.of(
-                    "party", ChildParty.builder()
+        List<Element<Child>> children = ImmutableList.of(
+            Element.<Child>builder()
+                .id(UUID.randomUUID())
+                .value(Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName("James")
                         .partyId("123")
-                        .build()
-                ))));
+                        .build())
+                    .build())
+                .build());
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(childObject)
+        CaseData caseData = CaseData.builder()
+            .children1(children)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
+        CaseData alteredData = service.addHiddenValues(caseData);
 
-        Map<String, Object> data = response.getData();
-        List<Map<String, Object>> children = (List<Map<String, Object>>) data.get("children1");
-        Map<String, Object> value = (Map<String, Object>) children.get(0).get("value");
-        Map<String, Object> party = (Map<String, Object>) value.get("party");
-
-        assertThat(party.get("partyId")).isEqualTo("123");
+        assertThat(alteredData.getChildren1().get(0).getValue().getParty().partyId).isEqualTo("123");
     }
 
     @SuppressWarnings("unchecked")
     @Test
     void shouldKeepExistingPartyIdAndContinueAddingNewPartyId() {
-        Map<String, Object> childObject = new HashMap<>();
-
-        childObject.put("children1", ImmutableList.of(
-            ImmutableMap.of(
-                "id", "12345",
-                "value", ImmutableMap.of(
-                    "party", ChildParty.builder()
+        List<Element<Child>> children = ImmutableList.of(
+            Element.<Child>builder()
+                .id(UUID.randomUUID())
+                .value(Child.builder()
+                    .party(ChildParty.builder()
                         .firstName("James")
                         .partyId("123")
-                        .build()
-                )),
-            ImmutableMap.of(
-                "id", "98765",
-                "value", ImmutableMap.of(
-                    "party", ChildParty.builder()
+                        .build())
+                    .build())
+                .build(),
+            Element.<Child>builder()
+                .id(UUID.randomUUID())
+                .value(Child.builder()
+                    .party(ChildParty.builder()
                         .firstName("Lucy")
-                        .build()
-                ))));
+                        .build())
+                    .build())
+                .build());
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(childObject)
+        CaseData caseData = CaseData.builder()
+            .children1(children)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
+        CaseData alteredData = service.addHiddenValues(caseData);
 
-        Map<String, Object> data = response.getData();
-        List<Map<String, Object>> children = (List<Map<String, Object>>) data.get("children1");
-        Map<String, Object> firstValue = (Map<String, Object>) children.get(0).get("value");
-        Map<String, Object> secondValue = (Map<String, Object>) children.get(1).get("value");
-        Map<String, Object> firstParty = (Map<String, Object>) firstValue.get("party");
-        Map<String, Object> secondParty = (Map<String, Object>) secondValue.get("party");
+        assertThat(alteredData.getChildren1().get(0).getValue().getParty().firstName).isEqualTo("James");
+        assertThat(alteredData.getChildren1().get(0).getValue().getParty().partyId).isEqualTo("123");
 
-        assertThat(firstParty).containsEntry("firstName", "James");
-        assertThat(firstParty.get("partyId")).isNotNull();
-
-        assertThat(secondParty).containsEntry("firstName", "Lucy");
-        assertThat(secondParty.get("partyId")).isNotNull();
-    }
-
-    private Map<String, Object> createData(String key, String value) {
-        Map<String, Object> data = new HashMap<>();
-        data.put(key, value);
-        return data;
+        assertThat(alteredData.getChildren1().get(1).getValue().getParty().firstName).isEqualTo("Lucy");
+        assertThat(alteredData.getChildren1().get(1).getValue().getParty().partyId).isNotNull();
     }
 }

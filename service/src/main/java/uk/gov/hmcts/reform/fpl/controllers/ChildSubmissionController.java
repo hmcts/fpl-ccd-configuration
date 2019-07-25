@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,15 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.*;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.OldChild;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.service.ChildrenMigrationService;
-import uk.gov.hmcts.reform.fpl.service.MapperService;
-import static org.springframework.util.ObjectUtils.isEmpty;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
@@ -28,21 +30,29 @@ import static java.util.stream.Collectors.toList;
 @RequestMapping("/callback/enter-children")
 public class ChildSubmissionController {
 
-    private final MapperService mapperService;
+    private final ObjectMapper mapper;
     private final ChildrenMigrationService childrenMigrationService;
 
     @Autowired
-    public ChildSubmissionController(MapperService mapperService,
+    public ChildSubmissionController(ObjectMapper mapper,
                                      ChildrenMigrationService childrenMigrationService) {
-        this.mapperService = mapperService;
+        this.mapper = mapper;
         this.childrenMigrationService = childrenMigrationService;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return childrenMigrationService.setMigratedValue(caseDetails);
+        CaseData alteredData = CaseData.builder()
+            .childrenMigrated(childrenMigrationService.setMigratedValue(caseData))
+            .children1(childrenMigrationService.expandChildrenCollection(caseData))
+            .build();
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(mapper.convertValue(alteredData, Map.class))
+            .build();
     }
 
     @PostMapping("/mid-event")
@@ -58,16 +68,21 @@ public class ChildSubmissionController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return childrenMigrationService.addHiddenValues(caseDetails);
+        CaseData alteredData = childrenMigrationService.addHiddenValues(caseData);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(mapper.convertValue(alteredData, Map.class))
+            .build();
     }
 
     @SuppressWarnings("unchecked")
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
-        CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (!isEmpty(caseData.getChildren1())) {
+        if (caseData.getChildren1() != null) {
             List<Child> newChildren = caseData.getChildren1().stream()
                 .map(Element::getValue)
                 .collect(toList());
@@ -79,7 +94,7 @@ public class ChildSubmissionController {
                 .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
                 errors.add("Date of birth cannot be in the future");
             }
-        } else if (!isEmpty(caseData.getChildren())) {
+        } else if (caseData.getChildren() != null) {
             if (caseData.getChildren().getAllChildren().stream()
                 .map(OldChild::getChildDOB)
                 .filter(Objects::nonNull)
