@@ -21,12 +21,14 @@ module.exports = function () {
 
     continueAndSave() {
       this.click('Continue');
+      this.waitForNavigation({ waitUntil: 'networkidle0' });
       this.waitForElement('.check-your-answers');
       eventSummaryPage.submit('Save and continue');
     },
 
     continueAndSubmit() {
       this.click('Continue');
+      this.waitForNavigation({ waitUntil: 'networkidle0' });
       this.waitForElement('.check-your-answers');
       eventSummaryPage.submit('Submit');
     },
@@ -70,8 +72,8 @@ module.exports = function () {
     },
 
     navigateToCaseDetails(caseId) {
-      const href = `${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${caseId.replace(/\D/g, '')}`;
-      this.navigateToUrl(href);
+      this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${caseId.replace(/\D/g, '')}`);
+      this.waitForText('Sign Out');
     },
   });
 };
