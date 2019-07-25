@@ -28,6 +28,8 @@ exports.config = {
     Puppeteer: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: false,
+      keepCookies: false,
+      keepBrowserState: false,
       waitForTimeout: 15000,
       chrome: {
         ignoreHTTPSErrors: true,
