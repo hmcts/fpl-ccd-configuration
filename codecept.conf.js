@@ -37,7 +37,10 @@ exports.config = {
       },
       windowSize: '1280x960',
     },
-    MyHelpers: {
+    HooksHelper: {
+      require: './e2e/helpers/hooks_helper.js',
+    },
+    PuppeteerHelpers: {
       require: './e2e/helpers/puppeter_helper.js',
     },
   },

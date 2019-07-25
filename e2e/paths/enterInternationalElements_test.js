@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-Feature('Enter international element').retry(2);
+Feature('Enter international element');
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
