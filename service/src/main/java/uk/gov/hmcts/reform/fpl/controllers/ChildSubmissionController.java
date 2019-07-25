@@ -40,6 +40,7 @@ public class ChildSubmissionController {
         this.childrenMigrationService = childrenMigrationService;
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
@@ -65,6 +66,7 @@ public class ChildSubmissionController {
             .build();
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
