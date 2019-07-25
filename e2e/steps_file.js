@@ -21,14 +21,12 @@ module.exports = function () {
 
     continueAndSave() {
       this.click('Continue');
-      this.waitForNavigation({ waitUntil: 'networkidle0' });
       this.waitForElement('.check-your-answers');
       eventSummaryPage.submit('Save and continue');
     },
 
     continueAndSubmit() {
       this.click('Continue');
-      this.waitForNavigation({ waitUntil: 'networkidle0' });
       this.waitForElement('.check-your-answers');
       eventSummaryPage.submit('Submit');
     },
