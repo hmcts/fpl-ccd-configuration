@@ -34,4 +34,9 @@ public class CoreCaseDataStoreLoader {
         String response = ResourceReader.readString("core-case-data-store-api/responses/start-event-success.json");
         return mapper.readValue(response, StartEventResponse.class);
     }
+
+    public static CaseDetails reformMigratedCaseDetails() throws IOException {
+        String response = ResourceReader.readString("core-case-data-store-api/reform-migrated-case-details.json");
+        return mapper.readValue(response, CaseDetails.class);
+    }
 }

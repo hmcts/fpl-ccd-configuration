@@ -262,33 +262,6 @@
     </div>
   </dl>
 
-  <h3 class="heading heading--two">Hearing needed (NEW)</h3>
-  <dl class="data-list">
-    <div class="data-list__row">
-      <dt class="data-list__title">Hearing date requested (NEW)</dt>
-      <dd class="data-list__definition">
-        {% if case_data.hearing is not empty and
-        case_data.hearing.timeFrame is not empty %}
-        <span class="u-block">{{ case_data.hearing.timeFrame }}</span>
-        {% if case_data.hearing.sameDayHearingReason is not empty %}
-        <span class="u-block">Same Day Hearing Reason: {{ case_data.hearing.sameDayHearingReason }}</span>
-        {% endif %}
-        {% if case_data.hearing.twoDayHearingReason is not empty %}
-        <span class="u-block">Two Day Hearing Reason: {{ case_data.hearing.twoDayHearingReason }}</span>
-        {% endif %}
-        {% if case_data.hearing.sevenDayHearingReason is not empty %}
-        <span class="u-block">Seven Day Hearing Reason: {{ case_data.hearing.sevenDayHearingReason }}</span>
-        {% endif %}
-        {% if case_data.hearing.twelveDayHearingReason is not empty %}
-        <span class="u-block">Twelve Day Hearing Reason: {{ case_data.hearing.twelveDayHearingReason }}</span>
-        {% endif %}
-        {% else %}
-        -
-        {% endif %}
-      </dd>
-    </div>
-  </dl>
-
   <h3 class="heading heading--two">Hearing needed</h3>
   <dl class="data-list">
     <div class="data-list__row">

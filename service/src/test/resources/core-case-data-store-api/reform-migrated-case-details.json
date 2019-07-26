@@ -1,0 +1,474 @@
+{
+  "id": 12345,
+  "jurisdiction": "PUBLICLAW",
+  "state": "Open",
+  "case_type_id": "CARE_SUPERVISION_EPO",
+  "security_classification": "PUBLIC",
+  "case_data": {
+    "gatekeeperEmail": "FamilyPublicLaw+gatekeeper@gmail.com",
+    "caseLocalAuthority": "example",
+    "risks": {
+      "neglect": "Yes",
+      "sexualAbuse": "Yes",
+      "physicalHarm": "Yes",
+      "emotionalHarm": "Yes",
+      "neglectOccurrences": [
+        "Past harm",
+        "Future risk of harm"
+      ],
+      "sexualAbuseOccurrences": [
+        "Past harm",
+        "Future risk of harm"
+      ],
+      "physicalHarmOccurrences": [
+        "Past harm",
+        "Future risk of harm"
+      ],
+      "emotionalHarmOccurrences": [
+        "Past harm",
+        "Future risk of harm"
+      ]
+    },
+    "orders": {
+      "orderType": [
+        "EMERGENCY_PROTECTION_ORDER"
+      ],
+      "directions": "Yes",
+      "emergencyProtectionOrderDirections": [
+        "CONTACT_WITH_NAMED_PERSON"
+      ]
+    },
+    "others": {
+      "firstOther": {
+        "DOB": "1999-02-02",
+        "name": "Jason Lavery",
+        "gender": "They identify in another way",
+        "address": {
+          "County": "Armagh",
+          "Country": "N.Ire",
+          "PostCode": "BT43 343",
+          "PostTown": "Portadown",
+          "AddressLine1": "Flat 13",
+          "AddressLine2": "Portadown street",
+          "AddressLine3": "Portadown road"
+        },
+        "telephone": "07749972245",
+        "birthPlace": "Armagh",
+        "childInformation": "Cousin",
+        "litigationIssues": "NO",
+        "genderIdentification": "Unknown"
+      },
+      "additionalOthers": [
+        {
+          "id": "34c97e1a-eed9-499b-9693-e92496a1f54d",
+          "value": {
+            "DOB": "2000-02-02",
+            "name": "Peter Lavery",
+            "gender": "Male",
+            "address": {
+              "County": "Cork",
+              "Country": "Northern Ireland",
+              "PostCode": "BTTT TTT",
+              "PostTown": "Newcastle",
+              "AddressLine1": "Flat 29",
+              "AddressLine2": "Newcastle road",
+              "AddressLine3": "Newcastle street"
+            },
+            "telephone": "07749972241",
+            "birthPlace": "Lisburn",
+            "detailsHidden": "Yes",
+            "childInformation": "Friend of family",
+            "litigationIssues": "YES",
+            "detailsHiddenReason": "Other two hide from parties",
+            "litigationIssuesDetails": "Other two inability to take part in proceedings"
+          }
+        }
+      ]
+    },
+    "grounds": {
+      "thresholdReason": [
+        "noCare",
+        "beyondControl"
+      ],
+      "thresholdDetails": "grounds for application criteria"
+    },
+    "groundsForEPO": {
+      "reason": [
+        "HARM_IF_NOT_MOVED_TO_NEW_ACCOMMODATION",
+        "HARM_IF_KEPT_IN_CURRENT_ACCOMMODATION"
+      ]
+    },
+    "hearing": {
+      "type": "Contested interim care order",
+      "reason": "Baby will be discharged from hospital on 21 June 2018",
+      "timeFrame": "Same day",
+      "reducedNotice": "Yes",
+      "withoutNotice": "Yes",
+      "type_GiveReason": "Standard case management hearing",
+      "respondentsAware": "Yes",
+      "reducedNoticeReason": "Baby needs to be discharged from the hospital",
+      "withoutNoticeReason": "Notice without hearing needed",
+      "respondentsAwareReason": "They seek to care for baby in mother and baby unit"
+    },
+    "caseName": "test",
+    "children1": [
+      {
+        "id": "3b0b9640-2894-41eb-bef2-a031d18c8457",
+        "value": {
+          "party": {
+            "firstName": "Tom",
+            "lastName": "Reeves",
+            "address": {
+              "County": "Omagh",
+              "Country": "Northern Ireland",
+              "PostCode": "SE22 6SB",
+              "PostTown": "BT11 1234",
+              "AddressLine1": "Appartment 21",
+              "AddressLine2": "22 Wesley Drive",
+              "AddressLine3": "Wesley"
+            },
+            "adoption": "Yes",
+            "dateOfBirth": "2018-06-15",
+            "keyDates": "child starting primary school or taking GCSEs",
+            "gender": "Boy",
+            "fathersName": "Rob Reeves",
+            "mothersName": "Isbella Reeves",
+            "detailsHidden": "Yes",
+            "situationDate": "2018-11-08",
+            "careAndContactPlan": "Place baby in local authority foster care",
+            "placementCourt": "Central London County Court",
+            "additionalNeeds": "Yes",
+            "livingSituation": "Living with respondents",
+            "socialWorkerTel": {
+              "telephoneNumber": "0123456789"
+            },
+            "litigationIssues": "DONT_KNOW",
+            "socialWorkerName": "Helen Green",
+            "detailsHiddenReason": "History of domestic violence with relatives",
+            "fathersResponsibility": "Yes",
+            "additionalNeedsDetails": "Autism",
+            "childGenderIdentification": "Boy",
+            "placementOrderApplication": "Yes"
+          }
+        }
+      },
+      {
+        "id": "3b0b9640-2894-41eb-bef2-a031d18c8453",
+        "value": {
+          "party": {
+            "address": {
+              "County": "London",
+              "Country": "BT66 7RR",
+              "PostCode": "MK10 1SA",
+              "PostTown": "MK",
+              "AddressLine1": "Carnegie House",
+              "AddressLine2": "Central Milton Keynes",
+              "AddressLine3": "Milton Keynes"
+            },
+            "adoption": "Yes",
+            "dateOfBirth": "2002-02-02",
+            "keyDates": "test child two key date",
+            "firstName": "Sarah",
+            "lastName": "Reeves",
+            "gender": "Girl",
+            "fathersName": "Scott Simpson",
+            "mothersName": "Sarah Simpson",
+            "detailsHidden": "No",
+            "situationDate": "2002-02-02",
+            "careAndContactPlan": "test child two care and contact plan",
+            "placementCourt": "test child two court",
+            "additionalNeeds": "Yes",
+            "livingSituation": "Living with respondents",
+            "socialWorkerTel": {
+              "telephoneNumber": "07749972242"
+            },
+            "litigationIssues": "YES",
+            "socialWorkerName": "Paul Wilsdon",
+            "detailsHiddenReason": "test child two contact details hidden reason",
+            "fathersResponsibility": "Yes",
+            "additionalNeedsDetails": "learning disabilities",
+            "litigationIssuesDetails": "test child two ability to take part in proceedings",
+            "placementOrderApplication": "Yes"
+          }
+        }
+      }
+    ],
+    "children": {},
+    "applicant": {
+      "name": "London Borough of Southwark",
+      "email": "jane@smith.com",
+      "mobile": "2020202020",
+      "address": {
+        "County": "Galway",
+        "Country": "Ireland",
+        "PostCode": "SE1 2QH",
+        "PostTown": "Limerick",
+        "AddressLine1": "160 Tooley St",
+        "AddressLine2": "Tooley road",
+        "AddressLine3": "Tooley"
+      },
+      "jobTitle": "Legal adviser",
+      "telephone": "02120202020",
+      "personToContact": "Jane Smith",
+      "pbaNumber": "PBA1234567"
+    },
+    "solicitor": {
+      "dx": "106 Southwark &",
+      "name": "Brian Banks",
+      "email": "brian@banks.com",
+      "mobile": "7665545327",
+      "reference": "12345",
+      "telephone": "020 2772 5772"
+    },
+    "proceeding": {
+      "ended": "02-02-2006",
+      "judge": "William Peters",
+      "started": "02-02-2002",
+      "children": "children subject to proceedings",
+      "guardian": "Mark Watson",
+      "caseNumber": "12345",
+      "ordersMade": "Supervision order",
+      "proceedingStatus": "Ongoing",
+      "onGoingProceeding": "Yes",
+      "sameGuardianNeeded": "No",
+      "sameGuardianDetails": "Some guardian not needed",
+      "additionalProceedings": [
+        {
+          "id": "a5e57424-9b5c-4722-be7e-9d9d9111c2b9",
+          "value": {
+            "ended": "02-02-2009",
+            "judge": "Peters Williams",
+            "started": "02-02-2008",
+            "children": "children subject to proceedings",
+            "guardian": "John Watson",
+            "caseNumber": "12345",
+            "ordersMade": "Supervision order",
+            "proceedingStatus": "Ongoing",
+            "onGoingProceeding": "Yes",
+            "sameGuardianNeeded": "No",
+            "sameGuardianDetails": "Some guardian not needed"
+          }
+        }
+      ]
+    },
+    "respondents": {},
+    "respondents1": [
+      {
+        "id": "randomID",
+        "value": {
+          "party": {
+            "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
+            "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+            "partyType": "Individual",
+            "title": "Mr",
+            "firstName": "Paul",
+            "lastName": "Smith",
+            "gender": "Male",
+            "genderIdentification": "",
+            "dateOfBirth": "1944-05-02",
+            "placeOfBirth": "Crewe",
+            "litigationIssues": "YES",
+            "litigationIssuesDetails": "respondent one test litigation reason",
+            "relationshipToChild": "Uncle",
+            "contactDetailsHidden": "No",
+            "contactDetailsHiddenReason": "Hide from all",
+            "address": {},
+            "telephoneNumber": {
+              "telephoneNumber": "07712345678"
+            }
+          },
+          "leadRespondentIndicator": "Y"
+        }
+      },
+      {
+        "id": "a5e57424-9b5c-4722-be7e-9d9d9111c2b0",
+        "value": {
+          "party": {
+            "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
+            "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+            "partyType": "Individual",
+            "title": "Mr",
+            "firstName": "James",
+            "lastName": "Smith",
+            "gender": "They identify in another way",
+            "genderIdentification": "Unknown",
+            "dateOfBirth": "1933-04-02",
+            "placeOfBirth": "Newry",
+            "litigationIssues": "YES",
+            "litigationIssuesDetails": "respondent two litigation capacity reason",
+            "relationshipToChild": "Brother",
+            "contactDetailsHidden": "No",
+            "contactDetailsHiddenReason": "respondent two hidden contact details reason",
+            "address": {
+              "AddressLine1": "Unit 12",
+              "AddressLine2": "Transa Way",
+              "AddressLine3": "Hillsborough",
+              "PostTown": "Lurgan",
+              "PostCode": "BT26 6RJ",
+              "County": "Down",
+              "Country": "United Kingdom"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "02892611016"
+            }
+          },
+          "leadRespondentIndicator": "Y"
+        }
+      },
+      {
+        "id": "0a5d43cc-333a-4c03-adcf-c6e0d5fbb035",
+        "value": {
+          "party": {
+            "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
+            "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+            "partyType": "Individual",
+            "title": "Mr",
+            "firstName": "An",
+            "lastName": "Other",
+            "gender": "Male",
+            "dateOfBirth": "1933-04-02",
+            "placeOfBirth": "Reading",
+            "litigationIssues": "NO",
+            "address": {
+              "AddressLine1": "Flat 90",
+              "AddressLine2": "Surrey street",
+              "AddressLine3": "Surrey road",
+              "PostTown": "Surrey",
+              "PostCode": "BT22 2345",
+              "County": "Croydon",
+              "Country": "UK"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "0987654321"
+            }
+          },
+          "leadRespondentIndicator": "Y"
+        }
+      }
+    ],
+    "factorsParenting": {
+      "anythingElse": "No",
+      "alcoholDrugAbuse": "Yes",
+      "domesticViolence": "Yes",
+      "alcoholDrugAbuseReason": "history of drug abuse",
+      "domesticViolenceReason": "history of domestic violence"
+    },
+    "allocationProposal": {
+      "proposal": "Section 9 circuit judge",
+      "proposalReason": "allocation proposal reason"
+    },
+    "hearingPreferences": {
+      "welsh": "Yes",
+      "interpreter": "Yes",
+      "intermediary": "Yes",
+      "welshDetails": "welsh proceedings",
+      "interpreterDetails": "interpreter required",
+      "disabilityAssistance": "Yes",
+      "intermediaryDetails": "intermediary hearing required",
+      "extraSecurityMeasures": "Yes",
+      "disabilityAssistanceDetails": "learning disability",
+      "extraSecurityMeasuresDetails": "security needed",
+      "somethingElse": "Yes",
+      "somethingElseDetails": "I need this from someone"
+    },
+    "internationalElement": {
+      "issues": "Yes",
+      "proceedings": "Yes",
+      "issuesReason": "Brussels 2 regulation",
+      "possibleCarer": "Yes",
+      "proceedingsReason": "Outside of the UK",
+      "significantEvents": "Yes",
+      "possibleCarerReason": "Aunt outside UK",
+      "significantEventsReason": "Something happened in France",
+      "internationalAuthorityInvolvement": "Yes",
+      "internationalAuthorityInvolvementDetails": "French authorities were involved"
+    },
+    "documents_socialWorkOther": [
+      {
+        "id": "76d8cc29-9085-4e22-a6f7-f86bfb77f020",
+        "value": {
+          "documentTitle": "Additional document one",
+          "typeOfDocument": {
+            "document_url": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8",
+            "document_filename": "form.pdf",
+            "document_binary_url": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8/binary"
+          }
+        }
+      }
+    ],
+    "documents_socialWorkCarePlan_document": {
+      "statusReason": "some text",
+      "documentStatus": "To follow",
+      "typeOfDocument": {
+        "document_url": "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55",
+        "document_filename": "form.pdf",
+        "document_binary_url": "http://dm-store:8080/documents/be17a76e-38ed-4448-8b83-45de1aa93f55/binary"
+      }
+    },
+    "documents_socialWorkStatement_document": {
+      "statusReason": "Social work statement and genogram text",
+      "documentStatus": "To follow",
+      "typeOfDocument": {
+        "document_url": "http://dm-store:8080/documents/0d26676f-b8d8-410d-ad2d-40290e478127",
+        "document_filename": "form.pdf",
+        "document_binary_url": "http://dm-store:8080/documents/0d26676f-b8d8-410d-ad2d-40290e478127/binary"
+      }
+    },
+    "documents_socialWorkAssessment_document": {
+      "statusReason": "Social work assessment text",
+      "documentStatus": "To follow",
+      "typeOfDocument": {
+        "document_url": "http://dm-store:8080/documents/91434306-7283-46a1-9901-a64d30d1fb8e",
+        "document_filename": "form.pdf",
+        "document_binary_url": "http://dm-store:8080/documents/91434306-7283-46a1-9901-a64d30d1fb8e/binary"
+      }
+    },
+    "documents_socialWorkChronology_document": {
+      "statusReason": "Social work chronology text",
+      "documentStatus": "To follow",
+      "typeOfDocument": {
+        "document_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e",
+        "document_filename": "form.pdf",
+        "document_binary_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e/binary"
+      }
+    },
+    "documents_checklist_document":{
+      "documentStatus":"Attached",
+      "typeOfDocument":{
+        "document_url":"http://dm-store:8080/documents/85fc89c0-6841-4964-9d5f-f35c2a465ae1",
+        "document_filename":"Screen Shot 2019-06-10 at 09.10.45.png",
+        "document_binary_url":"http://dm-store:8080/documents/85fc89c0-6841-4964-9d5f-f35c2a465ae1/binary"
+      }
+    },
+    "documents_threshold_document":{
+      "documentStatus":"Attached",
+      "typeOfDocument":{
+        "document_url":"http://dm-store:8080/documents/d91ef133-1c98-4e71-9a4c-6da330a97830",
+        "document_filename":"Screen Shot 2019-06-10 at 09.10.45.png",
+        "document_binary_url":"http://dm-store:8080/documents/d91ef133-1c98-4e71-9a4c-6da330a97830/binary"
+      }
+    },
+    "documents_socialWorkEvidenceTemplate_document":{
+      "documentStatus":"Attached",
+      "typeOfDocument":{
+        "document_url":"http://dm-store:8080/documents/30f16903-a9de-4bef-8da4-146301e0a350",
+        "document_filename":"Screen Shot 2019-06-10 at 09.10.45.png",
+        "document_binary_url":"http://dm-store:8080/documents/30f16903-a9de-4bef-8da4-146301e0a350/binary"
+      }
+    },
+    "documents_socialWorkOther":[
+      {
+        "id":"633bb807-e3ca-47d1-87d7-3fbd854143a4",
+        "value":{
+          "documentTitle":"document_one"
+        }
+      },
+      {
+        "id":"6e427368-875e-408a-b25e-ef93dc8ab3da",
+        "value":{
+          "documentTitle":"document_two"
+        }
+      }
+    ]
+  }
+}

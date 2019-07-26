@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.reformMigratedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
 class DocumentGeneratorServiceTest {
@@ -51,7 +52,7 @@ class DocumentGeneratorServiceTest {
             .containsExactlyInAnyOrderElementsOf(splitContentIntoTrimmedLines(expectedContent));
     }
 
-    /*@Test
+    @Test
     void shouldGenerateSubmittedFormWhenCaseHasBothOldAndNewReformStructure() throws IOException {
         Clock clock = Clock.fixed(Instant.parse("2018-11-26T00:00:00Z"), ZoneId.systemDefault());
 
@@ -64,7 +65,7 @@ class DocumentGeneratorServiceTest {
 
         assertThat(splitContentIntoTrimmedLines(content))
             .containsExactlyInAnyOrderElementsOf(splitContentIntoTrimmedLines(expectedContent));
-    }*/
+    }
 
     private List<String> splitContentIntoTrimmedLines(String content) {
         return Stream.of(content.split("\n")).map(String::trim).collect(Collectors.toList());
