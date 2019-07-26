@@ -31,9 +31,9 @@ public class ChildrenMigrationService {
 
     public List<Element<Child>> expandChildrenCollection(CaseData caseData) {
         if (caseData.getChildren() == null) {
-            List<Element<Child>> populatedRespondent = new ArrayList<>();
+            List<Element<Child>> populatedChildren = new ArrayList<>();
 
-            populatedRespondent.add(Element.<Child>builder()
+            populatedChildren.add(Element.<Child>builder()
                 .value(Child.builder()
                     .party(ChildParty.builder()
                         .partyId(UUID.randomUUID().toString())
@@ -41,7 +41,7 @@ public class ChildrenMigrationService {
                     .build())
                 .build());
 
-            return populatedRespondent;
+            return populatedChildren;
         } else {
             return caseData.getChildren1();
         }
