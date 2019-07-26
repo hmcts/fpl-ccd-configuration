@@ -63,7 +63,7 @@ class DocumentGeneratorServiceTest {
     }
 
     @Test
-    void shouldGenerateSubmittedFormWhenCaseHasBothOldAndNewRespondentStructure() throws IOException {
+    void shouldGenerateSubmittedFormWhenCaseHasBothOldAndNewRReformStructure() throws IOException {
         Clock clock = Clock.fixed(Instant.parse("2018-11-26T00:00:00Z"), ZoneId.systemDefault());
 
         String content = textContentOf(

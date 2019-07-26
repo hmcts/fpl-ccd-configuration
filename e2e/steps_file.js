@@ -51,7 +51,7 @@ module.exports = function () {
     },
 
     seeAnswerInTab(questionNo, complexTypeHeading, question, answer) {
-      const complexType = locate(`.//span[text() = "${complexTypeHeading}"]`);
+      const complexType = locate(`.//span[text() = '${complexTypeHeading}']`);
       const questionRow = locate(`${complexType}/../../../table/tbody/tr[${questionNo}]`);
       this.seeElement(locate(`${questionRow}/th/span`).withText(question));
       if (Array.isArray(answer)) {
@@ -70,8 +70,8 @@ module.exports = function () {
     },
 
     navigateToCaseDetails(caseId) {
-      const href = `${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${caseId.replace(/\D/g, '')}`;
-      this.navigateToUrl(href);
+      this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${caseId.replace(/\D/g, '')}`);
+      this.waitForText('Sign Out');
     },
   });
 };

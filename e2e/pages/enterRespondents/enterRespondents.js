@@ -4,60 +4,58 @@ const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 module.exports = {
 
   state: {
-    context: 'firstRespondent',
+    context: 0,
   },
 
-  fields: function() {
+  fields: function () {
     const id = this.state.context;
 
     return {
       respondent: {
-        name: `#respondents_${id}_name`,
-        dob: {
-          day: `#respondents_${id}_dob-day`,
-          month: `#respondents_${id}_dob-month`,
-          year: `#respondents_${id}_dob-year`,
+        firstName: `#respondents1_${id}_party_firstName`,
+        lastName: `#respondents1_${id}_party_lastName`,
+        dateOfBirth: {
+          day: `#respondents1_${id}_party_dateOfBirth-day`,
+          month: `#respondents1_${id}_party_dateOfBirth-month`,
+          year: `#respondents1_${id}_party_dateOfBirth-year`,
         },
-        gender: `#respondents_${id}_gender`,
-        genderIdentify: `#respondents_${id}_genderIdentify`,
-        placeOfBirth: `#respondents_${id}_placeOfBirth`,
-        address: `#respondents_${id}_address_address`,
-        telephone: `#respondents_${id}_telephone`,
-        relationshipToChild: `#respondents_${id}_relationshipToChild`,
+        address: `#respondents1_${id}_party_address_address`,
+        telephone: `input[id="respondents1_${id}_party_telephoneNumber_telephoneNumber"]`,
+        gender: `#respondents1_${id}_party_gender`,
+        genderIdentification: `#respondents1_${id}_party_genderIdentification`,
+        placeOfBirth: `#respondents1_${id}_party_placeOfBirth`,
+        relationshipToChild: `#respondents1_${id}_party_relationshipToChild`,
         litigationIssues: {
-          yes: `#respondents_${id}_litigationIssues-YES`,
-          no: `#respondents_${id}_litigationIssues-NO`,
-          dont_know: `#respondents_${id}_litigationIssues-DONT_KNOW`,
+          yes: `#respondents1_${id}_party_litigationIssues-YES`,
+          no: `#respondents1_${id}_party_litigationIssues-NO`,
+          dont_know: `#respondents1_${id}_party_litigationIssues-DONT_KNOW`,
         },
-        litigationIssuesDetails: `#respondents_${id}_litigationIssuesDetails`,
+        litigationIssuesDetails: `#respondents1_${id}_party_litigationIssuesDetails`,
       },
       contactDetailsHidden: (option) => {
         return {
-          option: `#respondents_${id}_contactDetailsHidden-${option}`,
-          reason: `#respondents_${id}_contactDetailsHiddenReason`,
+          option: `#respondents1_${id}_party_contactDetailsHidden-${option}`,
+          reason: `#respondents1_${id}_party_contactDetailsHiddenReason`,
         };
       },
     };
   },
-  addRespondentButton: 'Add new',
+  addRespondentButton: '#respondents1 > div:nth-child(1) > button:nth-child(2)',
 
   addRespondent() {
-    if (this.state.context === 'additional_0') {
-      throw new Error('Adding more respondents is not supported in the test');
-    }
-
     I.click(this.addRespondentButton);
-    this.state.context = 'additional_0';
+    this.state.context++;
   },
 
   enterRespondent(respondent) {
-    I.fillField(this.fields().respondent.name, respondent.name);
-    I.fillField(this.fields().respondent.dob.day, respondent.dob.day);
-    I.fillField(this.fields().respondent.dob.month, respondent.dob.month);
-    I.fillField(this.fields().respondent.dob.year, respondent.dob.year);
+    I.fillField(this.fields().respondent.firstName, respondent.firstName);
+    I.fillField(this.fields().respondent.lastName, respondent.lastName);
+    I.fillField(this.fields().respondent.dateOfBirth.day, respondent.dob.day);
+    I.fillField(this.fields().respondent.dateOfBirth.month, respondent.dob.month);
+    I.fillField(this.fields().respondent.dateOfBirth.year, respondent.dob.year);
     I.selectOption(this.fields().respondent.gender, respondent.gender);
     if (respondent.gender === 'They identify in another way') {
-      I.fillField(this.fields().respondent.genderIdentify, '');
+      I.fillField(this.fields().respondent.genderIdentification, '');
     }
     I.fillField(this.fields().respondent.placeOfBirth, respondent.placeOfBirth);
     within(this.fields().respondent.address, () => {
@@ -79,7 +77,7 @@ module.exports = {
 
   enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
     litigationIssue = litigationIssue.toLowerCase();
-    switch(litigationIssue) {
+    switch (litigationIssue) {
       case 'yes':
         I.checkOption(this.fields().respondent.litigationIssues.yes);
         break;

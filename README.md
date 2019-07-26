@@ -53,16 +53,22 @@ To run e2e tests enter `yarn test` in the command line.
 
 ### Optional configuration
 
-To run all tests only in one browser please set `PARALLEL_CHUNKS` environment variable to `1`.
+To run all tests only in one browser please set `PARALLEL_CHUNKS` environment variable to `1`. By default 3 chunks are enabled.
 
 ```$bash
 PARALLEL_CHUNKS=1 yarn test
 ```
 
-To show tests in browser window as they run please set `SHOW_BROWSER_WINDOW` environment variable to `true`.
+To show tests in browser window as they run please set `SHOW_BROWSER_WINDOW` environment variable to `true`. By default browser window is hidden.
 
 ```$bash
 SHOW_BROWSER_WINDOW=true yarn test
+```
+
+To disable retry upon test failure please set `TEST_RETRIES` environment variable to `0`. By default 2 retries are enabled. 
+
+```$bash
+TEST_RETRIES=0 yarn test
 ```
 
 ## Service:

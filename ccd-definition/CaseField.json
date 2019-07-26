@@ -279,6 +279,23 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondents1",
+    "Label": "Respondents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "RespondentNew",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondentsMigrated",
+    "Label": "Migrated?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "orders",
     "Label": "Orders and directions needed",
     "FieldType": "Orders",

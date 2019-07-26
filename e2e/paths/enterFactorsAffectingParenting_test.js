@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-Feature('EnterFactorsAffectingParenting').retry(2);
+Feature('EnterFactorsAffectingParenting');
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);

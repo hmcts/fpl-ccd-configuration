@@ -251,68 +251,101 @@
         }
       ]
     },
-    "respondents": {
-      "additional": [
-        {
-          "id": "a5e57424-9b5c-4722-be7e-9d9d9111c2b0",
-          "value": {
-            "dob": "1933-04-02",
-            "name": "James Smith",
-            "gender": "They identify in another way",
-            "address": {
-              "County": "Down",
-              "Country": "United Kingdom",
-              "PostCode": "BT26 6RJ",
-              "PostTown": "Lurgan",
-              "AddressLine1": "Unit 12",
-              "AddressLine2": "Transa Way",
-              "AddressLine3": "Hillsborough"
-            },
-            "telephone": "02892611016",
-            "placeOfBirth": "Newry",
-            "genderIdentify": "Unknown",
+    "respondents": {},
+    "respondents1": [
+      {
+        "id": "randomID",
+        "value": {
+          "party": {
+            "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
+            "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+            "partyType": "Individual",
+            "title": "Mr",
+            "firstName": "Paul",
+            "lastName": "Smith",
+            "gender": "Male",
+            "genderIdentification": "",
+            "dateOfBirth": "1944-05-02",
+            "placeOfBirth": "Crewe",
             "litigationIssues": "YES",
+            "litigationIssuesDetails": "respondent one test litigation reason",
+            "relationshipToChild": "Uncle",
+            "contactDetailsHidden": "No",
+            "contactDetailsHiddenReason": "Hide from all",
+            "address": {},
+            "telephoneNumber": {
+              "telephoneNumber": "07712345678"
+            }
+          },
+          "leadRespondentIndicator": "Y"
+        }
+      },
+      {
+        "id": "a5e57424-9b5c-4722-be7e-9d9d9111c2b0",
+        "value": {
+          "party": {
+            "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
+            "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+            "partyType": "Individual",
+            "title": "Mr",
+            "firstName": "James",
+            "lastName": "Smith",
+            "gender": "They identify in another way",
+            "genderIdentification": "Unknown",
+            "dateOfBirth": "1933-04-02",
+            "placeOfBirth": "Newry",
+            "litigationIssues": "YES",
+            "litigationIssuesDetails": "respondent two litigation capacity reason",
             "relationshipToChild": "Brother",
             "contactDetailsHidden": "No",
-            "litigationIssuesDetails": "respondent two litigation capacity reason",
-            "contactDetailsHiddenReason": "respondent two hidden contact details reason"
-          }
-        },
-        {
-          "id": "0a5d43cc-333a-4c03-adcf-c6e0d5fbb035",
-          "value": {
-            "dob": "1933-04-02",
-            "name": "Another",
-            "gender": "Male",
+            "contactDetailsHiddenReason": "respondent two hidden contact details reason",
             "address": {
-              "County": "Croydon",
-              "Country": "UK",
-              "PostCode": "BT22 2345",
-              "PostTown": "Surrey",
+              "AddressLine1": "Unit 12",
+              "AddressLine2": "Transa Way",
+              "AddressLine3": "Hillsborough",
+              "PostTown": "Lurgan",
+              "PostCode": "BT26 6RJ",
+              "County": "Down",
+              "Country": "United Kingdom"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "02892611016"
+            }
+          },
+          "leadRespondentIndicator": "Y"
+        }
+      },
+      {
+        "id": "0a5d43cc-333a-4c03-adcf-c6e0d5fbb035",
+        "value": {
+          "party": {
+            "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
+            "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+            "partyType": "Individual",
+            "title": "Mr",
+            "firstName": "An",
+            "lastName": "Other",
+            "gender": "Male",
+            "dateOfBirth": "1933-04-02",
+            "placeOfBirth": "Reading",
+            "litigationIssues": "NO",
+            "address": {
               "AddressLine1": "Flat 90",
               "AddressLine2": "Surrey street",
-              "AddressLine3": "Surrey road"
+              "AddressLine3": "Surrey road",
+              "PostTown": "Surrey",
+              "PostCode": "BT22 2345",
+              "County": "Croydon",
+              "Country": "UK"
             },
-            "telephone": "0987654321",
-            "placeOfBirth": "Reading",
-            "litigationIssues": "NO"
-          }
+            "telephoneNumber": {
+              "telephoneNumber": "0987654321"
+            }
+          },
+          "leadRespondentIndicator": "Y"
         }
-      ],
-      "firstRespondent": {
-        "dob": "1944-05-02",
-        "name": "Paul Smith",
-        "gender": "Male",
-        "address": {},
-        "telephone": "07712345678",
-        "placeOfBirth": "Crewe",
-        "litigationIssues": "YES",
-        "relationshipToChild": "Uncle",
-        "contactDetailsHidden": "No",
-        "litigationIssuesDetails": "respondent one test litigation reason",
-        "contactDetailsHiddenReason": "Hide from all"
       }
-    },
+    ],
     "factorsParenting": {
       "anythingElse": "No",
       "alcoholDrugAbuse": "Yes",

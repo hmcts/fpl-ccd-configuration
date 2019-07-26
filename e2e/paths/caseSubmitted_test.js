@@ -3,7 +3,7 @@ const fields = {
   documentLink: 'ccd-read-document-field>a',
 };
 
-Feature('Submit Case').retry(2);
+Feature('Submit Case');
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   I.selectOption(caseViewPage.actionsDropdown, config.applicationActions.submitCase);
