@@ -51,6 +51,21 @@ class DocumentGeneratorServiceTest {
             .containsExactlyInAnyOrderElementsOf(splitContentIntoTrimmedLines(expectedContent));
     }
 
+    /*@Test
+    void shouldGenerateSubmittedFormWhenCaseHasBothOldAndNewReformStructure() throws IOException {
+        Clock clock = Clock.fixed(Instant.parse("2018-11-26T00:00:00Z"), ZoneId.systemDefault());
+
+        String content = textContentOf(
+            createServiceInstance(clock).generateSubmittedFormPDF(reformMigratedCaseDetails(),
+                Pair.of("userFullName", "Emma Taylor"))
+        );
+
+        String expectedContent = ResourceReader.readString("submitted-form-pdf-content.txt");
+
+        assertThat(splitContentIntoTrimmedLines(content))
+            .containsExactlyInAnyOrderElementsOf(splitContentIntoTrimmedLines(expectedContent));
+    }*/
+
     private List<String> splitContentIntoTrimmedLines(String content) {
         return Stream.of(content.split("\n")).map(String::trim).collect(Collectors.toList());
     }
