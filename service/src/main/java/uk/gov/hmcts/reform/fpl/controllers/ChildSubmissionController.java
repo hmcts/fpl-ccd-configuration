@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.OldChild;
+import uk.gov.hmcts.reform.fpl.model.OldChildren;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ChildrenMigrationService;
@@ -24,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Api
 @RestController
@@ -84,20 +86,24 @@ public class ChildSubmissionController {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        OldChildren children = defaultIfNull(caseData.getChildren(), null);
+
         if (caseData.getChildren1() != null) {
-            List<Child> newChildren = caseData.getChildren1().stream()
+            List<Element<Child>> migratedChildrenObject = caseData.getChildren1();
+
+            List<Child> migratedChildren = migratedChildrenObject.stream()
                 .map(Element::getValue)
                 .collect(toList());
 
-            if (newChildren.stream()
+            if (migratedChildren.stream()
                 .map(Child::getParty)
                 .map(Party::getDateOfBirth)
                 .filter(Objects::nonNull)
-                .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
+                .anyMatch(dob -> dob.after(new Date()))) {
                 errors.add("Date of birth cannot be in the future");
             }
-        } else if (caseData.getChildren() != null) {
-            if (caseData.getChildren().getAllChildren().stream()
+        } else if (children != null) {
+            if (children.getAllChildren().stream()
                 .map(OldChild::getChildDOB)
                 .filter(Objects::nonNull)
                 .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
