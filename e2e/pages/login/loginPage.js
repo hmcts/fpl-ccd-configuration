@@ -16,5 +16,6 @@ module.exports = {
     I.fillField(this.fields.username, username);
     I.fillField(this.fields.password, password);
     I.click(this.submitButton);
+    I.waitForText('Sign Out');
   },
 };
