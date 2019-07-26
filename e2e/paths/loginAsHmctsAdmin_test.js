@@ -1,7 +1,7 @@
 const config = require('../config.js');
 let caseId;
 
-Feature('Login as hmcts admin').retry(2);
+Feature('Login as hmcts admin');
 
 Before(async (I, caseViewPage, submitApplicationPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
