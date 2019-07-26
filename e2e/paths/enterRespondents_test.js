@@ -1,7 +1,7 @@
 const config = require('../config.js');
 const respondents = require('../fixtures/respondents.js');
 
-Feature('Enter respondents').retry(2);
+Feature('Enter respondents');
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);

@@ -28,7 +28,6 @@ exports.config = {
     Puppeteer: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: true,
-      waitForNavigation: 'networkidle0',
       waitForTimeout: 15000,
       chrome: {
         ignoreHTTPSErrors: true,
@@ -38,7 +37,10 @@ exports.config = {
       },
       windowSize: '1280x960',
     },
-    MyHelpers: {
+    HooksHelper: {
+      require: './e2e/helpers/hooks_helper.js',
+    },
+    PuppeteerHelpers: {
       require: './e2e/helpers/puppeter_helper.js',
     },
   },

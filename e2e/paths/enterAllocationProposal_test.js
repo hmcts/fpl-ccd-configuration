@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-Feature('Enter Allocation Proposal').retry(2);
+Feature('Enter Allocation Proposal');
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
