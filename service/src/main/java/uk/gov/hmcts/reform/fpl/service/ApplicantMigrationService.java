@@ -34,7 +34,7 @@ public class ApplicantMigrationService {
     }
 
     public List<Element<Applicant>> expandApplicantCollection(CaseData caseData) {
-        if (caseData.getApplicants() != null) {
+        if (caseData.getApplicants() == null) {
             List<Element<Applicant>> populatedApplicant = new ArrayList<>();
 
             populatedApplicant.add(Element.<Applicant>builder()
