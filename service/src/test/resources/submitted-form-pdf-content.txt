@@ -14,7 +14,7 @@ Same dayHearing date requested
 Yes
 Contact with any named personDirection needed
 Emergency protection orderOrders needed
-, Another, James SmithPaul SmithRespondents
+, An Other, James SmithPaul SmithRespondents
 London Borough of SouthwarkApplicant
 Fee charged
 Date issued
@@ -127,12 +127,12 @@ NoLitigation capacity issues
 -Relationship to the child or children
 0987654321Telephone number
 , UK, Croydon
-, BT22 2345, Surrey, Surrey road, Surrey streetFlat 90Address
+, BT22 2345, Surrey, Surrey road, Surrey streetFlat 90Current address
 ReadingPlace of birth
 MaleGender
 2 April 1933Date of birth
 85 years oldAge
-AnotherName
+An OtherName
 respondent two hidden contact details reason
 NoConfidential contact details
 -Anything else to help take part in proceedings
@@ -146,7 +146,7 @@ YesLitigation capacity issues
 BrotherRelationship to the child or children
 02892611016Telephone number
 , United Kingdom, Down
-, BT26 6RJ, Lurgan, Hillsborough, Transa WayUnit 12Address
+, BT26 6RJ, Lurgan, Hillsborough, Transa WayUnit 12Current address
 NewryPlace of birth
 UnknownGender
 2 April 1933Date of birth

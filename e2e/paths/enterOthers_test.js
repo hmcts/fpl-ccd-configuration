@@ -1,7 +1,7 @@
 const config = require('../config.js');
 const others = require('../fixtures/others.js');
 
-Feature('Enter others who should be given notice').retry(2);
+Feature('Enter others who should be given notice');
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);

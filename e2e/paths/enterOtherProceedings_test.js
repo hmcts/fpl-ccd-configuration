@@ -1,7 +1,7 @@
 const config = require('../config.js');
 const otherProceedingData = require('../fixtures/otherProceedingData');
 
-Feature('Enter Other Proceedings').retry(2);
+Feature('Enter Other Proceedings');
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);

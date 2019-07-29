@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-Feature('Select hearing').retry(2);
+Feature('Select hearing');
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);

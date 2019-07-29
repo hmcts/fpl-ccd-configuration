@@ -2,7 +2,7 @@ const config = require('../config.js');
 const applicant = require('../fixtures/applicant.js');
 const solicitor = require('../fixtures/solicitor.js');
 
-Feature('Enter applicant').retry(2);
+Feature('Enter applicant');
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);

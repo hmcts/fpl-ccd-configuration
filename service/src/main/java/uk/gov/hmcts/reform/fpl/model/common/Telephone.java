@@ -11,5 +11,6 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Telephone {
     private final String telephoneNumber;
+    private final String telephoneUsageType;
     private final String contactDirection;
 }

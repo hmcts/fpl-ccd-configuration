@@ -1,5 +1,4 @@
-module.exports = class MyHelpers extends Helper {
-
+module.exports = class PuppeteerHelpers extends Helper {
   clickBrowserBack() {
     const page = this.helpers['Puppeteer'].page;
     return page.goBack();
@@ -8,10 +7,5 @@ module.exports = class MyHelpers extends Helper {
   reloadPage() {
     const page = this.helpers['Puppeteer'].page;
     return page.reload();
-  }
-
-  navigateToUrl(url) {
-    const page = this.helpers['Puppeteer'].page;
-    return page.goto(url);
   }
 };
