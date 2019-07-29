@@ -52,6 +52,7 @@ module.exports = {
     uploadDocuments: 'Documents',
     changeCaseName: 'Change case name',
     submitCase: 'Submit application',
+    deleteApplication: 'Delete an application',
   },
   addFamilyManCaseNumber: 'Add case number',
   sendToGatekeeper: 'Send to gatekeeper',
