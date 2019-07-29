@@ -1,9 +1,10 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import com.fasterxml.jackson.annotation.JsonFormat;
+import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 
 import java.util.Date;
@@ -14,7 +15,7 @@ import java.util.Date;
 public class Party {
     public final String partyId;
     public final String idamID;
-    public final String partyType;
+    public final PartyType partyType;
     public final String title;
     public final String firstName;
     public final String lastName;

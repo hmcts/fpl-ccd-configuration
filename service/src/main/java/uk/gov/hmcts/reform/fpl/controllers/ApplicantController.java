@@ -44,22 +44,20 @@ public class ApplicantController {
         this.mapper = mapper;
     }
 
+    @SuppressWarnings("unchecked")
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
-//        CaseDetails caseDetails = callbackrequest.getCaseDetails();
-//        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-//
-//        CaseData alteredData = CaseData.builder()
-//            .applicantsMigrated(applicantMigrationService.setMigratedValue(caseData))
-//            .applicants(applicantMigrationService.expandApplicantCollection(caseData))
-//            .build();
-//
-//        return AboutToStartOrSubmitCallbackResponse.builder()
-//            .data(mapper.convertValue(alteredData, Map.class))
-//            .build();
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return applicantMigrationService.setMigratedValue(caseDetails);
+        CaseData alteredData = CaseData.builder()
+            .applicantsMigrated(applicantMigrationService.setMigratedValue(caseData))
+            .applicants(applicantMigrationService.expandApplicantCollection(caseData))
+            .build();
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(mapper.convertValue(alteredData, Map.class))
+            .build();
     }
 
     @SuppressWarnings("unchecked")

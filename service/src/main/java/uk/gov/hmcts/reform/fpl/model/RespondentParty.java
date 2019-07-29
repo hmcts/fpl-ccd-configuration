@@ -27,9 +27,12 @@ public final class RespondentParty extends Party {
 
     @Builder(toBuilder = true)
     public RespondentParty(String partyId,
+                           String idamID,
                            PartyType partyType,
+                           String title,
                            String firstName,
                            String lastName,
+                           String organisationName,
                            Date dateOfBirth,
                            Address address,
                            EmailAddress email,
@@ -42,7 +45,8 @@ public final class RespondentParty extends Party {
                            String contactDetailsHiddenReason,
                            String litigationIssues,
                            String litigationIssuesDetails) {
-        super(partyId, partyType, firstName, lastName, dateOfBirth, address, email, telephoneNumber);
+        super(partyId, idamID, partyType, title, firstName, lastName, organisationName,
+            dateOfBirth, address, email, telephoneNumber);
 
         this.gender = gender;
         this.genderIdentification = genderIdentification;

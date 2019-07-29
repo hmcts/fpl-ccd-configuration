@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
@@ -22,7 +23,7 @@ public class ApplicantParty extends Party {
     @Builder(toBuilder = true)
     private ApplicantParty(String partyId,
                            String idamID,
-                           String partyType,
+                           PartyType partyType,
                            String title,
                            String firstName,
                            String lastName,

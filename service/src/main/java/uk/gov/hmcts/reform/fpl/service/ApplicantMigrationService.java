@@ -25,59 +25,31 @@ public class ApplicantMigrationService {
     @Autowired
     private final ObjectMapper mapper = new ObjectMapper();
 
-//    public String setMigratedValue(CaseData caseData){
-//        if(caseData.getApplicants() != null){
-//            return "Yes";
-//        } else {
-//            return "No";
-//        }
-//    }
-//
-//    public List<Element<Applicant>> expandApplicantCollection(CaseData caseData) {
-//        if (caseData.getApplicants() != null) {
-//            List<Element<Applicant>> populatedApplicant = new ArrayList<>();
-//
-//            populatedApplicant.add(Element.<Applicant>builder()
-//                .value(Applicant.builder()
-//                    .party(ApplicantParty.builder()
-//                        .partyId(UUID.randomUUID().toString())
-//                        .build())
-//                    .build())
-//                .build());
-//
-//            return populatedApplicant;
-//        } else {
-//            return caseData.getApplicants();
-//        }
-//    }
-
-    public AboutToStartOrSubmitCallbackResponse setMigratedValue(CaseDetails caseDetails) {
-        Map<String, Object> data = caseDetails.getData();
-
-        if (caseDetails.getData().containsKey("applicants") || !caseDetails.getData().containsKey("applicant")) {
-            data.put("applicantsMigrated", "Yes");
-
-            if (!caseDetails.getData().containsKey("applicants")) {
-                List<Map<String, Object>> populatedApplicant = new ArrayList<>();
-                populatedApplicant.add(ImmutableMap.of(
-                    "id", UUID.randomUUID().toString(),
-                    "value", ImmutableMap.of(
-                        "party", ImmutableMap.of(
-                            "partyId", UUID.randomUUID().toString()
-                        )
-                    ))
-                );
-                data.put("applicants", populatedApplicant);
-            }
+    public String setMigratedValue(CaseData caseData) {
+        if (caseData.getApplicants() != null || caseData.getApplicant() == null) {
+            return "Yes";
         } else {
-            data.put("applicantsMigrated", "No");
-
+            return "No";
         }
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
     }
 
+    public List<Element<Applicant>> expandApplicantCollection(CaseData caseData) {
+        if (caseData.getApplicants() != null) {
+            List<Element<Applicant>> populatedApplicant = new ArrayList<>();
+
+            populatedApplicant.add(Element.<Applicant>builder()
+                .value(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .partyId(UUID.randomUUID().toString())
+                        .build())
+                    .build())
+                .build());
+
+            return populatedApplicant;
+        } else {
+            return caseData.getApplicants();
+        }
+    }
 
     @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse addHiddenValues(CaseDetails caseDetails) {
@@ -96,7 +68,7 @@ public class ApplicantMigrationService {
                     //partyId and partyType are hidden fields so setting a value will not persist in database.
                     if (applicant.getPartyId() == null) {
                         partyBuilder.partyId(UUID.randomUUID().toString());
-                        partyBuilder.partyType(PartyType.ORGANISATION.toString());
+                        partyBuilder.partyType(PartyType.ORGANISATION);
                     }
 
                     return partyBuilder.build();

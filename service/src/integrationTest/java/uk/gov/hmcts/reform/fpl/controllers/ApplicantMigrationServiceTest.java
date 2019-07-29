@@ -1,13 +1,20 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.OldApplicant;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicantMigrationService;
 
 import java.util.HashMap;
@@ -17,40 +24,46 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = {ApplicantMigrationService.class, ObjectMapper.class})
 public class ApplicantMigrationServiceTest {
-    private final ApplicantMigrationService service = new ApplicantMigrationService();
+
+    @Autowired
+    private ApplicantMigrationService service;
 
     @Test
     void shouldAddMigratedApplicantYesWhenNoApplicantData() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("data", "some data"))
-            .build();
+        CaseData caseData = CaseData.builder().applicant(null).build();
 
-        AboutToStartOrSubmitCallbackResponse response = service.setMigratedValue(caseDetails);
+        String response = service.setMigratedValue(caseData);
 
-        assertThat(response.getData()).containsEntry("applicantsMigrated", "Yes");
+        assertThat(response).isEqualTo("Yes");
     }
 
     @Test
     void shouldAddMigratedApplicantYesWhenNewApplicantExists() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("applicants", "some value"))
+        CaseData caseData = CaseData.builder()
+            .applicants(
+                ImmutableList.of(Element.<Applicant>builder()
+                    .value(Applicant.builder()
+                        .party(ApplicantParty.builder().build())
+                        .build())
+                    .build()))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = service.setMigratedValue(caseDetails);
+        String response = service.setMigratedValue(caseData);
 
-        assertThat(response.getData()).containsEntry("applicantsMigrated", "Yes");
+        assertThat(response).isEqualTo("Yes");
     }
 
     @Test
     void shouldAddMigratedApplicantNoWhenOldApplicantExists() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("applicant", "some value"))
+        CaseData caseData = CaseData.builder()
+            .applicant(OldApplicant.builder().build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = service.setMigratedValue(caseDetails);
+        String response = service.setMigratedValue(caseData);
 
-        assertThat(response.getData()).containsEntry("applicantsMigrated", "No");
+        assertThat(response).isEqualTo("No");
     }
 
     private Map<String, Object> createData(String key, String value) {
