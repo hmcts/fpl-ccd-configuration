@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-Feature('Enter attending hearing information into the application').retry(2);
+Feature('Enter attending hearing information into the application');
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);

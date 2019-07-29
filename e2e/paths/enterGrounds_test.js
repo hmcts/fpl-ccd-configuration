@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-Feature('Enter grounds').retry(2);
+Feature('Enter grounds');
 
 Before((I) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
