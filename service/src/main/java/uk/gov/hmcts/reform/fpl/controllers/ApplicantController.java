@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OldApplicant;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicantMigrationService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.utils.PBANumberHelper;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.utils.PBANumberHelper;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.PBANumberHelper.validatePBANumber;
@@ -65,27 +67,32 @@ public class ApplicantController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         ImmutableList.Builder<String> validationErrors = ImmutableList.builder();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (caseDetails.getData().containsKey("applicants")) {
-            List<Map<String, Object>> migratedApplicantsObject =
-                (List<Map<String, Object>>) caseDetails.getData().get("applicants");
+        if (caseData.getApplicants() != null) {
+            List<Element<Applicant>> migratedApplicantsObject = caseData.getApplicants();
 
-            migratedApplicantsObject.stream()
-                .map(applicant ->
-                    mapperService.mapObject((Map<String, Object>) applicant.get("value"), Applicant.class))
+            List<Applicant> migratedApplicant = migratedApplicantsObject
+                .stream()
+                .map(Element::getValue)
+                .collect(Collectors.toList());
+
+            migratedApplicant.stream()
                 .map(Applicant::getParty)
                 .map(ApplicantParty::getPbaNumber)
                 .filter(Objects::nonNull)
                 .forEach(pbaNumber -> {
-                    String formattedPbaNumber = PBANumberHelper.updatePBANumber(pbaNumber);
+                    String formattedPbaNumber =
+                        PBANumberHelper.updatePBANumber(pbaNumber);
                     validationErrors.addAll(validatePBANumber(formattedPbaNumber));
                 });
 
-            caseDetails.getData().put("applicants", migratedApplicantsObject);
+            CaseData.builder().applicants(migratedApplicantsObject).build();
 
         } else {
             Map<String, Object> applicantData = (Map<String, Object>)
                 caseDetails.getData().get("applicant");
+            
 
             OldApplicant applicant = mapperService.mapObject(applicantData, OldApplicant.class);
 
