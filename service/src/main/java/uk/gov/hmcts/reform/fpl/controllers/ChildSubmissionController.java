@@ -45,8 +45,8 @@ public class ChildSubmissionController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("children1", childrenMigrationService.expandChildrenCollection(caseData));
         caseDetails.getData().put("childrenMigrated", childrenMigrationService.setMigratedValue(caseData));
+        caseDetails.getData().put("children1", childrenMigrationService.expandChildrenCollection(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

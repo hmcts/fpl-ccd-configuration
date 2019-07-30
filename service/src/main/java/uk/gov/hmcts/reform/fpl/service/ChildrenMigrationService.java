@@ -31,7 +31,7 @@ public class ChildrenMigrationService {
 
     @SuppressWarnings("unchecked")
     public List<Element<Child>> expandChildrenCollection(CaseData caseData) {
-        if (caseData.getChildren() != null) {
+        if (caseData.getChildren1() == null) {
             List<Element<Child>> populatedChildren = new ArrayList<>();
 
             populatedChildren.add(Element.<Child>builder()
