@@ -49,36 +49,32 @@ public class ChildrenMigrationService {
 
     @SuppressWarnings("unchecked")
     public List<Element<Child>> addHiddenValues(CaseData caseData) {
-        if (caseData.getChildren1() != null) {
-            List<Element<Child>> childrenParties = caseData.getChildren1();
+        List<Element<Child>> childrenParties = caseData.getChildren1();
 
-            List<ChildParty> childrenPartyList = childrenParties.stream()
-                .map(Element::getValue)
-                .map(Child::getParty)
-                .map(child -> {
-                    ChildParty.ChildPartyBuilder partyBuilder = child.toBuilder();
+        List<ChildParty> childrenPartyList = childrenParties.stream()
+            .map(Element::getValue)
+            .map(Child::getParty)
+            .map(child -> {
+                ChildParty.ChildPartyBuilder partyBuilder = child.toBuilder();
 
-                    if (child.getPartyId() == null) {
-                        partyBuilder.partyId(UUID.randomUUID().toString());
-                        partyBuilder.partyType(PartyType.INDIVIDUAL);
-                    }
+                if (child.getPartyId() == null) {
+                    partyBuilder.partyId(UUID.randomUUID().toString());
+                    partyBuilder.partyType(PartyType.INDIVIDUAL);
+                }
 
-                    return partyBuilder.build();
-                })
-                .collect(toList());
+                return partyBuilder.build();
+            })
+            .collect(toList());
 
-            List<Element<Child>> children = childrenPartyList.stream()
-                .map(item -> Element.<Child>builder()
-                    .id(UUID.randomUUID())
-                    .value(Child.builder()
-                        .party(item)
-                        .build())
+        List<Element<Child>> children = childrenPartyList.stream()
+            .map(item -> Element.<Child>builder()
+                .id(UUID.randomUUID())
+                .value(Child.builder()
+                    .party(item)
                     .build())
-                .collect(toList());
+                .build())
+            .collect(toList());
 
-            return children;
-        }
-
-        return caseData.getChildren1();
+        return children;
     }
 }

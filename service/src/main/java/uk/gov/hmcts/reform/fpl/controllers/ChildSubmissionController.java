@@ -69,7 +69,9 @@ public class ChildSubmissionController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("children1", childrenMigrationService.addHiddenValues(caseData));
+        if (caseData.getChildren1() != null) {
+            caseDetails.getData().put("children1", childrenMigrationService.addHiddenValues(caseData));
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
