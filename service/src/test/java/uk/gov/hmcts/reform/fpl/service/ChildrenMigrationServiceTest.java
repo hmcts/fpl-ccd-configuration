@@ -56,6 +56,34 @@ class ChildrenMigrationServiceTest {
         assertThat(migratedValue).isEqualTo("No");
     }
 
+    @Test
+    void shouldReturnAnEmptyListOfChildren1WithAPartyIdIfChildren1IsNull() {
+        CaseData caseData = CaseData.builder()
+            .children(OldChildren.builder().build())
+            .build();
+
+        List<Element<Child>> alteredChildrenList = service.expandChildrenCollection(caseData);
+        assertThat(alteredChildrenList.get(0).getValue().getParty().partyId).isNotNull();
+    }
+
+    @Test
+    void shouldReturnChildren1IfChildren1IsPrePopulated() {
+        CaseData caseData = CaseData.builder()
+            .children1(
+                ImmutableList.of(Element.<Child>builder()
+                    .value(
+                        Child.builder()
+                            .party(ChildParty.builder()
+                                .partyId("123")
+                                .build())
+                            .build())
+                    .build()))
+            .build();
+
+        List<Element<Child>> migratedChildrenList = service.expandChildrenCollection(caseData);
+        assertThat(migratedChildrenList.get(0).getValue().getParty().partyId).isEqualTo("123");
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToSingleChild() {
