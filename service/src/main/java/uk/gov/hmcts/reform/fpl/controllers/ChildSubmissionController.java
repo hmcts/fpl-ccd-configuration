@@ -14,18 +14,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.OldChild;
-import uk.gov.hmcts.reform.fpl.model.OldChildren;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ChildrenMigrationService;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Api
 @RestController
@@ -48,13 +45,11 @@ public class ChildSubmissionController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        CaseData alteredData = CaseData.builder()
-            .childrenMigrated(childrenMigrationService.setMigratedValue(caseData))
-            .children1(childrenMigrationService.expandChildrenCollection(caseData))
-            .build();
+        caseDetails.getData().put("children1", childrenMigrationService.expandChildrenCollection(caseData));
+        caseDetails.getData().put("childrenMigrated", childrenMigrationService.setMigratedValue(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(mapper.convertValue(alteredData, Map.class))
+            .data(caseDetails.getData())
             .build();
     }
 
@@ -74,10 +69,10 @@ public class ChildSubmissionController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        CaseData alteredData = childrenMigrationService.addHiddenValues(caseData);
+        caseDetails.getData().put("children1", childrenMigrationService.addHiddenValues(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(mapper.convertValue(alteredData, Map.class))
+            .data(caseDetails.getData())
             .build();
     }
 
@@ -86,24 +81,20 @@ public class ChildSubmissionController {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        OldChildren children = defaultIfNull(caseData.getChildren(), null);
-
         if (caseData.getChildren1() != null) {
-            List<Element<Child>> migratedChildrenObject = caseData.getChildren1();
-
-            List<Child> migratedChildren = migratedChildrenObject.stream()
+            List<Child> newChildren = caseData.getChildren1().stream()
                 .map(Element::getValue)
                 .collect(toList());
 
-            if (migratedChildren.stream()
+            if (newChildren.stream()
                 .map(Child::getParty)
                 .map(Party::getDateOfBirth)
                 .filter(Objects::nonNull)
-                .anyMatch(dob -> dob.after(new Date()))) {
+                .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
                 errors.add("Date of birth cannot be in the future");
             }
-        } else if (children != null) {
-            if (children.getAllChildren().stream()
+        } else if (caseData.getChildren() != null) {
+            if (caseData.getChildren().getAllChildren().stream()
                 .map(OldChild::getChildDOB)
                 .filter(Objects::nonNull)
                 .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {

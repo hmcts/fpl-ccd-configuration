@@ -29,8 +29,9 @@ public class ChildrenMigrationService {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<Element<Child>> expandChildrenCollection(CaseData caseData) {
-        if (caseData.getChildren() == null) {
+        if (caseData.getChildren() != null) {
             List<Element<Child>> populatedChildren = new ArrayList<>();
 
             populatedChildren.add(Element.<Child>builder()
@@ -40,7 +41,6 @@ public class ChildrenMigrationService {
                         .build())
                     .build())
                 .build());
-
             return populatedChildren;
         } else {
             return caseData.getChildren1();
@@ -48,9 +48,7 @@ public class ChildrenMigrationService {
     }
 
     @SuppressWarnings("unchecked")
-    public CaseData addHiddenValues(CaseData caseData) {
-        CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder();
-
+    public List<Element<Child>> addHiddenValues(CaseData caseData) {
         if (caseData.getChildren1() != null) {
             List<Element<Child>> childrenParties = caseData.getChildren1();
 
@@ -78,9 +76,9 @@ public class ChildrenMigrationService {
                     .build())
                 .collect(toList());
 
-            caseDataBuilder.children1(children);
+            return children;
         }
 
-        return caseDataBuilder.build();
+        return caseData.getChildren1();
     }
 }

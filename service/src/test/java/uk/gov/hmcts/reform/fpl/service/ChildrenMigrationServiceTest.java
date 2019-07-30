@@ -73,11 +73,11 @@ class ChildrenMigrationServiceTest {
             .children1(children)
             .build();
 
-        CaseData newData = service.addHiddenValues(caseData);
+        List<Element<Child>> editedChildren = service.addHiddenValues(caseData);
 
-        assertThat(newData.getChildren1().get(0).getValue().getParty().firstName).isEqualTo("James");
-        assertThat(newData.getChildren1().get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(newData.getChildren1().get(0).getValue().getParty().partyId).isNotNull();
+        assertThat(editedChildren.get(0).getValue().getParty().firstName).isEqualTo("James");
+        assertThat(editedChildren.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(editedChildren.get(0).getValue().getParty().partyId).isNotNull();
     }
 
     @SuppressWarnings("unchecked")
@@ -106,24 +106,15 @@ class ChildrenMigrationServiceTest {
             .children1(children)
             .build();
 
-        CaseData newData = service.addHiddenValues(caseData);
+        List<Element<Child>> editedChildren = service.addHiddenValues(caseData);
 
-        assertThat(newData.getChildren1().get(0).getValue().getParty().firstName).isEqualTo("James");
-        assertThat(newData.getChildren1().get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(newData.getChildren1().get(0).getValue().getParty().partyId).isNotNull();
+        assertThat(editedChildren.get(0).getValue().getParty().firstName).isEqualTo("James");
+        assertThat(editedChildren.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(editedChildren.get(0).getValue().getParty().partyId).isNotNull();
 
-        assertThat(newData.getChildren1().get(1).getValue().getParty().firstName).isEqualTo("Lucy");
-        assertThat(newData.getChildren1().get(1).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(newData.getChildren1().get(1).getValue().getParty().partyId).isNotNull();
-    }
-
-    @Test
-    void shouldNotAddPartyIDAndPartyTypeValuesToDataStructureIfChildren1IsNotPresent() {
-        CaseData caseData = CaseData.builder().build();
-
-        CaseData alteredData = service.addHiddenValues(caseData);
-
-        assertThat(alteredData).isEqualTo(caseData);
+        assertThat(editedChildren.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
+        assertThat(editedChildren.get(1).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(editedChildren.get(1).getValue().getParty().partyId).isNotNull();
     }
 
     @SuppressWarnings("unchecked")
@@ -144,9 +135,9 @@ class ChildrenMigrationServiceTest {
             .children1(children)
             .build();
 
-        CaseData alteredData = service.addHiddenValues(caseData);
+        List<Element<Child>> editedChildren = service.addHiddenValues(caseData);
 
-        assertThat(alteredData.getChildren1().get(0).getValue().getParty().partyId).isEqualTo("123");
+        assertThat(editedChildren.get(0).getValue().getParty().partyId).isEqualTo("123");
     }
 
     @SuppressWarnings("unchecked")
@@ -175,12 +166,12 @@ class ChildrenMigrationServiceTest {
             .children1(children)
             .build();
 
-        CaseData alteredData = service.addHiddenValues(caseData);
+        List<Element<Child>> editedChildren = service.addHiddenValues(caseData);
 
-        assertThat(alteredData.getChildren1().get(0).getValue().getParty().firstName).isEqualTo("James");
-        assertThat(alteredData.getChildren1().get(0).getValue().getParty().partyId).isEqualTo("123");
+        assertThat(editedChildren.get(0).getValue().getParty().firstName).isEqualTo("James");
+        assertThat(editedChildren.get(0).getValue().getParty().partyId).isEqualTo("123");
 
-        assertThat(alteredData.getChildren1().get(1).getValue().getParty().firstName).isEqualTo("Lucy");
-        assertThat(alteredData.getChildren1().get(1).getValue().getParty().partyId).isNotNull();
+        assertThat(editedChildren.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
+        assertThat(editedChildren.get(1).getValue().getParty().partyId).isNotNull();
     }
 }
