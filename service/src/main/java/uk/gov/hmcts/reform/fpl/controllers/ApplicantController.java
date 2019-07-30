@@ -34,14 +34,12 @@ import static uk.gov.hmcts.reform.fpl.utils.PBANumberHelper.validatePBANumber;
 public class ApplicantController {
 
     @Autowired
-    private MapperService mapperService;
     private final ApplicantMigrationService applicantMigrationService;
     private final ObjectMapper mapper;
 
     @Autowired
-    public ApplicantController(MapperService mapperService,
-                               ApplicantMigrationService applicantMigrationService, ObjectMapper mapper) {
-        this.mapperService = mapperService;
+    public ApplicantController(ApplicantMigrationService applicantMigrationService,
+                               ObjectMapper mapper) {
         this.applicantMigrationService = applicantMigrationService;
         this.mapper = mapper;
     }
@@ -52,13 +50,11 @@ public class ApplicantController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        CaseData alteredData = CaseData.builder()
-            .applicantsMigrated(applicantMigrationService.setMigratedValue(caseData))
-            .applicants(applicantMigrationService.expandApplicantCollection(caseData))
-            .build();
+        caseDetails.getData().put("applicantsMigrated", applicantMigrationService.setMigratedValue(caseData));
+        caseDetails.getData().put("applicants", applicantMigrationService.expandApplicantCollection(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(mapper.convertValue(alteredData, Map.class))
+            .data(caseDetails.getData())
             .build();
     }
 
@@ -76,7 +72,6 @@ public class ApplicantController {
                 .stream()
                 .map(Element::getValue)
                 .collect(Collectors.toList());
-
             migratedApplicant.stream()
                 .map(Applicant::getParty)
                 .map(ApplicantParty::getPbaNumber)
@@ -87,27 +82,25 @@ public class ApplicantController {
                     validationErrors.addAll(validatePBANumber(formattedPbaNumber));
                 });
 
-            CaseData.builder().applicants(migratedApplicantsObject).build();
-
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(caseDetails.getData())
+                .errors(validationErrors.build())
+                .build();
         } else {
-            Map<String, Object> applicantData = (Map<String, Object>)
-                caseDetails.getData().get("applicant");
-            
+            OldApplicant applicantData = caseData.getApplicant();
 
-            OldApplicant applicant = mapperService.mapObject(applicantData, OldApplicant.class);
-
-            if (isNullOrEmpty(applicant.getPbaNumber())) {
+            if (isNullOrEmpty(applicantData.getPbaNumber())) {
                 return AboutToStartOrSubmitCallbackResponse.builder()
                     .data(caseDetails.getData())
                     .errors(validationErrors.build())
                     .build();
             }
 
-            String newPbaNumberData = PBANumberHelper.updatePBANumber(applicant.getPbaNumber());
+            String newPbaNumberData = PBANumberHelper.updatePBANumber(applicantData.getPbaNumber());
             validationErrors.addAll(validatePBANumber(newPbaNumberData));
 
             if (validationErrors.build().isEmpty()) {
-                applicantData.put("pbaNumber", newPbaNumberData);
+                applicantData.setPbaNumber(newPbaNumberData);
                 caseDetails.getData().put("applicant", applicantData);
             }
         }
