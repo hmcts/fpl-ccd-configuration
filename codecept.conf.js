@@ -71,6 +71,7 @@ exports.config = {
     submitApplicationPage: './e2e/pages/submitApplication/submitApplication.js',
     sendToGatekeeperPage: './e2e/pages/sendToGatekeeper/sendToGatekeeper.js',
     standardDirectionsPage: './e2e/pages/uploadDocuments/standardDirections.js',
+    deleteApplicationPage: './e2e/pages/deleteApplication/deleteApplication.js',
   },
   plugins: {
     autoDelay: {
