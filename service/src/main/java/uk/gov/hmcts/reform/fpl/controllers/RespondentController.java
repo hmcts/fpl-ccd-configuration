@@ -40,7 +40,6 @@ public class RespondentController {
         this.respondentService = respondentService;
     }
 
-    @SuppressWarnings("unchecked")
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
@@ -64,7 +63,6 @@ public class RespondentController {
             .build();
     }
 
-    @SuppressWarnings("unchecked")
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -77,7 +75,6 @@ public class RespondentController {
             .build();
     }
 
-    @SuppressWarnings("unchecked")
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);

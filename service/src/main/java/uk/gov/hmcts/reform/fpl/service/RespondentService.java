@@ -65,7 +65,6 @@ public class RespondentService {
                 })
                 .collect(toList());
         }
-
         return respondents;
     }
 }
