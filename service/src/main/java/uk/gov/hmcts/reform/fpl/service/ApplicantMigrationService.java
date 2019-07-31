@@ -14,9 +14,11 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.utils.PBANumberHelper.validatePBANumber;
+import static uk.gov.hmcts.reform.fpl.utils.PBANumberHelper.updatePBANumber;
 
 @Service
 public class ApplicantMigrationService {
@@ -50,29 +52,56 @@ public class ApplicantMigrationService {
         }
     }
 
-    public List<String> validate(CaseData caseData) {
+    public List<String> validatePBANumbers(CaseData caseData) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
 
         if (caseData.getApplicants() != null) {
             caseData.getApplicants().stream()
                 .map(Element::getValue)
                 .map(Applicant::getParty)
-                .map(ApplicantParty::getPbaNumber)
                 .filter(Objects::nonNull)
-                .forEach(pbaNumber -> {
-                    errors.addAll(validatePBANumber(pbaNumber));
+                .forEach(applicantParty -> {
+                    if (applicantParty.getPbaNumber() != null) {
+                        errors.addAll(validatePBANumber(applicantParty.getPbaNumber()));
+                    }
                 });
 
         } else if (caseData.getApplicant() != null && caseData.getApplicant().getPbaNumber() != null) {
-            String oldApplicationPBANumber = caseData.getApplicant().getPbaNumber();
-            errors.addAll(validatePBANumber(oldApplicationPBANumber));
+            errors.addAll(validatePBANumber(caseData.getApplicant().getPbaNumber()));
         }
 
         return errors.build();
     }
 
-    public String updatedPBANumber (CaseData caseData) {
-        return "Hello";
+
+    public CaseDetails updatePBANumbers (CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if (caseData.getApplicants() != null) {
+            List<Element<Applicant>> applicants = caseData.getApplicants().stream()
+                .map(element -> {
+                    Applicant.ApplicantBuilder applicantBuilder = Applicant.builder();
+
+                    if (element.getValue().getParty().getPbaNumber() != null) {
+                        String pba = updatePBANumber(element.getValue().getParty().getPbaNumber());
+                        applicantBuilder.party(element.getValue().getParty().toBuilder().pbaNumber(pba).build());
+                    }
+
+                    return Element.<Applicant>builder()
+                        .id(element.getId())
+                        .value(applicantBuilder.build())
+                        .build();
+                })
+                .collect(Collectors.toList());
+
+            caseDetails.getData().put("applicants", applicants);
+        } else if (caseData.getApplicant() != null && caseData.getApplicant().getPbaNumber() != null) {
+            String oldApplicationPBANumber = caseData.getApplicant().getPbaNumber();
+            caseData.getApplicant().setPbaNumber(updatePBANumber(oldApplicationPBANumber));
+            caseDetails.getData().put("applicant", caseData.getApplicant());
+        }
+
+        return caseDetails;
     }
 
     @SuppressWarnings("unchecked")

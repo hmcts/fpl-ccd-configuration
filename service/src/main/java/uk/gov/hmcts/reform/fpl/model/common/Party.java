@@ -14,7 +14,6 @@ import java.util.Date;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Party {
     public final String partyId;
-    public final String idamID;
     public final PartyType partyType;
     public final String title;
     public final String firstName;
