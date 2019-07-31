@@ -46,13 +46,8 @@ public class ApplicantController {
     @SuppressWarnings("unchecked")
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = applicantMigrationService.updatePBANumbers(callbackrequest.getCaseDetails());
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(applicantMigrationService.validatePBANumbers(caseData))
-            .build();
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        return applicantMigrationService.validateAndUpdatePBANumbers(caseDetails);
     }
 
     @PostMapping("/about-to-submit")

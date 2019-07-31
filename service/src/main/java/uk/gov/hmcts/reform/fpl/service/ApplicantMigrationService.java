@@ -11,11 +11,14 @@ import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.OldApplicant;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.utils.PBANumberHelper;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.utils.PBANumberHelper.validatePBANumber;
 import static uk.gov.hmcts.reform.fpl.utils.PBANumberHelper.updatePBANumber;
@@ -52,29 +55,8 @@ public class ApplicantMigrationService {
         }
     }
 
-    public List<String> validatePBANumbers(CaseData caseData) {
-        ImmutableList.Builder<String> errors = ImmutableList.builder();
-
-        if (caseData.getApplicants() != null) {
-            caseData.getApplicants().stream()
-                .map(Element::getValue)
-                .map(Applicant::getParty)
-                .filter(Objects::nonNull)
-                .forEach(applicantParty -> {
-                    if (applicantParty.getPbaNumber() != null) {
-                        errors.addAll(validatePBANumber(applicantParty.getPbaNumber()));
-                    }
-                });
-
-        } else if (caseData.getApplicant() != null && caseData.getApplicant().getPbaNumber() != null) {
-            errors.addAll(validatePBANumber(caseData.getApplicant().getPbaNumber()));
-        }
-
-        return errors.build();
-    }
-
-
-    public CaseDetails updatePBANumbers (CaseDetails caseDetails) {
+    public AboutToStartOrSubmitCallbackResponse validateAndUpdatePBANumbers(CaseDetails caseDetails) {
+        ImmutableList.Builder<String> validationErrors = ImmutableList.builder();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (caseData.getApplicants() != null) {
@@ -84,6 +66,8 @@ public class ApplicantMigrationService {
 
                     if (element.getValue().getParty().getPbaNumber() != null) {
                         String pba = updatePBANumber(element.getValue().getParty().getPbaNumber());
+                        validationErrors.addAll(validatePBANumber(pba));
+
                         applicantBuilder.party(element.getValue().getParty().toBuilder().pbaNumber(pba).build());
                     }
 
@@ -95,13 +79,29 @@ public class ApplicantMigrationService {
                 .collect(Collectors.toList());
 
             caseDetails.getData().put("applicants", applicants);
-        } else if (caseData.getApplicant() != null && caseData.getApplicant().getPbaNumber() != null) {
-            String oldApplicationPBANumber = caseData.getApplicant().getPbaNumber();
-            caseData.getApplicant().setPbaNumber(updatePBANumber(oldApplicationPBANumber));
-            caseDetails.getData().put("applicant", caseData.getApplicant());
-        }
 
-        return caseDetails;
+        } else {
+            OldApplicant applicantData = caseData.getApplicant();
+
+            if (isNullOrEmpty(applicantData.getPbaNumber())) {
+                return AboutToStartOrSubmitCallbackResponse.builder()
+                    .data(caseDetails.getData())
+                    .errors(validationErrors.build())
+                    .build();
+            }
+
+            String newPbaNumberData = PBANumberHelper.updatePBANumber(applicantData.getPbaNumber());
+            validationErrors.addAll(validatePBANumber(newPbaNumberData));
+
+            if (validationErrors.build().isEmpty()) {
+                applicantData.setPbaNumber(newPbaNumberData);
+                caseDetails.getData().put("applicant", applicantData);
+            }
+        }
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .errors(validationErrors.build())
+            .build();
     }
 
     @SuppressWarnings("unchecked")
