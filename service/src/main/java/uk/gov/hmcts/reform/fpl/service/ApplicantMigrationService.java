@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,12 +13,10 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.fpl.utils.PBANumberHelper.validatePBANumber;
 
 @Service
 public class ApplicantMigrationService {
@@ -49,6 +48,31 @@ public class ApplicantMigrationService {
         } else {
             return caseData.getApplicants();
         }
+    }
+
+    public List<String> validate(CaseData caseData) {
+        ImmutableList.Builder<String> errors = ImmutableList.builder();
+
+        if (caseData.getApplicants() != null) {
+            caseData.getApplicants().stream()
+                .map(Element::getValue)
+                .map(Applicant::getParty)
+                .map(ApplicantParty::getPbaNumber)
+                .filter(Objects::nonNull)
+                .forEach(pbaNumber -> {
+                    errors.addAll(validatePBANumber(pbaNumber));
+                });
+
+        } else if (caseData.getApplicant() != null && caseData.getApplicant().getPbaNumber() != null) {
+            String oldApplicationPBANumber = caseData.getApplicant().getPbaNumber();
+            errors.addAll(validatePBANumber(oldApplicationPBANumber));
+        }
+
+        return errors.build();
+    }
+
+    public String updatedPBANumber (CaseData caseData) {
+        return "Hello";
     }
 
     @SuppressWarnings("unchecked")
