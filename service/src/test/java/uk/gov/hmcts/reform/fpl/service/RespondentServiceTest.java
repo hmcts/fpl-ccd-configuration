@@ -40,9 +40,8 @@ class RespondentServiceTest {
         CaseData caseData = CaseData.builder()
             .respondents1(
                 ImmutableList.of(Element.<MigratedRespondent>builder()
-                    .value(
-                        MigratedRespondent.builder()
-                            .build())
+                    .value(MigratedRespondent.builder()
+                        .build())
                     .build()))
             .build();
 
@@ -79,11 +78,11 @@ class RespondentServiceTest {
             .respondents1(respondents)
             .build();
 
-        CaseData newData = service.addHiddenValues(caseData);
+        List<Element<MigratedRespondent>> newData = service.addHiddenValues(caseData);
 
-        assertThat(newData.getRespondents1().get(0).getValue().getParty().firstName).isEqualTo("James");
-        assertThat(newData.getRespondents1().get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(newData.getRespondents1().get(0).getValue().getParty().partyId).isNotNull();
+        assertThat(newData.get(0).getValue().getParty().firstName).isEqualTo("James");
+        assertThat(newData.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(newData.get(0).getValue().getParty().partyId).isNotNull();
     }
 
     @SuppressWarnings("unchecked")
@@ -112,24 +111,24 @@ class RespondentServiceTest {
             .respondents1(respondents)
             .build();
 
-        CaseData newData = service.addHiddenValues(caseData);
+        List<Element<MigratedRespondent>> newData = service.addHiddenValues(caseData);
 
-        assertThat(newData.getRespondents1().get(0).getValue().getParty().firstName).isEqualTo("James");
-        assertThat(newData.getRespondents1().get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(newData.getRespondents1().get(0).getValue().getParty().partyId).isNotNull();
+        assertThat(newData.get(0).getValue().getParty().firstName).isEqualTo("James");
+        assertThat(newData.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(newData.get(0).getValue().getParty().partyId).isNotNull();
 
-        assertThat(newData.getRespondents1().get(1).getValue().getParty().firstName).isEqualTo("Lucy");
-        assertThat(newData.getRespondents1().get(1).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(newData.getRespondents1().get(1).getValue().getParty().partyId).isNotNull();
+        assertThat(newData.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
+        assertThat(newData.get(1).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(newData.get(1).getValue().getParty().partyId).isNotNull();
     }
 
     @Test
     void shouldNotAddPartyIdAndPartyTypeValuesToDataStructureIfRespondents1IsNotPresent() {
         CaseData caseData = CaseData.builder().build();
 
-        CaseData alteredData = service.addHiddenValues(caseData);
+        List<Element<MigratedRespondent>> alteredData = service.addHiddenValues(caseData);
 
-        assertThat(alteredData).isEqualTo(caseData);
+        assertThat(alteredData).isEmpty();
     }
 
     @Test
@@ -149,9 +148,9 @@ class RespondentServiceTest {
             .respondents1(respondents)
             .build();
 
-        CaseData alteredData = service.addHiddenValues(caseData);
+        List<Element<MigratedRespondent>> alteredData = service.addHiddenValues(caseData);
 
-        assertThat(alteredData.getRespondents1().get(0).getValue().getParty().partyId).isEqualTo("123");
+        assertThat(alteredData.get(0).getValue().getParty().partyId).isEqualTo("123");
     }
 
     @SuppressWarnings("unchecked")
@@ -180,12 +179,12 @@ class RespondentServiceTest {
             .respondents1(respondents)
             .build();
 
-        CaseData alteredData = service.addHiddenValues(caseData);
+        List<Element<MigratedRespondent>> alteredData = service.addHiddenValues(caseData);
 
-        assertThat(alteredData.getRespondents1().get(0).getValue().getParty().firstName).isEqualTo("James");
-        assertThat(alteredData.getRespondents1().get(0).getValue().getParty().partyId).isEqualTo("123");
+        assertThat(alteredData.get(0).getValue().getParty().firstName).isEqualTo("James");
+        assertThat(alteredData.get(0).getValue().getParty().partyId).isEqualTo("123");
 
-        assertThat(alteredData.getRespondents1().get(1).getValue().getParty().firstName).isEqualTo("Lucy");
-        assertThat(alteredData.getRespondents1().get(1).getValue().getParty().partyId).isNotNull();
+        assertThat(alteredData.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
+        assertThat(alteredData.get(1).getValue().getParty().partyId).isNotNull();
     }
 }

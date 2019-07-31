@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.service.RespondentService;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
@@ -36,8 +35,7 @@ public class RespondentController {
     private final RespondentService respondentService;
 
     @Autowired
-    public RespondentController(ObjectMapper mapper,
-                                RespondentService respondentService) {
+    public RespondentController(ObjectMapper mapper, RespondentService respondentService) {
         this.mapper = mapper;
         this.respondentService = respondentService;
     }
@@ -48,13 +46,11 @@ public class RespondentController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        CaseData alteredData = CaseData.builder()
-            .respondentsMigrated(respondentService.setMigratedValue(caseData))
-            .respondents1(respondentService.expandRespondentCollection(caseData))
-            .build();
+        caseDetails.getData().put("respondentsMigrated", respondentService.setMigratedValue(caseData));
+        caseDetails.getData().put("respondents1", respondentService.expandRespondentCollection(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(mapper.convertValue(alteredData, Map.class))
+            .data(caseDetails.getData())
             .build();
     }
 
@@ -63,7 +59,7 @@ public class RespondentController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(callbackrequest.getCaseDetails().getData())
+            .data(caseDetails.getData())
             .errors(validate(caseDetails))
             .build();
     }
@@ -74,10 +70,10 @@ public class RespondentController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        CaseData alteredData = respondentService.addHiddenValues(caseData);
+        caseDetails.getData().put("respondents1", respondentService.addHiddenValues(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(mapper.convertValue(alteredData, Map.class))
+            .data(caseDetails.getData())
             .build();
     }
 

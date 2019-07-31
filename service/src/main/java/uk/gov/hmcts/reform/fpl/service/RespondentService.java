@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -18,9 +16,6 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class RespondentService {
 
-    @Autowired
-    private ObjectMapper mapper;
-
     public String setMigratedValue(CaseData caseData) {
         if (caseData.getRespondents1() != null || caseData.getRespondents() == null) {
             return "Yes";
@@ -30,7 +25,7 @@ public class RespondentService {
     }
 
     public List<Element<MigratedRespondent>> expandRespondentCollection(CaseData caseData) {
-        if (caseData.getRespondents() == null) {
+        if (caseData.getRespondents1() == null) {
             List<Element<MigratedRespondent>> populatedRespondent = new ArrayList<>();
 
             populatedRespondent.add(Element.<MigratedRespondent>builder()
@@ -47,41 +42,30 @@ public class RespondentService {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public CaseData addHiddenValues(CaseData caseData) {
-        CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder();
+    public List<Element<MigratedRespondent>> addHiddenValues(CaseData caseData) {
+        List<Element<MigratedRespondent>> respondents = new ArrayList<>();
 
         if (caseData.getRespondents1() != null) {
-            List<Element<MigratedRespondent>> respondentParties = caseData.getRespondents1();
+            respondents = caseData.getRespondents1().stream()
+                .map(element -> {
+                    MigratedRespondent.MigratedRespondentBuilder respondentBuilder = MigratedRespondent.builder();
 
-            List<RespondentParty> respondentPartyList = respondentParties.stream()
-                .map(Element::getValue)
-                .map(MigratedRespondent::getParty)
-                .map(respondent -> {
-                    RespondentParty.RespondentPartyBuilder partyBuilder = respondent.toBuilder();
-
-                    if (respondent.getPartyId() == null) {
-                        partyBuilder.partyId(UUID.randomUUID().toString());
-                        partyBuilder.partyType(PartyType.INDIVIDUAL);
+                    if (element.getValue().getParty().getPartyId() == null) {
+                        respondentBuilder.party(element.getValue().getParty().toBuilder()
+                            .partyId(UUID.randomUUID().toString())
+                            .partyType(PartyType.INDIVIDUAL).build());
+                    } else {
+                        respondentBuilder.party(element.getValue().getParty().toBuilder().build());
                     }
 
-                    return partyBuilder.build();
+                    return Element.<MigratedRespondent>builder()
+                        .id(element.getId())
+                        .value(respondentBuilder.leadRespondentIndicator("No").build())
+                        .build();
                 })
                 .collect(toList());
-
-            List<Element<MigratedRespondent>> respondents = respondentPartyList.stream()
-                .map(item -> Element.<MigratedRespondent>builder()
-                    .id(UUID.randomUUID())
-                    .value(MigratedRespondent.builder()
-                        .party(item)
-                        .leadRespondentIndicator("No")
-                        .build())
-                    .build())
-                .collect(toList());
-
-            caseDataBuilder.respondents1(respondents);
         }
 
-        return caseDataBuilder.build();
+        return respondents;
     }
 }
