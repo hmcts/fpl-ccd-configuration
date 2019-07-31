@@ -29,38 +29,52 @@ module.exports = {
   },
 
   selectSocialWorkChronologyToFollow() {
-    I.selectOption(this.fields.socialWorkChronologyStatus, 'To follow');
+    within(this.fields.socialWorkChronologyStatus, () => {
+      I.click(locate('label').withText('To follow'));
+    });
     I.fillField(this.fields.socialWorkChronologyReason, 'mock reason');
   },
 
   uploadSocialWorkStatement(file) {
     I.attachFile(this.documents.socialWorkStatementAndGenogram, file);
-    I.selectOption(this.fields.socialWorkStatementAndGenogramStatus, 'Included in social work evidence template (SWET)');
+    within(this.fields.socialWorkStatementAndGenogramStatus, () => {
+      I.click(locate('label').withText('Included in social work evidence template (SWET)'));
+    });
   },
 
   uploadSocialWorkAssessment(file) {
     I.attachFile(this.documents.socialWorkAssessment, file);
-    I.selectOption(this.fields.socialWorkAssessmentStatus, 'Attached');
+    within(this.fields.socialWorkAssessmentStatus, () => {
+      I.click(locate('label').withText('Attached'));
+    });
   },
 
   uploadCarePlan(file) {
     I.attachFile(this.documents.carePlan, file);
-    I.selectOption(this.fields.carePlanStatus, 'Attached');
+    within(this.fields.carePlanStatus, () => {
+      I.click(locate('label').withText('Attached'));
+    });
   },
 
   uploadSWET(file) {
     I.attachFile(this.documents.socialWorkEvidenceTemplate, file);
-    I.selectOption(this.fields.socialWorkEvidenceTemplateStatus, 'Attached');
+    within(this.fields.socialWorkEvidenceTemplateStatus, () => {
+      I.click(locate('label').withText('Attached'));
+    });
   },
 
   uploadThresholdDocument(file) {
     I.attachFile(this.documents.thresholdDocument, file);
-    I.selectOption(this.fields.thresholdDocumentStatus, 'Attached');
+    within(this.fields.thresholdDocumentStatus, () => {
+      I.click(locate('label').withText('Attached'));
+    });
   },
 
   uploadChecklistDocument(file) {
     I.attachFile(this.documents.checklistDocument, file);
-    I.selectOption(this.fields.checklistDocumentStatus, 'Attached');
+    within(this.fields.checklistDocumentStatus, () => {
+      I.click(locate('label').withText('Attached'));
+    });
   },
 
   uploadAdditionalDocuments(file) {

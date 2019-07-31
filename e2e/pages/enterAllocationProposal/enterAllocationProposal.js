@@ -3,13 +3,15 @@ const I = actor();
 module.exports = {
 
   fields: {
-    allocationProposal: '#allocationProposal_proposal',
+    allocationProposalRadioGroup: '#allocationProposal_proposal',
     proposalReason: '#allocationProposal_proposalReason',
   },
 
   selectAllocationProposal(proposal) {
-    I.waitForElement(this.fields.allocationProposal);
-    I.selectOption(this.fields.allocationProposal, proposal);
+    I.waitForElement(this.fields.allocationProposalRadioGroup);
+    within(this.fields.allocationProposalRadioGroup, () => {
+      I.click(locate('label').withText(proposal));
+    });
   },
 
   enterProposalReason(reason) {
