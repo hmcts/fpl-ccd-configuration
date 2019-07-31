@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -17,7 +16,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -27,11 +28,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ApplicantMidEventControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final String ERROR_MESSAGE = "Payment by account (PBA) number must include 7 numbers";
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     void shouldReturnErrorsWhenThereIsNewApplicantAndEmptyPbaNumber() throws Exception {
@@ -55,10 +58,10 @@ public class ApplicantMidEventControllerTest {
 
         MvcResult response = getMvcResult(request);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        Assertions.assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
@@ -83,10 +86,10 @@ public class ApplicantMidEventControllerTest {
 
         MvcResult response = getMvcResult(request);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        Assertions.assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
     @Test
@@ -111,10 +114,10 @@ public class ApplicantMidEventControllerTest {
 
         MvcResult response = getMvcResult(request);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        Assertions.assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
@@ -139,10 +142,10 @@ public class ApplicantMidEventControllerTest {
 
         MvcResult response = getMvcResult(request);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        Assertions.assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
@@ -167,12 +170,13 @@ public class ApplicantMidEventControllerTest {
 
         MvcResult response = getMvcResult(request);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        Assertions.assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void shouldReturnNoErrorsWhenThereIsNewApplicantAndPbaNumberIsLowerCaseAndSevenDigits() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
@@ -195,10 +199,14 @@ public class ApplicantMidEventControllerTest {
 
         MvcResult response = getMvcResult(request);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        Assertions.assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+
+        CaseData caseData = objectMapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getApplicants().get(0).getValue().getParty().getPbaNumber()).isEqualTo("PBA1234567");
     }
 
     @Test
@@ -223,10 +231,10 @@ public class ApplicantMidEventControllerTest {
 
         MvcResult response = getMvcResult(request);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        Assertions.assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
     private MvcResult getMvcResult(CallbackRequest request) throws Exception {
@@ -235,7 +243,7 @@ public class ApplicantMidEventControllerTest {
                     .header("authorization", AUTH_TOKEN)
                     .header("user-id", USER_ID)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(MAPPER.writeValueAsString(request)))
+                    .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andReturn();
     }

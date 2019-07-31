@@ -17,15 +17,13 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OldApplicant;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicantMigrationService;
-import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.utils.PBANumberHelper;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.utils.PBANumberHelper.validatePBANumber;
 
 @Api
@@ -68,24 +66,33 @@ public class ApplicantController {
         if (caseData.getApplicants() != null) {
             List<Element<Applicant>> migratedApplicantsObject = caseData.getApplicants();
 
-            List<Applicant> migratedApplicant = migratedApplicantsObject
-                .stream()
+            List<ApplicantParty> applicantParties = migratedApplicantsObject.stream()
                 .map(Element::getValue)
-                .collect(Collectors.toList());
-            migratedApplicant.stream()
                 .map(Applicant::getParty)
-                .map(ApplicantParty::getPbaNumber)
-                .filter(Objects::nonNull)
-                .forEach(pbaNumber -> {
-                    String formattedPbaNumber =
-                        PBANumberHelper.updatePBANumber(pbaNumber);
-                    validationErrors.addAll(validatePBANumber(formattedPbaNumber));
-                });
+                .map(party -> {
+                    ApplicantParty.ApplicantPartyBuilder applicantPartyBuilder = party.toBuilder();
 
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseDetails.getData())
-                .errors(validationErrors.build())
-                .build();
+                    if (party.getPbaNumber() != null) {
+                        String pba = PBANumberHelper.updatePBANumber(party.getPbaNumber());
+                        validationErrors.addAll(validatePBANumber(pba));
+                        applicantPartyBuilder.pbaNumber(pba);
+                    }
+                    return applicantPartyBuilder.build();
+                })
+                .collect(toList());
+
+            List<Element<Applicant>> updatedApplicants = applicantParties.stream()
+                .map(entry -> Element.<Applicant>builder()
+                    .id(migratedApplicantsObject.get(0).getId())
+                    .value(Applicant.builder()
+                        .party(entry)
+                        .build())
+                    .build())
+                .collect(toList());
+
+            caseDetails.getData().put("applicants", updatedApplicants);
+            System.out.println("CASE DETAILS IN IF " + caseDetails.getData().put("applicants", updatedApplicants));
+
         } else {
             OldApplicant applicantData = caseData.getApplicant();
 
@@ -104,7 +111,7 @@ public class ApplicantController {
                 caseDetails.getData().put("applicant", applicantData);
             }
         }
-
+        System.out.println("RETURN CASE DETAILS = " + caseDetails.getData());
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .errors(validationErrors.build())
