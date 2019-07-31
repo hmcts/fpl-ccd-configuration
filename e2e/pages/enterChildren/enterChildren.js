@@ -1,3 +1,4 @@
+/* global locate */
 const I = actor();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
