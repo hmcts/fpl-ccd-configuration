@@ -54,7 +54,7 @@ public class ApplicantController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        
+
         return applicantMigrationService.addHiddenValues(caseDetails);
     }
 }
