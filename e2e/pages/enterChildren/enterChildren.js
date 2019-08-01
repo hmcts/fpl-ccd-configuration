@@ -22,11 +22,11 @@ module.exports = {
       genderIdentification: `#children1_${id}_party_genderIdentification`,
       situation: {
         selector: `select[id="children1_${id}_party_livingSituation"]`,
-        situationDetails: `#children1_${id}_party_situationDetails`,
+        situationDetails: `#children1_${id}_party_livingSituationDetails`,
         dateStartedStaying: {
-          day: `#children1_${id}_party_situationDate-day`,
-          month: `#children1_${id}_party_situationDate-month`,
-          year: `#children1_${id}_party_situationDate-year`,
+          day: `#children1_${id}_party_addressChangeDate-day`,
+          month: `#children1_${id}_party_addressChangeDate-month`,
+          year: `#children1_${id}_party_addressChangeDate-year`,
         },
         addressOfChild: `div[id="children1_${id}_party_address_address"]`,
       },
@@ -37,7 +37,7 @@ module.exports = {
       fathersName: `#children1_${id}_party_fathersName`,
       fatherResponsible: `#children1_${id}_party_fathersResponsibility`,
       socialWorkerName: `#children1_${id}_party_socialWorkerName`,
-      socialWorkerTel: `#children1_${id}_party_socialWorkerTel_telephoneNumber`,
+      socialWorkerTel: `#children1_${id}_party_socialWorkerTelephoneNumber_telephoneNumber`,
       additionalNeedsNo: `#children1_${id}_party_additionalNeeds-No`,
       contactHiddenNo: `#children1_${id}_party_detailsHidden-No`,
       litigationIssues: {

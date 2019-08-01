@@ -134,12 +134,12 @@
             "fathersName": "Rob Reeves",
             "mothersName": "Isbella Reeves",
             "detailsHidden": "Yes",
-            "situationDate": "2018-11-08",
+            "addressChangeDate": "2018-11-08",
             "careAndContactPlan": "Place baby in local authority foster care",
             "placementCourt": "Central London County Court",
             "additionalNeeds": "Yes",
             "livingSituation": "Living with respondents",
-            "socialWorkerTel": {
+            "socialWorkerTelephoneNumber": {
               "telephoneNumber": "0123456789"
             },
             "litigationIssues": "DONT_KNOW",
@@ -174,12 +174,12 @@
             "fathersName": "Scott Simpson",
             "mothersName": "Sarah Simpson",
             "detailsHidden": "No",
-            "situationDate": "2002-02-02",
+            "addressChangeDate": "2002-02-02",
             "careAndContactPlan": "test child two care and contact plan",
             "placementCourt": "test child two court",
             "additionalNeeds": "Yes",
             "livingSituation": "Living with respondents",
-            "socialWorkerTel": {
+            "socialWorkerTelephoneNumber": {
               "telephoneNumber": "07749972242"
             },
             "litigationIssues": "YES",

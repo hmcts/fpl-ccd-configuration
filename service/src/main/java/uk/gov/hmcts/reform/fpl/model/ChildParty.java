@@ -19,9 +19,9 @@ public final class ChildParty extends Party {
     private final String gender;
     private final String genderIdentification;
     private final String livingSituation;
-    private final String situationDetails;
+    private final String livingSituationDetails;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private final Date situationDate;
+    private final Date addressChangeDate;
     private final String keyDates;
     private final String careAndContactPlan;
     private final String adoption;
@@ -31,7 +31,7 @@ public final class ChildParty extends Party {
     private final String fathersName;
     private final String fathersResponsibility;
     private final String socialWorkerName;
-    private final Telephone socialWorkerTel;
+    private final Telephone socialWorkerTelephoneNumber;
     private final String additionalNeeds;
     private final String additionalNeedsDetails;
     private final String detailsHidden;
@@ -51,8 +51,8 @@ public final class ChildParty extends Party {
                        String gender,
                        String genderIdentification,
                        String livingSituation,
-                       String situationDetails,
-                       Date situationDate,
+                       String livingSituationDetails,
+                       Date addressChangeDate,
                        String keyDates,
                        String careAndContactPlan,
                        String adoption,
@@ -62,7 +62,7 @@ public final class ChildParty extends Party {
                        String fathersName,
                        String fathersResponsibility,
                        String socialWorkerName,
-                       Telephone socialWorkerTel,
+                       Telephone socialWorkerTelephoneNumber,
                        String additionalNeeds,
                        String additionalNeedsDetails,
                        String detailsHidden,
@@ -74,8 +74,8 @@ public final class ChildParty extends Party {
         this.gender = gender;
         this.genderIdentification = genderIdentification;
         this.livingSituation = livingSituation;
-        this.situationDetails = situationDetails;
-        this.situationDate = situationDate;
+        this.livingSituationDetails = livingSituationDetails;
+        this.addressChangeDate = addressChangeDate;
         this.keyDates = keyDates;
         this.careAndContactPlan = careAndContactPlan;
         this.adoption = adoption;
@@ -85,7 +85,7 @@ public final class ChildParty extends Party {
         this.fathersName = fathersName;
         this.fathersResponsibility = fathersResponsibility;
         this.socialWorkerName = socialWorkerName;
-        this.socialWorkerTel = socialWorkerTel;
+        this.socialWorkerTelephoneNumber = socialWorkerTelephoneNumber;
         this.additionalNeeds = additionalNeeds;
         this.additionalNeedsDetails = additionalNeedsDetails;
         this.detailsHidden = detailsHidden;

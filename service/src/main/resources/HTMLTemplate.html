@@ -1094,13 +1094,13 @@
                       {% endif %}
                     {% endif %}
                   {% endif %}
-                {% if child.value.party.situationDate is not empty %}
+                {% if child.value.party.addressChangeDate is not empty %}
                   {% if child.value.party.livingSituation == 'In hospital and soon to be discharged' %}
-                    <span class="u-block">Discharge date: {{ child.value.party.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
+                    <span class="u-block">Discharge date: {{ child.value.party.addressChangeDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
                   {% elseif child.value.livingSituation == 'Removed by Police, powers end soon' %}
-                    <span class="u-block">Date powers end: {{ child.value.party.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
+                    <span class="u-block">Date powers end: {{ child.value.party.addressChangeDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
                   {% else %}
-                    <span class="u-block">Date this began: {{ child.value.party.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
+                    <span class="u-block">Date this began: {{ child.value.party.addressChangeDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
                   {% endif %}
                 {% endif %}
               {% else %}
@@ -1206,9 +1206,9 @@
           <div class="data-list__row">
             <dt class="data-list__title">Social worker's telephone number</dt>
             <dd class="data-list__definition">
-              {% if child.value.party.socialWorkerTel is not empty
-              and child.value.party.socialWorkerTel.telephoneNumber is not empty %}
-                {{ child.value.party.socialWorkerTel.telephoneNumber }}
+              {% if child.value.party.socialWorkerTelephoneNumber is not empty
+              and child.value.party.socialWorkerTelephoneNumber.telephoneNumber is not empty %}
+                {{ child.value.party.socialWorkerTelephoneNumber.telephoneNumber }}
               {% else %}
                 -
               {% endif %}

@@ -1811,7 +1811,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildParty",
-    "ListElementCode": "situationDetails",
+    "ListElementCode": "livingSituationDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Details",
     "FieldShowCondition": "livingSituation=\"Other\"",
@@ -1820,7 +1820,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildParty ",
-    "ListElementCode": "situationDate",
+    "ListElementCode": "addressChangeDate",
     "FieldType": "Date",
     "ElementLabel": "What date did they start staying here?",
     "FieldShowCondition": "livingSituation=\"*\"",
@@ -1916,7 +1916,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ChildParty",
-    "ListElementCode": "socialWorkerTel",
+    "ListElementCode": "socialWorkerTelephoneNumber",
     "FieldType": "Telephone",
     "ElementLabel": "Social worker's telephone number",
     "SecurityClassification": "Public"
