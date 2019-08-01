@@ -1,16 +1,18 @@
+/* global locate */
+
 const I = actor();
 
 module.exports = {
 
   fields: {
     timeFrame: {
-      dropdown: {id: 'hearing_timeFrame'},
+      radioGroup: '#hearing_timeFrame',
       sameDay: 'Same day',
       reason: '#hearing_reason',
     },
 
     hearingType: {
-      dropdown: '#hearing_type',
+      radioGroup: '#hearing_type',
       contestedICO: 'Contested interim care order',
     },
 
@@ -28,12 +30,16 @@ module.exports = {
   },
 
   enterTimeFrame(reason = 'test reason') {
-    I.selectOption(this.fields.timeFrame.dropdown, this.fields.timeFrame.sameDay);
+    within(this.fields.timeFrame.radioGroup, () => {
+      I.click(locate('label').withText(this.fields.timeFrame.sameDay));
+    });
     I.fillField(this.fields.timeFrame.reason, reason);
   },
 
   enterHearingType() {
-    I.selectOption(this.fields.hearingType.dropdown, this.fields.hearingType.contestedICO);
+    within(this.fields.hearingType.radioGroup, () => {
+      I.click(locate('label').withText(this.fields.hearingType.contestedICO));
+    });
   },
 
   enterWithoutNoticeHearing() {
