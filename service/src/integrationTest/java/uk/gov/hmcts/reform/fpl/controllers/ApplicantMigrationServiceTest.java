@@ -2,14 +2,11 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -20,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.service.ApplicantMigrationService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,6 +27,9 @@ public class ApplicantMigrationServiceTest {
 
     @Autowired
     private ApplicantMigrationService service;
+
+    @Autowired
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Test
     void shouldAddMigratedApplicantYesWhenNoApplicantData() {
@@ -75,44 +76,62 @@ public class ApplicantMigrationServiceTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    void shouldAddPartyIdAndPartyTypeValuesToApplicant() {
-        Map<String, Object> applicantObject = new HashMap<>();
-
-        applicantObject.put("applicants", ImmutableList.of(
-            ImmutableMap.of(
-                "id", "12345",
-                "value", ImmutableMap.of(
-                    "party", ApplicantParty.builder()
+    void shouldAddPartyIdAndPartyTypeValuesToMigratedApplicant() {
+        List<Element<Applicant>> applicants = ImmutableList.of(
+            Element.<Applicant>builder()
+                .id(UUID.randomUUID())
+                .value(Applicant.builder()
+                    .party(ApplicantParty.builder()
                         .organisationName("Becky's Organisation")
-                        .build()
-                ))));
+                        .build())
+                    .build())
+                .build());
 
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(applicantObject)
+        CaseData caseData = CaseData.builder()
+            .applicants(applicants)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
+        List<Element<Applicant>> editedApplicant = service.addHiddenValues(caseData);
 
-        Map<String, Object> data = response.getData();
-        List<Map<String, Object>> applicant = (List<Map<String, Object>>) data.get("applicants");
-        Map<String, Object> value = (Map<String, Object>) applicant.get(0).get("value");
-        Map<String, Object> party = (Map<String, Object>) value.get("party");
-
-        assertThat(party)
-            .containsEntry("organisationName", "Becky's Organisation")
-            .containsEntry("partyType", "ORGANISATION");
-
-        assertThat(party.get("partyId")).isNotNull();
+        assertThat(editedApplicant.get(0).getValue().getParty().getOrganisationName().contains("Becky's Organisation"));
+        assertThat(editedApplicant.get(0).getValue().getParty().getPartyType().equals("ORGANISATION"));
+        assertThat(editedApplicant.get(0).getValue().getParty().getPartyId().isEmpty());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
-    void shouldNotAddPartyIdAndPartyTypeValuesToDataStructureIfNewApplicantIsNotPresent() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("applicant", "some value"))
+    void shouldAddPartyIDAndPartyTypeValuesToMigratedApplicant() {
+        List<Element<Applicant>> applicants = ImmutableList.of(
+            Element.<Applicant>builder()
+                .id(UUID.randomUUID())
+                .value(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .organisationName("Becky's Organisation")
+                        .build())
+                    .build())
+                .build(),
+            Element.<Applicant>builder()
+                .id(UUID.randomUUID())
+                .value(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .organisationName("Ben Stokes Bats")
+                        .build())
+                    .build())
+                .build()
+        );
+
+        CaseData caseData = CaseData.builder()
+            .applicants(applicants)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
+        List<Element<Applicant>> editedApplicant = service.addHiddenValues(caseData);
 
-        assertThat(response.getData()).isEqualTo(caseDetails.getData());
+        assertThat(editedApplicant.get(0).getValue().getParty().getOrganisationName().contains("Becky's Organisation"));
+        assertThat(editedApplicant.get(0).getValue().getParty().getPartyType().equals("ORGANISATION"));
+        assertThat(editedApplicant.get(0).getValue().getParty().getPartyId().isEmpty());
+
+        assertThat(editedApplicant.get(0).getValue().getParty().getOrganisationName().contains("Ben Stokes Bats"));
+        assertThat(editedApplicant.get(0).getValue().getParty().getPartyType().equals("ORGANISATION"));
+        assertThat(editedApplicant.get(0).getValue().getParty().getPartyId().isEmpty());
     }
 }

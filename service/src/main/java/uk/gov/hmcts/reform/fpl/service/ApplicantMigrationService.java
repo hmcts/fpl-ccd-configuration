@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.utils.PBANumberHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -108,43 +106,30 @@ public class ApplicantMigrationService {
     }
 
     @SuppressWarnings("unchecked")
-    public AboutToStartOrSubmitCallbackResponse addHiddenValues(CaseDetails caseDetails) {
-        Map<String, Object> data = caseDetails.getData();
+    public List<Element<Applicant>> addHiddenValues(CaseData caseData) {
+        List<Element<Applicant>> applicants = new ArrayList<>();
 
-        if (caseDetails.getData().containsKey("applicants")) {
-            List<Map<String, Object>> applicantParties = (List<Map<String, Object>>) data.get("applicants");
+        if (caseData.getApplicants() != null) {
+            applicants = caseData.getApplicants().stream()
+                .map(element -> {
+                    Applicant.ApplicantBuilder applicantBuilder = Applicant.builder();
 
-            List<ApplicantParty> applicantPartyList = applicantParties.stream()
-                .map(entry -> mapper.convertValue(entry.get("value"), Map.class))
-                .map(map -> mapper.convertValue(map.get("party"), ApplicantParty.class))
-                .map(applicant -> {
-                    ApplicantParty.ApplicantPartyBuilder partyBuilder = applicant.toBuilder();
-
-                    //Variable within CCD part structure must be set to expand Collection.
-                    //partyId and partyType are hidden fields so setting a value will not persist in database.
-                    if (applicant.getPartyId() == null) {
-                        partyBuilder.partyId(UUID.randomUUID().toString());
-                        partyBuilder.partyType(PartyType.ORGANISATION);
+                    if (element.getValue().getParty().getPartyId() == null) {
+                        applicantBuilder.party(element.getValue().getParty().toBuilder()
+                            .partyId(UUID.randomUUID().toString())
+                            .partyType(PartyType.ORGANISATION).build());
+                    } else {
+                        applicantBuilder.party(element.getValue().getParty().toBuilder().build());
                     }
 
-                    return partyBuilder.build();
+                    return Element.<Applicant>builder()
+                        .id(element.getId())
+                        .value(applicantBuilder.leadApplicantIndicator("Yes").build())
+                        .build();
                 })
                 .collect(toList());
-
-            List<Map<String, Object>> applicants = applicantPartyList.stream()
-                .map(item -> ImmutableMap.<String, Object>builder()
-                    .put("id", UUID.randomUUID().toString())
-                    .put("value", ImmutableMap.of(
-                        "party", mapper.convertValue(item, Map.class),
-                        "leadApplicantIndicator", "Yes"))
-                    .build())
-                .collect(toList());
-
-            data.put("applicants", applicants);
         }
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+        return applicants;
     }
+
 }

@@ -56,7 +56,7 @@ public class ApplicantMidEventControllerTest {
                 .build())
             .build();
 
-        MvcResult response = getMvcResult(request);
+        MvcResult response = makeRequest(request);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -84,7 +84,7 @@ public class ApplicantMidEventControllerTest {
                 .build())
             .build();
 
-        MvcResult response = getMvcResult(request);
+        MvcResult response = makeRequest(request);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -112,7 +112,7 @@ public class ApplicantMidEventControllerTest {
                 .build())
             .build();
 
-        MvcResult response = getMvcResult(request);
+        MvcResult response = makeRequest(request);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -140,7 +140,7 @@ public class ApplicantMidEventControllerTest {
                 .build())
             .build();
 
-        MvcResult response = getMvcResult(request);
+        MvcResult response = makeRequest(request);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -168,12 +168,7 @@ public class ApplicantMidEventControllerTest {
                 .build())
             .build();
 
-        MvcResult response = getMvcResult(request);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+        assertPbaNumberIsAsExpected(request);
     }
 
     @SuppressWarnings("unchecked")
@@ -197,16 +192,7 @@ public class ApplicantMidEventControllerTest {
                 .build())
             .build();
 
-        MvcResult response = getMvcResult(request);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
-
-        CaseData caseData = objectMapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-        assertThat(caseData.getApplicants().get(0).getValue().getParty().getPbaNumber()).isEqualTo("PBA1234567");
+        assertPbaNumberIsAsExpected(request);
     }
 
     @Test
@@ -229,22 +215,30 @@ public class ApplicantMidEventControllerTest {
                 .build())
             .build();
 
-        MvcResult response = getMvcResult(request);
+        assertPbaNumberIsAsExpected(request);
+    }
+
+    private void assertPbaNumberIsAsExpected(CallbackRequest request) throws Exception {
+        MvcResult response = makeRequest(request);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+
+        CaseData caseData = objectMapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getApplicants().get(0).getValue().getParty().getPbaNumber()).isEqualTo("PBA1234567");
     }
 
-    private MvcResult getMvcResult(CallbackRequest request) throws Exception {
+    private MvcResult makeRequest(CallbackRequest request) throws Exception {
         return mockMvc
-                .perform(post("/callback/enter-applicant/mid-event")
-                    .header("authorization", AUTH_TOKEN)
-                    .header("user-id", USER_ID)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isOk())
-                .andReturn();
+            .perform(post("/callback/enter-applicant/mid-event")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andReturn();
     }
 }
