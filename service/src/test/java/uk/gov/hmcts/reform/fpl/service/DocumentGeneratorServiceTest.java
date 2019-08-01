@@ -74,7 +74,7 @@ class DocumentGeneratorServiceTest {
 
         String content = textContentOf(
             createServiceInstance(clock).generateSubmittedFormPDF(reformRespondentCaseDetails(),
-                Pair.of("userFullName", "Emma Taylor"))
+            Pair.of("userFullName", "Emma Taylor"))
         );
 
         String expectedContent = ResourceReader.readString("submitted-form-pdf-content.txt");

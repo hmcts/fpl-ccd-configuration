@@ -23,8 +23,7 @@ public class ApplicantController {
     private final ObjectMapper mapper;
 
     @Autowired
-    public ApplicantController(ApplicantMigrationService applicantMigrationService,
-                               ObjectMapper mapper) {
+    public ApplicantController(ApplicantMigrationService applicantMigrationService, ObjectMapper mapper) {
         this.applicantMigrationService = applicantMigrationService;
         this.mapper = mapper;
     }
