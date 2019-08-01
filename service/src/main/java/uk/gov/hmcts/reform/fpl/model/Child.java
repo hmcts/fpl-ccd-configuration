@@ -10,6 +10,7 @@ import lombok.Data;
 public class Child {
     private final ChildParty party;
 
+    @Builder(toBuilder = true)
     @JsonCreator
     public Child(@JsonProperty("party") ChildParty party) {
         this.party = party;

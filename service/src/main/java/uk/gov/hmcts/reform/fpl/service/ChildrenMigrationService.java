@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -29,7 +30,6 @@ public class ChildrenMigrationService {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<Element<Child>> expandChildrenCollection(CaseData caseData) {
         if (caseData.getChildren1() == null) {
             List<Element<Child>> populatedChildren = new ArrayList<>();
@@ -47,34 +47,21 @@ public class ChildrenMigrationService {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<Element<Child>> addHiddenValues(CaseData caseData) {
-        List<Element<Child>> childrenParties = caseData.getChildren1();
+        return caseData.getChildren1().stream()
+            .map(element -> {
+                ChildParty.ChildPartyBuilder childPartyBuilder = element.getValue().getParty().toBuilder();
 
-        List<ChildParty> childrenPartyList = childrenParties.stream()
-            .map(Element::getValue)
-            .map(Child::getParty)
-            .map(child -> {
-                ChildParty.ChildPartyBuilder partyBuilder = child.toBuilder();
-
-                if (child.getPartyId() == null) {
-                    partyBuilder.partyId(UUID.randomUUID().toString());
-                    partyBuilder.partyType(PartyType.INDIVIDUAL);
+                if (element.getValue().getParty().getPartyId() == null) {
+                    childPartyBuilder.partyId(UUID.randomUUID().toString());
+                    childPartyBuilder.partyType(PartyType.INDIVIDUAL);
                 }
 
-                return partyBuilder.build();
+                return Element.<Child>builder()
+                    .id(element.getId())
+                    .value(element.getValue().toBuilder().party(childPartyBuilder.build()).build())
+                    .build();
             })
             .collect(toList());
-
-        List<Element<Child>> children = childrenPartyList.stream()
-            .map(item -> Element.<Child>builder()
-                .id(UUID.randomUUID())
-                .value(Child.builder()
-                    .party(item)
-                    .build())
-                .build())
-            .collect(toList());
-
-        return children;
     }
 }

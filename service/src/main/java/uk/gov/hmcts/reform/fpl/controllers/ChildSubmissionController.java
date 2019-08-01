@@ -33,8 +33,7 @@ public class ChildSubmissionController {
     private final ChildrenMigrationService childrenMigrationService;
 
     @Autowired
-    public ChildSubmissionController(ObjectMapper mapper,
-                                     ChildrenMigrationService childrenMigrationService) {
+    public ChildSubmissionController(ObjectMapper mapper, ChildrenMigrationService childrenMigrationService) {
         this.mapper = mapper;
         this.childrenMigrationService = childrenMigrationService;
     }
