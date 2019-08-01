@@ -71,7 +71,9 @@ public class ApplicantController {
                         String pba = updatePBANumber(element.getValue().getParty().getPbaNumber());
                         validationErrors.addAll(validatePBANumber(pba));
 
-                        applicantBuilder.party(element.getValue().getParty().toBuilder().pbaNumber(pba).build());
+                        if (validationErrors.build().isEmpty()) {
+                            applicantBuilder.party(element.getValue().getParty().toBuilder().pbaNumber(pba).build());
+                        }
                     }
 
                     return Element.<Applicant>builder()
@@ -82,7 +84,6 @@ public class ApplicantController {
                 .collect(Collectors.toList());
 
             caseDetails.getData().put("applicants", applicants);
-
         } else {
             OldApplicant applicantData = caseData.getApplicant();
 
