@@ -67,7 +67,7 @@ module.exports = {
 
   defineChildSituation(day, month, year) {
     within(this.fields().situation.radioGroup, () => {
-        I.click(locate('label').withText('Living with respondents'));
+      I.click(locate('label').withText('Living with respondents'));
     });
     I.fillField(this.fields().situation.dateStartedStaying.day, day);
     I.fillField(this.fields().situation.dateStartedStaying.month, month);
