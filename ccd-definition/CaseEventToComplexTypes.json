@@ -1,1 +1,146 @@
-[]
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.firstName",
+    "FieldDisplayOrder": "1",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.lastName",
+    "FieldDisplayOrder": "2",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.dateOfBirth",
+    "FieldDisplayOrder": "3",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.gender",
+    "FieldDisplayOrder": "4",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.genderIdentification",
+    "FieldDisplayOrder": "5",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.placeOfBirth",
+    "FieldDisplayOrder": "6",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.address",
+    "FieldDisplayOrder": "7",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.telephoneNumber.telephoneNumber",
+    "FieldDisplayOrder": "8",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.relationshipLabel",
+    "FieldDisplayOrder": "10",
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.relationshipToChild",
+    "FieldDisplayOrder": "11",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.contactDetailsHidden",
+    "FieldDisplayOrder": "12",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.contactDetailsHiddenReason",
+    "FieldDisplayOrder": "13",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.proceedingsLabel",
+    "FieldDisplayOrder": "14",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.litigationIssues",
+    "FieldDisplayOrder": "15",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.litigationIssuesDetails",
+    "FieldDisplayOrder": "16",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "CaseEventID": "enterRespondents",
+    "CaseFieldID": "respondents1",
+    "ListElementCode": "party.respondent_border",
+    "FieldDisplayOrder": "15",
+    "DisplayContext": "OPTIONAL"
+  }
+]
