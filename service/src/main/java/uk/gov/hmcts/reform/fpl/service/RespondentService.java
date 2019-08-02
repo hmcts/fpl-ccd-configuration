@@ -54,7 +54,8 @@ public class RespondentService {
                         respondentBuilder
                             .party(element.getValue().getParty().toBuilder()
                                 .partyId(UUID.randomUUID().toString())
-                                .partyType(PartyType.INDIVIDUAL).build())
+                                .partyType(PartyType.INDIVIDUAL)
+                                .build())
                             .leadRespondentIndicator("No");
 
                     } else {
