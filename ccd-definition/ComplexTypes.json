@@ -11,7 +11,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "UploadDocument",
     "ListElementCode": "documentStatus",
-    "FieldType": "FixedList",
+    "FieldType": "FixedRadioList",
     "FieldTypeParameter": "attachedToFollowOption",
     "ElementLabel": "Document status",
     "SecurityClassification": "Public"
@@ -28,7 +28,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "UploadSwetDocument",
     "ListElementCode": "documentStatus",
-    "FieldType": "FixedList",
+    "FieldType": "FixedRadioList",
     "FieldTypeParameter": "swetDocumentOptions",
     "ElementLabel": "Document status",
     "SecurityClassification": "Public"
@@ -106,7 +106,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "Child",
     "ListElementCode": "livingSituation",
-    "FieldType": "FixedList",
+    "FieldType": "FixedRadioList",
     "FieldTypeParameter": "LivingSituationList",
     "ElementLabel": "Describe child's situation",
     "SecurityClassification": "Public"
@@ -840,7 +840,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AllocationProposal",
     "ListElementCode": "proposal",
-    "FieldType": "FixedList",
+    "FieldType": "FixedRadioList",
     "FieldTypeParameter": "AllocationProposalList",
     "ElementLabel": "Which level of judge do you recommend for this case?",
     "SecurityClassification": "Public"
@@ -885,7 +885,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "timeFrame",
-    "FieldType": "FixedList",
+    "FieldType": "FixedRadioList",
     "FieldTypeParameter": "TimeFrameList",
     "ElementLabel": "When do you need a hearing?",
     "SecurityClassification": "Public"
@@ -934,7 +934,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "Hearing",
     "ListElementCode": "type",
-    "FieldType": "FixedList",
+    "FieldType": "FixedRadioList",
     "FieldTypeParameter": "HearingTypeFixedList",
     "ElementLabel": "What type of hearing do you need?",
     "SecurityClassification": "Public"

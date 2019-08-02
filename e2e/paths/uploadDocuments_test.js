@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-Feature('Upload Documents').retry(2);
+Feature('Upload Documents');
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);

@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-Feature('Change case name').retry(2);
+Feature('Change case name');
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);

@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-Feature('Enter order and details').retry(2);
+Feature('Enter order and details');
 
 Before((I, caseViewPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);

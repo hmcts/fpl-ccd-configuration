@@ -1,3 +1,5 @@
+/* global locate */
+
 const I = actor();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
@@ -18,7 +20,7 @@ module.exports = {
       },
       gender: `#children_${childNo}_childGender`,
       situation: {
-        selector: `#children_${childNo}_livingSituation`,
+        radioGroup: `#children_${childNo}_livingSituation`,
         dateStartedStaying: {
           day: `#children_${childNo}_situationDate-day`,
           month: `#children_${childNo}_situationDate-month`,
@@ -64,8 +66,10 @@ module.exports = {
     I.selectOption(this.fields().gender, gender);
   },
 
-  defineChildSituation(day, month, year, situation = 'Living with respondents') {
-    I.selectOption(this.fields().situation.selector, situation);
+  defineChildSituation(day, month, year) {
+    within(this.fields().situation.radioGroup, () => {
+      I.click(locate('label').withText('Living with respondents'));
+    });
     I.fillField(this.fields().situation.dateStartedStaying.day, day);
     I.fillField(this.fields().situation.dateStartedStaying.month, month);
     I.fillField(this.fields().situation.dateStartedStaying.year, year);

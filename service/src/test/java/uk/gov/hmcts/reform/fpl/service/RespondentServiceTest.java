@@ -30,9 +30,7 @@ class RespondentServiceTest {
     void shouldAddMigratedRespondentYesWhenNoRespondentData() {
         CaseData caseData = CaseData.builder().respondents(null).build();
 
-        String migratedValue = service.setMigratedValue(caseData);
-
-        assertThat(migratedValue).isEqualTo("Yes");
+        assertThat(service.setMigratedValue(caseData)).isEqualTo("Yes");
     }
 
     @Test
@@ -45,9 +43,7 @@ class RespondentServiceTest {
                     .build()))
             .build();
 
-        String migratedValue = service.setMigratedValue(caseData);
-
-        assertThat(migratedValue).isEqualTo("Yes");
+        assertThat(service.setMigratedValue(caseData)).isEqualTo("Yes");
     }
 
     @Test
@@ -56,12 +52,9 @@ class RespondentServiceTest {
             .respondents(Respondents.builder().build())
             .build();
 
-        String migratedValue = service.setMigratedValue(caseData);
-
-        assertThat(migratedValue).isEqualTo("No");
+        assertThat(service.setMigratedValue(caseData)).isEqualTo("No");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     void shouldAddPartyIdAndPartyTypeValuesToSingleRespondent() {
         List<Element<MigratedRespondent>> respondents = ImmutableList.of(
@@ -85,7 +78,6 @@ class RespondentServiceTest {
         assertThat(newData.get(0).getValue().getParty().partyId).isNotNull();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     void shouldAddPartyIdAndPartyTypeValuesToMultipleRespondents() {
         List<Element<MigratedRespondent>> respondents = ImmutableList.of(
@@ -153,7 +145,6 @@ class RespondentServiceTest {
         assertThat(alteredData.get(0).getValue().getParty().partyId).isEqualTo("123");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     void shouldKeepExistingPartyIdAndContinueAddingNewPartyId() {
         List<Element<MigratedRespondent>> respondents = ImmutableList.of(
