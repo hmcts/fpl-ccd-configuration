@@ -498,6 +498,13 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "DeletionConsent",
+    "ListElementCode": "Delete",
+    "ListElement": "I'm sure that this application should be deleted",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "PartyType",
     "ListElementCode": "INDIVIDUAL",
     "ListElement": "Individual"
@@ -507,12 +514,5 @@
     "ID": "PartyType",
     "ListElementCode": "ORGANISATION",
     "ListElement": "Organisation"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "DeletionConsent",
-    "ListElementCode": "Delete",
-    "ListElement": "I'm sure that this application should be deleted",
-    "DisplayOrder": 1
   }
 ]
