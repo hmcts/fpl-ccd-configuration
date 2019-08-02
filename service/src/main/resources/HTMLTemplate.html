@@ -1006,7 +1006,7 @@
     {% endfor %}
   {% endif %}
 
-  {% if case_data.respondents is not empty %}
+  {% if case_data.respondents is not empty or case_data.respondents1 is empty %}
   <h3 class="heading heading--two">Respondent
     {% if case_data.respondents is not empty
     and case_data.respondents.additional is not empty %}
