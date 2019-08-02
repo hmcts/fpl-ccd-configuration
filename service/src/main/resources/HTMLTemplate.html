@@ -25,6 +25,7 @@
       color: #78b1dc;
       border: 1px solid #78b1dc;
     }
+
     .heading {
       display: block;
     }
@@ -466,11 +467,9 @@
     </div>
   </dl>
 
-  {% if case_data.children is not empty 
-  and case_data.children1 is empty %}
+  {% if case_data.children1 is empty %}
     <h3 class="heading heading--two">Child
-      {% if case_data.children is not empty and
-      case_data.children.additionalChildren is not empty %}
+      {% if case_data.children is not empty and case_data.children.additionalChildren is not empty %}
         1
       {% endif %}
     </h3>
@@ -749,9 +748,8 @@
       </div>
     </dl>
 
-    {% if case_data.children is not empty and
-    case_data.children.additionalChildren is not empty %}
-      {% if case_data.children is not empty and case_data.children.firstChild is not empty %}
+    {% if case_data.children is not empty and case_data.children.additionalChildren is not empty %}
+      {% if case_data.children.firstChild is not empty %}
         {% set counter = 2 %}
       {% else %}
         {% set counter = 1 %}
