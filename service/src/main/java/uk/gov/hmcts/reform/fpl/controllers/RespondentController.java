@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.Respondents;
 import uk.gov.hmcts.reform.fpl.model.common.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
@@ -24,7 +23,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Api
 @RestController
@@ -79,8 +77,6 @@ public class RespondentController {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Respondents respondents = defaultIfNull(caseData.getRespondents(), null);
-
         if (caseData.getRespondents1() != null) {
             List<Element<MigratedRespondent>> migratedRespondentObject = caseData.getRespondents1();
 
@@ -95,8 +91,8 @@ public class RespondentController {
                 .anyMatch(dob -> dob.after(new Date()))) {
                 errors.add("Date of birth cannot be in the future");
             }
-        } else if (respondents != null) {
-            if (respondents.getAllRespondents().stream()
+        } else if (caseData.getRespondents() != null) {
+            if (caseData.getRespondents().getAllRespondents().stream()
                 .map(Respondent::getDob)
                 .filter(Objects::nonNull)
                 .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {

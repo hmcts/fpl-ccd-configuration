@@ -51,16 +51,19 @@ public class RespondentService {
                     MigratedRespondent.MigratedRespondentBuilder respondentBuilder = MigratedRespondent.builder();
 
                     if (element.getValue().getParty().getPartyId() == null) {
-                        respondentBuilder.party(element.getValue().getParty().toBuilder()
-                            .partyId(UUID.randomUUID().toString())
-                            .partyType(PartyType.INDIVIDUAL).build());
+                        respondentBuilder
+                            .party(element.getValue().getParty().toBuilder()
+                                .partyId(UUID.randomUUID().toString())
+                                .partyType(PartyType.INDIVIDUAL).build())
+                            .leadRespondentIndicator("No");
+
                     } else {
                         respondentBuilder.party(element.getValue().getParty().toBuilder().build());
                     }
 
                     return Element.<MigratedRespondent>builder()
                         .id(element.getId())
-                        .value(respondentBuilder.leadRespondentIndicator("No").build())
+                        .value(respondentBuilder.build())
                         .build();
                 })
                 .collect(toList());

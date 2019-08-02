@@ -56,7 +56,7 @@ class RespondentServiceTest {
     }
 
     @Test
-    void shouldAddPartyIdAndPartyTypeValuesToSingleRespondent() {
+    void shouldAddPartyId_PartyType_LeadRespondentIndicatorValuesToSingleRespondent() {
         List<Element<MigratedRespondent>> respondents = ImmutableList.of(
             Element.<MigratedRespondent>builder()
                 .id(UUID.randomUUID())
@@ -76,10 +76,11 @@ class RespondentServiceTest {
         assertThat(newData.get(0).getValue().getParty().firstName).isEqualTo("James");
         assertThat(newData.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
         assertThat(newData.get(0).getValue().getParty().partyId).isNotNull();
+        assertThat(newData.get(0).getValue().getLeadRespondentIndicator()).isEqualTo("No");
     }
 
     @Test
-    void shouldAddPartyIdAndPartyTypeValuesToMultipleRespondents() {
+    void shouldAddPartyId_PartyType_LeadRespondentIndicatorValuesToMultipleRespondents() {
         List<Element<MigratedRespondent>> respondents = ImmutableList.of(
             Element.<MigratedRespondent>builder()
                 .id(UUID.randomUUID())
@@ -108,14 +109,16 @@ class RespondentServiceTest {
         assertThat(newData.get(0).getValue().getParty().firstName).isEqualTo("James");
         assertThat(newData.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
         assertThat(newData.get(0).getValue().getParty().partyId).isNotNull();
+        assertThat(newData.get(0).getValue().getLeadRespondentIndicator()).isEqualTo("No");
 
         assertThat(newData.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
         assertThat(newData.get(1).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
         assertThat(newData.get(1).getValue().getParty().partyId).isNotNull();
+        assertThat(newData.get(1).getValue().getLeadRespondentIndicator()).isEqualTo("No");
     }
 
     @Test
-    void shouldNotAddPartyIdAndPartyTypeValuesToDataStructureIfRespondents1IsNotPresent() {
+    void shouldNotAddPartyId_PartyType_LeadRespondentIndicatorValuesToDataStructureIfRespondents1IsNotPresent() {
         CaseData caseData = CaseData.builder().build();
 
         List<Element<MigratedRespondent>> alteredData = service.addHiddenValues(caseData);
