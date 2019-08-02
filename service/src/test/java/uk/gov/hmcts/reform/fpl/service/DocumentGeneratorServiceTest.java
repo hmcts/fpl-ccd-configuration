@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.templates.DocumentTemplates;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 import uk.gov.hmcts.reform.pdf.generator.exception.MalformedTemplateException;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.Instant;
@@ -35,7 +36,10 @@ class DocumentGeneratorServiceTest {
             Pair.of("userFullName", "Emma Taylor"))
         );
 
-        assertThat(content).contains("C110A");
+        String expectedContent = ResourceReader.readString("empty-form-pdf-content.txt");
+
+        assertThat(splitContentIntoTrimmedLines(content))
+            .containsExactlyInAnyOrderElementsOf(splitContentIntoTrimmedLines(expectedContent));
     }
 
     @Test
