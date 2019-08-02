@@ -13,7 +13,6 @@ import java.util.Date;
 public class Party {
     public final String partyId;
     public final PartyType partyType;
-    public final String title;
     public final String firstName;
     public final String lastName;
     public final String organisationName;

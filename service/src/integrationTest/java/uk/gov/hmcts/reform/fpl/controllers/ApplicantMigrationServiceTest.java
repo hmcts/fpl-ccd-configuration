@@ -14,9 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.OldApplicant;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.ApplicantMigrationService;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,13 +63,6 @@ public class ApplicantMigrationServiceTest {
         String response = service.setMigratedValue(caseData);
 
         assertThat(response).isEqualTo("No");
-    }
-
-    private Map<String, Object> createData(String key, String value) {
-        Map<String, Object> data = new HashMap<>();
-        data.put(key, value);
-
-        return data;
     }
 
     @SuppressWarnings("unchecked")

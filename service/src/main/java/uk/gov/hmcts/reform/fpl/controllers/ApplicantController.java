@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantMigrationService;
+import uk.gov.hmcts.reform.fpl.service.UpdateAndValidatePbaService;
 
 @Api
 @RestController
@@ -20,11 +21,17 @@ public class ApplicantController {
 
     @Autowired
     private final ApplicantMigrationService applicantMigrationService;
+
+    @Autowired
+    private final UpdateAndValidatePbaService updateAndValidatePbaService;
+
     private final ObjectMapper mapper;
 
     @Autowired
-    public ApplicantController(ApplicantMigrationService applicantMigrationService, ObjectMapper mapper) {
+    public ApplicantController(ApplicantMigrationService applicantMigrationService,
+                               UpdateAndValidatePbaService updateAndValidatePbaService, ObjectMapper mapper) {
         this.applicantMigrationService = applicantMigrationService;
+        this.updateAndValidatePbaService = updateAndValidatePbaService;
         this.mapper = mapper;
     }
 
@@ -47,7 +54,7 @@ public class ApplicantController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
-        return applicantMigrationService.validateAndUpdatePBANumbers(caseDetails);
+        return updateAndValidatePbaService.updateAndValidatePbaNumbers(caseDetails);
     }
 
     @PostMapping("/about-to-submit")
