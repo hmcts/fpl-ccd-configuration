@@ -1,1 +1,130 @@
-[]
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Applicants",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "applicants",
+    "ListElementCode": "party.organisationName",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Applicants",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "applicants",
+    "ListElementCode": "party.pbaNumber",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Applicants",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "applicants",
+    "ListElementCode": "party.address.AddressLine1",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Applicants",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "applicants",
+    "ListElementCode": "party.address.AddressLine2",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Applicants",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "applicants",
+    "ListElementCode": "party.address.AddressLine3",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Applicants",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "applicants",
+    "ListElementCode": "party.address.PostTown",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Applicants",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "applicants",
+    "ListElementCode": "party.address.County",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Applicants",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "applicants",
+    "ListElementCode": "party.address.Country",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Applicants",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "applicants",
+    "ListElementCode": "party.address.PostCode",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Applicants",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "applicants",
+    "ListElementCode": "party.telephoneNumber.telephoneNumber",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Applicants",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "applicants",
+    "ListElementCode": "party.telephoneNumber.contactDirection",
+    "FieldDisplayOrder": 11,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Applicants",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "applicants",
+    "ListElementCode": "party.jobTitle",
+    "FieldDisplayOrder": 12,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Applicants",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "applicants",
+    "ListElementCode": "party.mobileNumber.telephoneNumber",
+    "FieldDisplayOrder": 13,
+    "EventElementLabel": "Mobile number",
+    "EventHintText": "For example, 07665 545327",
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Applicants",
+    "CaseEventID": "enterApplicant",
+    "CaseFieldID": "applicants",
+    "ListElementCode": "party.email.email",
+    "FieldDisplayOrder": 14,
+    "DisplayContext": "OPTIONAL"
+  }
+]
