@@ -1743,7 +1743,7 @@
     "ListElementCode": "partyId",
     "FieldType": "Text",
     "ElementLabel": "Party Id",
-    "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",
+    "FieldShowCondition": "partyId=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
   {

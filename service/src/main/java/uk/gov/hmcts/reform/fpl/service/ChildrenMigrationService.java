@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
@@ -47,20 +48,35 @@ public class ChildrenMigrationService {
     }
 
     public List<Element<Child>> addHiddenValues(CaseData caseData) {
-        return caseData.getChildren1().stream()
-            .map(element -> {
-                ChildParty.ChildPartyBuilder childPartyBuilder = element.getValue().getParty().toBuilder();
+        if (caseData.getChildren1() != null) {
+            return caseData.getChildren1().stream()
+                .map(element -> {
+                    Child.ChildBuilder childBuilder = Child.builder();
 
-                if (element.getValue().getParty().getPartyId() == null) {
-                    childPartyBuilder.partyId(UUID.randomUUID().toString());
-                    childPartyBuilder.partyType(PartyType.INDIVIDUAL);
-                }
+                    if (element.getValue().getParty().getPartyId() == null) {
+                        childBuilder
+                            .party(element.getValue().getParty().toBuilder()
+                                .partyId(UUID.randomUUID().toString())
+                                .partyType(PartyType.INDIVIDUAL)
+                                .build());
+                    } else {
+                        childBuilder.party(element.getValue().getParty().toBuilder().build());
+                    }
 
-                return Element.<Child>builder()
-                    .id(element.getId())
-                    .value(element.getValue().toBuilder().party(childPartyBuilder.build()).build())
-                    .build();
-            })
-            .collect(toList());
+                    return Element.<Child>builder()
+                        .id(element.getId())
+                        .value(childBuilder.build())
+                        .build();
+                })
+                .collect(toList());
+        } else {
+            return ImmutableList.of(
+                Element.<Child>builder()
+                    .value(Child.builder()
+                        .party(ChildParty.builder().build())
+                        .build())
+                    .build()
+            );
+        }
     }
 }

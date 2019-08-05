@@ -202,4 +202,19 @@ class ChildrenMigrationServiceTest {
         assertThat(editedChildren.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
         assertThat(editedChildren.get(1).getValue().getParty().partyId).isNotNull();
     }
+
+    @Test
+    void shouldReturnEmptyListOfChildrenWhenChildren1IsEmpty() {
+        List<Element<Child>> expectedChild = ImmutableList.of(
+            Element.<Child>builder()
+                .value(Child.builder()
+                    .party(ChildParty.builder().build())
+                    .build())
+                .build());
+
+        CaseData caseData = CaseData.builder().build();
+        List<Element<Child>> emptyChildrenList = service.addHiddenValues(caseData);
+
+        assertThat(emptyChildrenList).isEqualTo(expectedChild);
+    }
 }
