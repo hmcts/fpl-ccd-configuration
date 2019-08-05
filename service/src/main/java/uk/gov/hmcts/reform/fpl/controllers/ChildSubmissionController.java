@@ -66,11 +66,14 @@ public class ChildSubmissionController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        CaseDetails alteredCaseDetails = childrenMigrationService.addHiddenValues(caseDetails);
+        if (caseData.getChildren1() != null) {
+            caseDetails.getData().put("children1", childrenMigrationService.addHiddenValues(caseData));
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(alteredCaseDetails.getData())
+            .data(caseDetails.getData())
             .build();
     }
 
