@@ -1929,6 +1929,67 @@
         </dl>
       {% endfor %}
     {% endif %}
+    {% if case_data.applicant is empty and case_data.applicants is empty %}
+    <dl class="data-list">
+      <div class="data-list__row">
+        <dt class="data-list__title">Name</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Contact name</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Job title</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Address</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Mobile number</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Telephone number</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Email address</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Payment by account (PBA) number</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Solicitor's Name</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Solicitor's mobile number</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Solicitor's telephone number</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Solicitor's email address</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Solicitor's DX Number</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+      <div class="data-list__row">
+        <dt class="data-list__title">Solicitor's reference</dt>
+        <dd class="data-list__definition">-</dd>
+      </div>
+    </dl>
+    {% endif %}
+
   <h3 class="heading heading--two">
     Other
     {% if case_data.others is not empty and
