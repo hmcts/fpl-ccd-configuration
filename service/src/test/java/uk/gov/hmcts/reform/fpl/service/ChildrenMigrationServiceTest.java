@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -97,15 +99,18 @@ class ChildrenMigrationServiceTest {
                     .build())
                 .build());
 
-        CaseData caseData = CaseData.builder()
-            .children1(children)
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of(
+                "children1", children
+            ))
             .build();
 
-        List<Element<Child>> editedChildren = service.addHiddenValues(caseData);
+        CaseDetails editedCaseDetails = service.addHiddenValues(caseDetails);
+        List<Element<Child>> updatedChildren1 = (List<Element<Child>>) editedCaseDetails.getData().get("children1");
 
-        assertThat(editedChildren.get(0).getValue().getParty().firstName).isEqualTo("James");
-        assertThat(editedChildren.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(editedChildren.get(0).getValue().getParty().partyId).isNotNull();
+        assertThat(updatedChildren1.get(0).getValue().getParty().firstName).isEqualTo("James");
+        assertThat(updatedChildren1.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(updatedChildren1.get(0).getValue().getParty().partyId).isNotNull();
     }
 
     @SuppressWarnings("unchecked")
@@ -130,19 +135,22 @@ class ChildrenMigrationServiceTest {
                 .build()
         );
 
-        CaseData caseData = CaseData.builder()
-            .children1(children)
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of(
+                "children1", children
+            ))
             .build();
 
-        List<Element<Child>> editedChildren = service.addHiddenValues(caseData);
+        CaseDetails editedCaseDetails = service.addHiddenValues(caseDetails);
+        List<Element<Child>> updatedChildren1 = (List<Element<Child>>) editedCaseDetails.getData().get("children1");
 
-        assertThat(editedChildren.get(0).getValue().getParty().firstName).isEqualTo("James");
-        assertThat(editedChildren.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(editedChildren.get(0).getValue().getParty().partyId).isNotNull();
+        assertThat(updatedChildren1.get(0).getValue().getParty().firstName).isEqualTo("James");
+        assertThat(updatedChildren1.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(updatedChildren1.get(0).getValue().getParty().partyId).isNotNull();
 
-        assertThat(editedChildren.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
-        assertThat(editedChildren.get(1).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(editedChildren.get(1).getValue().getParty().partyId).isNotNull();
+        assertThat(updatedChildren1.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
+        assertThat(updatedChildren1.get(1).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(updatedChildren1.get(1).getValue().getParty().partyId).isNotNull();
     }
 
     @SuppressWarnings("unchecked")
@@ -159,13 +167,16 @@ class ChildrenMigrationServiceTest {
                     .build())
                 .build());
 
-        CaseData caseData = CaseData.builder()
-            .children1(children)
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of(
+                "children1", children
+            ))
             .build();
 
-        List<Element<Child>> editedChildren = service.addHiddenValues(caseData);
+        CaseDetails editedCaseDetails = service.addHiddenValues(caseDetails);
+        List<Element<Child>> updatedChildren1 = (List<Element<Child>>) editedCaseDetails.getData().get("children1");
 
-        assertThat(editedChildren.get(0).getValue().getParty().partyId).isEqualTo("123");
+        assertThat(updatedChildren1.get(0).getValue().getParty().partyId).isEqualTo("123");
     }
 
     @SuppressWarnings("unchecked")
@@ -190,31 +201,31 @@ class ChildrenMigrationServiceTest {
                     .build())
                 .build());
 
-        CaseData caseData = CaseData.builder()
-            .children1(children)
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of(
+                "children1", children
+            ))
             .build();
 
-        List<Element<Child>> editedChildren = service.addHiddenValues(caseData);
+        CaseDetails editedCaseDetails = service.addHiddenValues(caseDetails);
+        List<Element<Child>> updatedChildren1 = (List<Element<Child>>) editedCaseDetails.getData().get("children1");
 
-        assertThat(editedChildren.get(0).getValue().getParty().firstName).isEqualTo("James");
-        assertThat(editedChildren.get(0).getValue().getParty().partyId).isEqualTo("123");
+        assertThat(updatedChildren1.get(0).getValue().getParty().firstName).isEqualTo("James");
+        assertThat(updatedChildren1.get(0).getValue().getParty().partyId).isEqualTo("123");
 
-        assertThat(editedChildren.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
-        assertThat(editedChildren.get(1).getValue().getParty().partyId).isNotNull();
+        assertThat(updatedChildren1.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
+        assertThat(updatedChildren1.get(1).getValue().getParty().partyId).isNotNull();
     }
 
     @Test
-    void shouldReturnEmptyListOfChildrenWhenChildren1IsEmpty() {
-        List<Element<Child>> expectedChild = ImmutableList.of(
-            Element.<Child>builder()
-                .value(Child.builder()
-                    .party(ChildParty.builder().build())
-                    .build())
-                .build());
+    void shouldNotRemoveExistingCaseData() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of(
+                "respondent", "abc"
+            ))
+            .build();
+        CaseDetails editedCaseDetails = service.addHiddenValues(caseDetails);
 
-        CaseData caseData = CaseData.builder().build();
-        List<Element<Child>> emptyChildrenList = service.addHiddenValues(caseData);
-
-        assertThat(emptyChildrenList).isEqualTo(expectedChild);
+        assertThat(editedCaseDetails.getData().get("respondent")).isEqualTo("abc");
     }
 }

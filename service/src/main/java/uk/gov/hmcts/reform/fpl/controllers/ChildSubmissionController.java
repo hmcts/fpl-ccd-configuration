@@ -46,7 +46,7 @@ public class ChildSubmissionController {
 
         caseDetails.getData().put("childrenMigrated", childrenMigrationService.setMigratedValue(caseData));
         caseDetails.getData().put("children1", childrenMigrationService.expandChildrenCollection(caseData));
-
+        
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
@@ -66,12 +66,11 @@ public class ChildSubmissionController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("children1", childrenMigrationService.addHiddenValues(caseData));
+        CaseDetails alteredCaseDetails = childrenMigrationService.addHiddenValues(caseDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(alteredCaseDetails.getData())
             .build();
     }
 

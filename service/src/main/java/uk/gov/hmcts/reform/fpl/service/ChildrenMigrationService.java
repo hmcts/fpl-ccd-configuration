@@ -2,8 +2,10 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -47,9 +49,14 @@ public class ChildrenMigrationService {
         }
     }
 
-    public List<Element<Child>> addHiddenValues(CaseData caseData) {
-        if (caseData.getChildren1() != null) {
-            return caseData.getChildren1().stream()
+    @SuppressWarnings("unchecked")
+    public CaseDetails addHiddenValues(CaseDetails caseDetails) {
+        CaseDetails.CaseDetailsBuilder caseDetailsBuilder = caseDetails.toBuilder();
+
+        if (caseDetails.getData().get("children1") != null) {
+            List<Element<Child>> children1 = (List<Element<Child>>) caseDetails.getData().get("children1");
+
+            List<Element<Child>> alteredChildren = children1.stream()
                 .map(element -> {
                     Child.ChildBuilder childBuilder = Child.builder();
 
@@ -69,14 +76,12 @@ public class ChildrenMigrationService {
                         .build();
                 })
                 .collect(toList());
-        } else {
-            return ImmutableList.of(
-                Element.<Child>builder()
-                    .value(Child.builder()
-                        .party(ChildParty.builder().build())
-                        .build())
-                    .build()
-            );
+
+            caseDetailsBuilder.data(ImmutableMap.of(
+                "children1", alteredChildren
+            ));
         }
+
+        return caseDetailsBuilder.build();
     }
 }
