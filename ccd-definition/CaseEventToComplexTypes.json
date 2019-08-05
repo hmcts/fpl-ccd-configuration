@@ -168,7 +168,7 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.proceedingsLabel",
     "FieldDisplayOrder": "19",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "READONLY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -195,6 +195,6 @@
     "CaseFieldID": "respondents1",
     "ListElementCode": "party.respondent_border",
     "FieldDisplayOrder": "22",
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "READONLY"
   }
 ]

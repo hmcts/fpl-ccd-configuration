@@ -1567,14 +1567,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "Telephone",
-    "ListElementCode": "contactDirection",
-    "FieldType": "Text",
-    "ElementLabel": "Telephone number",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "ID": "RespondentParty",
     "ListElementCode": "partyId",
     "FieldType": "Text",
