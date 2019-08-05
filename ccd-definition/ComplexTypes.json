@@ -1570,7 +1570,7 @@
     "ID": "RespondentParty",
     "ListElementCode": "partyId",
     "FieldType": "Text",
-    "ElementLabel": "party ID",
+    "ElementLabel": "Party ID",
     "FieldShowCondition": "partyType=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   },
