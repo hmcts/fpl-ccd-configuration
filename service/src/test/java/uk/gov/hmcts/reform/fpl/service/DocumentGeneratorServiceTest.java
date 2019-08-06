@@ -30,12 +30,13 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.reformMigrat
 class DocumentGeneratorServiceTest {
 
     @Test
-    void shouldGenerateSubmittedFormDocumentWhenCaseHasNoData() throws IOException {
+    void shouldGenerateSubmittedFormDocumentWithExpectedContentsWhenCaseHasNoData() throws IOException {
         String content = textContentOf(createServiceInstance().generateSubmittedFormPDF(emptyCaseDetails(),
             Pair.of("userFullName", "Emma Taylor"))
         );
 
         assertThat(content).contains("C110A");
+        assertThat(content).contains("Child");
     }
 
     @Test
