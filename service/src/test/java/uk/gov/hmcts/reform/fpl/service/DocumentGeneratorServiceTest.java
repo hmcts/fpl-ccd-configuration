@@ -77,7 +77,7 @@ class DocumentGeneratorServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenTemplateIsTemplateIsMalformed() {
+    void shouldThrowExceptionWhenTemplateIsMalformed() {
         assertThatThrownBy(() -> createServiceInstance().generateSubmittedFormPDF(null))
             .isInstanceOf(MalformedTemplateException.class);
     }
