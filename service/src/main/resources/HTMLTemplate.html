@@ -1393,9 +1393,9 @@
   {% if case_data.respondents1 is not empty and case_data.respondents is empty %}
     {% set counter = 1 %}
     {% for respondent in case_data.respondents1 %}
-      {% if respondent.value is empty %}
+      {% if loop.length == 1 %}
         <h3 class="heading heading--two">Respondent</h3>
-      {% elseif respondent.value is not empty %}
+      {% else %}
         <h3 class="heading heading--two">Respondent {{counter}}</h3>
       {% endif %}
       <dl class="data-list">
