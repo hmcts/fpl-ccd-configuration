@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.templates.DocumentTemplates;
 import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -44,9 +45,12 @@ public class DocumentGeneratorService {
 
     private CaseDetails populateEmptyCollections(CaseDetails caseDetails) {
         if (caseDetails != null) {
-            caseDetails.getData().putIfAbsent("respondents1", collectionWithEmptyElement());
+            Map<String, Object> dataCopy = new HashMap<>(caseDetails.getData());
+            dataCopy.putIfAbsent("respondents1", collectionWithEmptyElement());
+
+            return caseDetails.toBuilder().data(dataCopy).build();
         }
-        return caseDetails;
+        return null;
     }
 
     private <T> List<Element<T>> collectionWithEmptyElement() {
