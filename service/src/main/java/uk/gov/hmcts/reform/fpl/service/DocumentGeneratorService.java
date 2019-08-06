@@ -2,13 +2,17 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.templates.DocumentTemplates;
 import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
 
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class DocumentGeneratorService {
@@ -26,7 +30,9 @@ public class DocumentGeneratorService {
 
     @SafeVarargs
     public final byte[] generateSubmittedFormPDF(CaseDetails caseDetails, Map.Entry<String, ?>... extraContextEntries) {
-        Map<String, Object> context = mapper.convertValue(caseDetails, new TypeReference<Map<String, Object>>() {});
+        Map<String, Object> context = mapper.convertValue(populateEmptyCollections(caseDetails),
+            new TypeReference<Map<String, Object>>() {
+            });
 
         for (Map.Entry<String, ?> entry : extraContextEntries) {
             context.put(entry.getKey(), entry.getValue());
@@ -35,5 +41,17 @@ public class DocumentGeneratorService {
         byte[] template = templates.getHtmlTemplate();
 
         return converter.convert(template, context);
+    }
+
+    private CaseDetails populateEmptyCollections(CaseDetails caseDetails) {
+        if (caseDetails != null) {
+            caseDetails.getData().putIfAbsent("respondents1", collectionWithEmptyElement());
+        }
+
+        return caseDetails;
+    }
+
+    private <T> List<Element<T>> collectionWithEmptyElement() {
+        return ImmutableList.of(new Element<>(UUID.randomUUID(), null));
     }
 }
