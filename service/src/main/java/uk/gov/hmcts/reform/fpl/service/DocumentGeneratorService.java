@@ -36,7 +36,6 @@ public class DocumentGeneratorService {
         for (Map.Entry<String, ?> entry : extraContextEntries) {
             context.put(entry.getKey(), entry.getValue());
         }
-
         byte[] template = templates.getHtmlTemplate();
 
         return converter.convert(template, context);
