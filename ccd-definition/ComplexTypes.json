@@ -1585,6 +1585,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "MobileNumber",
+    "ListElementCode": "telephoneNumber",
+    "FieldType": "Text",
+    "ElementLabel": "Mobile number",
+    "HintText": "For example, 07665 545327",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "ApplicantParty",
     "ListElementCode": "partyId",
     "FieldType": "Text",
@@ -1649,7 +1658,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "ApplicantParty",
     "ListElementCode": "mobileNumber",
-    "FieldType": "Telephone",
+    "FieldType": "MobileNumber",
     "ElementLabel": "Mobile number",
     "SecurityClassification": "Public"
   },
