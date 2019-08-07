@@ -162,15 +162,15 @@
           <dt class="data-list__title">Fee charged</dt>
           <dd class="data-list__definition"></dd>
         </div>
+
         <div class="data-list__row data-list__row--no-border">
           <dt class="data-list__title">Applicant</dt>
           <dd class="data-list__definition">
-            {% if case_data.applicant is not empty and case_data.applicants is empty and case_data.applicant.name is not empty %}
+            {% if case_data.applicant is not empty and case_data.applicant.name is not empty %}
               {{ case_data.applicant.name }}
-            {% elseif case_data.applicants is not empty %}
+            {% elseif case_data.applicant is empty and case_data.applicants is not empty %}
               {% for applicant in case_data.applicants %}
-                {% if applicant.value is not empty and applicant.value.party is not empty and
-            applicant.value.party.organisationName is not empty %}
+                {% if applicant.value is not empty and applicant.value.party is not empty and applicant.value.party.organisationName is not empty %}
                   {{ applicant.value.party.organisationName }}
                 {% endif %}
               {% endfor %}
@@ -179,6 +179,7 @@
             {% endif %}
           </dd>
         </div>
+
         <div class="data-list__row data-list__row--no-border">
           <dt class="data-list__title">Respondents</dt>
           <dd class="data-list__definition">
@@ -1590,6 +1591,7 @@
   {% endfor %}
 
   <h3 class="heading heading--two">Applicant</h3>
+
   {% if case_data.applicant is not empty %}
     <dl class="data-list">
       <div class="data-list__row">
@@ -1767,9 +1769,9 @@
         </dd>
       </div>
     </dl>
-    {% elseif case_data.applicants is not empty %}
-      {% for applicant in case_data.applicants %}
-        <dl class="data-list">
+  {% elseif case_data.applicants is not empty and case_data.applicant is empty %}
+    {% for applicant in case_data.applicants %}
+      <dl class="data-list">
           <div class="data-list__row">
             <dt class="data-list__title">Name</dt>
             <dd class="data-list__definition">
@@ -1942,8 +1944,8 @@
             </dd>
           </div>
         </dl>
-      {% endfor %}
-    {% endif %}
+    {% endfor %}
+  {% endif %}
 
   <h3 class="heading heading--two">
     Other

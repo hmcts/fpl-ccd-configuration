@@ -9,7 +9,7 @@ The family court sitting at
 Case number
 Date issued
 Fee charged
--Applicant
+Applicant
 -Respondents
 Application submitted on 2 August 2019
 Orders
@@ -48,23 +48,6 @@ Child
 -Social worker's telephone number
 -Additional needs
 -Litigation capacity issues
--Confidential contact details
-Respondent
--Name
--Age
--Date of birth
--Gender
--Place of birth
--Current address
--Telephone number
--Relationship to the child or children
--Interpreter
--Spoken or written Welsh
--Intermediary
--Facilities or assistance for a disability
--Separate waiting room or other security measures
--Litigation capacity issues
--Anything else to help take part in proceedings
 -Confidential contact details
 Applicant
 -Name
