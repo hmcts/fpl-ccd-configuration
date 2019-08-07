@@ -455,6 +455,12 @@ spec:
         - name: wait-for-database
           image: postgres:10.5-alpine
           command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
+        - name: create-user
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE USER idam WITH PASSWORD 'idam'"]
+        - name: create-database
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE DATABASE idam WITH OWNER = idam ENCODING = 'UTF-8' CONNECTION LIMIT = -1;"]
       containers:
         - name: idam-api
           image: hmctsprivate.azurecr.io/tidam/api:latest
