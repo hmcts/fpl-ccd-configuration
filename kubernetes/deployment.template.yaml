@@ -228,6 +228,10 @@ data:
   IDAM_S2S_BASE_URI: 'http://service-auth-provider-api'
   S2S_NAMES_WHITELIST: 'ccd_gw,ccd_data,fpl_case_service'
   MAX_ACTIVE_DB_CONNECTIONS: '10'
+  ENABLE_POSTGRES_BLOB_STORAGE: 'false'
+  ENABLE_AZURE_STORAGE_CONTAINER: 'true'
+  STORAGEACCOUNT_PRIMARY_CONNECTION_STRING: 'DefaultEndpointsProtocol=https;AccountName=${STORAGE_ACCOUNT_NAME};AccountKey=${STORAGE_ACCOUNT_KEY};EndpointSuffix=core.windows.net'
+  STORAGE_CONTAINER_DOCUMENT_CONTAINER_NAME: 'preview'
   REFORM_ENVIRONMENT: 'kubernetes'
 
 ---
