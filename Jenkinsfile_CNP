@@ -15,7 +15,9 @@ List<Map<String, Object>> secrets = [
   secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN'),
   secret('notify-api-key', 'NOTIFY_API_KEY'),
   secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
-  secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD')
+  secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
+  secret('storage-account-name', 'STORAGE_ACCOUNT_NAME'),
+  secret('storage-account-key', 'STORAGE_ACCOUNT_KEY')
 ]
 
 static Map<String, Object> secret(String secretName, String envVariable) {
@@ -141,12 +143,12 @@ withPipeline(type, product, component) {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
   }
 
-  before('functionalTest:aat') {
+  before('functionalTest:demo') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
   }
 
-  before('functionalTest:demo') {
-    env.SKIP_FUNCTIONAL_TESTS = 'true'
+  after('functionalTest:aat') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
   after('functionalTest:preview') {
