@@ -457,7 +457,7 @@ spec:
           command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
         - name: create-user
           image: postgres:10.5-alpine
-          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE USER idam WITH PASSWORD 'idam'"]
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE USER idam WITH PASSWORD 'idam';"]
         - name: create-database
           image: postgres:10.5-alpine
           command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE DATABASE idam WITH OWNER = idam ENCODING = 'UTF-8' CONNECTION LIMIT = -1;"]
@@ -666,6 +666,12 @@ spec:
         - name: wait-for-database
           image: postgres:10.5-alpine
           command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
+        - name: create-user
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE USER ccd_user_profile WITH PASSWORD 'ccd_user_profile';"]
+        - name: create-database
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE DATABASE ccd_user_profile WITH OWNER = ccd_user_profile ENCODING = 'UTF-8' CONNECTION LIMIT = -1;"]
       containers:
         - name: ccd-user-profile-api
           image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
@@ -737,6 +743,12 @@ spec:
         - name: wait-for-database
           image: postgres:10.5-alpine
           command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
+        - name: create-user
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE USER ccd_definition_store WITH PASSWORD 'ccd_definition_store';"]
+        - name: create-database
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE DATABASE ccd_definition_store WITH OWNER = ccd_definition_store ENCODING = 'UTF-8' CONNECTION LIMIT = -1;"]
       containers:
         - name: ccd-definition-store-api
           image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
@@ -808,6 +820,12 @@ spec:
         - name: wait-for-database
           image: postgres:10.5-alpine
           command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
+        - name: create-user
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE USER ccd_data_store WITH PASSWORD 'ccd_data_store';"]
+        - name: create-database
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE DATABASE ccd_data_store WITH OWNER = ccd_data_store ENCODING = 'UTF-8' CONNECTION LIMIT = -1;"]
       containers:
         - name: ccd-data-store-api
           image: hmctspublic.azurecr.io/ccd/data-store-api:latest
@@ -879,6 +897,12 @@ spec:
         - name: wait-for-database
           image: postgres:10.5-alpine
           command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
+        - name: create-user
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE USER evidence WITH PASSWORD 'evidence';"]
+        - name: create-database
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE DATABASE evidence WITH OWNER = evidence ENCODING = 'UTF-8' CONNECTION LIMIT = -1;"]
       containers:
         - name: dm-store
           image: hmctspublic.azurecr.io/dm/store:latest
