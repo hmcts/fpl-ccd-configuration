@@ -1,0 +1,11 @@
+package uk.gov.hmcts.reform.fpl.enums;
+
+public enum OrderType {
+    CARE_ORDER,
+    INTERIM_CARE_ORDER,
+    SUPERVISION_ORDER,
+    INTERIM_SUPERVISION_ORDER,
+    EDUCATION_SUPERVISION_ORDER,
+    EMERGENCY_PROTECTION_ORDER,
+    OTHER
+}

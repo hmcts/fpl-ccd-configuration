@@ -8,7 +8,9 @@ import com.google.common.collect.ImmutableList;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.validators.interfaces.HasChildName;
 
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -17,9 +19,12 @@ import java.util.stream.Collectors;
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
+@HasChildName
 public class Children {
 
+    @Valid
     private final Child firstChild;
+    @Valid
     private final List<Element<Child>> additionalChildren;
 
     @JsonCreator
