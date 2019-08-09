@@ -29,3 +29,6 @@ service/out
 .project
 .settings
 .springBeans
+
+# helm charts
+requirements.lock
