@@ -228,6 +228,10 @@ data:
   IDAM_S2S_BASE_URI: 'http://service-auth-provider-api'
   S2S_NAMES_WHITELIST: 'ccd_gw,ccd_data,fpl_case_service'
   MAX_ACTIVE_DB_CONNECTIONS: '10'
+  ENABLE_POSTGRES_BLOB_STORAGE: 'false'
+  ENABLE_AZURE_STORAGE_CONTAINER: 'true'
+  STORAGEACCOUNT_PRIMARY_CONNECTION_STRING: 'DefaultEndpointsProtocol=https;AccountName=${STORAGE_ACCOUNT_NAME};AccountKey=${STORAGE_ACCOUNT_KEY};EndpointSuffix=core.windows.net'
+  STORAGE_CONTAINER_DOCUMENT_CONTAINER_NAME: 'preview'
   REFORM_ENVIRONMENT: 'kubernetes'
 
 ---
@@ -319,7 +323,7 @@ spec:
     spec:
       containers:
         - name: service-auth-provider-api
-          image: hmcts.azurecr.io/hmcts/rpe-service-auth-provider:latest
+          image: hmctspublic.azurecr.io/rpe/service-auth-provider:latest
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
@@ -386,7 +390,7 @@ spec:
     spec:
       containers:
         - name: idam-authentication-web
-          image: hmcts.azurecr.io/hmcts/tidam-authentication-web:latest
+          image: hmctsprivate.azurecr.io/tidam/authentication-web:latest
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
@@ -455,9 +459,15 @@ spec:
         - name: wait-for-database
           image: postgres:10.5-alpine
           command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
+        - name: create-user
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE USER idam WITH PASSWORD 'idam';"]
+        - name: create-database
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE DATABASE idam WITH OWNER = idam ENCODING = 'UTF-8' CONNECTION LIMIT = -1;"]
       containers:
         - name: idam-api
-          image: hmcts.azurecr.io/hmcts/tidam-api:latest
+          image: hmctsprivate.azurecr.io/tidam/api:latest
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
@@ -524,7 +534,7 @@ spec:
     spec:
       containers:
         - name: ccd-case-management-web
-          image: hmcts.azurecr.io/hmcts/ccd-case-management-web:latest
+          image: hmctspublic.azurecr.io/ccd/case-management-web:latest
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
@@ -591,7 +601,7 @@ spec:
     spec:
       containers:
         - name: ccd-api-gateway
-          image: hmcts.azurecr.io/hmcts/ccd-api-gateway-web:latest
+          image: hmctspublic.azurecr.io/ccd/api-gateway-web:latest
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
@@ -660,9 +670,15 @@ spec:
         - name: wait-for-database
           image: postgres:10.5-alpine
           command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
+        - name: create-user
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE USER ccd_user_profile WITH PASSWORD 'ccd_user_profile';"]
+        - name: create-database
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE DATABASE ccd_user_profile WITH OWNER = ccd_user_profile ENCODING = 'UTF-8' CONNECTION LIMIT = -1;"]
       containers:
         - name: ccd-user-profile-api
-          image: hmcts.azurecr.io/hmcts/ccd-user-profile-api:latest
+          image: hmctspublic.azurecr.io/ccd/user-profile-api:latest
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
@@ -731,9 +747,15 @@ spec:
         - name: wait-for-database
           image: postgres:10.5-alpine
           command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
+        - name: create-user
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE USER ccd_definition_store WITH PASSWORD 'ccd_definition_store';"]
+        - name: create-database
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE DATABASE ccd_definition_store WITH OWNER = ccd_definition_store ENCODING = 'UTF-8' CONNECTION LIMIT = -1;"]
       containers:
         - name: ccd-definition-store-api
-          image: hmcts.azurecr.io/hmcts/ccd-definition-store-api:latest
+          image: hmctspublic.azurecr.io/ccd/definition-store-api:latest
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
@@ -802,9 +824,15 @@ spec:
         - name: wait-for-database
           image: postgres:10.5-alpine
           command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
+        - name: create-user
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE USER ccd_data_store WITH PASSWORD 'ccd_data_store';"]
+        - name: create-database
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE DATABASE ccd_data_store WITH OWNER = ccd_data_store ENCODING = 'UTF-8' CONNECTION LIMIT = -1;"]
       containers:
         - name: ccd-data-store-api
-          image: hmcts.azurecr.io/hmcts/ccd-data-store-api:latest
+          image: hmctspublic.azurecr.io/ccd/data-store-api:latest
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
@@ -873,9 +901,15 @@ spec:
         - name: wait-for-database
           image: postgres:10.5-alpine
           command: ['sh', '-c', 'until pg_isready -h shared-database; do echo "waiting two more seconds"; sleep 2; done;']
+        - name: create-user
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE USER evidence WITH PASSWORD 'evidence';"]
+        - name: create-database
+          image: postgres:10.5-alpine
+          command: ['psql', '-h', 'shared-database', '-U', 'postgres', '-c', "CREATE DATABASE evidence WITH OWNER = evidence ENCODING = 'UTF-8' CONNECTION LIMIT = -1;"]
       containers:
         - name: dm-store
-          image: hmcts.azurecr.io/hmcts/dm-store:rdm-3200-reverted
+          image: hmctspublic.azurecr.io/dm/store:latest
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
@@ -961,7 +995,7 @@ spec:
     spec:
       containers:
         - name: shared-database
-          image: hmcts.azurecr.io/hmcts/ccd-postgres:10.5-alpine
+          image: postgres:10.5-alpine
           imagePullPolicy: Always
           resources:
             requests:
