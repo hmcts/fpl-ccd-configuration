@@ -11,13 +11,19 @@ def product = "fpl"
 def component = "case-service"
 
 List<Map<String, Object>> secrets = [
+  secret('fpl-case-service-s2s-secret', 'IDAM_S2S_AUTH_TOTP_SECRET'),
   secret('ccd-configurer-s2s-secret', 'CCD_CONFIGURER_S2S_SECRET'),
   secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN'),
   secret('notify-api-key', 'NOTIFY_API_KEY'),
   secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
   secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
   secret('storage-account-name', 'STORAGE_ACCOUNT_NAME'),
-  secret('storage-account-key', 'STORAGE_ACCOUNT_KEY')
+  secret('storage-account-key', 'STORAGE_ACCOUNT_KEY'),
+  secret('local-authority-email-to-code-mapping', 'FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING'),
+  secret('local-authority-code-to-name-mapping', 'FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING'),
+  secret('local-authority-user-mapping', 'FPL_LOCAL_AUTHORITY_USER_MAPPING'),
+  secret('local-authority-code-to-hmcts-court-mapping', 'FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING'),
+  secret('local-authority-code-to-cafcass-mapping', 'FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING')
 ]
 
 static Map<String, Object> secret(String secretName, String envVariable) {
