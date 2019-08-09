@@ -1,3 +1,9 @@
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  keyVaults:
+    fpl:
+      resourceGroup: fpl-case-service
+      secrets:
+        - fpl-case-service-s2s-secret
+        - notify-api-key
