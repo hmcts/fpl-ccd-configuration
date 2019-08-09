@@ -13,5 +13,4 @@ java:
     FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING: SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com
     CCD_UI_BASE_URL: http://localhost
     NOTIFY_API_KEY: fake-key
-    APPINSIGHTS_INSTRUMENTATIONKEY: fake-key
   applicationPort: 4000
