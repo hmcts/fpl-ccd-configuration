@@ -1,6 +1,7 @@
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  aadIdentityName: fpl
   keyVaults:
     fpl:
       resourceGroup: fpl-case-service
