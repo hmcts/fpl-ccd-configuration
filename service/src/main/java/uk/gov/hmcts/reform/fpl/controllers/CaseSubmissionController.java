@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.tuple.Pair;
@@ -15,6 +16,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.CaseSubmissionValidatorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
@@ -24,6 +27,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
@@ -38,17 +42,23 @@ public class CaseSubmissionController {
     private final DocumentGeneratorService documentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final CaseSubmissionValidatorService caseSubmissionValidatorService;
+    private final ObjectMapper mapper;
 
     @Autowired
     public CaseSubmissionController(
         UserDetailsService userDetailsService,
         DocumentGeneratorService documentGeneratorService,
         UploadDocumentService uploadDocumentService,
+        CaseSubmissionValidatorService caseSubmissionValidatorService,
+        ObjectMapper mapper,
         ApplicationEventPublisher applicationEventPublisher) {
         this.userDetailsService = userDetailsService;
         this.documentGeneratorService = documentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.caseSubmissionValidatorService = caseSubmissionValidatorService;
+        this.mapper = mapper;
     }
 
     @PostMapping("/about-to-start")
@@ -73,6 +83,7 @@ public class CaseSubmissionController {
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         byte[] pdf = documentGeneratorService.generateSubmittedFormPDF(caseDetails,
             Pair.of("userFullName", userDetailsService.getUserName(authorization))
@@ -93,6 +104,7 @@ public class CaseSubmissionController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
+            .errors(caseSubmissionValidatorService.validateCaseDetails(caseData))
             .build();
     }
 

@@ -1,0 +1,56 @@
+package uk.gov.hmcts.reform.fpl.Validators;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.validators.HasTelephoneValidator;
+
+import javax.validation.ConstraintValidatorContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@ExtendWith(SpringExtension.class)
+class HasTelephoneValidatorTest {
+    private HasTelephoneValidator validator = new HasTelephoneValidator();
+    private ConstraintValidatorContext constraintValidatorContext;
+
+    @Test
+    void shouldReturnFalseIfBothApplicantTelephoneAndMobileDoNotExist() {
+        Applicant applicant = Applicant.builder().build();
+        Boolean isValid = validator.isValid(applicant, constraintValidatorContext);
+
+        assertThat(isValid).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueIfApplicantTelephoneExists() {
+        Applicant applicant = Applicant.builder()
+            .telephone("12345678")
+            .build();
+        Boolean isValid = validator.isValid(applicant, constraintValidatorContext);
+
+        assertThat(isValid).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueIfApplicantMobileExists() {
+        Applicant applicant = Applicant.builder()
+            .mobile("12345678")
+            .build();
+        Boolean isValid = validator.isValid(applicant, constraintValidatorContext);
+
+        assertThat(isValid).isTrue();
+    }
+
+    @Test
+    void shouldReturnTrueIfBothApplicantTelephoneAndMobileExist() {
+        Applicant applicant = Applicant.builder()
+            .telephone("12345678")
+            .mobile("12345678")
+            .build();
+        Boolean isValid = validator.isValid(applicant, constraintValidatorContext);
+
+        assertThat(isValid).isTrue();
+    }
+}
