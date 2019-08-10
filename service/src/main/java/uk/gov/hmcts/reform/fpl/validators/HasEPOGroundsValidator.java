@@ -23,6 +23,6 @@ public class HasEPOGroundsValidator implements ConstraintValidator<HasEPOGrounds
                 return true;
             }
         }
-        return false;
+        return true;
     }
 }

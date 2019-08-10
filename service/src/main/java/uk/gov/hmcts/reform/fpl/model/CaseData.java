@@ -27,7 +27,7 @@ public class CaseData {
     private final String gatekeeperEmail;
     private final String caseLocalAuthority;
     private final Risks risks;
-    @NotNull(message = "You need to add details to orders and directions needed")
+    @NotNull(message = "Select at least one type of order")
     @Valid
     private final Orders orders;
     private final Grounds grounds;

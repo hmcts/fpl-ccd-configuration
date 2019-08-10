@@ -7,6 +7,7 @@ Feature('HMCTS admin upload standard directions');
 Before(async (I, caseViewPage, loginPage, submitApplicationPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseId = await I.grabTextFrom('.heading-h1');
+  I.enterMandatoryFields();
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationPage.giveConsent();
   I.continueAndSubmit();

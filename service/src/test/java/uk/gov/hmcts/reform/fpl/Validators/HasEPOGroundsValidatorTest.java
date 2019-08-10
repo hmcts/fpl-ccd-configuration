@@ -20,12 +20,12 @@ class HasEPOGroundsValidatorTest {
     private ConstraintValidatorContext constraintValidatorContext;
 
     @Test
-    void shouldReturnFalseIfOrdersAndGroundsForEPODoNotExistInCaseData() {
+    void shouldReturnTrueIfOrdersAndGroundsForEPODoNotExistInCaseData() {
         CaseData caseData = CaseData.builder().build();
 
         Boolean isValid = validator.isValid(caseData, constraintValidatorContext);
 
-        assertThat(isValid).isFalse();
+        assertThat(isValid).isTrue();
     }
 
     @Test
