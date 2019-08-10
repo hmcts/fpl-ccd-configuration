@@ -2,8 +2,16 @@
 const config = require('./config');
 
 const logIn = require('./pages/login/loginPage');
+const caseViewPage = require('./pages/caseView/caseView');
+const changeCaseNamePage = require('./pages/changeCaseName/changeCaseName');
 const createCasePage = require('./pages/createCase/createCase');
 const eventSummaryPage = require('./pages/createCase/eventSummary');
+const enterApplicantPage  = require('./pages/enterApplicant/enterApplicant');
+const enterChildrenPage = require('./pages/enterChildren/enterChildren');
+const ordersNeededPage  = require('./pages/ordersNeeded/ordersNeeded');
+const selectHearingPage = require('./pages/selectHearing/selectHearing');
+
+const applicant = require('./fixtures/applicant');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
 
@@ -72,6 +80,21 @@ module.exports = function () {
     navigateToCaseDetails(caseId) {
       this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${caseId.replace(/\D/g, '')}`);
       this.waitForText('Sign Out');
+    },
+
+    enterMandatoryFields() {
+      caseViewPage.goToNewActions(config.applicationActions.selectOrders);
+      ordersNeededPage.checkCareOrder();
+      this.continueAndSave();
+      caseViewPage.goToNewActions(config.applicationActions.selectHearing);
+      selectHearingPage.enterHearingType();
+      this.continueAndSave();
+      caseViewPage.goToNewActions(config.applicationActions.enterApplicants);
+      enterApplicantPage.enterApplicantDetails(applicant);
+      this.continueAndSave();
+      caseViewPage.goToNewActions(config.applicationActions.enterChildren);
+      enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
+      this.continueAndSave();
     },
   });
 };
