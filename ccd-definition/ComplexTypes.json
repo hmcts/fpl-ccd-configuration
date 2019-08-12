@@ -838,6 +838,43 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "litigation",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Litigation capacity issues",
+    "FieldShowCondition": "litigation=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "litigationDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "litigation=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "learningDisability",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Learning disability issues",
+    "HintText": "For example, Respondent has learning disability",
+    "FieldShowCondition": "litigation=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingPreferences",
+    "ListElementCode": "learningDisabilityDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "learningDisability=\"DO_NOT_SHOW\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "AllocationProposal",
     "ListElementCode": "proposal",
     "FieldType": "FixedRadioList",
