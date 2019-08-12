@@ -13,13 +13,19 @@ public class HasThresholdCriteriaValidator implements ConstraintValidator<HasThr
 
     @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext constraintValidatorContext) {
-        if (caseData.getOrders() != null && caseData.getOrders().getOrderType() != null &&
-                caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER) &&
-                caseData.getGroundsForEPO() != null &&
-                caseData.getGroundsForEPO().getThresholdReason() != null && !caseData.getGroundsForEPO().getThresholdReason().contains("")) {
-            return true;
+
+        if(caseData.getOrders() != null && caseData.getOrders().getOrderType() != null) {
+            if (caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
+                if (caseData.getGroundsForEPO() == null || caseData.getGroundsForEPO().getThresholdReason() == null || caseData.getGroundsForEPO().getThresholdReason().contains("")) {
+                    return false;
+                } else {
+                    return true;
+                }
+            } else {
+                return true;
+            }
         } else {
-            return false;
+            return true;
         }
     }
 }

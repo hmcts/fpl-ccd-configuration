@@ -13,10 +13,10 @@ public class HasDocumentStatusValidator implements ConstraintValidator<HasDocume
 
     @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext constraintValidatorContext) {
+
         if (caseData.getDocuments_checklist_document() != null || caseData.getDocuments_socialWorkStatement_document() != null ||
             caseData.getDocuments_socialWorkCarePlan_document() != null || caseData.getDocuments_socialWorkChronology_document() != null ||
             caseData.getDocuments_threshold_document() != null || caseData.getDocuments_socialWorkAssessment_document() != null) {
-
 
             if (validateStatus(caseData.getDocuments_checklist_document()) &&
                 validateStatus(caseData.getDocuments_socialWorkCarePlan_document()) &&
@@ -28,7 +28,6 @@ public class HasDocumentStatusValidator implements ConstraintValidator<HasDocume
             } else {
                 return false;
             }
-
         } else {
             return false;
         }

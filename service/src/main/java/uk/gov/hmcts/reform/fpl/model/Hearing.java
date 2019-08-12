@@ -11,9 +11,9 @@ import javax.validation.constraints.NotBlank;
 @AllArgsConstructor
 public class Hearing {
 
-    @NotBlank(message = "Select an option for when you need a hearing")
     private final String type;
     private final String reason;
+    @NotBlank(message = "Select an option for when you need a hearing")
     private final String timeFrame;
     private final String reducedNotice;
     private final String withoutNotice;

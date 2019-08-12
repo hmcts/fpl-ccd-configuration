@@ -20,15 +20,15 @@ class HasThresholdCriteriaDetailsValidatorTest {
     private ConstraintValidatorContext constraintValidatorContext;
 
     @Test
-    void shouldReturnFalseIfGetOrdersDoesNotExistOnCaseData() {
+    void shouldReturnTrueIfGetOrdersDoesNotExistOnCaseData() {
         CaseData caseData = CaseData.builder().build();
 
         Boolean isValid = validator.isValid(caseData, constraintValidatorContext);
-        assertThat(isValid).isFalse();
+        assertThat(isValid).isTrue();
     }
 
     @Test
-    void shouldReturnFalseWhenOrderTypeContainsCareOrderOnly() {
+    void shouldReturnTrueWhenOrderTypeContainsCareOrderOnly() {
         CaseData caseData = CaseData.builder()
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.CARE_ORDER))
@@ -37,7 +37,7 @@ class HasThresholdCriteriaDetailsValidatorTest {
 
         Boolean isValid = validator.isValid(caseData, constraintValidatorContext);
 
-        assertThat(isValid).isFalse();
+        assertThat(isValid).isTrue();
     }
 
     @Test

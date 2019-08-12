@@ -24,7 +24,7 @@ public class Applicant {
     private final String personToContact;
     @NotBlank(message = "Enter a job title for the contact")
     private final String jobTitle;
-    @NotNull(message = "Enter an address for the contact")
+    @NotNull(message = "Enter a valid address for the contact")
     @Valid
     private final Address address;
     private final String mobile;

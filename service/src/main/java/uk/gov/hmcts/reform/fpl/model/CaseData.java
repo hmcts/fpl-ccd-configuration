@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -16,10 +15,11 @@ import java.util.List;
 
 @Data
 @Builder
-@AllArgsConstructor
 @HasEPOGrounds
-@DocumentsSequenceGroup
-@EPOSequenceGroup
+@HasThresholdCriteria
+@HasThresholdCriteriaDetails
+@HasDocumentStatus
+
 public class CaseData {
 
     @NotBlank(message = "Enter a case name")

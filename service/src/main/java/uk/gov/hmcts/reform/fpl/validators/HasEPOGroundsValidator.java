@@ -13,16 +13,19 @@ public class HasEPOGroundsValidator implements ConstraintValidator<HasEPOGrounds
 
     @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext constraintValidatorContext) {
-        if(caseData.getOrders() != null && caseData.getOrders().getOrderType() != null && caseData.getGroundsForEPO() != null
-            && caseData.getGroundsForEPO().getReason() != null) {
 
-            if (caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER) &&
-                !caseData.getGroundsForEPO().getReason().contains("")) {
-                return true;
+        if(caseData.getOrders() != null && caseData.getOrders().getOrderType() != null) {
+            if (caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
+                if (caseData.getGroundsForEPO() == null || caseData.getGroundsForEPO().getReason() == null || caseData.getGroundsForEPO().getReason().contains("")) {
+                    return false;
+                } else {
+                    return true;
+                }
             } else {
-                return false;
+                return true;
             }
+        } else {
+            return true;
         }
-        return true;
     }
 }

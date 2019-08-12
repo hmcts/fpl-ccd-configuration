@@ -17,10 +17,9 @@ public class Address {
     private final String addressLine1;
     private final String addressLine2;
     private final String addressLine3;
-    @NotBlank(message = "Enter a valid address for the contact")
     private final String postTown;
     private final String county;
-    @NotBlank(message = "Enter a valid address for the contact")
+    @NotBlank(message = "Enter a postcode for the contact")
     private final String postcode;
     private final String country;
 

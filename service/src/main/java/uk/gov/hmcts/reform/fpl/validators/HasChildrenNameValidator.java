@@ -16,13 +16,12 @@ public class HasChildrenNameValidator implements ConstraintValidator<HasChildNam
 
     @Override
     public boolean isValid(Children children, ConstraintValidatorContext constraintValidatorContext) {
-        if (children.getAdditionalChildren() != null || children.getFirstChild() != null) {
 
+        if (children.getAdditionalChildren() != null || children.getFirstChild() != null) {
             return children.getAllChildren().stream()
                 .filter(Objects::nonNull)
                 .map(Child::getChildName)
                 .allMatch(childName -> childName != null && !childName.isBlank());
-
         } else {
             return false;
         }
