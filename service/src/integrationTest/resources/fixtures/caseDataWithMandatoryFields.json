@@ -1,0 +1,63 @@
+{
+  "case_details": {
+    "id": "2313",
+    "case_data": {
+      "caseName": "Test case",
+      "caseLocalAuthority": "example",
+      "orders": {
+        "orderType": [
+          "EMERGENCY_PROTECTION_ORDER"
+        ]
+      },
+      "hearing": {
+        "timeFrame": "Within 18 days"
+      },
+      "applicant": {
+        "name": "James Nelson",
+        "personToContact": "Trevor Wilson",
+        "jobTitle": "Sales Assistant",
+        "telephone": "123456789",
+        "address": {
+          "AddressLine1": "1 Some street",
+          "PostCode": "BT66 7RR"
+        },
+        "email": "Trevor@google.com"
+      },
+      "children": {
+        "firstChild": {
+          "childName": "Trevor Jones"
+        }
+      },
+      "groundsForEPO": {
+        "reason": [
+          "reason"
+        ],
+        "thresholdReason": [
+          "reason"
+        ],
+        "thresholdDetails": "details"
+      },
+      "documents_socialWorkCarePlan_document": {
+        "documentStatus": "Complete"
+      },
+      "documents_socialWorkStatement_document": {
+        "documentStatus": "Complete"
+      },
+      "documents_socialWorkAssessment_document": {
+        "documentStatus": "Complete"
+      },
+      "documents_socialWorkChronology_document": {
+        "documentStatus": "Complete"
+      },
+      "documents_checklist_document": {
+        "documentStatus": "Complete"
+      },
+      "documents_threshold_document": {
+        "documentStatus": "Complete"
+      },
+      "documents_socialWorkEvidenceTemplate_document": {
+        "documentStatus": "Complete"
+      }
+    }
+  }
+}

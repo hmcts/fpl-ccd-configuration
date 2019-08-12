@@ -44,6 +44,38 @@ class CaseSubmissionControllerAboutToSubmitTest {
     private MockMvc mockMvc;
 
     @Test
+    void shouldReturnErrorsWhenNoCaseDataIsProvided() throws Exception {
+        byte[] pdf = {1, 2, 3, 4, 5};
+        Document document = document();
+
+        given(userDetailsService.getUserName(AUTH_TOKEN))
+            .willReturn("Emma Taylor");
+        given(documentGeneratorService.generateSubmittedFormPDF(any(), any()))
+            .willReturn(pdf);
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "2313.pdf"))
+            .willReturn(document);
+
+        AboutToStartOrSubmitCallbackResponse response = makeSubmitCaseRequest("fixtures/emptyCaseData.json");
+
+        assertThat(response.getErrors()).isNotNull();
+    }
+
+    @Test
+    void shouldReturnNoErrorsWhenMandatoryFieldsAreProvidedInCaseData() throws Exception {
+        byte[] pdf = {1, 2, 3, 4, 5};
+        Document document = document();
+
+        given(documentGeneratorService.generateSubmittedFormPDF(any(), any()))
+            .willReturn(pdf);
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "2313.pdf"))
+            .willReturn(document);
+
+        AboutToStartOrSubmitCallbackResponse response = makeSubmitCaseRequest("fixtures/caseDataWithMandatoryFields.json");
+
+        assertThat(response.getErrors()).isNull();
+    }
+
+    @Test
     void shouldReturnUnsuccessfulResponseWithNoData() throws Exception {
         mockMvc
             .perform(post("/callback/case-submission/about-to-submit")
@@ -94,5 +126,19 @@ class CaseSubmissionControllerAboutToSubmitTest {
                 .put("document_binary_url", document.links.binary.href)
                 .put("document_filename", document.originalDocumentName)
                 .build());
+    }
+
+    private AboutToStartOrSubmitCallbackResponse makeSubmitCaseRequest(String fixtureType) throws Exception {
+        MvcResult response =  mockMvc
+            .perform(post("/callback/case-submission/about-to-submit")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(readBytes(fixtureType)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        return MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 }
