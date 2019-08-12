@@ -16,7 +16,8 @@ public class HasThresholdCriteriaDetailsValidator implements ConstraintValidator
         if (caseData.getOrders() != null && caseData.getOrders().getOrderType() != null &&
             caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER) &&
             caseData.getGroundsForEPO() != null &&
-            caseData.getGroundsForEPO().getThresholdDetails() != null) {
+            caseData.getGroundsForEPO().getThresholdDetails() != null &&
+            !caseData.getGroundsForEPO().getThresholdDetails().isEmpty()) {
             return true;
         } else {
             return false;

@@ -21,7 +21,7 @@ public class HasChildrenNameValidator implements ConstraintValidator<HasChildNam
             return children.getAllChildren().stream()
                 .filter(Objects::nonNull)
                 .map(Child::getChildName)
-                .allMatch(childName -> childName != null || childName.isBlank());
+                .allMatch(childName -> childName != null && !childName.isBlank());
 
         } else {
             return false;

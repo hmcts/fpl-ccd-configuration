@@ -53,4 +53,36 @@ class HasTelephoneValidatorTest {
 
         assertThat(isValid).isTrue();
     }
+
+    @Test
+    void shouldReturnFalseIfApplicantTelephoneIsEmptyString() {
+        Applicant applicant = Applicant.builder()
+            .telephone("")
+            .build();
+        Boolean isValid = validator.isValid(applicant, constraintValidatorContext);
+
+        assertThat(isValid).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseIfApplicantTelephoneAndMobileNumberAreEmptyStrings() {
+        Applicant applicant = Applicant.builder()
+            .telephone("")
+            .mobile("")
+            .build();
+        Boolean isValid = validator.isValid(applicant, constraintValidatorContext);
+
+        assertThat(isValid).isFalse();
+    }
+
+    @Test
+    void shouldReturnTrueIfApplicantTelephoneIsNotEmptyAndMobileNumberIsEmpty() {
+        Applicant applicant = Applicant.builder()
+            .telephone("123")
+            .mobile("")
+            .build();
+        Boolean isValid = validator.isValid(applicant, constraintValidatorContext);
+
+        assertThat(isValid).isTrue();
+    }
 }

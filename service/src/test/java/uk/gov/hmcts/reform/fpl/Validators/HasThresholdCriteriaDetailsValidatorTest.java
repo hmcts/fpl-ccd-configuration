@@ -68,4 +68,20 @@ class HasThresholdCriteriaDetailsValidatorTest {
 
         assertThat(isValid).isTrue();
     }
+
+    @Test
+    void shouldReturnFalseWhenOrderTypeDoesContainEPOAndThresholdDetailsIsEmpty() {
+        CaseData caseData = CaseData.builder()
+            .orders(Orders.builder()
+                .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
+                .build())
+            .groundsForEPO(GroundsForEPO.builder()
+                .thresholdDetails("")
+                .build())
+            .build();
+
+        Boolean isValid = validator.isValid(caseData, constraintValidatorContext);
+
+        assertThat(isValid).isFalse();
+    }
 }

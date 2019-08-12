@@ -29,7 +29,7 @@ class HasEPOGroundsValidatorTest {
     }
 
     @Test
-    void shouldReturnFalseIfOrderTypeEPOExistsInCaseDataButNotGroundsForEPO() {
+    void shouldReturnTrueIfOrderTypeEPOExistsInCaseDataButNotGroundsForEPO() {
         CaseData caseData = CaseData.builder()
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
@@ -38,7 +38,7 @@ class HasEPOGroundsValidatorTest {
 
         Boolean isValid = validator.isValid(caseData, constraintValidatorContext);
 
-        assertThat(isValid).isFalse();
+        assertThat(isValid).isTrue();
     }
 
     @Test
@@ -55,5 +55,21 @@ class HasEPOGroundsValidatorTest {
         Boolean isValid = validator.isValid(caseData, constraintValidatorContext);
 
         assertThat(isValid).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseIfOrderTypeEPOExistAndGroundsForEPOReasonIsEmptyString() {
+        CaseData caseData = CaseData.builder()
+            .orders(Orders.builder()
+                .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
+                .build())
+            .groundsForEPO(GroundsForEPO.builder()
+                .reason(ImmutableList.of(""))
+                .build())
+            .build();
+
+        Boolean isValid = validator.isValid(caseData, constraintValidatorContext);
+
+        assertThat(isValid).isFalse();
     }
 }

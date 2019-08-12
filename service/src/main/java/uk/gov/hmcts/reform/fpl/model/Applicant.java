@@ -29,7 +29,6 @@ public class Applicant {
     private final Address address;
     private final String mobile;
     private final String telephone;
-
     @NotBlank(message = "Enter an email address for the contact")
     private final String email;
     private String pbaNumber;

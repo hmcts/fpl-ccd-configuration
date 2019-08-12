@@ -41,6 +41,18 @@ class HasChildrenNameValidatorTest {
     }
 
     @Test
+    void shouldReturnFalseIfFirstChildNameIsEmptyString() {
+        Children children = Children.builder()
+            .firstChild(Child.builder()
+                .childName("")
+                .build())
+            .build();
+        Boolean isValid = validator.isValid(children, constraintValidatorContext);
+
+        assertThat(isValid).isFalse();
+    }
+
+    @Test
     void shouldReturnTrueIfAdditionalChildHasChildName() {
         Children children = Children.builder()
             .additionalChildren(ImmutableList.of(
@@ -75,5 +87,26 @@ class HasChildrenNameValidatorTest {
         Boolean isValid = validator.isValid(children, constraintValidatorContext);
 
         assertThat(isValid).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseIFFirstChildHasChildNameButtAdditionalChildHasEmptyStringAsChildName() {
+        Children children = Children.builder()
+            .firstChild(Child.builder()
+                .childName("James")
+                .build())
+            .additionalChildren(ImmutableList.of(
+                Element.<Child>builder()
+                    .id(UUID.randomUUID())
+                    .value(Child.builder()
+                        .childName("")
+                        .build())
+                    .build()
+            ))
+            .build();
+
+        Boolean isValid = validator.isValid(children, constraintValidatorContext);
+
+        assertThat(isValid).isFalse();
     }
 }

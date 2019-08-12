@@ -63,4 +63,33 @@ class HasDocumentStatusValidatorTest {
         Boolean isValid = validator.isValid(caseData, constraintValidatorContext);
         assertThat(isValid).isTrue();
     }
+
+    @Test
+    void shouldReturnFalseIfAllDocumentStatusesContainEmptyString() {
+        CaseData caseData = CaseData.builder()
+            .documents_checklist_document(Document.builder()
+                .documentStatus("")
+                .build())
+            .documents_socialWorkCarePlan_document(Document.builder()
+                .documentStatus("")
+                .build())
+            .documents_socialWorkStatement_document(Document.builder()
+                .documentStatus("")
+                .build())
+            .documents_threshold_document(Document.builder()
+                .documentStatus("")
+                .build())
+            .documents_socialWorkChronology_document(Document.builder()
+                .documentStatus("")
+                .build())
+
+            .documents_socialWorkAssessment_document(Document.builder()
+                .documentStatus("")
+                .build())
+
+            .build();
+
+        Boolean isValid = validator.isValid(caseData, constraintValidatorContext);
+        assertThat(isValid).isFalse();
+    }
 }

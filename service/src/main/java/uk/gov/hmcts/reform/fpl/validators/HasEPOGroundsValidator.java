@@ -16,11 +16,11 @@ public class HasEPOGroundsValidator implements ConstraintValidator<HasEPOGrounds
         if(caseData.getOrders() != null && caseData.getOrders().getOrderType() != null && caseData.getGroundsForEPO() != null
             && caseData.getGroundsForEPO().getReason() != null) {
 
-            if (caseData.getOrders().getOrderType().contains(OrderType.EDUCATION_SUPERVISION_ORDER) &&
-                caseData.getGroundsForEPO().getReason() != null) {
-                return false;
-            } else {
+            if (caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER) &&
+                !caseData.getGroundsForEPO().getReason().contains("")) {
                 return true;
+            } else {
+                return false;
             }
         }
         return true;
