@@ -16,6 +16,7 @@ Scenario('Cannot submit an incomplete case', (I, caseViewPage, submitApplication
   I.waitForElement('.check-your-answers');
   I.click('Submit');
   I.waitForElement('.error-summary-list');
+  I.see("Tell us the status of all documents including those that you haven't uploaded");
   I.see("Select at least one type of order");
   I.see("You need to add details to children");
   I.see("You need to add details to applicant");

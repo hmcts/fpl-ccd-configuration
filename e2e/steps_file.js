@@ -10,6 +10,7 @@ const enterApplicantPage  = require('./pages/enterApplicant/enterApplicant');
 const enterChildrenPage = require('./pages/enterChildren/enterChildren');
 const ordersNeededPage  = require('./pages/ordersNeeded/ordersNeeded');
 const selectHearingPage = require('./pages/selectHearing/selectHearing');
+const uploadDocumentsPage = require('./pages/uploadDocuments/uploadDocuments');
 
 const applicant = require('./fixtures/applicant');
 
@@ -87,13 +88,21 @@ module.exports = function () {
       ordersNeededPage.checkCareOrder();
       this.continueAndSave();
       caseViewPage.goToNewActions(config.applicationActions.selectHearing);
-      selectHearingPage.enterHearingType();
+      selectHearingPage.enterTimeFrame();
       this.continueAndSave();
       caseViewPage.goToNewActions(config.applicationActions.enterApplicants);
       enterApplicantPage.enterApplicantDetails(applicant);
       this.continueAndSave();
       caseViewPage.goToNewActions(config.applicationActions.enterChildren);
       enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
+      this.continueAndSave();
+      caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+      uploadDocumentsPage.selectSocialWorkChronologyToFollow(config.testFile);
+      uploadDocumentsPage.uploadSocialWorkStatement(config.testFile);
+      uploadDocumentsPage.uploadSocialWorkAssessment(config.testFile);
+      uploadDocumentsPage.uploadCarePlan(config.testFile);
+      uploadDocumentsPage.uploadThresholdDocument(config.testFile);
+      uploadDocumentsPage.uploadChecklistDocument(config.testFile);
       this.continueAndSave();
     },
   });
