@@ -3,7 +3,6 @@ const config = require('./config');
 
 const logIn = require('./pages/login/loginPage');
 const caseViewPage = require('./pages/caseView/caseView');
-const changeCaseNamePage = require('./pages/changeCaseName/changeCaseName');
 const createCasePage = require('./pages/createCase/createCase');
 const eventSummaryPage = require('./pages/createCase/eventSummary');
 const enterApplicantPage  = require('./pages/enterApplicant/enterApplicant');
