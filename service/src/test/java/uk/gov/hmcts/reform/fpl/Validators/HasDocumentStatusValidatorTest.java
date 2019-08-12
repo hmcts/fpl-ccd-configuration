@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.Validators;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -15,6 +16,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 class HasDocumentStatusValidatorTest {
     HasDocumentStatusValidator validator = new HasDocumentStatusValidator();
+
+    @Mock
     private ConstraintValidatorContext constraintValidatorContext;
 
     @Test

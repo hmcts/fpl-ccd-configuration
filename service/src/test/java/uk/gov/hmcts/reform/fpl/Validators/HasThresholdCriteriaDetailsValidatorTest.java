@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.Validators;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -17,6 +18,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 class HasThresholdCriteriaDetailsValidatorTest {
     private HasThresholdCriteriaDetailsValidator validator = new HasThresholdCriteriaDetailsValidator();
+
+    @Mock
     private ConstraintValidatorContext constraintValidatorContext;
 
     @Test

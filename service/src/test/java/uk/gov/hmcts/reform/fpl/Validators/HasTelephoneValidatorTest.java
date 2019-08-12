@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.Validators;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.validators.HasTelephoneValidator;
@@ -13,6 +14,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 class HasTelephoneValidatorTest {
     private HasTelephoneValidator validator = new HasTelephoneValidator();
+
+    @Mock
     private ConstraintValidatorContext constraintValidatorContext;
 
     @Test

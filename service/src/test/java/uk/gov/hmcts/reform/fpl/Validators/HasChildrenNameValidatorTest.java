@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.Validators;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Children;
@@ -18,6 +19,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(SpringExtension.class)
 class HasChildrenNameValidatorTest {
     private HasChildrenNameValidator validator = new HasChildrenNameValidator();
+
+    @Mock
     private ConstraintValidatorContext constraintValidatorContext;
 
     @Test
