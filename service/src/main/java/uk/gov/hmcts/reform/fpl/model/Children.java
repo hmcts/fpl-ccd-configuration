@@ -10,11 +10,11 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasChildName;
 
-import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 
 @Data
 @Builder

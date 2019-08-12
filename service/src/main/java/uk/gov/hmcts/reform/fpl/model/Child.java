@@ -6,8 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import java.util.Date;
+import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder

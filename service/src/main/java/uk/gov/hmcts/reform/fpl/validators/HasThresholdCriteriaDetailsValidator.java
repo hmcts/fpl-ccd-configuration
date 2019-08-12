@@ -7,16 +7,22 @@ import uk.gov.hmcts.reform.fpl.validators.interfaces.HasThresholdCriteriaDetails
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class HasThresholdCriteriaDetailsValidator implements ConstraintValidator<HasThresholdCriteriaDetails, CaseData> {
+public class HasThresholdCriteriaDetailsValidator implements
+    ConstraintValidator<HasThresholdCriteriaDetails, CaseData> {
+
     @Override
-    public void initialize(HasThresholdCriteriaDetails constraintAnnotation) { }
+    public void initialize(HasThresholdCriteriaDetails constraintAnnotation) {
+
+    }
 
     @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext constraintValidatorContext) {
 
-        if(caseData.getOrders() != null && caseData.getOrders().getOrderType() != null) {
+        if (caseData.getOrders() != null && caseData.getOrders().getOrderType() != null) {
             if (caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
-                if (caseData.getGroundsForEPO() == null || caseData.getGroundsForEPO().getThresholdDetails() == null || caseData.getGroundsForEPO().getThresholdDetails().isEmpty()) {
+                if (caseData.getGroundsForEPO() == null
+                    || caseData.getGroundsForEPO().getThresholdDetails() == null
+                    || caseData.getGroundsForEPO().getThresholdDetails().isEmpty()) {
                     return false;
                 } else {
                     return true;

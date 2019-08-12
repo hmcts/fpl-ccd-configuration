@@ -4,9 +4,9 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Children;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasChildName;
 
+import java.util.Objects;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import java.util.Objects;
 
 public class HasChildrenNameValidator implements ConstraintValidator<HasChildName, Children> {
 

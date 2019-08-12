@@ -9,14 +9,19 @@ import javax.validation.ConstraintValidatorContext;
 
 public class HasEPOGroundsValidator implements ConstraintValidator<HasEPOGrounds, CaseData> {
     @Override
-    public void initialize(HasEPOGrounds constraintAnnotation) { }
+    public void initialize(HasEPOGrounds constraintAnnotation) {
+
+    }
 
     @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext constraintValidatorContext) {
 
-        if(caseData.getOrders() != null && caseData.getOrders().getOrderType() != null) {
+        if (caseData.getOrders() != null && caseData.getOrders().getOrderType() != null) {
+
             if (caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
-                if (caseData.getGroundsForEPO() == null || caseData.getGroundsForEPO().getReason() == null || caseData.getGroundsForEPO().getReason().contains("")) {
+                if (caseData.getGroundsForEPO() == null
+                    || caseData.getGroundsForEPO().getReason() == null
+                    || caseData.getGroundsForEPO().getReason().contains("")) {
                     return false;
                 } else {
                     return true;

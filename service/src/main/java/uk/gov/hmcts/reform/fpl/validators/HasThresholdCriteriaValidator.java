@@ -9,14 +9,18 @@ import javax.validation.ConstraintValidatorContext;
 
 public class HasThresholdCriteriaValidator implements ConstraintValidator<HasThresholdCriteria, CaseData> {
     @Override
-    public void initialize(HasThresholdCriteria constraintAnnotation) { }
+    public void initialize(HasThresholdCriteria constraintAnnotation) {
+
+    }
 
     @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext constraintValidatorContext) {
 
-        if(caseData.getOrders() != null && caseData.getOrders().getOrderType() != null) {
+        if (caseData.getOrders() != null && caseData.getOrders().getOrderType() != null) {
             if (caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
-                if (caseData.getGroundsForEPO() == null || caseData.getGroundsForEPO().getThresholdReason() == null || caseData.getGroundsForEPO().getThresholdReason().contains("")) {
+                if (caseData.getGroundsForEPO() == null
+                    || caseData.getGroundsForEPO().getThresholdReason() == null
+                    || caseData.getGroundsForEPO().getThresholdReason().contains("")) {
                     return false;
                 } else {
                     return true;

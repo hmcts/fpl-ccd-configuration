@@ -5,13 +5,16 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.*;
+import uk.gov.hmcts.reform.fpl.validators.interfaces.HasDocumentStatus;
+import uk.gov.hmcts.reform.fpl.validators.interfaces.HasEPOGrounds;
+import uk.gov.hmcts.reform.fpl.validators.interfaces.HasThresholdCriteria;
+import uk.gov.hmcts.reform.fpl.validators.interfaces.HasThresholdCriteriaDetails;
+
+import java.util.List;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import java.util.List;
 
 @Data
 @Builder

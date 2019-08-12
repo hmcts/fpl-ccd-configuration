@@ -5,18 +5,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
+import java.util.List;
+import java.util.Set;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.util.List;
-import java.util.Set;
 
 @Service
 public class CaseSubmissionValidatorService {
 
     @Autowired
-    public CaseSubmissionValidatorService() {}
+    public CaseSubmissionValidatorService() {
+
+    }
 
     public List<String> validateCaseDetails(CaseData caseData) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();

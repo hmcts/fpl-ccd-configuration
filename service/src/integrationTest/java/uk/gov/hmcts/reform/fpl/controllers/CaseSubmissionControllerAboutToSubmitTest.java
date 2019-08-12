@@ -72,7 +72,8 @@ class CaseSubmissionControllerAboutToSubmitTest {
         given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "test.pdf"))
             .willReturn(document);
 
-        AboutToStartOrSubmitCallbackResponse response = makeSubmitCaseRequest("fixtures/caseDataWithMandatoryFields.json");
+        AboutToStartOrSubmitCallbackResponse response =
+            makeSubmitCaseRequest("fixtures/caseDataWithMandatoryFields.json");
 
         assertThat(response.getErrors()).isEmpty();
     }

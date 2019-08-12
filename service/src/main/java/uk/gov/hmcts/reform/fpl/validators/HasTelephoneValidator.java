@@ -8,7 +8,9 @@ import javax.validation.ConstraintValidatorContext;
 
 public class HasTelephoneValidator implements ConstraintValidator<HasTelephone, Applicant> {
     @Override
-    public void initialize(HasTelephone constraintAnnotation) { }
+    public void initialize(HasTelephone constraintAnnotation) {
+
+    }
 
     @Override
     public boolean isValid(Applicant applicant, ConstraintValidatorContext constraintValidatorContext) {
