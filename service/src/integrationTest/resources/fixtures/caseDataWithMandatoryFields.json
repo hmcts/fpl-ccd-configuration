@@ -2,7 +2,7 @@
   "case_details": {
     "id": "2313",
     "case_data": {
-      "caseName": "Test case",
+      "caseName": "test",
       "caseLocalAuthority": "example",
       "orders": {
         "orderType": [
