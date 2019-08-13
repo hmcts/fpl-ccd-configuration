@@ -20,39 +20,6 @@ class RespondentServiceTest {
 
     private final RespondentService service = new RespondentService();
 
-    @Test
-    void shouldAddMigratedRespondentYesWhenNoRespondentData() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("data", "some data"))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = service.setMigratedValue(caseDetails);
-
-        assertThat(response.getData()).containsEntry("respondentsMigrated", "Yes");
-    }
-
-    @Test
-    void shouldAddMigratedRespondentYesWhenRespondents1Exists() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("respondents1", "some value"))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = service.setMigratedValue(caseDetails);
-
-        assertThat(response.getData()).containsEntry("respondentsMigrated", "Yes");
-    }
-
-    @Test
-    void shouldAddMigratedRespondentNoWhenOldRespondentsExists() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("respondents", "some value"))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = service.setMigratedValue(caseDetails);
-
-        assertThat(response.getData()).containsEntry("respondentsMigrated", "No");
-    }
-
     @SuppressWarnings("unchecked")
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToSingleRespondent() {
@@ -134,8 +101,11 @@ class RespondentServiceTest {
 
     @Test
     void shouldNotAddPartyIDAndPartyTypeValuesToDataStructureIfRespondents1IsNotPresent() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("respondent", "data");
+
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("respondent", "data"))
+            .data(data)
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
@@ -211,12 +181,5 @@ class RespondentServiceTest {
 
         assertThat(secondParty).containsEntry("firstName", "Lucy");
         assertThat(secondParty.get("partyId")).isNotNull();
-    }
-
-    private Map<String, Object> createData(String key, String value) {
-        Map<String, Object> data = new HashMap<>();
-        data.put(key, value);
-
-        return data;
     }
 }

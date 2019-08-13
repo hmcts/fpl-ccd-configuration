@@ -10,10 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Respondents;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
-import uk.gov.hmcts.reform.fpl.model.migration.MigratedRespondent;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 
@@ -23,7 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Api
 @RestController
@@ -44,7 +41,7 @@ public class RespondentController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
-        return respondentService.setMigratedValue(caseDetails);
+        return respondentService.expandRespondentCollection(caseDetails);
     }
 
     @PostMapping("/mid-event")
@@ -68,33 +65,20 @@ public class RespondentController {
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
 
-        Map<String, Object> respondentsData =
-            (Map<String, Object>) defaultIfNull(caseDetails.getData().get("respondents"), null);
-
         if (caseDetails.getData().containsKey("respondents1")) {
-
             List<Map<String, Object>> migratedRespondentObject =
                 (List<Map<String, Object>>) caseDetails.getData().get("respondents1");
 
-            List<MigratedRespondent> migratedRespondents = migratedRespondentObject.stream()
+            List<Respondents> respondents = migratedRespondentObject.stream()
                 .map(respondent ->
-                    mapper.mapObject((Map<String, Object>) respondent.get("value"), MigratedRespondent.class))
+                    mapper.mapObject((Map<String, Object>) respondent.get("value"), Respondents.class))
                 .collect(toList());
 
-            if (migratedRespondents.stream()
-                .map(MigratedRespondent::getParty)
+            if (respondents.stream()
+                .map(Respondents::getParty)
                 .map(Party::getDateOfBirth)
                 .filter(Objects::nonNull)
                 .anyMatch(dob -> dob.after(new Date()))) {
-                errors.add("Date of birth cannot be in the future");
-            }
-        } else {
-
-            Respondents respondents = mapper.mapObject(respondentsData, Respondents.class);
-            if (respondents.getAllRespondents().stream()
-                .map(Respondent::getDob)
-                .filter(Objects::nonNull)
-                .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
                 errors.add("Date of birth cannot be in the future");
             }
         }
