@@ -1,3 +1,7 @@
+tags:
+  fpl-ccd-stack: true
+  ccd-idam-pr: true
+
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
@@ -14,6 +18,11 @@ ccd:
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
+  idam-pr:
+    releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
+    redirect_uris:
+      CCD:
+        - https://case-management-web-${SERVICE_FQDN}/oauth2redirect
   apiGateway:
     s2sKey: ${CCD_API_GATEWAY_S2S_SECRET}
     idamClientSecret:
