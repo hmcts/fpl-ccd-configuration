@@ -46,7 +46,6 @@ public class RespondentService {
             .build();
     }
 
-
     @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse addHiddenValues(CaseDetails caseDetails) {
         Map<String, Object> data = caseDetails.getData();
