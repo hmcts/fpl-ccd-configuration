@@ -51,7 +51,6 @@ def archiveCoreCaseDataDefinitions(env) {
 }
 
 withPipeline(type, product, component) {
-  setVaultName('fpl')
   loadVaultSecrets(secrets)
   enableDockerBuild()
   installCharts()
