@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.validators;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -10,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Document;
 import javax.validation.ConstraintValidatorContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
+import static org.mockito.BDDMockito.given;
 
 @ExtendWith(SpringExtension.class)
 class HasDocumentStatusValidatorTest {
@@ -18,6 +20,22 @@ class HasDocumentStatusValidatorTest {
 
     @Mock
     private ConstraintValidatorContext constraintValidatorContext;
+
+    @Mock
+    private ConstraintValidatorContext.ConstraintViolationBuilder constraintViolationBuilder;
+
+    @Mock
+    private ConstraintValidatorContext.ConstraintViolationBuilder.NodeBuilderCustomizableContext
+        nodeBuilderCustomizableContext;
+
+    @BeforeEach
+    private void prepareMocks() {
+        given(constraintValidatorContext.getDefaultConstraintMessageTemplate()).willReturn("");
+        given(constraintValidatorContext.buildConstraintViolationWithTemplate(Mockito.anyString()))
+            .willReturn(constraintViolationBuilder);
+        given(constraintViolationBuilder.addPropertyNode(Mockito.anyString()))
+            .willReturn(nodeBuilderCustomizableContext);
+    }
 
     @Test
     void shouldReturnFalseIfMandatoryDocumentsDoNotExistOnCaseData() {
