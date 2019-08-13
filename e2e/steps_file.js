@@ -3,7 +3,7 @@ const config = require('./config');
 
 const logIn = require('./pages/login/loginPage');
 const createCasePage = require('./pages/createCase/createCase');
-const eventSummaryPage = require('./pages/createCase/eventSummary');
+const eventSummaryPage = require('./pages/eventSummary/eventSummary');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
 
@@ -23,6 +23,12 @@ module.exports = function () {
       this.click('Continue');
       this.waitForElement('.check-your-answers');
       eventSummaryPage.submit('Save and continue');
+    },
+
+    continueAndProvideSummary(summary, description) {
+      this.click('Continue');
+      this.waitForElement('.check-your-answers');
+      eventSummaryPage.provideSummaryAndSubmit('Save and continue', summary, description);
     },
 
     continueAndSubmit() {
