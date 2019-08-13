@@ -31,12 +31,12 @@ class CaseSubmissionValidatorServiceTest {
         CaseData caseData = CaseData.builder().build();
         List<String> errors = service.validateCaseDetails(caseData);
 
-        assertThat(errors).contains("Enter a case name");
-        assertThat(errors).contains("Select at least one type of order");
-        assertThat(errors).contains("You need to add details to children");
-        assertThat(errors).contains("You need to add details to applicant");
-        assertThat(errors).contains("You need to add details to hearing");
-        assertThat(errors).contains("Tell us the status of all documents including those that you haven't uploaded");
+        assertThat(errors).contains("- Enter a case name");
+        assertThat(errors).contains("- Select at least one type of order");
+        assertThat(errors).contains("- You need to add details to children");
+        assertThat(errors).contains("- You need to add details to applicant");
+        assertThat(errors).contains("- You need to add details to hearing");
+        assertThat(errors).contains("- Tell us the status of all documents including those that you haven't uploaded");
     }
 
     @Test
@@ -50,16 +50,16 @@ class CaseSubmissionValidatorServiceTest {
 
         List<String> errors = service.validateCaseDetails(caseData);
 
-        assertThat(errors).contains("Select at least one type of order");
-        assertThat(errors).contains("Select an option for when you need a hearing");
-        assertThat(errors).contains("Enter the applicant's full name");
-        assertThat(errors).contains("Enter the contact's full name");
-        assertThat(errors).contains("Enter a job title for the contact");
-        assertThat(errors).contains("Enter a valid address for the contact");
-        assertThat(errors).contains("Enter at least one telephone number for the contact");
-        assertThat(errors).contains("Enter an email address for the contact");
-        assertThat(errors).contains("Tell us the names of all children in the case");
-        assertThat(errors).contains("Tell us the status of all documents including those that you haven't uploaded");
+        assertThat(errors).contains("- Select at least one type of order");
+        assertThat(errors).contains("- Select an option for when you need a hearing");
+        assertThat(errors).contains("- Enter the applicant's full name");
+        assertThat(errors).contains("- Enter the contact's full name");
+        assertThat(errors).contains("- Enter a job title for the contact");
+        assertThat(errors).contains("- Enter a valid address for the contact");
+        assertThat(errors).contains("- Enter at least one telephone number for the contact");
+        assertThat(errors).contains("- Enter an email address for the contact");
+        assertThat(errors).contains("- Tell us the names of all children in the case");
+        assertThat(errors).contains("- Tell us the status of all documents including those that you haven't uploaded");
     }
 
     @Test
@@ -92,10 +92,10 @@ class CaseSubmissionValidatorServiceTest {
 
         List<String> errors = service.validateCaseDetails(caseData);
 
-        assertThat(errors).contains("Select at least one option for how this case meets grounds for an emergency"
+        assertThat(errors).contains("- Select at least one option for how this case meets grounds for an emergency"
             + " protection order");
-        assertThat(errors).contains("Select at least one option for how this case meets the threshold criteria");
-        assertThat(errors).contains("Enter details of how the case meets the threshold criteria");
+        assertThat(errors).contains("- Select at least one option for how this case meets the threshold criteria");
+        assertThat(errors).contains("- Enter details of how the case meets the threshold criteria");
     }
 
     @Test
@@ -126,8 +126,8 @@ class CaseSubmissionValidatorServiceTest {
             .build();
 
         List<String> errors = service.validateCaseDetails(caseData);
-        assertThat(errors).contains("Enter a valid address for the contact");
-        assertThat(errors).contains("Enter a postcode for the contact");
+        assertThat(errors).contains("- Enter a valid address for the contact");
+        assertThat(errors).contains("- Enter a postcode for the contact");
     }
 
     @Test

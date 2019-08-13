@@ -15,7 +15,8 @@ public class HasDocumentStatusValidator implements ConstraintValidator<HasDocume
 
     @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext constraintValidatorContext) {
-
+        constraintValidatorContext.buildConstraintViolationWithTemplate(constraintValidatorContext
+            .getDefaultConstraintMessageTemplate()).addPropertyNode("documents").addConstraintViolation();
         if (caseData.checklist() != null
             || caseData.socialWorkStatement() != null
             || caseData.socialWorkCarePlan() != null
