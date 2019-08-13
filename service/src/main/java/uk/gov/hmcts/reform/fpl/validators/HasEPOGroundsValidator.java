@@ -16,7 +16,8 @@ public class HasEPOGroundsValidator implements ConstraintValidator<HasEPOGrounds
     @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext constraintValidatorContext) {
         constraintValidatorContext.buildConstraintViolationWithTemplate(constraintValidatorContext
-            .getDefaultConstraintMessageTemplate()).addPropertyNode("groundsForTheApplication").addConstraintViolation();
+            .getDefaultConstraintMessageTemplate()).addPropertyNode("groundsForTheApplication")
+            .addConstraintViolation();
 
         if (caseData.getOrders() != null && caseData.getOrders().getOrderType() != null) {
 

@@ -18,7 +18,8 @@ public class HasThresholdCriteriaValidator implements ConstraintValidator<HasThr
 
         if (caseData.getOrders() != null && caseData.getOrders().getOrderType() != null) {
             constraintValidatorContext.buildConstraintViolationWithTemplate(constraintValidatorContext
-                .getDefaultConstraintMessageTemplate()).addPropertyNode("groundsForTheApplication").addConstraintViolation();
+                .getDefaultConstraintMessageTemplate()).addPropertyNode("groundsForTheApplication")
+                .addConstraintViolation();
 
             if (caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
                 if (caseData.getGroundsForEPO() == null

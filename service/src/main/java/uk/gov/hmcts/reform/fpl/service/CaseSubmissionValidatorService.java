@@ -29,8 +29,8 @@ public class CaseSubmissionValidatorService {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<CaseData>> violations = validator.validate(caseData);
 
-        List<String> errors = Stream.of("applicant", "children", "orders", "groundsForTheApplication", "hearing", "caseName",
-            "documents")
+        List<String> errors = Stream.of("applicant", "children", "orders", "groundsForTheApplication", "hearing",
+            "caseName", "documents")
             .flatMap(section -> Stream.of(buildErrorSection(violations, section)))
             .flatMap(Collection::stream)
             .collect(Collectors.toList());
@@ -55,15 +55,14 @@ public class CaseSubmissionValidatorService {
         return errorList;
     }
 
-    private String splitCamelCase(String phrase){
+    private String splitCamelCase(String phrase) {
         String editedPhrase = "";
 
-        for (int i=0; i < phrase.length(); i++){
+        for (int i = 0; i < phrase.length(); i++) {
             char charAtIndex = phrase.charAt(i);
-            if(Character.isUpperCase(charAtIndex)){
+            if (Character.isUpperCase(charAtIndex)) {
                 editedPhrase = editedPhrase + " " + Character.toLowerCase(charAtIndex);
-            }
-            else {
+            } else {
                 editedPhrase = editedPhrase + charAtIndex;
             }
         }
