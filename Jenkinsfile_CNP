@@ -10,7 +10,7 @@ def type = "java"
 def product = "fpl"
 def component = "case-service"
 
-List<Map<String, List<Map<String, Object>>>> secrets = [
+def secrets = [
   'fpl-${env}': [
     secret('fpl-case-service-s2s-secret', 'IDAM_S2S_AUTH_TOTP_SECRET'),
     secret('ccd-configurer-s2s-secret', 'CCD_CONFIGURER_S2S_SECRET'),
