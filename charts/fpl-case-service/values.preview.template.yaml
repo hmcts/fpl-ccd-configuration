@@ -16,7 +16,8 @@ ccd:
   consulIP: ${CONSUL_LB_IP}
   apiGateway:
     s2sKey: ${CCD_API_GATEWAY_S2S_SECRET}
-    idamClientSecret: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
+    idamClientSecret:
+      value: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
   dataStoreApi:
     s2sKey: ${CCD_DATA_STORE_S2S_SECRET}
   definitionStoreApi:
