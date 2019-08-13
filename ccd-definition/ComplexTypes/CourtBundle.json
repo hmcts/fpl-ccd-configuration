@@ -1,0 +1,10 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtBundle",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Upload a file",
+    "SecurityClassification": "Public"
+  }
+]
