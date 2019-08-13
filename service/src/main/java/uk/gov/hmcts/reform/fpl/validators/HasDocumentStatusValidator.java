@@ -16,19 +16,19 @@ public class HasDocumentStatusValidator implements ConstraintValidator<HasDocume
     @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext constraintValidatorContext) {
 
-        if (caseData.getDocuments_checklist_document() != null
-            || caseData.getDocuments_socialWorkStatement_document() != null
-            || caseData.getDocuments_socialWorkCarePlan_document() != null
-            || caseData.getDocuments_socialWorkChronology_document() != null
-            || caseData.getDocuments_threshold_document() != null
-            || caseData.getDocuments_socialWorkAssessment_document() != null) {
+        if (caseData.checklist() != null
+            || caseData.socialWorkStatement() != null
+            || caseData.socialWorkCarePlan() != null
+            || caseData.socialWorkChronology() != null
+            || caseData.threshold() != null
+            || caseData.socialWorkAssessment() != null) {
 
-            if (validateStatus(caseData.getDocuments_checklist_document())
-                && validateStatus(caseData.getDocuments_socialWorkCarePlan_document())
-                && validateStatus(caseData.getDocuments_socialWorkStatement_document())
-                && validateStatus(caseData.getDocuments_socialWorkChronology_document())
-                && validateStatus(caseData.getDocuments_threshold_document())
-                && validateStatus(caseData.getDocuments_socialWorkAssessment_document())) {
+            if (validateStatus(caseData.checklist())
+                && validateStatus(caseData.socialWorkCarePlan())
+                && validateStatus(caseData.socialWorkStatement())
+                && validateStatus(caseData.socialWorkChronology())
+                && validateStatus(caseData.threshold())
+                && validateStatus(caseData.socialWorkAssessment())) {
                 return true;
             } else {
                 return false;
