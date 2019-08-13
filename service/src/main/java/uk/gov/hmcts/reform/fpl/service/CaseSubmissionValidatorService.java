@@ -11,7 +11,6 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 
 @Service
 public class CaseSubmissionValidatorService {
@@ -23,9 +22,7 @@ public class CaseSubmissionValidatorService {
 
     public List<String> validateCaseDetails(CaseData caseData) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
-
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<CaseData>> violations = validator.validate(caseData);
         violations.forEach(error -> errors.add(error.getMessage()));
 

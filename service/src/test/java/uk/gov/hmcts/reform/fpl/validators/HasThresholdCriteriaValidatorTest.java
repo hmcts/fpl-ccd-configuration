@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.Validators;
+package uk.gov.hmcts.reform.fpl.validators;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.validators.HasThresholdCriteriaValidator;
 
 import javax.validation.ConstraintValidatorContext;
 
@@ -21,7 +20,7 @@ class HasThresholdCriteriaValidatorTest {
 
     @Mock
     private ConstraintValidatorContext constraintValidatorContext;
-    
+
     @Test
     void shouldReturnTrueIfOrdersDoesNotExistOnCaseData() {
         CaseData caseData = CaseData.builder().build();

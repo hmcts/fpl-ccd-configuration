@@ -1,11 +1,10 @@
-package uk.gov.hmcts.reform.fpl.Validators;
+package uk.gov.hmcts.reform.fpl.validators;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.validators.HasTelephoneValidator;
 
 import javax.validation.ConstraintValidatorContext;
 

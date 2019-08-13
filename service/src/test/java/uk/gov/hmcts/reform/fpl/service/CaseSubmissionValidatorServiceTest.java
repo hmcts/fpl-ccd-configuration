@@ -5,22 +5,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Children;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
-import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-
 import java.util.List;
 import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 class CaseSubmissionValidatorServiceTest {
@@ -93,7 +92,8 @@ class CaseSubmissionValidatorServiceTest {
 
         List<String> errors = service.validateCaseDetails(caseData);
 
-        assertThat(errors).contains("Select at least one option for how this case meets grounds for an emergency protection order");
+        assertThat(errors).contains("Select at least one option for how this case meets grounds for an emergency"
+            + " protection order");
         assertThat(errors).contains("Select at least one option for how this case meets the threshold criteria");
         assertThat(errors).contains("Enter details of how the case meets the threshold criteria");
     }

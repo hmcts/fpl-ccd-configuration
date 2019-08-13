@@ -82,7 +82,6 @@ public class CaseSubmissionController {
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         byte[] pdf = documentGeneratorService.generateSubmittedFormPDF(caseDetails,
             Pair.of("userFullName", userDetailsService.getUserName(authorization))
@@ -100,6 +99,8 @@ public class CaseSubmissionController {
             .put("document_binary_url", document.links.binary.href)
             .put("document_filename", document.originalDocumentName)
             .build());
+
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)

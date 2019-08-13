@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.Validators;
+package uk.gov.hmcts.reform.fpl.validators;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
@@ -9,33 +9,31 @@ import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.validators.HasEPOGroundsValidator;
 
 import javax.validation.ConstraintValidatorContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-class HasEPOGroundsValidatorTest {
-    private HasEPOGroundsValidator validator = new HasEPOGroundsValidator();
+class HasThresholdCriteriaDetailsValidatorTest {
+    private HasThresholdCriteriaDetailsValidator validator = new HasThresholdCriteriaDetailsValidator();
 
     @Mock
     private ConstraintValidatorContext constraintValidatorContext;
 
     @Test
-    void shouldReturnTrueIfOrdersAndGroundsForEPODoNotExistInCaseData() {
+    void shouldReturnTrueIfGetOrdersDoesNotExistOnCaseData() {
         CaseData caseData = CaseData.builder().build();
 
         Boolean isValid = validator.isValid(caseData, constraintValidatorContext);
-
         assertThat(isValid).isTrue();
     }
 
     @Test
-    void shouldReturnTrueIfOrderTypeIsNotEPO() {
+    void shouldReturnTrueWhenOrderTypeContainsCareOrderOnly() {
         CaseData caseData = CaseData.builder()
             .orders(Orders.builder()
-                .orderType(ImmutableList.of(OrderType.EDUCATION_SUPERVISION_ORDER))
+                .orderType(ImmutableList.of(OrderType.CARE_ORDER))
                 .build())
             .build();
 
@@ -45,7 +43,7 @@ class HasEPOGroundsValidatorTest {
     }
 
     @Test
-    void shouldReturnFalseIfOrderTypeEPOExistsInCaseDataButNotGroundsForEPO() {
+    void shouldReturnFalseWhenOrderTypeDoesContainEPOButNotThresholdDetails() {
         CaseData caseData = CaseData.builder()
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
@@ -58,13 +56,13 @@ class HasEPOGroundsValidatorTest {
     }
 
     @Test
-    void shouldReturnTrueIfOrderTypeEPOExistAndGroundsForEPOReasonExistInCaseData() {
+    void shouldReturnTrueWhenOrderTypeDoesContainEPOAndThresholdDetails() {
         CaseData caseData = CaseData.builder()
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
                 .build())
             .groundsForEPO(GroundsForEPO.builder()
-                .reason(ImmutableList.of("Reason"))
+                .thresholdDetails("details")
                 .build())
             .build();
 
@@ -74,13 +72,13 @@ class HasEPOGroundsValidatorTest {
     }
 
     @Test
-    void shouldReturnFalseIfOrderTypeEPOExistAndGroundsForEPOReasonIsEmptyString() {
+    void shouldReturnFalseWhenOrderTypeDoesContainEPOAndThresholdDetailsIsEmpty() {
         CaseData caseData = CaseData.builder()
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
                 .build())
             .groundsForEPO(GroundsForEPO.builder()
-                .reason(ImmutableList.of(""))
+                .thresholdDetails("")
                 .build())
             .build();
 

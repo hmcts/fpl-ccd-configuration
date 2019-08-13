@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.Validators;
+package uk.gov.hmcts.reform.fpl.validators;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
@@ -8,11 +8,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Children;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.validators.HasChildrenNameValidator;
-
-import javax.validation.ConstraintValidatorContext;
 
 import java.util.UUID;
+import javax.validation.ConstraintValidatorContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

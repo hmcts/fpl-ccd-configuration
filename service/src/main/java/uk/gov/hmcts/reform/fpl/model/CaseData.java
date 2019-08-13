@@ -24,7 +24,8 @@ import javax.validation.constraints.NotNull;
 @HasThresholdCriteria
 @HasThresholdCriteriaDetails
 @HasDocumentStatus
-
+// Added supression to remove pattern match errors on documents - must match pattern '^[a-z][a-z0-9][a-zA-Z0-9]*$'
+@SuppressWarnings("all")
 public class CaseData {
 
     @NotBlank(message = "Enter a case name")
@@ -57,48 +58,56 @@ public class CaseData {
 
     @Getter(AccessLevel.NONE)
     private final List<Element<DocumentSocialWorkOther>> documents_socialWorkOther;
+
     public List<Element<DocumentSocialWorkOther>> socialWorkOther() {
         return documents_socialWorkOther;
     }
 
     @Getter(AccessLevel.NONE)
     private final Document documents_socialWorkCarePlan_document;
+
     public Document socialWorkCarePlan() {
         return documents_socialWorkCarePlan_document;
     }
 
     @Getter(AccessLevel.NONE)
     private final Document documents_socialWorkStatement_document;
+
     public Document socialWorkStatement() {
         return documents_socialWorkStatement_document;
     }
 
     @Getter(AccessLevel.NONE)
     private final Document documents_socialWorkAssessment_document;
+
     public Document socialWorkAssessment() {
         return documents_socialWorkAssessment_document;
     }
 
     @Getter(AccessLevel.NONE)
     private final Document documents_socialWorkChronology_document;
+
     public Document socialWorkChronology() {
         return documents_socialWorkChronology_document;
     }
 
     @Getter(AccessLevel.NONE)
     private final Document documents_checklist_document;
+
     public Document checklist() {
         return documents_checklist_document;
     }
 
     @Getter(AccessLevel.NONE)
     private final Document documents_threshold_document;
+
     public Document threshold() {
         return documents_threshold_document;
     }
 
     @Getter(AccessLevel.NONE)
     private final Document documents_socialWorkEvidenceTemplate_document;
+
     public Document socialWorkEvidence() {
         return documents_socialWorkEvidenceTemplate_document;
     }

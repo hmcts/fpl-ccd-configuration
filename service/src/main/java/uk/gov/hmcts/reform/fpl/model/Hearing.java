@@ -9,6 +9,8 @@ import javax.validation.constraints.NotBlank;
 @Data
 @Builder
 @AllArgsConstructor
+// Added supression to remove pattern match error on type_giveReason - must match pattern '^[a-z][a-z0-9][a-zA-Z0-9]*$'
+@SuppressWarnings("all")
 public class Hearing {
 
     private final String type;
