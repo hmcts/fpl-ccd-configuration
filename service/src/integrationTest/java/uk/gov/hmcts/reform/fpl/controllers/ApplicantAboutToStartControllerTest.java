@@ -39,7 +39,7 @@ public class ApplicantAboutToStartControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getAboutToStartOrSubmitCallbackResponse(request);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = getAboutCallbackResponse(request);
 
         assertThat(callbackResponse.getData()).containsEntry("applicantsMigrated", "Yes");
     }
@@ -52,13 +52,13 @@ public class ApplicantAboutToStartControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getAboutToStartOrSubmitCallbackResponse(request);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = getAboutCallbackResponse(request);
 
         assertThat(callbackResponse.getData()).containsEntry("applicantsMigrated", "No");
     }
 
 
-    private AboutToStartOrSubmitCallbackResponse getAboutToStartOrSubmitCallbackResponse(CallbackRequest request) throws Exception {
+    private AboutToStartOrSubmitCallbackResponse getAboutCallbackResponse(CallbackRequest request) throws Exception {
         MvcResult response = mockMvc
             .perform(post("/callback/enter-applicant/about-to-start")
                 .header("authorization", AUTH_TOKEN)
