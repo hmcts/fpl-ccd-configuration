@@ -7,7 +7,7 @@ services:
         - http_proxy
         - https_proxy
         - no_proxy
-    image: docker.artifactory.reform.hmcts.net/fpl/fpl-service
+    image: hmctspublic.azurecr.io/fpl/case-service
     container_name: fpl-service
     environment:
       - IDAM_API_URL=http://idam-api:8080

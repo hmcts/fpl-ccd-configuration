@@ -34,8 +34,8 @@ class DocumentGeneratorServiceTest {
     void shouldGenerateSubmittedFormDocumentWhenCaseHasNoData() throws IOException {
         Clock clock = Clock.fixed(Instant.parse("2019-08-02T00:00:00Z"), ZoneId.systemDefault());
 
-        String content = textContentOf(createServiceInstance(clock).generateSubmittedFormPDF(
-            emptyCaseDetails(),Pair.of("userFullName", "Emma Taylor"))
+        String content = textContentOf(createServiceInstance(clock).generateSubmittedFormPDF(emptyCaseDetails(),
+            Pair.of("userFullName", "Emma Taylor"))
         );
 
         String expectedContent = ResourceReader.readString("empty-form-pdf-content.txt");
@@ -79,7 +79,7 @@ class DocumentGeneratorServiceTest {
 
         String content = textContentOf(
             createServiceInstance(clock).generateSubmittedFormPDF(reformRespondentCaseDetails(),
-            Pair.of("userFullName", "Emma Taylor"))
+                Pair.of("userFullName", "Emma Taylor"))
         );
 
         String expectedContent = ResourceReader.readString("submitted-form-pdf-content.txt");
@@ -93,7 +93,7 @@ class DocumentGeneratorServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionWhenTemplateIsTemplateIsMalformed() {
+    void shouldThrowExceptionWhenTemplateIsMalformed() {
         assertThatThrownBy(() -> createServiceInstance().generateSubmittedFormPDF(null))
             .isInstanceOf(MalformedTemplateException.class);
     }

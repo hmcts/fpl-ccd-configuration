@@ -32,8 +32,7 @@ public class DocumentGeneratorService {
     @SafeVarargs
     public final byte[] generateSubmittedFormPDF(CaseDetails caseDetails, Map.Entry<String, ?>... extraContextEntries) {
         Map<String, Object> context = mapper.convertValue(populateEmptyCollections(caseDetails),
-            new TypeReference<Map<String, Object>>() {
-            });
+            new TypeReference<Map<String, Object>>() {});
 
         for (Map.Entry<String, ?> entry : extraContextEntries) {
             context.put(entry.getKey(), entry.getValue());
@@ -48,6 +47,7 @@ public class DocumentGeneratorService {
         if (caseDetails != null) {
             Map<String, Object> dataCopy = new HashMap<>(caseDetails.getData());
             dataCopy.putIfAbsent("applicants", collectionWithEmptyElement());
+            dataCopy.putIfAbsent("respondents1", collectionWithEmptyElement());
 
             return caseDetails.toBuilder().data(dataCopy).build();
         }
