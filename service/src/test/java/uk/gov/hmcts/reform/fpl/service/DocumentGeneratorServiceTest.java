@@ -32,11 +32,16 @@ class DocumentGeneratorServiceTest {
 
     @Test
     void shouldGenerateSubmittedFormDocumentWhenCaseHasNoData() throws IOException {
-        String content = textContentOf(createServiceInstance().generateSubmittedFormPDF(emptyCaseDetails(),
-            Pair.of("userFullName", "Emma Taylor"))
+        Clock clock = Clock.fixed(Instant.parse("2019-08-02T00:00:00Z"), ZoneId.systemDefault());
+
+        String content = textContentOf(createServiceInstance(clock).generateSubmittedFormPDF(
+            emptyCaseDetails(),Pair.of("userFullName", "Emma Taylor"))
         );
 
-        assertThat(content).contains("C110A");
+        String expectedContent = ResourceReader.readString("empty-form-pdf-content.txt");
+
+        assertThat(splitContentIntoTrimmedLines(content))
+            .containsExactlyInAnyOrderElementsOf(splitContentIntoTrimmedLines(expectedContent));
     }
 
     @Test

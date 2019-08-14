@@ -162,14 +162,15 @@
           <dt class="data-list__title">Fee charged</dt>
           <dd class="data-list__definition"></dd>
         </div>
+
         <div class="data-list__row data-list__row--no-border">
           <dt class="data-list__title">Applicant</dt>
           <dd class="data-list__definition">
-            {% if case_data.applicant is not empty and case_data.applicants is empty and case_data.applicant.name is not empty %}
+            {% if case_data.applicant is not empty and case_data.applicant.name is not empty %}
               {{ case_data.applicant.name }}
-            {% elseif case_data.applicants is not empty %}
+            {% elseif case_data.applicant is empty and case_data.applicants is not empty %}
               {% for applicant in case_data.applicants %}
-                {% if applicant.value.party.organisationName is not empty %}
+                {% if applicant.value is not empty and applicant.value.party is not empty and applicant.value.party.organisationName is not empty %}
                   {{ applicant.value.party.organisationName }}
                 {% endif %}
               {% endfor %}
@@ -178,6 +179,7 @@
             {% endif %}
           </dd>
         </div>
+
         <div class="data-list__row data-list__row--no-border">
           <dt class="data-list__title">Respondents</dt>
           <dd class="data-list__definition">
@@ -223,7 +225,10 @@
     {% endif %}
     {% if case_data.applicants is not empty %}
       {% for applicant in case_data.applicants %}
+        {% if applicant.value is not empty and applicant.value.party is not empty and
+        applicant.value.party.organisationName is not empty %}
           from {{ applicant.value.party.organisationName }}
+        {% endif %}
       {% endfor %}
     {% endif %}
     submitted on {{ null | today | date("d MMMM yyyy") }}
@@ -1586,6 +1591,7 @@
   {% endfor %}
 
   <h3 class="heading heading--two">Applicant</h3>
+
   {% if case_data.applicant is not empty %}
     <dl class="data-list">
       <div class="data-list__row">
@@ -1763,13 +1769,14 @@
         </dd>
       </div>
     </dl>
-    {% elseif case_data.applicants is not empty %}
-      {% for applicant in case_data.applicants %}
-        <dl class="data-list">
+  {% elseif case_data.applicants is not empty and case_data.applicant is empty %}
+    {% for applicant in case_data.applicants %}
+      <dl class="data-list">
           <div class="data-list__row">
             <dt class="data-list__title">Name</dt>
             <dd class="data-list__definition">
-              {% if applicant.value.party.organisationName is not empty %}
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.organisationName is not empty %}
                 {{ applicant.value.party.organisationName }}
               {% else %}
                 -
@@ -1779,7 +1786,9 @@
           <div class="data-list__row">
             <dt class="data-list__title">Contact name</dt>
             <dd class="data-list__definition">
-              {% if applicant.value.party.telephoneNumber is not empty and applicant.value.party.telephoneNumber.contactDirection is not empty %}
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.telephoneNumber is not empty and
+              applicant.value.party.telephoneNumber.contactDirection is not empty %}
                 {{ applicant.value.party.telephoneNumber.contactDirection }}
               {% else %}
                 -
@@ -1789,7 +1798,8 @@
           <div class="data-list__row">
             <dt class="data-list__title">Job title</dt>
             <dd class="data-list__definition">
-              {% if applicant.value.party.jobTitle is not empty %}
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.jobTitle is not empty %}
                 {{ applicant.value.party.jobTitle }}
               {% else %}
                 -
@@ -1799,7 +1809,8 @@
           <div class="data-list__row">
             <dt class="data-list__title">Address</dt>
             <dd class="data-list__definition">
-              {% if applicant.value.party.address is not empty %}
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.address is not empty %}
                 {% if applicant.value.party.address.AddressLine1 is not empty %}
                   <span class="u-comma-before">{{ applicant.value.party.address.AddressLine1 }}</span>
                 {% endif %}
@@ -1820,7 +1831,7 @@
                 {% endif %}
                 {% if applicant.value.party.address.Country is not empty %}
                   <span class="u-comma-before">{{ applicant.value.party.address.Country }}</span>
-                {% endif %}
+              {% endif %}
               {% else %}
                 -
               {% endif %}
@@ -1829,7 +1840,9 @@
           <div class="data-list__row">
             <dt class="data-list__title">Mobile number</dt>
             <dd class="data-list__definition">
-              {% if applicant.value.party.mobileNumber is not empty and applicant.value.party.mobileNumber.telephoneNumber is not empty %}
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.mobileNumber is not empty and
+              applicant.value.party.mobileNumber.telephoneNumber is not empty %}
                 {{ applicant.value.party.mobileNumber.telephoneNumber }}
               {% else %}
                 -
@@ -1839,7 +1852,9 @@
            <div class="data-list__row">
             <dt class="data-list__title">Telephone number</dt>
             <dd class="data-list__definition">
-              {% if applicant.value.party.telephoneNumber is not empty and applicant.value.party.telephoneNumber.telephoneNumber is not empty %}
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.telephoneNumber is not empty and
+              applicant.value.party.telephoneNumber.telephoneNumber is not empty %}
                 {{ applicant.value.party.telephoneNumber.telephoneNumber }}
               {% else %}
                 -
@@ -1849,7 +1864,8 @@
           <div class="data-list__row">
             <dt class="data-list__title">Email address</dt>
             <dd class="data-list__definition">
-              {% if applicant.value.party.email is not empty%}
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.email is not empty %}
                 {{ applicant.value.party.email.email }}
               {% else %}
                 -
@@ -1859,7 +1875,8 @@
           <div class="data-list__row">
             <dt class="data-list__title">Payment by account (PBA) number</dt>
             <dd class="data-list__definition">
-              {% if applicant.value.party.pbaNumber is not empty and applicant.value.party.pbaNumber is not empty %}
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.pbaNumber is not empty and applicant.value.party.pbaNumber is not empty %}
                 {{ applicant.value.party.pbaNumber }}
               {% else %}
                 -
@@ -1927,8 +1944,9 @@
             </dd>
           </div>
         </dl>
-      {% endfor %}
-    {% endif %}
+    {% endfor %}
+  {% endif %}
+
   <h3 class="heading heading--two">
     Other
     {% if case_data.others is not empty and
