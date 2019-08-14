@@ -14,28 +14,26 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ApplicantMigrationService;
 import uk.gov.hmcts.reform.fpl.service.UpdateAndValidatePbaService;
 
+import static org.springframework.util.ObjectUtils.isEmpty;
+
 @Api
 @RestController
 @RequestMapping("/callback/enter-applicant")
 public class ApplicantController {
 
-    @Autowired
     private final ApplicantMigrationService applicantMigrationService;
-
-    @Autowired
     private final UpdateAndValidatePbaService updateAndValidatePbaService;
-
     private final ObjectMapper mapper;
 
     @Autowired
     public ApplicantController(ApplicantMigrationService applicantMigrationService,
-                               UpdateAndValidatePbaService updateAndValidatePbaService, ObjectMapper mapper) {
+                               UpdateAndValidatePbaService updateAndValidatePbaService,
+                               ObjectMapper mapper) {
         this.applicantMigrationService = applicantMigrationService;
         this.updateAndValidatePbaService = updateAndValidatePbaService;
         this.mapper = mapper;
     }
 
-    @SuppressWarnings("unchecked")
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
@@ -49,7 +47,6 @@ public class ApplicantController {
             .build();
     }
 
-    @SuppressWarnings("unchecked")
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
@@ -62,7 +59,7 @@ public class ApplicantController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (caseData.getApplicants() != null) {
+        if (!isEmpty(caseData.getApplicants())) {
             caseDetails.getData().put("applicants", applicantMigrationService.addHiddenValues(caseData));
         }
 

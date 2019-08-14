@@ -168,10 +168,12 @@
           <dd class="data-list__definition">
             {% if case_data.applicant is not empty and case_data.applicant.name is not empty %}
               {{ case_data.applicant.name }}
-            {% elseif case_data.applicant is empty and case_data.applicants is not empty %}
+            {% elseif case_data.applicants is not empty %}
               {% for applicant in case_data.applicants %}
                 {% if applicant.value is not empty and applicant.value.party is not empty and applicant.value.party.organisationName is not empty %}
                   {{ applicant.value.party.organisationName }}
+                {% else %}
+                  -
                 {% endif %}
               {% endfor %}
             {% else %}

@@ -34,7 +34,7 @@ class MigrationControllerTest {
     private static final String USER_ID = "1";
 
     @Autowired
-    private ObjectMapper MAPPER;
+    private ObjectMapper mapper;
 
     @Autowired
     private MockMvc mockMvc;
@@ -88,11 +88,11 @@ class MigrationControllerTest {
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsString(request)))
+                .content(mapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andReturn();
 
-        return MAPPER.readValue(response.getResponse()
+        return mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 }

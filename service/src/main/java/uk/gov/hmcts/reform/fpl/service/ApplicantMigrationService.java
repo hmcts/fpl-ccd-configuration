@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.google.common.collect.ImmutableList;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -12,12 +13,13 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
+import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 public class ApplicantMigrationService {
 
     public String setMigratedValue(CaseData caseData) {
-        if (caseData.getApplicants() != null || caseData.getApplicant() == null) {
+        if (!isEmpty(caseData.getApplicants()) || isEmpty(caseData.getApplicant())) {
             return "Yes";
         } else {
             return "No";
@@ -25,10 +27,8 @@ public class ApplicantMigrationService {
     }
 
     public List<Element<Applicant>> expandApplicantCollection(CaseData caseData) {
-        if (caseData.getApplicants() == null) {
-            List<Element<Applicant>> populatedApplicant = new ArrayList<>();
-
-            populatedApplicant.add(Element.<Applicant>builder()
+        if (isEmpty(caseData.getApplicants())) {
+            return ImmutableList.of(Element.<Applicant>builder()
                 .value(Applicant.builder()
                     .party(ApplicantParty.builder()
                         .partyId(UUID.randomUUID().toString())
@@ -36,22 +36,20 @@ public class ApplicantMigrationService {
                     .build())
                 .build());
 
-            return populatedApplicant;
         } else {
             return caseData.getApplicants();
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<Element<Applicant>> addHiddenValues(CaseData caseData) {
         List<Element<Applicant>> applicants = new ArrayList<>();
 
-        if (caseData.getApplicants() != null) {
+        if (!isEmpty(caseData.getApplicants())) {
             applicants = caseData.getApplicants().stream()
                 .map(element -> {
                     Applicant.ApplicantBuilder applicantBuilder = Applicant.builder();
 
-                    if (element.getValue().getParty().getPartyId() == null) {
+                    if (isEmpty(element.getValue().getParty().getPartyId())) {
                         applicantBuilder.party(element.getValue().getParty().toBuilder()
                             .partyId(UUID.randomUUID().toString())
                             .partyType(PartyType.ORGANISATION).build());
