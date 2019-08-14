@@ -14,8 +14,8 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.Respondents;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -46,7 +46,7 @@ class RespondentMidEventControllerTest {
                     "respondents1", ImmutableList.of(
                         ImmutableMap.of(
                             "id", "",
-                            "value", Respondents.builder()
+                            "value", Respondent.builder()
                                 .party(RespondentParty.builder()
                                     .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
                                     .build())
@@ -71,7 +71,7 @@ class RespondentMidEventControllerTest {
                     "respondents1", ImmutableList.of(
                         ImmutableMap.of(
                             "id", "",
-                            "value", Respondents.builder()
+                            "value", Respondent.builder()
                                 .party(RespondentParty.builder()
                                     .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
                                     .build())
@@ -79,7 +79,7 @@ class RespondentMidEventControllerTest {
                         ),
                         ImmutableMap.of(
                             "id", "",
-                            "value", Respondents.builder()
+                            "value", Respondent.builder()
                                 .party(RespondentParty.builder()
                                     .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
                                     .build())
@@ -104,7 +104,7 @@ class RespondentMidEventControllerTest {
                     "respondents1", ImmutableList.of(
                         ImmutableMap.of(
                             "id", "",
-                            "value", Respondents.builder()
+                            "value", Respondent.builder()
                                 .party(RespondentParty.builder()
                                     .dateOfBirth(Date.from(ZonedDateTime.now().minusDays(1).toInstant()))
                                     .build())

@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class Respondents {
+public class Respondent {
     private final RespondentParty party;
     private final String leadRespondentIndicator;
 }

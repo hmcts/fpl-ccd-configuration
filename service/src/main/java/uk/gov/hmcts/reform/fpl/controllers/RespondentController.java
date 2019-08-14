@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.Respondents;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
@@ -65,23 +65,22 @@ public class RespondentController {
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
 
-        if (caseDetails.getData().containsKey("respondents1")) {
-            List<Map<String, Object>> migratedRespondentObject =
-                (List<Map<String, Object>>) caseDetails.getData().get("respondents1");
+        List<Map<String, Object>> respondentObject =
+            (List<Map<String, Object>>) caseDetails.getData().get("respondents1");
 
-            List<Respondents> respondents = migratedRespondentObject.stream()
-                .map(respondent ->
-                    mapper.mapObject((Map<String, Object>) respondent.get("value"), Respondents.class))
-                .collect(toList());
+        List<Respondent> respondents = respondentObject.stream()
+            .map(respondent ->
+                mapper.mapObject((Map<String, Object>) respondent.get("value"), Respondent.class))
+            .collect(toList());
 
-            if (respondents.stream()
-                .map(Respondents::getParty)
-                .map(Party::getDateOfBirth)
-                .filter(Objects::nonNull)
-                .anyMatch(dob -> dob.after(new Date()))) {
-                errors.add("Date of birth cannot be in the future");
-            }
+        if (respondents.stream()
+            .map(Respondent::getParty)
+            .map(Party::getDateOfBirth)
+            .filter(Objects::nonNull)
+            .anyMatch(dob -> dob.after(new Date()))) {
+            errors.add("Date of birth cannot be in the future");
         }
+
         return errors.build();
     }
 }

@@ -22,6 +22,26 @@ class RespondentServiceTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    void shouldExpandRespondentCollectionWhenNoRespondents() {
+        Map<String, Object> respondentObject = new HashMap<>();
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(respondentObject)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = service.expandRespondentCollection(caseDetails);
+        List<Map<String, Object>> respondents = (List<Map<String, Object>>) response.getData().get("respondents1");
+        Map<String, Object> value = (Map<String, Object>) respondents.get(0).get("value");
+        Map<String, Object> party = (Map<String, Object>) value.get("party");
+
+        assertThat(response.getData()).containsOnlyKeys("respondents1");
+
+        assertThat(respondents).hasSize(1);
+        assertThat(party.get("partyId")).isNotNull();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     void shouldAddPartyIDAndPartyTypeValuesToSingleRespondent() {
         Map<String, Object> respondentObject = new HashMap<>();
 
