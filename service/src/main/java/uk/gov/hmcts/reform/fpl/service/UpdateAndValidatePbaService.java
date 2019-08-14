@@ -15,26 +15,30 @@ import uk.gov.hmcts.reform.fpl.utils.PBANumberHelper;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
+import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.utils.PBANumberHelper.updatePBANumber;
 import static uk.gov.hmcts.reform.fpl.utils.PBANumberHelper.validatePBANumber;
 
 @Service
 public class UpdateAndValidatePbaService {
 
+    private final ObjectMapper mapper;
+
     @Autowired
-    private final ObjectMapper mapper = new ObjectMapper();
+    public UpdateAndValidatePbaService(ObjectMapper mapper) {
+        this.mapper = mapper;
+    }
 
     public AboutToStartOrSubmitCallbackResponse updateAndValidatePbaNumbers(CaseDetails caseDetails) {
         ImmutableList.Builder<String> validationErrors = ImmutableList.builder();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (caseData.getApplicants() != null) {
+        if (!isEmpty(caseData.getApplicants())) {
             List<Element<Applicant>> applicants = caseData.getApplicants().stream()
                 .map(element -> {
                     Applicant.ApplicantBuilder applicantBuilder = Applicant.builder();
 
-                    if (element.getValue().getParty().getPbaNumber() != null) {
+                    if (!isEmpty(element.getValue().getParty().getPbaNumber())) {
                         String pba = updatePBANumber(element.getValue().getParty().getPbaNumber());
                         validationErrors.addAll(validatePBANumber(pba));
 
@@ -53,7 +57,7 @@ public class UpdateAndValidatePbaService {
         } else {
             OldApplicant applicantData = caseData.getApplicant();
 
-            if (isNullOrEmpty(applicantData.getPbaNumber())) {
+            if (isEmpty(applicantData.getPbaNumber())) {
                 return AboutToStartOrSubmitCallbackResponse.builder()
                     .data(caseDetails.getData())
                     .errors(validationErrors.build())
@@ -68,6 +72,7 @@ public class UpdateAndValidatePbaService {
                 caseDetails.getData().put("applicant", applicantData);
             }
         }
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .errors(validationErrors.build())

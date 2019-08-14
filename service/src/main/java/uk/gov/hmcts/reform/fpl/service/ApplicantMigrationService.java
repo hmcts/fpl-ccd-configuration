@@ -31,6 +31,7 @@ public class ApplicantMigrationService {
             return ImmutableList.of(Element.<Applicant>builder()
                 .value(Applicant.builder()
                     .party(ApplicantParty.builder()
+                        // A value within applicant party needs to be set in order to expand UI view.
                         .partyId(UUID.randomUUID().toString())
                         .build())
                     .build())

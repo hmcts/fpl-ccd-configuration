@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,6 +19,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -36,186 +41,70 @@ public class ApplicantMidEventControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Test
-    void shouldReturnErrorsWhenThereIsNewApplicantAndEmptyPbaNumber() throws Exception {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of(
-                    "applicants", ImmutableList.of(
-                        ImmutableMap.of(
-                            "id", "",
-                            "value", Applicant.builder()
-                                .party(ApplicantParty.builder()
-                                    .pbaNumber("")
-                                    .build())
-                                .build()
-                        )
-                    )
-                ))
-                .build())
-            .build();
+    @ParameterizedTest
+    @ValueSource(strings = {"1234567", "pba1234567", "PBA1234567" })
+    void shouldReturnNoErrorsWhenValidPbaNumber(String input) throws Exception {
+        CallbackRequest request = getCallbackRequest(input);
 
-        MvcResult response = makeRequest(request);
+        assertPbaNumberIsAsExpected(request);
+    }
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+    @ParameterizedTest
+    @ValueSource(strings = {"  ", "\t", "\n", "123", "12345678"})
+    void shouldReturnErrorsWhenThereIsInvalidPbaNumber(String input) throws Exception {
+        CallbackRequest request = getCallbackRequest(input);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(
+            makeRequest(request).getResponse().getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldReturnErrorsWhenThereIsNewApplicantAndPbaNumberIsNull() throws Exception {
+    void shouldReturnNoErrorsWhenThereIsNewApplicantAndPbaNumberIsNull() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
-                .data(ImmutableMap.of(
-                    "applicants", ImmutableList.of(
-                        ImmutableMap.of(
-                            "id", "",
-                            "value", Applicant.builder()
-                                .party(ApplicantParty.builder()
-                                    .pbaNumber(null)
-                                    .build())
-                                .build()
-                        )
-                    )
-                ))
+                .data(ImmutableMap.of("applicants", ImmutableList.of(Element.builder()
+                    .id(UUID.randomUUID())
+                    .value(Applicant.builder()
+                        .party(ApplicantParty.builder().build())
+                        .build())
+                    .build())))
                 .build())
             .build();
 
-        MvcResult response = makeRequest(request);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(
+            makeRequest(request).getResponse().getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
-    @Test
-    void shouldReturnErrorsWhenThereIsNewApplicantAndPbaNumberIsLessThanSevenDigits() throws Exception {
-        CallbackRequest request = CallbackRequest.builder()
+    private CallbackRequest getCallbackRequest(String input) {
+        return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
-                .data(ImmutableMap.of(
-                    "applicants", ImmutableList.of(
-                        ImmutableMap.of(
-                            "id", "",
-                            "value", Applicant.builder()
-                                .party(ApplicantParty.builder()
-                                    .pbaNumber("123")
-                                    .build())
-                                .build()
-                        )
-                    )
-                ))
+                .data(ImmutableMap.of("applicants", ImmutableList.of(Element.builder()
+                    .id(UUID.randomUUID())
+                    .value(Applicant.builder()
+                        .party(ApplicantParty.builder()
+                            .pbaNumber(input)
+                            .build())
+                        .build())
+                    .build())))
                 .build())
             .build();
-
-        MvcResult response = makeRequest(request);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
-    @Test
-    void shouldReturnErrorsWhenThereIsNewApplicantAndPbaNumberIsMoreThanSevenDigits() throws Exception {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of(
-                    "applicants", ImmutableList.of(
-                        ImmutableMap.of(
-                            "id", "",
-                            "value", Applicant.builder()
-                                .party(ApplicantParty.builder()
-                                    .pbaNumber("12345678")
-                                    .build())
-                                .build()
-                        )
-                    )
-                ))
-                .build())
-            .build();
-
-        MvcResult response = makeRequest(request);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
-    }
-
-    @Test
-    void shouldReturnNoErrorsWhenThereIsNewApplicantAndPbaNumberIsSevenDigits() throws Exception {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of(
-                    "applicants", ImmutableList.of(
-                        ImmutableMap.of(
-                            "id", "",
-                            "value", Applicant.builder()
-                                .party(ApplicantParty.builder()
-                                    .pbaNumber("1234567")
-                                    .build())
-                                .build()
-                        )
-                    )
-                ))
-                .build())
-            .build();
-
-        assertPbaNumberIsAsExpected(request);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    void shouldReturnNoErrorsWhenThereIsNewApplicantAndPbaNumberIsLowerCaseAndSevenDigits() throws Exception {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of(
-                    "applicants", ImmutableList.of(
-                        ImmutableMap.of(
-                            "id", "",
-                            "value", Applicant.builder()
-                                .party(ApplicantParty.builder()
-                                    .pbaNumber("pba1234567")
-                                    .build())
-                                .build()
-                        )
-                    )
-                ))
-                .build())
-            .build();
-
-        assertPbaNumberIsAsExpected(request);
-    }
-
-    @Test
-    void shouldReturnNoErrorsWhenThereIsNewApplicantAndPbaNumberIsUpperCaseAndSevenDigits() throws Exception {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of(
-                    "applicants", ImmutableList.of(
-                        ImmutableMap.of(
-                            "id", "",
-                            "value", Applicant.builder()
-                                .party(ApplicantParty.builder()
-                                    .pbaNumber("PBA1234567")
-                                    .build())
-                                .build()
-                        )
-                    )
-                ))
-                .build())
-            .build();
-
-        assertPbaNumberIsAsExpected(request);
+    private MvcResult makeRequest(CallbackRequest request) throws Exception {
+        return mockMvc
+            .perform(post("/callback/enter-applicant/mid-event")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andReturn();
     }
 
     private void assertPbaNumberIsAsExpected(CallbackRequest request) throws Exception {
@@ -229,16 +118,5 @@ public class ApplicantMidEventControllerTest {
         CaseData caseData = objectMapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(caseData.getApplicants().get(0).getValue().getParty().getPbaNumber()).isEqualTo("PBA1234567");
-    }
-
-    private MvcResult makeRequest(CallbackRequest request) throws Exception {
-        return mockMvc
-            .perform(post("/callback/enter-applicant/mid-event")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
     }
 }
