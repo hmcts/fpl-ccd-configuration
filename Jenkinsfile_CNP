@@ -10,7 +10,6 @@ def component = "case-service"
 def secrets = [
   'fpl-${env}': [
     secret('fpl-case-service-s2s-secret', 'IDAM_S2S_AUTH_TOTP_SECRET'),
-    secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN'),
     secret('notify-api-key', 'NOTIFY_API_KEY'),
     secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
     secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
@@ -29,7 +28,8 @@ def secrets = [
   'ccd-${env}': [
     secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_IDAM_CLIENT_SECRET'),
     secret('ccd-as-a-pr-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
-    secret('ccd-as-a-pr-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD')
+    secret('ccd-as-a-pr-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD'),
+    secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
   ]
 ]
 

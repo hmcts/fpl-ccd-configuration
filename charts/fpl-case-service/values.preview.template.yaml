@@ -35,6 +35,7 @@ ccd:
       value: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
     environment:
       PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
+      ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
   definitionStoreApi:
     s2sKey: ${CCD_DEFINITION_STORE_S2S_SECRET}
   dataStoreApi:
