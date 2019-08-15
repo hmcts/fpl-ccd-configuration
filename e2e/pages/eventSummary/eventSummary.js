@@ -17,5 +17,4 @@ module.exports = {
     I.fillField(this.fields.description, description);
     this.submit(button);
   },
-
 };
