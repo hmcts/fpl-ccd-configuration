@@ -42,8 +42,7 @@ public class CaseData {
     @NotNull(message = "You need to add details to applicant")
     @Valid
     private final Applicant applicant;
-    private final List<Element<Respondent>> respondent;
-    private final List<Element<RespondentParty>> respondent1;
+    private final List<Element<RespondentParty>> respondent;
     private final Proceeding proceeding;
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;

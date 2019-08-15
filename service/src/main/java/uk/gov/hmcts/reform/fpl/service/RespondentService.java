@@ -22,29 +22,23 @@ public class RespondentService {
     @Autowired
     private final ObjectMapper mapper = new ObjectMapper();
 
-    public AboutToStartOrSubmitCallbackResponse setMigratedValue(CaseDetails caseDetails) {
+    public AboutToStartOrSubmitCallbackResponse expandRespondentCollection(CaseDetails caseDetails) {
         Map<String, Object> data = caseDetails.getData();
 
-        if (caseDetails.getData().containsKey("respondents1") || !caseDetails.getData().containsKey("respondents")) {
-            data.put("respondentsMigrated", "Yes");
-
-            if (!caseDetails.getData().containsKey("respondents1")) {
-                // Populates first respondent so UI contains expanded Respondent Object.
-                List<Map<String, Object>> populatedRespondent = new ArrayList<>();
-                populatedRespondent.add(ImmutableMap.of(
-                    "id", UUID.randomUUID().toString(),
-                    "value", ImmutableMap.of(
-                        "party", ImmutableMap.of(
-                            // Variable within CCD party structure must be set to expand Collection.
-                            // PartyId is a hidden field so setting a value will not persist to the db
-                            "partyId", UUID.randomUUID().toString()
-                        )
-                    ))
-                );
-                data.put("respondents1", populatedRespondent);
-            }
-        } else {
-            data.put("respondentsMigrated", "No");
+        if (!caseDetails.getData().containsKey("respondents1")) {
+            // Populates first respondent so UI contains expanded Respondent Object.
+            List<Map<String, Object>> populatedRespondent = new ArrayList<>();
+            populatedRespondent.add(ImmutableMap.of(
+                "id", UUID.randomUUID().toString(),
+                "value", ImmutableMap.of(
+                    "party", ImmutableMap.of(
+                        // Variable within CCD party structure must be set to expand Collection.
+                        // PartyId is a hidden field so setting a value will not persist to the db
+                        "partyId", UUID.randomUUID().toString()
+                    )
+                ))
+            );
+            data.put("respondents1", populatedRespondent);
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
