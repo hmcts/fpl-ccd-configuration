@@ -46,7 +46,7 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "respondents",
+    "CaseFieldID": "respondents1",
     "TabFieldDisplayOrder": 2
   },
   {
@@ -56,7 +56,7 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "respondents1",
+    "CaseFieldID": "applicant",
     "TabFieldDisplayOrder": 3
   },
   {
@@ -66,7 +66,7 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "applicant",
+    "CaseFieldID": "applicants",
     "TabFieldDisplayOrder": 4
   },
   {
@@ -76,7 +76,7 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "applicants",
+    "CaseFieldID": "solicitor",
     "TabFieldDisplayOrder": 5
   },
   {
@@ -86,18 +86,8 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "solicitor",
-    "TabFieldDisplayOrder": 6
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "CasePeopleTab",
-    "TabLabel": "People in the case",
-    "TabDisplayOrder": 3,
     "CaseFieldID": "others",
-    "TabFieldDisplayOrder": 7
+    "TabFieldDisplayOrder": 6
   },
   {
     "LiveFrom": "01/01/2017",
