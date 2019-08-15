@@ -14,6 +14,6 @@ fi
 docker run --rm --name json2xlsx \
   -v ${definition_input_dir}:/tmp/ccd-definition \
   -v ${definition_output_file}:/tmp/ccd-definition.xlsx \
-  -e CCD_DEF_CASE_SERVICE_BASE_URL \
+  -e CCD_DEF_CASE_SERVICE_BASE_URL=${CCD_DEF_CASE_SERVICE_BASE_URL:-http://fpl-service:4000} \
   hmcts/ccd-definition-processor:6e82fb6 \
   json2xlsx -D /tmp/ccd-definition -o /tmp/ccd-definition.xlsx
