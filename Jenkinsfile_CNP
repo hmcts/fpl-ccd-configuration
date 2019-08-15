@@ -98,11 +98,11 @@ withPipeline(type, product, component) {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
       
-      env
-      
       ./bin/configurer/add-roles.sh
       ./bin/configurer/import-ccd-definition.sh
     """
+
+    env.URL="https://case-management-web-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
   }
 
   after('smoketest:saat-staging') {
