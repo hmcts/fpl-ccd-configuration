@@ -37,22 +37,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "amendChildren",
-    "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "enterRespondents",
     "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "amendRespondents",
-    "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
@@ -67,13 +53,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "enterOthers",
     "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "amendOthers",
-    "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
@@ -107,22 +86,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "amendInternationalElement",
-    "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "otherProceedings",
     "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "amendOtherProceedings",
-    "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
@@ -137,13 +102,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "attendingHearing",
     "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "amendAttendingHearing",
-    "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
@@ -206,6 +164,50 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "sendToGatekeeper",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "amendChildren",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "amendRespondents",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "amendOthers",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "amendInternationalElement",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "amendOtherProceedings",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "amendAttendingHearing",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },

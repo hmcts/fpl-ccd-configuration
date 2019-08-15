@@ -21,14 +21,6 @@ Scenario('HMCTS admin can login and add a FamilyMan case number to a submitted c
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
 
-
-  // Children
-  // Respondents
-  // Other parties to be given notice
-  // International Element
-  // Other proceedings
-  // Attending the Hearing
-
   function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description,
     I_doActionsOnEditPage = () => {}) {
 
@@ -40,25 +32,25 @@ Scenario('HMCTS admin can login and add a FamilyMan case number to a submitted c
     I.see(description);
   }
 
-  const summary = 'Summary of change';
-  const description = 'Description of change';
+  const summaryText = 'Summary of change';
+  const descriptionText = 'Description of change';
 
   I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendChildren,
-    summary, description);
+    summaryText, descriptionText);
 
   I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendRespondents,
-    summary, description);
+    summaryText, descriptionText);
 
   I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendOther,
-    summary, description);
+    summaryText, descriptionText);
 
   I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendInternationalElement,
-    summary, description);
+    summaryText, descriptionText);
 
   I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendOtherProceedings,
-    summary, description, () => enterOtherProceedingsPage.selectNoForProceeding());
+    summaryText, descriptionText, () => enterOtherProceedingsPage.selectNoForProceeding());
 
   I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendAttendingHearing,
-    summary, description);
+    summaryText, descriptionText);
 
 });
