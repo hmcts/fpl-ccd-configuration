@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.OldApplicant;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -56,20 +55,14 @@ class MigrationControllerTest {
 
     @Test
     void shouldOnlyRemoveApplicantWhilstRetainingApplicantsStructure() throws Exception {
-        List<Element<Applicant>> newApplicant = new ArrayList<>();
-        newApplicant.add(Element.<Applicant>builder()
+        List<Element<Applicant>> applicants = ImmutableList.of(Element.<Applicant>builder()
             .value(Applicant.builder().build())
             .build());
 
-        CaseData caseData = CaseData.builder()
-            .applicant(OldApplicant.builder().build())
-            .applicants(newApplicant)
-            .build();
-
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
             ImmutableMap.of(
-                "applicant", caseData.getApplicant(),
-                "applicants", caseData.getApplicants()
+                "applicant", OldApplicant.builder().build(),
+                "applicants", applicants
             ));
 
         assertThat(callbackResponse.getData()).containsOnlyKeys("applicants");
