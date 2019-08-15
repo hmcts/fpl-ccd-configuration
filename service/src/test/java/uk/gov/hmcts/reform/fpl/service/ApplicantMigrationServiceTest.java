@@ -68,13 +68,21 @@ class ApplicantMigrationServiceTest {
     }
 
     @Test
-    void shouldNotExpandApplicantCollectionWhenApplicantsAlreadyHasSize1() {
+    void shouldNotExpandApplicantCollectionWhenApplicantsAlreadyExists() {
+        String uuid = UUID.randomUUID().toString();
+
         CaseData caseData = CaseData.builder().applicants(ImmutableList.of(
-            Element.<Applicant>builder().build()))
+            Element.<Applicant>builder()
+                .value(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .partyId(uuid)
+                        .build())
+                    .build())
+                .build()))
             .build();
 
-        assertThat(caseData.getApplicants()).hasSize(1);
         assertThat(service.expandApplicantCollection(caseData)).hasSize(1);
+        assertThat(service.expandApplicantCollection(caseData).get(0).getValue().getParty().partyId).isEqualTo(uuid);
     }
 
 
