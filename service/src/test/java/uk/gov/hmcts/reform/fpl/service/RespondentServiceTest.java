@@ -20,37 +20,24 @@ class RespondentServiceTest {
 
     private final RespondentService service = new RespondentService();
 
+    @SuppressWarnings("unchecked")
     @Test
-    void shouldAddMigratedRespondentYesWhenNoRespondentData() {
+    void shouldExpandRespondentCollectionWhenNoRespondents() {
+        Map<String, Object> respondentObject = new HashMap<>();
+
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("data", "some data"))
+            .data(respondentObject)
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = service.setMigratedValue(caseDetails);
+        AboutToStartOrSubmitCallbackResponse response = service.expandRespondentCollection(caseDetails);
+        List<Map<String, Object>> respondents = (List<Map<String, Object>>) response.getData().get("respondents1");
+        Map<String, Object> value = (Map<String, Object>) respondents.get(0).get("value");
+        Map<String, Object> party = (Map<String, Object>) value.get("party");
 
-        assertThat(response.getData()).containsEntry("respondentsMigrated", "Yes");
-    }
+        assertThat(response.getData()).containsOnlyKeys("respondents1");
 
-    @Test
-    void shouldAddMigratedRespondentYesWhenRespondents1Exists() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("respondents1", "some value"))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = service.setMigratedValue(caseDetails);
-
-        assertThat(response.getData()).containsEntry("respondentsMigrated", "Yes");
-    }
-
-    @Test
-    void shouldAddMigratedRespondentNoWhenOldRespondentsExists() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("respondents", "some value"))
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse response = service.setMigratedValue(caseDetails);
-
-        assertThat(response.getData()).containsEntry("respondentsMigrated", "No");
+        assertThat(respondents).hasSize(1);
+        assertThat(party.get("partyId")).isNotNull();
     }
 
     @SuppressWarnings("unchecked")
@@ -134,8 +121,11 @@ class RespondentServiceTest {
 
     @Test
     void shouldNotAddPartyIDAndPartyTypeValuesToDataStructureIfRespondents1IsNotPresent() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("respondent", "data");
+
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(createData("respondent", "data"))
+            .data(data)
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
@@ -211,12 +201,5 @@ class RespondentServiceTest {
 
         assertThat(secondParty).containsEntry("firstName", "Lucy");
         assertThat(secondParty.get("partyId")).isNotNull();
-    }
-
-    private Map<String, Object> createData(String key, String value) {
-        Map<String, Object> data = new HashMap<>();
-        data.put(key, value);
-
-        return data;
     }
 }
