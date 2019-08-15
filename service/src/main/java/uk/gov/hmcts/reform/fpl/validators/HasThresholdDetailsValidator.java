@@ -1,15 +1,18 @@
 package uk.gov.hmcts.reform.fpl.validators;
 
+import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.HasEPOGrounds;
+import uk.gov.hmcts.reform.fpl.validators.interfaces.HasThresholdDetails;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class HasEPOGroundsValidator implements ConstraintValidator<HasEPOGrounds, CaseData> {
+public class HasThresholdDetailsValidator implements
+    ConstraintValidator<HasThresholdDetails, CaseData> {
+
     @Override
-    public void initialize(HasEPOGrounds constraintAnnotation) {
+    public void initialize(HasThresholdDetails constraintAnnotation) {
     }
 
     @Override
@@ -21,8 +24,8 @@ public class HasEPOGroundsValidator implements ConstraintValidator<HasEPOGrounds
         if (caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
             && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
 
-            return caseData.getGroundsForEPO() != null && caseData.getGroundsForEPO().getReason() != null
-                && !caseData.getGroundsForEPO().getReason().contains("");
+            return caseData.getGroundsForEPO() != null
+                && StringUtils.isNotBlank(caseData.getGroundsForEPO().getThresholdDetails());
         } else {
             return true;
         }

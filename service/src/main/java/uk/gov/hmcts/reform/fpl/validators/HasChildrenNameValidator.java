@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.validators;
 
+import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Children;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasChildName;
@@ -16,12 +17,11 @@ public class HasChildrenNameValidator implements ConstraintValidator<HasChildNam
 
     @Override
     public boolean isValid(Children children, ConstraintValidatorContext constraintValidatorContext) {
-
         if (children.getAdditionalChildren() != null || children.getFirstChild() != null) {
             return children.getAllChildren().stream()
                 .filter(Objects::nonNull)
                 .map(Child::getChildName)
-                .allMatch(childName -> childName != null && !childName.isBlank());
+                .allMatch(StringUtils::isNotEmpty);
         } else {
             return false;
         }

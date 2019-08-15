@@ -8,7 +8,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class Solicitor {
-
     private final String dx;
     private final String name;
     private final String email;

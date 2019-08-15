@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.validators.interfaces;
 
-import uk.gov.hmcts.reform.fpl.validators.HasThresholdCriteriaDetailsValidator;
+import uk.gov.hmcts.reform.fpl.validators.HasThresholdReasonValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,9 +12,9 @@ import javax.validation.Payload;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = { HasThresholdCriteriaDetailsValidator.class })
-public @interface HasThresholdCriteriaDetails {
-    String message() default "Enter details of how the case meets the threshold criteria";
+@Constraint(validatedBy = { HasThresholdReasonValidator.class })
+public @interface HasThresholdReason {
+    String message() default "Select at least one option for how this case meets the threshold criteria";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

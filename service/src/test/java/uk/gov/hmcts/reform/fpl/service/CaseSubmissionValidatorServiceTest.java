@@ -31,12 +31,19 @@ class CaseSubmissionValidatorServiceTest {
         CaseData caseData = CaseData.builder().build();
         List<String> errors = service.validateCaseDetails(caseData);
 
-        assertThat(errors).contains("- Enter a case name");
-        assertThat(errors).contains("- Select at least one type of order");
-        assertThat(errors).contains("- You need to add details to children");
-        assertThat(errors).contains("- You need to add details to applicant");
-        assertThat(errors).contains("- You need to add details to hearing");
-        assertThat(errors).contains("- Tell us the status of all documents including those that you haven't uploaded");
+        assertThat(errors).containsOnly("In the case name section:",
+            "- Enter a case name",
+            "In the orders section:",
+            "- Select at least one type of order",
+            "In the children section:",
+            "- You need to add details to children",
+            "In the applicant section:",
+            "- You need to add details to applicant",
+            "In the hearing section:",
+            "- You need to add details to hearing",
+            "In the documents section:",
+            "- Tell us the status of all documents including those that you haven't uploaded"
+        );
     }
 
     @Test
@@ -50,16 +57,23 @@ class CaseSubmissionValidatorServiceTest {
 
         List<String> errors = service.validateCaseDetails(caseData);
 
-        assertThat(errors).contains("- Select at least one type of order");
-        assertThat(errors).contains("- Select an option for when you need a hearing");
-        assertThat(errors).contains("- Enter the applicant's full name");
-        assertThat(errors).contains("- Enter the contact's full name");
-        assertThat(errors).contains("- Enter a job title for the contact");
-        assertThat(errors).contains("- Enter a valid address for the contact");
-        assertThat(errors).contains("- Enter at least one telephone number for the contact");
-        assertThat(errors).contains("- Enter an email address for the contact");
-        assertThat(errors).contains("- Tell us the names of all children in the case");
-        assertThat(errors).contains("- Tell us the status of all documents including those that you haven't uploaded");
+        assertThat(errors).containsOnly("In the orders section:",
+            "- Select at least one type of order",
+            "- Select an option for when you need a hearing",
+            "In the applicant section:",
+            "- Enter the applicant's full name",
+            "- Enter the contact's full name",
+            "- Enter a job title for the contact",
+            "- Enter a valid address for the contact",
+            "- Enter at least one telephone number for the contact",
+            "- Enter an email address for the contact",
+            "In the children section:",
+            "- Tell us the names of all children in the case",
+            "In the documents section:",
+            "- Tell us the status of all documents including those that you haven't uploaded",
+            "In the hearing section:",
+            "- Select an option for when you need a hearing"
+        );
     }
 
     @Test
@@ -76,7 +90,7 @@ class CaseSubmissionValidatorServiceTest {
                 .build())
             .applicant(Applicant.builder()
                 .telephone("12345")
-                .email("bra@winterfell.com")
+                .email("bran@winterfell.com")
                 .name("Bran Stark")
                 .personToContact("Sansa Stark")
                 .jobTitle("Warden of the north")
@@ -85,6 +99,27 @@ class CaseSubmissionValidatorServiceTest {
                     .postcode("BT66 7RR")
                     .build())
                 .build())
+            .documents_socialWorkStatement_document(Document.builder()
+                .documentStatus("reason")
+                .build())
+            .documents_checklist_document(Document.builder()
+                .documentStatus("reason")
+                .build())
+            .documents_socialWorkAssessment_document(Document.builder()
+                .documentStatus("reason")
+                .build())
+            .documents_socialWorkCarePlan_document(Document.builder()
+                .documentStatus("reason")
+                .build())
+            .documents_socialWorkChronology_document(Document.builder()
+                .documentStatus("reason")
+                .build())
+            .documents_socialWorkEvidenceTemplate_document(Document.builder()
+                .documentStatus("reason")
+                .build())
+            .documents_threshold_document(Document.builder()
+                .documentStatus("reason")
+                .build())
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
                 .build())
@@ -92,10 +127,11 @@ class CaseSubmissionValidatorServiceTest {
 
         List<String> errors = service.validateCaseDetails(caseData);
 
-        assertThat(errors).contains("- Select at least one option for how this case meets grounds for an emergency"
-            + " protection order");
-        assertThat(errors).contains("- Select at least one option for how this case meets the threshold criteria");
-        assertThat(errors).contains("- Enter details of how the case meets the threshold criteria");
+        assertThat(errors).containsOnly("In the grounds for the application section:",
+            "- Select at least one option for how this case meets grounds for an emergency protection order",
+            "- Select at least one option for how this case meets the threshold criteria",
+            "- Enter details of how the case meets the threshold criteria"
+        );
     }
 
     @Test
@@ -112,7 +148,7 @@ class CaseSubmissionValidatorServiceTest {
                 .build())
             .applicant(Applicant.builder()
                 .telephone("12345")
-                .email("bra@winterfell.com")
+                .email("bran@winterfell.com")
                 .name("Bran Stark")
                 .personToContact("Sansa Stark")
                 .jobTitle("Warden of the north")
@@ -122,6 +158,27 @@ class CaseSubmissionValidatorServiceTest {
                 .build())
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
+                .build())
+            .documents_socialWorkStatement_document(Document.builder()
+                .documentStatus("reason")
+                .build())
+            .documents_checklist_document(Document.builder()
+                .documentStatus("reason")
+                .build())
+            .documents_socialWorkAssessment_document(Document.builder()
+                .documentStatus("reason")
+                .build())
+            .documents_socialWorkCarePlan_document(Document.builder()
+                .documentStatus("reason")
+                .build())
+            .documents_socialWorkChronology_document(Document.builder()
+                .documentStatus("reason")
+                .build())
+            .documents_socialWorkEvidenceTemplate_document(Document.builder()
+                .documentStatus("reason")
+                .build())
+            .documents_threshold_document(Document.builder()
+                .documentStatus("reason")
                 .build())
             .build();
 

@@ -16,7 +16,6 @@ import javax.validation.constraints.NotNull;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @HasTelephone
 public class Applicant {
-
     private final String applicantLabel;
     @NotBlank(message = "Enter the applicant's full name")
     private final String name;

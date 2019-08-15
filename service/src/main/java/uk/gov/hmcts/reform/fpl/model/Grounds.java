@@ -10,7 +10,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class Grounds {
-
     private final List<String> thresholdReason;
     private final String thresholdDetails;
 }

@@ -12,7 +12,6 @@ import java.util.UUID;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Element<T> {
-
     private final UUID id;
     private final T value;
 

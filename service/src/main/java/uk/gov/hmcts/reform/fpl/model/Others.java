@@ -11,7 +11,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class Others {
-
     private final Other firstOther;
     private final List<Element<Other>> additionalOthers;
 }

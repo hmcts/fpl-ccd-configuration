@@ -38,6 +38,15 @@
           "CONTACT_WITH_NAMED_PERSON"
         ]
       },
+      "groundsForEPO": {
+        "reason": [
+          "reason"
+        ],
+        "thresholdReason": [
+          "reason"
+        ],
+        "thresholdDetails": "details"
+      },
       "others": {
         "firstOther": {
           "DOB": "1999-02-02",
@@ -361,6 +370,24 @@
         }
       },
       "documents_socialWorkChronology_document": {
+        "statusReason": "Social work assessment text",
+        "documentStatus": "To follow",
+        "typeOfDocument": {
+          "document_url": "http://dm-store:8080/documents/91434306-7283-46a1-9901-a64d30d1fb8e",
+          "document_filename": "form.pdf",
+          "document_binary_url": "http://dm-store:8080/documents/91434306-7283-46a1-9901-a64d30d1fb8e/binary"
+        }
+      },
+      "documents_checklist_document": {
+        "statusReason": "Social work chronology text",
+        "documentStatus": "To follow",
+        "typeOfDocument": {
+          "document_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e",
+          "document_filename": "form.pdf",
+          "document_binary_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e/binary"
+        }
+      },
+      "documents_threshold_document": {
         "statusReason": "Social work chronology text",
         "documentStatus": "To follow",
         "typeOfDocument": {

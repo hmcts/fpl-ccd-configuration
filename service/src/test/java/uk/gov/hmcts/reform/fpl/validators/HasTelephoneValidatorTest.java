@@ -1,90 +1,120 @@
 package uk.gov.hmcts.reform.fpl.validators;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 
-import javax.validation.ConstraintValidatorContext;
+import java.util.List;
+
+import java.util.stream.Collectors;
+
+import javax.validation.Validation;
+import javax.validation.Validator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 class HasTelephoneValidatorTest {
-    private HasTelephoneValidator validator = new HasTelephoneValidator();
+    private Validator validator;
 
-    @Mock
-    private ConstraintValidatorContext constraintValidatorContext;
+    private static final String ERROR_MESSAGE = "Enter at least one telephone number for the contact";
 
-    @Test
-    void shouldReturnFalseIfBothApplicantTelephoneAndMobileDoNotExist() {
-        Applicant applicant = Applicant.builder().build();
-        Boolean isValid = validator.isValid(applicant, constraintValidatorContext);
-
-        assertThat(isValid).isFalse();
+    @BeforeEach
+    private void setup() {
+        validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
     @Test
-    void shouldReturnTrueIfApplicantTelephoneExists() {
+    void shouldNotReturnAnErrorIfApplicantTelephoneExists() {
         Applicant applicant = Applicant.builder()
             .telephone("12345678")
             .build();
-        Boolean isValid = validator.isValid(applicant, constraintValidatorContext);
 
-        assertThat(isValid).isTrue();
+        List<String> errorMessages = validator.validate(applicant).stream()
+            .map(error -> error.getMessage())
+            .collect(Collectors.toList());
+
+        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldReturnTrueIfApplicantMobileExists() {
+    void shouldNotReturnAnErrorIfApplicantMobileExists() {
         Applicant applicant = Applicant.builder()
             .mobile("12345678")
             .build();
-        Boolean isValid = validator.isValid(applicant, constraintValidatorContext);
 
-        assertThat(isValid).isTrue();
+        List<String> errorMessages = validator.validate(applicant).stream()
+            .map(error -> error.getMessage())
+            .collect(Collectors.toList());
+
+        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldReturnTrueIfBothApplicantTelephoneAndMobileExist() {
+    void shouldNotReturnAnErrorIfBothApplicantTelephoneAndMobileExist() {
         Applicant applicant = Applicant.builder()
             .telephone("12345678")
             .mobile("12345678")
             .build();
-        Boolean isValid = validator.isValid(applicant, constraintValidatorContext);
 
-        assertThat(isValid).isTrue();
+        List<String> errorMessages = validator.validate(applicant).stream()
+            .map(error -> error.getMessage())
+            .collect(Collectors.toList());
+
+        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldReturnFalseIfApplicantTelephoneIsEmptyString() {
-        Applicant applicant = Applicant.builder()
-            .telephone("")
-            .build();
-        Boolean isValid = validator.isValid(applicant, constraintValidatorContext);
-
-        assertThat(isValid).isFalse();
-    }
-
-    @Test
-    void shouldReturnFalseIfApplicantTelephoneAndMobileNumberAreEmptyStrings() {
-        Applicant applicant = Applicant.builder()
-            .telephone("")
-            .mobile("")
-            .build();
-        Boolean isValid = validator.isValid(applicant, constraintValidatorContext);
-
-        assertThat(isValid).isFalse();
-    }
-
-    @Test
-    void shouldReturnTrueIfApplicantTelephoneIsNotEmptyAndMobileNumberIsEmpty() {
+    void shouldNotReturnAnErrorIfApplicantTelephoneIsNotEmptyAndMobileNumberIsEmpty() {
         Applicant applicant = Applicant.builder()
             .telephone("123")
             .mobile("")
             .build();
-        Boolean isValid = validator.isValid(applicant, constraintValidatorContext);
 
-        assertThat(isValid).isTrue();
+        List<String> errorMessages = validator.validate(applicant).stream()
+            .map(error -> error.getMessage())
+            .collect(Collectors.toList());
+
+        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnAnErrorIfBothApplicantTelephoneAndMobileDoNotExist() {
+        Applicant applicant = Applicant.builder().build();
+
+        List<String> errorMessages = validator.validate(applicant).stream()
+            .map(error -> error.getMessage())
+            .collect(Collectors.toList());
+
+        assertThat(errorMessages).contains(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnAnErrorIfApplicantTelephoneIsEmptyString() {
+        Applicant applicant = Applicant.builder()
+            .telephone("")
+            .build();
+
+        List<String> errorMessages = validator.validate(applicant).stream()
+            .map(error -> error.getMessage())
+            .collect(Collectors.toList());
+
+        assertThat(errorMessages).contains(ERROR_MESSAGE);
+    }
+
+    @Test
+    void shouldReturnAnErrorIfApplicantTelephoneAndMobileNumberAreEmptyStrings() {
+        Applicant applicant = Applicant.builder()
+            .telephone("")
+            .mobile("")
+            .build();
+
+        List<String> errorMessages = validator.validate(applicant).stream()
+            .map(error -> error.getMessage())
+            .collect(Collectors.toList());
+
+        assertThat(errorMessages).contains(ERROR_MESSAGE);
     }
 }

@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Respondents {
-
     private final Respondent firstRespondent;
     private final List<Element<Respondent>> additional;
 

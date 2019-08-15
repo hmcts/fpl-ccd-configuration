@@ -8,7 +8,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class InternationalElement {
-
     private final String issues;
     private final String proceedings;
     private final String issuesReason;

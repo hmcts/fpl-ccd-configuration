@@ -8,7 +8,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class HearingPreferences {
-
     private final String welsh;
     private final String interpreter;
     private final String intermediary;

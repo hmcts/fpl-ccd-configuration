@@ -12,6 +12,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -55,9 +57,35 @@ class CaseSubmissionControllerAboutToSubmitTest {
         given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "2313.pdf"))
             .willReturn(document);
 
-        AboutToStartOrSubmitCallbackResponse response = makeSubmitCaseRequest("fixtures/emptyCaseData.json");
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .data(ImmutableMap.<String, Object>builder()
+                .put("caseName", "title")
+                .build()).build())
+            .build();
 
-        assertThat(response.getErrors()).isNotNull();
+        MvcResult response = mockMvc
+            .perform(post("/callback/case-submission/about-to-submit")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(MAPPER.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(callbackResponse.getErrors()).containsOnly("In the orders section:",
+            "- Select at least one type of order",
+            "In the children section:",
+            "- You need to add details to children",
+            "In the applicant section:",
+            "- You need to add details to applicant",
+            "In the hearing section:",
+            "- You need to add details to hearing",
+            "In the documents section:",
+            "- Tell us the status of all documents including those that you haven't uploaded"
+        );
     }
 
     @Test
@@ -73,7 +101,7 @@ class CaseSubmissionControllerAboutToSubmitTest {
             .willReturn(document);
 
         AboutToStartOrSubmitCallbackResponse response =
-            makeSubmitCaseRequest("fixtures/caseDataWithMandatoryFields.json");
+            makeSubmitCaseRequest("core-case-data-store-api/callback-request.json");
 
         assertThat(response.getErrors()).isEmpty();
     }

@@ -10,7 +10,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class Risks {
-
     private final String neglect;
     private final String sexualAbuse;
     private final String physicalHarm;

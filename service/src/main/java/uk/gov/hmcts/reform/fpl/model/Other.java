@@ -7,10 +7,8 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-// Added supression to remove pattern match error on DOB - must match pattern '^[a-z][a-z0-9][a-zA-Z0-9]*$'
-@SuppressWarnings("all")
+@SuppressWarnings("membername")
 public class Other {
-
     private final String DOB;
     private final String name;
     private final String gender;

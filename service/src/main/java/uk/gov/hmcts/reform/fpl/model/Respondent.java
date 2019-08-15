@@ -12,7 +12,6 @@ import java.util.Date;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Respondent {
-
     private final String name;
     private final Date dob;
     private final String gender;

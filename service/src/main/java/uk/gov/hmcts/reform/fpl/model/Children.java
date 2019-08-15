@@ -21,7 +21,6 @@ import javax.validation.Valid;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @HasChildName
 public class Children {
-
     @Valid
     private final Child firstChild;
     @Valid

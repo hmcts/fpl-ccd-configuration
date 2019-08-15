@@ -13,7 +13,6 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Child {
-
     @NotBlank(message = "Tell us the names of all children in the case")
     private final String childName;
     private final Date childDOB;

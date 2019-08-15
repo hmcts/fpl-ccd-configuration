@@ -8,7 +8,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class FactorsParenting {
-
     private final String anythingElse;
     private final String alcoholDrugAbuse;
     private final String domesticViolence;
