@@ -34,7 +34,7 @@ class CaseSubmissionValidatorServiceTest {
         assertThat(errors).containsOnly("In the case name section:",
             "- Enter a case name",
             "In the orders and directions needed section:",
-            "- You need to details to orders and directions needed",
+            "- You need to add details to orders and directions needed",
             "In the children section:",
             "- You need to add details to children",
             "In the applicant section:",
@@ -58,7 +58,7 @@ class CaseSubmissionValidatorServiceTest {
         List<String> errors = service.validateCaseDetails(caseData);
 
         assertThat(errors).containsOnly("In the orders and directions needed section:",
-            "- You need to details to orders and directions needed",
+            "- You need to add details to orders and directions needed",
             "- Select an option for when you need a hearing",
             "In the applicant section:",
             "- Enter the applicant's full name",
