@@ -65,10 +65,6 @@ fpl:
 spring:
   profiles: local
 
-management:
-  endpoints:
-    enabled-by-default: false
-
 idam:
   api:
     url: http://localhost:4501
