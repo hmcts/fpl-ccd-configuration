@@ -31,7 +31,6 @@ class CaseSubmissionControllerMidEventTest {
     private MockMvc mockMvc;
 
     @Test
-    @SuppressWarnings("AvoidEscapedUnicodeCharacters")
     void shouldReturnErrorsWhenNoCaseDataIsProvided() throws Exception {
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
@@ -51,15 +50,15 @@ class CaseSubmissionControllerMidEventTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getErrors()).containsOnly("In the orders and directions needed section:",
-            "\u2022 You need to add details to orders and directions needed",
+            "• You need to add details to orders and directions needed",
             "In the children section:",
-            "\u2022 You need to add details to children",
+            "• You need to add details to children",
             "In the applicant section:",
-            "\u2022 You need to add details to applicant",
+            "• You need to add details to applicant",
             "In the hearing needed section:",
-            "\u2022 You need to add details to hearing needed",
+            "• You need to add details to hearing needed",
             "In the documents section:",
-            "\u2022 Tell us the status of all documents including those that you haven't uploaded"
+            "• Tell us the status of all documents including those that you haven't uploaded"
         );
     }
 

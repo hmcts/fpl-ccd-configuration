@@ -22,7 +22,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@SuppressWarnings("AvoidEscapedUnicodeCharacters")
 class CaseSubmissionValidatorServiceTest {
 
     private final CaseSubmissionValidatorService service = new CaseSubmissionValidatorService();
@@ -33,17 +32,17 @@ class CaseSubmissionValidatorServiceTest {
         List<String> errors = service.validateCaseDetails(caseData);
         
         assertThat(errors).containsOnly("In the case name section:",
-            "\u2022 Enter a case name",
+            "• Enter a case name",
             "In the orders and directions needed section:",
-            "\u2022 You need to add details to orders and directions needed",
+            "• You need to add details to orders and directions needed",
             "In the children section:",
-            "\u2022 You need to add details to children",
+            "• You need to add details to children",
             "In the applicant section:",
-            "\u2022 You need to add details to applicant",
+            "• You need to add details to applicant",
             "In the hearing needed section:",
-            "\u2022 You need to add details to hearing needed",
+            "• You need to add details to hearing needed",
             "In the documents section:",
-            "\u2022 Tell us the status of all documents including those that you haven't uploaded"
+            "• Tell us the status of all documents including those that you haven't uploaded"
         );
     }
 
@@ -59,21 +58,21 @@ class CaseSubmissionValidatorServiceTest {
         List<String> errors = service.validateCaseDetails(caseData);
 
         assertThat(errors).containsOnly("In the orders and directions needed section:",
-            "\u2022 You need to add details to orders and directions needed",
-            "\u2022 Select an option for when you need a hearing",
+            "• You need to add details to orders and directions needed",
+            "• Select an option for when you need a hearing",
             "In the applicant section:",
-            "\u2022 Enter the applicant's full name",
-            "\u2022 Enter the contact's full name",
-            "\u2022 Enter a job title for the contact",
-            "\u2022 Enter a valid address for the contact",
-            "\u2022 Enter at least one telephone number for the contact",
-            "\u2022 Enter an email address for the contact",
+            "• Enter the applicant's full name",
+            "• Enter the contact's full name",
+            "• Enter a job title for the contact",
+            "• Enter a valid address for the contact",
+            "• Enter at least one telephone number for the contact",
+            "• Enter an email address for the contact",
             "In the children section:",
-            "\u2022 Tell us the names of all children in the case",
+            "• Tell us the names of all children in the case",
             "In the documents section:",
-            "\u2022 Tell us the status of all documents including those that you haven't uploaded",
+            "• Tell us the status of all documents including those that you haven't uploaded",
             "In the hearing needed section:",
-            "\u2022 Select an option for when you need a hearing"
+            "• Select an option for when you need a hearing"
         );
     }
 
@@ -94,9 +93,9 @@ class CaseSubmissionValidatorServiceTest {
         List<String> errors = service.validateCaseDetails(caseData);
 
         assertThat(errors).containsOnly("In the grounds for the application section:",
-            "\u2022 Select at least one option for how this case meets grounds for an emergency protection order",
-            "\u2022 Select at least one option for how this case meets the threshold criteria",
-            "\u2022 Enter details of how the case meets the threshold criteria"
+            "• Select at least one option for how this case meets grounds for an emergency protection order",
+            "• Select at least one option for how this case meets the threshold criteria",
+            "• Enter details of how the case meets the threshold criteria"
         );
     }
 
@@ -124,8 +123,8 @@ class CaseSubmissionValidatorServiceTest {
             .build();
 
         List<String> errors = service.validateCaseDetails(caseData);
-        assertThat(errors).contains("\u2022 Enter a valid address for the contact");
-        assertThat(errors).contains("\u2022 Enter a postcode for the contact");
+        assertThat(errors).contains("• Enter a valid address for the contact");
+        assertThat(errors).contains("• Enter a postcode for the contact");
     }
 
     @Test

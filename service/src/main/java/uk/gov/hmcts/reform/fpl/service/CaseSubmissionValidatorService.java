@@ -40,13 +40,12 @@ public class CaseSubmissionValidatorService {
         return caseErrors.build();
     }
 
-    @SuppressWarnings("AvoidEscapedUnicodeCharacters")
     private List<String> groupErrorsBySection(Set<ConstraintViolation<CaseData>> caseData, SectionType section) {
         List<String> errorList;
 
         errorList = caseData.stream()
             .filter(error -> error.getPropertyPath().toString().contains(section.getPredicate()))
-            .map(error -> String.format("\u2022 %s", error.getMessage()))
+            .map(error -> String.format("• %s", error.getMessage()))
             .collect(Collectors.toList());
 
         if (!errorList.isEmpty()) {
