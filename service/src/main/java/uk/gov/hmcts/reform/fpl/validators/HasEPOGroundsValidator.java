@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.validators;
 
-import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasEPOGrounds;
 
@@ -18,8 +17,7 @@ public class HasEPOGroundsValidator implements ConstraintValidator<HasEPOGrounds
             .getDefaultConstraintMessageTemplate()).addPropertyNode("groundsForTheApplication")
             .addConstraintViolation();
 
-        if (caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
-            && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
+        if (caseData.hasEPOGrounds()) {
 
             return caseData.getGroundsForEPO() != null && caseData.getGroundsForEPO().getReason() != null
                 && !caseData.getGroundsForEPO().getReason().contains("");

@@ -18,8 +18,7 @@ public class HasThresholdReasonValidator implements ConstraintValidator<HasThres
             .getDefaultConstraintMessageTemplate()).addPropertyNode("groundsForTheApplication")
             .addConstraintViolation();
 
-        if (caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
-            && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
+        if (caseData.hasEPOGrounds()) {
 
             return caseData.getGroundsForEPO() != null && caseData.getGroundsForEPO().getThresholdReason() != null
                 && !caseData.getGroundsForEPO().getThresholdReason().contains("");

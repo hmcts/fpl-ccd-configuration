@@ -15,6 +15,14 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import static uk.gov.hmcts.reform.fpl.enums.SectionType.APPLICANT;
+import static uk.gov.hmcts.reform.fpl.enums.SectionType.CHILDREN;
+import static uk.gov.hmcts.reform.fpl.enums.SectionType.ORDERS;
+import static uk.gov.hmcts.reform.fpl.enums.SectionType.GROUNDS;
+import static uk.gov.hmcts.reform.fpl.enums.SectionType.HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.SectionType.DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.SectionType.CASENAME;
+
 @Service
 public class CaseSubmissionValidatorService {
 
@@ -24,8 +32,7 @@ public class CaseSubmissionValidatorService {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<CaseData>> violations = validator.validate(caseData);
 
-        Stream.of(SectionType.APPLICANT, SectionType.CHILDREN, SectionType.ORDERS, SectionType.GROUNDS,
-            SectionType.HEARING, SectionType.DOCUMENTS, SectionType.CASENAME)
+        Stream.of(APPLICANT, CHILDREN, ORDERS, GROUNDS, HEARING, DOCUMENTS, CASENAME)
             .flatMap(section -> Stream.of(groupErrorsBySection(violations, section)))
             .flatMap(Collection::stream)
             .forEach(caseErrors::add);

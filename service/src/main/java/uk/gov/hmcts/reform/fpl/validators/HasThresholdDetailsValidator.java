@@ -21,8 +21,7 @@ public class HasThresholdDetailsValidator implements
             .getDefaultConstraintMessageTemplate()).addPropertyNode("groundsForTheApplication")
             .addConstraintViolation();
 
-        if (caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
-            && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
+        if (caseData.hasEPOGrounds()) {
 
             return caseData.getGroundsForEPO() != null
                 && StringUtils.isNotBlank(caseData.getGroundsForEPO().getThresholdDetails());

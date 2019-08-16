@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -34,6 +35,12 @@ public class CaseData {
     @NotNull(message = "You need to add details to orders and directions needed")
     @Valid
     private final Orders orders;
+
+    public boolean hasEPOGrounds() {
+        return orders != null && orders.getOrderType() != null
+            && orders.getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER);
+    }
+
     private final Grounds grounds;
     private final GroundsForEPO groundsForEPO;
     @NotNull(message = "You need to add details to children")
@@ -53,12 +60,7 @@ public class CaseData {
     private final HearingPreferences hearingPreferences;
     private final InternationalElement internationalElement;
 
-    @Getter(AccessLevel.NONE)
     private final List<Element<DocumentSocialWorkOther>> documents_socialWorkOther;
-
-    public List<Element<DocumentSocialWorkOther>> socialWorkOtherDocument() {
-        return documents_socialWorkOther;
-    }
 
     @Getter(AccessLevel.NONE)
     private final Document documents_socialWorkCarePlan_document;
@@ -102,10 +104,5 @@ public class CaseData {
         return documents_threshold_document;
     }
 
-    @Getter(AccessLevel.NONE)
     private final Document documents_socialWorkEvidenceTemplate_document;
-
-    public Document socialWorkEvidenceDocument() {
-        return documents_socialWorkEvidenceTemplate_document;
-    }
 }
