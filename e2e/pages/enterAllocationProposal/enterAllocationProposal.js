@@ -1,5 +1,3 @@
-/* global locate */
-
 const I = actor();
 
 module.exports = {
