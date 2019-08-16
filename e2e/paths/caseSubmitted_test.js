@@ -15,10 +15,10 @@ Scenario('Cannot submit an incomplete case', (I, caseViewPage, submitApplication
   I.click('Continue');
   I.waitForElement('.error-summary-list');
   I.see('Tell us the status of all documents including those that you haven\'t uploaded');
-  I.see('Select at least one type of order');
+  I.see('You need to details to orders and directions needed');
   I.see('You need to add details to children');
   I.see('You need to add details to applicant');
-  I.see('You need to add details to hearing');
+  I.see('You need to add details to hearing needed');
 });
 
 Scenario('Can give consent and submit the case', (I, caseViewPage, submitApplicationPage) => {
