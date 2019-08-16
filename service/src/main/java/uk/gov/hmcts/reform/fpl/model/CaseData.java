@@ -31,7 +31,7 @@ public class CaseData {
     private final String gatekeeperEmail;
     private final String caseLocalAuthority;
     private final Risks risks;
-    @NotNull(message = "Select at least one type of order")
+    @NotNull(message = "You need to details to orders and directions needed")
     @Valid
     private final Orders orders;
     private final Grounds grounds;
@@ -47,7 +47,7 @@ public class CaseData {
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;
     private final AllocationProposal allocationProposal;
-    @NotNull(message = "You need to add details to hearing")
+    @NotNull(message = "You need to add details to hearing needed")
     @Valid
     private final Hearing hearing;
     private final HearingPreferences hearingPreferences;

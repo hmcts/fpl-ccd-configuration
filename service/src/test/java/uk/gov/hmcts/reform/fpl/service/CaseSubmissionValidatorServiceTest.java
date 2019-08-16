@@ -30,17 +30,17 @@ class CaseSubmissionValidatorServiceTest {
     void shouldReturnErrorsIfMandatoryCaseSectionsHaveNotBeenCompleted() {
         CaseData caseData = CaseData.builder().build();
         List<String> errors = service.validateCaseDetails(caseData);
-
+        
         assertThat(errors).containsOnly("In the case name section:",
             "- Enter a case name",
-            "In the orders section:",
-            "- Select at least one type of order",
+            "In the orders and directions needed section:",
+            "- You need to details to orders and directions needed",
             "In the children section:",
             "- You need to add details to children",
             "In the applicant section:",
             "- You need to add details to applicant",
-            "In the hearing section:",
-            "- You need to add details to hearing",
+            "In the hearing needed section:",
+            "- You need to add details to hearing needed",
             "In the documents section:",
             "- Tell us the status of all documents including those that you haven't uploaded"
         );
@@ -57,8 +57,8 @@ class CaseSubmissionValidatorServiceTest {
 
         List<String> errors = service.validateCaseDetails(caseData);
 
-        assertThat(errors).containsOnly("In the orders section:",
-            "- Select at least one type of order",
+        assertThat(errors).containsOnly("In the orders and directions needed section:",
+            "- You need to details to orders and directions needed",
             "- Select an option for when you need a hearing",
             "In the applicant section:",
             "- Enter the applicant's full name",
@@ -71,7 +71,7 @@ class CaseSubmissionValidatorServiceTest {
             "- Tell us the names of all children in the case",
             "In the documents section:",
             "- Tell us the status of all documents including those that you haven't uploaded",
-            "In the hearing section:",
+            "In the hearing needed section:",
             "- Select an option for when you need a hearing"
         );
     }

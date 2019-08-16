@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
@@ -24,8 +24,13 @@ public class CaseSubmissionValidatorService {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<CaseData>> violations = validator.validate(caseData);
 
-        Stream.of("applicant", "children", "orders", "groundsForTheApplication", "hearing",
-            "caseName", "documents")
+        Stream.of(ImmutablePair.of("applicant", "applicant"),
+            ImmutablePair.of("children", "children"),
+            ImmutablePair.of("orders", "orders and directions needed"),
+            ImmutablePair.of("groundsForTheApplication", "grounds for the application"),
+            ImmutablePair.of("hearing", "hearing needed"),
+            ImmutablePair.of("documents", "documents"),
+            ImmutablePair.of("caseName", "case name"))
             .flatMap(section -> Stream.of(groupErrorsBySection(violations, section)))
             .flatMap(Collection::stream)
             .forEach(caseErrors::add);
@@ -33,18 +38,16 @@ public class CaseSubmissionValidatorService {
         return caseErrors.build();
     }
 
-    private List<String> groupErrorsBySection(Set<ConstraintViolation<CaseData>> caseData, String section) {
+    private List<String> groupErrorsBySection(Set<ConstraintViolation<CaseData>> caseData, ImmutablePair section) {
         List<String> errorList;
 
         errorList = caseData.stream()
-            .filter(error -> error.getPropertyPath().toString().contains(section))
+            .filter(error -> error.getPropertyPath().toString().contains(section.left.toString()))
             .map(error -> String.format("- %s", error.getMessage()))
             .collect(Collectors.toList());
 
         if (!errorList.isEmpty()) {
-            String sectionHeader = StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(section), " ")
-                .toLowerCase();
-            errorList.add(0, String.format("In the %s section:", sectionHeader));
+            errorList.add(0, String.format("In the %s section:", section.right.toString()));
         }
 
         return errorList;
