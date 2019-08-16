@@ -53,11 +53,12 @@ Change the variable for CCD_DEF_CASE_SERVICE_BASE_URL in bin/import-ccd-definiti
 the service.
 
 ### Run the application (from IntelliiJ)
-
-For local profile - configure the notify.api_key if necessary (in service/src/main/resources/application.yaml). 
  
 Ensure the Spring Boot is started with local profile 
 (add environment variable spring.profiles.active=local when starting the main class).
+
+Configure the notify.api_key if necessary (you can pass them as environment variables when IntelliJ 
+starts the application). 
 
 Ensure the variable CCD_DEF_CASE_SERVICE_BASE_URL bin/import-ccd-definition.sh is set to
 http://docker.for.mac.localhost:4000 - this will use the host machine for CCD, reaching 
