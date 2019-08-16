@@ -50,15 +50,15 @@ class CaseSubmissionControllerMidEventTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getErrors()).containsOnly("In the orders and directions needed section:",
-            "- You need to add details to orders and directions needed",
+            "\u2022 You need to add details to orders and directions needed",
             "In the children section:",
-            "- You need to add details to children",
+            "\u2022 You need to add details to children",
             "In the applicant section:",
-            "- You need to add details to applicant",
+            "\u2022 You need to add details to applicant",
             "In the hearing needed section:",
-            "- You need to add details to hearing needed",
+            "\u2022 You need to add details to hearing needed",
             "In the documents section:",
-            "- Tell us the status of all documents including those that you haven't uploaded"
+            "\u2022 Tell us the status of all documents including those that you haven't uploaded"
         );
     }
 

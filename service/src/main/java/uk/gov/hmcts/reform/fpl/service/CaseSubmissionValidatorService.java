@@ -45,7 +45,7 @@ public class CaseSubmissionValidatorService {
 
         errorList = caseData.stream()
             .filter(error -> error.getPropertyPath().toString().contains(section.getPredicate()))
-            .map(error -> String.format("- %s", error.getMessage()))
+            .map(error -> String.format("\u2022 %s", error.getMessage()))
             .collect(Collectors.toList());
 
         if (!errorList.isEmpty()) {
