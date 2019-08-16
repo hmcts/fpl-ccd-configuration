@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.validators;
 
 import org.apache.commons.lang.StringUtils;
-import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasThresholdDetails;
 

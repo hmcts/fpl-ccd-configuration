@@ -31,6 +31,7 @@ class CaseSubmissionControllerMidEventTest {
     private MockMvc mockMvc;
 
     @Test
+    @SuppressWarnings("AvoidEscapedUnicodeCharacters")
     void shouldReturnErrorsWhenNoCaseDataIsProvided() throws Exception {
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()

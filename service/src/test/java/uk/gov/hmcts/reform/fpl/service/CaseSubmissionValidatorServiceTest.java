@@ -22,6 +22,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
+@SuppressWarnings("AvoidEscapedUnicodeCharacters")
 class CaseSubmissionValidatorServiceTest {
 
     private final CaseSubmissionValidatorService service = new CaseSubmissionValidatorService();

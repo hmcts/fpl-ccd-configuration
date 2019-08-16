@@ -16,12 +16,12 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 
 import static uk.gov.hmcts.reform.fpl.enums.SectionType.APPLICANT;
+import static uk.gov.hmcts.reform.fpl.enums.SectionType.CASENAME;
 import static uk.gov.hmcts.reform.fpl.enums.SectionType.CHILDREN;
-import static uk.gov.hmcts.reform.fpl.enums.SectionType.ORDERS;
+import static uk.gov.hmcts.reform.fpl.enums.SectionType.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.SectionType.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.SectionType.HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.SectionType.DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.SectionType.CASENAME;
+import static uk.gov.hmcts.reform.fpl.enums.SectionType.ORDERS;
 
 @Service
 public class CaseSubmissionValidatorService {
@@ -40,6 +40,7 @@ public class CaseSubmissionValidatorService {
         return caseErrors.build();
     }
 
+    @SuppressWarnings("AvoidEscapedUnicodeCharacters")
     private List<String> groupErrorsBySection(Set<ConstraintViolation<CaseData>> caseData, SectionType section) {
         List<String> errorList;
 
