@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.SectionType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.util.Collection;
@@ -24,13 +24,8 @@ public class CaseSubmissionValidatorService {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<CaseData>> violations = validator.validate(caseData);
 
-        Stream.of(ImmutablePair.of("applicant", "applicant"),
-            ImmutablePair.of("children", "children"),
-            ImmutablePair.of("orders", "orders and directions needed"),
-            ImmutablePair.of("groundsForTheApplication", "grounds for the application"),
-            ImmutablePair.of("hearing", "hearing needed"),
-            ImmutablePair.of("documents", "documents"),
-            ImmutablePair.of("caseName", "case name"))
+        Stream.of(SectionType.APPLICANT, SectionType.CHILDREN, SectionType.ORDERS, SectionType.GROUNDS,
+            SectionType.HEARING, SectionType.DOCUMENTS, SectionType.CASENAME)
             .flatMap(section -> Stream.of(groupErrorsBySection(violations, section)))
             .flatMap(Collection::stream)
             .forEach(caseErrors::add);
@@ -38,16 +33,16 @@ public class CaseSubmissionValidatorService {
         return caseErrors.build();
     }
 
-    private List<String> groupErrorsBySection(Set<ConstraintViolation<CaseData>> caseData, ImmutablePair section) {
+    private List<String> groupErrorsBySection(Set<ConstraintViolation<CaseData>> caseData, SectionType section) {
         List<String> errorList;
 
         errorList = caseData.stream()
-            .filter(error -> error.getPropertyPath().toString().contains(section.left.toString()))
+            .filter(error -> error.getPropertyPath().toString().contains(section.getPredicate()))
             .map(error -> String.format("- %s", error.getMessage()))
             .collect(Collectors.toList());
 
         if (!errorList.isEmpty()) {
-            errorList.add(0, String.format("In the %s section:", section.right.toString()));
+            errorList.add(0, String.format("In the %s section:", section.getSectionHeaderName()));
         }
 
         return errorList;
