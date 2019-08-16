@@ -1,4 +1,4 @@
-/* global locate, process */
+/* global process */
 const config = require('./config');
 
 const logIn = require('./pages/login/loginPage');
