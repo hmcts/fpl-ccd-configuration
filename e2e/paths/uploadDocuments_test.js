@@ -55,6 +55,7 @@ Scenario('Ability for a local authority to upload court bundle only after case i
   I.dontSee('Court bundle');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  I.enterMandatoryFields();
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationPage.giveConsent();
   I.continueAndSubmit();
