@@ -13,8 +13,6 @@ Scenario('Cannot submit an incomplete case', (I, caseViewPage, submitApplication
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationPage.giveConsent();
   I.click('Continue');
-  I.waitForElement('.check-your-answers');
-  I.click('Submit');
   I.waitForElement('.error-summary-list');
   I.see('Tell us the status of all documents including those that you haven\'t uploaded');
   I.see('Select at least one type of order');

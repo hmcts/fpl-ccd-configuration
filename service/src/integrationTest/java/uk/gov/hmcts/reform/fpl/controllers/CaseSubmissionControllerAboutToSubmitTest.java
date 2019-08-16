@@ -12,8 +12,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -44,67 +42,6 @@ class CaseSubmissionControllerAboutToSubmitTest {
     private UploadDocumentService uploadDocumentService;
     @Autowired
     private MockMvc mockMvc;
-
-    @Test
-    void shouldReturnErrorsWhenNoCaseDataIsProvided() throws Exception {
-        byte[] pdf = {1, 2, 3, 4, 5};
-        Document document = document();
-
-        given(userDetailsService.getUserName(AUTH_TOKEN))
-            .willReturn("Emma Taylor");
-        given(documentGeneratorService.generateSubmittedFormPDF(any(), any()))
-            .willReturn(pdf);
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "2313.pdf"))
-            .willReturn(document);
-
-        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
-            .data(ImmutableMap.<String, Object>builder()
-                .put("caseName", "title")
-                .build()).build())
-            .build();
-
-        MvcResult response = mockMvc
-            .perform(post("/callback/case-submission/about-to-submit")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        assertThat(callbackResponse.getErrors()).containsOnly("In the orders section:",
-            "- Select at least one type of order",
-            "In the children section:",
-            "- You need to add details to children",
-            "In the applicant section:",
-            "- You need to add details to applicant",
-            "In the hearing section:",
-            "- You need to add details to hearing",
-            "In the documents section:",
-            "- Tell us the status of all documents including those that you haven't uploaded"
-        );
-    }
-
-    @Test
-    void shouldReturnNoErrorsWhenMandatoryFieldsAreProvidedInCaseData() throws Exception {
-        byte[] pdf = {1, 2, 3, 4, 5};
-        Document document = document();
-
-        given(userDetailsService.getUserName(AUTH_TOKEN))
-            .willReturn("Emma Taylor");
-        given(documentGeneratorService.generateSubmittedFormPDF(any(), any()))
-            .willReturn(pdf);
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "test.pdf"))
-            .willReturn(document);
-
-        AboutToStartOrSubmitCallbackResponse response =
-            makeSubmitCaseRequest("core-case-data-store-api/callback-request.json");
-
-        assertThat(response.getErrors()).isEmpty();
-    }
 
     @Test
     void shouldReturnUnsuccessfulResponseWithNoData() throws Exception {
@@ -157,19 +94,5 @@ class CaseSubmissionControllerAboutToSubmitTest {
                 .put("document_binary_url", document.links.binary.href)
                 .put("document_filename", document.originalDocumentName)
                 .build());
-    }
-
-    private AboutToStartOrSubmitCallbackResponse makeSubmitCaseRequest(String fixtureType) throws Exception {
-        MvcResult response =  mockMvc
-            .perform(post("/callback/case-submission/about-to-submit")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(readBytes(fixtureType)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        return MAPPER.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 }

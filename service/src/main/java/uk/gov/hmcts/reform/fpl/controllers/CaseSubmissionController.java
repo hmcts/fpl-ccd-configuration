@@ -76,6 +76,17 @@ public class CaseSubmissionController {
             .build();
     }
 
+    @PostMapping("/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .errors(caseSubmissionValidatorService.validateCaseDetails(caseData))
+            .build();
+    }
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
         @RequestHeader(value = "authorization") String authorization,
@@ -100,11 +111,8 @@ public class CaseSubmissionController {
             .put("document_filename", document.originalDocumentName)
             .build());
 
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
-            .errors(caseSubmissionValidatorService.validateCaseDetails(caseData))
             .build();
     }
 
