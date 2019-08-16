@@ -30,7 +30,7 @@ class RespondentAboutToStartControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldAddRespondentMigratedValueToData() throws Exception {
+    void shouldPrepopulateRespondent() throws Exception {
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
                 .put("data", "some data")
@@ -48,6 +48,6 @@ class RespondentAboutToStartControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        assertThat(callbackResponse.getData()).containsEntry("respondentsMigrated", "Yes");
+        assertThat(callbackResponse.getData()).containsKey("respondents1");
     }
 }
