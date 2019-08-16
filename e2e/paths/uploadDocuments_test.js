@@ -40,6 +40,7 @@ Scenario('As a local authority I have the ability to upload a document after sub
   uploadDocumentsPage.selectSocialWorkChronologyToFollow(config.testFile);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  I.enterMandatoryFields();
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationPage.giveConsent();
   I.continueAndSubmit();
