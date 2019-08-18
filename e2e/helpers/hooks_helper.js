@@ -7,7 +7,7 @@ module.exports = class HooksHelpers extends Helper {
 
   _afterStep(step) {
     if (step.name === 'attachFile') {
-      return this.helpers['Puppeteer'].wait(2); // in seconds
+      return this.helpers['Puppeteer'].wait(2); // in seconds; time needed for document store to store uploaded files
     }
   }
 };
