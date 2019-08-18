@@ -14,6 +14,7 @@ module.exports = {
   continueButton: 'Continue',
 
   enterCaseName(caseName = 'Barnet Council v Smith') {
+    I.waitForElement(this.enterCaseNamePage.caseName);
     I.fillField(this.enterCaseNamePage.caseName, caseName);
   },
 
@@ -21,7 +22,6 @@ module.exports = {
     I.selectOption(this.fields.jurisdiction, 'Family Public Law');
     I.selectOption(this.fields.caseType, 'Care, supervision and EPOs');
     I.selectOption(this.fields.event, 'Start application');
-    I.wait(1); // in seconds
     I.click(this.startButton);
     this.enterCaseName();
   },
