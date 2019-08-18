@@ -21,6 +21,7 @@ module.exports = {
     I.selectOption(this.fields.jurisdiction, 'Family Public Law');
     I.selectOption(this.fields.caseType, 'Care, supervision and EPOs');
     I.selectOption(this.fields.event, 'Start application');
+    I.wait(1); // in seconds
     I.click(this.startButton);
     this.enterCaseName();
   },
