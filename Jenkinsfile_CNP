@@ -7,7 +7,7 @@ def type = "java"
 def product = "fpl"
 def component = "case-service"
 
-def secrets = [
+def serviceSecrets = [
   'fpl-${env}': [
     secret('fpl-case-service-s2s-secret', 'IDAM_S2S_AUTH_TOTP_SECRET'),
     secret('notify-api-key', 'NOTIFY_API_KEY'),
@@ -18,7 +18,10 @@ def secrets = [
     secret('local-authority-user-mapping', 'FPL_LOCAL_AUTHORITY_USER_MAPPING'),
     secret('local-authority-code-to-hmcts-court-mapping', 'FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING'),
     secret('local-authority-code-to-cafcass-mapping', 'FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING')
-  ],
+  ]
+]
+
+def otherSecrets = [
   // below is just for CCD in AKS - to be cleaned up when CCD Helm chart is updated to use flex volume for secrets
   's2s-${env}': [
     secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_SECRET'),
@@ -47,7 +50,12 @@ def archiveCoreCaseDataDefinitions(env) {
 }
 
 withPipeline(type, product, component) {
-  loadVaultSecrets(secrets)
+  onMaster {
+    loadVaultSecrets(serviceSecrets)
+  }
+  onPR {
+    loadVaultSecrets(serviceSecrets + otherSecrets)
+  }
   enableDockerBuild()
   installCharts()
   enableSlackNotifications('#fpla-tech')
