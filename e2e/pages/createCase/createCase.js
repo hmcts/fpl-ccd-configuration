@@ -14,6 +14,7 @@ module.exports = {
   continueButton: 'Continue',
 
   enterCaseName(caseName = 'Barnet Council v Smith') {
+    I.waitForElement(this.enterCaseNamePage.caseName);
     I.fillField(this.enterCaseNamePage.caseName, caseName);
   },
 

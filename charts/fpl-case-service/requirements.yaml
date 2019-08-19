@@ -1,0 +1,9 @@
+dependencies:
+  - name: java
+    version: 2.3.0
+    repository: '@hmctspublic'
+  - name: ccd
+    version: 3.0.4
+    repository: '@hmctspublic'
+    tags:
+      - fpl-ccd-stack

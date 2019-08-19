@@ -22,4 +22,4 @@ rm ${release_config_dir}/UserProfile.json
 
 # build the ccd definition file
 export CCD_DEF_CASE_SERVICE_BASE_URL=http://fpl-case-service-${environment}.service.core-compute-${environment}.internal
-${root_dir}/kubernetes/configurer/utils/fpl-process-definition.sh ${release_config_dir} ${release_definition_output_file}
+${root_dir}/bin/configurer/utils/fpl-process-definition.sh ${release_config_dir} ${release_definition_output_file}
