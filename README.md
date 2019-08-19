@@ -27,7 +27,8 @@ Creating and starting containers:
 Add users and roles:
 
 ```bash
-$ ./bin/add-users-and-roles.sh
+$ ./bin/configurer/add-roles.sh
+$ ./bin/configurer/add-users.sh
 ```
 
 Load CCD definition:
@@ -35,7 +36,7 @@ Load CCD definition:
 CCD definition is stored in JSON format. To load it into CCD instance please run: 
 
 ```bash
-$ ./bin/import-ccd-definition.sh
+$ ./bin/configurer/import-ccd-definition.sh
 ```
 
 Note: Above script will export JSON content into XLSX file and upload it into instance of CCD definition store.

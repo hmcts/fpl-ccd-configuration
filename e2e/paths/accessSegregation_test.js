@@ -11,6 +11,7 @@ Before(async (I, caseViewPage, submitApplicationPage) => {
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationPage.giveConsent();
   I.continueAndSubmit();
+  I.wait(2); // in seconds; time needed for access grant calls to complete
   I.signOut();
 });
 
