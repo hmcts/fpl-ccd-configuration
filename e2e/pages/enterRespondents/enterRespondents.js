@@ -2,40 +2,33 @@ const I = actor();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
-
-  state: {
-    context: 0,
-  },
-
-  fields: function () {
-    const id = this.state.context;
-
+  fields: function (index) {
     return {
       respondent: {
-        firstName: `#respondents1_${id}_party_firstName`,
-        lastName: `#respondents1_${id}_party_lastName`,
+        firstName: `#respondents1_${index}_party_firstName`,
+        lastName: `#respondents1_${index}_party_lastName`,
         dateOfBirth: {
-          day: `#respondents1_${id}_party_dateOfBirth-day`,
-          month: `#respondents1_${id}_party_dateOfBirth-month`,
-          year: `#respondents1_${id}_party_dateOfBirth-year`,
+          day: `#respondents1_${index}_party_dateOfBirth-day`,
+          month: `#respondents1_${index}_party_dateOfBirth-month`,
+          year: `#respondents1_${index}_party_dateOfBirth-year`,
         },
-        address: `#respondents1_${id}_party_address_address`,
-        telephone: `input[id="respondents1_${id}_party_telephoneNumber_telephoneNumber"]`,
-        gender: `#respondents1_${id}_party_gender`,
-        genderIdentification: `#respondents1_${id}_party_genderIdentification`,
-        placeOfBirth: `#respondents1_${id}_party_placeOfBirth`,
-        relationshipToChild: `#respondents1_${id}_party_relationshipToChild`,
+        address: `#respondents1_${index}_party_address_address`,
+        telephone: `input[id="respondents1_${index}_party_telephoneNumber_telephoneNumber"]`,
+        gender: `#respondents1_${index}_party_gender`,
+        genderIdentification: `#respondents1_${index}_party_genderIdentification`,
+        placeOfBirth: `#respondents1_${index}_party_placeOfBirth`,
+        relationshipToChild: `#respondents1_${index}_party_relationshipToChild`,
         litigationIssues: {
-          yes: `#respondents1_${id}_party_litigationIssues-YES`,
-          no: `#respondents1_${id}_party_litigationIssues-NO`,
-          dont_know: `#respondents1_${id}_party_litigationIssues-DONT_KNOW`,
+          yes: `#respondents1_${index}_party_litigationIssues-YES`,
+          no: `#respondents1_${index}_party_litigationIssues-NO`,
+          dont_know: `#respondents1_${index}_party_litigationIssues-DONT_KNOW`,
         },
-        litigationIssuesDetails: `#respondents1_${id}_party_litigationIssuesDetails`,
+        litigationIssuesDetails: `#respondents1_${index}_party_litigationIssuesDetails`,
       },
       contactDetailsHidden: (option) => {
         return {
-          option: `#respondents1_${id}_party_contactDetailsHidden-${option}`,
-          reason: `#respondents1_${id}_party_contactDetailsHiddenReason`,
+          option: `#respondents1_${index}_party_contactDetailsHidden-${option}`,
+          reason: `#respondents1_${index}_party_contactDetailsHiddenReason`,
         };
       },
     };
@@ -44,52 +37,63 @@ module.exports = {
 
   addRespondent() {
     I.click(this.addRespondentButton);
-    this.state.context++;
   },
 
-  enterRespondent(respondent) {
-    I.fillField(this.fields().respondent.firstName, respondent.firstName);
-    I.fillField(this.fields().respondent.lastName, respondent.lastName);
-    I.fillField(this.fields().respondent.dateOfBirth.day, respondent.dob.day);
-    I.fillField(this.fields().respondent.dateOfBirth.month, respondent.dob.month);
-    I.fillField(this.fields().respondent.dateOfBirth.year, respondent.dob.year);
-    I.selectOption(this.fields().respondent.gender, respondent.gender);
+  async enterRespondent(respondent) {
+    const elementIndex = await this.getActiveElementIndex();
+
+    I.fillField(this.fields(elementIndex).respondent.firstName, respondent.firstName);
+    I.fillField(this.fields(elementIndex).respondent.lastName, respondent.lastName);
+    I.fillField(this.fields(elementIndex).respondent.dateOfBirth.day, respondent.dob.day);
+    I.fillField(this.fields(elementIndex).respondent.dateOfBirth.month, respondent.dob.month);
+    I.fillField(this.fields(elementIndex).respondent.dateOfBirth.year, respondent.dob.year);
+    I.selectOption(this.fields(elementIndex).respondent.gender, respondent.gender);
     if (respondent.gender === 'They identify in another way') {
-      I.fillField(this.fields().respondent.genderIdentification, '');
+      I.fillField(this.fields(elementIndex).respondent.genderIdentification, '');
     }
-    I.fillField(this.fields().respondent.placeOfBirth, respondent.placeOfBirth);
-    within(this.fields().respondent.address, () => {
+    I.fillField(this.fields(elementIndex).respondent.placeOfBirth, respondent.placeOfBirth);
+    within(this.fields(elementIndex).respondent.address, () => {
       postcodeLookup.lookupPostcode(respondent.address);
     });
-    I.fillField(this.fields().respondent.telephone, respondent.telephone);
+    I.fillField(this.fields(elementIndex).respondent.telephone, respondent.telephone);
   },
 
-  enterRelationshipToChild(relationship) {
-    I.fillField(this.fields().respondent.relationshipToChild, relationship);
+  async enterRelationshipToChild(relationship) {
+    const elementIndex = await this.getActiveElementIndex();
+
+    I.fillField(this.fields(elementIndex).respondent.relationshipToChild, relationship);
   },
 
-  enterContactDetailsHidden(option, reason = '') {
-    I.click(this.fields().contactDetailsHidden(option).option);
+  async enterContactDetailsHidden(option, reason = '') {
+    const elementIndex = await this.getActiveElementIndex();
+
+    I.click(this.fields(elementIndex).contactDetailsHidden(option).option);
     if (option === 'Yes') {
-      I.fillField(this.fields().contactDetailsHidden(option).reason, reason);
+      I.fillField(this.fields(elementIndex).contactDetailsHidden(option).reason, reason);
     }
   },
 
-  enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
+  async enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
+    const elementIndex = await this.getActiveElementIndex();
+
     litigationIssue = litigationIssue.toLowerCase();
     switch (litigationIssue) {
       case 'yes':
-        I.checkOption(this.fields().respondent.litigationIssues.yes);
+        I.checkOption(this.fields(elementIndex).respondent.litigationIssues.yes);
         break;
       case 'no':
-        I.checkOption(this.fields().respondent.litigationIssues.no);
+        I.checkOption(this.fields(elementIndex).respondent.litigationIssues.no);
         break;
       case 'dont know':
-        I.checkOption(this.fields().respondent.litigationIssues.dont_know);
+        I.checkOption(this.fields(elementIndex).respondent.litigationIssues.dont_know);
         break;
     }
     if (litigationIssue === 'yes') {
-      I.fillField(this.fields().respondent.litigationIssuesDetails, litigationIssueDetail);
+      I.fillField(this.fields(elementIndex).respondent.litigationIssuesDetails, litigationIssueDetail);
     }
+  },
+
+  async getActiveElementIndex() {
+    return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
   },
 };
