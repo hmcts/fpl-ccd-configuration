@@ -15,7 +15,6 @@ public class HasApplicantContactNameValidator implements ConstraintValidator<Has
     @Override
     public boolean isValid(ApplicantParty applicantParty, ConstraintValidatorContext constraintValidatorContext) {
         return applicantParty.getTelephoneNumber() != null
-            && applicantParty.getTelephoneNumber().getContactDirection() != null
             && StringUtils.isNotBlank(applicantParty.getTelephoneNumber().getContactDirection());
     }
 }
