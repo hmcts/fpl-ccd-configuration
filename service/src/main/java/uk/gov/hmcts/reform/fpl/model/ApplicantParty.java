@@ -8,15 +8,24 @@ import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.validators.interfaces.HasApplicantContactName;
+import uk.gov.hmcts.reform.fpl.validators.interfaces.HasApplicantTelephone;
 
 import java.util.Date;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
+@HasApplicantTelephone
+@HasApplicantContactName
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApplicantParty extends Party {
+    @NotBlank(message = "Enter the applicant's full name")
     private final String organisationName;
     private final Telephone mobileNumber;
+    @NotBlank(message = "Enter a job title for the contact")
     private final String jobTitle;
     private final String pbaNumber;
 
@@ -27,7 +36,9 @@ public class ApplicantParty extends Party {
                            String lastName,
                            String organisationName,
                            Date dateOfBirth,
+                           @Valid
                            Address address,
+                           @Valid
                            EmailAddress email,
                            Telephone telephoneNumber,
                            Telephone mobileNumber,

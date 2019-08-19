@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasDocumentStatus;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasEPOGrounds;
+import uk.gov.hmcts.reform.fpl.validators.interfaces.HasMainApplicant;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasThresholdDetails;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasThresholdReason;
 
@@ -25,6 +26,7 @@ import javax.validation.constraints.NotNull;
 @HasThresholdReason
 @HasThresholdDetails
 @HasDocumentStatus
+@HasMainApplicant
 @SuppressWarnings("membername")
 public class CaseData {
     @NotBlank(message = "Enter a case name")
@@ -46,10 +48,18 @@ public class CaseData {
     @NotNull(message = "You need to add details to children")
     @Valid
     private final Children children;
-    @NotNull(message = "You need to add details to applicant")
-    @Valid
     private final OldApplicant applicant;
     private final List<Element<Applicant>> applicants;
+
+    @Valid
+    public final Applicant getMainApplicant() {
+        if (applicants != null && applicants.get(0) != null && applicants.get(0).getValue() != null) {
+            return applicants.get(0).getValue();
+        } else {
+            return Applicant.builder().build();
+        }
+    }
+
     private final String applicantsMigrated;
     private final List<Element<RespondentParty>> respondent;
     private final Proceeding proceeding;

@@ -7,6 +7,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Children;
@@ -15,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +33,7 @@ class CaseSubmissionValidatorServiceTest {
     void shouldReturnErrorsIfMandatoryCaseSectionsHaveNotBeenCompleted() {
         CaseData caseData = CaseData.builder().build();
         List<String> errors = service.validateCaseDetails(caseData);
-        
+
         assertThat(errors).containsOnly("In the case name section:",
             "• Enter a case name",
             "In the orders and directions needed section:",
@@ -52,7 +55,12 @@ class CaseSubmissionValidatorServiceTest {
             .caseName("Test case")
             .children(Children.builder().build())
             .hearing(Hearing.builder().build())
-            .applicant(Applicant.builder().build())
+            .applicants(List.of(Element.<Applicant>builder()
+                .id(UUID.randomUUID())
+                .value(Applicant.builder()
+                    .party(ApplicantParty.builder().build())
+                    .build())
+                .build()))
             .build();
 
         List<String> errors = service.validateCaseDetails(caseData);
@@ -84,7 +92,7 @@ class CaseSubmissionValidatorServiceTest {
                 .timeFrame("Within 18 days")
                 .build())
             .children(initChildren())
-            .applicant(initApplicant())
+            .applicants(initApplicants())
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
                 .build())
@@ -107,16 +115,27 @@ class CaseSubmissionValidatorServiceTest {
                 .timeFrame("Within 18 days")
                 .build())
             .children(initChildren())
-            .applicant(Applicant.builder()
-                .telephone("12345")
-                .email("bran@winterfell.com")
-                .name("Bran Stark")
-                .personToContact("Sansa Stark")
-                .jobTitle("Warden of the north")
-                .address(Address.builder()
-                    .addressLine2("Winterfell castle")
+            .applicants(List.of(Element.<Applicant>builder()
+                .id(UUID.randomUUID())
+                .value(Applicant.builder()
+                    .party(ApplicantParty.builder()
+                        .email(EmailAddress.builder()
+                            .email("bran@winterfell.com")
+                            .build())
+                        .address(Address.builder()
+                            .addressLine2("Winterfell castle")
+                            .build())
+                        .telephoneNumber(Telephone.builder()
+                            .telephoneNumber("12345")
+                            .contactDirection("Sansa Stark")
+                            .build())
+                        .jobTitle("Warden of the north")
+                        .firstName("Bran")
+                        .lastName("Stark")
+                        .build())
+                    .leadApplicantIndicator("Yes")
                     .build())
-                .build())
+                .build()))
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
                 .build())
@@ -135,7 +154,7 @@ class CaseSubmissionValidatorServiceTest {
                 .orderType(ImmutableList.of(OrderType.EDUCATION_SUPERVISION_ORDER))
                 .build())
             .children(initChildren())
-            .applicant(initApplicant())
+            .applicants(initApplicants())
             .hearing(Hearing.builder()
                 .timeFrame("Within 18 days")
                 .build())
@@ -158,7 +177,7 @@ class CaseSubmissionValidatorServiceTest {
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
                 .build())
             .children(initChildren())
-            .applicant(initApplicant())
+            .applicants(initApplicants())
             .hearing(Hearing.builder()
                 .timeFrame("Within 18 days")
                 .build())
@@ -193,22 +212,33 @@ class CaseSubmissionValidatorServiceTest {
                 .build());
     }
 
-    private Applicant initApplicant() {
-        return Applicant.builder()
-                .name("Harry Kane")
-                .personToContact("Harry Kane")
-                .jobTitle("Judge")
-                .address(Address.builder()
-                    .addressLine1("1 Some street")
-                    .addressLine2("Some road")
-                    .postTown("some town")
-                    .postcode("BT66 7RR")
-                    .county("Some county")
-                    .country("UK")
+    private List<Element<Applicant>> initApplicants() {
+        return List.of(Element.<Applicant>builder()
+                .id(UUID.randomUUID())
+                .value(Applicant.builder()
+                    .leadApplicantIndicator("Yes")
+                    .party(ApplicantParty.builder()
+                        .organisationName("Harry Kane")
+                        .jobTitle("Judge")
+                        .address(Address.builder()
+                            .addressLine1("1 Some street")
+                            .addressLine2("Some road")
+                            .postTown("some town")
+                            .postcode("BT66 7RR")
+                            .county("Some county")
+                            .country("UK")
+                            .build())
+                        .email(EmailAddress.builder()
+                            .email("Harrykane@hMCTS.net")
+                            .build())
+                        .telephoneNumber(Telephone.builder()
+                            .telephoneNumber("02838882404")
+                            .contactDirection("Harry Kane")
+                            .build())
+                        .build())
                     .build())
-                .telephone("02838882404")
-                .email("Harrykane@HMCTS.net")
-                .build();
+                .build()
+        );
     }
 
     private Children initChildren() {

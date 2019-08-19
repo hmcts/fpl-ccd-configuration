@@ -4,7 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
+import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ import javax.validation.Validator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-class HasTelephoneValidatorTest {
+class HasApplicantTelephoneValidatorTest {
     private Validator validator;
 
     private static final String ERROR_MESSAGE = "Enter at least one telephone number for the contact";
@@ -28,11 +29,13 @@ class HasTelephoneValidatorTest {
 
     @Test
     void shouldNotReturnAnErrorIfApplicantTelephoneExists() {
-        Applicant applicant = Applicant.builder()
-            .telephone("12345678")
+        ApplicantParty applicantParty = ApplicantParty.builder()
+            .telephoneNumber(Telephone.builder()
+                .telephoneNumber("12345678")
+                .build())
             .build();
 
-        List<String> errorMessages = validator.validate(applicant).stream()
+        List<String> errorMessages = validator.validate(applicantParty).stream()
             .map(error -> error.getMessage())
             .collect(Collectors.toList());
 
@@ -41,11 +44,13 @@ class HasTelephoneValidatorTest {
 
     @Test
     void shouldNotReturnAnErrorIfApplicantMobileExists() {
-        Applicant applicant = Applicant.builder()
-            .mobile("12345678")
+        ApplicantParty applicantParty = ApplicantParty.builder()
+            .mobileNumber(Telephone.builder()
+                .telephoneNumber("12345678")
+                .build())
             .build();
 
-        List<String> errorMessages = validator.validate(applicant).stream()
+        List<String> errorMessages = validator.validate(applicantParty).stream()
             .map(error -> error.getMessage())
             .collect(Collectors.toList());
 
@@ -54,12 +59,16 @@ class HasTelephoneValidatorTest {
 
     @Test
     void shouldNotReturnAnErrorIfBothApplicantTelephoneAndMobileExist() {
-        Applicant applicant = Applicant.builder()
-            .telephone("12345678")
-            .mobile("12345678")
+        ApplicantParty applicantParty = ApplicantParty.builder()
+            .telephoneNumber(Telephone.builder()
+                .telephoneNumber("12345678")
+                .build())
+            .mobileNumber(Telephone.builder()
+                .telephoneNumber("12345678")
+                .build())
             .build();
 
-        List<String> errorMessages = validator.validate(applicant).stream()
+        List<String> errorMessages = validator.validate(applicantParty).stream()
             .map(error -> error.getMessage())
             .collect(Collectors.toList());
 
@@ -68,12 +77,16 @@ class HasTelephoneValidatorTest {
 
     @Test
     void shouldNotReturnAnErrorIfApplicantTelephoneIsNotEmptyAndMobileNumberIsEmpty() {
-        Applicant applicant = Applicant.builder()
-            .telephone("123")
-            .mobile("")
+        ApplicantParty applicantParty = ApplicantParty.builder()
+            .telephoneNumber(Telephone.builder()
+                .telephoneNumber("12345678")
+                .build())
+            .mobileNumber(Telephone.builder()
+                .telephoneNumber("")
+                .build())
             .build();
 
-        List<String> errorMessages = validator.validate(applicant).stream()
+        List<String> errorMessages = validator.validate(applicantParty).stream()
             .map(error -> error.getMessage())
             .collect(Collectors.toList());
 
@@ -82,9 +95,9 @@ class HasTelephoneValidatorTest {
 
     @Test
     void shouldReturnAnErrorIfBothApplicantTelephoneAndMobileDoNotExist() {
-        Applicant applicant = Applicant.builder().build();
+        ApplicantParty applicantParty = ApplicantParty.builder().build();
 
-        List<String> errorMessages = validator.validate(applicant).stream()
+        List<String> errorMessages = validator.validate(applicantParty).stream()
             .map(error -> error.getMessage())
             .collect(Collectors.toList());
 
@@ -93,11 +106,13 @@ class HasTelephoneValidatorTest {
 
     @Test
     void shouldReturnAnErrorIfApplicantTelephoneIsEmptyString() {
-        Applicant applicant = Applicant.builder()
-            .telephone("")
+        ApplicantParty applicantParty = ApplicantParty.builder()
+            .mobileNumber(Telephone.builder()
+                .telephoneNumber("")
+                .build())
             .build();
 
-        List<String> errorMessages = validator.validate(applicant).stream()
+        List<String> errorMessages = validator.validate(applicantParty).stream()
             .map(error -> error.getMessage())
             .collect(Collectors.toList());
 
@@ -106,12 +121,16 @@ class HasTelephoneValidatorTest {
 
     @Test
     void shouldReturnAnErrorIfApplicantTelephoneAndMobileNumberAreEmptyStrings() {
-        Applicant applicant = Applicant.builder()
-            .telephone("")
-            .mobile("")
+        ApplicantParty applicantParty = ApplicantParty.builder()
+            .telephoneNumber(Telephone.builder()
+                .telephoneNumber("")
+                .build())
+            .mobileNumber(Telephone.builder()
+                .telephoneNumber("")
+                .build())
             .build();
 
-        List<String> errorMessages = validator.validate(applicant).stream()
+        List<String> errorMessages = validator.validate(applicantParty).stream()
             .map(error -> error.getMessage())
             .collect(Collectors.toList());
 
