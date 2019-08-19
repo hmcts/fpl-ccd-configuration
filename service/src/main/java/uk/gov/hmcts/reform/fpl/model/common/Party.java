@@ -15,6 +15,7 @@ public class Party {
     public final PartyType partyType;
     public final String firstName;
     public final String lastName;
+    public final String organisationName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     public final Date dateOfBirth;
     public final Address address;
