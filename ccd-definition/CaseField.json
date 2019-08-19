@@ -198,6 +198,23 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicants",
+    "Label": "Applicants",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Applicants",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "applicantsMigrated",
+    "Label": "Migrated?",
+    "FieldType": "YesOrNo",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "solicitor",
     "Label": "Solicitor",
     "FieldType": "Solicitor",

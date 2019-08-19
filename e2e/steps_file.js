@@ -73,6 +73,7 @@ module.exports = function () {
 
     signOut() {
       this.click('Sign Out');
+      this.wait(2); // in seconds
     },
 
     navigateToCaseDetails(caseId) {
