@@ -81,18 +81,6 @@ exports.config = {
   tests: './e2e/paths/*_test.js',
   mocha: {
     reporterOptions: {
-      'codeceptjs-cli-reporter': {
-        stdout: '-',
-        options: {
-          steps: true,
-        },
-      },
-      'mocha-junit-reporter': {
-        stdout: '-',
-        options: {
-          mochaFile: 'test-results/result.xml',
-        },
-      },
       'mochawesome': {
         stdout: '-',
         options: {
