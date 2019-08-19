@@ -7,7 +7,7 @@ def type = "java"
 def product = "fpl"
 def component = "case-service"
 
-def secrets = [
+def serviceSecrets = [
   'fpl-${env}': [
     secret('fpl-case-service-s2s-secret', 'IDAM_S2S_AUTH_TOTP_SECRET'),
     secret('notify-api-key', 'NOTIFY_API_KEY'),
@@ -18,6 +18,21 @@ def secrets = [
     secret('local-authority-user-mapping', 'FPL_LOCAL_AUTHORITY_USER_MAPPING'),
     secret('local-authority-code-to-hmcts-court-mapping', 'FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING'),
     secret('local-authority-code-to-cafcass-mapping', 'FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING')
+  ]
+]
+
+def otherSecrets = [
+  // below is just for CCD in AKS - to be cleaned up when CCD Helm chart is updated to use flex volume for secrets
+  's2s-${env}': [
+    secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_SECRET'),
+    secret('microservicekey-ccd-data', 'CCD_DATA_STORE_S2S_SECRET'),
+    secret('microservicekey-ccd-definition', 'CCD_DEFINITION_STORE_S2S_SECRET')
+  ],
+  'ccd-${env}': [
+    secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_IDAM_CLIENT_SECRET'),
+    secret('ccd-as-a-pr-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
+    secret('ccd-as-a-pr-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD'),
+    secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
   ]
 ]
 
@@ -35,23 +50,11 @@ def archiveCoreCaseDataDefinitions(env) {
 }
 
 withPipeline(type, product, component) {
-  loadVaultSecrets(secrets)
+  onMaster {
+    loadVaultSecrets(serviceSecrets)
+  }
   onPR {
-    def previewSecrets = [
-      // below is just for CCD in AKS - to be cleaned up when CCD Helm chart is updated to use flex volume for secrets
-      's2s-${env}': [
-              secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_SECRET'),
-              secret('microservicekey-ccd-data', 'CCD_DATA_STORE_S2S_SECRET'),
-              secret('microservicekey-ccd-definition', 'CCD_DEFINITION_STORE_S2S_SECRET')
-      ],
-      'ccd-${env}': [
-              secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_IDAM_CLIENT_SECRET'),
-              secret('ccd-as-a-pr-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
-              secret('ccd-as-a-pr-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD'),
-              secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
-      ]
-    ]
-    loadVaultSecrets(previewSecrets)
+    loadVaultSecrets(serviceSecrets + otherSecrets)
   }
   enableDockerBuild()
   installCharts()
