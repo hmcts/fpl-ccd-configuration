@@ -30,6 +30,7 @@ public final class RespondentParty extends Party {
                            PartyType partyType,
                            String firstName,
                            String lastName,
+                           String organisationName,
                            Date dateOfBirth,
                            Address address,
                            EmailAddress email,
@@ -42,7 +43,8 @@ public final class RespondentParty extends Party {
                            String contactDetailsHiddenReason,
                            String litigationIssues,
                            String litigationIssuesDetails) {
-        super(partyId, partyType, firstName, lastName, dateOfBirth, address, email, telephoneNumber);
+        super(partyId, partyType, firstName, lastName, organisationName,
+            dateOfBirth, address, email, telephoneNumber);
 
         this.gender = gender;
         this.genderIdentification = genderIdentification;

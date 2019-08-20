@@ -8,7 +8,7 @@ surname=${3:-"Tester"}
 
 userToken=$($(dirname ${0})/idam-lease-user-token.sh 1 admin)
 
-searchResponse=$(curl -k --silent --show-error --output /dev/null --write-out "%{http_code}" -H "Authorization: Bearer ${userToken}" ${IDAM_API_BASE_URL}/users?email=${email})
+searchResponse=$(curl -k --silent --show-error --output /dev/null --write-out "%{http_code}" -H "Authorization: Bearer ${userToken}" ${IDAM_API_BASE_URL:-http://localhost:4501}/users?email=${email})
 
 if [[ ${searchResponse} -ne 200 && ${searchResponse} -ne 404 ]]; then
   echo "The requested user search returned error: ${searchResponse}"
@@ -16,11 +16,11 @@ if [[ ${searchResponse} -ne 200 && ${searchResponse} -ne 404 ]]; then
 fi
 
 if [[ ${searchResponse} -eq 200 ]]; then
-  echo "User ${email} already exists - skipping"
+  echo "User ${email} already exists in IDAM - skipping"
   exit 0
 fi
 
-echo "User ${email} - adding"
+echo "User ${email} - adding user to IDAM"
 
 IFS=',' read -ra roles <<< ${rolesStr}
 
@@ -33,7 +33,7 @@ for role in ${roles[@]}; do
 done
 
 curl -k --fail --show-error --silent --output /dev/null -X POST \
-  ${IDAM_API_BASE_URL}/testing-support/accounts \
+  ${IDAM_API_BASE_URL:-http://localhost:4501}/testing-support/accounts \
   -H "Content-Type: application/json" \
   -d '{
     "email": "'${email}'",
