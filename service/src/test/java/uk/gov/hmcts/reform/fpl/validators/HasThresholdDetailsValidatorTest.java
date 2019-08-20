@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 
 import java.util.List;
@@ -62,7 +62,7 @@ class HasThresholdDetailsValidatorTest {
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
                 .build())
-            .groundsForEPO(GroundsForEPO.builder()
+            .grounds(Grounds.builder()
                 .thresholdDetails("details")
                 .build())
             .build();
@@ -95,7 +95,7 @@ class HasThresholdDetailsValidatorTest {
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
                 .build())
-            .groundsForEPO(GroundsForEPO.builder()
+            .grounds(Grounds.builder()
                 .thresholdDetails("")
                 .build())
             .build();

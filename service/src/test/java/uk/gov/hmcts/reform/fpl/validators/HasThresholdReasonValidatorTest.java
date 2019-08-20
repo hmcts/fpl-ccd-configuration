@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 
 import java.util.List;
@@ -63,7 +63,7 @@ class HasThresholdReasonValidatorTest {
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
                 .build())
-            .groundsForEPO(GroundsForEPO.builder()
+            .grounds(Grounds.builder()
                 .thresholdReason(ImmutableList.of("Reason"))
                 .build())
             .build();
@@ -91,13 +91,13 @@ class HasThresholdReasonValidatorTest {
     }
 
     @Test
-    void shouldReturnAnErrorWhenOrderTypeDoesContainEPOAndThresholdReasonIsEmptyStringList() {
+    void shouldReturnAnErrorWhenOrderTypeDoesContainEPOAndThresholdReasonIsEmpty() {
         CaseData caseData = CaseData.builder()
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
                 .build())
-            .groundsForEPO(GroundsForEPO.builder()
-                .thresholdReason(ImmutableList.of(""))
+            .grounds(Grounds.builder()
+                .thresholdReason(ImmutableList.of())
                 .build())
             .build();
 

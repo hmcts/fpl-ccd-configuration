@@ -21,9 +21,8 @@ public class HasThresholdDetailsValidator implements
             .addConstraintViolation();
 
         if (caseData.hasEPOGrounds()) {
-
-            return caseData.getGroundsForEPO() != null
-                && StringUtils.isNotBlank(caseData.getGroundsForEPO().getThresholdDetails());
+            return caseData.getGrounds() != null
+                && StringUtils.isNotBlank(caseData.getGrounds().getThresholdDetails());
         } else {
             return true;
         }

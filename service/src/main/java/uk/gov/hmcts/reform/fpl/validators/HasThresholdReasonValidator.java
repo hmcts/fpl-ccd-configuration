@@ -18,9 +18,8 @@ public class HasThresholdReasonValidator implements ConstraintValidator<HasThres
             .addConstraintViolation();
 
         if (caseData.hasEPOGrounds()) {
-
-            return caseData.getGroundsForEPO() != null && caseData.getGroundsForEPO().getThresholdReason() != null
-                && !caseData.getGroundsForEPO().getThresholdReason().contains("");
+            return caseData.getGrounds() != null && caseData.getGrounds().getThresholdReason() != null
+                && !caseData.getGrounds().getThresholdReason().isEmpty();
         } else {
             return true;
         }

@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Children;
+import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -170,6 +171,8 @@ class CaseSubmissionValidatorServiceTest {
             .caseName("Test case")
             .groundsForEPO(GroundsForEPO.builder()
                 .reason(ImmutableList.of("reason"))
+                .build())
+            .grounds(Grounds.builder()
                 .thresholdReason(ImmutableList.of("reason"))
                 .thresholdDetails("Details")
                 .build())
