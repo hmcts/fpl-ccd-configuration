@@ -8,8 +8,8 @@ Before((I, caseViewPage) => {
 });
 
 Scenario('Complete half the factors affecting parenting section of the c110a' +
-  ' application', (I, enterFactorsAffectingParentingPage, caseViewPage) => {
-  enterFactorsAffectingParentingPage.completeAlcoholOrDrugAbuse();
+  ' application', (I, enterFactorsAffectingParentingEventPage, caseViewPage) => {
+  enterFactorsAffectingParentingEventPage.completeAlcoholOrDrugAbuse();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterFactorsAffectingParenting);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
@@ -17,10 +17,10 @@ Scenario('Complete half the factors affecting parenting section of the c110a' +
   I.seeAnswerInTab(2, 'Factors affecting parenting', 'Give details', 'mock reason');
 });
 
-Scenario('Filling in factors affecting parenting sections of c110a', (I, enterFactorsAffectingParentingPage, caseViewPage) => {
-  enterFactorsAffectingParentingPage.completeAlcoholOrDrugAbuse();
-  enterFactorsAffectingParentingPage.completeDomesticViolence();
-  enterFactorsAffectingParentingPage.completeAnythingElse();
+Scenario('Filling in factors affecting parenting sections of c110a', (I, enterFactorsAffectingParentingEventPage, caseViewPage) => {
+  enterFactorsAffectingParentingEventPage.completeAlcoholOrDrugAbuse();
+  enterFactorsAffectingParentingEventPage.completeDomesticViolence();
+  enterFactorsAffectingParentingEventPage.completeAnythingElse();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterFactorsAffectingParenting);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);

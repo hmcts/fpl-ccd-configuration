@@ -8,8 +8,8 @@ Before((I, caseViewPage) => {
 });
 
 Scenario('completing half of the international element section of the c110a' +
-  ' application', (I, enterInternationalElementsPage, caseViewPage) => {
-  enterInternationalElementsPage.halfFillForm();
+  ' application', (I, enterInternationalElementEventPage, caseViewPage) => {
+  enterInternationalElementEventPage.halfFillForm();
   I.see('Give reason');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterInternationalElement);
@@ -21,8 +21,8 @@ Scenario('completing half of the international element section of the c110a' +
   I.seeAnswerInTab(4, 'International element', 'Give reason', 'test');
 });
 
-Scenario('completed international element of the c110a application', (I, enterInternationalElementsPage, caseViewPage) => {
-  enterInternationalElementsPage.fillForm();
+Scenario('completed international element of the c110a application', (I, enterInternationalElementEventPage, caseViewPage) => {
+  enterInternationalElementEventPage.fillForm();
   I.see('Give reason');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterInternationalElement);

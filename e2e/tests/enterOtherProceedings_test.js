@@ -8,8 +8,8 @@ Before((I, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.enterOtherProceedings);
 });
 
-Scenario('Select not aware of any ongoing or previous proceedings', (I, enterOtherProceedingsPage, caseViewPage) => {
-  enterOtherProceedingsPage.selectNoForProceeding();
+Scenario('Select not aware of any ongoing or previous proceedings', (I, enterOtherProceedingsEventPage, caseViewPage) => {
+  enterOtherProceedingsEventPage.selectNoForProceeding();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOtherProceedings);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
@@ -18,9 +18,9 @@ Scenario('Select not aware of any ongoing or previous proceedings', (I, enterOth
 });
 
 Scenario('Select yes for ongoing or previous proceedings and fill in other proceedings one',
-  async (I, enterOtherProceedingsPage, caseViewPage) => {
-    enterOtherProceedingsPage.selectYesForProceeding();
-    await enterOtherProceedingsPage.enterProceedingInformation(otherProceedingData[0]);
+  async (I, enterOtherProceedingsEventPage, caseViewPage) => {
+    enterOtherProceedingsEventPage.selectYesForProceeding();
+    await enterOtherProceedingsEventPage.enterProceedingInformation(otherProceedingData[0]);
     I.continueAndSave();
     I.seeEventSubmissionConfirmation(config.applicationActions.enterOtherProceedings);
     caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
@@ -39,11 +39,11 @@ Scenario('Select yes for ongoing or previous proceedings and fill in other proce
   });
 
 Scenario('Select yes for ongoing or previous proceedings and fill in multiple proceedings',
-  async (I, enterOtherProceedingsPage, caseViewPage) => {
-    await enterOtherProceedingsPage.selectYesForProceeding();
-    await enterOtherProceedingsPage.enterProceedingInformation(otherProceedingData[0]);
-    enterOtherProceedingsPage.addNewProceeding();
-    await enterOtherProceedingsPage.enterProceedingInformation(otherProceedingData[1]);
+  async (I, enterOtherProceedingsEventPage, caseViewPage) => {
+    await enterOtherProceedingsEventPage.selectYesForProceeding();
+    await enterOtherProceedingsEventPage.enterProceedingInformation(otherProceedingData[0]);
+    enterOtherProceedingsEventPage.addNewProceeding();
+    await enterOtherProceedingsEventPage.enterProceedingInformation(otherProceedingData[1]);
     I.continueAndSave();
     I.seeEventSubmissionConfirmation(config.applicationActions.enterOtherProceedings);
     caseViewPage.selectTab(caseViewPage.tabs.legalBasis);

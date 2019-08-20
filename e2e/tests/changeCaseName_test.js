@@ -7,8 +7,8 @@ Before((I, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.changeCaseName);
 });
 
-Scenario('changed case name', (I, changeCaseNamePage) => {
-  changeCaseNamePage.changeCaseName();
+Scenario('changed case name', (I, changeCaseNameEventPage) => {
+  changeCaseNameEventPage.changeCaseName();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.changeCaseName);
 });

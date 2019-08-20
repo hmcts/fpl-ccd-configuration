@@ -32,39 +32,39 @@ Before((I, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.enterChildren);
 });
 
-Scenario('completing half of the enter children in the c110a application', async (I, enterChildrenPage, caseViewPage) => {
-  await enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
-  await enterChildrenPage.defineChildSituation('01', '11', '2017');
-  await enterChildrenPage.enterAddress(addresses[0]);
+Scenario('completing half of the enter children in the c110a application', async (I, enterChildrenEventPage, caseViewPage) => {
+  await enterChildrenEventPage.enterChildDetails('Timothy', '01', '08', '2015');
+  await enterChildrenEventPage.defineChildSituation('01', '11', '2017');
+  await enterChildrenEventPage.enterAddress(addresses[0]);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
 
-Scenario('completing entering child information in the c110a application', async (I, enterChildrenPage, caseViewPage) => {
-  await enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
-  await enterChildrenPage.defineChildSituation('01', '11', '2017');
-  await enterChildrenPage.enterAddress(addresses[0]);
-  await enterChildrenPage.enterKeyDatesAffectingHearing();
-  await enterChildrenPage.enterSummaryOfCarePlan();
-  await enterChildrenPage.defineAdoptionIntention();
-  await enterChildrenPage.enterParentsDetails();
-  await enterChildrenPage.enterSocialWorkerDetails();
-  await enterChildrenPage.defineChildAdditionalNeeds();
-  await enterChildrenPage.defineContactDetailsVisibility();
-  await enterChildrenPage.enterLitigationIssues('Yes', 'mock reason');
-  enterChildrenPage.addChild();
-  await enterChildrenPage.enterChildDetails('Susan', '01', '07', '2016');
-  await enterChildrenPage.defineChildSituation('02', '11', '2017');
-  await enterChildrenPage.enterAddress(addresses[1]);
-  await enterChildrenPage.enterKeyDatesAffectingHearing();
-  await enterChildrenPage.enterSummaryOfCarePlan();
-  await enterChildrenPage.defineAdoptionIntention();
-  await enterChildrenPage.enterParentsDetails();
-  await enterChildrenPage.enterSocialWorkerDetails();
-  await enterChildrenPage.defineChildAdditionalNeeds();
-  await enterChildrenPage.defineContactDetailsVisibility();
-  await enterChildrenPage.enterLitigationIssues('No');
+Scenario('completing entering child information in the c110a application', async (I, enterChildrenEventPage, caseViewPage) => {
+  await enterChildrenEventPage.enterChildDetails('Timothy', '01', '08', '2015');
+  await enterChildrenEventPage.defineChildSituation('01', '11', '2017');
+  await enterChildrenEventPage.enterAddress(addresses[0]);
+  await enterChildrenEventPage.enterKeyDatesAffectingHearing();
+  await enterChildrenEventPage.enterSummaryOfCarePlan();
+  await enterChildrenEventPage.defineAdoptionIntention();
+  await enterChildrenEventPage.enterParentsDetails();
+  await enterChildrenEventPage.enterSocialWorkerDetails();
+  await enterChildrenEventPage.defineChildAdditionalNeeds();
+  await enterChildrenEventPage.defineContactDetailsVisibility();
+  await enterChildrenEventPage.enterLitigationIssues('Yes', 'mock reason');
+  enterChildrenEventPage.addChild();
+  await enterChildrenEventPage.enterChildDetails('Susan', '01', '07', '2016');
+  await enterChildrenEventPage.defineChildSituation('02', '11', '2017');
+  await enterChildrenEventPage.enterAddress(addresses[1]);
+  await enterChildrenEventPage.enterKeyDatesAffectingHearing();
+  await enterChildrenEventPage.enterSummaryOfCarePlan();
+  await enterChildrenEventPage.defineAdoptionIntention();
+  await enterChildrenEventPage.enterParentsDetails();
+  await enterChildrenEventPage.enterSocialWorkerDetails();
+  await enterChildrenEventPage.defineChildAdditionalNeeds();
+  await enterChildrenEventPage.defineContactDetailsVisibility();
+  await enterChildrenEventPage.enterLitigationIssues('No');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);

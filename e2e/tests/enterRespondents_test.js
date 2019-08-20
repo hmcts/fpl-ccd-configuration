@@ -8,23 +8,23 @@ Before((I, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
 });
 
-Scenario('Entering information for respondent and submitting', async (I, enterRespondentsPage, caseViewPage) => {
-  await enterRespondentsPage.enterRespondent(respondents[0]);
+Scenario('Entering information for respondent and submitting', async (I, enterRespondentsEventPage, caseViewPage) => {
+  await enterRespondentsEventPage.enterRespondent(respondents[0]);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
 
-Scenario('Entering all information for multiple respondents', async (I, enterRespondentsPage, caseViewPage) => {
-  await enterRespondentsPage.enterRespondent(respondents[0]);
-  await enterRespondentsPage.enterRelationshipToChild('mock reason');
-  await enterRespondentsPage.enterContactDetailsHidden('Yes', 'mock reason');
-  await enterRespondentsPage.enterLitigationIssues('Yes', 'mock reason');
-  enterRespondentsPage.addRespondent();
-  await enterRespondentsPage.enterRespondent(respondents[1]);
-  await enterRespondentsPage.enterRelationshipToChild('mock reason');
-  await enterRespondentsPage.enterContactDetailsHidden('Yes', 'mock reason');
-  await enterRespondentsPage.enterLitigationIssues('No');
+Scenario('Entering all information for multiple respondents', async (I, enterRespondentsEventPage, caseViewPage) => {
+  await enterRespondentsEventPage.enterRespondent(respondents[0]);
+  await enterRespondentsEventPage.enterRelationshipToChild('mock reason');
+  await enterRespondentsEventPage.enterContactDetailsHidden('Yes', 'mock reason');
+  await enterRespondentsEventPage.enterLitigationIssues('Yes', 'mock reason');
+  enterRespondentsEventPage.addRespondent();
+  await enterRespondentsEventPage.enterRespondent(respondents[1]);
+  await enterRespondentsEventPage.enterRelationshipToChild('mock reason');
+  await enterRespondentsEventPage.enterContactDetailsHidden('Yes', 'mock reason');
+  await enterRespondentsEventPage.enterLitigationIssues('No');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);

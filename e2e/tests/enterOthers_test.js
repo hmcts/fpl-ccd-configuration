@@ -8,23 +8,23 @@ Before((I, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.enterOthers);
 });
 
-Scenario('Enter other\'s details in c110a application', async (I, enterOthersPage, caseViewPage) => {
-  await enterOthersPage.enterOtherDetails(others[0]);
+Scenario('Enter other\'s details in c110a application', async (I, enterOthersEventPage, caseViewPage) => {
+  await enterOthersEventPage.enterOtherDetails(others[0]);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOthers);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
 
-Scenario('Complete entering others details in the c110a application', async (I, enterOthersPage, caseViewPage) => {
-  await enterOthersPage.enterOtherDetails(others[0]);
-  await enterOthersPage.enterRelationshipToChild('Tim Smith');
-  await enterOthersPage.enterContactDetailsHidden('Yes');
-  await enterOthersPage.enterLitigationIssues('No');
-  enterOthersPage.addOther();
-  await enterOthersPage.enterOtherDetails(others[1]);
-  await enterOthersPage.enterRelationshipToChild('Tim Smith');
-  await enterOthersPage.enterContactDetailsHidden('Yes');
-  await enterOthersPage.enterLitigationIssues('Yes', 'mock reason');
+Scenario('Complete entering others details in the c110a application', async (I, enterOthersEventPage, caseViewPage) => {
+  await enterOthersEventPage.enterOtherDetails(others[0]);
+  await enterOthersEventPage.enterRelationshipToChild('Tim Smith');
+  await enterOthersEventPage.enterContactDetailsHidden('Yes');
+  await enterOthersEventPage.enterLitigationIssues('No');
+  enterOthersEventPage.addOther();
+  await enterOthersEventPage.enterOtherDetails(others[1]);
+  await enterOthersEventPage.enterRelationshipToChild('Tim Smith');
+  await enterOthersEventPage.enterContactDetailsHidden('Yes');
+  await enterOthersEventPage.enterLitigationIssues('Yes', 'mock reason');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOthers);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);

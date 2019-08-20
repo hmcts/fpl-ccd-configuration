@@ -4,11 +4,11 @@ let caseId;
 
 Feature('Cases visible only to respective local authority and admin');
 
-Before(async (I, caseViewPage, submitApplicationPage) => {
+Before(async (I, caseViewPage, submitApplicationEventPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseId = await I.grabTextFrom('.heading-h1');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationPage.giveConsent();
+  submitApplicationEventPage.giveConsent();
   I.continueAndSubmit();
   I.wait(2); // in seconds; time needed for access grant calls to complete
   I.signOut();

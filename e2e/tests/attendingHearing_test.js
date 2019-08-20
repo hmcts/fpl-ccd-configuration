@@ -8,10 +8,10 @@ Before((I, caseViewPage) => {
 });
 
 Scenario('completing half of the attending hearing section of the c110a application',
-  (I, attendingHearingPage, caseViewPage) => {
-    attendingHearingPage.enterInterpreter();
-    attendingHearingPage.enterWelshProceedings();
-    attendingHearingPage.enterIntermediary();
+  (I, enterAttendingHearingEventPage, caseViewPage) => {
+    enterAttendingHearingEventPage.enterInterpreter();
+    enterAttendingHearingEventPage.enterWelshProceedings();
+    enterAttendingHearingEventPage.enterIntermediary();
     I.continueAndSave();
     I.seeEventSubmissionConfirmation(config.applicationActions.attendingHearing);
     caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
@@ -23,13 +23,13 @@ Scenario('completing half of the attending hearing section of the c110a applicat
   });
 
 Scenario('completing the attending hearing section of the c110a application',
-  (I, attendingHearingPage, caseViewPage) => {
-    attendingHearingPage.enterInterpreter();
-    attendingHearingPage.enterWelshProceedings();
-    attendingHearingPage.enterIntermediary();
-    attendingHearingPage.enterDisabilityAssistance();
-    attendingHearingPage.enterExtraSecurityMeasures();
-    attendingHearingPage.enterSomethingElse();
+  (I, enterAttendingHearingEventPage, caseViewPage) => {
+    enterAttendingHearingEventPage.enterInterpreter();
+    enterAttendingHearingEventPage.enterWelshProceedings();
+    enterAttendingHearingEventPage.enterIntermediary();
+    enterAttendingHearingEventPage.enterDisabilityAssistance();
+    enterAttendingHearingEventPage.enterExtraSecurityMeasures();
+    enterAttendingHearingEventPage.enterSomethingElse();
     I.continueAndSave();
     I.seeEventSubmissionConfirmation(config.applicationActions.attendingHearing);
     caseViewPage.selectTab(caseViewPage.tabs.legalBasis);

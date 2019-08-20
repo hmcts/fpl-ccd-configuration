@@ -4,11 +4,11 @@ let caseId;
 
 Feature('HMCTS admin upload standard directions');
 
-Before(async (I, caseViewPage, loginPage, submitApplicationPage) => {
+Before(async (I, caseViewPage, loginPage, submitApplicationEventPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseId = await I.grabTextFrom('.heading-h1');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationPage.giveConsent();
+  submitApplicationEventPage.giveConsent();
   I.continueAndSubmit();
   I.signOut();
   loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);

@@ -13,16 +13,16 @@ module.exports = {
   startButton: 'Start',
   continueButton: 'Continue',
 
-  enterCaseName(caseName = 'Barnet Council v Smith') {
-    I.waitForElement(this.enterCaseNamePage.caseName);
-    I.fillField(this.enterCaseNamePage.caseName, caseName);
-  },
-
   populateForm() {
     I.selectOption(this.fields.jurisdiction, 'Family Public Law');
     I.selectOption(this.fields.caseType, 'Care, supervision and EPOs');
     I.selectOption(this.fields.event, 'Start application');
     I.click(this.startButton);
     this.enterCaseName();
+  },
+
+  enterCaseName(caseName = 'Barnet Council v Smith') {
+    I.waitForElement(this.enterCaseNamePage.caseName);
+    I.fillField(this.enterCaseNamePage.caseName, caseName);
   },
 };

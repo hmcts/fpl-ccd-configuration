@@ -8,9 +8,9 @@ Before((I, caseViewPage) => {
 });
 
 Scenario('complete half of the enter risk and harm to children in the c110a' +
-  ' application', (I, enterRiskAndHarmToChildPage, caseViewPage) => {
-  enterRiskAndHarmToChildPage.completePhysicalHarm();
-  enterRiskAndHarmToChildPage.completeEmotionalHarm();
+  ' application', (I, enterRiskAndHarmToChildrenEventPage, caseViewPage) => {
+  enterRiskAndHarmToChildrenEventPage.completePhysicalHarm();
+  enterRiskAndHarmToChildrenEventPage.completeEmotionalHarm();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRisk);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
@@ -21,11 +21,11 @@ Scenario('complete half of the enter risk and harm to children in the c110a' +
 });
 
 Scenario('complete entering risk and harm to children in the c110a' +
-  ' application', (I, enterRiskAndHarmToChildPage, caseViewPage) => {
-  enterRiskAndHarmToChildPage.completePhysicalHarm();
-  enterRiskAndHarmToChildPage.completeEmotionalHarm();
-  enterRiskAndHarmToChildPage.completeSexualAbuse();
-  enterRiskAndHarmToChildPage.completeNeglect();
+  ' application', (I, enterRiskAndHarmToChildrenEventPage, caseViewPage) => {
+  enterRiskAndHarmToChildrenEventPage.completePhysicalHarm();
+  enterRiskAndHarmToChildrenEventPage.completeEmotionalHarm();
+  enterRiskAndHarmToChildrenEventPage.completeSexualAbuse();
+  enterRiskAndHarmToChildrenEventPage.completeNeglect();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRisk);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);

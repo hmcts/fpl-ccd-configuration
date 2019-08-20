@@ -10,8 +10,8 @@ Before((I, caseViewPage) => {
   I.click(caseViewPage.goButton);
 });
 
-Scenario('Can give consent and submit the case', (I, caseViewPage, submitApplicationPage) => {
-  submitApplicationPage.giveConsent();
+Scenario('Can give consent and submit the case', (I, caseViewPage, submitApplicationEventPage) => {
+  submitApplicationEventPage.giveConsent();
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   I.dontSee(caseViewPage.actionsDropdown);

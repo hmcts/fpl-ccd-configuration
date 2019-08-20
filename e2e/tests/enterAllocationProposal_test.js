@@ -7,15 +7,15 @@ Before((I, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
 });
 
-Scenario('Select lay justices for allocation proposal', (I, enterAllocationProposalPage) => {
-  enterAllocationProposalPage.selectAllocationProposal('Lay justices');
+Scenario('Select lay justices for allocation proposal', (I, enterAllocationProposalEventPage) => {
+  enterAllocationProposalEventPage.selectAllocationProposal('Lay justices');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationProposal);
 });
 
-Scenario('Select lay justices for allocation proposal with proposal reason', (I, enterAllocationProposalPage) => {
-  enterAllocationProposalPage.selectAllocationProposal('Lay justices');
-  enterAllocationProposalPage.enterProposalReason('test');
+Scenario('Select lay justices for allocation proposal with proposal reason', (I, enterAllocationProposalEventPage) => {
+  enterAllocationProposalEventPage.selectAllocationProposal('Lay justices');
+  enterAllocationProposalEventPage.enterProposalReason('test');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationProposal);
 });

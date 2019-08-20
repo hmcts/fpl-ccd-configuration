@@ -1,5 +1,5 @@
 const I = actor();
-const postcodeLookup = require('../fragments/addressPostcodeLookup');
+const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
   fields: function(index) {

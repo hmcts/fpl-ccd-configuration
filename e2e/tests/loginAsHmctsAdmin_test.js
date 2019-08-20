@@ -3,16 +3,16 @@ let caseId;
 
 Feature('Login and edit case as hmcts admin');
 
-Before(async (I, caseViewPage, submitApplicationPage) => {
+Before(async (I, caseViewPage, submitApplicationEventPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseId = await I.grabTextFrom('.heading-h1');
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationPage.giveConsent();
+  submitApplicationEventPage.giveConsent();
   I.continueAndSubmit();
   I.signOut();
 });
 
-Scenario('HMCTS admin can login and add a FamilyMan case number to a submitted case', (I, caseViewPage, loginPage, enterFamilyManPage, enterOtherProceedingsPage) => {
+Scenario('HMCTS admin can login and add a FamilyMan case number to a submitted case', (I, caseViewPage, loginPage, enterFamilyManPage, enterOtherProceedingsEventPage) => {
   loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   I.navigateToCaseDetails(caseId);
   I.see(caseId);
@@ -48,7 +48,7 @@ Scenario('HMCTS admin can login and add a FamilyMan case number to a submitted c
     summaryText, descriptionText);
 
   I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendOtherProceedings,
-    summaryText, descriptionText, () => enterOtherProceedingsPage.selectNoForProceeding());
+    summaryText, descriptionText, () => enterOtherProceedingsEventPage.selectNoForProceeding());
 
   I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendAttendingHearing,
     summaryText, descriptionText);

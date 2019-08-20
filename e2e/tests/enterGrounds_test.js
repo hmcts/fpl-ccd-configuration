@@ -6,9 +6,9 @@ Before((I) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
 });
 
-Scenario('Filling in grounds for application section of c110a', (I, enterGroundsPage, caseViewPage) => {
+Scenario('Filling in grounds for application section of c110a', (I, enterGroundsForApplicationEventPage, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
-  enterGroundsPage.enterThresholdCriteriaDetails();
+  enterGroundsForApplicationEventPage.enterThresholdCriteriaDetails();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterGrounds);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
@@ -17,20 +17,20 @@ Scenario('Filling in grounds for application section of c110a', (I, enterGrounds
 });
 
 Scenario('Filling in grounds for application after selecting EPO',
-  (I, enterGroundsPage, caseViewPage, ordersNeededPage) => {
+  (I, enterGroundsForApplicationEventPage, caseViewPage, enterOrdersAndDirectionsNeededEventPage) => {
     caseViewPage.goToNewActions(config.applicationActions.selectOrders);
-    ordersNeededPage.checkEmergencyProtectionOrder();
+    enterOrdersAndDirectionsNeededEventPage.checkEmergencyProtectionOrder();
     I.continueAndSave();
     I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
     caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
-    enterGroundsPage.enterGroundsForEmergencyProtectionOrder();
+    enterGroundsForApplicationEventPage.enterGroundsForEmergencyProtectionOrder();
     I.continueAndSave();
     I.seeEventSubmissionConfirmation(config.applicationActions.enterGrounds);
     caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
     I.seeAnswerInTab(
       1, 'How are there grounds for an emergency protection order?', '', [
-        enterGroundsPage.fields.groundsForApplication.harmIfNotMoved,
-        enterGroundsPage.fields.groundsForApplication.harmIfMoved,
-        enterGroundsPage.fields.groundsForApplication.urgentAccessRequired,
+        enterGroundsForApplicationEventPage.fields.groundsForApplication.harmIfNotMoved,
+        enterGroundsForApplicationEventPage.fields.groundsForApplication.harmIfMoved,
+        enterGroundsForApplicationEventPage.fields.groundsForApplication.urgentAccessRequired,
       ]);
   });

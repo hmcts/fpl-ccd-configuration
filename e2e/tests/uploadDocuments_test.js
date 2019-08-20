@@ -7,23 +7,23 @@ Before((I, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
 });
 
-Scenario('Selecting social work chronology document to follow in the c110a application', (I, uploadDocumentsPage, caseViewPage) => {
-  uploadDocumentsPage.selectSocialWorkChronologyToFollow();
+Scenario('Selecting social work chronology document to follow in the c110a application', (I, uploadDocumentsEventPage, caseViewPage) => {
+  uploadDocumentsEventPage.selectSocialWorkChronologyToFollow();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeDocument('Social work chronology', '', 'To follow', 'mock reason');
 });
 
-Scenario('Uploading all files in the c110a application', (I, uploadDocumentsPage, caseViewPage) => {
-  uploadDocumentsPage.selectSocialWorkChronologyToFollow(config.testFile);
-  uploadDocumentsPage.uploadSocialWorkStatement(config.testFile);
-  uploadDocumentsPage.uploadSocialWorkAssessment(config.testFile);
-  uploadDocumentsPage.uploadCarePlan(config.testFile);
-  uploadDocumentsPage.uploadSWET(config.testFile);
-  uploadDocumentsPage.uploadThresholdDocument(config.testFile);
-  uploadDocumentsPage.uploadChecklistDocument(config.testFile);
-  uploadDocumentsPage.uploadAdditionalDocuments(config.testFile);
+Scenario('Uploading all files in the c110a application', (I, uploadDocumentsEventPage, caseViewPage) => {
+  uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
+  uploadDocumentsEventPage.uploadSocialWorkStatement(config.testFile);
+  uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
+  uploadDocumentsEventPage.uploadCarePlan(config.testFile);
+  uploadDocumentsEventPage.uploadSWET(config.testFile);
+  uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
+  uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
+  uploadDocumentsEventPage.uploadAdditionalDocuments(config.testFile);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
@@ -36,30 +36,30 @@ Scenario('Uploading all files in the c110a application', (I, uploadDocumentsPage
   I.seeDocument('Checklist document', 'mockFile.txt', 'Attached');
 });
 
-Scenario('As a local authority I have the ability to upload a document after submission of a case', (I, uploadDocumentsPage, submitApplicationPage, caseViewPage) => {
-  uploadDocumentsPage.selectSocialWorkChronologyToFollow(config.testFile);
+Scenario('As a local authority I have the ability to upload a document after submission of a case', (I, uploadDocumentsEventPage, submitApplicationEventPage, caseViewPage) => {
+  uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationPage.giveConsent();
+  submitApplicationEventPage.giveConsent();
   I.continueAndSubmit();
   caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-  uploadDocumentsPage.uploadSocialWorkAssessment(config.testFile);
+  uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeDocument('Social work assessment', 'mockFile.txt', 'Attached');
 });
 
-Scenario('Ability for a local authority to upload court bundle only after case is submitted', (I, uploadDocumentsPage, submitApplicationPage, caseViewPage) => {
+Scenario('Ability for a local authority to upload court bundle only after case is submitted', (I, uploadDocumentsEventPage, submitApplicationEventPage, caseViewPage) => {
   I.dontSee('Court bundle');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationPage.giveConsent();
+  submitApplicationEventPage.giveConsent();
   I.continueAndSubmit();
   caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-  uploadDocumentsPage.uploadCourtBundle(config.testFile);
+  uploadDocumentsEventPage.uploadCourtBundle(config.testFile);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);

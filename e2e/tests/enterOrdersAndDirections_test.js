@@ -7,36 +7,36 @@ Before((I, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.selectOrders);
 });
 
-Scenario('Select the care order case order and continue', (I, caseViewPage, ordersNeededPage) => {
-  ordersNeededPage.checkCareOrder();
+Scenario('Select the care order case order and continue', (I, caseViewPage, enterOrdersAndDirectionsNeededEventPage) => {
+  enterOrdersAndDirectionsNeededEventPage.checkCareOrder();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
   caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
   I.seeAnswerInTab(1, 'Orders and directions needed', 'Which orders do you need?', 'Care order');
 });
 
-Scenario('Select all case orders and fill in directions & interim information', (I, caseViewPage, ordersNeededPage) => {
-  ordersNeededPage.checkCareOrder();
-  ordersNeededPage.checkInterimCareOrder();
-  ordersNeededPage.checkSupervisionOrder();
-  ordersNeededPage.checkInterimSupervisionOrder();
-  ordersNeededPage.checkEducationSupervisionOrder();
-  ordersNeededPage.checkEmergencyProtectionOrder();
-  ordersNeededPage.checkOtherOrder();
-  ordersNeededPage.checkWhereabouts();
-  ordersNeededPage.checkEntry();
-  ordersNeededPage.checkSearch();
-  ordersNeededPage.checkProtectionOrdersOther();
-  ordersNeededPage.enterProtectionOrdersDetails('Test');
-  ordersNeededPage.checkContact();
-  ordersNeededPage.checkAssessment();
-  ordersNeededPage.checkMedicalPractitioner();
-  ordersNeededPage.checkExclusion();
-  ordersNeededPage.checkProtectionDirectionsOther();
-  ordersNeededPage.enterProtectionDirectionsDetails('Test');
-  ordersNeededPage.enterOrderDetails('Test');
-  ordersNeededPage.checkDirections();
-  ordersNeededPage.enterDirections('Test');
+Scenario('Select all case orders and fill in directions & interim information', (I, caseViewPage, enterOrdersAndDirectionsNeededEventPage) => {
+  enterOrdersAndDirectionsNeededEventPage.checkCareOrder();
+  enterOrdersAndDirectionsNeededEventPage.checkInterimCareOrder();
+  enterOrdersAndDirectionsNeededEventPage.checkSupervisionOrder();
+  enterOrdersAndDirectionsNeededEventPage.checkInterimSupervisionOrder();
+  enterOrdersAndDirectionsNeededEventPage.checkEducationSupervisionOrder();
+  enterOrdersAndDirectionsNeededEventPage.checkEmergencyProtectionOrder();
+  enterOrdersAndDirectionsNeededEventPage.checkOtherOrder();
+  enterOrdersAndDirectionsNeededEventPage.checkWhereabouts();
+  enterOrdersAndDirectionsNeededEventPage.checkEntry();
+  enterOrdersAndDirectionsNeededEventPage.checkSearch();
+  enterOrdersAndDirectionsNeededEventPage.checkProtectionOrdersOther();
+  enterOrdersAndDirectionsNeededEventPage.enterProtectionOrdersDetails('Test');
+  enterOrdersAndDirectionsNeededEventPage.checkContact();
+  enterOrdersAndDirectionsNeededEventPage.checkAssessment();
+  enterOrdersAndDirectionsNeededEventPage.checkMedicalPractitioner();
+  enterOrdersAndDirectionsNeededEventPage.checkExclusion();
+  enterOrdersAndDirectionsNeededEventPage.checkProtectionDirectionsOther();
+  enterOrdersAndDirectionsNeededEventPage.enterProtectionDirectionsDetails('Test');
+  enterOrdersAndDirectionsNeededEventPage.enterOrderDetails('Test');
+  enterOrdersAndDirectionsNeededEventPage.checkDirections();
+  enterOrdersAndDirectionsNeededEventPage.enterDirections('Test');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
   caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
