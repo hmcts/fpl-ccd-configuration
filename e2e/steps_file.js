@@ -4,13 +4,12 @@ const config = require('./config');
 const logIn = require('./pages/login/loginPage');
 const caseViewPage = require('./pages/caseView/caseView');
 const createCasePage = require('./pages/createCase/createCase');
-const eventSummaryPage = require('./pages/createCase/eventSummary');
+const eventSummaryPage = require('./pages/eventSummary/eventSummary');
 const enterApplicantPage  = require('./pages/enterApplicant/enterApplicant');
 const enterChildrenPage = require('./pages/enterChildren/enterChildren');
 const ordersNeededPage  = require('./pages/ordersNeeded/ordersNeeded');
 const selectHearingPage = require('./pages/selectHearing/selectHearing');
 const uploadDocumentsPage = require('./pages/uploadDocuments/uploadDocuments');
-const eventSummaryPage = require('./pages/eventSummary/eventSummary');
 
 const applicant = require('./fixtures/applicant');
 
