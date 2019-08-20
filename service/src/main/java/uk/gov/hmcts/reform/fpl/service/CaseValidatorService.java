@@ -23,6 +23,8 @@ import static uk.gov.hmcts.reform.fpl.enums.Section.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Section.HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.Section.ORDERS;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class CaseValidatorService {
 
@@ -34,15 +36,12 @@ public class CaseValidatorService {
     }
 
     public List<String> validateCaseDetails(CaseData caseData) {
-        ImmutableList.Builder<String> caseErrors = ImmutableList.builder();
         Set<ConstraintViolation<CaseData>> violations = validator.validate(caseData);
 
-        Stream.of(APPLICANT, CHILDREN, ORDERS, GROUNDS, HEARING, DOCUMENTS, CASENAME)
+        return Stream.of(APPLICANT, CHILDREN, ORDERS, GROUNDS, HEARING, DOCUMENTS, CASENAME)
             .flatMap(section -> Stream.of(groupErrorsBySection(violations, section)))
             .flatMap(Collection::stream)
-            .forEach(caseErrors::add);
-
-        return caseErrors.build();
+            .collect(toList());
     }
 
     private List<String> groupErrorsBySection(Set<ConstraintViolation<CaseData>> caseData, Section section) {

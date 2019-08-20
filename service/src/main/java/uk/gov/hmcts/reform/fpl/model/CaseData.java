@@ -34,12 +34,6 @@ public class CaseData {
     @NotNull(message = "You need to add details to orders and directions needed")
     @Valid
     private final Orders orders;
-
-    public boolean hasEPOGrounds() {
-        return orders != null && orders.getOrderType() != null
-            && orders.getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER);
-    }
-
     private final Grounds grounds;
     private final GroundsForEPO groundsForEPO;
     @NotNull(message = "You need to add details to children")
@@ -73,22 +67,22 @@ public class CaseData {
     private final List<Element<DocumentSocialWorkOther>> documents_socialWorkOther;
 
     @JsonProperty("documents_socialWorkCarePlan_document")
-    public Document socialWorkCarePlanDocument;
+    public final Document socialWorkCarePlanDocument;
 
     @JsonProperty("documents_socialWorkStatement_document")
-    public Document socialWorkStatementDocument;
+    public final Document socialWorkStatementDocument;
 
     @JsonProperty("documents_socialWorkAssessment_document")
-    public Document socialWorkAssessmentDocument;
+    public final Document socialWorkAssessmentDocument;
 
     @JsonProperty("documents_socialWorkChronology_document")
-    public Document socialWorkChronologyDocument;
+    public final Document socialWorkChronologyDocument;
 
     @JsonProperty("documents_checklist_document")
-    public Document checklistDocument;
+    public final Document checklistDocument;
 
     @JsonProperty("documents_threshold_document")
-    public Document thresholdDocument;
+    public final Document thresholdDocument;
 
     private final Document documents_socialWorkEvidenceTemplate_document;
 }
