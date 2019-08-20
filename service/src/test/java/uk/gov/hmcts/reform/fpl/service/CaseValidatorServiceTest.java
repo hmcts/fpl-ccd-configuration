@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -21,21 +22,31 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.List;
+
 import java.util.UUID;
+
+import javax.validation.Validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-class CaseSubmissionValidatorServiceTest {
+class CaseValidatorServiceTest {
+    private CaseValidatorService caseValidatorService;
 
-    private final CaseSubmissionValidatorService service = new CaseSubmissionValidatorService();
+    @BeforeEach()
+    private void setup() {
+        caseValidatorService = new CaseValidatorService(Validation
+            .buildDefaultValidatorFactory()
+            .getValidator());
+    }
 
     @Test
     void shouldReturnErrorsIfMandatoryCaseSectionsHaveNotBeenCompleted() {
         CaseData caseData = CaseData.builder().build();
-        List<String> errors = service.validateCaseDetails(caseData);
+        List<String> errors = caseValidatorService.validateCaseDetails(caseData);
 
-        assertThat(errors).containsOnly("In the case name section:",
+        assertThat(errors).containsOnly(
+            "In the case name section:",
             "• Enter a case name",
             "In the orders and directions needed section:",
             "• You need to add details to orders and directions needed",
@@ -64,9 +75,10 @@ class CaseSubmissionValidatorServiceTest {
                 .build()))
             .build();
 
-        List<String> errors = service.validateCaseDetails(caseData);
+        List<String> errors = caseValidatorService.validateCaseDetails(caseData);
 
-        assertThat(errors).containsOnly("In the orders and directions needed section:",
+        assertThat(errors).containsOnly(
+            "In the orders and directions needed section:",
             "• You need to add details to orders and directions needed",
             "• Select an option for when you need a hearing",
             "In the applicant section:",
@@ -99,9 +111,10 @@ class CaseSubmissionValidatorServiceTest {
                 .build())
             .build();
 
-        List<String> errors = service.validateCaseDetails(caseData);
+        List<String> errors = caseValidatorService.validateCaseDetails(caseData);
 
-        assertThat(errors).containsOnly("In the grounds for the application section:",
+        assertThat(errors).containsOnly(
+            "In the grounds for the application section:",
             "• Select at least one option for how this case meets grounds for an emergency protection order",
             "• Select at least one option for how this case meets the threshold criteria",
             "• Enter details of how the case meets the threshold criteria"
@@ -142,7 +155,7 @@ class CaseSubmissionValidatorServiceTest {
                 .build())
             .build();
 
-        List<String> errors = service.validateCaseDetails(caseData);
+        List<String> errors = caseValidatorService.validateCaseDetails(caseData);
         assertThat(errors).contains("• Enter a valid address for the contact");
         assertThat(errors).contains("• Enter a postcode for the contact");
     }
@@ -161,7 +174,7 @@ class CaseSubmissionValidatorServiceTest {
                 .build())
             .build();
 
-        List<String> errors = service.validateCaseDetails(caseData);
+        List<String> errors = caseValidatorService.validateCaseDetails(caseData);
         assertThat(errors).isEmpty();
     }
 
@@ -186,61 +199,61 @@ class CaseSubmissionValidatorServiceTest {
                 .build())
             .build();
 
-        List<String> errors = service.validateCaseDetails(caseData);
+        List<String> errors = caseValidatorService.validateCaseDetails(caseData);
         assertThat(errors).isEmpty();
     }
 
     private CaseData.CaseDataBuilder initCaseDocuments() {
         return CaseData.builder()
-        .documents_socialWorkStatement_document(Document.builder()
-            .documentStatus("reason")
-            .build())
-            .documents_checklist_document(Document.builder()
+            .socialWorkStatementDocument(Document.builder()
                 .documentStatus("reason")
                 .build())
-            .documents_socialWorkAssessment_document(Document.builder()
+            .checklistDocument(Document.builder()
                 .documentStatus("reason")
                 .build())
-            .documents_socialWorkCarePlan_document(Document.builder()
+            .socialWorkAssessmentDocument(Document.builder()
                 .documentStatus("reason")
                 .build())
-            .documents_socialWorkChronology_document(Document.builder()
+            .socialWorkCarePlanDocument(Document.builder()
+                .documentStatus("reason")
+                .build())
+            .socialWorkChronologyDocument(Document.builder()
                 .documentStatus("reason")
                 .build())
             .documents_socialWorkEvidenceTemplate_document(Document.builder()
                 .documentStatus("reason")
                 .build())
-            .documents_threshold_document(Document.builder()
+            .thresholdDocument(Document.builder()
                 .documentStatus("reason")
                 .build());
     }
 
     private List<Element<Applicant>> initApplicants() {
         return List.of(Element.<Applicant>builder()
-                .id(UUID.randomUUID())
-                .value(Applicant.builder()
-                    .leadApplicantIndicator("Yes")
-                    .party(ApplicantParty.builder()
-                        .organisationName("Harry Kane")
-                        .jobTitle("Judge")
-                        .address(Address.builder()
-                            .addressLine1("1 Some street")
-                            .addressLine2("Some road")
-                            .postTown("some town")
-                            .postcode("BT66 7RR")
-                            .county("Some county")
-                            .country("UK")
-                            .build())
-                        .email(EmailAddress.builder()
-                            .email("Harrykane@hMCTS.net")
-                            .build())
-                        .telephoneNumber(Telephone.builder()
-                            .telephoneNumber("02838882404")
-                            .contactDirection("Harry Kane")
-                            .build())
+            .id(UUID.randomUUID())
+            .value(Applicant.builder()
+                .leadApplicantIndicator("Yes")
+                .party(ApplicantParty.builder()
+                    .organisationName("Harry Kane")
+                    .jobTitle("Judge")
+                    .address(Address.builder()
+                        .addressLine1("1 Some street")
+                        .addressLine2("Some road")
+                        .postTown("some town")
+                        .postcode("BT66 7RR")
+                        .county("Some county")
+                        .country("UK")
+                        .build())
+                    .email(EmailAddress.builder()
+                        .email("Harrykane@hMCTS.net")
+                        .build())
+                    .telephoneNumber(Telephone.builder()
+                        .telephoneNumber("02838882404")
+                        .contactDirection("Harry Kane")
                         .build())
                     .build())
-                .build()
+                .build())
+            .build()
         );
     }
 

@@ -1,16 +1,14 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import lombok.AccessLevel;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasDocumentStatus;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasEPOGrounds;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.HasMainApplicant;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasThresholdDetails;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasThresholdReason;
 
@@ -26,7 +24,6 @@ import javax.validation.constraints.NotNull;
 @HasThresholdReason
 @HasThresholdDetails
 @HasDocumentStatus
-@HasMainApplicant
 @SuppressWarnings("membername")
 public class CaseData {
     @NotBlank(message = "Enter a case name")
@@ -49,6 +46,7 @@ public class CaseData {
     @Valid
     private final Children children;
     private final OldApplicant applicant;
+    @NotNull(message = "You need to add details to applicant")
     private final List<Element<Applicant>> applicants;
 
     @Valid
@@ -74,47 +72,23 @@ public class CaseData {
 
     private final List<Element<DocumentSocialWorkOther>> documents_socialWorkOther;
 
-    @Getter(AccessLevel.NONE)
-    private final Document documents_socialWorkCarePlan_document;
+    @JsonProperty("documents_socialWorkCarePlan_document")
+    public Document socialWorkCarePlanDocument;
 
-    public Document socialWorkCarePlanDocument() {
-        return documents_socialWorkCarePlan_document;
-    }
+    @JsonProperty("documents_socialWorkStatement_document")
+    public Document socialWorkStatementDocument;
 
-    @Getter(AccessLevel.NONE)
-    private final Document documents_socialWorkStatement_document;
+    @JsonProperty("documents_socialWorkAssessment_document")
+    public Document socialWorkAssessmentDocument;
 
-    public Document socialWorkStatementDocument() {
-        return documents_socialWorkStatement_document;
-    }
+    @JsonProperty("documents_socialWorkChronology_document")
+    public Document socialWorkChronologyDocument;
 
-    @Getter(AccessLevel.NONE)
-    private final Document documents_socialWorkAssessment_document;
+    @JsonProperty("documents_checklist_document")
+    public Document checklistDocument;
 
-    public Document socialWorkAssessmentDocument() {
-        return documents_socialWorkAssessment_document;
-    }
-
-    @Getter(AccessLevel.NONE)
-    private final Document documents_socialWorkChronology_document;
-
-    public Document socialWorkChronologyDocument() {
-        return documents_socialWorkChronology_document;
-    }
-
-    @Getter(AccessLevel.NONE)
-    private final Document documents_checklist_document;
-
-    public Document checklistDocument() {
-        return documents_checklist_document;
-    }
-
-    @Getter(AccessLevel.NONE)
-    private final Document documents_threshold_document;
-
-    public Document thresholdDocument() {
-        return documents_threshold_document;
-    }
+    @JsonProperty("documents_threshold_document")
+    public Document thresholdDocument;
 
     private final Document documents_socialWorkEvidenceTemplate_document;
 }

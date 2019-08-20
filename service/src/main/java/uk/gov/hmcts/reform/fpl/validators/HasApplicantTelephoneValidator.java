@@ -9,10 +9,6 @@ import javax.validation.ConstraintValidatorContext;
 
 public class HasApplicantTelephoneValidator implements ConstraintValidator<HasApplicantTelephone, ApplicantParty> {
     @Override
-    public void initialize(HasApplicantTelephone constraintAnnotation) {
-    }
-
-    @Override
     public boolean isValid(ApplicantParty applicantParty, ConstraintValidatorContext constraintValidatorContext) {
         return applicantParty.getTelephoneNumber() != null
             && StringUtils.isNotBlank(applicantParty.getTelephoneNumber().getTelephoneNumber())

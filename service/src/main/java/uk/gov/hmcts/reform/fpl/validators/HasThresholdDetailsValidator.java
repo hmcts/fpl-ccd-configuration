@@ -9,18 +9,13 @@ import javax.validation.ConstraintValidatorContext;
 
 public class HasThresholdDetailsValidator implements
     ConstraintValidator<HasThresholdDetails, CaseData> {
-
-    @Override
-    public void initialize(HasThresholdDetails constraintAnnotation) {
-    }
-
     @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext constraintValidatorContext) {
-        constraintValidatorContext.buildConstraintViolationWithTemplate(constraintValidatorContext
-            .getDefaultConstraintMessageTemplate()).addPropertyNode("groundsForTheApplication")
-            .addConstraintViolation();
-
         if (caseData.hasEPOGrounds()) {
+            constraintValidatorContext.buildConstraintViolationWithTemplate(constraintValidatorContext
+                .getDefaultConstraintMessageTemplate()).addPropertyNode("groundsForTheApplication")
+                .addConstraintViolation();
+
             return caseData.getGrounds() != null
                 && StringUtils.isNotBlank(caseData.getGrounds().getThresholdDetails());
         } else {

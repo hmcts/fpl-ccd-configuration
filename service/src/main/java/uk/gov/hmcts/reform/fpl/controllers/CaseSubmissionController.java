@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.CaseSubmissionValidatorService;
+import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
@@ -41,7 +41,7 @@ public class CaseSubmissionController {
     private final DocumentGeneratorService documentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final CaseSubmissionValidatorService caseSubmissionValidatorService;
+    private final CaseValidatorService caseSubmissionValidatorService;
     private final ObjectMapper mapper;
 
     @Autowired
@@ -49,7 +49,7 @@ public class CaseSubmissionController {
         UserDetailsService userDetailsService,
         DocumentGeneratorService documentGeneratorService,
         UploadDocumentService uploadDocumentService,
-        CaseSubmissionValidatorService caseSubmissionValidatorService,
+        CaseValidatorService caseSubmissionValidatorService,
         ObjectMapper mapper,
         ApplicationEventPublisher applicationEventPublisher) {
         this.userDetailsService = userDetailsService;

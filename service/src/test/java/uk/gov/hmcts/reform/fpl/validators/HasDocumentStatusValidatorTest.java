@@ -31,22 +31,22 @@ class HasDocumentStatusValidatorTest {
     @Test
     void shouldReturnAnErrorIfDocumentStatusesExistOnCaseData() {
         CaseData caseData = CaseData.builder()
-            .documents_checklist_document(Document.builder()
+            .checklistDocument(Document.builder()
                 .documentStatus("Status")
                 .build())
-            .documents_socialWorkCarePlan_document(Document.builder()
+            .socialWorkCarePlanDocument(Document.builder()
                 .documentStatus("Status")
                 .build())
-            .documents_socialWorkStatement_document(Document.builder()
+            .socialWorkStatementDocument(Document.builder()
                 .documentStatus("Status")
                 .build())
-            .documents_threshold_document(Document.builder()
+            .thresholdDocument(Document.builder()
                 .documentStatus("Status")
                 .build())
-            .documents_socialWorkChronology_document(Document.builder()
+            .socialWorkChronologyDocument(Document.builder()
                 .documentStatus("Status")
                 .build())
-            .documents_socialWorkAssessment_document(Document.builder()
+            .socialWorkAssessmentDocument(Document.builder()
                 .documentStatus("Status")
                 .build())
             .build();
@@ -72,7 +72,7 @@ class HasDocumentStatusValidatorTest {
     @Test
     void shouldNotReturnAnErrorIfMandatoryDocumentsExistAndThresholdDocumentStatusDoesNotExistOnCaseData() {
         CaseData caseData = CaseData.builder()
-            .documents_threshold_document(Document.builder().build())
+            .thresholdDocument(Document.builder().build())
             .build();
 
         List<String> errorMessages = validator.validate(caseData).stream()
@@ -85,22 +85,22 @@ class HasDocumentStatusValidatorTest {
     @Test
     void shouldNotReturnAnErrorIfAllDocumentStatusesContainEmptyString() {
         CaseData caseData = CaseData.builder()
-            .documents_checklist_document(Document.builder()
+            .checklistDocument(Document.builder()
                 .documentStatus("")
                 .build())
-            .documents_socialWorkCarePlan_document(Document.builder()
+            .socialWorkCarePlanDocument(Document.builder()
                 .documentStatus("")
                 .build())
-            .documents_socialWorkStatement_document(Document.builder()
+            .socialWorkStatementDocument(Document.builder()
                 .documentStatus("")
                 .build())
-            .documents_threshold_document(Document.builder()
+            .thresholdDocument(Document.builder()
                 .documentStatus("")
                 .build())
-            .documents_socialWorkChronology_document(Document.builder()
+            .socialWorkChronologyDocument(Document.builder()
                 .documentStatus("")
                 .build())
-            .documents_socialWorkAssessment_document(Document.builder()
+            .socialWorkAssessmentDocument(Document.builder()
                 .documentStatus("")
                 .build())
             .build();

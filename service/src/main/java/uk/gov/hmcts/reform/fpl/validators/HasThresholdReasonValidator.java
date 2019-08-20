@@ -8,16 +8,12 @@ import javax.validation.ConstraintValidatorContext;
 
 public class HasThresholdReasonValidator implements ConstraintValidator<HasThresholdReason, CaseData> {
     @Override
-    public void initialize(HasThresholdReason constraintAnnotation) {
-    }
-
-    @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext constraintValidatorContext) {
-        constraintValidatorContext.buildConstraintViolationWithTemplate(constraintValidatorContext
-            .getDefaultConstraintMessageTemplate()).addPropertyNode("groundsForTheApplication")
-            .addConstraintViolation();
-
         if (caseData.hasEPOGrounds()) {
+            constraintValidatorContext.buildConstraintViolationWithTemplate(constraintValidatorContext
+                .getDefaultConstraintMessageTemplate()).addPropertyNode("groundsForTheApplication")
+                .addConstraintViolation();
+
             return caseData.getGrounds() != null && caseData.getGrounds().getThresholdReason() != null
                 && !caseData.getGrounds().getThresholdReason().isEmpty();
         } else {

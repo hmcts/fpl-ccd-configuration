@@ -10,11 +10,6 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 public class HasChildrenNameValidator implements ConstraintValidator<HasChildName, Children> {
-
-    @Override
-    public void initialize(HasChildName constraintAnnotation) {
-    }
-
     @Override
     public boolean isValid(Children children, ConstraintValidatorContext constraintValidatorContext) {
         if (children.getAdditionalChildren() != null || children.getFirstChild() != null) {

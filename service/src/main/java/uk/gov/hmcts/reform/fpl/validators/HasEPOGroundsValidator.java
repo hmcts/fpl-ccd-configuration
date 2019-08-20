@@ -8,16 +8,11 @@ import javax.validation.ConstraintValidatorContext;
 
 public class HasEPOGroundsValidator implements ConstraintValidator<HasEPOGrounds, CaseData> {
     @Override
-    public void initialize(HasEPOGrounds constraintAnnotation) {
-    }
-
-    @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext constraintValidatorContext) {
-        constraintValidatorContext.buildConstraintViolationWithTemplate(constraintValidatorContext
-            .getDefaultConstraintMessageTemplate()).addPropertyNode("groundsForTheApplication")
-            .addConstraintViolation();
-
         if (caseData.hasEPOGrounds()) {
+            constraintValidatorContext.buildConstraintViolationWithTemplate(constraintValidatorContext
+                .getDefaultConstraintMessageTemplate()).addPropertyNode("groundsForTheApplication")
+                .addConstraintViolation();
 
             return caseData.getGroundsForEPO() != null && caseData.getGroundsForEPO().getReason() != null
                 && !caseData.getGroundsForEPO().getReason().contains("");

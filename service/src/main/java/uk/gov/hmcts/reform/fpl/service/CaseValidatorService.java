@@ -1,8 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.SectionType;
+import uk.gov.hmcts.reform.fpl.enums.Section;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.util.Collection;
@@ -12,24 +13,28 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
 import javax.validation.Validator;
 
-import static uk.gov.hmcts.reform.fpl.enums.SectionType.APPLICANT;
-import static uk.gov.hmcts.reform.fpl.enums.SectionType.CASENAME;
-import static uk.gov.hmcts.reform.fpl.enums.SectionType.CHILDREN;
-import static uk.gov.hmcts.reform.fpl.enums.SectionType.DOCUMENTS;
-import static uk.gov.hmcts.reform.fpl.enums.SectionType.GROUNDS;
-import static uk.gov.hmcts.reform.fpl.enums.SectionType.HEARING;
-import static uk.gov.hmcts.reform.fpl.enums.SectionType.ORDERS;
+import static uk.gov.hmcts.reform.fpl.enums.Section.APPLICANT;
+import static uk.gov.hmcts.reform.fpl.enums.Section.CASENAME;
+import static uk.gov.hmcts.reform.fpl.enums.Section.CHILDREN;
+import static uk.gov.hmcts.reform.fpl.enums.Section.DOCUMENTS;
+import static uk.gov.hmcts.reform.fpl.enums.Section.GROUNDS;
+import static uk.gov.hmcts.reform.fpl.enums.Section.HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.Section.ORDERS;
 
 @Service
-public class CaseSubmissionValidatorService {
+public class CaseValidatorService {
+
+    private final Validator validator;
+
+    @Autowired
+    public CaseValidatorService(Validator validator) {
+        this.validator = validator;
+    }
 
     public List<String> validateCaseDetails(CaseData caseData) {
         ImmutableList.Builder<String> caseErrors = ImmutableList.builder();
-
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         Set<ConstraintViolation<CaseData>> violations = validator.validate(caseData);
 
         Stream.of(APPLICANT, CHILDREN, ORDERS, GROUNDS, HEARING, DOCUMENTS, CASENAME)
@@ -40,11 +45,11 @@ public class CaseSubmissionValidatorService {
         return caseErrors.build();
     }
 
-    private List<String> groupErrorsBySection(Set<ConstraintViolation<CaseData>> caseData, SectionType section) {
+    private List<String> groupErrorsBySection(Set<ConstraintViolation<CaseData>> caseData, Section section) {
         List<String> errorList;
 
         errorList = caseData.stream()
-            .filter(error -> error.getPropertyPath().toString().contains(section.getPredicate()))
+            .filter(error -> error.getPropertyPath().toString().contains(section.getErrorKey()))
             .map(error -> String.format("• %s", error.getMessage()))
             .collect(Collectors.toList());
 

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
-public enum SectionType {
+public enum Section {
     APPLICANT("mainApplicant", "applicant"),
     CHILDREN("children", "children"),
     ORDERS("orders", "orders and directions needed"),
@@ -9,16 +9,16 @@ public enum SectionType {
     DOCUMENTS("documents", "documents"),
     CASENAME("caseName", "case name");
 
-    private final String predicate;
+    private final String errorKey;
     private final String sectionHeaderName;
 
-    private SectionType(String predicate, String sectionHeaderName) {
-        this.predicate = predicate;
+    private Section(String errorKey, String sectionHeaderName) {
+        this.errorKey = errorKey;
         this.sectionHeaderName = sectionHeaderName;
     }
 
-    public String getPredicate() {
-        return predicate;
+    public String getErrorKey() {
+        return errorKey;
     }
 
     public String getSectionHeaderName() {
