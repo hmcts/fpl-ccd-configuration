@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.OldApplicant;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
@@ -20,44 +19,11 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = {ApplicantMigrationService.class, ObjectMapper.class})
-class ApplicantMigrationServiceTest {
+@SpringBootTest(classes = {ApplicantService.class, ObjectMapper.class})
+class ApplicantServiceTest {
 
     @Autowired
-    private ApplicantMigrationService service;
-
-    @Test
-    void shouldAddMigratedApplicantYesWhenNoApplicantData() {
-        String response = service.setMigratedValue(CaseData.builder().build());
-
-        assertThat(response).isEqualTo("Yes");
-    }
-
-    @Test
-    void shouldAddMigratedApplicantYesWhenNewApplicantExists() {
-        CaseData caseData = CaseData.builder()
-            .applicants(ImmutableList.of(Element.<Applicant>builder()
-                .value(Applicant.builder()
-                    .party(ApplicantParty.builder().build())
-                    .build())
-                .build()))
-            .build();
-
-        String response = service.setMigratedValue(caseData);
-
-        assertThat(response).isEqualTo("Yes");
-    }
-
-    @Test
-    void shouldAddMigratedApplicantNoWhenOldApplicantExists() {
-        CaseData caseData = CaseData.builder()
-            .applicant(OldApplicant.builder().build())
-            .build();
-
-        String response = service.setMigratedValue(caseData);
-
-        assertThat(response).isEqualTo("No");
-    }
+    private ApplicantService service;
 
     @Test
     void shouldExpandApplicantCollectionWhenNoApplicants() {
