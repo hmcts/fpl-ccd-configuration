@@ -2,129 +2,149 @@ const I = actor();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
-  state: {
-    context: 'firstChild',
-  },
-  
-  fields: function() {
-    const childNo = this.state.context;
-    
+  fields: function(index) {
     return {
-      fullName: `#children_${childNo}_childName`,
+      fullName: `#children_${index}_childName`,
       DOB: {
-        day: `#children_${childNo}_childDOB-day`,
-        month: `#children_${childNo}_childDOB-month`,
-        year: `#children_${childNo}_childDOB-year`,
+        day: `#children_${index}_childDOB-day`,
+        month: `#children_${index}_childDOB-month`,
+        year: `#children_${index}_childDOB-year`,
       },
-      gender: `#children_${childNo}_childGender`,
+      gender: `#children_${index}_childGender`,
       situation: {
-        radioGroup: `#children_${childNo}_livingSituation`,
+        radioGroup: `#children_${index}_livingSituation`,
         dateStartedStaying: {
-          day: `#children_${childNo}_situationDate-day`,
-          month: `#children_${childNo}_situationDate-month`,
-          year: `#children_${childNo}_situationDate-year`,
+          day: `#children_${index}_situationDate-day`,
+          month: `#children_${index}_situationDate-month`,
+          year: `#children_${index}_situationDate-year`,
         },
-        addressOfChild: `#children_${childNo}_address_address`,
+        addressOfChild: `#children_${index}_address_address`,
       },
-      keyDates: `#children_${childNo}_keyDates`,
-      careAndContactPlan: `#children_${childNo}_careAndContact`,
-      adoptionNo: `#children_${childNo}_adoption-No`,
-      mothersName: `#children_${childNo}_mothersName`,
-      fathersName: `#children_${childNo}_fathersName`,
-      fatherResponsible: `#children_${childNo}_fathersResponsibility`,
-      socialWorkerName: `#children_${childNo}_socialWorkerName`,
-      socialWorkerTel: `#children_${childNo}_socialWorkerTel`,
-      additionalNeedsNo: `#children_${childNo}_additionalNeeds-No`,
-      contactHiddenNo: `#children_${childNo}_detailsHidden-No`,
+      keyDates: `#children_${index}_keyDates`,
+      careAndContactPlan: `#children_${index}_careAndContact`,
+      adoptionNo: `#children_${index}_adoption-No`,
+      mothersName: `#children_${index}_mothersName`,
+      fathersName: `#children_${index}_fathersName`,
+      fatherResponsible: `#children_${index}_fathersResponsibility`,
+      socialWorkerName: `#children_${index}_socialWorkerName`,
+      socialWorkerTel: `#children_${index}_socialWorkerTel`,
+      additionalNeedsNo: `#children_${index}_additionalNeeds-No`,
+      contactHiddenNo: `#children_${index}_detailsHidden-No`,
       litigationIssues: {
-        yes: `#children_${childNo}_litigationIssues-YES`,
-        no: `#children_${childNo}_litigationIssues-NO`,
-        dont_know: `#children_${childNo}_litigationIssues-DONT_KNOW`,
+        yes: `#children_${index}_litigationIssues-YES`,
+        no: `#children_${index}_litigationIssues-NO`,
+        dont_know: `#children_${index}_litigationIssues-DONT_KNOW`,
       },
-      litigationIssuesDetails: `#children_${childNo}_litigationIssuesDetails`,
+      litigationIssuesDetails: `#children_${index}_litigationIssuesDetails`,
     };
   },
   addChildButton: 'Add new',
 
   addChild() {
-    if (this.state.context === 'additionalChildren_0') {
-      throw new Error('Adding more children is not supported in the test');
-    }
-
     I.click(this.addChildButton);
-    this.state.context = 'additionalChildren_0';
   },
 
-  enterChildDetails(name, day, month, year, gender = 'Boy') {
-    I.fillField(this.fields().fullName, name);
-    I.click(this.fields().DOB.day);
-    I.fillField(this.fields().DOB.day, day);
-    I.fillField(this.fields().DOB.month, month);
-    I.fillField(this.fields().DOB.year, year);
-    I.selectOption(this.fields().gender, gender);
+  async enterChildDetails(name, day, month, year, gender = 'Boy') {
+    const elementIndex = await this.getActiveElementIndex();
+
+    I.fillField(this.fields(elementIndex).fullName, name);
+    I.click(this.fields(elementIndex).DOB.day);
+    I.fillField(this.fields(elementIndex).DOB.day, day);
+    I.fillField(this.fields(elementIndex).DOB.month, month);
+    I.fillField(this.fields(elementIndex).DOB.year, year);
+    I.selectOption(this.fields(elementIndex).gender, gender);
   },
 
-  defineChildSituation(day, month, year) {
-    within(this.fields().situation.radioGroup, () => {
+  async defineChildSituation(day, month, year) {
+    const elementIndex = await this.getActiveElementIndex();
+
+    within(this.fields(elementIndex).situation.radioGroup, () => {
       I.click(locate('label').withText('Living with respondents'));
     });
-    I.fillField(this.fields().situation.dateStartedStaying.day, day);
-    I.fillField(this.fields().situation.dateStartedStaying.month, month);
-    I.fillField(this.fields().situation.dateStartedStaying.year, year);
+    I.fillField(this.fields(elementIndex).situation.dateStartedStaying.day, day);
+    I.fillField(this.fields(elementIndex).situation.dateStartedStaying.month, month);
+    I.fillField(this.fields(elementIndex).situation.dateStartedStaying.year, year);
   },
 
-  enterAddress(address) {
-    within(this.fields().situation.addressOfChild, () => {
+  async enterAddress(address) {
+    const elementIndex = await this.getActiveElementIndex();
+
+    within(this.fields(elementIndex).situation.addressOfChild, () => {
       postcodeLookup.lookupPostcode(address);
     });
   },
 
-  enterKeyDatesAffectingHearing(keyDates = 'Tuesday the 11th') {
-    I.fillField(this.fields().keyDates, keyDates);
+  async enterKeyDatesAffectingHearing(keyDates = 'Tuesday the 11th') {
+    const elementIndex = await this.getActiveElementIndex();
+
+    I.fillField(this.fields(elementIndex).keyDates, keyDates);
   },
 
-  enterSummaryOfCarePlan(carePlan = 'care plan summary') {
-    I.fillField(this.fields().careAndContactPlan, carePlan);
+  async enterSummaryOfCarePlan(carePlan = 'care plan summary') {
+    const elementIndex = await this.getActiveElementIndex();
+
+    I.fillField(this.fields(elementIndex).careAndContactPlan, carePlan);
   },
 
-  defineAdoptionIntention() {
-    I.click(this.fields().adoptionNo);
+  async defineAdoptionIntention() {
+    const elementIndex = await this.getActiveElementIndex();
+
+    I.click(this.fields(elementIndex).adoptionNo);
   },
 
-  enterParentsDetails(fatherResponsible = 'Yes', motherName = 'Laura Smith', fatherName = 'David Smith') {
-    I.fillField(this.fields().mothersName, motherName);
-    I.fillField(this.fields().fathersName, fatherName);
-    I.selectOption(this.fields().fatherResponsible, fatherResponsible);
+  async enterParentsDetails(fatherResponsible = 'Yes', motherName = 'Laura Smith', fatherName = 'David Smith') {
+    const elementIndex = await this.getActiveElementIndex();
+
+    I.fillField(this.fields(elementIndex).mothersName, motherName);
+    I.fillField(this.fields(elementIndex).fathersName, fatherName);
+    I.selectOption(this.fields(elementIndex).fatherResponsible, fatherResponsible);
   },
 
-  enterSocialWorkerDetails(socialWorkerName = 'James Jackson', socialWorkerTel = '01234567') {
-    I.fillField(this.fields().socialWorkerName, socialWorkerName);
-    I.fillField(this.fields().socialWorkerTel, socialWorkerTel);
+  async enterSocialWorkerDetails(socialWorkerName = 'James Jackson', socialWorkerTel = '01234567') {
+    const elementIndex = await this.getActiveElementIndex();
+
+    I.fillField(this.fields(elementIndex).socialWorkerName, socialWorkerName);
+    I.fillField(this.fields(elementIndex).socialWorkerTel, socialWorkerTel);
   },
 
-  defineChildAdditionalNeeds() {
-    I.click(this.fields().additionalNeedsNo);
+  async defineChildAdditionalNeeds() {
+    const elementIndex = await this.getActiveElementIndex();
+
+    I.click(this.fields(elementIndex).additionalNeedsNo);
   },
 
-  defineContactDetailsVisibility() {
-    I.click(this.fields().contactHiddenNo);
+  async defineContactDetailsVisibility() {
+    const elementIndex = await this.getActiveElementIndex();
+
+    I.click(this.fields(elementIndex).contactHiddenNo);
   },
 
-  enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
+  async enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
+    const elementIndex = await this.getActiveElementIndex();
+
     litigationIssue = litigationIssue.toLowerCase();
     switch(litigationIssue) {
       case 'yes':
-        I.checkOption(this.fields().litigationIssues.yes);
+        I.checkOption(this.fields(elementIndex).litigationIssues.yes);
         break;
       case 'no':
-        I.checkOption(this.fields().litigationIssues.no);
+        I.checkOption(this.fields(elementIndex).litigationIssues.no);
         break;
       case 'dont know':
-        I.checkOption(this.fields().litigationIssues.dont_know);
+        I.checkOption(this.fields(elementIndex).litigationIssues.dont_know);
         break;
     }
     if (litigationIssue === 'yes') {
-      I.fillField(this.fields().litigationIssuesDetails, litigationIssueDetail);
+      I.fillField(this.fields(elementIndex).litigationIssuesDetails, litigationIssueDetail);
+    }
+  },
+
+  async getActiveElementIndex() {
+    const count = await I.grabNumberOfVisibleElements('//button[text()="Remove"]');
+    if (count === 0) {
+      return 'firstChild';
+    } else {
+      return `additionalChildren_${count - 1}`;
     }
   },
 };

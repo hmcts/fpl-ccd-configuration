@@ -8,23 +8,23 @@ Before((I, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
 });
 
-Scenario('Entering information for respondent and submitting', (I, enterRespondentsPage, caseViewPage) => {
-  enterRespondentsPage.enterRespondent(respondents[0]);
+Scenario('Entering information for respondent and submitting', async (I, enterRespondentsPage, caseViewPage) => {
+  await enterRespondentsPage.enterRespondent(respondents[0]);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
 
-Scenario('Entering all information for multiple respondents', (I, enterRespondentsPage, caseViewPage) => {
-  enterRespondentsPage.enterRespondent(respondents[0]);
-  enterRespondentsPage.enterRelationshipToChild('mock reason');
-  enterRespondentsPage.enterContactDetailsHidden('Yes', 'mock reason');
-  enterRespondentsPage.enterLitigationIssues('Yes', 'mock reason');
+Scenario('Entering all information for multiple respondents', async (I, enterRespondentsPage, caseViewPage) => {
+  await enterRespondentsPage.enterRespondent(respondents[0]);
+  await enterRespondentsPage.enterRelationshipToChild('mock reason');
+  await enterRespondentsPage.enterContactDetailsHidden('Yes', 'mock reason');
+  await enterRespondentsPage.enterLitigationIssues('Yes', 'mock reason');
   enterRespondentsPage.addRespondent();
-  enterRespondentsPage.enterRespondent(respondents[1]);
-  enterRespondentsPage.enterRelationshipToChild('mock reason');
-  enterRespondentsPage.enterContactDetailsHidden('Yes', 'mock reason');
-  enterRespondentsPage.enterLitigationIssues('No');
+  await enterRespondentsPage.enterRespondent(respondents[1]);
+  await enterRespondentsPage.enterRelationshipToChild('mock reason');
+  await enterRespondentsPage.enterContactDetailsHidden('Yes', 'mock reason');
+  await enterRespondentsPage.enterLitigationIssues('No');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);

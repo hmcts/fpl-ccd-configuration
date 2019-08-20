@@ -10,6 +10,7 @@ const enterChildrenPage = require('./pages/enterChildren/enterChildren');
 const ordersNeededPage  = require('./pages/ordersNeeded/ordersNeeded');
 const selectHearingPage = require('./pages/selectHearing/selectHearing');
 const uploadDocumentsPage = require('./pages/uploadDocuments/uploadDocuments');
+const eventSummaryPage = require('./pages/eventSummary/eventSummary');
 
 const applicant = require('./fixtures/applicant');
 
@@ -31,6 +32,12 @@ module.exports = function () {
       this.click('Continue');
       this.waitForElement('.check-your-answers');
       eventSummaryPage.submit('Save and continue');
+    },
+
+    continueAndProvideSummary(summary, description) {
+      this.click('Continue');
+      this.waitForElement('.check-your-answers');
+      eventSummaryPage.provideSummaryAndSubmit('Save and continue', summary, description);
     },
 
     continueAndSubmit() {
