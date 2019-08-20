@@ -1,4 +1,4 @@
-/* global locate, process */
+/* global process */
 const config = require('./config');
 
 const logIn = require('./pages/login/loginPage');
@@ -67,6 +67,7 @@ module.exports = function () {
 
     signOut() {
       this.click('Sign Out');
+      this.wait(2); // in seconds
     },
 
     navigateToCaseDetails(caseId) {

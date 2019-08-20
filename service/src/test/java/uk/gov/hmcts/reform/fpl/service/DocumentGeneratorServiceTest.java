@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.reformRespondentCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.reformApplicantCaseDetails;
 
 @ExtendWith(SpringExtension.class)
 class DocumentGeneratorServiceTest {
@@ -58,11 +58,11 @@ class DocumentGeneratorServiceTest {
     }
 
     @Test
-    void shouldGenerateSubmittedFormWhenCaseHasBothOldAndNewRespondentStructure() throws IOException {
+    void shouldGenerateSubmittedFormWhenCaseHasBothOldAndNewApplicantStructure() throws IOException {
         Clock clock = Clock.fixed(Instant.parse("2018-11-26T00:00:00Z"), ZoneId.systemDefault());
 
         String content = textContentOf(
-            createServiceInstance(clock).generateSubmittedFormPDF(reformRespondentCaseDetails(),
+            createServiceInstance(clock).generateSubmittedFormPDF(reformApplicantCaseDetails(),
                 Pair.of("userFullName", "Emma Taylor"))
         );
 

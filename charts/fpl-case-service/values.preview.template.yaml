@@ -1,0 +1,43 @@
+tags:
+  fpl-ccd-stack: true
+  ccd-idam-pr: true
+
+java:
+  image: ${IMAGE_NAME}
+  ingressHost: ${SERVICE_FQDN}
+  environment:
+    CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
+    IDAM_S2S_AUTH_TOTP_SECRET: ${IDAM_S2S_AUTH_TOTP_SECRET}
+    NOTIFY_API_KEY: ${NOTIFY_API_KEY}
+    FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING: ${FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING}
+    FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING: ${FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING}
+    FPL_LOCAL_AUTHORITY_USER_MAPPING: ${FPL_LOCAL_AUTHORITY_USER_MAPPING}
+    FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING: ${FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING}
+    FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING: ${FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING}
+
+ccd:
+  ingressHost: ${SERVICE_FQDN}
+  ingressIP: ${INGRESS_IP}
+  consulIP: ${CONSUL_LB_IP}
+  idam-pr:
+    releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
+    redirect_uris:
+      CCD:
+        - https://case-management-web-${SERVICE_FQDN}/oauth2redirect
+  caseManagementWeb:
+    enabled: true
+    environment:
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+      DM_URL: https://gateway-${SERVICE_FQDN}/documents
+      DM_URL_REMOTE: https?://(gateway-${SERVICE_FQDN}:443|dm-store-aat.service.core-compute-aat.internal)/documents
+  apiGateway:
+    s2sKey: ${CCD_API_GATEWAY_S2S_SECRET}
+    idamClientSecret:
+      value: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
+    environment:
+      PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
+      ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
+  definitionStoreApi:
+    s2sKey: ${CCD_DEFINITION_STORE_S2S_SECRET}
+  dataStoreApi:
+    s2sKey: ${CCD_DATA_STORE_S2S_SECRET}

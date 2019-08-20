@@ -28,12 +28,13 @@ exports.config = {
     Puppeteer: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: true,
-      waitForTimeout: 15000,
+      waitForTimeout: 5000,
       chrome: {
         ignoreHTTPSErrors: true,
         args: process.env.PROXY_SERVER ? [
           `--proxy-server=${process.env.PROXY_SERVER}`,
         ] : [],
+        devtools: process.env.SHOW_BROWSER_WINDOW || false,
       },
       windowSize: '1280x960',
     },
@@ -95,7 +96,6 @@ exports.config = {
     },
   },
   tests: './e2e/paths/*_test.js',
-  timeout: 15000,
   mocha: {
     reporterOptions: {
       'codeceptjs-cli-reporter': {
