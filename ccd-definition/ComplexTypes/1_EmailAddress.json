@@ -1,0 +1,11 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmailAddress",
+    "ListElementCode": "email",
+    "FieldType": "Text",
+    "ElementLabel": "Email",
+    "HintText": "For example, joe.bloggs@la.gov.uk",
+    "SecurityClassification": "Public"
+  }
+]
