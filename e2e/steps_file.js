@@ -1,9 +1,9 @@
 /* global process */
 const config = require('./config');
 
-const logIn = require('./pages/login/loginPage');
-const createCasePage = require('./pages/createCase/createCase');
-const eventSummaryPage = require('./pages/eventSummary/eventSummary');
+const logIn = require('./pages/loginPage');
+const createCasePage = require('./pages/createCase');
+const eventSummaryPage = require('./pages/eventSummary');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
 
