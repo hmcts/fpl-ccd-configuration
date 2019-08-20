@@ -79,16 +79,4 @@ exports.config = {
     },
   },
   tests: './e2e/paths/*_test.js',
-  mocha: {
-    reporterOptions: {
-      'mochawesome': {
-        stdout: '-',
-        options: {
-          reportDir: './output',
-          reportName: 'index',
-          inlineAssets: true,
-        },
-      },
-    },
-  },
 };
