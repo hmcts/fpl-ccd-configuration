@@ -32,39 +32,39 @@ Before((I, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.enterChildren);
 });
 
-Scenario('completing half of the enter children in the c110a application', (I, enterChildrenPage, caseViewPage) => {
-  enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
-  enterChildrenPage.defineChildSituation('01', '11', '2017');
-  enterChildrenPage.enterAddress(addresses[0]);
+Scenario('completing half of the enter children in the c110a application', async (I, enterChildrenPage, caseViewPage) => {
+  await enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
+  await enterChildrenPage.defineChildSituation('01', '11', '2017');
+  await enterChildrenPage.enterAddress(addresses[0]);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
 
-Scenario('completing entering child information in the c110a application', (I, enterChildrenPage, caseViewPage) => {
-  enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
-  enterChildrenPage.defineChildSituation('01', '11', '2017');
-  enterChildrenPage.enterAddress(addresses[0]);
-  enterChildrenPage.enterKeyDatesAffectingHearing();
-  enterChildrenPage.enterSummaryOfCarePlan();
-  enterChildrenPage.defineAdoptionIntention();
-  enterChildrenPage.enterParentsDetails();
-  enterChildrenPage.enterSocialWorkerDetails();
-  enterChildrenPage.defineChildAdditionalNeeds();
-  enterChildrenPage.defineContactDetailsVisibility();
-  enterChildrenPage.enterLitigationIssues('Yes', 'mock reason');
+Scenario('completing entering child information in the c110a application', async (I, enterChildrenPage, caseViewPage) => {
+  await enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
+  await enterChildrenPage.defineChildSituation('01', '11', '2017');
+  await enterChildrenPage.enterAddress(addresses[0]);
+  await enterChildrenPage.enterKeyDatesAffectingHearing();
+  await enterChildrenPage.enterSummaryOfCarePlan();
+  await enterChildrenPage.defineAdoptionIntention();
+  await enterChildrenPage.enterParentsDetails();
+  await enterChildrenPage.enterSocialWorkerDetails();
+  await enterChildrenPage.defineChildAdditionalNeeds();
+  await enterChildrenPage.defineContactDetailsVisibility();
+  await enterChildrenPage.enterLitigationIssues('Yes', 'mock reason');
   enterChildrenPage.addChild();
-  enterChildrenPage.enterChildDetails('Susan', '01', '07', '2016');
-  enterChildrenPage.defineChildSituation('02', '11', '2017');
-  enterChildrenPage.enterAddress(addresses[1]);
-  enterChildrenPage.enterKeyDatesAffectingHearing();
-  enterChildrenPage.enterSummaryOfCarePlan();
-  enterChildrenPage.defineAdoptionIntention();
-  enterChildrenPage.enterParentsDetails();
-  enterChildrenPage.enterSocialWorkerDetails();
-  enterChildrenPage.defineChildAdditionalNeeds();
-  enterChildrenPage.defineContactDetailsVisibility();
-  enterChildrenPage.enterLitigationIssues('No');
+  await enterChildrenPage.enterChildDetails('Susan', '01', '07', '2016');
+  await enterChildrenPage.defineChildSituation('02', '11', '2017');
+  await enterChildrenPage.enterAddress(addresses[1]);
+  await enterChildrenPage.enterKeyDatesAffectingHearing();
+  await enterChildrenPage.enterSummaryOfCarePlan();
+  await enterChildrenPage.defineAdoptionIntention();
+  await enterChildrenPage.enterParentsDetails();
+  await enterChildrenPage.enterSocialWorkerDetails();
+  await enterChildrenPage.defineChildAdditionalNeeds();
+  await enterChildrenPage.defineContactDetailsVisibility();
+  await enterChildrenPage.enterLitigationIssues('No');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);

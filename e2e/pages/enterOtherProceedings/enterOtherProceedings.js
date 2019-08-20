@@ -1,13 +1,7 @@
 const I = actor();
 
 module.exports = {
-  state: {
-    contextPrefix: '',
-  },
-
-  fields: function() {
-    const prefix = this.state.contextPrefix;
-
+  fields: function(index) {
     return {
       onGoingProceeding: {
         yes: '#proceeding_onGoingProceeding-Yes',
@@ -15,19 +9,19 @@ module.exports = {
         dontKnow: '#proceeding_onGoingProceeding-DontKnow',
       },
       proceedingStatus: {
-        previous: `#proceeding_${prefix}proceedingStatus-Previous`,
-        ongoing: `#proceeding_${prefix}proceedingStatus-Ongoing`,
+        previous: `#proceeding_${index}proceedingStatus-Previous`,
+        ongoing: `#proceeding_${index}proceedingStatus-Ongoing`,
       },
-      caseNumber: `#proceeding_${prefix}caseNumber`,
-      started: `#proceeding_${prefix}started`,
-      ended: `#proceeding_${prefix}ended`,
-      ordersMade: `#proceeding_${prefix}ordersMade`,
-      judge: `#proceeding_${prefix}judge`,
-      children: `#proceeding_${prefix}children`,
-      guardian: `#proceeding_${prefix}guardian`,
+      caseNumber: `#proceeding_${index}caseNumber`,
+      started: `#proceeding_${index}started`,
+      ended: `#proceeding_${index}ended`,
+      ordersMade: `#proceeding_${index}ordersMade`,
+      judge: `#proceeding_${index}judge`,
+      children: `#proceeding_${index}children`,
+      guardian: `#proceeding_${index}guardian`,
       sameGuardianNeeded: {
-        yes: `#proceeding_${prefix}sameGuardianNeeded-Yes`,
-        no: `#proceeding_${prefix}sameGuardianNeeded-No`,
+        yes: `#proceeding_${index}sameGuardianNeeded-Yes`,
+        no: `#proceeding_${index}sameGuardianNeeded-No`,
       },
     };
   },
@@ -35,39 +29,47 @@ module.exports = {
   addProceedingButton: 'Add new',
 
   addNewProceeding() {
-    if (this.state.contextPrefix === 'additionalProceedings_0_') {
-      throw new Error('Adding more proceedings is not supported in the test');
-    }
-
     I.click(this.addProceedingButton);
-    this.state.contextPrefix = 'additionalProceedings_0_';
   },
 
   selectYesForProceeding() {
-    I.click(this.fields().onGoingProceeding.yes);
+    I.click(this.fields(undefined).onGoingProceeding.yes);
   },
 
   selectNoForProceeding() {
-    I.click(this.fields().onGoingProceeding.no);
+    I.click(this.fields(undefined).onGoingProceeding.no);
   },
 
-  selectOngoingProceedingStatus(status = 'ongoing') {
-    if(status == 'ongoing') {
-      I.click(this.fields().proceedingStatus.ongoing);
-    } else if (status == 'previous') {
-      I.click(this.fields().proceedingStatus.previous);
+  async selectOngoingProceedingStatus(status = 'ongoing') {
+    const elementIndex = await this.getActiveElementIndex();
+
+    if(status === 'ongoing') {
+      I.click(this.fields(elementIndex).proceedingStatus.ongoing);
+    } else if (status === 'previous') {
+      I.click(this.fields(elementIndex).proceedingStatus.previous);
     }
   },
 
-  enterProceedingInformation(otherProceedingData) {
-    this.selectOngoingProceedingStatus(otherProceedingData.proceedingStatus);
-    I.fillField(this.fields().caseNumber, otherProceedingData.caseNumber);
-    I.fillField(this.fields().started, otherProceedingData.started);
-    I.fillField(this.fields().ended, otherProceedingData.ended);
-    I.fillField(this.fields().ordersMade, otherProceedingData.ordersMade);
-    I.fillField(this.fields().judge, otherProceedingData.judge);
-    I.fillField(this.fields().children, otherProceedingData.children);
-    I.fillField(this.fields().guardian, otherProceedingData.guardian);
-    I.click(this.fields().sameGuardianNeeded.yes);
+  async enterProceedingInformation(otherProceedingData) {
+    const elementIndex = await this.getActiveElementIndex();
+
+    await this.selectOngoingProceedingStatus(otherProceedingData.proceedingStatus);
+    I.fillField(this.fields(elementIndex).caseNumber, otherProceedingData.caseNumber);
+    I.fillField(this.fields(elementIndex).started, otherProceedingData.started);
+    I.fillField(this.fields(elementIndex).ended, otherProceedingData.ended);
+    I.fillField(this.fields(elementIndex).ordersMade, otherProceedingData.ordersMade);
+    I.fillField(this.fields(elementIndex).judge, otherProceedingData.judge);
+    I.fillField(this.fields(elementIndex).children, otherProceedingData.children);
+    I.fillField(this.fields(elementIndex).guardian, otherProceedingData.guardian);
+    I.click(this.fields(elementIndex).sameGuardianNeeded.yes);
+  },
+
+  async getActiveElementIndex() {
+    const count = await I.grabNumberOfVisibleElements('//button[text()="Remove"]');
+    if (count === 0) {
+      return '';
+    } else {
+      return `additionalProceedings_${count - 1}_`;
+    }
   },
 };

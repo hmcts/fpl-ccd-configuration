@@ -8,23 +8,23 @@ Before((I, caseViewPage) => {
   caseViewPage.goToNewActions(config.applicationActions.enterOthers);
 });
 
-Scenario('Enter other\'s details in c110a application', (I, enterOthersPage, caseViewPage) => {
-  enterOthersPage.enterOtherDetails(others[0]);
+Scenario('Enter other\'s details in c110a application', async (I, enterOthersPage, caseViewPage) => {
+  await enterOthersPage.enterOtherDetails(others[0]);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOthers);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
 });
 
-Scenario('Complete entering others details in the c110a application', (I, enterOthersPage, caseViewPage) => {
-  enterOthersPage.enterOtherDetails(others[0]);
-  enterOthersPage.enterRelationshipToChild('Tim Smith');
-  enterOthersPage.enterContactDetailsHidden('Yes');
-  enterOthersPage.enterLitigationIssues('No');
+Scenario('Complete entering others details in the c110a application', async (I, enterOthersPage, caseViewPage) => {
+  await enterOthersPage.enterOtherDetails(others[0]);
+  await enterOthersPage.enterRelationshipToChild('Tim Smith');
+  await enterOthersPage.enterContactDetailsHidden('Yes');
+  await enterOthersPage.enterLitigationIssues('No');
   enterOthersPage.addOther();
-  enterOthersPage.enterOtherDetails(others[1]);
-  enterOthersPage.enterRelationshipToChild('Tim Smith');
-  enterOthersPage.enterContactDetailsHidden('Yes');
-  enterOthersPage.enterLitigationIssues('Yes', 'mock reason');
+  await enterOthersPage.enterOtherDetails(others[1]);
+  await enterOthersPage.enterRelationshipToChild('Tim Smith');
+  await enterOthersPage.enterContactDetailsHidden('Yes');
+  await enterOthersPage.enterLitigationIssues('Yes', 'mock reason');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOthers);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);

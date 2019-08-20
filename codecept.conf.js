@@ -1,21 +1,4 @@
-/* global require, process */
-const _ = require('lodash');
-
-const container = require('codeceptjs').container;
-
-container.support = new Proxy(container.support, {
-  /**
-   * Handler that makes deep clone of registered support objects declared via `include` configuration property.
-   *
-   * @param target
-   * @param thisArg
-   * @param argumentsList
-   * @returns {*}
-   */
-  apply(target, thisArg, argumentsList) {
-    return _.cloneDeep(target.apply(thisArg, argumentsList));
-  },
-});
+/* global process */
 
 exports.config = {
   output: './output',
@@ -96,28 +79,4 @@ exports.config = {
     },
   },
   tests: './e2e/paths/*_test.js',
-  mocha: {
-    reporterOptions: {
-      'codeceptjs-cli-reporter': {
-        stdout: '-',
-        options: {
-          steps: true,
-        },
-      },
-      'mocha-junit-reporter': {
-        stdout: '-',
-        options: {
-          mochaFile: 'test-results/result.xml',
-        },
-      },
-      'mochawesome': {
-        stdout: '-',
-        options: {
-          reportDir: './output',
-          reportName: 'index',
-          inlineAssets: true,
-        },
-      },
-    },
-  },
 };
