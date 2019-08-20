@@ -15,10 +15,10 @@ Before(async (I, caseViewPage, loginPage, submitApplicationEventPage) => {
   I.navigateToCaseDetails(caseId);
 });
 
-Scenario('HMCTS admin upload standard directions with other documents and see them in documents tab', (I, caseViewPage, standardDirectionsPage) => {
+Scenario('HMCTS admin upload standard directions with other documents and see them in documents tab', (I, caseViewPage, uploadStandardDirectionsDocumentEventPage) => {
   caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-  standardDirectionsPage.uploadStandardDirections(config.testFile);
-  standardDirectionsPage.uploadAdditionalDocuments(config.testFile);
+  uploadStandardDirectionsDocumentEventPage.uploadStandardDirections(config.testFile);
+  uploadStandardDirectionsDocumentEventPage.uploadAdditionalDocuments(config.testFile);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
@@ -29,10 +29,10 @@ Scenario('HMCTS admin upload standard directions with other documents and see th
   I.seeAnswerInTab('2', 'Other documents 2', 'Upload a file', 'mockFile.txt');
 });
 
-Scenario('Local authority can see standard directions in documents tab', (I, caseViewPage, standardDirectionsPage, loginPage) => {
+Scenario('Local authority can see standard directions in documents tab', (I, caseViewPage, uploadStandardDirectionsDocumentEventPage, loginPage) => {
   caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-  standardDirectionsPage.uploadStandardDirections(config.testFile);
-  standardDirectionsPage.uploadAdditionalDocuments(config.testFile);
+  uploadStandardDirectionsDocumentEventPage.uploadStandardDirections(config.testFile);
+  uploadStandardDirectionsDocumentEventPage.uploadAdditionalDocuments(config.testFile);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   I.signOut();

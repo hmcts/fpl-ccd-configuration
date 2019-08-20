@@ -12,12 +12,12 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
   I.signOut();
 });
 
-Scenario('HMCTS admin can login and add a FamilyMan case number to a submitted case', (I, caseViewPage, loginPage, enterFamilyManPage, enterOtherProceedingsEventPage) => {
+Scenario('HMCTS admin can login and add a FamilyMan case number to a submitted case', (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage, enterOtherProceedingsEventPage) => {
   loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   I.navigateToCaseDetails(caseId);
   I.see(caseId);
   caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
-  enterFamilyManPage.enterCaseID();
+  enterFamilyManCaseNumberEventPage.enterCaseID();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
 

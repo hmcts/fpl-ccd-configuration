@@ -15,9 +15,9 @@ Before(async (I, caseViewPage, loginPage, submitApplicationEventPage) => {
   I.navigateToCaseDetails(caseId);
 });
 
-Scenario('HMCTS admin can enter and send email to gatekeeper', (I, caseViewPage, sendToGatekeeperPage) => {
+Scenario('HMCTS admin can enter and send email to gatekeeper', (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
   caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-  sendToGatekeeperPage.enterEmail();
+  sendCaseToGatekeeperEventPage.enterEmail();
   I.click('Continue');
   I.click('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
