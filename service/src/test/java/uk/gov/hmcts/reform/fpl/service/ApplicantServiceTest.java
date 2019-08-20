@@ -53,7 +53,7 @@ class ApplicantServiceTest {
 
 
     @Test
-    void shouldAddPartyIdAndPartyTypeValuesToMigratedApplicant() {
+    void shouldAddPartyIdAndPartyTypeValuesToApplicant() {
         List<Element<Applicant>> applicants = ImmutableList.of(
             Element.<Applicant>builder()
                 .id(UUID.randomUUID())
@@ -66,14 +66,14 @@ class ApplicantServiceTest {
             .applicants(applicants)
             .build();
 
-        List<Element<Applicant>> migratedApplicant = service.addHiddenValues(caseData);
+        List<Element<Applicant>> applicant = service.addHiddenValues(caseData);
 
-        assertThat(migratedApplicant.get(0).getValue().getParty().getPartyId()).isNotNull();
-        assertThat(migratedApplicant.get(0).getValue().getParty().getPartyType()).isEqualTo(PartyType.ORGANISATION);
+        assertThat(applicant.get(0).getValue().getParty().getPartyId()).isNotNull();
+        assertThat(applicant.get(0).getValue().getParty().getPartyType()).isEqualTo(PartyType.ORGANISATION);
     }
 
     @Test
-    void shouldAddPartyIDAndPartyTypeValuesToManyMigratedApplicants() {
+    void shouldAddPartyIDAndPartyTypeValuesToManyApplicants() {
         List<Element<Applicant>> applicants = ImmutableList.of(
             Element.<Applicant>builder()
                 .id(UUID.randomUUID())
@@ -127,9 +127,9 @@ class ApplicantServiceTest {
             .applicants(applicants)
             .build();
 
-        Applicant migratedApplicant = service.addHiddenValues(caseData).get(0).getValue();
+        Applicant applicant = service.addHiddenValues(caseData).get(0).getValue();
 
-        assertThat(migratedApplicant.getParty().partyId).isEqualTo(uuid);
+        assertThat(applicant.getParty().partyId).isEqualTo(uuid);
     }
 
 
