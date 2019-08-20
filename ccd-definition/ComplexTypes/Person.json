@@ -1,0 +1,19 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Person",
+    "ListElementCode": "firstOther",
+    "FieldType": "Others",
+    "ElementLabel": "Person 1",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Person",
+    "ListElementCode": "additionalOthers",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Others",
+    "ElementLabel": "Other person",
+    "SecurityClassification": "Public"
+  }
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationProposal",
+    "ListElementCode": "proposal",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "AllocationProposalList",
+    "ElementLabel": "Which level of judge do you recommend for this case?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationProposal",
+    "ListElementCode": "proposalReason",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give reason",
+    "SecurityClassification": "Public"
+  }
+]
