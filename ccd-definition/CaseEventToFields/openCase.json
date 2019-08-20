@@ -4,7 +4,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "openCase",
     "CaseFieldID": "caseName",
-    "PageFieldDisplayOrder": 2,
+    "PageFieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL",
     "PageID": 1,
     "PageDisplayOrder": 1,

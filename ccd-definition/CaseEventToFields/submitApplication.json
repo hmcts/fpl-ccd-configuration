@@ -15,7 +15,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "submitApplication",
     "CaseFieldID": "submissionConsent",
-    "PageFieldDisplayOrder": 1,
+    "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": 1,
     "PageDisplayOrder": 1,
