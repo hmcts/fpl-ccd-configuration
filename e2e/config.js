@@ -54,8 +54,16 @@ module.exports = {
     submitCase: 'Submit application',
     deleteApplication: 'Delete an application',
   },
-  addFamilyManCaseNumber: 'Add case number',
-  sendToGatekeeper: 'Send to gatekeeper',
+  administrationActions: {
+    addFamilyManCaseNumber: 'Add case number',
+    sendToGatekeeper: 'Send to gatekeeper',
+    amendChildren: 'Children',
+    amendRespondents: 'Respondents',
+    amendOther: 'Others to be given notice',
+    amendInternationalElement: 'International element',
+    amendOtherProceedings: 'Other proceedings',
+    amendAttendingHearing: 'Attending the hearing',
+  },
   // files
   testFile: './e2e/fixtures/mockFile.txt',
   // urls
