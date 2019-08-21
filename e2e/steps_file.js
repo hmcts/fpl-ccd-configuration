@@ -1,15 +1,15 @@
 /* global process */
 const config = require('./config');
 
-const logIn = require('./pages/login/loginPage');
-const caseViewPage = require('./pages/caseView/caseView');
-const createCasePage = require('./pages/createCase/createCase');
-const eventSummaryPage = require('./pages/eventSummary/eventSummary');
-const enterApplicantPage  = require('./pages/enterApplicant/enterApplicant');
-const enterChildrenPage = require('./pages/enterChildren/enterChildren');
-const ordersNeededPage  = require('./pages/ordersNeeded/ordersNeeded');
-const selectHearingPage = require('./pages/selectHearing/selectHearing');
-const uploadDocumentsPage = require('./pages/uploadDocuments/uploadDocuments');
+const logIn = require('./pages/login.page');
+const caseViewPage = require('./pages/caseView.page');
+const eventSummaryPage = require('./pages/eventSummary.page');
+const enterApplicantPage  = require('./pages/events/enterApplicantEvent.page');
+const enterChildrenPage = require('./pages/events/enterChildrenEvent.page');
+const ordersNeededPage  = require('./pages/events/enterOrdersAndDirectionsNeededEvent.page');
+const selectHearingPage = require('./pages/events/enterHearingNeededEvent.page');
+const uploadDocumentsPage = require('./pages/events/uploadDocumentsEvent.page');
+const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
 
 const applicant = require('./fixtures/applicant');
 
@@ -23,7 +23,7 @@ module.exports = function () {
       logIn.signIn(username, password);
       this.click('Create Case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
-      createCasePage.populateForm();
+      openApplicationEventPage.populateForm();
       this.continueAndSave();
     },
 
@@ -89,7 +89,7 @@ module.exports = function () {
       this.waitForText('Sign Out');
     },
 
-    enterMandatoryFields() {
+    async enterMandatoryFields () {
       caseViewPage.goToNewActions(config.applicationActions.selectOrders);
       ordersNeededPage.checkCareOrder();
       this.continueAndSave();
@@ -100,7 +100,7 @@ module.exports = function () {
       enterApplicantPage.enterApplicantDetails(applicant);
       this.continueAndSave();
       caseViewPage.goToNewActions(config.applicationActions.enterChildren);
-      enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
+      await enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
       this.continueAndSave();
       caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
       uploadDocumentsPage.selectSocialWorkChronologyToFollow(config.testFile);

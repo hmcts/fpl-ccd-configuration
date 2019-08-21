@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
+import static java.util.stream.Collectors.toList;
+
 import static uk.gov.hmcts.reform.fpl.enums.Section.APPLICANT;
 import static uk.gov.hmcts.reform.fpl.enums.Section.CASENAME;
 import static uk.gov.hmcts.reform.fpl.enums.Section.CHILDREN;
@@ -21,8 +23,6 @@ import static uk.gov.hmcts.reform.fpl.enums.Section.DOCUMENTS;
 import static uk.gov.hmcts.reform.fpl.enums.Section.GROUNDS;
 import static uk.gov.hmcts.reform.fpl.enums.Section.HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.Section.ORDERS;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 public class CaseValidatorService {

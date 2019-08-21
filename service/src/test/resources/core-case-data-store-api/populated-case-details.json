@@ -182,24 +182,39 @@
         }
       ]
     },
-    "applicant": {
-      "name": "London Borough of Southwark",
-      "email": "jane@smith.com",
-      "mobile": "2020202020",
-      "address": {
-        "County": "Galway",
-        "Country": "Ireland",
-        "PostCode": "SE1 2QH",
-        "PostTown": "Limerick",
-        "AddressLine1": "160 Tooley St",
-        "AddressLine2": "Tooley road",
-        "AddressLine3": "Tooley"
-      },
-      "jobTitle": "Legal adviser",
-      "telephone": "02120202020",
-      "personToContact": "Jane Smith",
-      "pbaNumber": "PBA1234567"
-    },
+    "applicants": [
+      {
+        "id": "8a22519a-1625-4667-a0c4-c939b44d5069",
+        "value": {
+          "party": {
+            "partyType": "Individual",
+            "organisationName": "London Borough of Southwark",
+            "address": {
+              "County": "Galway",
+              "Country": "Ireland",
+              "PostCode": "SE1 2QH",
+              "PostTown": "Limerick",
+              "AddressLine1": "160 Tooley St",
+              "AddressLine2": "Tooley road",
+              "AddressLine3": "Tooley"
+            },
+            "email": {
+              "email": "jane@smith.com"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "02120202020",
+              "contactDirection": "Jane Smith"
+            },
+            "mobileNumber": {
+              "telephoneNumber": "2020202020"
+            },
+            "jobTitle": "Legal adviser",
+            "pbaNumber": "PBA1234567"
+          },
+          "leadApplicantIndicator": null
+        }
+      }
+    ],
     "solicitor": {
       "dx": "106 Southwark &",
       "name": "Brian Banks",
@@ -370,19 +385,6 @@
       "internationalAuthorityInvolvement": "Yes",
       "internationalAuthorityInvolvementDetails": "French authorities were involved"
     },
-    "documents_socialWorkOther": [
-      {
-        "id": "76d8cc29-9085-4e22-a6f7-f86bfb77f020",
-        "value": {
-          "documentTitle": "Additional document one",
-          "typeOfDocument": {
-            "document_url": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8",
-            "document_filename": "form.pdf",
-            "document_binary_url": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8/binary"
-          }
-        }
-      }
-    ],
     "documents_socialWorkCarePlan_document": {
       "statusReason": "some text",
       "documentStatus": "To follow",

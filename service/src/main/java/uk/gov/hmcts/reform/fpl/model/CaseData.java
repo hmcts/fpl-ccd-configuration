@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -39,7 +38,6 @@ public class CaseData {
     @NotNull(message = "You need to add details to children")
     @Valid
     private final Children children;
-    private final OldApplicant applicant;
     @NotNull(message = "You need to add details to applicant")
     private final List<Element<Applicant>> applicants;
 
