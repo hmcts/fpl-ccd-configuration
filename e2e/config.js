@@ -64,7 +64,7 @@ module.exports = {
     amendOtherProceedings: 'Other proceedings',
     amendAttendingHearing: 'Attending the hearing',
     addHearingBookingDetails: 'Add hearing details',
-    createNoticeOfProceedings: "Create notice of proceedings"
+    createNoticeOfProceedings: 'Create notice of proceedings',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',

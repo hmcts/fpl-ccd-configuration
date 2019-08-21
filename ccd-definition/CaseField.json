@@ -413,5 +413,49 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "NoticeOfProceedingsBundle",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "directions",
+    "Label": "Directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cmo",
+    "Label": "CMO",
+    "FieldType": "CMO",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cmoCollection",
+    "Label": "CMO",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "CMO",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cafcassDirections",
+    "Label": "Cafcass Directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityDirections",
+    "Label": "Local Authority Directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
   }
 ]

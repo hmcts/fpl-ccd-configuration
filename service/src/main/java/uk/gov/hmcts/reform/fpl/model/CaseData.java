@@ -1,22 +1,21 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.interfaces.NoticeOfProceedingsGroup;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
@@ -45,6 +44,11 @@ public class CaseData {
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;
     private final AllocationProposal allocationProposal;
+    private final List<Element<Direction>> directions;
+    private final List<Element<Direction>> cafcassDirections;
+    private final CMO cmo;
+    private final List<Element<CMO>> cmoCollection;
+
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
     private final Hearing hearing;
@@ -92,4 +96,5 @@ public class CaseData {
     }
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
+
 }

@@ -1,0 +1,27 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CMO",
+    "ListElementCode": "hearingDate",
+    "FieldType": "Text",
+    "ElementLabel": "When is the date of the hearing?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CMO",
+    "ListElementCode": "directions",
+    "FieldType": "Collection",
+    "ElementLabel": "Directions",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CMO",
+    "ListElementCode": "finished",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Has the CMO been completed?",
+    "SecurityClassification": "Public"
+  }
+]
