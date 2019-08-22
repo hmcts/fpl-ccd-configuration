@@ -21,16 +21,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("integration-test")
 @WebMvcTest(ChildController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ChildAboutToStartTest {
+class ChildControllerAboutToStartTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    void shouldAddChildrenMigratedValueToData() throws Exception {
+    void shouldAddChildrenAndChildrenMigratedValueToData() throws Exception {
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
                 .put("data", "some data")
@@ -41,13 +41,14 @@ class ChildAboutToStartTest {
             .perform(post("/callback/enter-children/about-to-start")
                 .header("authorization", AUTH_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsString(request)))
+                .content(mapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andReturn();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
+        assertThat(callbackResponse.getData()).containsKey("children1");
         assertThat(callbackResponse.getData()).containsEntry("childrenMigrated", "Yes");
     }
 }

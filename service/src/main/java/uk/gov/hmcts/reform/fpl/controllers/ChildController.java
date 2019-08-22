@@ -45,7 +45,7 @@ public class ChildController {
 
         caseDetails.getData().put("childrenMigrated", childrenMigrationService.setMigratedValue(caseData));
         caseDetails.getData().put("children1", childrenMigrationService.expandChildrenCollection(caseData));
-        
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
