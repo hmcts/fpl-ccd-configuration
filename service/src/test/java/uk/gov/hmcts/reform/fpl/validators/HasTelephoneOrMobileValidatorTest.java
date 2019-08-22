@@ -17,7 +17,7 @@ import javax.validation.Validator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-class HasApplicantTelephoneValidatorTest {
+class HasTelephoneOrMobileValidatorTest {
     private Validator validator;
 
     private static final String ERROR_MESSAGE = "Enter at least one telephone number for the contact";

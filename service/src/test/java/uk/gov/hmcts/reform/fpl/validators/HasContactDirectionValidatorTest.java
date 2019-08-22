@@ -17,7 +17,7 @@ import javax.validation.Validator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-public class HasApplicantContactNameValidatorTest {
+public class HasContactDirectionValidatorTest {
     private Validator validator;
 
     private static final String ERROR_MESSAGE = "Enter the contact's full name";
