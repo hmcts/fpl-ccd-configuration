@@ -41,7 +41,7 @@ public class CaseSubmissionController {
     private final DocumentGeneratorService documentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final CaseValidatorService caseSubmissionValidatorService;
+    private final CaseValidatorService caseValidatorService;
     private final ObjectMapper mapper;
 
     @Autowired
@@ -49,22 +49,22 @@ public class CaseSubmissionController {
         UserDetailsService userDetailsService,
         DocumentGeneratorService documentGeneratorService,
         UploadDocumentService uploadDocumentService,
-        CaseValidatorService caseSubmissionValidatorService,
+        CaseValidatorService caseValidatorService,
         ObjectMapper mapper,
         ApplicationEventPublisher applicationEventPublisher) {
         this.userDetailsService = userDetailsService;
         this.documentGeneratorService = documentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
         this.applicationEventPublisher = applicationEventPublisher;
-        this.caseSubmissionValidatorService = caseSubmissionValidatorService;
+        this.caseValidatorService = caseValidatorService;
         this.mapper = mapper;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStartEvent(
         @RequestHeader(value = "authorization") String authorization,
-        @RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         String label = String.format(CONSENT_TEMPLATE, userDetailsService.getUserName(authorization));
 
@@ -77,13 +77,13 @@ public class CaseSubmissionController {
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(caseSubmissionValidatorService.validateCaseDetails(caseData))
+            .errors(caseValidatorService.validateCaseDetails(caseData))
             .build();
     }
 
@@ -91,8 +91,8 @@ public class CaseSubmissionController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         byte[] pdf = documentGeneratorService.generateSubmittedFormPDF(caseDetails,
             Pair.of("userFullName", userDetailsService.getUserName(authorization))

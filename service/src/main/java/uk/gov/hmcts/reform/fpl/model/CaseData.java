@@ -59,7 +59,8 @@ public class CaseData {
     private final HearingPreferences hearingPreferences;
     private final InternationalElement internationalElement;
 
-    private final List<Element<DocumentSocialWorkOther>> documents_socialWorkOther;
+    @JsonProperty("documents_socialWorkOther")
+    private final List<Element<DocumentSocialWorkOther>> socialWorkOtherDocuments;
 
     @JsonProperty("documents_socialWorkCarePlan_document")
     @NotNull(message = "Tell us the status of all documents including those that you haven't uploaded")
@@ -91,5 +92,6 @@ public class CaseData {
     @Valid
     public final Document thresholdDocument;
 
-    private final Document documents_socialWorkEvidenceTemplate_document;
+    @JsonProperty("documents_socialWorkEvidenceTemplate_document")
+    private final Document socialWorkEvidenceTemplateDocument;
 }

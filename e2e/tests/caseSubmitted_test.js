@@ -10,8 +10,7 @@ Before((I) => {
 });
 
 Scenario('Cannot submit an incomplete case', (I, caseViewPage, submitApplicationEventPage) => {
-  I.selectOption(caseViewPage.actionsDropdown, config.applicationActions.submitCase);
-  I.click(caseViewPage.goButton);
+  caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.giveConsent();
   I.click('Continue');
   I.waitForElement('.error-summary-list');
@@ -24,8 +23,7 @@ Scenario('Cannot submit an incomplete case', (I, caseViewPage, submitApplication
 
 Scenario('Can give consent and submit the case', async (I, caseViewPage, submitApplicationEventPage) => {
   await I.enterMandatoryFields();
-  I.selectOption(caseViewPage.actionsDropdown, config.applicationActions.submitCase);
-  I.click(caseViewPage.goButton);
+  caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.giveConsent();
   I.continueAndSubmit();
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);

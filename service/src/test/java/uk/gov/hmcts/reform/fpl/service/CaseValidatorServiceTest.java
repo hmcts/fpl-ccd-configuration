@@ -220,7 +220,7 @@ class CaseValidatorServiceTest {
             .socialWorkChronologyDocument(Document.builder()
                 .documentStatus("reason")
                 .build())
-            .documents_socialWorkEvidenceTemplate_document(Document.builder()
+            .socialWorkEvidenceTemplateDocument(Document.builder()
                 .documentStatus("reason")
                 .build())
             .thresholdDocument(Document.builder()
