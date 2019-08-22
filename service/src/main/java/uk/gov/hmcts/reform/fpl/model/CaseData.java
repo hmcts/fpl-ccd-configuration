@@ -48,7 +48,6 @@ public class CaseData {
         }
     }
 
-    private final String applicantsMigrated;
     private final List<Element<RespondentParty>> respondent;
     private final Proceeding proceeding;
     private final Solicitor solicitor;

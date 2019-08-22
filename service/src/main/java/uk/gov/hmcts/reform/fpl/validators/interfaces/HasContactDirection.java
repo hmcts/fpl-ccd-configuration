@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.validators.interfaces;
 
-import uk.gov.hmcts.reform.fpl.validators.HasApplicantTelephoneValidator;
+import uk.gov.hmcts.reform.fpl.validators.HasContactDirectionValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -12,9 +12,9 @@ import javax.validation.Payload;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = { HasApplicantTelephoneValidator.class })
-public @interface HasApplicantTelephone {
-    String message() default "Enter at least one telephone number for the contact";
+@Constraint(validatedBy = { HasContactDirectionValidator.class })
+public @interface HasContactDirection {
+    String message() default "Enter the contact's full name";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }
