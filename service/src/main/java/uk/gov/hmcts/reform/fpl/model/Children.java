@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.validation.Valid;
 import javax.validation.constraints.Size;
 
 @Data
@@ -36,6 +37,7 @@ public class Children {
     }
 
     @JsonIgnore
+    @Valid
     @Size(min = 1, message = "Tell us the names of all children in the case")
     public List<Child> getAllChildren() {
         ImmutableList.Builder<Child> builder = ImmutableList.builder();
