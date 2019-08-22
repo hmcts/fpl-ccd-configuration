@@ -182,24 +182,39 @@
         }
       ]
     },
-    "applicant": {
-      "name": "London Borough of Southwark",
-      "email": "jane@smith.com",
-      "mobile": "2020202020",
-      "address": {
-        "County": "Galway",
-        "Country": "Ireland",
-        "PostCode": "SE1 2QH",
-        "PostTown": "Limerick",
-        "AddressLine1": "160 Tooley St",
-        "AddressLine2": "Tooley road",
-        "AddressLine3": "Tooley"
-      },
-      "jobTitle": "Legal adviser",
-      "telephone": "02120202020",
-      "personToContact": "Jane Smith",
-      "pbaNumber": "PBA1234567"
-    },
+    "applicants": [
+      {
+        "id": "8a22519a-1625-4667-a0c4-c939b44d5069",
+        "value": {
+          "party": {
+            "partyType": "Individual",
+            "organisationName": "London Borough of Southwark",
+            "address": {
+              "County": "Galway",
+              "Country": "Ireland",
+              "PostCode": "SE1 2QH",
+              "PostTown": "Limerick",
+              "AddressLine1": "160 Tooley St",
+              "AddressLine2": "Tooley road",
+              "AddressLine3": "Tooley"
+            },
+            "email": {
+              "email": "jane@smith.com"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "02120202020",
+              "contactDirection": "Jane Smith"
+            },
+            "mobileNumber": {
+              "telephoneNumber": "2020202020"
+            },
+            "jobTitle": "Legal adviser",
+            "pbaNumber": "PBA1234567"
+          },
+          "leadApplicantIndicator": null
+        }
+      }
+    ],
     "solicitor": {
       "dx": "106 Southwark &",
       "name": "Brian Banks",
@@ -239,68 +254,100 @@
         }
       ]
     },
-    "respondents": {
-      "additional": [
-        {
-          "id": "a5e57424-9b5c-4722-be7e-9d9d9111c2b0",
-          "value": {
-            "dob": "1933-04-02",
-            "name": "James Smith",
-            "gender": "They identify in another way",
-            "address": {
-              "County": "Down",
-              "Country": "United Kingdom",
-              "PostCode": "BT26 6RJ",
-              "PostTown": "Lurgan",
-              "AddressLine1": "Unit 12",
-              "AddressLine2": "Transa Way",
-              "AddressLine3": "Hillsborough"
-            },
-            "telephone": "02892611016",
-            "placeOfBirth": "Newry",
-            "genderIdentify": "Unknown",
+    "respondents1": [
+      {
+        "id": "randomID",
+        "value": {
+          "party": {
+            "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
+            "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+            "partyType": "Individual",
+            "title": "Mr",
+            "firstName": "Paul",
+            "lastName": "Smith",
+            "gender": "Male",
+            "genderIdentification": "",
+            "dateOfBirth": "1944-05-02",
+            "placeOfBirth": "Crewe",
             "litigationIssues": "YES",
+            "litigationIssuesDetails": "respondent one test litigation reason",
+            "relationshipToChild": "Uncle",
+            "contactDetailsHidden": "No",
+            "contactDetailsHiddenReason": "Hide from all",
+            "address": {},
+            "telephoneNumber": {
+              "telephoneNumber": "07712345678"
+            }
+          },
+          "leadRespondentIndicator": "Y"
+        }
+      },
+      {
+        "id": "a5e57424-9b5c-4722-be7e-9d9d9111c2b0",
+        "value": {
+          "party": {
+            "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
+            "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+            "partyType": "Individual",
+            "title": "Mr",
+            "firstName": "James",
+            "lastName": "Smith",
+            "gender": "They identify in another way",
+            "genderIdentification": "Unknown",
+            "dateOfBirth": "1933-04-02",
+            "placeOfBirth": "Newry",
+            "litigationIssues": "YES",
+            "litigationIssuesDetails": "respondent two litigation capacity reason",
             "relationshipToChild": "Brother",
             "contactDetailsHidden": "No",
-            "litigationIssuesDetails": "respondent two litigation capacity reason",
-            "contactDetailsHiddenReason": "respondent two hidden contact details reason"
-          }
-        },
-        {
-          "id": "0a5d43cc-333a-4c03-adcf-c6e0d5fbb035",
-          "value": {
-            "dob": "1933-04-02",
-            "name": "An Other",
-            "gender": "Male",
+            "contactDetailsHiddenReason": "respondent two hidden contact details reason",
             "address": {
-              "County": "Croydon",
-              "Country": "UK",
-              "PostCode": "BT22 2345",
-              "PostTown": "Surrey",
+              "AddressLine1": "Unit 12",
+              "AddressLine2": "Transa Way",
+              "AddressLine3": "Hillsborough",
+              "PostTown": "Lurgan",
+              "PostCode": "BT26 6RJ",
+              "County": "Down",
+              "Country": "United Kingdom"
+            },
+            "telephoneNumber": {
+              "telephoneNumber": "02892611016"
+            }
+          },
+          "leadRespondentIndicator": "Y"
+        }
+      },
+      {
+        "id": "0a5d43cc-333a-4c03-adcf-c6e0d5fbb035",
+        "value": {
+          "party": {
+            "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
+            "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
+            "partyType": "Individual",
+            "title": "Mr",
+            "firstName": "An",
+            "lastName": "Other",
+            "gender": "Male",
+            "dateOfBirth": "1933-04-02",
+            "placeOfBirth": "Reading",
+            "litigationIssues": "NO",
+            "address": {
               "AddressLine1": "Flat 90",
               "AddressLine2": "Surrey street",
-              "AddressLine3": "Surrey road"
+              "AddressLine3": "Surrey road",
+              "PostTown": "Surrey",
+              "PostCode": "BT22 2345",
+              "County": "Croydon",
+              "Country": "UK"
             },
-            "telephone": "0987654321",
-            "placeOfBirth": "Reading",
-            "litigationIssues": "NO"
-          }
+            "telephoneNumber": {
+              "telephoneNumber": "0987654321"
+            }
+          },
+          "leadRespondentIndicator": "Y"
         }
-      ],
-      "firstRespondent": {
-        "dob": "1944-05-02",
-        "name": "Paul Smith",
-        "gender": "Male",
-        "address": {},
-        "telephone": "07712345678",
-        "placeOfBirth": "Crewe",
-        "litigationIssues": "YES",
-        "relationshipToChild": "Uncle",
-        "contactDetailsHidden": "No",
-        "litigationIssuesDetails": "respondent one test litigation reason",
-        "contactDetailsHiddenReason": "Hide from all"
       }
-    },
+    ],
     "factorsParenting": {
       "anythingElse": "No",
       "alcoholDrugAbuse": "Yes",
@@ -387,41 +434,41 @@
         "document_binary_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e/binary"
       }
     },
-    "documents_checklist_document":{
-      "documentStatus":"Attached",
-      "typeOfDocument":{
-        "document_url":"http://dm-store:8080/documents/85fc89c0-6841-4964-9d5f-f35c2a465ae1",
-        "document_filename":"Screen Shot 2019-06-10 at 09.10.45.png",
-        "document_binary_url":"http://dm-store:8080/documents/85fc89c0-6841-4964-9d5f-f35c2a465ae1/binary"
+    "documents_checklist_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": {
+        "document_url": "http://dm-store:8080/documents/85fc89c0-6841-4964-9d5f-f35c2a465ae1",
+        "document_filename": "Screen Shot 2019-06-10 at 09.10.45.png",
+        "document_binary_url": "http://dm-store:8080/documents/85fc89c0-6841-4964-9d5f-f35c2a465ae1/binary"
       }
     },
-    "documents_threshold_document":{
-      "documentStatus":"Attached",
-      "typeOfDocument":{
-        "document_url":"http://dm-store:8080/documents/d91ef133-1c98-4e71-9a4c-6da330a97830",
-        "document_filename":"Screen Shot 2019-06-10 at 09.10.45.png",
-        "document_binary_url":"http://dm-store:8080/documents/d91ef133-1c98-4e71-9a4c-6da330a97830/binary"
+    "documents_threshold_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": {
+        "document_url": "http://dm-store:8080/documents/d91ef133-1c98-4e71-9a4c-6da330a97830",
+        "document_filename": "Screen Shot 2019-06-10 at 09.10.45.png",
+        "document_binary_url": "http://dm-store:8080/documents/d91ef133-1c98-4e71-9a4c-6da330a97830/binary"
       }
     },
-    "documents_socialWorkEvidenceTemplate_document":{
-      "documentStatus":"Attached",
-      "typeOfDocument":{
-        "document_url":"http://dm-store:8080/documents/30f16903-a9de-4bef-8da4-146301e0a350",
-        "document_filename":"Screen Shot 2019-06-10 at 09.10.45.png",
-        "document_binary_url":"http://dm-store:8080/documents/30f16903-a9de-4bef-8da4-146301e0a350/binary"
+    "documents_socialWorkEvidenceTemplate_document": {
+      "documentStatus": "Attached",
+      "typeOfDocument": {
+        "document_url": "http://dm-store:8080/documents/30f16903-a9de-4bef-8da4-146301e0a350",
+        "document_filename": "Screen Shot 2019-06-10 at 09.10.45.png",
+        "document_binary_url": "http://dm-store:8080/documents/30f16903-a9de-4bef-8da4-146301e0a350/binary"
       }
     },
-    "documents_socialWorkOther":[
+    "documents_socialWorkOther": [
       {
-        "id":"633bb807-e3ca-47d1-87d7-3fbd854143a4",
-        "value":{
-          "documentTitle":"document_one"
+        "id": "633bb807-e3ca-47d1-87d7-3fbd854143a4",
+        "value": {
+          "documentTitle": "document_one"
         }
       },
       {
-        "id":"6e427368-875e-408a-b25e-ef93dc8ab3da",
-        "value":{
-          "documentTitle":"document_two"
+        "id": "6e427368-875e-408a-b25e-ef93dc8ab3da",
+        "value": {
+          "documentTitle": "document_two"
         }
       }
     ]

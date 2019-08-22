@@ -46,6 +46,8 @@ public class DocumentGeneratorService {
         if (caseDetails != null) {
             Map<String, Object> dataCopy = new HashMap<>(caseDetails.getData());
             dataCopy.putIfAbsent("children1", collectionWithEmptyElement());
+            dataCopy.putIfAbsent("applicants", collectionWithEmptyElement());
+            dataCopy.putIfAbsent("respondents1", collectionWithEmptyElement());
 
             return caseDetails.toBuilder().data(dataCopy).build();
         }

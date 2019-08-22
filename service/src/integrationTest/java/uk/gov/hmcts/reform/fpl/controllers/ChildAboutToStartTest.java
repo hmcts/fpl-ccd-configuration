@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(ChildSubmissionController.class)
+@WebMvcTest(ChildController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ChildAboutToStartTest {
 

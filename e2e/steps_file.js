@@ -1,9 +1,9 @@
-/* global locate, process */
+/* global process */
 const config = require('./config');
 
-const logIn = require('./pages/login/loginPage');
-const createCasePage = require('./pages/createCase/createCase');
-const eventSummaryPage = require('./pages/createCase/eventSummary');
+const logIn = require('./pages/login.page');
+const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
+const eventSummaryPage = require('./pages/eventSummary.page');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
 
@@ -15,7 +15,7 @@ module.exports = function () {
       logIn.signIn(username, password);
       this.click('Create Case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
-      createCasePage.populateForm();
+      openApplicationEventPage.populateForm();
       this.continueAndSave();
     },
 
@@ -23,6 +23,12 @@ module.exports = function () {
       this.click('Continue');
       this.waitForElement('.check-your-answers');
       eventSummaryPage.submit('Save and continue');
+    },
+
+    continueAndProvideSummary(summary, description) {
+      this.click('Continue');
+      this.waitForElement('.check-your-answers');
+      eventSummaryPage.provideSummaryAndSubmit('Save and continue', summary, description);
     },
 
     continueAndSubmit() {
@@ -67,6 +73,7 @@ module.exports = function () {
 
     signOut() {
       this.click('Sign Out');
+      this.wait(2); // in seconds
     },
 
     navigateToCaseDetails(caseId) {

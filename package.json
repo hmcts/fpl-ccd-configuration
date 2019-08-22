@@ -4,21 +4,20 @@
   "description": "FPL CCD e2e tests",
   "devDependencies": {
     "babel-eslint": "^10.0.2",
-    "codeceptjs": "^2.1.5",
-    "eslint": "6.1.0",
-    "eslint-plugin-codeceptjs": "^1.0.0",
-    "husky": "^3.0.2",
+    "codeceptjs": "^2.3.0",
+    "eslint": "6.2.0",
+    "eslint-plugin-codeceptjs": "^1.1.0",
+    "husky": "^3.0.4",
     "mocha-junit-reporter": "^1.23.1",
-    "mocha-multi": "^1.1.0",
-    "mochawesome": "^4.0.1",
+    "mochawesome": "^4.1.0",
     "puppeteer": "^1.19.0"
   },
   "scripts": {
     "lint": "eslint e2e",
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
     "test": "codeceptjs run-multiple parallel",
-    "test:functional": "MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --invert --grep @smoke-tests --reporter mocha-multi",
-    "test:smoke": "MOCHAWESOME_REPORTFILENAME=smoke codeceptjs run --grep @smoke-tests --reporter mocha-multi"
+    "test:functional": "MOCHAWESOME_REPORTDIR=output MOCHAWESOME_REPORTFILENAME=functional MOCHAWESOME_JSON=false codeceptjs run-multiple parallel --invert --grep @smoke-tests --reporter mochawesome",
+    "test:smoke": "MOCHA_FILE=test-results/result.xml codeceptjs run --grep @smoke-tests --reporter mocha-junit-reporter"
   },
   "husky": {
     "hooks": {

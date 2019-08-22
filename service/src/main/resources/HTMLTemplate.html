@@ -162,46 +162,41 @@
           <dt class="data-list__title">Fee charged</dt>
           <dd class="data-list__definition"></dd>
         </div>
+
         <div class="data-list__row data-list__row--no-border">
           <dt class="data-list__title">Applicant</dt>
           <dd class="data-list__definition">
-            {% if case_data.applicant is not empty and case_data.applicant.name is not empty %}
-              {{ case_data.applicant.name }}
+            {% if case_data.applicants is not empty %}
+              {% for applicant in case_data.applicants %}
+                {% if applicant.value is not empty and applicant.value.party is not empty and applicant.value.party.organisationName is not empty %}
+                  {{ applicant.value.party.organisationName }}
+                {% else %}
+                  -
+                {% endif %}
+              {% endfor %}
             {% else %}
               -
             {% endif %}
           </dd>
         </div>
+
         <div class="data-list__row data-list__row--no-border">
           <dt class="data-list__title">Respondents</dt>
           <dd class="data-list__definition">
-            {% if case_data.respondents is not empty %}
-              {% if case_data.respondents.firstRespondent is not empty %}
-                <span class="u-comma-before">{{ case_data.respondents.firstRespondent.name }}</span>
-              {% elseif case_data.respondents.firstRespondent is empty and case_data.respondents.additional is not empty %}
-                // No op
-              {% else %}
-                -
-              {% endif %}
-              {% if case_data.respondents.additional is not empty %}
-                {% for additionalRespondent in case_data.respondents.additional %}
-                  {% if additionalRespondent.value.name is not empty %}
-                    <span class="u-comma-before">{{ additionalRespondent.value.name }}</span>
-                  {% endif %}
-                {% endfor %}
-              {% endif %}
-            {% elseif case_data.respondents1 is not empty %}
+            {% if case_data.respondents1 is not empty %}
               {% for respondent in case_data.respondents1 %}
-                {% if respondent.value.party.firstName is not empty and respondent.value.party.lastName is empty %}
-                  <span class="u-comma-before">{{ respondent.value.party.firstName }}</span>
-                {% elseif respondent.value.party.firstName is empty and respondent.value.party.lastName is not empty %}
-                  <span class="u-comma-before">{{ respondent.value.party.lastName }}</span>
-                {% elseif respondent.value.party.firstName is not empty and respondent.value.party.lastName is not empty %}
-                  <span class="u-comma-before">{{ respondent.value.party.firstName }} {{ respondent.value.party.lastName }}</span>
+                {% if respondent.value is not empty %}
+                  {% if respondent.value.party.firstName is not empty and respondent.value.party.lastName is empty %}
+                    <span class="u-comma-before">{{ respondent.value.party.firstName }}</span>
+                  {% elseif respondent.value.party.firstName is empty and respondent.value.party.lastName is not empty %}
+                    <span class="u-comma-before">{{ respondent.value.party.lastName }}</span>
+                  {% elseif respondent.value.party.firstName is not empty and respondent.value.party.lastName is not empty %}
+                    <span class="u-comma-before">{{ respondent.value.party.firstName }} {{ respondent.value.party.lastName }}</span>
+                  {% endif %}
+                {% else %}
+                  -
                 {% endif %}
               {% endfor %}
-            {% else %}
-              -
             {% endif %}
           </dd>
         </div>
@@ -210,10 +205,13 @@
 </header>
 <main>
   <h2 class="heading heading--two u-margin-bottom-10">
-    {% if case_data.applicant is empty or case_data.applicant.name is empty %}
-      Application
-    {% else %}
-      Application from {{ case_data.applicant.name }}
+    Application
+    {% if case_data.applicants is not empty %}
+      {% for applicant in case_data.applicants %}
+        {% if applicant.value is not empty and applicant.value.party is not empty and applicant.value.party.organisationName is not empty %}
+          from {{ applicant.value.party.organisationName }}
+        {% endif %}
+      {% endfor %}
     {% endif %}
     submitted on {{ null | today | date("d MMMM yyyy") }}
   </h2>
@@ -1242,227 +1240,34 @@
       </dl>
     {% endfor %}
   {% endif %}
-
-  {% if case_data.respondents is not empty %}
-  <h3 class="heading heading--two">Respondent
-    {% if case_data.respondents is not empty
-    and case_data.respondents.additional is not empty %}
-      1
-    {% endif %}
-  </h3>
-  <dl class="data-list">
-    <div class="data-list__row">
-      <dt class="data-list__title">Name</dt>
-      <dd class="data-list__definition">
-        {% if case_data.respondents is not empty and
-        case_data.respondents.firstRespondent is not empty and
-        case_data.respondents.firstRespondent.name is not empty %}
-          {{ case_data.respondents.firstRespondent.name }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Age</dt>
-      <dd class="data-list__definition">
-        {% if case_data.respondents is not empty and
-        case_data.respondents.firstRespondent is not empty and
-        case_data.respondents.firstRespondent.dob is not empty %}
-          {{ case_data.respondents.firstRespondent.dob | age }}
-        {% else %}
-         -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Date of birth</dt>
-      <dd class="data-list__definition">
-        {% if case_data.respondents is not empty and
-        case_data.respondents.firstRespondent is not empty and
-        case_data.respondents.firstRespondent.dob is not empty %}
-          {{ case_data.respondents.firstRespondent.dob | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Gender</dt>
-      <dd class="data-list__definition">
-        {% if case_data.respondents is not empty and
-          case_data.respondents.firstRespondent is not empty and
-          case_data.respondents.firstRespondent.gender is not empty %}
-          {% if case_data.respondents.firstRespondent.gender == 'They identify in another way'
-          and case_data.respondents.firstRespondent.genderIdentify is not empty %}
-            <span class="u-block">{{ case_data.respondents.firstRespondent.genderIdentify }}</span>
-          {% else %}
-            <span class="u-block">{{ case_data.respondents.firstRespondent.gender }}</span>
-          {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Place of birth</dt>
-      <dd class="data-list__definition">
-        {% if case_data.respondents is not empty and
-        case_data.respondents.firstRespondent is not empty and
-        case_data.respondents.firstRespondent.placeOfBirth is not empty %}
-          {{ case_data.respondents.firstRespondent.placeOfBirth }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Current address</dt>
-      <dd class="data-list__definition">
-        {% if case_data.respondents is not empty and case_data.respondents.firstRespondent is not empty and case_data.respondents.firstRespondent.address is not empty %}
-          {% if case_data.respondents.firstRespondent.contactDetailsHidden is not empty and case_data.respondents.firstRespondent.contactDetailsHidden == "Yes" %}
-            Confidential
-          {% else %}
-            {% if case_data.respondents.firstRespondent.address.AddressLine1 is not empty %}
-              <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.AddressLine1 }}</span>
-            {% endif %}
-            {% if case_data.respondents.firstRespondent.address.AddressLine2 is not empty %}
-              <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.AddressLine2 }}</span>
-            {% endif %}
-            {% if case_data.respondents.firstRespondent.address.AddressLine3 is not empty %}
-              <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.AddressLine3 }}</span>
-            {% endif %}
-            {% if case_data.respondents.firstRespondent.address.PostTown is not empty %}
-              <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.PostTown }}</span>
-            {% endif %}
-            {% if case_data.respondents.firstRespondent.address.PostCode is not empty %}
-              <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.PostCode }}</span>
-            {% endif %}
-            {% if case_data.respondents.firstRespondent.address.County is not empty %}
-              <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.County }}</span>
-            {% endif %}
-            {% if case_data.respondents.firstRespondent.address.Country is not empty %}
-              <span class="u-comma-before">{{ case_data.respondents.firstRespondent.address.Country }}</span>
-            {% endif %}
-          {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Telephone number</dt>
-      <dd class="data-list__definition">
-        {% if case_data.respondents is not empty and case_data.respondents.firstRespondent is not empty and case_data.respondents.firstRespondent.telephone is not empty %}
-          {% if case_data.respondents.firstRespondent.contactDetailsHidden is not empty and case_data.respondents.firstRespondent.contactDetailsHidden == "Yes" %}
-            Confidential
-          {% else %}
-            {{ case_data.respondents.firstRespondent.telephone }}
-          {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Relationship to the child or children</dt>
-      <dd class="data-list__definition">
-        {% if case_data.respondents is not empty and
-        case_data.respondents.firstRespondent is not empty and
-        case_data.respondents.firstRespondent.relationshipToChild is not empty %}
-          <span class="u-block">{{ case_data.respondents.firstRespondent.relationshipToChild }}</span>
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Interpreter</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Spoken or written Welsh</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Intermediary</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Facilities or assistance for a disability</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Separate waiting room or other security measures</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Litigation capacity issues</dt>
-      <dd class="data-list__definition">
-        {% if case_data.respondents is not empty and
-        case_data.respondents.firstRespondent is not empty and
-        case_data.respondents.firstRespondent.litigationIssues is not empty %}
-          {% if case_data.respondents.firstRespondent.litigationIssues == 'YES' %}
-            <span class="u-block">Yes</span>
-            {% if case_data.respondents.firstRespondent.litigationIssuesDetails is not empty %}
-              <span class="u-block">{{ case_data.respondents.firstRespondent.litigationIssuesDetails }}</span>
-            {% endif %}
-          {% elseif case_data.respondents.firstRespondent.litigationIssues == 'NO' %}
-            <span class="u-block">No</span>
-          {% else %}
-            <span class="u-block">Don't know</span>
-          {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Anything else to help take part in proceedings</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Confidential contact details</dt>
-      <dd class="data-list__definition">
-        {% if case_data.respondents is not empty and
-        case_data.respondents.firstRespondent is not empty and
-        case_data.respondents.firstRespondent.contactDetailsHidden is not empty %}
-          <span class="u-block">{{ case_data.respondents.firstRespondent.contactDetailsHidden }}</span>
-          {% if case_data.respondents.firstRespondent.contactDetailsHiddenReason is not empty %}
-            <span class="u-block">{{ case_data.respondents.firstRespondent.contactDetailsHiddenReason }}</span>
-          {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-  </dl>
-
-  {% if case_data.respondents is not empty and case_data.respondents.additional is not empty %}
-    {% if case_data.respondents is not empty and case_data.respondents.firstRespondent is not empty %}
-      {% set counter = 2 %}
-    {% else %}
-      {% set counter = 1 %}
-    {% endif %}
-    {% for respondent in case_data.respondents.additional %}
-      {% if respondent is not empty and respondent.value is not empty %}
-      <h3 class="heading heading--two">Respondent {{counter}}</h3>
+  {% if case_data.respondents1 is not empty and case_data.respondents is empty %}
+    {% set counter = 1 %}
+    {% for respondent in case_data.respondents1 %}
+      {% if loop.length == 1 %}
+        <h3 class="heading heading--two">Respondent</h3>
+      {% else %}
+        <h3 class="heading heading--two">Respondent {{counter}}</h3>
+      {% endif %}
       <dl class="data-list">
         <div class="data-list__row">
           <dt class="data-list__title">Name</dt>
           <dd class="data-list__definition">
-          {% if respondent.value.name is not empty %}
-            {{ respondent.value.name }}
-          {% else %}
-            -
-          {% endif %}
+            {% if respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.firstName is not empty and respondent.value.party.lastName is empty %}
+              {{ respondent.value.party.firstName }}
+            {% elseif respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.firstName is empty and respondent.value.party.lastName is not empty %}
+              {{ respondent.value.party.lastName }}
+            {% elseif respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.firstName is not empty and respondent.value.party.lastName is not empty %}
+              {{ respondent.value.party.firstName }} {{ respondent.value.party.lastName }}
+            {% else %}
+              -
+            {% endif %}
           </dd>
         </div>
         <div class="data-list__row">
           <dt class="data-list__title">Age</dt>
           <dd class="data-list__definition">
-            {% if respondent.value.dob is not empty %}
-              {{ respondent.value.dob | age }}
+            {% if respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.dateOfBirth is not empty %}
+              {{ respondent.value.party.dateOfBirth | age }}
             {% else %}
               -
             {% endif %}
@@ -1471,23 +1276,21 @@
         <div class="data-list__row">
           <dt class="data-list__title">Date of birth</dt>
           <dd class="data-list__definition">
-            {% if respondent.value.dob is not empty %}
-              {{ respondent.value.dob | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
+            {% if respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.dateOfBirth is not empty %}
+              {{ respondent.value.party.dateOfBirth | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
             {% else %}
               -
             {% endif %}
           </dd>
         </div>
-
         <div class="data-list__row">
           <dt class="data-list__title">Gender</dt>
           <dd class="data-list__definition">
-            {% if respondent.value.gender is not empty %}
-              {% if respondent.value.gender == 'They identify in another way'
-              and respondent.value.genderIdentify is not empty %}
-                <span class="u-block">{{ respondent.value.genderIdentify }}</span>
+            {% if respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.gender is not empty %}
+              {% if respondent.value.party.gender == 'They identify in another way' and respondent.value.party.genderIdentification is not empty %}
+                <span class="u-block">{{ respondent.value.party.genderIdentification }}</span>
               {% else %}
-                {{ respondent.value.gender }}
+                {{ respondent.value.party.gender }}
               {% endif %}
             {% else %}
               -
@@ -1497,8 +1300,8 @@
         <div class="data-list__row">
           <dt class="data-list__title">Place of birth</dt>
           <dd class="data-list__definition">
-            {% if respondent.value.placeOfBirth is not empty %}
-              {{ respondent.value.placeOfBirth }}
+            {% if respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.placeOfBirth is not empty %}
+              {{ respondent.value.party.placeOfBirth }}
             {% else %}
               -
             {% endif %}
@@ -1507,30 +1310,30 @@
         <div class="data-list__row">
           <dt class="data-list__title">Current address</dt>
           <dd class="data-list__definition">
-            {% if respondent.value.address is not empty %}
-              {% if respondent.value.contactDetailsHidden is not empty and respondent.value.contactDetailsHidden == "Yes" %}
+            {% if respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.address is not empty %}
+              {% if respondent.value.party.contactDetailsHidden is not empty and respondent.value.party.contactDetailsHidden == "Yes" %}
                 Confidential
               {% else %}
-                {% if respondent.value.address.AddressLine1 is not empty %}
-                  <span class="u-comma-before">{{ respondent.value.address.AddressLine1 }}</span>
+                {% if respondent.value.party.address.AddressLine1 is not empty %}
+                  <span class="u-comma-before">{{ respondent.value.party.address.AddressLine1 }}</span>
                 {% endif %}
-                {% if respondent.value.address.AddressLine2 is not empty %}
-                  <span class="u-comma-before">{{ respondent.value.address.AddressLine2 }}</span>
+                {% if respondent.value.party.address.AddressLine2 is not empty %}
+                  <span class="u-comma-before">{{ respondent.value.party.address.AddressLine2 }}</span>
                 {% endif %}
-                {% if respondent.value.address.AddressLine3 is not empty %}
-                  <span class="u-comma-before">{{ respondent.value.address.AddressLine3 }}</span>
+                {% if respondent.value.party.address.AddressLine3 is not empty %}
+                  <span class="u-comma-before">{{ respondent.value.party.address.AddressLine3 }}</span>
                 {% endif %}
-                {% if respondent.value.address.PostTown is not empty %}
-                  <span class="u-comma-before">{{ respondent.value.address.PostTown }}</span>
+                {% if respondent.value.party.address.PostTown is not empty %}
+                  <span class="u-comma-before">{{ respondent.value.party.address.PostTown }}</span>
                 {% endif %}
-                {% if respondent.value.address.PostCode is not empty %}
-                  <span class="u-comma-before">{{ respondent.value.address.PostCode }}</span>
+                {% if respondent.value.party.address.PostCode is not empty %}
+                  <span class="u-comma-before">{{ respondent.value.party.address.PostCode }}</span>
                 {% endif %}
-                {% if respondent.value.address.County is not empty %}
-                  <span class="u-comma-before">{{ respondent.value.address.County }}</span>
+                {% if respondent.value.party.address.County is not empty %}
+                  <span class="u-comma-before">{{ respondent.value.party.address.County }}</span>
                 {% endif %}
-                {% if respondent.value.address.Country is not empty %}
-                  <span class="u-comma-before">{{ respondent.value.address.Country }}</span>
+                {% if respondent.value.party.address.Country is not empty %}
+                  <span class="u-comma-before">{{ respondent.value.party.address.Country }}</span>
                 {% endif %}
               {% endif %}
             {% else %}
@@ -1541,11 +1344,11 @@
         <div class="data-list__row">
           <dt class="data-list__title">Telephone number</dt>
           <dd class="data-list__definition">
-            {% if respondent.value.telephone is not empty %}
-              {% if respondent.value.contactDetailsHidden is not empty and respondent.value.contactDetailsHidden == "Yes" %}
+            {% if respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.telephoneNumber is not empty and respondent.value.party.telephoneNumber.telephoneNumber is not empty %}
+              {% if respondent.value.party.contactDetailsHidden is not empty and respondent.value.party.contactDetailsHidden == "Yes" %}
                 Confidential
               {% else %}
-                {{ respondent.value.telephone }}
+                {{ respondent.value.party.telephoneNumber.telephoneNumber }}
               {% endif %}
             {% else %}
               -
@@ -1555,8 +1358,8 @@
         <div class="data-list__row">
           <dt class="data-list__title">Relationship to the child or children</dt>
           <dd class="data-list__definition">
-            {% if respondent.value.relationshipToChild is not empty %}
-              <span class="u-block">{{ respondent.value.relationshipToChild }}</span>
+            {% if respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.relationshipToChild is not empty %}
+              <span class="u-block">{{ respondent.value.party.relationshipToChild }}</span>
             {% else %}
               -
             {% endif %}
@@ -1585,18 +1388,18 @@
         <div class="data-list__row">
           <dt class="data-list__title">Litigation capacity issues</dt>
           <dd class="data-list__definition">
-            {% if respondent.value.litigationIssues is not empty %}
-              {% if respondent.value.litigationIssues == 'YES' %}
+            {% if respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.litigationIssues is not empty %}
+              {% if respondent.value.party.litigationIssues == 'YES' %}
                 <span class="u-block">Yes</span>
-                {% if respondent.value.litigationIssuesDetails is not empty %}
-                  <span class="u-block">{{ respondent.value.litigationIssuesDetails }}</span>
-                {% endif %}
-              {% elseif respondent.value.litigationIssues == 'NO' %}
+                  {% if respondent.value.party.litigationIssuesDetails is not empty %}
+                    <span class="u-block">{{ respondent.value.party.litigationIssuesDetails }}</span>
+                  {% endif %}
+              {% elseif respondent.value.party.litigationIssues == 'NO' %}
                 <span class="u-block">No</span>
               {% else %}
                 <span class="u-block">Don't know</span>
               {% endif %}
-            {% else %}
+              {% else %}
               -
             {% endif %}
           </dd>
@@ -1608,386 +1411,200 @@
         <div class="data-list__row">
           <dt class="data-list__title">Confidential contact details</dt>
           <dd class="data-list__definition">
-            {% if respondent.value.contactDetailsHidden is not empty %}
-              <span class="u-block">{{ respondent.value.contactDetailsHidden }}</span>
-            {% if case_data.respondents.firstRespondent.contactDetailsHiddenReason is not empty %}
-              <span class="u-block">{{ respondent.value.contactDetailsHiddenReason }}</span>
-            {% endif %}
+            {% if respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.contactDetailsHidden is not empty %}
+              <span class="u-block">{{ respondent.value.party.contactDetailsHidden }}</span>
+                {% if respondent.value.party.contactDetailsHiddenReason is not empty %}
+                  <span class="u-block">{{ respondent.value.party.contactDetailsHiddenReason }}</span>
+                {% endif %}
             {% else %}
               -
             {% endif %}
           </dd>
         </div>
       </dl>
-      {% endif %}
-      {% set counter = counter + 1 %}
-      {% endfor %}
-    {% endif %}
+    {% set counter = counter + 1 %}
+    {% endfor %}
   {% endif %}
 
-  {% if case_data.respondents1 is not empty %}
-  {% set counter = 1 %}
-  {% endif %}
-  {% for respondent in case_data.respondents1 %}
-  {% if respondent is not empty and respondent.value is not empty and respondent.value.party is not empty %}
-  <h3 class="heading heading--two">Respondent {{counter}}</h3>
-  <dl class="data-list">
-    <div class="data-list__row">
-      <dt class="data-list__title">Name</dt>
-      <dd class="data-list__definition">
-        {% if respondent.value.party.firstName is not empty and respondent.value.party.lastName is empty %}
-          {{ respondent.value.party.firstName }}
-        {% elseif respondent.value.party.firstName is empty and respondent.value.party.lastName is not empty %}
-          {{ respondent.value.party.lastName }}
-        {% elseif respondent.value.party.firstName is not empty and respondent.value.party.lastName is not empty %}
-          {{ respondent.value.party.firstName }} {{ respondent.value.party.lastName }}
-        {% else %}
-        -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Age</dt>
-      <dd class="data-list__definition">
-        {% if respondent.value.party.dateOfBirth is not empty %}
-        {{ respondent.value.party.dateOfBirth | age }}
-        {% else %}
-        -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Date of birth</dt>
-      <dd class="data-list__definition">
-        {% if respondent.value.party.dateOfBirth is not empty %}
-        {{ respondent.value.party.dateOfBirth | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
-        {% else %}
-        -
-        {% endif %}
-      </dd>
-    </div>
-
-    <div class="data-list__row">
-      <dt class="data-list__title">Gender</dt>
-      <dd class="data-list__definition">
-        {% if respondent.value.party.gender is not empty %}
-        {% if respondent.value.party.gender == 'They identify in another way'
-        and respondent.value.party.genderIdentification is not empty %}
-        <span class="u-block">{{ respondent.value.party.genderIdentification }}</span>
-        {% else %}
-        {{ respondent.value.party.gender }}
-        {% endif %}
-        {% else %}
-        -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Place of birth</dt>
-      <dd class="data-list__definition">
-        {% if respondent.value.party.placeOfBirth is not empty %}
-        {{ respondent.value.party.placeOfBirth }}
-        {% else %}
-        -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Current address</dt>
-      <dd class="data-list__definition">
-        {% if respondent.value.party.address is not empty %}
-          {% if respondent.value.party.contactDetailsHidden is not empty and respondent.value.party.contactDetailsHidden == "Yes" %}
-            Confidential
-          {% else %}
-            {% if respondent.value.party.address.AddressLine1 is not empty %}
-              <span class="u-comma-before">{{ respondent.value.party.address.AddressLine1 }}</span>
-            {% endif %}
-            {% if respondent.value.party.address.AddressLine2 is not empty %}
-              <span class="u-comma-before">{{ respondent.value.party.address.AddressLine2 }}</span>
-            {% endif %}
-            {% if respondent.value.party.address.AddressLine3 is not empty %}
-              <span class="u-comma-before">{{ respondent.value.party.address.AddressLine3 }}</span>
-            {% endif %}
-            {% if respondent.value.party.address.PostTown is not empty %}
-              <span class="u-comma-before">{{ respondent.value.party.address.PostTown }}</span>
-            {% endif %}
-            {% if respondent.value.party.address.PostCode is not empty %}
-              <span class="u-comma-before">{{ respondent.value.party.address.PostCode }}</span>
-            {% endif %}
-            {% if respondent.value.party.address.County is not empty %}
-              <span class="u-comma-before">{{ respondent.value.party.address.County }}</span>
-            {% endif %}
-            {% if respondent.value.party.address.Country is not empty %}
-              <span class="u-comma-before">{{ respondent.value.party.address.Country }}</span>
-            {% endif %}
-          {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Telephone number</dt>
-      <dd class="data-list__definition">
-        {% if respondent.value.party.telephoneNumber is not empty and respondent.value.party.telephoneNumber.telephoneNumber is not empty %}
-          {% if respondent.value.party.contactDetailsHidden is not empty and respondent.value.party.contactDetailsHidden == "Yes" %}
-            Confidential
-          {% else %}
-            {{ respondent.value.party.telephoneNumber.telephoneNumber }}
-          {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Relationship to the child or children</dt>
-      <dd class="data-list__definition">
-        {% if respondent.value.party.relationshipToChild is not empty %}
-        <span class="u-block">{{ respondent.value.party.relationshipToChild }}</span>
-        {% else %}
-        -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Interpreter</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Spoken or written Welsh</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Intermediary</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Facilities or assistance for a disability</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Separate waiting room or other security measures</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Litigation capacity issues</dt>
-      <dd class="data-list__definition">
-        {% if respondent.value.party.litigationIssues is not empty %}
-        {% if respondent.value.party.litigationIssues == 'YES' %}
-        <span class="u-block">Yes</span>
-        {% if respondent.value.party.litigationIssuesDetails is not empty %}
-        <span class="u-block">{{ respondent.value.party.litigationIssuesDetails }}</span>
-        {% endif %}
-        {% elseif respondent.value.party.litigationIssues == 'NO' %}
-        <span class="u-block">No</span>
-        {% else %}
-        <span class="u-block">Don't know</span>
-        {% endif %}
-        {% else %}
-        -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Anything else to help take part in proceedings</dt>
-      <dd class="data-list__definition">-</dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Confidential contact details</dt>
-      <dd class="data-list__definition">
-        {% if respondent.value.party.contactDetailsHidden is not empty %}
-        <span class="u-block">{{ respondent.value.party.contactDetailsHidden }}</span>
-        {% if respondent.value.party.contactDetailsHiddenReason is not empty %}
-        <span class="u-block">{{ respondent.value.party.contactDetailsHiddenReason }}</span>
-        {% endif %}
-        {% else %}
-        -
-        {% endif %}
-      </dd>
-    </div>
-  </dl>
-  {% endif %}
-  {% set counter = counter + 1 %}
-  {% endfor %}
 
   <h3 class="heading heading--two">Applicant</h3>
-  <dl class="data-list">
-    <div class="data-list__row">
-      <dt class="data-list__title">Name</dt>
-      <dd class="data-list__definition">
-        {% if case_data.applicant is not empty and
-        case_data.applicant.name is not empty %}
-          {{ case_data.applicant.name }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Contact name</dt>
-      <dd class="data-list__definition">
-        {% if case_data.applicant is not empty and
-        case_data.applicant.personToContact is not empty %}
-          {{ case_data.applicant.personToContact }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Job title</dt>
-      <dd class="data-list__definition">
-        {% if case_data.applicant is not empty and
-        case_data.applicant.jobTitle is not empty %}
-          {{ case_data.applicant.jobTitle }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Address</dt>
-      <dd class="data-list__definition">
-        {% if case_data.applicant is not empty and
-          case_data.applicant.address is not empty %}
-          {% if case_data.applicant.address.AddressLine1 is not empty %}
-            <span class="u-comma-before">{{ case_data.applicant.address.AddressLine1 }}</span>
-          {% endif %}
-          {% if case_data.applicant.address.AddressLine2 is not empty %}
-            <span class="u-comma-before">{{ case_data.applicant.address.AddressLine2 }}</span>
-          {% endif %}
-          {% if case_data.applicant.address.AddressLine3 is not empty %}
-            <span class="u-comma-before">{{ case_data.applicant.address.AddressLine3 }}</span>
-          {% endif %}
-          {% if case_data.applicant.address.PostTown is not empty %}
-            <span class="u-comma-before">{{ case_data.applicant.address.PostTown }}</span>
-          {% endif %}
-          {% if case_data.applicant.address.PostCode is not empty %}
-            <span class="u-comma-before">{{ case_data.applicant.address.PostCode }}</span>
-          {% endif %}
-          {% if case_data.applicant.address.County is not empty %}
-            <span class="u-comma-before">{{ case_data.applicant.address.County }}</span>
-          {% endif %}
-          {% if case_data.applicant.address.Country is not empty %}
-            <span class="u-comma-before">{{ case_data.applicant.address.Country }}</span>
-          {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Mobile number</dt>
-      <dd class="data-list__definition">
-        {% if case_data.applicant is not empty and
-        case_data.applicant.mobile is not empty %}
-          {{ case_data.applicant.mobile }}
-        {% else %}
-         -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Telephone number</dt>
-      <dd class="data-list__definition">
-        {% if case_data.applicant is not empty and
-        case_data.applicant.telephone is not empty %}
-          {{ case_data.applicant.telephone }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Email address</dt>
-      <dd class="data-list__definition">
-        {% if case_data.applicant is not empty and
-        case_data.applicant.email is not empty %}
-          {{ case_data.applicant.email }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Payment by account (PBA) number</dt>
-      <dd class="data-list__definition">
-        {% if case_data.applicant is not empty and
-        case_data.applicant.pbaNumber is not empty %}
-        {{ case_data.applicant.pbaNumber }}
-        {% else %}
-        -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Solicitor's Name</dt>
-      <dd class="data-list__definition">
-        {% if case_data.solicitor is not empty and
-        case_data.solicitor.name is not empty %}
-          {{ case_data.solicitor.name }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Solicitor's mobile number</dt>
-      <dd class="data-list__definition">
-        {% if case_data.solicitor is not empty and
-        case_data.solicitor.mobile is not empty %}
-          {{ case_data.solicitor.mobile }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Solicitor's telephone number</dt>
-      <dd class="data-list__definition">
-        {% if case_data.solicitor is not empty and
-        case_data.solicitor.telephone is not empty %}
-          {{ case_data.solicitor.telephone }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Solicitor's email address</dt>
-      <dd class="data-list__definition">
-        {% if case_data.solicitor is not empty and
-        case_data.solicitor.email is not empty %}
-          {{ case_data.solicitor.email }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Solicitor's DX Number</dt>
-      <dd class="data-list__definition">
-        {% if case_data.solicitor is not empty and
-        case_data.solicitor.dx is not empty %}
-          {{ case_data.solicitor.dx }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Solicitor's reference</dt>
-      <dd class="data-list__definition">
-        {% if case_data.solicitor is not empty and
-        case_data.solicitor.reference is not empty %}
-          {{ case_data.solicitor.reference }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-  </dl>
+  {% if case_data.applicants is not empty %}
+    {% for applicant in case_data.applicants %}
+      <dl class="data-list">
+          <div class="data-list__row">
+            <dt class="data-list__title">Name</dt>
+            <dd class="data-list__definition">
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.organisationName is not empty %}
+                {{ applicant.value.party.organisationName }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Contact name</dt>
+            <dd class="data-list__definition">
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.telephoneNumber is not empty and
+              applicant.value.party.telephoneNumber.contactDirection is not empty %}
+                {{ applicant.value.party.telephoneNumber.contactDirection }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Job title</dt>
+            <dd class="data-list__definition">
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.jobTitle is not empty %}
+                {{ applicant.value.party.jobTitle }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Address</dt>
+            <dd class="data-list__definition">
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.address is not empty %}
+                {% if applicant.value.party.address.AddressLine1 is not empty %}
+                  <span class="u-comma-before">{{ applicant.value.party.address.AddressLine1 }}</span>
+                {% endif %}
+                {% if applicant.value.party.address.AddressLine2 is not empty %}
+                  <span class="u-comma-before">{{ applicant.value.party.address.AddressLine2 }}</span>
+                {% endif %}
+                {% if applicant.value.party.address.AddressLine3 is not empty %}
+                  <span class="u-comma-before">{{ applicant.value.party.address.AddressLine3 }}</span>
+                {% endif %}
+                {% if applicant.value.party.address.PostTown is not empty %}
+                  <span class="u-comma-before">{{ applicant.value.party.address.PostTown }}</span>
+                {% endif %}
+                {% if applicant.value.party.address.PostCode is not empty %}
+                  <span class="u-comma-before">{{ applicant.value.party.address.PostCode }}</span>
+                {% endif %}
+                {% if applicant.value.party.address.County is not empty %}
+                  <span class="u-comma-before">{{ applicant.value.party.address.County }}</span>
+                {% endif %}
+                {% if applicant.value.party.address.Country is not empty %}
+                  <span class="u-comma-before">{{ applicant.value.party.address.Country }}</span>
+              {% endif %}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Mobile number</dt>
+            <dd class="data-list__definition">
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.mobileNumber is not empty and
+              applicant.value.party.mobileNumber.telephoneNumber is not empty %}
+                {{ applicant.value.party.mobileNumber.telephoneNumber }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+           <div class="data-list__row">
+            <dt class="data-list__title">Telephone number</dt>
+            <dd class="data-list__definition">
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.telephoneNumber is not empty and
+              applicant.value.party.telephoneNumber.telephoneNumber is not empty %}
+                {{ applicant.value.party.telephoneNumber.telephoneNumber }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Email address</dt>
+            <dd class="data-list__definition">
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.email is not empty %}
+                {{ applicant.value.party.email.email }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Payment by account (PBA) number</dt>
+            <dd class="data-list__definition">
+              {% if applicant.value is not empty and applicant.value.party is not empty and
+              applicant.value.party.pbaNumber is not empty and applicant.value.party.pbaNumber is not empty %}
+                {{ applicant.value.party.pbaNumber }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Solicitor's Name</dt>
+            <dd class="data-list__definition">
+              {% if case_data.solicitor is not empty and case_data.solicitor.name is not empty %}
+                {{ case_data.solicitor.name }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Solicitor's mobile number</dt>
+            <dd class="data-list__definition">
+              {% if case_data.solicitor is not empty and case_data.solicitor.mobile is not empty %}
+                {{ case_data.solicitor.mobile }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Solicitor's telephone number</dt>
+            <dd class="data-list__definition">
+              {% if case_data.solicitor is not empty and case_data.solicitor.telephone is not empty %}
+                {{ case_data.solicitor.telephone }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Solicitor's email address</dt>
+            <dd class="data-list__definition">
+              {% if case_data.solicitor is not empty and case_data.solicitor.email is not empty %}
+                {{ case_data.solicitor.email }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Solicitor's DX Number</dt>
+            <dd class="data-list__definition">
+              {% if case_data.solicitor is not empty and case_data.solicitor.dx is not empty %}
+                {{ case_data.solicitor.dx }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+          <div class="data-list__row">
+            <dt class="data-list__title">Solicitor's reference</dt>
+            <dd class="data-list__definition">
+              {% if case_data.solicitor is not empty and case_data.solicitor.reference is not empty %}
+                {{ case_data.solicitor.reference }}
+              {% else %}
+                -
+              {% endif %}
+            </dd>
+          </div>
+        </dl>
+    {% endfor %}
+  {% endif %}
 
   <h3 class="heading heading--two">
     Other

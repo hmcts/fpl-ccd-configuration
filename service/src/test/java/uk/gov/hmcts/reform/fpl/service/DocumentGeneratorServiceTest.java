@@ -23,20 +23,24 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.migratedChildCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.reformMigratedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
 class DocumentGeneratorServiceTest {
 
     @Test
-    void shouldGenerateSubmittedFormDocumentWithExpectedContentsWhenCaseHasNoData() throws IOException {
-        String content = textContentOf(createServiceInstance().generateSubmittedFormPDF(emptyCaseDetails(),
+    void shouldGenerateSubmittedFormDocumentWhenCaseHasNoData() throws IOException {
+        Clock clock = Clock.fixed(Instant.parse("2019-08-02T00:00:00Z"), ZoneId.systemDefault());
+
+        String content = textContentOf(createServiceInstance(clock).generateSubmittedFormPDF(emptyCaseDetails(),
             Pair.of("userFullName", "Emma Taylor"))
         );
 
-        assertThat(content).contains("C110A");
-        assertThat(content).contains("Child");
+        String expectedContent = ResourceReader.readString("empty-form-pdf-content.txt");
+
+        assertThat(splitContentIntoTrimmedLines(content))
+            .containsExactlyInAnyOrderElementsOf(splitContentIntoTrimmedLines(expectedContent));
     }
 
     @Test
@@ -53,29 +57,28 @@ class DocumentGeneratorServiceTest {
             .containsExactlyInAnyOrderElementsOf(splitContentIntoTrimmedLines(expectedContent));
     }
 
+    @Test
+    void shouldGenerateSubmittedFormWhenCaseHasBothOldAndNewChildStructure() throws IOException {
+        Clock clock = Clock.fixed(Instant.parse("2018-11-26T00:00:00Z"), ZoneId.systemDefault());
+
+        String content = textContentOf(
+            createServiceInstance(clock).generateSubmittedFormPDF(migratedChildCaseDetails(),
+                Pair.of("userFullName", "Emma Taylor"))
+        );
+        String expectedContent = ResourceReader.readString("submitted-form-pdf-content.txt");
+
+        assertThat(splitContentIntoTrimmedLines(content))
+            .containsExactlyInAnyOrderElementsOf(splitContentIntoTrimmedLines(expectedContent));
+    }
+
     private List<String> splitContentIntoTrimmedLines(String content) {
         return Stream.of(content.split("\n")).map(String::trim).collect(Collectors.toList());
     }
 
     @Test
-    void shouldThrowExceptionWhenTemplateIsTemplateIsMalformed() {
+    void shouldThrowExceptionWhenTemplateIsMalformed() {
         assertThatThrownBy(() -> createServiceInstance().generateSubmittedFormPDF(null))
             .isInstanceOf(MalformedTemplateException.class);
-    }
-
-    @Test
-    void shouldGenerateSubmittedFormWhenCaseHasBothOldAndNewRReformStructure() throws IOException {
-        Clock clock = Clock.fixed(Instant.parse("2018-11-26T00:00:00Z"), ZoneId.systemDefault());
-
-        String content = textContentOf(
-            createServiceInstance(clock).generateSubmittedFormPDF(reformMigratedCaseDetails(),
-                Pair.of("userFullName", "Emma Taylor"))
-        );
-
-        String expectedContent = ResourceReader.readString("submitted-form-pdf-content.txt");
-
-        assertThat(splitContentIntoTrimmedLines(content))
-            .containsExactlyInAnyOrderElementsOf(splitContentIntoTrimmedLines(expectedContent));
     }
 
     private DocumentGeneratorService createServiceInstance() {

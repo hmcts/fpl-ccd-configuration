@@ -2,20 +2,38 @@
 
 @Library("Infrastructure")
 
-import uk.gov.hmcts.contino.Consul
-import uk.gov.hmcts.contino.Kubectl
-
 def type = "java"
 
 def product = "fpl"
 def component = "case-service"
 
-List<Map<String, Object>> secrets = [
-  secret('ccd-configurer-s2s-secret', 'CCD_CONFIGURER_S2S_SECRET'),
-  secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN'),
-  secret('notify-api-key', 'NOTIFY_API_KEY'),
-  secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
-  secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD')
+def serviceSecrets = [
+  'fpl-${env}': [
+    secret('fpl-case-service-s2s-secret', 'IDAM_S2S_AUTH_TOTP_SECRET'),
+    secret('notify-api-key', 'NOTIFY_API_KEY'),
+    secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
+    secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
+    secret('local-authority-email-to-code-mapping', 'FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING'),
+    secret('local-authority-code-to-name-mapping', 'FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING'),
+    secret('local-authority-user-mapping', 'FPL_LOCAL_AUTHORITY_USER_MAPPING'),
+    secret('local-authority-code-to-hmcts-court-mapping', 'FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING'),
+    secret('local-authority-code-to-cafcass-mapping', 'FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING')
+  ]
+]
+
+def otherSecrets = [
+  // below is just for CCD in AKS - to be cleaned up when CCD Helm chart is updated to use flex volume for secrets
+  's2s-${env}': [
+    secret('microservicekey-ccd-gw', 'CCD_API_GATEWAY_S2S_SECRET'),
+    secret('microservicekey-ccd-data', 'CCD_DATA_STORE_S2S_SECRET'),
+    secret('microservicekey-ccd-definition', 'CCD_DEFINITION_STORE_S2S_SECRET')
+  ],
+  'ccd-${env}': [
+    secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_IDAM_CLIENT_SECRET'),
+    secret('ccd-as-a-pr-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
+    secret('ccd-as-a-pr-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD'),
+    secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
+  ]
 ]
 
 static Map<String, Object> secret(String secretName, String envVariable) {
@@ -32,10 +50,14 @@ def archiveCoreCaseDataDefinitions(env) {
 }
 
 withPipeline(type, product, component) {
-  setVaultName('fpl')
-  loadVaultSecrets(secrets)
+  onMaster {
+    loadVaultSecrets(serviceSecrets)
+  }
+  onPR {
+    loadVaultSecrets(serviceSecrets + otherSecrets)
+  }
   enableDockerBuild()
-  enableDeployToAKS()
+  installCharts()
   enableSlackNotifications('#fpla-tech')
 
   env.POSTCODE_PLACEHOLDER = '${postcode}'
@@ -60,31 +82,6 @@ withPipeline(type, product, component) {
     }
   }
 
-  after('aksdeploy') {
-    def aksServiceName = "${product}-${component}-${env.BRANCH_NAME}".toLowerCase()
-    def aksDomain = "${(env.SUBSCRIPTION_NAME in ['nonprod', 'prod']) ? 'service.core-compute-preview.internal' : 'service.core-compute-saat.internal'}"
-
-    def kubectl = new Kubectl(this, env.SUBSCRIPTION_NAME, aksServiceName)
-
-    def ingressIP = kubectl.getServiceLoadbalancerIP("traefik", "admin")
-
-    def consul = new Consul(this, env.SUBSCRIPTION_NAME in ['nonprod', 'prod'] ? 'preview' : 'saat')
-    consul.registerDns("service-auth-provider-api-${aksServiceName}", ingressIP)
-    consul.registerDns("idam-authentication-web-${aksServiceName}", ingressIP)
-    consul.registerDns("idam-api-${aksServiceName}", ingressIP)
-    consul.registerDns("ccd-case-management-web-${aksServiceName}", ingressIP)
-    consul.registerDns("ccd-api-gateway-${aksServiceName}", ingressIP)
-    consul.registerDns("ccd-definition-store-api-${aksServiceName}", ingressIP)
-    consul.registerDns("ccd-user-profile-api-${aksServiceName}", ingressIP)
-
-    env.DATABASE_HOST = kubectl.getServiceLoadbalancerIP("shared-database")
-    env.IDAM_API_BASE_URL = "https://idam-api-${aksServiceName}.${aksDomain}"
-    env.SERVICE_AUTH_PROVIDER_API_BASE_URL = "https://service-auth-provider-api-${aksServiceName}.${aksDomain}"
-    env.CCD_DEFINITION_STORE_API_BASE_URL = "https://ccd-definition-store-api-${aksServiceName}.${aksDomain}"
-    env.CCD_USER_PROFILE_API_BASE_URL = "https://ccd-user-profile-api-${aksServiceName}.${aksDomain}"
-    env.URL = "https://ccd-case-management-web-${aksServiceName}.${aksDomain}"
-  }
-
   before('smoketest:saat-staging') {
     env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
     archiveCoreCaseDataDefinitions('saat')
@@ -106,11 +103,14 @@ withPipeline(type, product, component) {
   }
 
   before('smoketest:preview') {
-    env.CCD_DEF_CASE_SERVICE_BASE_URL = env.TEST_URL.replace('https', 'http')
-
     sh """
-      CCD_CONFIGURER_S2S_SECRET=AABBCCDDEEFFGGHH ./kubernetes/configurer/configure-ccd.sh
+      eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+      
+      ./bin/configurer/add-roles.sh
+      ./bin/configurer/import-ccd-definition.sh
     """
+
+    env.URL="https://case-management-web-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
   }
 
   after('smoketest:saat-staging') {
@@ -141,12 +141,12 @@ withPipeline(type, product, component) {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
   }
 
-  before('functionalTest:demo') {
+  before('functionalTest:aat') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
   }
 
-  after('functionalTest:aat') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  before('functionalTest:demo') {
+    env.SKIP_FUNCTIONAL_TESTS = 'true'
   }
 
   after('functionalTest:preview') {

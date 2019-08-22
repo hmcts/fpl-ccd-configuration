@@ -14,4 +14,6 @@ public class CaseData {
     private final OldChildren children;
     private final List<Element<Child>> children1;
     private final String childrenMigrated;
+    private final List<Element<Applicant>> applicants;
+    private final List<Element<Respondent>> respondents;
 }
