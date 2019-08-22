@@ -1,4 +1,4 @@
-FROM hmcts/cnp-java-base:openjdk-11-distroless-1.0-beta
+FROM hmctspublic.azurecr.io/base/java:openjdk-11-distroless-1.0
 
 EXPOSE 4000
 
