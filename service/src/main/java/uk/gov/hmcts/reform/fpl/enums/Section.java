@@ -6,7 +6,7 @@ public enum Section {
     ORDERS("orders", "orders and directions needed"),
     GROUNDS("groundsForTheApplication", "grounds for the application"),
     HEARING("hearing", "hearing needed"),
-    DOCUMENTS("documents", "documents"),
+    DOCUMENTS("Document", "documents"),
     CASENAME("caseName", "case name");
 
     private final String errorKey;

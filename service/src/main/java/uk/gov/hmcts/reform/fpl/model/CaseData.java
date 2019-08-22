@@ -6,7 +6,6 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.HasDocumentStatus;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasEPOGrounds;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasThresholdDetails;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasThresholdReason;
@@ -22,7 +21,6 @@ import javax.validation.constraints.NotNull;
 @HasEPOGrounds
 @HasThresholdReason
 @HasThresholdDetails
-@HasDocumentStatus
 @SuppressWarnings("membername")
 public class CaseData {
     @NotBlank(message = "Enter a case name")
@@ -65,21 +63,33 @@ public class CaseData {
     private final List<Element<DocumentSocialWorkOther>> documents_socialWorkOther;
 
     @JsonProperty("documents_socialWorkCarePlan_document")
+    @NotNull(message = "Tell us the status of all documents including those that you haven't uploaded")
+    @Valid
     public final Document socialWorkCarePlanDocument;
 
     @JsonProperty("documents_socialWorkStatement_document")
+    @NotNull(message = "Tell us the status of all documents including those that you haven't uploaded")
+    @Valid
     public final Document socialWorkStatementDocument;
 
     @JsonProperty("documents_socialWorkAssessment_document")
+    @NotNull(message = "Tell us the status of all documents including those that you haven't uploaded")
+    @Valid
     public final Document socialWorkAssessmentDocument;
 
     @JsonProperty("documents_socialWorkChronology_document")
+    @NotNull(message = "Tell us the status of all documents including those that you haven't uploaded")
+    @Valid
     public final Document socialWorkChronologyDocument;
 
     @JsonProperty("documents_checklist_document")
+    @NotNull(message = "Tell us the status of all documents including those that you haven't uploaded")
+    @Valid
     public final Document checklistDocument;
 
     @JsonProperty("documents_threshold_document")
+    @NotNull(message = "Tell us the status of all documents including those that you haven't uploaded")
+    @Valid
     public final Document thresholdDocument;
 
     private final Document documents_socialWorkEvidenceTemplate_document;
