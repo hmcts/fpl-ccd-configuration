@@ -37,16 +37,9 @@ public class CaseData {
     @Valid
     private final Children children;
     @NotNull(message = "You need to add details to applicant")
-    private final List<Element<Applicant>> applicants;
-
     @Valid
-    public final Applicant getMainApplicant() {
-        if (applicants != null && applicants.get(0) != null && applicants.get(0).getValue() != null) {
-            return applicants.get(0).getValue();
-        } else {
-            return Applicant.builder().build();
-        }
-    }
+    private final List<@NotNull(message = "You need to add details to applicant")
+        Element<Applicant>> applicants;
 
     private final List<Element<RespondentParty>> respondent;
     private final Proceeding proceeding;

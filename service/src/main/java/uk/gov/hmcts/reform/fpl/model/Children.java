@@ -8,22 +8,18 @@ import com.google.common.collect.ImmutableList;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.HasChildName;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
+import javax.validation.constraints.Size;
 
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-@HasChildName
 public class Children {
-    @Valid
     private final Child firstChild;
-    @Valid
     private final List<Element<Child>> additionalChildren;
 
     @JsonCreator
@@ -40,6 +36,7 @@ public class Children {
     }
 
     @JsonIgnore
+    @Size(min = 1, message = "Tell us the names of all children in the case")
     public List<Child> getAllChildren() {
         ImmutableList.Builder<Child> builder = ImmutableList.builder();
         if (firstChild != null) {

@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Data
@@ -13,6 +15,8 @@ import java.util.UUID;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Element<T> {
     private final UUID id;
+    @NotNull
+    @Valid
     private final T value;
 
     @JsonCreator

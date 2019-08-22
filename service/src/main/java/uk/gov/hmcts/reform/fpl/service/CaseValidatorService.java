@@ -49,6 +49,7 @@ public class CaseValidatorService {
         errorList = caseData.stream()
             .filter(error -> error.getPropertyPath().toString().contains(section.getErrorKey()))
             .map(error -> String.format("• %s", error.getMessage()))
+            .distinct()
             .collect(Collectors.toList());
 
         if (!errorList.isEmpty()) {

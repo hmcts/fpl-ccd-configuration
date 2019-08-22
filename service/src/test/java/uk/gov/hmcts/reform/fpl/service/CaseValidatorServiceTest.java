@@ -45,7 +45,7 @@ class CaseValidatorServiceTest {
         CaseData caseData = CaseData.builder().build();
         List<String> errors = caseValidatorService.validateCaseDetails(caseData);
 
-        assertThat(errors).containsOnly(
+        assertThat(errors).containsOnlyOnce(
             "In the case name section:",
             "• Enter a case name",
             "In the orders and directions needed section:",
@@ -77,7 +77,7 @@ class CaseValidatorServiceTest {
 
         List<String> errors = caseValidatorService.validateCaseDetails(caseData);
 
-        assertThat(errors).containsOnly(
+        assertThat(errors).containsOnlyOnce(
             "In the orders and directions needed section:",
             "• You need to add details to orders and directions needed",
             "• Select an option for when you need a hearing",
@@ -113,7 +113,7 @@ class CaseValidatorServiceTest {
 
         List<String> errors = caseValidatorService.validateCaseDetails(caseData);
 
-        assertThat(errors).containsOnly(
+        assertThat(errors).containsOnlyOnce(
             "In the grounds for the application section:",
             "• Select at least one option for how this case meets grounds for an emergency protection order",
             "• Select at least one option for how this case meets the threshold criteria",
@@ -156,8 +156,10 @@ class CaseValidatorServiceTest {
             .build();
 
         List<String> errors = caseValidatorService.validateCaseDetails(caseData);
-        assertThat(errors).contains("• Enter a valid address for the contact");
-        assertThat(errors).contains("• Enter a postcode for the contact");
+        assertThat(errors).containsOnlyOnce(
+            "• Enter a valid address for the contact",
+            "• Enter a postcode for the contact"
+        );
     }
 
     @Test

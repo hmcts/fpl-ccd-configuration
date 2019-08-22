@@ -49,7 +49,7 @@ class CaseSubmissionControllerMidEventTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        assertThat(callbackResponse.getErrors()).containsOnly(
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce(
             "In the orders and directions needed section:",
             "• You need to add details to orders and directions needed",
             "In the children section:",

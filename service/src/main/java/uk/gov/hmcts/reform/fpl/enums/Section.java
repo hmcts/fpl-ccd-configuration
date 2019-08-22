@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
 public enum Section {
-    APPLICANT("mainApplicant", "applicant"),
+    APPLICANT("applicant", "applicant"),
     CHILDREN("children", "children"),
     ORDERS("orders", "orders and directions needed"),
     GROUNDS("groundsForTheApplication", "grounds for the application"),
