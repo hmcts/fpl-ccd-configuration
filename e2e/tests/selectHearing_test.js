@@ -12,7 +12,7 @@ Scenario('completing half the fields in the Select hearing section of the c110a 
   enterHearingNeededEventPage.enterHearingType();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.selectHearing);
-  caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
+  caseViewPage.selectTab(caseViewPage.tabs.hearing);
   I.seeAnswerInTab(1, 'Hearing needed', 'When do you need a hearing?', enterHearingNeededEventPage.fields.timeFrame.sameDay);
   I.seeAnswerInTab(2, 'Hearing needed', 'Give reason', 'test reason');
   I.seeAnswerInTab(3, 'Hearing needed', 'What type of hearing do you need?', enterHearingNeededEventPage.fields.hearingType.contestedICO);
@@ -26,7 +26,7 @@ Scenario('completing the Select hearing section of the c110a application', (I, c
   enterHearingNeededEventPage.enterRespondentsAware();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.selectHearing);
-  caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
+  caseViewPage.selectTab(caseViewPage.tabs.hearing);
   I.seeAnswerInTab(1, 'Hearing needed', 'When do you need a hearing?', enterHearingNeededEventPage.fields.timeFrame.sameDay);
   I.seeAnswerInTab(2, 'Hearing needed', 'Give reason', 'test reason');
   I.seeAnswerInTab(3, 'Hearing needed', 'What type of hearing do you need?', enterHearingNeededEventPage.fields.hearingType.contestedICO);

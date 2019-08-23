@@ -13,9 +13,19 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
-    "TabID": "OrdersHearingTab",
-    "TabLabel": "Orders and hearing",
+    "TabID": "HearingTab",
+    "TabLabel": "Hearing",
     "TabDisplayOrder": 2,
+    "CaseFieldID": "hearing",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OrdersTab",
+    "TabLabel": "Orders",
+    "TabDisplayOrder": 3,
     "CaseFieldID": "orders",
     "TabFieldDisplayOrder": 1
   },
@@ -23,19 +33,9 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
-    "TabID": "OrdersHearingTab",
-    "TabLabel": "Orders and hearing",
-    "TabDisplayOrder": 2,
-    "CaseFieldID": "hearing",
-    "TabFieldDisplayOrder": 2
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 3,
+    "TabDisplayOrder": 4,
     "CaseFieldID": "children",
     "TabFieldDisplayOrder": 1
   },
@@ -45,7 +45,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 3,
+    "TabDisplayOrder": 4,
     "CaseFieldID": "respondents1",
     "TabFieldDisplayOrder": 2
   },
@@ -55,7 +55,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 3,
+    "TabDisplayOrder": 4,
     "CaseFieldID": "applicants",
     "TabFieldDisplayOrder": 3
   },
@@ -65,7 +65,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 3,
+    "TabDisplayOrder": 4,
     "CaseFieldID": "solicitor",
     "TabFieldDisplayOrder": 4
   },
@@ -75,7 +75,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 3,
+    "TabDisplayOrder": 4,
     "CaseFieldID": "others",
     "TabFieldDisplayOrder": 5
   },
@@ -85,7 +85,7 @@
     "Channel": "CaseWorker",
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "caseIDReference",
     "TabFieldDisplayOrder": 1
   },
@@ -95,7 +95,7 @@
     "Channel": "CaseWorker",
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "groundsForEPO",
     "TabFieldDisplayOrder": 2
   },
@@ -105,7 +105,7 @@
     "Channel": "CaseWorker",
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "grounds",
     "TabFieldDisplayOrder": 3
   },
@@ -115,7 +115,7 @@
     "Channel": "CaseWorker",
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "risks",
     "TabFieldDisplayOrder": 4
   },
@@ -125,7 +125,7 @@
     "Channel": "CaseWorker",
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "factorsParenting",
     "TabFieldDisplayOrder": 5
   },
@@ -135,7 +135,7 @@
     "Channel": "CaseWorker",
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "internationalElement",
     "TabFieldDisplayOrder": 6
   },
@@ -145,7 +145,7 @@
     "Channel": "CaseWorker",
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "proceeding",
     "TabFieldDisplayOrder": 7
   },
@@ -155,7 +155,7 @@
     "Channel": "CaseWorker",
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "allocationProposal",
     "TabFieldDisplayOrder": 8
   },
@@ -165,7 +165,7 @@
     "Channel": "CaseWorker",
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
-    "TabDisplayOrder": 4,
+    "TabDisplayOrder": 5,
     "CaseFieldID": "hearingPreferences",
     "TabFieldDisplayOrder": 9
   },
@@ -175,7 +175,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "caseIDReference",
     "TabFieldDisplayOrder": 1
   },
@@ -185,7 +185,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "documents_socialWorkChronology_document",
     "TabFieldDisplayOrder": 2
   },
@@ -195,7 +195,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "documents_socialWorkStatement_document",
     "TabFieldDisplayOrder": 3
   },
@@ -205,7 +205,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "documents_socialWorkAssessment_document",
     "TabFieldDisplayOrder": 4
   },
@@ -215,7 +215,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "documents_socialWorkCarePlan_document",
     "TabFieldDisplayOrder": 5
   },
@@ -225,7 +225,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "standardDirectionsDocument",
     "TabFieldDisplayOrder": 6
   },
@@ -235,7 +235,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "otherCourtAdminDocuments",
     "TabFieldDisplayOrder": 7
   },
@@ -245,7 +245,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "courtBundle",
     "TabFieldDisplayOrder": 8
   },
@@ -255,7 +255,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
     "TabFieldDisplayOrder": 9
   },
@@ -265,7 +265,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "documents_threshold_document",
     "TabFieldDisplayOrder": 10
   },
@@ -275,7 +275,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "documents_checklist_document",
     "TabFieldDisplayOrder": 11
   },
@@ -285,7 +285,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "documents_socialWorkOther",
     "TabFieldDisplayOrder": 12
   },
@@ -295,7 +295,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 5,
+    "TabDisplayOrder": 6,
     "CaseFieldID": "submittedForm",
     "TabFieldDisplayOrder": 13
   }
