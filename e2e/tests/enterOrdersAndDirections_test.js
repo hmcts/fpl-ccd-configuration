@@ -11,7 +11,7 @@ Scenario('Select the care order case order and continue', (I, caseViewPage, ente
   enterOrdersAndDirectionsNeededEventPage.checkCareOrder();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
-  caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeAnswerInTab(1, 'Orders and directions needed', 'Which orders do you need?', 'Care order');
 });
 
@@ -39,7 +39,7 @@ Scenario('Select all case orders and fill in directions & interim information', 
   enterOrdersAndDirectionsNeededEventPage.enterDirections('Test');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.selectOrders);
-  caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeAnswerInTab(1, 'Orders and directions needed', 'Which orders do you need?',
     ['Care order', 'Interim care order', 'Supervision order', 'Interim supervision order', 'Education supervision' +
     ' order', 'Emergency protection order', 'Other order under part 4 of the Children Act 1989']);
