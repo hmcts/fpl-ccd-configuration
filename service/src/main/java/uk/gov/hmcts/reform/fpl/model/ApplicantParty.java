@@ -29,15 +29,6 @@ public class ApplicantParty extends Party implements TelephoneContacts {
     @NotBlank(message = "Enter a job title for the contact")
     private final String jobTitle;
     private final String pbaNumber;
-
-    public Telephone getTelephoneNumber() {
-        return telephoneNumber;
-    }
-
-    public Telephone getMobileNumber() {
-        return mobileNumber;
-    }
-
     @Builder(toBuilder = true)
     private ApplicantParty(String partyId,
                            PartyType partyType,

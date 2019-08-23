@@ -30,7 +30,6 @@ public class Child {
     private final String detailsHidden;
     private final String litigationIssues;
     private final Address address;
-
     @JsonCreator
     public Child(@JsonProperty("childName") final String childName,
                  @JsonProperty("childDOB") final Date childDOB,

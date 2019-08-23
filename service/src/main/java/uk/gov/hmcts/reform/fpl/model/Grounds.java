@@ -21,7 +21,6 @@ public class Grounds {
         groups = EPOGroup.class)
     private final List<@NotBlank(message = "Select at least one option for how this case meets the threshold criteria",
         groups = EPOGroup.class) String> thresholdReason;
-
     @NotBlank(message = "Enter details of how the case meets the threshold criteria", groups = EPOGroup.class)
     private final String thresholdDetails;
 }

@@ -23,7 +23,6 @@ public class Address {
     @NotBlank(message = "Enter a postcode for the contact")
     private final String postcode;
     private final String country;
-
     @JsonCreator
     public Address(@JsonProperty("AddressLine1") final String addressLine1,
                    @JsonProperty("AddressLine2") final String addressLine2,

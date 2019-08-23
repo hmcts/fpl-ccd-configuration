@@ -217,7 +217,7 @@ class CaseValidatorServiceTest {
     }
 
     @Test
-    void shouldNotSeeAnErrorWhenGroundsAndGroundsForEPOAreComplete() {
+    void shouldNotReturnAnErrorWhenGroundsAndGroundsForEPOAreCompleted() {
         CaseData caseData = initCaseDocuments()
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))

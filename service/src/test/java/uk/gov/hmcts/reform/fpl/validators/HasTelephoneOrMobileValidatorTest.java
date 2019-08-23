@@ -28,7 +28,7 @@ class HasTelephoneOrMobileValidatorTest {
     }
 
     @Test
-    void shouldNotReturnAnErrorIfApplicantTelephoneExists() {
+    void shouldNotReturnAnErrorIfTelephoneExists() {
         ApplicantParty applicantParty = ApplicantParty.builder()
             .telephoneNumber(Telephone.builder()
                 .telephoneNumber("12345678")
@@ -43,7 +43,7 @@ class HasTelephoneOrMobileValidatorTest {
     }
 
     @Test
-    void shouldNotReturnAnErrorIfApplicantMobileExists() {
+    void shouldNotReturnAnErrorIfMobileNumberExists() {
         ApplicantParty applicantParty = ApplicantParty.builder()
             .mobileNumber(Telephone.builder()
                 .telephoneNumber("12345678")
@@ -58,7 +58,7 @@ class HasTelephoneOrMobileValidatorTest {
     }
 
     @Test
-    void shouldNotReturnAnErrorIfBothApplicantTelephoneAndMobileExist() {
+    void shouldNotReturnAnErrorIfBothTelephoneAndMobileNumberExist() {
         ApplicantParty applicantParty = ApplicantParty.builder()
             .telephoneNumber(Telephone.builder()
                 .telephoneNumber("12345678")
@@ -76,7 +76,7 @@ class HasTelephoneOrMobileValidatorTest {
     }
 
     @Test
-    void shouldNotReturnAnErrorIfApplicantTelephoneIsNotEmptyAndMobileNumberIsEmpty() {
+    void shouldNotReturnAnErrorIfTelephoneNumberIsNotEmptyAndMobileNumberIsEmpty() {
         ApplicantParty applicantParty = ApplicantParty.builder()
             .telephoneNumber(Telephone.builder()
                 .telephoneNumber("12345678")
@@ -94,7 +94,7 @@ class HasTelephoneOrMobileValidatorTest {
     }
 
     @Test
-    void shouldReturnAnErrorIfBothApplicantTelephoneAndMobileDoNotExist() {
+    void shouldReturnAnErrorIfBothTelephoneAndMobileNumberAreNotPopulated() {
         ApplicantParty applicantParty = ApplicantParty.builder().build();
 
         List<String> errorMessages = validator.validate(applicantParty).stream()
@@ -120,7 +120,7 @@ class HasTelephoneOrMobileValidatorTest {
     }
 
     @Test
-    void shouldReturnAnErrorIfApplicantTelephoneAndMobileNumberAreEmptyStrings() {
+    void shouldReturnAnErrorIfTelephoneAndMobileNumberAreEmptyStrings() {
         ApplicantParty applicantParty = ApplicantParty.builder()
             .telephoneNumber(Telephone.builder()
                 .telephoneNumber("")

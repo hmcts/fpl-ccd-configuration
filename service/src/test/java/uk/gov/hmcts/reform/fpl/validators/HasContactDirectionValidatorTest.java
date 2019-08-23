@@ -28,7 +28,7 @@ public class HasContactDirectionValidatorTest {
     }
 
     @Test
-    void shouldReturnAnErrorIfApplicantsDoesNotExistOnCaseData() {
+    void shouldReturnAnErrorIfTelephoneIsNotPopulated() {
         ApplicantParty applicantParty = ApplicantParty.builder().build();
 
         List<String> errorMessages = validator.validate(applicantParty).stream()
@@ -39,7 +39,7 @@ public class HasContactDirectionValidatorTest {
     }
 
     @Test
-    void shouldReturnAnErrorIfApplicantTelephoneIsPopulatedWithoutContactDirection() {
+    void shouldReturnAnErrorIfTelephoneIsPopulatedWithoutContactDirection() {
         ApplicantParty applicantParty = ApplicantParty.builder()
             .telephoneNumber(Telephone.builder().build())
             .build();
