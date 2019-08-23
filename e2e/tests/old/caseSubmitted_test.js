@@ -1,4 +1,4 @@
-const config = require('../config.js');
+const config = require('../../config.js');
 const fields = {
   documentLink: 'ccd-read-document-field>a',
 };

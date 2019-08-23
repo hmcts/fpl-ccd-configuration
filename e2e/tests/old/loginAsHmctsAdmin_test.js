@@ -1,4 +1,4 @@
-const config = require('../config.js');
+const config = require('../../config.js');
 let caseId;
 
 Feature('Login and edit case as hmcts admin');
