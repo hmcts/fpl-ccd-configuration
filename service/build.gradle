@@ -57,6 +57,10 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 }
 check.dependsOn integration
 
+task checkDependenciesIntegrity(type: Exec, description: 'Checks integrity of Yarn dependencies.') {
+  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'check', '--integrity'
+}
+
 task installDependencies(type: Exec, description: 'Installs Yarn dependencies.') {
   commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'install'
 }
@@ -65,11 +69,15 @@ task awaitApplicationReadiness(type: Exec, description: 'Awaits until applicatio
   commandLine '../bin/configurer/utils/wait-for.sh', System.env.URL
 }
 
+task lintUserInterfaceTests(type: Exec, description: 'Runs linting of E2E tests.') {
+  commandLine '/usr/bin/yarn', 'lint'
+}
+
 task runSmokeTests(type: Exec, description: 'Runs smoke tests.') {
   commandLine '/usr/bin/yarn', '--silent', 'test:smoke'
 }
 
-task runFunctionalTest(type: Exec, description: 'Runs E2E tests.') {
+task runFunctionalTest(type: Exec, description: 'Runs functional tests.') {
   onlyIf(new Spec<Task>() {
     boolean isSatisfiedBy(Task task) {
       String skipTestsEnvironmentVariable = System.env.SKIP_FUNCTIONAL_TESTS
@@ -80,11 +88,11 @@ task runFunctionalTest(type: Exec, description: 'Runs E2E tests.') {
 }
 
 task smoke(description: 'Runs the smoke tests.') {
-  dependsOn(awaitApplicationReadiness, installDependencies, runSmokeTests)
+  dependsOn(awaitApplicationReadiness, checkDependenciesIntegrity, installDependencies, lintUserInterfaceTests, runSmokeTests)
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(awaitApplicationReadiness, installDependencies, runFunctionalTest)
+  dependsOn(awaitApplicationReadiness, checkDependenciesIntegrity, installDependencies, lintUserInterfaceTests, runFunctionalTest)
 }
 
 checkstyle {
