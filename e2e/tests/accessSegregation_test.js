@@ -1,17 +1,23 @@
-const config = require('../../config.js');
+const config = require('../config.js');
 
 let caseId;
 
-Feature('Cases visible only to respective local authority and admin');
+Feature('Access segregation');
 
 Before(async (I, caseViewPage, submitApplicationEventPage) => {
-  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-  caseId = await I.grabTextFrom('.heading-h1');
-  caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationEventPage.giveConsent();
-  I.continueAndSubmit();
-  I.wait(2); // in seconds; time needed for access grant calls to complete
-  I.signOut();
+  if (!caseId) {
+    I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+    caseViewPage.goToNewActions(config.applicationActions.submitCase);
+    submitApplicationEventPage.giveConsent();
+    I.continueAndSubmit();
+
+    // eslint-disable-next-line require-atomic-updates
+    caseId = await I.grabTextFrom('.heading-h1');
+    console.log(`Case ${caseId} has been submitted`);
+
+    I.wait(2); // in seconds; time needed for access grant calls to complete
+    I.signOut();
+  }
 });
 
 Scenario('Different user in the same local authority can see case created', async (I, loginPage) => {

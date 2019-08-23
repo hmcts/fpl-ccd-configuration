@@ -15,6 +15,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, loginPage) => {
     caseId = await I.grabTextFrom('.heading-h1');
     console.log(`Case ${caseId} has been submitted`);
 
+    I.wait(2); // in seconds; time needed for access grant calls to complete
     I.signOut();
     loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
     I.navigateToCaseDetails(caseId);
