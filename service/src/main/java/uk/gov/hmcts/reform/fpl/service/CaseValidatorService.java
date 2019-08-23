@@ -45,9 +45,7 @@ public class CaseValidatorService {
 
     private List<String> groupErrorsBySection(Set<ConstraintViolation<CaseData>> caseData, Section section) {
         List<String> errorList;
-
-        caseData.stream().forEach(error -> System.out.println(error.getPropertyPath()));
-
+        
         errorList = caseData.stream()
             .filter(error -> error.getPropertyPath().toString().contains(section.getErrorKey()))
             .map(error -> String.format("• %s", error.getMessage()))

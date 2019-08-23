@@ -30,7 +30,7 @@ public class CaseData {
     @Valid
     private final Grounds grounds;
 
-    @NotNull(message = "Select at least one option for how this case meets grounds for an emergency protection order",
+    @NotNull(message = "You need to add details to grounds for the application",
         groups = EPOGroup.class)
     @Valid
     private final GroundsForEPO groundsForEPO;

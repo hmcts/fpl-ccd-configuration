@@ -17,7 +17,7 @@ import javax.validation.constraints.Size;
 public class Grounds {
     @NotNull(message = "Select at least one option for how this case meets the threshold criteria",
         groups = EPOGroup.class)
-    @Size(message = "Select at least one option for how this case meets the threshold criteria",
+    @Size(min = 1, message = "Select at least one option for how this case meets the threshold criteria",
         groups = EPOGroup.class)
     private final List<@NotBlank(message = "Select at least one option for how this case meets the threshold criteria",
         groups = EPOGroup.class) String> thresholdReason;

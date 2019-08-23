@@ -18,7 +18,7 @@ import javax.validation.constraints.Size;
 public class GroundsForEPO {
     @NotNull(message = "Select at least one option for how this case meets grounds for an emergency protection order",
         groups = EPOGroup.class)
-    @Size(message = "Select at least one option for how this case meets grounds for an emergency protection order",
+    @Size(min = 1, message = "Select at least one option for how this case meets grounds for an emergency protection order",
         groups = EPOGroup.class)
     private List<@NotBlank(
         message = "Select at least one option for how this case meets grounds for an emergency protection order",

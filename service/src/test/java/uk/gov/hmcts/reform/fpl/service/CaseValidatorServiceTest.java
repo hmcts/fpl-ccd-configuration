@@ -194,8 +194,7 @@ class CaseValidatorServiceTest {
 
         assertThat(errors).containsOnlyOnce(
             "In the grounds for the application section:",
-            "• You need to add details to grounds for the application",
-            "• Select at least one option for how this case meets grounds for an emergency protection order"
+            "• You need to add details to grounds for the application"
         );
     }
 
@@ -212,29 +211,8 @@ class CaseValidatorServiceTest {
 
         assertThat(errors).containsOnlyOnce(
             "In the grounds for the application section:",
-            "• Select at least one option for how this case meets grounds for an emergency protection order",
             "• Select at least one option for how this case meets the threshold criteria",
             "• Enter details of how the case meets the threshold criteria"
-        );
-    }
-
-    @Test
-    void shouldSeeAnErrorWHenEPOHasBeenSelectedButGroundsForEPOHasNotBeenProvided() {
-        CaseData caseData = initCaseDocuments()
-            .orders(Orders.builder()
-                .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
-                .build())
-            .grounds(Grounds.builder()
-                .thresholdDetails("details")
-                .thresholdReason(ImmutableList.of("reason"))
-                .build())
-            .build();
-
-        List<String> errors = caseValidatorService.validateCaseDetails(caseData, EPOGroup.class);
-
-        assertThat(errors).containsOnlyOnce(
-            "In the grounds for the application section:",
-            "• Select at least one option for how this case meets grounds for an emergency protection order"
         );
     }
 
