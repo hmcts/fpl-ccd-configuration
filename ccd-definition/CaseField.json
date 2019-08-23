@@ -382,7 +382,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingDetails",
     "Label": " ",
-    "FieldType": "HearingBookingDetails",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingBookingDetails",
     "SecurityClassification": "Public"
   }
 ]
