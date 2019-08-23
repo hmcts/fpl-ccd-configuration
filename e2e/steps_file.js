@@ -46,9 +46,11 @@ module.exports = function () {
       this.seeCurrentUrlEquals(urlNavigatedTo);
     },
 
-    seeDocument(title, name, status, reason = '') {
+    seeDocument(title, name, status = '', reason = '') {
       this.see(title);
-      this.see(status);
+      if (status !== '') {
+        this.see(status);
+      }
       if (reason !== '') {
         this.see(reason);
       } else {
