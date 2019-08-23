@@ -6,9 +6,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.HasEPOGrounds;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.HasThresholdDetails;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.HasThresholdReason;
+import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
 
 import java.util.List;
 
@@ -18,10 +16,6 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
-@HasEPOGrounds
-@HasThresholdReason
-@HasThresholdDetails
-@SuppressWarnings("membername")
 public class CaseData {
     @NotBlank(message = "Enter a case name")
     private final String caseName;
@@ -31,11 +25,20 @@ public class CaseData {
     @NotNull(message = "You need to add details to orders and directions needed")
     @Valid
     private final Orders orders;
+
+    @NotNull(message = "You need to add details to grounds for the application", groups = EPOGroup.class)
+    @Valid
     private final Grounds grounds;
+
+    @NotNull(message = "Select at least one option for how this case meets grounds for an emergency protection order",
+        groups = EPOGroup.class)
+    @Valid
     private final GroundsForEPO groundsForEPO;
+
     @NotNull(message = "You need to add details to children")
     @Valid
     private final Children children;
+
     @NotNull(message = "You need to add details to applicant")
     @Valid
     private final List<@NotNull(message = "You need to add details to applicant")
@@ -49,6 +52,7 @@ public class CaseData {
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
     private final Hearing hearing;
+
     private final HearingPreferences hearingPreferences;
     private final InternationalElement internationalElement;
 

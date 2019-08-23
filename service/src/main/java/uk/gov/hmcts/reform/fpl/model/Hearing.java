@@ -9,7 +9,6 @@ import javax.validation.constraints.NotBlank;
 @Data
 @Builder
 @AllArgsConstructor
-@SuppressWarnings("membername")
 public class Hearing {
     private final String type;
     private final String reason;
@@ -17,6 +16,7 @@ public class Hearing {
     private final String timeFrame;
     private final String reducedNotice;
     private final String withoutNotice;
+    @SuppressWarnings("membername")
     private final String type_GiveReason;
     private final String respondentsAware;
     private final String reducedNoticeReason;

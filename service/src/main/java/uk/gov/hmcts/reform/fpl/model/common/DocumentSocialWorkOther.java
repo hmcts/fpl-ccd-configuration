@@ -9,5 +9,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class DocumentSocialWorkOther {
     private final String documentTitle;
-    private final TypeOfDocument typeOfDocument;
+    private final DocumentReference typeOfDocument;
 }

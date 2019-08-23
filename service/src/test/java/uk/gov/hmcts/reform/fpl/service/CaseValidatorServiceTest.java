@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
 
 import java.util.List;
 
@@ -94,30 +95,6 @@ class CaseValidatorServiceTest {
             "• Tell us the status of all documents including those that you haven't uploaded",
             "In the hearing needed section:",
             "• Select an option for when you need a hearing"
-        );
-    }
-
-    @Test
-    void shouldReturnAnErrorWhenEPOHasBeenSelectedButNoGroundsForTheApplicationProvided() {
-        CaseData caseData = initCaseDocuments()
-            .caseName("Test case")
-            .hearing(Hearing.builder()
-                .timeFrame("Within 18 days")
-                .build())
-            .children(initChildren())
-            .applicants(initApplicants())
-            .orders(Orders.builder()
-                .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
-                .build())
-            .build();
-
-        List<String> errors = caseValidatorService.validateCaseDetails(caseData);
-
-        assertThat(errors).containsOnlyOnce(
-            "In the grounds for the application section:",
-            "• Select at least one option for how this case meets grounds for an emergency protection order",
-            "• Select at least one option for how this case meets the threshold criteria",
-            "• Enter details of how the case meets the threshold criteria"
         );
     }
 
@@ -202,6 +179,81 @@ class CaseValidatorServiceTest {
             .build();
 
         List<String> errors = caseValidatorService.validateCaseDetails(caseData);
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void shouldReturnAnErrorWhenEPOHasBeenSelectedButNoGroundsForTheApplicationProvided() {
+        CaseData caseData = initCaseDocuments()
+            .orders(Orders.builder()
+                .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
+                .build())
+            .build();
+
+        List<String> errors = caseValidatorService.validateCaseDetails(caseData, EPOGroup.class);
+
+        assertThat(errors).containsOnlyOnce(
+            "In the grounds for the application section:",
+            "• You need to add details to grounds for the application",
+            "• Select at least one option for how this case meets grounds for an emergency protection order"
+        );
+    }
+
+    @Test
+    void shouldReturnAnErrorWhenEPOHasBeenSelectedButGroundsIsEmpty() {
+        CaseData caseData = initCaseDocuments()
+            .orders(Orders.builder()
+                .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
+                .build())
+            .grounds(Grounds.builder().build())
+            .build();
+
+        List<String> errors = caseValidatorService.validateCaseDetails(caseData, EPOGroup.class);
+
+        assertThat(errors).containsOnlyOnce(
+            "In the grounds for the application section:",
+            "• Select at least one option for how this case meets grounds for an emergency protection order",
+            "• Select at least one option for how this case meets the threshold criteria",
+            "• Enter details of how the case meets the threshold criteria"
+        );
+    }
+
+    @Test
+    void shouldSeeAnErrorWHenEPOHasBeenSelectedButGroundsForEPOHasNotBeenProvided() {
+        CaseData caseData = initCaseDocuments()
+            .orders(Orders.builder()
+                .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
+                .build())
+            .grounds(Grounds.builder()
+                .thresholdDetails("details")
+                .thresholdReason(ImmutableList.of("reason"))
+                .build())
+            .build();
+
+        List<String> errors = caseValidatorService.validateCaseDetails(caseData, EPOGroup.class);
+
+        assertThat(errors).containsOnlyOnce(
+            "In the grounds for the application section:",
+            "• Select at least one option for how this case meets grounds for an emergency protection order"
+        );
+    }
+
+    @Test
+    void shouldNotSeeAnErrorWhenGroundsAndGroundsForEPOAreComplete() {
+        CaseData caseData = initCaseDocuments()
+            .orders(Orders.builder()
+                .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
+                .build())
+            .grounds(Grounds.builder()
+                .thresholdDetails("details")
+                .thresholdReason(ImmutableList.of("reason"))
+                .build())
+            .groundsForEPO(GroundsForEPO.builder()
+                .reason(ImmutableList.of("reason"))
+                .build())
+            .build();
+
+        List<String> errors = caseValidatorService.validateCaseDetails(caseData, EPOGroup.class);
         assertThat(errors).isEmpty();
     }
 

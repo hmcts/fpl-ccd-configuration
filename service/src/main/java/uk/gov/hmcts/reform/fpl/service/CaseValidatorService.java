@@ -34,8 +34,8 @@ public class CaseValidatorService {
         this.validator = validator;
     }
 
-    public List<String> validateCaseDetails(CaseData caseData) {
-        Set<ConstraintViolation<CaseData>> violations = validator.validate(caseData);
+    public List<String> validateCaseDetails(CaseData caseData, Class<?>...groups) {
+        Set<ConstraintViolation<CaseData>> violations = validator.validate(caseData, groups);
 
         return Stream.of(APPLICANT, CHILDREN, ORDERS, GROUNDS, HEARING, DOCUMENTS, CASENAME)
             .flatMap(section -> Stream.of(groupErrorsBySection(violations, section)))
@@ -45,6 +45,8 @@ public class CaseValidatorService {
 
     private List<String> groupErrorsBySection(Set<ConstraintViolation<CaseData>> caseData, Section section) {
         List<String> errorList;
+
+        caseData.stream().forEach(error -> System.out.println(error.getPropertyPath()));
 
         errorList = caseData.stream()
             .filter(error -> error.getPropertyPath().toString().contains(section.getErrorKey()))

@@ -4,7 +4,7 @@ public enum Section {
     APPLICANT("applicant", "applicant"),
     CHILDREN("children", "children"),
     ORDERS("orders", "orders and directions needed"),
-    GROUNDS("groundsForTheApplication", "grounds for the application"),
+    GROUNDS("grounds", "grounds for the application"),
     HEARING("hearing", "hearing needed"),
     DOCUMENTS("Document", "documents"),
     CASENAME("caseName", "case name");

@@ -7,8 +7,8 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-@SuppressWarnings("membername")
 public class Other {
+    @SuppressWarnings("membername")
     private final String DOB;
     private final String name;
     private final String gender;

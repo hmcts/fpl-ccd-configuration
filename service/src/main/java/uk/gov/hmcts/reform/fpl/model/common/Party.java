@@ -21,8 +21,8 @@ public class Party {
     public final String organisationName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     public final Date dateOfBirth;
-    @Valid
     @NotNull(message = "Enter a valid address for the contact")
+    @Valid
     public final Address address;
     @NotNull(message = "Enter an email address for the contact")
     @Valid

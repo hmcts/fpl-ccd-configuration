@@ -37,9 +37,8 @@ public class Children {
     }
 
     @JsonIgnore
-    @Valid
     @Size(min = 1, message = "Tell us the names of all children in the case")
-    public List<Child> getAllChildren() {
+    public List<@Valid Child> getAllChildren() {
         ImmutableList.Builder<Child> builder = ImmutableList.builder();
         if (firstChild != null) {
             builder.add(firstChild);

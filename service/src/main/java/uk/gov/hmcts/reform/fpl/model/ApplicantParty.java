@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.interfaces.TelephoneContacts;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasContactDirection;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasTelephoneOrMobile;
 
@@ -21,13 +22,21 @@ import javax.validation.constraints.NotBlank;
 @HasTelephoneOrMobile
 @HasContactDirection
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ApplicantParty extends Party {
+public class ApplicantParty extends Party implements TelephoneContacts {
     @NotBlank(message = "Enter the applicant's full name")
     private final String organisationName;
     private final Telephone mobileNumber;
     @NotBlank(message = "Enter a job title for the contact")
     private final String jobTitle;
     private final String pbaNumber;
+
+    public Telephone getTelephoneNumber() {
+        return telephoneNumber;
+    }
+
+    public Telephone getMobileNumber() {
+        return mobileNumber;
+    }
 
     @Builder(toBuilder = true)
     private ApplicantParty(String partyId,
