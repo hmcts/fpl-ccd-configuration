@@ -11,9 +11,9 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
     submitApplicationEventPage.giveConsent();
     I.continueAndSubmit();
     console.log(`Case ${await I.grabTextFrom('.heading-h1')} has been submitted`);
+    // eslint-disable-next-line require-atomic-updates
+    created = true;
   }
-  // eslint-disable-next-line require-atomic-updates
-  created = true;
 });
 
 Scenario('local authority uploads documents', (I, caseViewPage, uploadDocumentsEventPage) => {
