@@ -2,14 +2,12 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -18,19 +16,22 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.service.email.content.TornadoDocumentTemplates;
 
+import javax.validation.constraints.NotNull;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-
-import javax.validation.constraints.NotNull;
 
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
 
 @Api
 @RestController
 @RequestMapping("/callback/case-submission")
+@Slf4j
 public class CaseSubmissionController {
 
     private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
@@ -78,6 +79,7 @@ public class CaseSubmissionController {
             Pair.of("userFullName", userDetailsService.getUserName(authorization))
         );
 
+        generateInDocmosisAndSaveToDisk(caseDetails);
         Document document = uploadDocumentService.uploadPDF(userId, authorization, pdf, buildFileName(caseDetails));
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
@@ -94,6 +96,22 @@ public class CaseSubmissionController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
+    }
+
+    private void generateInDocmosisAndSaveToDisk(CaseDetails caseDetails) {
+        Map<String, Object> data = caseDetails.getData();
+
+        Map<String, String> placeholders = Map.of("applicant", getApplicantName());
+        byte[] bytes = documentGeneratorService.generatePdf(placeholders, TornadoDocumentTemplates.C6);
+        try {
+            IOUtils.write(bytes, new FileOutputStream("test.pdf"));
+        } catch (IOException e) {
+            log.error("Can't save generated document to disc", e);
+        }
+    }
+
+    private String getApplicantName() {
+        return "NO NAME";
     }
 
     @PostMapping("/submitted")
