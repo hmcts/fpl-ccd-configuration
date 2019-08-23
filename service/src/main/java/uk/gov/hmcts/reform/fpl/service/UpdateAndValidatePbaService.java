@@ -8,9 +8,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.OldApplicant;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.utils.PBANumberHelper;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,24 +51,6 @@ public class UpdateAndValidatePbaService {
                 .collect(Collectors.toList());
 
             caseDetails.getData().put("applicants", applicants);
-
-        } else {
-            OldApplicant applicantData = caseData.getApplicant();
-
-            if (isEmpty(applicantData.getPbaNumber())) {
-                return AboutToStartOrSubmitCallbackResponse.builder()
-                    .data(caseDetails.getData())
-                    .errors(validationErrors.build())
-                    .build();
-            }
-
-            String newPbaNumberData = PBANumberHelper.updatePBANumber(applicantData.getPbaNumber());
-            validationErrors.addAll(validatePBANumber(newPbaNumberData));
-
-            if (validationErrors.build().isEmpty()) {
-                applicantData.setPbaNumber(newPbaNumberData);
-                caseDetails.getData().put("applicant", applicantData);
-            }
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -79,3 +59,4 @@ public class UpdateAndValidatePbaService {
             .build();
     }
 }
+

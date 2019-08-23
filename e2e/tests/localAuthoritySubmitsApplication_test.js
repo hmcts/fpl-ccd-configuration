@@ -52,7 +52,7 @@ Scenario('local authority enters orders and directions', (I, caseViewPage, enter
   enterOrdersAndDirectionsNeededEventPage.enterDirections('Test');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOrdersAndDirectionsNeeded);
-  caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
+  caseViewPage.selectTab(caseViewPage.tabs.hearing);
   I.seeAnswerInTab(1, 'Orders and directions needed', 'Which orders do you need?', ['Care order', 'Interim care order', 'Supervision order', 'Interim supervision order', 'Education supervision order', 'Emergency protection order', 'Other order under part 4 of the Children Act 1989']);
   I.seeAnswerInTab(2, 'Orders and directions needed', 'Do you need any of these related orders?', ['Information on the whereabouts of the child', 'Authorisation for entry of premises', 'Authorisation to search for another child on the premises', 'Other order under section 48 of the Children Act 1989']);
   I.seeAnswerInTab(3, 'Orders and directions needed', 'Give details', 'Test');
@@ -72,7 +72,7 @@ Scenario('local authority enters hearing', (I, caseViewPage, enterHearingNeededE
   enterHearingNeededEventPage.enterRespondentsAware();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterHearingNeeded);
-  caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeAnswerInTab(1, 'Hearing needed', 'When do you need a hearing?', enterHearingNeededEventPage.fields.timeFrame.sameDay);
   I.seeAnswerInTab(2, 'Hearing needed', 'Give reason', 'test reason');
   I.seeAnswerInTab(3, 'Hearing needed', 'What type of hearing do you need?', enterHearingNeededEventPage.fields.hearingType.contestedICO);

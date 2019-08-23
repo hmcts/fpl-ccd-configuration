@@ -177,23 +177,39 @@
           }
         ]
       },
-      "applicant": {
-        "name": "London Borough of Southwark",
-        "email": "jane@smith.com",
-        "mobile": "2020202020",
-        "address": {
-          "County": "Galway",
-          "Country": "Ireland",
-          "PostCode": "SE1 2QH",
-          "PostTown": "Limerick",
-          "AddressLine1": "160 Tooley St",
-          "AddressLine2": "Tooley road",
-          "AddressLine3": "Tooley"
-        },
-        "jobTitle": "Legal adviser",
-        "telephone": "02120202020",
-        "personToContact": "Jane Smith"
-      },
+      "applicants": [
+        {
+          "id": "8a22519a-1625-4667-a0c4-c939b44d5069",
+          "value": {
+            "party": {
+              "partyType": "Individual",
+              "organisationName": "London Borough of Southwark",
+              "address": {
+                "County": "Galway",
+                "Country": "Ireland",
+                "PostCode": "SE1 2QH",
+                "PostTown": "Limerick",
+                "AddressLine1": "160 Tooley St",
+                "AddressLine2": "Tooley road",
+                "AddressLine3": "Tooley"
+              },
+              "email": {
+                "email": "jane@smith.com"
+              },
+              "telephoneNumber": {
+                "telephoneNumber": "02120202020",
+                "contactDirection": "Jane Smith"
+              },
+              "mobileNumber": {
+                "telephoneNumber": "2020202020"
+              },
+              "jobTitle": "Legal adviser",
+              "pbaNumber": "PBA1234567"
+            },
+            "leadApplicantIndicator": null
+          }
+        }
+      ],
       "solicitor": {
         "dx": "106 Southwark &",
         "name": "Brian Banks",

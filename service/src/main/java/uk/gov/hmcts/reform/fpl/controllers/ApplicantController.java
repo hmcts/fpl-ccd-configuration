@@ -11,25 +11,23 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.ApplicantMigrationService;
+import uk.gov.hmcts.reform.fpl.service.ApplicantService;
 import uk.gov.hmcts.reform.fpl.service.UpdateAndValidatePbaService;
-
-import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Api
 @RestController
 @RequestMapping("/callback/enter-applicant")
 public class ApplicantController {
 
-    private final ApplicantMigrationService applicantMigrationService;
+    private final ApplicantService applicantService;
     private final UpdateAndValidatePbaService updateAndValidatePbaService;
     private final ObjectMapper mapper;
 
     @Autowired
-    public ApplicantController(ApplicantMigrationService applicantMigrationService,
+    public ApplicantController(ApplicantService applicantService,
                                UpdateAndValidatePbaService updateAndValidatePbaService,
                                ObjectMapper mapper) {
-        this.applicantMigrationService = applicantMigrationService;
+        this.applicantService = applicantService;
         this.updateAndValidatePbaService = updateAndValidatePbaService;
         this.mapper = mapper;
     }
@@ -39,8 +37,7 @@ public class ApplicantController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("applicantsMigrated", applicantMigrationService.setMigratedValue(caseData));
-        caseDetails.getData().put("applicants", applicantMigrationService.expandApplicantCollection(caseData));
+        caseDetails.getData().put("applicants", applicantService.expandApplicantCollection(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -59,9 +56,7 @@ public class ApplicantController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (!isEmpty(caseData.getApplicants())) {
-            caseDetails.getData().put("applicants", applicantMigrationService.addHiddenValues(caseData));
-        }
+        caseDetails.getData().put("applicants", applicantService.addHiddenValues(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

@@ -13,7 +13,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.OldApplicant;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -22,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("integration-test")
 @WebMvcTest(ApplicantController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class ApplicantAboutToStartControllerTest {
+class ApplicantAboutToStartControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
 
     @Autowired
@@ -32,33 +31,13 @@ public class ApplicantAboutToStartControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldAddApplicantMigratedYesValueToDataWhenApplicantDoesNotExist() throws Exception {
+    void shouldPrepopulateApplicantDataWhenNoApplicantExists() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of("data", "some data"))
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getAboutCallbackResponse(request);
-
-        assertThat(callbackResponse.getData()).containsEntry("applicantsMigrated", "Yes");
-    }
-
-    @Test
-    void shouldAddApplicantMigratedNoValueToDataIfOldApplicantAlreadyExists() throws Exception {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of("applicant", OldApplicant.builder().build()))
-                .build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getAboutCallbackResponse(request);
-
-        assertThat(callbackResponse.getData()).containsEntry("applicantsMigrated", "No");
-    }
-
-
-    private AboutToStartOrSubmitCallbackResponse getAboutCallbackResponse(CallbackRequest request) throws Exception {
         MvcResult response = mockMvc
             .perform(post("/callback/enter-applicant/about-to-start")
                 .header("authorization", AUTH_TOKEN)
@@ -67,7 +46,9 @@ public class ApplicantAboutToStartControllerTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        return mapper.readValue(response.getResponse()
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(callbackResponse.getData()).containsKey("applicants");
     }
 }

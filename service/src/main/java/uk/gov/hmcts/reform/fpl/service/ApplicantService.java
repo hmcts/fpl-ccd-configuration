@@ -16,15 +16,7 @@ import static java.util.stream.Collectors.toList;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
-public class ApplicantMigrationService {
-
-    public String setMigratedValue(CaseData caseData) {
-        if (!isEmpty(caseData.getApplicants()) || isEmpty(caseData.getApplicant())) {
-            return "Yes";
-        } else {
-            return "No";
-        }
-    }
+public class ApplicantService {
 
     public List<Element<Applicant>> expandApplicantCollection(CaseData caseData) {
         if (isEmpty(caseData.getApplicants())) {
