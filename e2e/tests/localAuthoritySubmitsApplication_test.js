@@ -439,3 +439,19 @@ Scenario('local authority uploads documents', (I, caseViewPage, uploadDocumentsE
   I.seeDocument('Threshold document', 'mockFile.txt', 'Attached');
   I.seeDocument('Checklist document', 'mockFile.txt', 'Attached');
 });
+
+Scenario('local authority tries to submit without giving consent', (I, caseViewPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.submitCase);
+  I.see(`I, ${config.swanseaLocalAuthorityUserOne.forename} ${config.swanseaLocalAuthorityUserOne.surname}, believe that the facts stated in this application are true.`);
+  I.click('Continue');
+  I.seeInCurrentUrl('/submitApplication');
+});
+
+Scenario('local authority submits after giving consent', (I, caseViewPage, submitApplicationEventPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.submitCase);
+  submitApplicationEventPage.giveConsent();
+  I.continueAndSubmit();
+  I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.see('Barnet_Council_v_Smith.pdf');
+});
