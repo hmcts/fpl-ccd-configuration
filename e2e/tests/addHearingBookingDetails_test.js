@@ -25,6 +25,8 @@ Scenario('Enter hearing details and submitting', async (I, caseViewPage, loginPa
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
   I.continueAndProvideSummary('summary', 'description');
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingDetails);
+  I.see('summary');
+  I.see('description');
   caseViewPage.selectTab(caseViewPage.tabs.ordersHearing);
   I.seeAnswerInTab(1, 'Hearing 1', 'Type of hearing', hearingDetails[0].caseManagement);
   I.seeAnswerInTab(2, 'Hearing 1', 'Venue', hearingDetails[0].venue);
