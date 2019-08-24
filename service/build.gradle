@@ -57,12 +57,12 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 }
 check.dependsOn integration
 
-task checkDependenciesIntegrity(type: Exec, description: 'Checks integrity of Yarn dependencies.') {
-  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'check', '--integrity'
-}
-
 task installDependencies(type: Exec, description: 'Installs Yarn dependencies.') {
   commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'install'
+}
+
+task checkDependenciesIntegrity(type: Exec, description: 'Checks integrity of Yarn dependencies.') {
+  commandLine '/usr/bin/yarn', '--mutex', 'network', '--frozen-lockfile', '--silent', 'check', '--integrity'
 }
 
 task awaitApplicationReadiness(type: Exec, description: 'Awaits until application is ready.') {
@@ -88,11 +88,11 @@ task runFunctionalTest(type: Exec, description: 'Runs functional tests.') {
 }
 
 task smoke(description: 'Runs the smoke tests.') {
-  dependsOn(awaitApplicationReadiness, checkDependenciesIntegrity, installDependencies, lintUserInterfaceTests, runSmokeTests)
+  dependsOn(awaitApplicationReadiness, installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runSmokeTests)
 }
 
 task functional(description: 'Runs the functional tests.') {
-  dependsOn(awaitApplicationReadiness, checkDependenciesIntegrity, installDependencies, lintUserInterfaceTests, runFunctionalTest)
+  dependsOn(awaitApplicationReadiness, installDependencies, checkDependenciesIntegrity, lintUserInterfaceTests, runFunctionalTest)
 }
 
 checkstyle {
