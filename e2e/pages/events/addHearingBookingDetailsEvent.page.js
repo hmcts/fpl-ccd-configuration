@@ -38,8 +38,8 @@ module.exports = {
     const elementIndex = await this.getActiveElementIndex();
 
     I.click(this.fields(elementIndex).hearingDetails.hearingType);
-    I.fillField(this.fields(elementIndex).hearingDetails.venue, hearingDetails.venue);
-    I.fillField(this.fields(elementIndex).hearingDetails.date.day, hearingDetails.date.day);
+    await I.fillField(this.fields(elementIndex).hearingDetails.venue, hearingDetails.venue);
+    await I.fillField(this.fields(elementIndex).hearingDetails.date.day, hearingDetails.date.day);
     I.fillField(this.fields(elementIndex).hearingDetails.date.month, hearingDetails.date.month);
     I.fillField(this.fields(elementIndex).hearingDetails.date.year, hearingDetails.date.year);
     I.fillField(this.fields(elementIndex).hearingDetails.preHearingAttendance, hearingDetails.preHearingAttendance);

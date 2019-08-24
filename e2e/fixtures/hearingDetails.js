@@ -1,6 +1,6 @@
 module.exports =  [
   {
-    caseManagement: 'CASE_MANAGEMENT',
+    caseManagement: 'Case management',
     venue: 'Venue',
     date: {
       day: '01',
@@ -10,26 +10,28 @@ module.exports =  [
     preHearingAttendance: 'Pre hearing attendance',
     hearingTime: 'hearing time',
     hearingType: {
-      interpreter: 'INTERPRETER',
-      welsh: 'SPOKEN_OR_WRITTEN_WELSH',
-      somethingElse: 'SOMETHING_ELSE',
+      interpreter: 'Interpreter',
+      welsh: 'Spoken or written Welsh',
+      somethingElse: 'Something else',
     },
     giveDetails: 'Some details',
     judgeTitle: 'Judge title',
     fullName: 'Judge full name',
   },
   {
-    caseManagement: 'CASE_MANAGEMENT',
-    venue: 'Venue 2',
+    caseManagement: 'Case management',
+    venue: 'Venue',
     date: {
       day: '02',
       month: '02',
       year: '1982',
     },
-    preHearingAttendance: 'Pre hearing attendance 2',
+    preHearingAttendance: 'Pre hearing attendance',
     hearingTime: '2.30',
     hearingType: {
-      welsh: 'SPOKEN_OR_WRITTEN_WELSH',
+      interpreter: 'Interpreter',
+      welsh: 'Spoken or written Welsh',
+      somethingElse: 'Something else',
     },
     giveDetails: 'Tom jones is going to be there',
     judgeTitle: 'HHJ',
