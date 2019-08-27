@@ -1,0 +1,39 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "StatementOfService",
+    "ListElementCode": "labelOne",
+    "FieldType": "Label",
+    "ElementLabel": "If you send documents to a party’s solicitor, give the solicitor’s details.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "StatementOfService",
+    "ListElementCode": "labelTwo",
+    "FieldType": "Label",
+    "ElementLabel": "If you send documents to the children’s guardian, give the guardian’s name and contact address.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "StatementOfService",
+    "ListElementCode": "c9",
+    "FieldType": "Collection",
+    "ElementLabel": "Provide statement of service",
+    "FieldTypeParameter": "C9",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "StatementOfService",
+    "ListElementCode": "declaration",
+    "ElementLabel": "Declaration",
+    "FieldType": "Declaration",
+    "SecurityClassification": "Public"
+  }
+]

@@ -1,0 +1,19 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Declaration",
+    "ListElementCode": "personDeclaring",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "I am the:",
+    "FieldTypeParameter": "StatementOfServiceDeclaration",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Declaration",
+    "ListElementCode": "labelOne",
+    "FieldType": "Label",
+    "ElementLabel": "I have served the documents as stated.",
+    "SecurityClassification": "Public"
+  }
+]

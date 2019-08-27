@@ -513,5 +513,41 @@
     "ID": "PartyType",
     "ListElementCode": "ORGANISATION",
     "ListElement": "Organisation"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HowSentList",
+    "ListElementCode": "EMAIL",
+    "ListElement": "by email"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HowSentList",
+    "ListElementCode": "POST_OFFICE",
+    "ListElement": "Post office"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HowSentList",
+    "ListElementCode": "IN_PERSON",
+    "ListElement": "given in person"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StatementOfServiceDeclaration",
+    "ListElementCode": "APPLICANT",
+    "ListElement": "applicant"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StatementOfServiceDeclaration",
+    "ListElementCode": "SOLICITOR",
+    "ListElement": "solicitor for the applicant"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StatementOfServiceDeclaration",
+    "ListElementCode": "OTHER",
+    "ListElement": "other"
   }
 ]
