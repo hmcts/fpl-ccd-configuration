@@ -2,8 +2,8 @@ const config = require('../config.js');
 
 Feature('Application draft');
 
-Before((I) => {
-  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+Before(async (I) => {
+  await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
 });
 
 Scenario('local authority deletes application', (I, caseViewPage, deleteApplicationEventPage) => {

@@ -1,7 +1,7 @@
 /* global process */
 const config = require('./config');
 
-const logIn = require('./pages/login.page');
+const loginPage = require('./pages/login.page');
 const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
 
@@ -11,8 +11,23 @@ let baseUrl = process.env.URL || 'http://localhost:3451';
 
 module.exports = function () {
   return actor({
-    logInAndCreateCase(username, password) {
-      logIn.signIn(username, password);
+    async signIn(username, password) {
+      this.amOnPage(process.env.URL || 'http://localhost:3451');
+      this.waitForElement('#global-header');
+
+      const user = await this.grabText('#user-name');
+      if (user !== undefined) {
+        if (user.toLowerCase().includes(username)) {
+          return;
+        }
+        this.signOut();
+      }
+
+      loginPage.signIn(username, password);
+    },
+
+    async logInAndCreateCase(username, password) {
+      await this.signIn(username, password);
       this.click('Create Case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       openApplicationEventPage.populateForm();

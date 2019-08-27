@@ -6,7 +6,7 @@ Feature('Access segregation');
 
 Before(async (I, caseViewPage, submitApplicationEventPage) => {
   if (!caseId) {
-    I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+    await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
     I.continueAndSubmit();
@@ -19,43 +19,43 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
   }
 });
 
-Scenario('Different user in the same local authority can see case created', async (I, loginPage) => {
-  loginPage.signIn(config.swanseaLocalAuthorityEmailUserTwo, config.localAuthorityPassword);
+Scenario('Different user in the same local authority can see case created', async (I) => {
+  await I.signIn(config.swanseaLocalAuthorityEmailUserTwo, config.localAuthorityPassword);
   I.navigateToCaseDetails(caseId);
   I.see(caseId);
   I.signOut();
 });
 
-Scenario('Different user in a different local authority cannot see case created', (I, loginPage) => {
-  loginPage.signIn(config.hillingdonLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+Scenario('Different user in a different local authority cannot see case created', async (I) => {
+  await I.signIn(config.hillingdonLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   I.navigateToCaseDetails(caseId);
   I.seeInCurrentUrl('error');
   I.signOut();
 });
 
-Scenario('HMCTS admin user can see the case', (I, loginPage) => {
-  loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
+Scenario('HMCTS admin user can see the case', async (I) => {
+  await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   I.navigateToCaseDetails(caseId);
   I.see(caseId);
   I.signOut();
 });
 
-Scenario('CAFCASS user can see the case', (I, loginPage) => {
-  loginPage.signIn(config.cafcassEmail, config.cafcassPassword);
+Scenario('CAFCASS user can see the case', async (I) => {
+  await I.signIn(config.cafcassEmail, config.cafcassPassword);
   I.navigateToCaseDetails(caseId);
   I.see(caseId);
   I.signOut();
 });
 
-Scenario('Gatekeeper user can see the case', (I, loginPage) => {
-  loginPage.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
+Scenario('Gatekeeper user can see the case', async (I) => {
+  await I.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
   I.navigateToCaseDetails(caseId);
   I.see(caseId);
   I.signOut();
 });
 
-Scenario('Judiciary user can see the case', (I, loginPage) => {
-  loginPage.signIn(config.judiciaryEmail, config.judiciaryPassword);
+Scenario('Judiciary user can see the case', async (I) => {
+  await I.signIn(config.judiciaryEmail, config.judiciaryPassword);
   I.navigateToCaseDetails(caseId);
   I.see(caseId);
   I.signOut();

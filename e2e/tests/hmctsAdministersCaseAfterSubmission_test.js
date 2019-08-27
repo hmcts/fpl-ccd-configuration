@@ -4,9 +4,9 @@ let caseId;
 
 Feature('Case administration after submission');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, loginPage) => {
+Before(async (I, caseViewPage, submitApplicationEventPage) => {
   if (!caseId) {
-    I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+    await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
     I.continueAndSubmit();
@@ -17,7 +17,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, loginPage) => {
 
     I.wait(2); // in seconds; time needed for access grant calls to complete
     I.signOut();
-    loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
+    await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
     I.navigateToCaseDetails(caseId);
   }
 });
