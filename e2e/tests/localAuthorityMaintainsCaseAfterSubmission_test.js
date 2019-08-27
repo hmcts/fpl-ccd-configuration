@@ -6,7 +6,7 @@ Feature('Case maintenance after submission');
 
 Before(async (I, caseViewPage, submitApplicationEventPage) => {
   if (!created) {
-    I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+    await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
     I.continueAndSubmit();

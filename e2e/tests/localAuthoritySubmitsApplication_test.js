@@ -13,7 +13,7 @@ Feature('Application draft');
 
 Before(async (I) => {
   if (!created) {
-    I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+    await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     console.log(`Application draft ${await I.grabTextFrom('.heading-h1')} has been created`);
     // eslint-disable-next-line require-atomic-updates
     created = true;
