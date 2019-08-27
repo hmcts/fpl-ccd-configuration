@@ -1,0 +1,19 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedings",
+    "ListElementCode": "proceedingLabel",
+    "FieldType": "Label",
+    "ElementLabel": "## The case management hearing will be on the 15 September 2019.",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "NoticeOfProceedings",
+    "ListElementCode": "proceedingType",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "ProceedingType",
+    "ElementLabel": "What would you like to create?",
+    "SecurityClassification": "Public"
+  }
+]
