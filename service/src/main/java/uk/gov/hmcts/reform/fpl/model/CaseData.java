@@ -27,7 +27,7 @@ public class CaseData {
     @NotNull(message = "You need to add details to orders and directions needed")
     @Valid
     private final Orders orders;
-    @NotNull(message = "You need to add details to grounds for the application", groups = EPOGroup.class)
+    @NotNull(message = "You need to add details to grounds for the application")
     @Valid
     private final Grounds grounds;
     @NotNull(message = "You need to add details to grounds for the application", groups = EPOGroup.class)

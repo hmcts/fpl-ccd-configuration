@@ -58,7 +58,9 @@ class CaseValidatorServiceTest {
             "In the hearing needed section:",
             "• You need to add details to hearing needed",
             "In the documents section:",
-            "• Tell us the status of all documents including those that you haven't uploaded"
+            "• Tell us the status of all documents including those that you haven't uploaded",
+            "In the grounds for the application section:",
+            "• You need to add details to grounds for the application"
         );
     }
 
@@ -143,6 +145,10 @@ class CaseValidatorServiceTest {
     void shouldNotReturnErrorsIfMandatoryFieldsHaveBeenCompletedNotIncludingEPO() {
         CaseData caseData = initCaseDocuments()
             .caseName("Test case")
+            .grounds(Grounds.builder()
+                .thresholdReason(ImmutableList.of("reason"))
+                .thresholdDetails("details")
+                .build())
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EDUCATION_SUPERVISION_ORDER))
                 .build())
@@ -204,15 +210,14 @@ class CaseValidatorServiceTest {
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
                 .build())
-            .grounds(Grounds.builder().build())
+            .groundsForEPO(GroundsForEPO.builder().build())
             .build();
 
         List<String> errors = caseValidatorService.validateCaseDetails(caseData, EPOGroup.class);
 
         assertThat(errors).containsOnlyOnce(
             "In the grounds for the application section:",
-            "• Select at least one option for how this case meets the threshold criteria",
-            "• Enter details of how the case meets the threshold criteria"
+            "• Select at least one option for how this case meets grounds for an emergency protection order"
         );
     }
 
