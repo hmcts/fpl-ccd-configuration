@@ -6,6 +6,7 @@ const caseViewPage = require('./pages/caseView.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
 const enterApplicantPage  = require('./pages/events/enterApplicantEvent.page');
 const enterChildrenPage = require('./pages/events/enterChildrenEvent.page');
+const enterGroundsPage = require('./pages/events/enterGroundsForApplicationEvent.page');
 const ordersNeededPage  = require('./pages/events/enterOrdersAndDirectionsNeededEvent.page');
 const selectHearingPage = require('./pages/events/enterHearingNeededEvent.page');
 const uploadDocumentsPage = require('./pages/events/uploadDocumentsEvent.page');
@@ -101,6 +102,9 @@ module.exports = function () {
       this.continueAndSave();
       caseViewPage.goToNewActions(config.applicationActions.enterChildren);
       await enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
+      this.continueAndSave();
+      caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
+      enterGroundsPage.enterThresholdCriteriaDetails();
       this.continueAndSave();
       caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
       uploadDocumentsPage.selectSocialWorkChronologyToFollow(config.testFile);

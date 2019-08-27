@@ -19,6 +19,7 @@ Scenario('Cannot submit an incomplete case', (I, caseViewPage, submitApplication
   I.see('You need to add details to children');
   I.see('You need to add details to applicant');
   I.see('You need to add details to hearing needed');
+  I.see('You need to add details to grounds for the application');
 });
 
 Scenario('Can give consent and submit the case', async (I, caseViewPage, submitApplicationEventPage) => {
