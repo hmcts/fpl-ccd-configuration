@@ -23,6 +23,7 @@ public final class RespondentParty extends Party {
     private final String contactDetailsHiddenReason;
     private final String litigationIssues;
     private final String litigationIssuesDetails;
+
     @Builder(toBuilder = true)
     public RespondentParty(String partyId,
                            PartyType partyType,

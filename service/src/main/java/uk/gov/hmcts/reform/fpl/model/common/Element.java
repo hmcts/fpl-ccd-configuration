@@ -19,6 +19,7 @@ public class Element<T> {
     @NotNull
     @Valid
     private final T value;
+
     @JsonCreator
     public Element(@JsonProperty("id") final UUID id,
                    @JsonProperty("value") final T value) {

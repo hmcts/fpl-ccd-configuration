@@ -22,6 +22,7 @@ import javax.validation.constraints.Size;
 public class Children {
     private final Child firstChild;
     private final List<Element<Child>> additionalChildren;
+    
     @JsonCreator
     public Children(@JsonProperty("firstChild") Child firstChild,
                     @JsonProperty("additionalChildren") List<Element<Child>> additionalChildren) {
