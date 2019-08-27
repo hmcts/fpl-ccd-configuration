@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -17,9 +15,6 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 public class ChildrenMigrationService {
-
-    @Autowired
-    private ObjectMapper mapper;
 
     public String setMigratedValue(CaseData caseData) {
         if (caseData.getChildren1() != null || caseData.getChildren() == null) {
@@ -46,18 +41,16 @@ public class ChildrenMigrationService {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<Element<Child>> addHiddenValues(CaseData caseData) {
         return caseData.getChildren1().stream()
             .map(element -> {
                 Child.ChildBuilder childBuilder = Child.builder();
 
                 if (element.getValue().getParty().getPartyId() == null) {
-                    childBuilder
-                        .party(element.getValue().getParty().toBuilder()
-                            .partyId(UUID.randomUUID().toString())
-                            .partyType(PartyType.INDIVIDUAL)
-                            .build());
+                    childBuilder.party(element.getValue().getParty().toBuilder()
+                        .partyId(UUID.randomUUID().toString())
+                        .partyType(PartyType.INDIVIDUAL)
+                        .build());
                 } else {
                     childBuilder.party(element.getValue().getParty().toBuilder().build());
                 }

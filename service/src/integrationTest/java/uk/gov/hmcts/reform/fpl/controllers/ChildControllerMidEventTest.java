@@ -76,61 +76,36 @@ class ChildControllerMidEventTest {
     }
 
     @Test
-    void shouldReturnDateOfBirthErrorsForNewChildWhenFutureDateOfBirth() throws Exception {
+    void shouldReturnDateOfBirthErrorForNewChildWhenFutureDateOfBirth() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
-                .data(ImmutableMap.of(
-                    "children1", ImmutableList.of(
-                        ImmutableMap.of(
-                            "id", "",
-                            "value", Child.builder()
-                                .party(ChildParty.builder()
-                                    .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
-                                    .build())
-                                .build()
-                        )
-                    )
-                ))
+                .data(ImmutableMap.of("children1", ImmutableList.of(
+                    createChildrenElement(ZonedDateTime.now().plusDays(1)))))
                 .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
 
-        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldReturnDateOfBirthErrorsForNewChildrenWhenThereIsMultipleChildren() throws Exception {
+    void shouldReturnDateOfBirthErrorForNewChildrenWhenThereIsMultipleChildren() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
                 .data(ImmutableMap.of(
                     "children1", ImmutableList.of(
-                        ImmutableMap.of(
-                            "id", "",
-                            "value", Child.builder()
-                                .party(ChildParty.builder()
-                                    .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
-                                    .build())
-                                .build()
-                        ),
-                        ImmutableMap.of(
-                            "id", "",
-                            "value", Child.builder()
-                                .party(ChildParty.builder()
-                                    .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
-                                    .build())
-                                .build()
-                        )
-                    )
-                ))
+                        createChildrenElement(ZonedDateTime.now().plusDays(1)),
+                        createChildrenElement(ZonedDateTime.now().plusDays(1))
+                    )))
                 .build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
 
-        assertThat(callbackResponse.getErrors()).containsExactly(ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce(ERROR_MESSAGE);
     }
 
     @Test
@@ -138,18 +113,8 @@ class ChildControllerMidEventTest {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
-                .data(ImmutableMap.of(
-                    "children1", ImmutableList.of(
-                        ImmutableMap.of(
-                            "id", "",
-                            "value", Child.builder()
-                                .party(ChildParty.builder()
-                                    .dateOfBirth(Date.from(ZonedDateTime.now().minusDays(1).toInstant()))
-                                    .build())
-                                .build()
-                        )
-                    )
-                ))
+                .data(ImmutableMap.of("children1", ImmutableList.of(
+                    createChildrenElement(ZonedDateTime.now().minusDays(1)))))
                 .build())
             .build();
 
@@ -176,6 +141,16 @@ class ChildControllerMidEventTest {
         return OldChild.builder()
             .childDOB(Date.from(dateOfBirth.toInstant()))
             .build();
+    }
+
+    private Map<String, Object> createChildrenElement(ZonedDateTime dateOfBirth) {
+        return ImmutableMap.of(
+            "id", "",
+            "value", Child.builder()
+                .party(ChildParty.builder()
+                    .dateOfBirth(Date.from(dateOfBirth.toInstant()))
+                    .build())
+                .build());
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(OldChildren children) throws Exception {

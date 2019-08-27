@@ -86,7 +86,6 @@ class ChildrenMigrationServiceTest {
         assertThat(migratedChildrenList.get(0).getValue().getParty().partyId).isEqualTo("123");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToSingleChild() {
         List<Element<Child>> children = ImmutableList.of(
@@ -109,7 +108,6 @@ class ChildrenMigrationServiceTest {
         assertThat(updatedChildren1.get(0).getValue().getParty().partyId).isNotNull();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToMultipleChildren() {
         List<Element<Child>> children = ImmutableList.of(
@@ -145,7 +143,6 @@ class ChildrenMigrationServiceTest {
         assertThat(updatedChildren1.get(1).getValue().getParty().partyId).isNotNull();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     void shouldKeepExistingPartyID() {
         List<Element<Child>> children = ImmutableList.of(
@@ -167,7 +164,6 @@ class ChildrenMigrationServiceTest {
         assertThat(updatedChildren1.get(0).getValue().getParty().partyId).isEqualTo("123");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     void shouldKeepExistingPartyIdAndContinueAddingNewPartyId() {
         List<Element<Child>> children = ImmutableList.of(

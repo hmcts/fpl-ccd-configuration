@@ -84,20 +84,21 @@ public class ChildController {
                 .map(Element::getValue)
                 .collect(toList());
 
-            if (newChildren.stream()
+            newChildren.stream()
                 .map(Child::getParty)
                 .map(Party::getDateOfBirth)
                 .filter(Objects::nonNull)
-                .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
-                errors.add("Date of birth cannot be in the future");
-            }
+                .filter(dateOfBirth -> dateOfBirth.after(new Date()))
+                .findAny()
+                .ifPresent(date -> errors.add("Date of birth cannot be in the future"));
+
         } else if (caseData.getChildren() != null) {
-            if (caseData.getChildren().getAllChildren().stream()
+            caseData.getChildren().getAllChildren().stream()
                 .map(OldChild::getChildDOB)
                 .filter(Objects::nonNull)
-                .anyMatch(dateOfBirth -> dateOfBirth.after(new Date()))) {
-                errors.add("Date of birth cannot be in the future");
-            }
+                .filter(dateOfBirth -> dateOfBirth.after(new Date()))
+                .findAny()
+                .ifPresent(date -> errors.add("Date of birth cannot be in the future"));
         }
         return errors.build();
     }
