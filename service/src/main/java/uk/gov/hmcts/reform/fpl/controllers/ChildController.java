@@ -22,8 +22,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import static java.util.stream.Collectors.toList;
-
 @Api
 @RestController
 @RequestMapping("/callback/enter-children")
@@ -80,11 +78,8 @@ public class ChildController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (caseData.getChildren1() != null) {
-            List<Child> newChildren = caseData.getChildren1().stream()
+            caseData.getChildren1().stream()
                 .map(Element::getValue)
-                .collect(toList());
-
-            newChildren.stream()
                 .map(Child::getParty)
                 .map(Party::getDateOfBirth)
                 .filter(Objects::nonNull)
