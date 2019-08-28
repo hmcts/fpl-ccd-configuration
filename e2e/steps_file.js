@@ -101,7 +101,7 @@ module.exports = function () {
       enterApplicantPage.enterApplicantDetails(applicant);
       this.continueAndSave();
       caseViewPage.goToNewActions(config.applicationActions.enterChildren);
-      await enterChildrenPage.enterChildDetails('Timothy', '01', '08', '2015');
+      await enterChildrenPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
       this.continueAndSave();
       caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
       enterGroundsPage.enterThresholdCriteriaDetails();
