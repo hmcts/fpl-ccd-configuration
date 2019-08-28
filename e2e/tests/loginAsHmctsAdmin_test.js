@@ -6,6 +6,7 @@ Feature('Login and edit case as hmcts admin');
 Before(async (I, caseViewPage, submitApplicationEventPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseId = await I.grabTextFrom('.heading-h1');
+  await I.enterMandatoryFields();
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.giveConsent();
   I.continueAndSubmit();

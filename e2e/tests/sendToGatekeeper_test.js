@@ -7,6 +7,7 @@ Feature('Send notification to gatekeeper');
 Before(async (I, caseViewPage, loginPage, submitApplicationEventPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseId = await I.grabTextFrom('.heading-h1');
+  await I.enterMandatoryFields();
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.giveConsent();
   I.continueAndSubmit();
