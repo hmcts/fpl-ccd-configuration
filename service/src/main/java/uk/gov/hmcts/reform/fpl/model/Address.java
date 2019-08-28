@@ -7,17 +7,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Address {
-
+    @NotBlank(message = "Enter a valid address for the contact")
     private final String addressLine1;
     private final String addressLine2;
     private final String addressLine3;
     private final String postTown;
     private final String county;
+    @NotBlank(message = "Enter a postcode for the contact")
     private final String postcode;
     private final String country;
 

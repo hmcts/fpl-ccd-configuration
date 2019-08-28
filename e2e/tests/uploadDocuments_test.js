@@ -36,10 +36,11 @@ Scenario('Uploading all files in the c110a application', (I, uploadDocumentsEven
   I.seeDocument('Checklist document', 'mockFile.txt', 'Attached');
 });
 
-Scenario('As a local authority I have the ability to upload a document after submission of a case', (I, uploadDocumentsEventPage, submitApplicationEventPage, caseViewPage) => {
+Scenario('As a local authority I have the ability to upload a document after submission of a case', async (I, uploadDocumentsEventPage, submitApplicationEventPage, caseViewPage) => {
   uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  await I.enterMandatoryFields();
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.giveConsent();
   I.continueAndSubmit();
@@ -51,10 +52,11 @@ Scenario('As a local authority I have the ability to upload a document after sub
   I.seeDocument('Social work assessment', 'mockFile.txt', 'Attached');
 });
 
-Scenario('Ability for a local authority to upload court bundle only after case is submitted', (I, uploadDocumentsEventPage, submitApplicationEventPage, caseViewPage) => {
+Scenario('Ability for a local authority to upload court bundle only after case is submitted', async (I, uploadDocumentsEventPage, submitApplicationEventPage, caseViewPage) => {
   I.dontSee('Court bundle');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
+  await I.enterMandatoryFields();
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.giveConsent();
   I.continueAndSubmit();

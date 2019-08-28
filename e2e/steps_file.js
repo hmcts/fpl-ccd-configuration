@@ -2,8 +2,17 @@
 const config = require('./config');
 
 const logIn = require('./pages/login.page');
-const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
+const caseViewPage = require('./pages/caseView.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
+const enterApplicantPage  = require('./pages/events/enterApplicantEvent.page');
+const enterChildrenPage = require('./pages/events/enterChildrenEvent.page');
+const enterGroundsPage = require('./pages/events/enterGroundsForApplicationEvent.page');
+const ordersNeededPage  = require('./pages/events/enterOrdersAndDirectionsNeededEvent.page');
+const selectHearingPage = require('./pages/events/enterHearingNeededEvent.page');
+const uploadDocumentsPage = require('./pages/events/uploadDocumentsEvent.page');
+const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
+
+const applicant = require('./fixtures/applicant');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
 
@@ -79,6 +88,32 @@ module.exports = function () {
     navigateToCaseDetails(caseId) {
       this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${caseId.replace(/\D/g, '')}`);
       this.waitForText('Sign Out');
+    },
+
+    async enterMandatoryFields () {
+      caseViewPage.goToNewActions(config.applicationActions.selectOrders);
+      ordersNeededPage.checkCareOrder();
+      this.continueAndSave();
+      caseViewPage.goToNewActions(config.applicationActions.selectHearing);
+      selectHearingPage.enterTimeFrame();
+      this.continueAndSave();
+      caseViewPage.goToNewActions(config.applicationActions.enterApplicants);
+      enterApplicantPage.enterApplicantDetails(applicant);
+      this.continueAndSave();
+      caseViewPage.goToNewActions(config.applicationActions.enterChildren);
+      await enterChildrenPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
+      this.continueAndSave();
+      caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
+      enterGroundsPage.enterThresholdCriteriaDetails();
+      this.continueAndSave();
+      caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+      uploadDocumentsPage.selectSocialWorkChronologyToFollow(config.testFile);
+      uploadDocumentsPage.uploadSocialWorkStatement(config.testFile);
+      uploadDocumentsPage.uploadSocialWorkAssessment(config.testFile);
+      uploadDocumentsPage.uploadCarePlan(config.testFile);
+      uploadDocumentsPage.uploadThresholdDocument(config.testFile);
+      uploadDocumentsPage.uploadChecklistDocument(config.testFile);
+      this.continueAndSave();
     },
   });
 };
