@@ -432,6 +432,7 @@
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/notice-of-proceedings/about-to-start",
     "ShowSummary": "N",
     "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue"

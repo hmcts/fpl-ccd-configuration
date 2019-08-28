@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -72,10 +73,14 @@ public class DocumentGeneratorService {
              docGenerationData);
 
         HttpEntity<DocmosisRequest> request = new HttpEntity<>(requestBody, headers);
-        ResponseEntity<byte[]> response = restTemplate.exchange(tornadoUrl, HttpMethod.POST, request, byte[].class);
-        return response.getBody();
+        byte[] response = null;
+        try {
+            response = restTemplate.exchange(tornadoUrl, HttpMethod.POST, request, byte[].class).getBody();
+        } catch (HttpClientErrorException.BadRequest ex) {
+            System.out.println("body" +  ex.getResponseBodyAsString());
+        }
+        return response;
     }
-
 
     static class DocmosisRequest {
         private final String templateName;
