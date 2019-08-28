@@ -2,6 +2,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "DecisionProposal",
+    "ListElementCode": "proposalText",
+    "ElementLabel": "This should be completed by a solicitor with good knowledge of the case.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DecisionProposal",
     "ListElementCode": "proposal",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "AllocationProposalList",
