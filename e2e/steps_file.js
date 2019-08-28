@@ -97,7 +97,7 @@ module.exports = function () {
       const normalisedCaseId = caseId.replace(/\D/g, '');
 
       const currentUrl = await this.grabCurrentUrl();
-      if (!currentUrl.endsWith(normalisedCaseId)) {
+      if (!currentUrl.replace(/#.+/g, '').endsWith(normalisedCaseId)) {
         this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
         this.waitForText('Sign Out');
       }
