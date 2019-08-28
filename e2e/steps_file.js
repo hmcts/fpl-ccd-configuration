@@ -93,9 +93,14 @@ module.exports = function () {
       this.wait(2); // in seconds
     },
 
-    navigateToCaseDetails(caseId) {
-      this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${caseId.replace(/\D/g, '')}`);
-      this.waitForText('Sign Out');
+    async navigateToCaseDetails(caseId) {
+      const normalisedCaseId = caseId.replace(/\D/g, '');
+
+      const currentUrl = await this.grabCurrentUrl();
+      if (!currentUrl.endsWith(normalisedCaseId)) {
+        this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
+        this.waitForText('Sign Out');
+      }
     },
   });
 };

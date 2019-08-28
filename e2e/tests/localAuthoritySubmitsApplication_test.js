@@ -19,7 +19,7 @@ Before(async (I) => {
     caseId = await I.grabTextFrom('.heading-h1');
     console.log(`Application draft ${caseId} has been created`);
   } else {
-    I.navigateToCaseDetails(caseId);
+    await I.navigateToCaseDetails(caseId);
   }
 });
 

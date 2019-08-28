@@ -21,42 +21,42 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
 
 Scenario('Different user in the same local authority can see case created', async (I) => {
   await I.signIn(config.swanseaLocalAuthorityEmailUserTwo, config.localAuthorityPassword);
-  I.navigateToCaseDetails(caseId);
+  await I.navigateToCaseDetails(caseId);
   I.see(caseId);
   I.signOut();
 });
 
 Scenario('Different user in a different local authority cannot see case created', async (I) => {
   await I.signIn(config.hillingdonLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-  I.navigateToCaseDetails(caseId);
+  await I.navigateToCaseDetails(caseId);
   I.seeInCurrentUrl('error');
   I.signOut();
 });
 
 Scenario('HMCTS admin user can see the case', async (I) => {
   await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
-  I.navigateToCaseDetails(caseId);
+  await I.navigateToCaseDetails(caseId);
   I.see(caseId);
   I.signOut();
 });
 
 Scenario('CAFCASS user can see the case', async (I) => {
   await I.signIn(config.cafcassEmail, config.cafcassPassword);
-  I.navigateToCaseDetails(caseId);
+  await I.navigateToCaseDetails(caseId);
   I.see(caseId);
   I.signOut();
 });
 
 Scenario('Gatekeeper user can see the case', async (I) => {
   await I.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
-  I.navigateToCaseDetails(caseId);
+  await I.navigateToCaseDetails(caseId);
   I.see(caseId);
   I.signOut();
 });
 
 Scenario('Judiciary user can see the case', async (I) => {
   await I.signIn(config.judiciaryEmail, config.judiciaryPassword);
-  I.navigateToCaseDetails(caseId);
+  await I.navigateToCaseDetails(caseId);
   I.see(caseId);
   I.signOut();
 });

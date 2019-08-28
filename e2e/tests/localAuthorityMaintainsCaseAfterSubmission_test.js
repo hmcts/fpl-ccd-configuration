@@ -15,7 +15,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
     caseId = await I.grabTextFrom('.heading-h1');
     console.log(`Case ${caseId} has been submitted`);
   } else {
-    I.navigateToCaseDetails(caseId);
+    await I.navigateToCaseDetails(caseId);
   }
 });
 

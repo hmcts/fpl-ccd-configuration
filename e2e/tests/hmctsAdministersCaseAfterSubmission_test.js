@@ -18,7 +18,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
     I.wait(2); // in seconds; time needed for access grant calls to complete
     I.signOut();
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
-    I.navigateToCaseDetails(caseId);
+    await I.navigateToCaseDetails(caseId);
   }
 });
 
