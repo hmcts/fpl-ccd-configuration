@@ -8,15 +8,12 @@ import lombok.Data;
 
 import java.util.UUID;
 
-import javax.validation.Valid;
-
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Element<T> {
 
     private final UUID id;
-    @Valid
     private final T value;
 
     @JsonCreator
