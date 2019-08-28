@@ -75,7 +75,7 @@ public class  HasChildNameValidatorTest {
     }
 
     @Test
-    void shouldNotReturnAnErrorIfFirstNameIsEntered() {
+    void shouldReturnAnErrorIfFirstNameIsEntered() {
         ChildParty childParty = ChildParty.builder()
             .firstName("James")
             .build();
@@ -84,11 +84,11 @@ public class  HasChildNameValidatorTest {
             .map(error -> error.getMessage())
             .collect(Collectors.toList());
 
-        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+        assertThat(errorMessages).contains(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldNotReturnAnErrorIfLastNameIsEntered() {
+    void shouldReturnAnErrorIfLastNameIsEntered() {
         ChildParty childParty = ChildParty.builder()
             .lastName("Burns")
             .build();
@@ -97,11 +97,11 @@ public class  HasChildNameValidatorTest {
             .map(error -> error.getMessage())
             .collect(Collectors.toList());
 
-        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+        assertThat(errorMessages).contains(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldNotReturnAnErrorIfFirstNameIsEnteredAndLastNameIsBlank() {
+    void shouldReturnAnErrorIfFirstNameIsEnteredAndLastNameIsBlank() {
         ChildParty childParty = ChildParty.builder()
             .firstName("James")
             .lastName("")
@@ -111,7 +111,7 @@ public class  HasChildNameValidatorTest {
             .map(error -> error.getMessage())
             .collect(Collectors.toList());
 
-        assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
+        assertThat(errorMessages).contains(ERROR_MESSAGE);
     }
 
     @Test
