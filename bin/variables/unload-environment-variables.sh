@@ -5,6 +5,7 @@ echo 'unset IDAM_VERSION'
 # urls
 echo 'unset SERVICE_AUTH_PROVIDER_API_BASE_URL'
 echo 'unset IDAM_API_BASE_URL'
+echo 'unset CCD_IDAM_REDIRECT_URL'
 echo 'unset CCD_DEFINITION_STORE_API_BASE_URL'
 
 # secrets
