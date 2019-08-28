@@ -1,18 +1,21 @@
 const config = require('../config.js');
 
-let created = false;
+let caseId;
 
 Feature('Case maintenance after submission');
 
 Before(async (I, caseViewPage, submitApplicationEventPage) => {
-  if (!created) {
+  if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
     I.continueAndSubmit();
-    console.log(`Case ${await I.grabTextFrom('.heading-h1')} has been submitted`);
+
     // eslint-disable-next-line require-atomic-updates
-    created = true;
+    caseId = await I.grabTextFrom('.heading-h1');
+    console.log(`Case ${caseId} has been submitted`);
+  } else {
+    I.navigateToCaseDetails(caseId);
   }
 });
 
