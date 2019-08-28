@@ -5,7 +5,7 @@ module.exports = {
   file: 'mockFile.txt',
   tabs: {
     orders: 'Orders',
-    hearing: 'Hearing',
+    hearings: 'Hearings',
     casePeople: 'People in the case',
     legalBasis: 'Legal basis',
     documents: 'cut-tabs>div>ul>li>a[href*=Documents]',

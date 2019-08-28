@@ -14,7 +14,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
-    "TabLabel": "Hearing",
+    "TabLabel": "Hearings",
     "TabDisplayOrder": 1,
     "CaseFieldID": "hearing",
     "TabFieldDisplayOrder": 1
@@ -24,7 +24,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
-    "TabLabel": "Hearing",
+    "TabLabel": "Hearings",
     "TabDisplayOrder": 2,
     "CaseFieldID": "hearingDetails",
     "TabFieldDisplayOrder": 1
