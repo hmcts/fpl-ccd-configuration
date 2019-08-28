@@ -16,7 +16,7 @@
     "CaseEventID": "otherProposal2",
     "CaseFieldID": "allocationProposal",
     "PageFieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "MANDATORY",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1
