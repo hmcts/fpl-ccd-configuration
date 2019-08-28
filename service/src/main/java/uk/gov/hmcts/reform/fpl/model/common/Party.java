@@ -8,9 +8,6 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 
 import java.util.Date;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 @Data
 @AllArgsConstructor
 public class Party {
@@ -21,11 +18,7 @@ public class Party {
     public final String organisationName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     public final Date dateOfBirth;
-    @NotNull(message = "Enter a valid address for the contact")
-    @Valid
     public final Address address;
-    @NotNull(message = "Enter an email address for the contact")
-    @Valid
     public final EmailAddress email;
     public final Telephone telephoneNumber;
 }

@@ -390,7 +390,7 @@ declare namespace CodeceptJS {
   export interface enterChildrenPage {
     fields(childNo: string) : void,
     addChild() : void,
-    enterChildDetails(name: string, day: string, month: string, year: string, gender?: string) : void,
+    enterChildDetails(firstName: string, lastName: string, day: string, month: string, year: string, gender?: string) : void,
     defineChildSituation(day: string, month: string, year: string, situation?: string) : void,
     enterAddress(address: string) : void,
     enterKeyDatesAffectingHearing(keyDates?: string) : void,

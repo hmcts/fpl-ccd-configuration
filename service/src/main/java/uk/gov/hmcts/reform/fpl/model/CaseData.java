@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -16,8 +16,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-@Builder(toBuilder = true)
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Builder
+@AllArgsConstructor
 public class CaseData {
     @NotBlank(message = "Enter a case name")
     private final String caseName;
@@ -33,9 +33,6 @@ public class CaseData {
     @NotNull(message = "You need to add details to grounds for the application", groups = EPOGroup.class)
     @Valid
     private final GroundsForEPO groundsForEPO;
-    @NotNull(message = "You need to add details to children")
-    @Valid
-    private final Children children;
     @NotNull(message = "You need to add details to applicant")
     @Valid
     private final List<@NotNull(message = "You need to add details to applicant")
@@ -78,4 +75,9 @@ public class CaseData {
     public final Document thresholdDocument;
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     private final Document socialWorkEvidenceTemplateDocument;
+    private final OldChildren children;
+    @NotNull(message = "You need to add details to children")
+    @Valid
+    private final List<@NotNull(message = "You need to add details to children")Element<Child>> children1;
+    private final String childrenMigrated;
 }

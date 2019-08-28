@@ -16,6 +16,7 @@ import java.util.Date;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -29,6 +30,12 @@ public class ApplicantParty extends Party implements TelephoneContacts {
     @NotBlank(message = "Enter a job title for the contact")
     private final String jobTitle;
     private final String pbaNumber;
+    @NotNull(message = "Enter a valid address for the contact")
+    @Valid
+    private final Address address;
+    @NotNull(message = "Enter an email address for the contact")
+    @Valid
+    public final EmailAddress email;
 
     @Builder(toBuilder = true)
     private ApplicantParty(String partyId,
@@ -37,9 +44,7 @@ public class ApplicantParty extends Party implements TelephoneContacts {
                            String lastName,
                            String organisationName,
                            Date dateOfBirth,
-                           @Valid
                            Address address,
-                           @Valid
                            EmailAddress email,
                            Telephone telephoneNumber,
                            Telephone mobileNumber,
@@ -52,5 +57,7 @@ public class ApplicantParty extends Party implements TelephoneContacts {
         this.mobileNumber = mobileNumber;
         this.jobTitle = jobTitle;
         this.pbaNumber = pbaNumber;
+        this.address = address;
+        this.email = email;
     }
 }

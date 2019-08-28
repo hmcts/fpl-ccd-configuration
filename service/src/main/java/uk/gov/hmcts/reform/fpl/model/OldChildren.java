@@ -13,33 +13,31 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import javax.validation.Valid;
-import javax.validation.constraints.Size;
 
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Children {
-    private final Child firstChild;
-    private final List<Element<Child>> additionalChildren;
-    
+public class OldChildren {
+
+    private final OldChild firstChild;
+    private final List<Element<OldChild>> additionalChildren;
+
     @JsonCreator
-    public Children(@JsonProperty("firstChild") Child firstChild,
-                    @JsonProperty("additionalChildren") List<Element<Child>> additionalChildren) {
+    public OldChildren(@JsonProperty("firstChild") OldChild firstChild,
+                       @JsonProperty("additionalChildren") List<Element<OldChild>> additionalChildren) {
         this.firstChild = firstChild;
         this.additionalChildren = additionalChildren;
     }
 
-    public Children(Child firstChild, Child... additionalChildren) {
+    public OldChildren(OldChild firstChild, OldChild... additionalChildren) {
         this(firstChild, Arrays.stream(additionalChildren)
-            .map(child -> new Element<>(UUID.randomUUID(), child))
+            .map(oldChild -> new Element<>(UUID.randomUUID(), oldChild))
             .collect(Collectors.toList()));
     }
 
     @JsonIgnore
-    @Size(min = 1, message = "Tell us the names of all children in the case")
-    public List<@Valid Child> getAllChildren() {
-        ImmutableList.Builder<Child> builder = ImmutableList.builder();
+    public List<OldChild> getAllChildren() {
+        ImmutableList.Builder<OldChild> builder = ImmutableList.builder();
         if (firstChild != null) {
             builder.add(firstChild);
         }

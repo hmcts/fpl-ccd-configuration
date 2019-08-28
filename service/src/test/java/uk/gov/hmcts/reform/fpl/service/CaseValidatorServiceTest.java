@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.Children;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
@@ -68,7 +68,12 @@ class CaseValidatorServiceTest {
     void shouldReturnErrorsIfMandatoryFieldsHaveNotBeenCompleted() {
         CaseData caseData = CaseData.builder()
             .caseName("Test case")
-            .children(Children.builder().build())
+            .children1(List.of(Element.<Child>builder()
+                .id(UUID.randomUUID())
+                .value(Child.builder()
+                    .party(ChildParty.builder().build())
+                    .build())
+                .build()))
             .hearing(Hearing.builder().build())
             .applicants(List.of(Element.<Applicant>builder()
                 .id(UUID.randomUUID())
@@ -107,7 +112,7 @@ class CaseValidatorServiceTest {
             .hearing(Hearing.builder()
                 .timeFrame("Within 18 days")
                 .build())
-            .children(initChildren())
+            .children1(initChildren())
             .applicants(List.of(Element.<Applicant>builder()
                 .id(UUID.randomUUID())
                 .value(Applicant.builder()
@@ -152,7 +157,7 @@ class CaseValidatorServiceTest {
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EDUCATION_SUPERVISION_ORDER))
                 .build())
-            .children(initChildren())
+            .children1(initChildren())
             .applicants(initApplicants())
             .hearing(Hearing.builder()
                 .timeFrame("Within 18 days")
@@ -177,7 +182,7 @@ class CaseValidatorServiceTest {
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
                 .build())
-            .children(initChildren())
+            .children1(initChildren())
             .applicants(initApplicants())
             .hearing(Hearing.builder()
                 .timeFrame("Within 18 days")
@@ -294,18 +299,17 @@ class CaseValidatorServiceTest {
         );
     }
 
-    private Children initChildren() {
-        return Children.builder()
-            .firstChild(Child.builder()
-                .childName("Test")
-                .build())
-            .additionalChildren(ImmutableList.of(
-                Element.<Child>builder()
-                    .id(UUID.randomUUID())
-                    .value(Child.builder()
-                        .childName("Test")
+    private List<Element<Child>> initChildren() {
+        return ImmutableList.of(
+            Element.<Child>builder()
+                .id(UUID.randomUUID())
+                .value(Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName("James")
+                        .lastName("Nelson")
                         .build())
-                    .build()))
-            .build();
+                    .build())
+                .build()
+        );
     }
 }
