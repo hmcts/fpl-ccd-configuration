@@ -284,6 +284,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherProposal2",
+    "Name": "Allocation decision",
+    "Description": "Entering other proceedings and allocation proposals",
+    "DisplayOrder": 19,
+    "PreConditionState(s)": "Open",
+    "PostConditionState": "Open",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
+    "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadDocumentsAfterSubmission",
     "Name": "Documents",
     "Description": "Upload documents after submission",
