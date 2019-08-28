@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C9",
+    "ID": "Recipient",
     "ListElementCode": "recipientName",
     "FieldType": "Text",
     "ElementLabel": "Name of recipient",
@@ -9,7 +9,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C9",
+    "ID": "Recipient",
     "ListElementCode": "recipientAddress",
     "FieldType": "AddressUK",
     "ElementLabel": "Address of recipient",
@@ -17,7 +17,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C9",
+    "ID": "Recipient",
     "ListElementCode": "documents",
     "FieldType": "TextArea",
     "ElementLabel": "Name of document(s)",
@@ -26,7 +26,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C9",
+    "ID": "Recipient",
     "ListElementCode": "dateSent",
     "FieldType": "Date",
     "ElementLabel": "When were they sent?",
@@ -35,7 +35,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C9",
+    "ID": "Recipient",
     "ListElementCode": "howSent",
     "FieldType": "FixedRadioList",
     "ElementLabel": "How were they sent?",

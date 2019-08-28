@@ -518,36 +518,42 @@
     "LiveFrom": "01/01/2017",
     "ID": "HowSentList",
     "ListElementCode": "EMAIL",
-    "ListElement": "by email"
+    "ListElement": "by email",
+    "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HowSentList",
     "ListElementCode": "POST_OFFICE",
-    "ListElement": "Post office"
+    "ListElement": "Post office",
+    "DisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HowSentList",
     "ListElementCode": "IN_PERSON",
-    "ListElement": "given in person"
+    "ListElement": "given in person",
+    "DisplayOrder": 3
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "StatementOfServiceDeclaration",
     "ListElementCode": "APPLICANT",
-    "ListElement": "applicant"
+    "ListElement": "applicant",
+    "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "StatementOfServiceDeclaration",
     "ListElementCode": "SOLICITOR",
-    "ListElement": "solicitor for the applicant"
+    "ListElement": "solicitor for the applicant",
+    "DisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "StatementOfServiceDeclaration",
     "ListElementCode": "OTHER",
-    "ListElement": "other"
+    "ListElement": "other",
+    "DisplayOrder": 3
   }
 ]

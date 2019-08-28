@@ -449,6 +449,8 @@
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
+    "ShowSummary": "Y",
+    "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue"
   }
 ]

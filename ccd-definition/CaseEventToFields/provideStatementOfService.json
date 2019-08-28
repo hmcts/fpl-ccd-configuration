@@ -8,6 +8,7 @@
     "DisplayContext": "MANDATORY",
     "PageID": 1,
     "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
   }
 ]
