@@ -14,7 +14,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "otherProposal2",
-    "CaseFieldID": "allocationProposal",
+    "CaseFieldID": "decisionProposal",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
     "PageID": 1,
