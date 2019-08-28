@@ -106,7 +106,6 @@ withPipeline(type, product, component) {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
       
-      ./bin/configurer/add-users.sh
       ./bin/configurer/add-roles.sh
       ./bin/configurer/import-ccd-definition.sh
     """
