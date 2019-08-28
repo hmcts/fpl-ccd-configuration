@@ -14,15 +14,7 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 
 @Service
-public class ChildrenMigrationService {
-
-    public String setMigratedValue(CaseData caseData) {
-        if (caseData.getChildren1() != null || caseData.getChildren() == null) {
-            return "Yes";
-        } else {
-            return "No";
-        }
-    }
+public class ChildrenService {
 
     public List<Element<Child>> expandChildrenCollection(CaseData caseData) {
         if (caseData.getChildren1() == null) {

@@ -436,7 +436,6 @@
     "PreConditionState(s)": "*",
     "PostConditionState": "*",
     "SecurityClassification": "Public",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/migration/about-to-submit",
     "EndButtonLabel": "Save and continue"
   }
 ]
