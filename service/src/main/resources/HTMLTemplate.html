@@ -1083,7 +1083,7 @@
                   {% if child.value.party.careStartDate is not empty %}
                     <span class="u-block">Date this began: {{ child.value.party.careStartDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
                   {% endif %}
-                {% else %}
+                {% elseif child.value.party.addressChangeDate is not empty %}
                   <span class="u-block">Date this began: {{ child.value.party.addressChangeDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
                 {% endif %}
             {% else %}
