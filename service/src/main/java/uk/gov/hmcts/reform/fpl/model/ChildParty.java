@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -10,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -20,8 +20,10 @@ public final class ChildParty extends Party {
     private final String genderIdentification;
     private final String livingSituation;
     private final String livingSituationDetails;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    private final Date addressChangeDate;
+    private final LocalDate addressChangeDate;
+    private final LocalDate datePowersEnd;
+    private final LocalDate careStartDate;
+    private final LocalDate dischargeDate;
     private final String keyDates;
     private final String careAndContactPlan;
     private final String adoption;
@@ -53,7 +55,10 @@ public final class ChildParty extends Party {
                       String genderIdentification,
                       String livingSituation,
                       String livingSituationDetails,
-                      Date addressChangeDate,
+                      LocalDate addressChangeDate,
+                      LocalDate datePowersEnd,
+                      LocalDate careStartDate,
+                      LocalDate dischargeDate,
                       String keyDates,
                       String careAndContactPlan,
                       String adoption,
@@ -78,6 +83,9 @@ public final class ChildParty extends Party {
         this.livingSituation = livingSituation;
         this.livingSituationDetails = livingSituationDetails;
         this.addressChangeDate = addressChangeDate;
+        this.datePowersEnd = datePowersEnd;
+        this.careStartDate = careStartDate;
+        this.dischargeDate = dischargeDate;
         this.keyDates = keyDates;
         this.careAndContactPlan = careAndContactPlan;
         this.adoption = adoption;
