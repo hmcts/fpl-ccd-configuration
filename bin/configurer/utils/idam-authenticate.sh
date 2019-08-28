@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -e
+set -eu
 
 USERNAME=$1
 PASSWORD=$2
