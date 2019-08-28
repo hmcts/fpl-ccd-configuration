@@ -3,17 +3,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "otherProposal2",
-    "CaseFieldID": "allocationProposal_label",
-    "PageFieldDisplayOrder": 1,
-    "DisplayContext": "READONLY",
-    "PageID": 1,
-    "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "otherProposal2",
     "CaseFieldID": "decisionProposal",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY",
