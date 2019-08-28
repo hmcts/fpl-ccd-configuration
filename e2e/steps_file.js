@@ -74,7 +74,7 @@ module.exports = function () {
     },
 
     seeAnswerInTab(questionNo, complexTypeHeading, question, answer) {
-      const complexType = locate(`.//span[text() = '${complexTypeHeading}']`);
+      const complexType = locate(`.//span[text() = "${complexTypeHeading}"]`);
       const questionRow = locate(`${complexType}/../../../table/tbody/tr[${questionNo}]`);
       this.seeElement(locate(`${questionRow}/th/span`).withText(question));
       if (Array.isArray(answer)) {
