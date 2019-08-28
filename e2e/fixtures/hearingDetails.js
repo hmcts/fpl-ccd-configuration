@@ -7,8 +7,8 @@ module.exports = [
       month: '01',
       year: '2050',
     },
-    preHearingAttendance: 'Pre hearings attendance',
-    hearingTime: 'hearings time',
+    preHearingAttendance: 'Pre hearing attendance',
+    hearingTime: 'hearing time',
     hearingType: {
       interpreter: 'Interpreter',
       welsh: 'Spoken or written Welsh',
@@ -26,7 +26,7 @@ module.exports = [
       month: '02',
       year: '2060',
     },
-    preHearingAttendance: 'Pre hearings attendance',
+    preHearingAttendance: 'Pre hearing attendance',
     hearingTime: '2.30',
     hearingType: {
       interpreter: 'Interpreter',
