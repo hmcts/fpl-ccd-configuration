@@ -7,14 +7,10 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
 
-import javax.validation.Valid;
-
 @Data
 @Builder(toBuilder = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CaseData {
     private final List<Element<Applicant>> applicants;
-
-    @Valid
     private final List<Element<HearingBookingDetail>> hearingDetails;
 }
