@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -12,5 +14,6 @@ import lombok.Data;
 public class Telephone {
     private final String telephoneNumber;
     private final String telephoneUsageType;
+    @NotBlank(message = "Enter the contact's full name")
     private final String contactDirection;
 }

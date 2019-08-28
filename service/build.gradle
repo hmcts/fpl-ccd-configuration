@@ -159,6 +159,8 @@ sonarqube {
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     property "sonar.coverage.exclusions", "**/model/**"
+    // Excludes sonar cloud testing to avoid duplication of code warning
+    property "sonar.exclusions", "**/model/OldChild.java, **/model/ChildParty.java"
   }
 }
 
