@@ -9,7 +9,7 @@ const otherProceedings = require('../fixtures/otherProceedingData');
 
 let caseId;
 
-Feature('Application draft');
+Feature('Application draft submission');
 
 Before(async (I) => {
   if (!caseId) {

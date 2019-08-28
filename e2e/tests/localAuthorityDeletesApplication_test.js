@@ -1,6 +1,6 @@
 const config = require('../config.js');
 
-Feature('Application draft');
+Feature('Application draft deletion');
 
 Before(async (I) => {
   await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
