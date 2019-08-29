@@ -291,6 +291,7 @@ declare namespace CodeceptJS {
     signOut() : void,
     say(msg: string) : void,
     retryStep(opts: string) : void,
+    enterMandatoryFields() : void,
   }
 
   export interface config {
