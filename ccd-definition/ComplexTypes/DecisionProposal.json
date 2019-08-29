@@ -1,22 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "DecisionProposal",
-    "ListElementCode": "proposalText",
-    "ElementLabel": "The proposed allocation is ${allocationProposal.proposal}",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "DecisionProposal",
-    "ListElementCode": "proposalTextAdditional",
-    "ElementLabel": "It should be a ${allocationProposal.proposal} as there are previous proceedings which were heard by a ${allocationProposal.proposal}...",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "ID": "AllocationProposal",
     "ListElementCode": "proposalTextAdditionalEmpty",
     "ElementLabel": "Display if allocation proposal is empty",
