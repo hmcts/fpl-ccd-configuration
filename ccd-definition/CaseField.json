@@ -255,7 +255,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "missingProposalLabel",
+    "ID": "missingProposal_Label",
     "Label": "The local authority has not made an allocation proposal.",
     "FieldType": "Label",
     "SecurityClassification": "Public"
@@ -263,7 +263,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "notMissingProposalLabel",
+    "ID": "decisionProposal_Label",
     "Label": "The proposed allocation is ${allocationProposal.proposal}.",
     "FieldType": "Label",
     "SecurityClassification": "Public"
@@ -271,7 +271,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "notMissingProposalLabel2",
+    "ID": "decisionProposal_LabelAdditional",
     "Label": "It should be a ${allocationProposal.proposal} as there are previous proceedings which were heard by a ${allocationProposal.proposal}...",
     "FieldType": "Label",
     "SecurityClassification": "Public"
