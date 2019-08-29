@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -17,12 +16,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.OldChild;
-import uk.gov.hmcts.reform.fpl.model.OldChildren;
 
 import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,40 +39,7 @@ class ChildControllerMidEventTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldReturnErrorWhenFirstChildDateOfBirthIsInFuture() throws Exception {
-        ZonedDateTime today = ZonedDateTime.now();
-        ZonedDateTime tomorrow = today.plusDays(1);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
-            new OldChildren(createChild(tomorrow), createChild(today))
-        );
-        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
-    }
-
-    @Test
-    void shouldReturnErrorWhenAdditionalChildDateOfBirthIsInFuture() throws Exception {
-        ZonedDateTime today = ZonedDateTime.now();
-        ZonedDateTime tomorrow = today.plusDays(1);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
-            new OldChildren(createChild(today), createChild(tomorrow))
-        );
-        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
-    }
-
-    @Test
-    void shouldReturnNoErrorsWhenAllDatesOfBirthAreTodayOrInPast() throws Exception {
-        ZonedDateTime today = ZonedDateTime.now();
-        ZonedDateTime yesterday = today.minusDays(1);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
-            new OldChildren(createChild(today), createChild(yesterday))
-        );
-        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
-    }
-
-    @Test
-    void shouldReturnDateOfBirthErrorForNewChildWhenFutureDateOfBirth() throws Exception {
+    void shouldReturnDateOfBirthErrorWhenFutureDateOfBirth() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -91,7 +54,7 @@ class ChildControllerMidEventTest {
     }
 
     @Test
-    void shouldReturnDateOfBirthErrorForNewChildrenWhenThereIsMultipleChildren() throws Exception {
+    void shouldReturnDateOfBirthErrorhenThereIsMultipleChildren() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -109,7 +72,7 @@ class ChildControllerMidEventTest {
     }
 
     @Test
-    void shouldReturnNoDateOfBirthErrorsForNewChildrenWhenValidDateOfBirth() throws Exception {
+    void shouldReturnNoDateOfBirthErrorWhenValidDateOfBirth() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -137,12 +100,6 @@ class ChildControllerMidEventTest {
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
-    private OldChild createChild(ZonedDateTime dateOfBirth) {
-        return OldChild.builder()
-            .childDOB(Date.from(dateOfBirth.toInstant()))
-            .build();
-    }
-
     private Map<String, Object> createChildrenElement(ZonedDateTime dateOfBirth) {
         return ImmutableMap.of(
             "id", "",
@@ -151,31 +108,6 @@ class ChildControllerMidEventTest {
                     .dateOfBirth(Date.from(dateOfBirth.toInstant()))
                     .build())
                 .build());
-    }
-
-    private AboutToStartOrSubmitCallbackResponse makeRequest(OldChildren children) throws Exception {
-        HashMap<String, Object> map = MAPPER.readValue(MAPPER.writeValueAsString(children),
-            new TypeReference<Map<String, Object>>() {
-            });
-
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.<String, Object>builder().put("children", map).build())
-                .build())
-            .build();
-
-        MvcResult response = mockMvc
-            .perform(post("/callback/enter-children/mid-event")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsBytes(request)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        return MAPPER.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request) throws Exception {

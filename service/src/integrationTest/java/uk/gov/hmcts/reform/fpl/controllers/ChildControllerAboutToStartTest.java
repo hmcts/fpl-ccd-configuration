@@ -30,11 +30,11 @@ class ChildControllerAboutToStartTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldAddChildrenAndChildrenMigratedValueToData() throws Exception {
-        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
-            .data(ImmutableMap.<String, Object>builder()
-                .put("data", "some data")
-                .build()).build())
+    void shouldPrepopulateChildrenDataWhenNoChildExists() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of("data", "some data"))
+                .build())
             .build();
 
         MvcResult response = mockMvc
@@ -49,6 +49,5 @@ class ChildControllerAboutToStartTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getData()).containsKey("children1");
-        assertThat(callbackResponse.getData()).containsEntry("childrenMigrated", "Yes");
     }
 }
