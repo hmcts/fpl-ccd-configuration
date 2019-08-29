@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.OldChildren;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
@@ -17,50 +16,13 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-class ChildrenMigrationServiceTest {
+class ChildrenServiceTest {
 
-    private final ChildrenMigrationService service = new ChildrenMigrationService();
-
-    @Test
-    void shouldSetMigratedChildrenToYesWhenNoChildrenDataPresent() {
-        CaseData caseData = CaseData.builder().children(null).build();
-        String migratedValue = service.setMigratedValue(caseData);
-
-        assertThat(migratedValue).isEqualTo("Yes");
-    }
+    private final ChildrenService service = new ChildrenService();
 
     @Test
-    void shouldSetMigratedChildrenToYesWhenChildren1Exists() {
-        CaseData caseData = CaseData.builder()
-            .children1(
-                ImmutableList.of(Element.<Child>builder()
-                    .value(
-                        Child.builder()
-                            .build())
-                    .build()))
-            .build();
-
-        String migratedValue = service.setMigratedValue(caseData);
-
-        assertThat(migratedValue).isEqualTo("Yes");
-    }
-
-    @Test
-    void shouldSetMigratedChildrenToNoWhenOldChildrenExists() {
-        CaseData caseData = CaseData.builder()
-            .children(OldChildren.builder().build())
-            .build();
-
-        String migratedValue = service.setMigratedValue(caseData);
-
-        assertThat(migratedValue).isEqualTo("No");
-    }
-
-    @Test
-    void shouldReturnAnEmptyListOfChildren1WithAPartyIdIfChildren1IsNull() {
-        CaseData caseData = CaseData.builder()
-            .children(OldChildren.builder().build())
-            .build();
+    void shouldReturnAnEmptyListOfChildrenWithAPartyIdIfChildrenIsNull() {
+        CaseData caseData = CaseData.builder().build();
 
         List<Element<Child>> alteredChildrenList = service.expandChildrenCollection(caseData);
 
@@ -68,7 +30,7 @@ class ChildrenMigrationServiceTest {
     }
 
     @Test
-    void shouldReturnChildren1IfChildren1IsPrePopulated() {
+    void shouldReturnChildrenIfChildrenIsPrePopulated() {
         CaseData caseData = CaseData.builder()
             .children1(
                 ImmutableList.of(Element.<Child>builder()
@@ -81,9 +43,9 @@ class ChildrenMigrationServiceTest {
                     .build()))
             .build();
 
-        List<Element<Child>> migratedChildrenList = service.expandChildrenCollection(caseData);
+        List<Element<Child>> childrenList = service.expandChildrenCollection(caseData);
 
-        assertThat(migratedChildrenList.get(0).getValue().getParty().partyId).isEqualTo("123");
+        assertThat(childrenList.get(0).getValue().getParty().partyId).isEqualTo("123");
     }
 
     @Test
@@ -101,11 +63,12 @@ class ChildrenMigrationServiceTest {
         CaseData caseData = CaseData.builder()
             .children1(children)
             .build();
-        List<Element<Child>> updatedChildren1 = service.addHiddenValues(caseData);
 
-        assertThat(updatedChildren1.get(0).getValue().getParty().firstName).isEqualTo("James");
-        assertThat(updatedChildren1.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(updatedChildren1.get(0).getValue().getParty().partyId).isNotNull();
+        List<Element<Child>> updatedChildren = service.addHiddenValues(caseData);
+
+        assertThat(updatedChildren.get(0).getValue().getParty().firstName).isEqualTo("James");
+        assertThat(updatedChildren.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(updatedChildren.get(0).getValue().getParty().partyId).isNotNull();
     }
 
     @Test
@@ -132,15 +95,15 @@ class ChildrenMigrationServiceTest {
         CaseData caseData = CaseData.builder()
             .children1(children)
             .build();
-        List<Element<Child>> updatedChildren1 = service.addHiddenValues(caseData);
+        List<Element<Child>> updatedChildren = service.addHiddenValues(caseData);
 
-        assertThat(updatedChildren1.get(0).getValue().getParty().firstName).isEqualTo("James");
-        assertThat(updatedChildren1.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(updatedChildren1.get(0).getValue().getParty().partyId).isNotNull();
+        assertThat(updatedChildren.get(0).getValue().getParty().firstName).isEqualTo("James");
+        assertThat(updatedChildren.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(updatedChildren.get(0).getValue().getParty().partyId).isNotNull();
 
-        assertThat(updatedChildren1.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
-        assertThat(updatedChildren1.get(1).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(updatedChildren1.get(1).getValue().getParty().partyId).isNotNull();
+        assertThat(updatedChildren.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
+        assertThat(updatedChildren.get(1).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(updatedChildren.get(1).getValue().getParty().partyId).isNotNull();
     }
 
     @Test
@@ -159,9 +122,9 @@ class ChildrenMigrationServiceTest {
         CaseData caseData = CaseData.builder()
             .children1(children)
             .build();
-        List<Element<Child>> updatedChildren1 = service.addHiddenValues(caseData);
+        List<Element<Child>> updatedChildren = service.addHiddenValues(caseData);
 
-        assertThat(updatedChildren1.get(0).getValue().getParty().partyId).isEqualTo("123");
+        assertThat(updatedChildren.get(0).getValue().getParty().partyId).isEqualTo("123");
     }
 
     @Test
@@ -188,12 +151,12 @@ class ChildrenMigrationServiceTest {
         CaseData caseData = CaseData.builder()
             .children1(children)
             .build();
-        List<Element<Child>> updatedChildren1 = service.addHiddenValues(caseData);
+        List<Element<Child>> updatedChildren = service.addHiddenValues(caseData);
 
-        assertThat(updatedChildren1.get(0).getValue().getParty().firstName).isEqualTo("James");
-        assertThat(updatedChildren1.get(0).getValue().getParty().partyId).isEqualTo("123");
+        assertThat(updatedChildren.get(0).getValue().getParty().firstName).isEqualTo("James");
+        assertThat(updatedChildren.get(0).getValue().getParty().partyId).isEqualTo("123");
 
-        assertThat(updatedChildren1.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
-        assertThat(updatedChildren1.get(1).getValue().getParty().partyId).isNotNull();
+        assertThat(updatedChildren.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
+        assertThat(updatedChildren.get(1).getValue().getParty().partyId).isNotNull();
     }
 }
