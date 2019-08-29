@@ -250,7 +250,8 @@
     "ID": "decisionProposal",
     "Label": "Allocation Decision",
     "FieldType": "AllocationProposal",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "ShowSummaryContentOption": "Y"
   },
   {
     "LiveFrom": "01/01/2017",

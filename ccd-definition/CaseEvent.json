@@ -291,8 +291,8 @@
     "PreConditionState(s)": "Open",
     "PostConditionState": "Open",
     "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
+    "ShowSummary": "Y",
+    "ShowEventNotes": "Y",
     "EndButtonLabel": "Save and continue"
   },
   {
