@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "DecisionProposal",
-    "ListElementCode": "proposalDecision",
+    "ListElementCode": "proposal",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "AllocationProposalList",
     "ElementLabel": "Which level of judge do you recommend for this case decision?",
