@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.HearingBookingDetail;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
@@ -33,7 +33,6 @@ class HearingBookingDetailsControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-
     private static final String ERROR_MESSAGE = "Enter a future date";
 
     @Autowired
@@ -43,7 +42,7 @@ class HearingBookingDetailsControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void shouldReturnErrorWhenHearingDateIsYesterday() throws Exception {
+    void shouldReturnAnErrorWhenHearingDateIsSetToYesterday() throws Exception {
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(yesterday));
@@ -52,7 +51,7 @@ class HearingBookingDetailsControllerTest {
     }
 
     @Test
-    void shouldReturnNoErrorWhenHearingDateIsTomorrow() throws Exception {
+    void shouldNotReturnAnErrorWhenHearingDateIsSetToTomorrow() throws Exception {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(tomorrow));
@@ -61,7 +60,7 @@ class HearingBookingDetailsControllerTest {
     }
 
     @Test
-    void shouldReturnErrorWhenHearingDateIsToday() throws Exception {
+    void shouldReturnAnErrorWhenHearingDateIsSetToToday() throws Exception {
         LocalDate today = LocalDate.now();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(today));
@@ -70,7 +69,7 @@ class HearingBookingDetailsControllerTest {
     }
 
     @Test
-    void shouldReturnErrorWhenHearingDateIsInDistantPast() throws Exception {
+    void shouldReturnAnErrorWhenHearingDateIsSetInDistantPast() throws Exception {
         LocalDate distantPast = LocalDate.now().minusYears(10000);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(distantPast));
@@ -79,7 +78,7 @@ class HearingBookingDetailsControllerTest {
     }
 
     @Test
-    void shouldReturnNoErrorWhenHearingDateIsInDistantFuture() throws Exception {
+    void shouldNotReturnAnErrorWhenHearingDateIsSetInDistantFuture() throws Exception {
         LocalDate distantFuture = LocalDate.now().plusYears(1000);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(distantFuture));
@@ -87,14 +86,14 @@ class HearingBookingDetailsControllerTest {
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
-    private HearingBookingDetail createHearing(LocalDate hearingDate) {
-        return HearingBookingDetail.builder()
+    private HearingBooking createHearing(LocalDate hearingDate) {
+        return HearingBooking.builder()
             .hearingDate(hearingDate)
             .build();
     }
 
     @SuppressWarnings("LineLength")
-    private AboutToStartOrSubmitCallbackResponse makeRequest(HearingBookingDetail hearingDetail) throws Exception {
+    private AboutToStartOrSubmitCallbackResponse makeRequest(HearingBooking hearingDetail) throws Exception {
         HashMap<String, Object> map = objectMapper.readValue(objectMapper.writeValueAsString(hearingDetail),
             new TypeReference<Map<String, Object>>() {
             });
@@ -102,8 +101,8 @@ class HearingBookingDetailsControllerTest {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
-                .data(ImmutableMap.<String, Object>builder().put("hearingDetails",
-                    ImmutableList.of(Element.builder()
+                .data(ImmutableMap.<String, Object>builder()
+                    .put("hearingDetails", ImmutableList.of(Element.builder()
                         .value(map)
                         .build()))
                     .build())
@@ -111,7 +110,7 @@ class HearingBookingDetailsControllerTest {
             .build();
 
         MvcResult response = mockMvc
-            .perform(post("/callback/add-hearing-booking/mid-event")
+            .perform(post("/callback/add-hearing-bookings/mid-event")
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)

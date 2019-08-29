@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBookingDetail;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
@@ -21,7 +21,7 @@ import java.util.Objects;
 
 @Api
 @RestController
-@RequestMapping("/callback/add-hearing-booking")
+@RequestMapping("/callback/add-hearing-bookings")
 public class HearingBookingDetailsController {
     private final MapperService mapperService;
 
@@ -47,7 +47,7 @@ public class HearingBookingDetailsController {
 
         caseData.getHearingDetails().stream()
             .map(Element::getValue)
-            .map(HearingBookingDetail::getHearingDate)
+            .map(HearingBooking::getHearingDate)
             .filter(Objects::nonNull)
             .filter(hearingDate -> hearingDate.isBefore(LocalDate.now()) || hearingDate.equals(LocalDate.now()))
             .findAny()

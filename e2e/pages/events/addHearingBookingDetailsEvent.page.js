@@ -3,7 +3,7 @@ const I = actor();
 module.exports = {
   fields: function (index) {
     return {
-      hearingDetails: {
+      hearingBooking: {
         hearingType: {
           caseManagement: `#hearingDetails_${index}_hearingType-CASE_MANAGEMENT`,
         },
@@ -37,19 +37,19 @@ module.exports = {
   async enterHearingDetails(hearingDetails) {
     const elementIndex = await this.getActiveElementIndex();
 
-    I.click(this.fields(elementIndex).hearingDetails.hearingType);
-    await I.fillField(this.fields(elementIndex).hearingDetails.hearingVenue, hearingDetails.hearingVenue);
-    await I.fillField(this.fields(elementIndex).hearingDetails.date.day, hearingDetails.date.day);
-    I.fillField(this.fields(elementIndex).hearingDetails.date.month, hearingDetails.date.month);
-    I.fillField(this.fields(elementIndex).hearingDetails.date.year, hearingDetails.date.year);
-    I.fillField(this.fields(elementIndex).hearingDetails.preHearingAttendance, hearingDetails.preHearingAttendance);
-    I.fillField(this.fields(elementIndex).hearingDetails.hearingTime, hearingDetails.hearingTime);
-    I.click(this.fields(elementIndex).hearingDetails.hearingNeedsBooked.interpreter);
-    I.click(this.fields(elementIndex).hearingDetails.hearingNeedsBooked.welsh);
-    I.click(this.fields(elementIndex).hearingDetails.hearingNeedsBooked.somethingElse);
-    I.fillField(this.fields(elementIndex).hearingDetails.giveDetails, hearingDetails.giveDetails);
-    I.fillField(this.fields(elementIndex).hearingDetails.judgeTitle, hearingDetails.judgeTitle);
-    I.fillField(this.fields(elementIndex).hearingDetails.judgeFullName, hearingDetails.fullName);
+    I.click(this.fields(elementIndex).hearingBooking.hearingType);
+    await I.fillField(this.fields(elementIndex).hearingBooking.hearingVenue, hearingDetails.hearingVenue);
+    I.fillField(this.fields(elementIndex).hearingBooking.date.day, hearingDetails.date.day);
+    I.fillField(this.fields(elementIndex).hearingBooking.date.month, hearingDetails.date.month);
+    I.fillField(this.fields(elementIndex).hearingBooking.date.year, hearingDetails.date.year);
+    I.fillField(this.fields(elementIndex).hearingBooking.preHearingAttendance, hearingDetails.preHearingAttendance);
+    I.fillField(this.fields(elementIndex).hearingBooking.hearingTime, hearingDetails.hearingTime);
+    I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.interpreter);
+    I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.welsh);
+    I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.somethingElse);
+    I.fillField(this.fields(elementIndex).hearingBooking.giveDetails, hearingDetails.giveDetails);
+    I.fillField(this.fields(elementIndex).hearingBooking.judgeTitle, hearingDetails.judgeTitle);
+    I.fillField(this.fields(elementIndex).hearingBooking.judgeFullName, hearingDetails.fullName);
   },
 
   async getActiveElementIndex() {

@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-public class HearingBookingDetail {
+public class HearingBooking {
     private final String hearingType;
     private final String hearingTypeDetails;
     private final String hearingVenue;

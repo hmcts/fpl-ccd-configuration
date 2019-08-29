@@ -1,5 +1,5 @@
 const config = require('../config.js');
-const hearingDetails = require('../fixtures/hearingDetails.js');
+const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 
 let caseId;
 
