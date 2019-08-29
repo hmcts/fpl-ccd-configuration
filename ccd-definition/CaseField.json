@@ -263,6 +263,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "notMissingProposalLabel",
+    "Label": "Proposal is: ${allocationProposal.proposal}",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "others",
     "Label": "Others to be given notice",
     "FieldType": "Person",
