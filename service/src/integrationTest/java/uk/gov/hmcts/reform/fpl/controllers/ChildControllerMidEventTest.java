@@ -39,7 +39,7 @@ class ChildControllerMidEventTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldReturnDateOfBirthErrorForChildWhenFutureDateOfBirth() throws Exception {
+    void shouldReturnDateOfBirthErrorWhenFutureDateOfBirth() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -54,7 +54,7 @@ class ChildControllerMidEventTest {
     }
 
     @Test
-    void shouldReturnDateOfBirthErrorForChildrenWhenThereIsMultipleChildren() throws Exception {
+    void shouldReturnDateOfBirthErrorhenThereIsMultipleChildren() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -72,7 +72,7 @@ class ChildControllerMidEventTest {
     }
 
     @Test
-    void shouldReturnNoDateOfBirthErrorsForChildrenWhenValidDateOfBirth() throws Exception {
+    void shouldReturnNoDateOfBirthErrorWhenValidDateOfBirth() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
