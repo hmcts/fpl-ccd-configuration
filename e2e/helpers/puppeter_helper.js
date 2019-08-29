@@ -22,7 +22,7 @@ module.exports = class PuppeteerHelpers extends Helper {
     const elements = await this.helpers['Puppeteer']._locate(locator);
 
     const texts = elements.map(async (element) => {
-      return await (await element.getProperty('innerText')).jsonValue();
+      return (await element.getProperty('innerText')).jsonValue();
     });
 
     if (texts.length > 1) {

@@ -16,11 +16,10 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
     caseId = await I.grabTextFrom('.heading-h1');
     console.log(`Case ${caseId} has been submitted`);
 
-    I.wait(2); // in seconds; time needed for access grant calls to complete
     I.signOut();
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
-    await I.navigateToCaseDetails(caseId);
   }
+  await I.navigateToCaseDetails(caseId);
 });
 
 Scenario('HMCTS admin enters FamilyMan reference number', (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
