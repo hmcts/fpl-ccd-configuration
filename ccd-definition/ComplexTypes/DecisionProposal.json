@@ -1,15 +1,6 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllocationProposal",
-    "ListElementCode": "proposalTextAdditionalEmpty",
-    "ElementLabel": "Display if allocation proposal is empty",
-    "FieldType": "Label",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "proposal!=\"\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "ID": "DecisionProposal",
     "ListElementCode": "proposalDecision",
     "FieldType": "FixedRadioList",

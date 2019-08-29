@@ -1,28 +1,15 @@
-[
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "otherProposal2",
-    "CaseFieldID": "decisionProposal",
-    "PageFieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY",
-    "PageID": 1,
-    "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
-
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "otherProposal2",
-    "CaseFieldID": "allocationProposal",
-    "PageFieldDisplayOrder": 2,
-    "DisplayContext": "READONLY",
-    "PageID": 1,
-    "PageDisplayOrder": 1,
-    "PageColumnNumber": 1,
-    "FieldShowCondition": "decisionProposal CONTAINS \"DO_NOT_DISPLAY\""
-  },
+[  {
+  "LiveFrom": "01/01/2017",
+  "CaseTypeID": "CARE_SUPERVISION_EPO",
+  "CaseEventID": "otherProposal2",
+  "CaseFieldID": "notMissingProposalLabel",
+  "PageFieldDisplayOrder": 1,
+  "DisplayContext": "READONLY",
+  "PageID": 1,
+  "PageDisplayOrder": 1,
+  "PageColumnNumber": 1,
+  "FieldShowCondition": "allocationProposal!=\"\""
+},
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
@@ -39,8 +26,8 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "otherProposal2",
-    "CaseFieldID": "notMissingProposalLabel",
-    "PageFieldDisplayOrder": 2,
+    "CaseFieldID": "notMissingProposalLabel2",
+    "PageFieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
     "PageID": 1,
     "PageDisplayOrder": 1,
@@ -51,12 +38,24 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "otherProposal2",
-    "CaseFieldID": "notMissingProposalLabel2",
-    "PageFieldDisplayOrder": 2,
+    "CaseFieldID": "decisionProposal",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "otherProposal2",
+    "CaseFieldID": "allocationProposal",
+    "PageFieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "allocationProposal!=\"\""
+    "FieldShowCondition": "decisionProposal CONTAINS \"DO_NOT_DISPLAY\""
   }
 ]
