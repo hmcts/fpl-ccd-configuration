@@ -1,0 +1,19 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PostalAddress",
+    "ListElementCode": "postalAddressLabel",
+    "FieldType": "Label",
+    "ElementLabel": "Postal address",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PostalAddress",
+    "ListElementCode": "postalAddress",
+    "FieldType": "AddressUK",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
+  }
+]
+

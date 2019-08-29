@@ -11,6 +11,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Declaration",
+    "ListElementCode": "otherRole",
+    "FieldType": "Text",
+    "ElementLabel": "What is your role?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "personDeclaring=\"OTHER\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Declaration",
     "ListElementCode": "labelOne",
     "FieldType": "Label",
     "ElementLabel": "I have served the documents as stated.",
