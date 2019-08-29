@@ -56,7 +56,6 @@ public class DocumentGeneratorService {
         for (Map.Entry<String, ?> entry : extraContextEntries) {
             context.put(entry.getKey(), entry.getValue());
         }
-
         byte[] template = templates.getHtmlTemplate();
 
         return converter.convert(template, context);
@@ -115,6 +114,7 @@ public class DocumentGeneratorService {
     private CaseDetails populateEmptyCollections(CaseDetails caseDetails) {
         if (caseDetails != null) {
             Map<String, Object> dataCopy = new HashMap<>(caseDetails.getData());
+            dataCopy.putIfAbsent("children1", collectionWithEmptyElement());
             dataCopy.putIfAbsent("applicants", collectionWithEmptyElement());
             dataCopy.putIfAbsent("respondents1", collectionWithEmptyElement());
 

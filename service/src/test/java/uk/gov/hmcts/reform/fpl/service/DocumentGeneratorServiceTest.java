@@ -32,6 +32,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.service.email.content.TornadoDocumentTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.migratedChildCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
@@ -67,6 +68,20 @@ class DocumentGeneratorServiceTest {
             Pair.of("userFullName", "Emma Taylor"))
         );
 
+        String expectedContent = ResourceReader.readString("submitted-form-pdf-content.txt");
+
+        assertThat(splitContentIntoTrimmedLines(content))
+            .containsExactlyInAnyOrderElementsOf(splitContentIntoTrimmedLines(expectedContent));
+    }
+
+    @Test
+    void shouldGenerateSubmittedFormWhenCaseHasBothOldAndNewChildStructure() throws IOException {
+        Clock clock = Clock.fixed(Instant.parse("2018-11-26T00:00:00Z"), ZoneId.systemDefault());
+
+        String content = textContentOf(
+            createServiceInstance(clock).generateSubmittedFormPDF(migratedChildCaseDetails(),
+                Pair.of("userFullName", "Emma Taylor"))
+        );
         String expectedContent = ResourceReader.readString("submitted-form-pdf-content.txt");
 
         assertThat(splitContentIntoTrimmedLines(content))

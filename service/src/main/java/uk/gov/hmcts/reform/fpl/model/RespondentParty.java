@@ -15,7 +15,6 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public final class RespondentParty extends Party {
-
     private final String gender;
     private final String genderIdentification;
     private final String placeOfBirth;
@@ -45,7 +44,6 @@ public final class RespondentParty extends Party {
                            String litigationIssuesDetails) {
         super(partyId, partyType, firstName, lastName, organisationName,
             dateOfBirth, address, email, telephoneNumber);
-
         this.gender = gender;
         this.genderIdentification = genderIdentification;
         this.placeOfBirth = placeOfBirth;
