@@ -33,6 +33,6 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "allocationProposal.proposal=\"\""
+    "FieldShowCondition": "allocationProposal=\"\""
   }
 ]
