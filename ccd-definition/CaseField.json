@@ -249,7 +249,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "decisionProposal",
     "Label": "Allocation Decision",
-    "FieldType": "DecisionProposal",
+    "FieldType": "AllocationProposal",
     "SecurityClassification": "Public"
   },
   {
