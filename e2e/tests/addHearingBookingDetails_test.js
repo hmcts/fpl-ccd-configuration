@@ -8,6 +8,7 @@ Feature('Add hearing booking details');
 Before(async (I, caseViewPage, submitApplicationEventPage) => {
   I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   caseId = await I.grabTextFrom('.heading-h1');
+  await I.enterMandatoryFields();
   caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.giveConsent();
   I.continueAndSubmit();
@@ -62,7 +63,7 @@ Scenario('Enter hearing details and submitting as Gatekeeper', async (I, caseVie
 
 function seeAnswersInHearingTab(I) {
   I.seeAnswerInTab(1, 'Hearing 1', 'Type of hearing', hearingDetails[0].caseManagement);
-  I.seeAnswerInTab(2, 'Hearing 1', 'Venue', hearingDetails[0].venue);
+  I.seeAnswerInTab(2, 'Hearing 1', 'Venue', hearingDetails[0].hearingVenue);
   I.seeAnswerInTab(3, 'Hearing 1', 'Date', '1 Jan 2050');
   I.seeAnswerInTab(4, 'Hearing 1', 'Pre-hearing attendance', hearingDetails[0].preHearingAttendance);
   I.seeAnswerInTab(5, 'Hearing 1', 'Hearing time', hearingDetails[0].hearingTime);
@@ -74,7 +75,7 @@ function seeAnswersInHearingTab(I) {
   I.seeAnswerInTab(9, 'Hearing 1', 'Full name', hearingDetails[0].fullName);
 
   I.seeAnswerInTab(1, 'Hearing 2', 'Type of hearing', hearingDetails[1].caseManagement);
-  I.seeAnswerInTab(2, 'Hearing 2', 'Venue', hearingDetails[1].venue);
+  I.seeAnswerInTab(2, 'Hearing 2', 'Venue', hearingDetails[1].hearingVenue);
   I.seeAnswerInTab(3, 'Hearing 2', 'Date', '2 Feb 2060');
   I.seeAnswerInTab(4, 'Hearing 2', 'Pre-hearing attendance', hearingDetails[1].preHearingAttendance);
   I.seeAnswerInTab(5, 'Hearing 2', 'Hearing time', hearingDetails[1].hearingTime);

@@ -1,7 +1,7 @@
 module.exports = [
   {
     caseManagement: 'Case management',
-    venue: 'Venue',
+    hearingVenue: 'Venue',
     date: {
       day: '01',
       month: '01',
@@ -20,7 +20,7 @@ module.exports = [
   },
   {
     caseManagement: 'Case management',
-    venue: 'Venue',
+    hearingVenue: 'Venue',
     date: {
       day: '02',
       month: '02',

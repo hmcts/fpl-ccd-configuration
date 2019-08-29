@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetails",
+    "ID": "HearingBooking",
     "ListElementCode": "hearingType",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "HearingTypeList",
@@ -10,7 +10,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetails",
+    "ID": "HearingBooking",
     "ListElementCode": "hearingTypeDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
@@ -19,15 +19,15 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetails",
-    "ListElementCode": "venue",
+    "ID": "HearingBooking",
+    "ListElementCode": "hearingVenue",
     "FieldType": "Text",
     "ElementLabel": "Venue",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetails",
+    "ID": "HearingBooking",
     "ListElementCode": "hearingDate",
     "FieldType": "Date",
     "ElementLabel": "Date",
@@ -36,7 +36,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetails",
+    "ID": "HearingBooking",
     "ListElementCode": "preHearingAttendance",
     "FieldType": "Text",
     "ElementLabel": "Pre-hearing attendance",
@@ -45,7 +45,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetails",
+    "ID": "HearingBooking",
     "ListElementCode": "hearingTime",
     "FieldType": "Text",
     "ElementLabel": "Hearing time",
@@ -54,7 +54,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetails",
+    "ID": "HearingBooking",
     "ListElementCode": "hearingNeededDetails",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "HearingNeedsBookedList",
@@ -63,7 +63,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetails",
+    "ID": "HearingBooking",
     "ListElementCode": "hearingNeededGiveDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
@@ -72,7 +72,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetails",
+    "ID": "HearingBooking",
     "ListElementCode": "judgeMagistrateLabel",
     "FieldType": "Label",
     "ElementLabel": "## Judge or magistrate",
@@ -80,7 +80,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetails",
+    "ID": "HearingBooking",
     "ListElementCode": "judgeTitle",
     "FieldType": "Text",
     "ElementLabel": "Title",
@@ -89,7 +89,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "HearingBookingDetails",
+    "ID": "HearingBooking",
     "ListElementCode": "judgeFullName",
     "FieldType": "Text",
     "ElementLabel": "Full name",

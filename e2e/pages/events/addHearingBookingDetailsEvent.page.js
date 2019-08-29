@@ -7,7 +7,7 @@ module.exports = {
         hearingType: {
           caseManagement: `#hearingDetails_${index}_hearingType-CASE_MANAGEMENT`,
         },
-        venue: `#hearingDetails_${index}_venue`,
+        hearingVenue: `#hearingDetails_${index}_hearingVenue`,
         date: {
           day: `#hearingDetails_${index}_hearingDate-day`,
           month: `#hearingDetails_${index}_hearingDate-month`,
@@ -38,7 +38,7 @@ module.exports = {
     const elementIndex = await this.getActiveElementIndex();
 
     I.click(this.fields(elementIndex).hearingDetails.hearingType);
-    await I.fillField(this.fields(elementIndex).hearingDetails.venue, hearingDetails.venue);
+    await I.fillField(this.fields(elementIndex).hearingDetails.hearingVenue, hearingDetails.hearingVenue);
     await I.fillField(this.fields(elementIndex).hearingDetails.date.day, hearingDetails.date.day);
     I.fillField(this.fields(elementIndex).hearingDetails.date.month, hearingDetails.date.month);
     I.fillField(this.fields(elementIndex).hearingDetails.date.year, hearingDetails.date.year);

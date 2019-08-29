@@ -14,7 +14,7 @@ import java.util.List;
 public class HearingBookingDetail {
     private final String hearingType;
     private final String hearingTypeDetails;
-    private final String venue;
+    private final String hearingVenue;
     private final LocalDate hearingDate;
     private final String preHearingAttendance;
     private final String hearingTime;
