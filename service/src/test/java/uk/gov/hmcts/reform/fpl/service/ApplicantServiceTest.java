@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {ApplicantService.class, ObjectMapper.class})
-class ApplicantServiceTest {
+class   ApplicantServiceTest {
 
     @Autowired
     private ApplicantService service;
