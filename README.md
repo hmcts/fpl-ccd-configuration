@@ -27,7 +27,7 @@ Creating and starting containers:
 Add users and roles:
 
 ```bash
-$ ./bin/configurer/setup-local-idam.sh
+$ ./bin/configurer/add-services.sh
 $ ./bin/configurer/add-roles.sh
 $ ./bin/configurer/add-users.sh
 ```

@@ -6,7 +6,7 @@ role=${1}
 
 dir=$(dirname ${0})
 
-userToken=$(${dir}/idam-lease-user-token.sh 1 ccd-import)
+userToken=$(${dir}/idam-lease-user-token.sh)
 serviceToken=$(${dir}/idam-lease-service-token.sh ccd_gw $(docker run --rm toolbelt/oathtool --totp -b ${CCD_API_GATEWAY_S2S_SECRET:-AAAAAAAAAAAAAAAC}))
 
 echo "Role ${role} - adding role to CCD"

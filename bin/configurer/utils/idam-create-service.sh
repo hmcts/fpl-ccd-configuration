@@ -5,7 +5,7 @@ set -eu
 dir=$(dirname ${0})
 
 LABEL="${1:-ccd_gateway}"
-SELF_REG="${2:-true}"
+SELF_REG="${2:-false}"
 CLIENT_ID="${3:-ccd_gateway}"
 CLIENT_SECRET="${4:-ccd_gateway_secret}"
 REDIRECT_URLS="${5:-[\"http://localhost:3451/oauth2redirect\"]}"

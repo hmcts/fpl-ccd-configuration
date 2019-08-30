@@ -4,6 +4,9 @@ set -eu
 
 dir=$(dirname ${0})
 
+# User used during the CCD import
+${dir}/utils/idam-create-caseworker.sh ccd.docker.default@hmcts.net ccd-import CCD_Docker
+
 ${dir}/utils/idam-create-caseworker.sh damian@swansea.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor "(local-authority)"
 ${dir}/utils/idam-create-caseworker.sh kurt@swansea.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor "(local-authority)"
 ${dir}/utils/idam-create-caseworker.sh james@swansea.gov.uk caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor "(local-authority)"
