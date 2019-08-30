@@ -67,7 +67,7 @@ spring:
 
 idam:
   api:
-    url: http://localhost:4501
+    url: http://localhost:5000
   s2s-auth:
     url: http://localhost:4502
     totp_secret: AABBCCDDEEFFGGHH
