@@ -8,7 +8,7 @@ RUN wget -P /tmp https://github.com/microsoft/ApplicationInsights-Java/releases/
 
 # Application image
 
-FROM hmctspublic.azurecr.io/base/java:openjdk-11-distroless-debug-1.0
+FROM hmctspublic.azurecr.io/base/java:openjdk-11-distroless-1.0
 
 EXPOSE 4000
 
