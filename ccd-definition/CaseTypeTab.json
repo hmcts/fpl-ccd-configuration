@@ -35,7 +35,7 @@
     "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
-    "TabDisplayOrder": 1,
+    "TabDisplayOrder": 3,
     "CaseFieldID": "orders",
     "TabFieldDisplayOrder": 1
   },
