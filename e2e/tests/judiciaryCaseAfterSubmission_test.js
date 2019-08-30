@@ -3,22 +3,27 @@ const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 
 let caseId;
 
-Feature('Add hearing booking details');
+Feature('Judiciary Case administration after submission');
 
 Before(async (I, caseViewPage, submitApplicationEventPage) => {
-  I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-  caseId = await I.grabTextFrom('.heading-h1');
-  await I.enterMandatoryFields();
-  caseViewPage.goToNewActions(config.applicationActions.submitCase);
-  submitApplicationEventPage.giveConsent();
-  I.continueAndSubmit();
-  I.signOut();
+  if (!caseId) {
+    await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+    await I.enterMandatoryFields();
+    caseViewPage.goToNewActions(config.applicationActions.submitCase);
+    submitApplicationEventPage.giveConsent();
+    I.continueAndSubmit();
+
+    // eslint-disable-next-line require-atomic-updates
+    caseId = await I.grabTextFrom('.heading-h1');
+    console.log(`Case ${caseId} has been submitted`);
+
+    I.signOut();
+    await I.signIn(config.judiciaryEmail, config.judiciaryPassword);
+  }
+  await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('Enter hearing details and submitting as HMCTS admin', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
-  loginPage.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
-  I.navigateToCaseDetails(caseId);
-  I.see(caseId);
+Scenario('Judiciaey enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   addHearingBookingDetailsEventPage.addHearing();
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
@@ -27,41 +32,6 @@ Scenario('Enter hearing details and submitting as HMCTS admin', async (I, caseVi
   I.continueAndProvideSummary('summary', 'description');
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
-  seeAnswersInHearingTab(I);
-});
-
-Scenario('Enter hearing details and submitting as Judiciary', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
-  loginPage.signIn(config.judiciaryEmail, config.judiciaryPassword);
-  I.navigateToCaseDetails(caseId);
-  I.see(caseId);
-  caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
-  addHearingBookingDetailsEventPage.addHearing();
-  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
-  addHearingBookingDetailsEventPage.addHearing();
-  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
-  I.continueAndProvideSummary('summary', 'description');
-  I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
-  caseViewPage.selectTab(caseViewPage.tabs.hearings);
-  seeAnswersInHearingTab(I);
-});
-
-
-Scenario('Enter hearing details and submitting as Gatekeeper', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
-  loginPage.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
-  I.navigateToCaseDetails(caseId);
-  I.see(caseId);
-  caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
-  addHearingBookingDetailsEventPage.addHearing();
-  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
-  addHearingBookingDetailsEventPage.addHearing();
-  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
-  I.continueAndProvideSummary('summary', 'description');
-  I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
-  caseViewPage.selectTab(caseViewPage.tabs.hearings);
-  seeAnswersInHearingTab(I);
-});
-
-function seeAnswersInHearingTab(I) {
   I.seeAnswerInTab(1, 'Hearing 1', 'Type of hearing', hearingDetails[0].caseManagement);
   I.seeAnswerInTab(2, 'Hearing 1', 'Venue', hearingDetails[0].hearingVenue);
   I.seeAnswerInTab(3, 'Hearing 1', 'Date', '1 Jan 2050');
@@ -85,4 +55,4 @@ function seeAnswersInHearingTab(I) {
   I.seeAnswerInTab(7, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
   I.seeAnswerInTab(8, 'Hearing 2', 'Title', hearingDetails[1].judgeTitle);
   I.seeAnswerInTab(9, 'Hearing 2', 'Full name', hearingDetails[1].fullName);
-}
+});
