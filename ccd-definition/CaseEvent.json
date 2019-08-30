@@ -434,7 +434,7 @@
     "Description": "Add hearing booking details to a case",
     "DisplayOrder": 1,
     "PreConditionState(s)": "Submitted",
-    "PostConditionState": "*",
+    "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "EndButtonLabel": "Save and continue"
