@@ -33,7 +33,7 @@ userCreationResponse=$(curl -k --show-error --silent --output /dev/null --write-
 
 # Unfortunately trying to create the same user throws 403, so we don't know what went wrong
 if [[ $userCreationResponse -eq 403 ]]; then
-  echo "User ${email} already exists"
+  echo -e "\nUser ${email} already exists"
 elif [[ $userCreationResponse -ne 201  ]]; then
   echo "Unexpected HTTP status code from IDAM: ${userCreationResponse}"
   exit 1
