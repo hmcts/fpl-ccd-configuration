@@ -550,15 +550,21 @@
                     {% endif %}
                   {% endif %}
                 {% endif %}
-              {% if child.value is not empty and child.value.party is not empty and child.value.party.addressChangeDate is not empty %}
                 {% if child.value.party.livingSituation is not empty and child.value.party.livingSituation == 'In hospital and soon to be discharged' %}
-                  <span class="u-block">Discharge date: {{ child.value.party.addressChangeDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
-                {% elseif child.value.party.livingSituation is not empty and child.value.livingSituation == 'Removed by Police, powers end soon' %}
-                  <span class="u-block">Date powers end: {{ child.value.party.addressChangeDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
-                {% else %}
+                  {% if child.value.party.dischargeDate is not empty %}
+                    <span class="u-block">Discharge date: {{ child.value.party.dischargeDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
+                  {% endif %}
+                {% elseif child.value.party.livingSituation is not empty and child.value.party.livingSituation == 'Removed by Police, powers end soon' %}
+                  {% if child.value.party.datePowersEnd is not empty %}
+                    <span class="u-block">Date powers end: {{ child.value.party.datePowersEnd | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
+                  {% endif %}
+                {% elseif child.value.party.livingSituation is not empty and child.value.party.livingSituation == 'Voluntarily in section 20 care order' %}
+                  {% if child.value.party.careStartDate is not empty %}
+                    <span class="u-block">Date this began: {{ child.value.party.careStartDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
+                  {% endif %}
+                {% elseif child.value.party.addressChangeDate is not empty %}
                   <span class="u-block">Date this began: {{ child.value.party.addressChangeDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
                 {% endif %}
-              {% endif %}
             {% else %}
               -
             {% endif %}
