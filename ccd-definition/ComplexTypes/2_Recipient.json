@@ -55,7 +55,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "Recipient",
     "ListElementCode": "emailAddress",
-    "FieldType": "Text",
+    "FieldType": "Email",
     "ElementLabel": "Recipient's email address",
     "SecurityClassification": "Public",
     "FieldShowCondition": "howSent=\"EMAIL\""
