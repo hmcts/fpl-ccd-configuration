@@ -4,7 +4,7 @@ set -eu
 
 dir=$(dirname ${0})
 
-ID="${1}"
+ID=${1}
 
 apiToken=$(${dir}/idam-authenticate.sh "${IDAM_ADMIN_USER:-idamOwner@hmcts.net}" "${IDAM_ADMIN_PASSWORD:-Ref0rmIsFun}")
 

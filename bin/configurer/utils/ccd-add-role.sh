@@ -2,9 +2,9 @@
 
 set -eu
 
-role=${1}
-
 dir=$(dirname ${0})
+
+role=${1}
 
 userToken=$(${dir}/idam-lease-user-token.sh)
 serviceToken=$(${dir}/idam-lease-service-token.sh ccd_gw $(docker run --rm toolbelt/oathtool --totp -b ${CCD_API_GATEWAY_S2S_SECRET:-AAAAAAAAAAAAAAAC}))
