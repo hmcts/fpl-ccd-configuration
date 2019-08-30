@@ -50,6 +50,8 @@ exports.config = {
     enterFactorsAffectingParentingEventPage: './e2e/pages/events/enterFactorsAffectingParentingEvent.page.js',
     enterInternationalElementEventPage: './e2e/pages/events/enterInternationalElementEvent.page.js',
     enterOtherProceedingsEventPage: './e2e/pages/events/enterOtherProceedingsEvent.page.js',
+
+
     enterAllocationProposalEventPage: './e2e/pages/events/enterAllocationProposalEvent.page.js',
     enterDecisionProposalEventPage: './e2e/pages/events/enterDecisionProposalEvent.page.js',
     enterAttendingHearingEventPage: './e2e/pages/events/enterAttendingHearingEvent.page.js',
