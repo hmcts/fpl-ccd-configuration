@@ -400,6 +400,14 @@ Scenario('local authority enters allocation proposal', (I, caseViewPage, enterAl
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationProposal);
 });
 
+Scenario('local authority enters decision proposal', (I, caseViewPage, enterDecisionProposalEventPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.enterDecisionProposal);
+  enterDecisionProposalEventPage.selectDecisionProposal('Lay justices');
+  enterDecisionProposalEventPage.enterProposalReason('test');
+  I.continueAndSave();
+  I.seeEventSubmissionConfirmation(config.applicationActions.enterDecisionProposal);
+});
+
 Scenario('local authority enters attending hearing',(I, caseViewPage, enterAttendingHearingEventPage) => {
   caseViewPage.goToNewActions(config.applicationActions.enterAttendingHearing);
   enterAttendingHearingEventPage.enterInterpreter();

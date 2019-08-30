@@ -48,6 +48,7 @@ module.exports = {
     enterInternationalElement: 'International element',
     enterOtherProceedings: 'Other proceedings',
     enterAllocationProposal: 'Allocation proposal',
+    enterDecisionProposal: 'Decision proposal',
     enterAttendingHearing: 'Attending the hearing',
     uploadDocuments: 'Documents',
     changeCaseName: 'Change case name',
