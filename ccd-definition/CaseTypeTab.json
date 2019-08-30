@@ -15,7 +15,7 @@
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
     "TabLabel": "Hearings",
-    "TabDisplayOrder": 1,
+    "TabDisplayOrder": 2,
     "CaseFieldID": "hearingDetails",
     "TabFieldDisplayOrder": 1
   },
@@ -25,7 +25,7 @@
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
     "TabLabel": "Hearings",
-    "TabDisplayOrder": 1,
+    "TabDisplayOrder": 2,
     "CaseFieldID": "hearing",
     "TabFieldDisplayOrder": 2
   },
