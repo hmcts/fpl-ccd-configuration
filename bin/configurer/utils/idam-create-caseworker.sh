@@ -6,22 +6,6 @@ email=${1}
 rolesStr=${2}
 surname=${3:-"Tester"}
 
-userToken=$($(dirname ${0})/idam-lease-user-token.sh 1 admin)
-
-searchResponse=$(curl -k --silent --show-error --output /dev/null --write-out "%{http_code}" -H "Authorization: Bearer ${userToken}" ${IDAM_API_BASE_URL:-http://localhost:4501}/users?email=${email})
-
-if [[ ${searchResponse} -ne 200 && ${searchResponse} -ne 404 ]]; then
-  echo "The requested user search returned error: ${searchResponse}"
-  exit 1
-fi
-
-if [[ ${searchResponse} -eq 200 ]]; then
-  echo "User ${email} already exists in IDAM - skipping"
-  exit 0
-fi
-
-echo "User ${email} - adding user to IDAM"
-
 IFS=',' read -ra roles <<< ${rolesStr}
 
 rolesJson=''
@@ -32,19 +16,31 @@ for role in ${roles[@]}; do
   rolesJson=${rolesJson}'{"code":"'${role}'"}'
 done
 
-curl -k --fail --show-error --silent --output /dev/null -X POST \
-  ${IDAM_API_BASE_URL:-http://localhost:4501}/testing-support/accounts \
+echo -e "\nCreating IDAM user: ${email}"
+
+userCreationResponse=$(curl --insecure --show-error --silent --output /dev/null --write-out "%{http_code}" -X POST \
+  ${IDAM_API_BASE_URL:-http://localhost:5000}/testing-support/accounts \
   -H "Content-Type: application/json" \
   -d '{
-    "email": "'${email}'",
-    "forename": "'${email}'",
-    "surname": "'${surname}'",
-    "password": "Password12",
-    "levelOfAccess": 1,
-    "roles": [
-      '${rolesJson}'
-    ],
-    "userGroup": {
-      "code": "caseworker"
-    }
-  }'
+  "email":"'${email}'",
+  "forename":"'${email}'",
+  "surname":"'${surname}'",
+  "password":"'Password12'",
+  "levelOfAccess":1,
+  "roles": [
+    '${rolesJson}'
+  ],
+  "userGroup": {"code": "caseworker"}}
+')
+
+# Unfortunately trying to create the same user throws 403, so we don't know what went wrong
+if [[ $userCreationResponse -eq 403 ]]; then
+  echo "User ${email} already exists"
+elif [[ $userCreationResponse -ne 201  ]]; then
+  echo "Unexpected HTTP status code from IDAM: ${userCreationResponse}"
+  exit 1
+else
+  echo "User ${email} - added to IDAM"
+fi
+
+
