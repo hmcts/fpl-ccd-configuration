@@ -48,7 +48,6 @@
     "ListElementCode": "howSent",
     "FieldType": "FixedRadioList",
     "ElementLabel": "How were they sent?",
-    "HintText": "For example, 31 3 2016",
     "FieldTypeParameter": "HowSentList",
     "SecurityClassification": "Public"
   },
