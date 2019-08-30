@@ -24,7 +24,14 @@ Creating and starting containers:
 ./ccd compose up -d
 ```
 
-Add services, roles and users (needs to be run in below order):
+Add services, roles and users (needs to be run in below order).
+
+Make sure the `IDAM_ADMIN_USER` `IDAM_ADMIN_PASSWORD` env variables are set to IDAM initial user.
+You can run the below scripts by prefixing them with `IDAM_ADMIN_USER= IDAM_ADMIN_PASSWORD=`, 
+by exporting variables or use some other approach of managing env variables, 
+e.g. [direnv](https://direnv.net).  
+
+The values can be found on [Confluence](https://tools.hmcts.net/confluence/x/eQP3P).
 
 ```bash
 $ ./bin/configurer/add-services.sh

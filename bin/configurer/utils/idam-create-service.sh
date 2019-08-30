@@ -10,7 +10,7 @@ CLIENT_ID="${3:-ccd_gateway}"
 CLIENT_SECRET="${4:-ccd_gateway_secret}"
 REDIRECT_URLS="${5:-[\"http://localhost:3451/oauth2redirect\"]}"
 
-apiToken=$(${dir}/idam-authenticate.sh "${IDAM_ADMIN_USER:-idamOwner@hmcts.net}" "${IDAM_ADMIN_PASSWORD:-Ref0rmIsFun}")
+apiToken=$(${dir}/idam-authenticate.sh "${IDAM_ADMIN_USER}" "${IDAM_ADMIN_PASSWORD}")
 
 echo -e "\nCreating service with:\nLabel: ${LABEL}\nClient ID: ${CLIENT_ID}\nClient Secret: ${CLIENT_SECRET}\nRedirect URL: ${REDIRECT_URLS}\n"
 

@@ -6,7 +6,7 @@ dir=$(dirname ${0})
 
 ID=${1}
 
-apiToken=$(${dir}/idam-authenticate.sh "${IDAM_ADMIN_USER:-idamOwner@hmcts.net}" "${IDAM_ADMIN_PASSWORD:-Ref0rmIsFun}")
+apiToken=$(${dir}/idam-authenticate.sh "${IDAM_ADMIN_USER}" "${IDAM_ADMIN_PASSWORD}")
 
 echo -e "\nCreating IDAM role: ${ID}"
 
