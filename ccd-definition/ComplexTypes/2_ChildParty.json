@@ -67,7 +67,7 @@
     "ListElementCode": "livingSituation",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "LivingSituationList",
-    "ElementLabel": "Describe child's situation",
+    "ElementLabel": "Child's living situation",
     "SecurityClassification": "Public"
   },
   {
@@ -75,7 +75,7 @@
     "ID": "ChildParty",
     "ListElementCode": "livingSituationDetails",
     "FieldType": "TextArea",
-    "ElementLabel": "Details",
+    "ElementLabel": "Give details",
     "FieldShowCondition": "livingSituation=\"Other\"",
     "SecurityClassification": "Public"
   },
@@ -85,7 +85,37 @@
     "ListElementCode": "addressChangeDate",
     "FieldType": "Date",
     "ElementLabel": "What date did they start staying here?",
-    "FieldShowCondition": "livingSituation=\"*\"",
+    "FieldShowCondition": "livingSituation=\"Living with *\"",
+    "HintText": "For example, 31 3 2018",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty ",
+    "ListElementCode": "datePowersEnd",
+    "FieldType": "Date",
+    "ElementLabel": "Date powers end",
+    "FieldShowCondition": "livingSituation=\"Removed by *\"",
+    "HintText": "For example, 31 3 2018",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty ",
+    "ListElementCode": "careStartDate",
+    "FieldType": "Date",
+    "ElementLabel": "Date this began",
+    "FieldShowCondition": "livingSituation=\"Voluntarily in section 20 care order\"",
+    "HintText": "For example, 31 3 2018",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ChildParty ",
+    "ListElementCode": "dischargeDate",
+    "FieldType": "Date",
+    "ElementLabel": "Discharge date",
+    "FieldShowCondition": "livingSituation=\"In hospital and soon to be discharged\"",
     "HintText": "For example, 31 3 2018",
     "SecurityClassification": "Public"
   },

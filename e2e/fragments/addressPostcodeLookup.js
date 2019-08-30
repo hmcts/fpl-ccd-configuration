@@ -21,9 +21,15 @@ module.exports = {
   lookupPostcode(address) {
     I.fillField(this.fields.postcodeLookup, address.postcode);
     I.click(this.findAddressButton);
+    I.waitForText('addresses found');
     I.waitForElement(locate(this.fields.addressList).find('option').withText(address.lookupOption));
-    I.click(this.fields.addressList);
     I.selectOption(this.fields.addressList, address.lookupOption);
+    I.waitForValue(this.fields.buildingAndStreet.lineOne, address.buildingAndStreet.lineOne);
+    I.waitForValue(this.fields.buildingAndStreet.lineTwo, address.buildingAndStreet.lineTwo);
+    I.waitForValue(this.fields.buildingAndStreet.lineThree, address.buildingAndStreet.lineThree);
+    I.waitForValue(this.fields.town, address.town);
+    I.waitForValue(this.fields.postcode, address.postcode);
+    I.waitForValue(this.fields.country, address.country);
   },
 
   enterAddressManually(address) {

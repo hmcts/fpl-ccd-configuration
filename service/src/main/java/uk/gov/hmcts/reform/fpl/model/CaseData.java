@@ -77,11 +77,9 @@ public class CaseData {
     public final Document thresholdDocument;
     @JsonProperty("documents_socialWorkEvidenceTemplate_document")
     private final Document socialWorkEvidenceTemplateDocument;
-    private final OldChildren children;
     @NotNull(message = "You need to add details to children")
     @Valid
     private final List<@NotNull(message = "You need to add details to children")Element<Child>> children1;
-    private final String childrenMigrated;
     @NotBlank(message = "Enter Familyman case number", groups = NoticeOfProceedingsGroup.class)
     private final String familyManCaseNumber;
     private List<ProceedingType> proceedingTypes;
