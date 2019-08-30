@@ -58,7 +58,7 @@
     "ListElementCode": "hearingNeededDetails",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "HearingNeedsBookedList",
-    "ElementLabel": "Hearing needs booked ",
+    "ElementLabel": "Hearing needs booked",
     "SecurityClassification": "Public"
   },
   {

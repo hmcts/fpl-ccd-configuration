@@ -15,7 +15,6 @@ module.exports = {
         },
         preHearingAttendance: `#hearingDetails_${index}_preHearingAttendance`,
         hearingTime: `#hearingDetails_${index}_hearingTime`,
-
         hearingNeedsBooked: {
           interpreter: `#hearingDetails_${index}_hearingNeededDetails-INTERPRETER`,
           welsh: `#hearingDetails_${index}_hearingNeededDetails-SPOKEN_OR_WRITTEN_WELSH`,

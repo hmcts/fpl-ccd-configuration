@@ -49,7 +49,7 @@ public class HearingBookingDetailsController {
             .map(Element::getValue)
             .map(HearingBooking::getHearingDate)
             .filter(Objects::nonNull)
-            .filter(hearingDate -> hearingDate.isBefore(LocalDate.now()) || hearingDate.equals(LocalDate.now()))
+            .filter(hearingDate -> !hearingDate.isAfter(LocalDate.now()))
             .findAny()
             .ifPresent(error -> errors.add("Enter a future date"));
 

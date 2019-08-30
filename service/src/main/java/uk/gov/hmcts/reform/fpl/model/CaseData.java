@@ -78,7 +78,6 @@ public class CaseData {
     @NotNull(message = "You need to add details to children")
     @Valid
     private final List<@NotNull(message = "You need to add details to children")Element<Child>> children1;
-    private final String childrenMigrated;
     private final List<Element<HearingBooking>> hearingDetails;
     private final List<Element<Respondent>> respondents;
 }

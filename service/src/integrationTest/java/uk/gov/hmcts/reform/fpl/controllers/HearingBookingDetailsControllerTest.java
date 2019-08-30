@@ -92,7 +92,6 @@ class HearingBookingDetailsControllerTest {
             .build();
     }
 
-    @SuppressWarnings("LineLength")
     private AboutToStartOrSubmitCallbackResponse makeRequest(HearingBooking hearingDetail) throws Exception {
         HashMap<String, Object> map = objectMapper.readValue(objectMapper.writeValueAsString(hearingDetail),
             new TypeReference<Map<String, Object>>() {
@@ -121,5 +120,4 @@ class HearingBookingDetailsControllerTest {
         return objectMapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
-
 }

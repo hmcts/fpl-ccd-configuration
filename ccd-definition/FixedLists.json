@@ -580,8 +580,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingNeedsBookedList",
-    "ListElementCode": "SEPERATE_WAITING_OR_SECURITY_MEASURES",
-    "ListElement": "Seperate waiting room or other security measures",
+    "ListElementCode": "SEPARATE_WAITING_OR_SECURITY_MEASURES",
+    "ListElement": "Separate waiting room or other security measures",
     "DisplayOrder": 5
   },
   {
