@@ -18,7 +18,7 @@ done
 
 echo -e "\nCreating IDAM user: ${email}"
 
-userCreationResponse=$(curl -k --show-error --silent --output /dev/null --write-out "%{http_code}" -X POST \
+userCreationResponse=$(curl --insecure --show-error --silent --output /dev/null --write-out "%{http_code}" -X POST \
   ${IDAM_API_BASE_URL:-http://localhost:5000}/testing-support/accounts \
   -H "Content-Type: application/json" \
   -d '{

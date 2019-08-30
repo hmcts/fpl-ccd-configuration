@@ -4,17 +4,16 @@ set -eu
 
 dir=$(dirname ${0})
 
-LABEL="${1:-ccd_gateway}"
-SELF_REG="${2:-false}"
-CLIENT_ID="${3:-ccd_gateway}"
-CLIENT_SECRET="${4:-ccd_gateway_secret}"
-REDIRECT_URLS="${5:-[\"http://localhost:3451/oauth2redirect\"]}"
+LABEL=${1}
+CLIENT_ID=${2}
+CLIENT_SECRET=${3}
+REDIRECT_URL=${4}
 
 apiToken=$(${dir}/idam-authenticate.sh "${IDAM_ADMIN_USER}" "${IDAM_ADMIN_PASSWORD}")
 
-echo -e "\nCreating service with:\nLabel: ${LABEL}\nClient ID: ${CLIENT_ID}\nClient Secret: ${CLIENT_SECRET}\nRedirect URL: ${REDIRECT_URLS}\n"
+echo -e "\nCreating service with:\nLabel: ${LABEL}\nClient ID: ${CLIENT_ID}\nClient Secret: ${CLIENT_SECRET}\nRedirect URL: ${REDIRECT_URL}\n"
 
-STATUS=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: application/json' -H "Authorization: AdminApiAuthToken ${apiToken}" \
+STATUS=$(curl --silent --output /dev/null --write-out '%{http_code}' -X POST -H 'Content-Type: application/json' -H "Authorization: AdminApiAuthToken ${apiToken}" \
   http://localhost:5000/services \
   -d '{
     "allowedRoles": [],
@@ -22,9 +21,9 @@ STATUS=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: applic
     "label": "'${LABEL}'",
     "oauth2ClientId": "'${CLIENT_ID}'",
     "oauth2ClientSecret": "'${CLIENT_SECRET}'",
-    "oauth2RedirectUris": '${REDIRECT_URLS}',
+    "oauth2RedirectUris": ["'${REDIRECT_URL}'"],
     "oauth2Scope": "openid profile authorities acr roles search-user",
-    "selfRegistrationAllowed": '${SELF_REG}'
+    "selfRegistrationAllowed": "false"
 }')
 
 if [ $STATUS -eq 201 ]; then
