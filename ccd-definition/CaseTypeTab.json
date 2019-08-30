@@ -36,7 +36,7 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "children",
+    "CaseFieldID": "children1",
     "TabFieldDisplayOrder": 1
   },
   {
@@ -45,17 +45,7 @@
     "Channel": "CaseWorker",
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
-    "TabDisplayOrder": 2,
-    "CaseFieldID": "children1",
-    "TabFieldDisplayOrder": 2
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "CasePeopleTab",
-    "TabLabel": "People in the case",
-    "TabDisplayOrder": 3,
+    "TabDisplayOrder": 4,
     "CaseFieldID": "respondents1",
     "TabFieldDisplayOrder": 2
   },

@@ -76,7 +76,11 @@ module.exports = {
     const elementIndex = await this.getActiveElementIndex();
 
     within(this.fields(elementIndex).child.situation.addressOfChild, () => {
-      postcodeLookup.lookupPostcode(address);
+      if (elementIndex === 0) {
+        postcodeLookup.lookupPostcode(address);
+      } else {
+        postcodeLookup.enterAddressManually(address);
+      }
     });
   },
 
