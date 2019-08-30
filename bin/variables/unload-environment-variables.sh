@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo 'unset IDAM_VERSION'
+echo 'unset ENVIRONMENT'
 
 # urls
 echo 'unset SERVICE_AUTH_PROVIDER_API_BASE_URL'

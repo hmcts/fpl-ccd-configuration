@@ -4,7 +4,7 @@ set -eu
 
 pr=${1}
 
-echo 'export IDAM_VERSION=strategic'
+echo 'export ENVIRONMENT=preview'
 
 # urls
 echo "export SERVICE_AUTH_PROVIDER_API_BASE_URL=https://rpe-service-auth-provider-aat.service.core-compute-aat.internal"
