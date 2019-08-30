@@ -38,6 +38,15 @@
           "CONTACT_WITH_NAMED_PERSON"
         ]
       },
+      "groundsForEPO": {
+        "reason": [
+          "reason"
+        ],
+        "thresholdReason": [
+          "reason"
+        ],
+        "thresholdDetails": "details"
+      },
       "others": {
         "firstOther": {
           "DOB": "1999-02-02",
@@ -106,43 +115,51 @@
         "respondentsAwareReason": "They seek to care for baby in mother and baby unit"
       },
       "caseName": "test",
-      "children": {
-        "firstChild": {
-          "address": {
-            "County": "Omagh",
-            "Country": "Northern Ireland",
-            "PostCode": "SE22 6SB",
-            "PostTown": "BT11 1234",
-            "AddressLine1": "Appartment 21",
-            "AddressLine2": "22 Wesley Drive",
-            "AddressLine3": "Wesley"
-          },
-          "adoption": "Yes",
-          "childDOB": "2018-06-15",
-          "keyDates": "child starting primary school or taking GCSEs",
-          "childName": "Tom Reeves",
-          "childGender": "They identify in another way",
-          "fathersName": "Rob Reeves",
-          "mothersName": "Isbella Reeves",
-          "detailsHidden": "Yes",
-          "situationDate": "2018-11-08",
-          "careAndContact": "Place baby in local authority foster care",
-          "placementCourt": "Central London County Court",
-          "additionalNeeds": "Yes",
-          "livingSituation": "Living with respondents",
-          "socialWorkerTel": "0123456789",
-          "litigationIssues": "NO",
-          "socialWorkerName": "Helen Green",
-          "detailsHiddenReason": "History of domestic violence with relatives",
-          "fathersResponsibility": "Yes",
-          "additionalNeedsDetails": "Autism",
-          "childGenderIdentification": "Boy",
-          "placementOrderApplication": "Yes"
+      "children1": [
+        {
+          "id": "3b0b9640-2894-41eb-bef2-a031d18c8457",
+          "value": {
+            "party": {
+              "firstName": "Tom",
+              "lastName": "Reeves",
+              "address": {
+                "County": "Omagh",
+                "Country": "Northern Ireland",
+                "PostCode": "SE22 6SB",
+                "PostTown": "BT11 1234",
+                "AddressLine1": "Appartment 21",
+                "AddressLine2": "22 Wesley Drive",
+                "AddressLine3": "Wesley"
+              },
+              "adoption": "Yes",
+              "dateOfBirth": "2018-06-15",
+              "keyDates": "child starting primary school or taking GCSEs",
+              "gender": "Boy",
+              "fathersName": "Rob Reeves",
+              "mothersName": "Isbella Reeves",
+              "detailsHidden": "Yes",
+              "addressChangeDate": "2018-11-08",
+              "careAndContactPlan": "Place baby in local authority foster care",
+              "placementCourt": "Central London County Court",
+              "additionalNeeds": "Yes",
+              "livingSituation": "Living with respondents",
+              "socialWorkerTelephoneNumber": {
+                "telephoneNumber": "0123456789"
+              },
+              "litigationIssues": "DONT_KNOW",
+              "socialWorkerName": "Helen Green",
+              "detailsHiddenReason": "History of domestic violence with relatives",
+              "fathersResponsibility": "Yes",
+              "additionalNeedsDetails": "Autism",
+              "childGenderIdentification": "Boy",
+              "placementOrderApplication": "Yes"
+            }
+          }
         },
-        "additionalChildren": [
-          {
-            "id": "3b0b9640-2894-41eb-bef2-a031d18c8453",
-            "value": {
+        {
+          "id": "3b0b9640-2894-41eb-bef2-a031d18c8453",
+          "value": {
+            "party": {
               "address": {
                 "County": "London",
                 "Country": "BT66 7RR",
@@ -153,19 +170,22 @@
                 "AddressLine3": "Milton Keynes"
               },
               "adoption": "Yes",
-              "childDOB": "2002-02-02",
+              "dateOfBirth": "2002-02-02",
               "keyDates": "test child two key date",
-              "childName": "Sarah Reeves",
-              "childGender": "Girl",
+              "firstName": "Sarah",
+              "lastName": "Reeves",
+              "gender": "Girl",
               "fathersName": "Scott Simpson",
               "mothersName": "Sarah Simpson",
-              "detailsHidden": "Yes",
-              "situationDate": "2002-02-02",
-              "careAndContact": "test child two care and contact plan",
+              "detailsHidden": "No",
+              "addressChangeDate": "2002-02-02",
+              "careAndContactPlan": "test child two care and contact plan",
               "placementCourt": "test child two court",
               "additionalNeeds": "Yes",
               "livingSituation": "Living with respondents",
-              "socialWorkerTel": "07749972242",
+              "socialWorkerTelephoneNumber": {
+                "telephoneNumber": "07749972242"
+              },
               "litigationIssues": "YES",
               "socialWorkerName": "Paul Wilsdon",
               "detailsHiddenReason": "test child two contact details hidden reason",
@@ -175,14 +195,14 @@
               "placementOrderApplication": "Yes"
             }
           }
-        ]
-      },
+        }
+      ],
       "applicants": [
         {
           "id": "8a22519a-1625-4667-a0c4-c939b44d5069",
           "value": {
             "party": {
-              "partyType": "Individual",
+              "partyType": "INDIVIDUAL",
               "organisationName": "London Borough of Southwark",
               "address": {
                 "County": "Galway",
@@ -401,6 +421,24 @@
         }
       },
       "documents_socialWorkChronology_document": {
+        "statusReason": "Social work assessment text",
+        "documentStatus": "To follow",
+        "typeOfDocument": {
+          "document_url": "http://dm-store:8080/documents/91434306-7283-46a1-9901-a64d30d1fb8e",
+          "document_filename": "form.pdf",
+          "document_binary_url": "http://dm-store:8080/documents/91434306-7283-46a1-9901-a64d30d1fb8e/binary"
+        }
+      },
+      "documents_checklist_document": {
+        "statusReason": "Social work chronology text",
+        "documentStatus": "To follow",
+        "typeOfDocument": {
+          "document_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e",
+          "document_filename": "form.pdf",
+          "document_binary_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e/binary"
+        }
+      },
+      "documents_threshold_document": {
         "statusReason": "Social work chronology text",
         "documentStatus": "To follow",
         "typeOfDocument": {

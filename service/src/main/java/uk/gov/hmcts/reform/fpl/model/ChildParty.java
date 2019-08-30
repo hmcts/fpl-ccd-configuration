@@ -12,9 +12,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import java.time.LocalDate;
 import java.util.Date;
 
+import javax.validation.constraints.NotBlank;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+
 public final class ChildParty extends Party {
     private final String gender;
     private final String genderIdentification;
@@ -40,6 +43,16 @@ public final class ChildParty extends Party {
     private final String detailsHiddenReason;
     private final String litigationIssues;
     private final String litigationIssuesDetails;
+
+    @NotBlank(message = "Tell us the names of all children in the case")
+    public String getFirstName() {
+        return super.getFirstName();
+    }
+
+    @NotBlank(message = "Tell us the names of all children in the case")
+    public String getLastName() {
+        return super.getLastName();
+    }
 
     @Builder(toBuilder = true)
     public ChildParty(String partyId,
@@ -77,7 +90,6 @@ public final class ChildParty extends Party {
                       String litigationIssuesDetails) {
         super(partyId, partyType, firstName, lastName, organisationName,
             dateOfBirth, address, email, telephoneNumber);
-
         this.gender = gender;
         this.genderIdentification = genderIdentification;
         this.livingSituation = livingSituation;

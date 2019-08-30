@@ -111,43 +111,51 @@
       "respondentsAwareReason": "They seek to care for baby in mother and baby unit"
     },
     "caseName": "test",
-    "children": {
-      "firstChild": {
-        "address": {
-          "County": "Omagh",
-          "Country": "Northern Ireland",
-          "PostCode": "SE22 6SB",
-          "PostTown": "BT11 1234",
-          "AddressLine1": "Appartment 21",
-          "AddressLine2": "22 Wesley Drive",
-          "AddressLine3": "Wesley"
-        },
-        "adoption": "Yes",
-        "childDOB": "2018-06-15",
-        "keyDates": "child starting primary school or taking GCSEs",
-        "childName": "Tom Reeves",
-        "childGender": "They identify in another way",
-        "fathersName": "Rob Reeves",
-        "mothersName": "Isbella Reeves",
-        "detailsHidden": "Yes",
-        "situationDate": "2018-11-08",
-        "careAndContact": "Place baby in local authority foster care",
-        "placementCourt": "Central London County Court",
-        "additionalNeeds": "Yes",
-        "livingSituation": "Living with respondents",
-        "socialWorkerTel": "0123456789",
-        "litigationIssues": "DONT_KNOW",
-        "socialWorkerName": "Helen Green",
-        "detailsHiddenReason": "History of domestic violence with relatives",
-        "fathersResponsibility": "Yes",
-        "additionalNeedsDetails": "Autism",
-        "childGenderIdentification": "Boy",
-        "placementOrderApplication": "Yes"
+    "children1": [
+      {
+        "id": "3b0b9640-2894-41eb-bef2-a031d18c8457",
+        "value": {
+          "party": {
+            "firstName": "Tom",
+            "lastName": "Reeves",
+            "address": {
+              "County": "Omagh",
+              "Country": "Northern Ireland",
+              "PostCode": "SE22 6SB",
+              "PostTown": "BT11 1234",
+              "AddressLine1": "Appartment 21",
+              "AddressLine2": "22 Wesley Drive",
+              "AddressLine3": "Wesley"
+            },
+            "adoption": "Yes",
+            "dateOfBirth": "2018-06-15",
+            "keyDates": "child starting primary school or taking GCSEs",
+            "gender": "Boy",
+            "fathersName": "Rob Reeves",
+            "mothersName": "Isbella Reeves",
+            "detailsHidden": "Yes",
+            "addressChangeDate": "2018-11-08",
+            "careAndContactPlan": "Place baby in local authority foster care",
+            "placementCourt": "Central London County Court",
+            "additionalNeeds": "Yes",
+            "livingSituation": "Living with respondents",
+            "socialWorkerTelephoneNumber": {
+              "telephoneNumber": "0123456789"
+            },
+            "litigationIssues": "DONT_KNOW",
+            "socialWorkerName": "Helen Green",
+            "detailsHiddenReason": "History of domestic violence with relatives",
+            "fathersResponsibility": "Yes",
+            "additionalNeedsDetails": "Autism",
+            "childGenderIdentification": "Boy",
+            "placementOrderApplication": "Yes"
+          }
+        }
       },
-      "additionalChildren": [
-        {
-          "id": "3b0b9640-2894-41eb-bef2-a031d18c8453",
-          "value": {
+      {
+        "id": "3b0b9640-2894-41eb-bef2-a031d18c8453",
+        "value": {
+          "party": {
             "address": {
               "County": "London",
               "Country": "BT66 7RR",
@@ -158,19 +166,22 @@
               "AddressLine3": "Milton Keynes"
             },
             "adoption": "Yes",
-            "childDOB": "2002-02-02",
+            "dateOfBirth": "2002-02-02",
             "keyDates": "test child two key date",
-            "childName": "Sarah Reeves",
-            "childGender": "Girl",
+            "firstName": "Sarah",
+            "lastName": "Reeves",
+            "gender": "Girl",
             "fathersName": "Scott Simpson",
             "mothersName": "Sarah Simpson",
             "detailsHidden": "No",
-            "situationDate": "2002-02-02",
-            "careAndContact": "test child two care and contact plan",
+            "addressChangeDate": "2002-02-02",
+            "careAndContactPlan": "test child two care and contact plan",
             "placementCourt": "test child two court",
             "additionalNeeds": "Yes",
             "livingSituation": "Living with respondents",
-            "socialWorkerTel": "07749972242",
+            "socialWorkerTelephoneNumber": {
+              "telephoneNumber": "07749972242"
+            },
             "litigationIssues": "YES",
             "socialWorkerName": "Paul Wilsdon",
             "detailsHiddenReason": "test child two contact details hidden reason",
@@ -180,8 +191,8 @@
             "placementOrderApplication": "Yes"
           }
         }
-      ]
-    },
+      }
+    ],
     "applicants": [
       {
         "id": "8a22519a-1625-4667-a0c4-c939b44d5069",
@@ -385,19 +396,6 @@
       "internationalAuthorityInvolvement": "Yes",
       "internationalAuthorityInvolvementDetails": "French authorities were involved"
     },
-    "documents_socialWorkOther": [
-      {
-        "id": "76d8cc29-9085-4e22-a6f7-f86bfb77f020",
-        "value": {
-          "documentTitle": "Additional document one",
-          "typeOfDocument": {
-            "document_url": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8",
-            "document_filename": "form.pdf",
-            "document_binary_url": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8/binary"
-          }
-        }
-      }
-    ],
     "documents_socialWorkCarePlan_document": {
       "statusReason": "some text",
       "documentStatus": "To follow",
