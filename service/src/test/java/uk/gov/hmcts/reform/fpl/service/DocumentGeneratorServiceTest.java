@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.fpl.config.DocumentGeneratorConfiguration;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.templates.DocumentTemplates;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 import uk.gov.hmcts.reform.pdf.generator.exception.MalformedTemplateException;
@@ -30,7 +31,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.fpl.service.email.content.TornadoDocumentTemplates.C6;
+
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.migratedChildCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
@@ -109,8 +111,8 @@ class DocumentGeneratorServiceTest {
         when(tornadoResponse.getBody()).thenReturn(expectedResponse);
 
 
-        byte[] actualBytes = createServiceInstance().generatePdf(placeholders, C6);
-        assertThat(actualBytes).isEqualTo(expectedResponse);
+        DocmosisDocument docmosisDocument = createServiceInstance().generateDocmosisDocument(placeholders, C6);
+        assertThat(docmosisDocument.getBytes()).isEqualTo(expectedResponse);
     }
 
     private DocumentGeneratorService createServiceInstance() {

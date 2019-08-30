@@ -9,20 +9,20 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.email.content.TornadoDocumentTemplates;
 import uk.gov.hmcts.reform.fpl.templates.DocumentTemplates;
 import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
+
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -33,7 +33,6 @@ public class DocumentGeneratorService {
     private final ObjectMapper mapper;
     private final RestTemplate restTemplate;
     private final String tornadoUrl;
-
 
     @Autowired
     public DocumentGeneratorService(HTMLToPDFConverter converter,
@@ -56,29 +55,31 @@ public class DocumentGeneratorService {
         for (Map.Entry<String, ?> entry : extraContextEntries) {
             context.put(entry.getKey(), entry.getValue());
         }
+
         byte[] template = templates.getHtmlTemplate();
 
         return converter.convert(template, context);
     }
 
-    public final byte[] generatePdf(Map<String,String> docGenerationData, TornadoDocumentTemplates documentTemplates) {
-
-        // create request entity
-        // set request headers
+    public DocmosisDocument generateDocmosisDocument(Map<String, String> templateData,
+                                                     DocmosisTemplates docmosisTemplate) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        DocmosisRequest requestBody = new DocmosisRequest(documentTemplates.getDocumentTemplate(),
-             docGenerationData);
+        DocmosisRequest requestBody = new DocmosisRequest(docmosisTemplate.getTemplateName(),
+            templateData);
 
         HttpEntity<DocmosisRequest> request = new HttpEntity<>(requestBody, headers);
+
         byte[] response = null;
+
         try {
             response = restTemplate.exchange(tornadoUrl, HttpMethod.POST, request, byte[].class).getBody();
         } catch (HttpClientErrorException.BadRequest ex) {
             System.out.println("body" +  ex.getResponseBodyAsString());
         }
-        return response;
+
+        return new DocmosisDocument(docmosisTemplate.getDocumentName(), response);
     }
 
     static class DocmosisRequest {

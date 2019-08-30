@@ -406,7 +406,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "proceedingType",
+    "ID": "proceedingTypes",
     "Label": "What would you like to create?",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "ProceedingType",

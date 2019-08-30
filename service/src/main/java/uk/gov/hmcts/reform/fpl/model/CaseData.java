@@ -39,7 +39,7 @@ public class CaseData {
     @Valid
     private final List<@NotNull(message = "You need to add details to applicant")
         Element<Applicant>> applicants;
-    private final List<Element<RespondentParty>> respondent;
+    private final List<Element<RespondentParty>> respondents1;
     private final Proceeding proceeding;
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;
@@ -84,5 +84,5 @@ public class CaseData {
     private final String childrenMigrated;
     @NotBlank(message = "Enter Familyman case number", groups = NoticeOfProceedingsGroup.class)
     private final String familyManCaseNumber;
-    private List<ProceedingType> proceedingType;
+    private List<ProceedingType> proceedingTypes;
 }

@@ -312,12 +312,12 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "proceedingLabel",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "proceedingType",
+    "CaseFieldID": "proceedingTypes",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   }
