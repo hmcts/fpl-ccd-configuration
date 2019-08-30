@@ -16,7 +16,7 @@
     "TabID": "HearingTab",
     "TabLabel": "Hearings",
     "TabDisplayOrder": 1,
-    "CaseFieldID": "hearing",
+    "CaseFieldID": "hearingDetails",
     "TabFieldDisplayOrder": 1
   },
   {
@@ -25,9 +25,9 @@
     "Channel": "CaseWorker",
     "TabID": "HearingTab",
     "TabLabel": "Hearings",
-    "TabDisplayOrder": 2,
-    "CaseFieldID": "hearingDetails",
-    "TabFieldDisplayOrder": 1
+    "TabDisplayOrder": 1,
+    "CaseFieldID": "hearing",
+    "TabFieldDisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
