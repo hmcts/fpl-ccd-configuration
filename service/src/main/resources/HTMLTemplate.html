@@ -464,543 +464,259 @@
       </dd>
     </div>
   </dl>
-
-  <h3 class="heading heading--two">Child
-    {% if case_data.children is not empty and
-    case_data.children.additionalChildren is not empty %}
-      1
-    {% endif %}
-  </h3>
-  <dl class="data-list">
-    <div class="data-list__row">
-      <dt class="data-list__title">Name</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.childName is not empty %}
-          {{ case_data.children.firstChild.childName }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Age</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.childDOB is not empty %}
-          {{ case_data.children.firstChild.childDOB | age }}
-        {% else %}
-         -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Date of birth</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.childDOB is not empty %}
-          {{ case_data.children.firstChild.childDOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Gender</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.childGender is not empty %}
-          {% if case_data.children.firstChild.childGender == 'They identify in another way'
-          and case_data.children.firstChild.childGenderIdentification is not empty %}
-            <span class="u-block">{{ case_data.children.firstChild.childGenderIdentification }}</span>
-          {% else %}
-            <span class="u-block">{{ case_data.children.firstChild.childGender }}</span>
-          {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Child's living situation</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and case_data.children.firstChild is not empty and case_data.children.firstChild.livingSituation is not empty %}
-          <span class="u-block">{{ case_data.children.firstChild.livingSituation }}</span>
-        {% if case_data.children.firstChild.address is not empty %}
-          {% if case_data.children.firstChild.detailsHidden is not empty and case_data.children.firstChild.detailsHidden == "Yes" %}
-            Confidential
-          {% else %}
-            {% if case_data.children.firstChild.address.AddressLine1 is not empty %}
-              <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine1 }}</span>
-            {% endif %}
-            {% if case_data.children.firstChild.address.AddressLine2 is not empty %}
-              <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine2 }}</span>
-            {% endif %}
-            {% if case_data.children.firstChild.address.AddressLine3 is not empty %}
-              <span class="u-comma-before">{{ case_data.children.firstChild.address.AddressLine3 }}</span>
-            {% endif %}
-            {% if case_data.children.firstChild.address.PostTown is not empty %}
-              <span class="u-comma-before">{{ case_data.children.firstChild.address.PostTown }}</span>
-            {% endif %}
-            {% if case_data.children.firstChild.address.PostCode is not empty %}
-              <span class="u-comma-before">{{ case_data.children.firstChild.address.PostCode }}</span>
-            {% endif %}
-            {% if case_data.children.firstChild.address.Country is not empty %}
-            <span class="u-comma-before">{{ case_data.children.firstChild.address.Country }}</span>
-            {% endif %}
-          {% endif %}
-        {% endif %}
-          {% if case_data.children.firstChild.situationDate is not empty %}
-            {% if case_data.children.firstChild.livingSituation == 'In hospital and soon to be discharged' %}
-              <span class="u-block">Discharge date: {{ case_data.children.firstChild.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
-            {% elseif case_data.children.firstChild.livingSituation == 'Removed by Police, powers end soon' %}
-              <span class="u-block">Date powers end: {{ case_data.children.firstChild.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
-            {% else %}
-              <span class="u-block">Date this began: {{ case_data.children.firstChild.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
-            {% endif %}
-          {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Key dates</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.keyDates is not empty %}
-          <span class="u-block">{{ case_data.children.firstChild.keyDates }}</span>
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Care and contact plan</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.careAndContact is not empty %}
-          <span class="u-block">{{ case_data.children.firstChild.careAndContact }}</span>
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Considering adoption</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.adoption is not empty %}
-          <span class="u-block">{{ case_data.children.firstChild.adoption }}</span>
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    {% if case_data.children is not empty
-    and case_data.children.firstChild is not empty
-    and case_data.children.firstChild.adoption == 'Yes' %}
-      <div class="data-list__row">
-        <dt class="data-list__title">Submitting application for a placement order</dt>
-        <dd class="data-list__definition">
-          {% if case_data.children.firstChild.placementOrderApplication is not empty %}
-            <span class="u-block">{{ case_data.children.firstChild.placementOrderApplication }}</span>
-          {% else %}
-            -
-          {% endif %}
-        </dd>
-      </div>
-      {% if case_data.children.firstChild.placementOrderApplication is not empty and
-      case_data.children.firstChild.placementOrderApplication == 'Yes' %}
+  {% if case_data.children1 is not empty %}
+    {% for child in case_data.children1 %}
+      {% if loop.length == 1 %}
+        <h3 class="heading heading--two">Child</h3>
+      {% else %}
+        <h3 class="heading heading--two">Child {{ loop.index + 1 }}</h3>
+      {% endif %}
+      <dl class="data-list">
         <div class="data-list__row">
-          <dt class="data-list__title">Court applying for</dt>
+          <dt class="data-list__title">Name</dt>
           <dd class="data-list__definition">
-            {% if case_data.children.firstChild.placementCourt is not empty %}
-              <span class="u-block">{{ case_data.children.firstChild.placementCourt }}</span>
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.firstName is not empty and child.value.party.lastName is empty %}
+              {{ child.value.party.firstName }}
+            {% elseif child.value is not empty and child.value.party is not empty and child.value.party.firstName is empty and child.value.party.lastName is not empty %}
+              {{ child.value.party.lastName }}
+            {% elseif child.value is not empty and child.value.party is not empty and child.value.party.firstName is not empty and child.value.party.lastName is not empty %}
+              {{ child.value.party.firstName }} {{ child.value.party.lastName }}
             {% else %}
               -
             {% endif %}
           </dd>
         </div>
-      {% endif %}
-    {% endif %}
-    <div class="data-list__row">
-      <dt class="data-list__title">Mother's name</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.mothersName is not empty %}
-          {{ case_data.children.firstChild.mothersName }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Father's name</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.fathersName is not empty %}
-          {{ case_data.children.firstChild.fathersName }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Father has parental responsibility</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.fathersResponsibility is not empty %}
-          {{ case_data.children.firstChild.fathersResponsibility }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Social worker's name</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.socialWorkerName is not empty %}
-          {{ case_data.children.firstChild.socialWorkerName }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Social worker's telephone number</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.socialWorkerTel is not empty %}
-          {{ case_data.children.firstChild.socialWorkerTel }}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Additional needs</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.additionalNeeds is not empty %}
-          <span class="u-block">{{ case_data.children.firstChild.additionalNeeds }}</span>
-          {% if case_data.children.firstChild.additionalNeedsDetails is not empty
-          and case_data.children.firstChild.additionalNeeds != 'No' %}
-            <span class="u-block">{{ case_data.children.firstChild.additionalNeedsDetails }}</span>
-          {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Litigation capacity issues</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.litigationIssues is not empty %}
-          {% if case_data.children.firstChild.litigationIssues == 'YES' %}
-          <span class="u-block">Yes</span>
-            {% if case_data.children.firstChild.litigationIssuesDetails is not empty %}
-              <span class="u-block">{{ case_data.children.firstChild.litigationIssuesDetails }}</span>
+        <div class="data-list__row">
+          <dt class="data-list__title">Age</dt>
+          <dd class="data-list__definition">
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.dateOfBirth is not empty %}
+              {{ child.value.party.dateOfBirth | age }}
+            {% else %}
+              -
             {% endif %}
-          {% elseif case_data.children.firstChild.litigationIssues == 'NO' %}
-            <span class="u-block">No</span>
-          {% else %}
-            <span class="u-block">Don't know</span>
-          {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-    <div class="data-list__row">
-      <dt class="data-list__title">Confidential contact details</dt>
-      <dd class="data-list__definition">
-        {% if case_data.children is not empty and
-        case_data.children.firstChild is not empty and
-        case_data.children.firstChild.detailsHidden is not empty %}
-          <span class="u-block">{{ case_data.children.firstChild.detailsHidden }}</span>
-        {% if case_data.children.firstChild.detailsHiddenReason is not empty
-        and case_data.children.firstChild.detailsHidden != 'No' %}
-          <span class="u-block">{{ case_data.children.firstChild.detailsHiddenReason }}</span>
-        {% endif %}
-        {% else %}
-          -
-        {% endif %}
-      </dd>
-    </div>
-  </dl>
-
-  {% if case_data.children is not empty and
-  case_data.children.additionalChildren is not empty %}
-    {% if case_data.children is not empty and case_data.children.firstChild is not empty %}
-      {% set counter = 2 %}
-    {% else %}
-      {% set counter = 1 %}
-    {% endif %}
-
-    {% for child in case_data.children.additionalChildren %}
-      {% if child is not empty and child.value is not empty %}
-        <h3 class="heading heading--two">Child {{ counter }}</h3>
-        <dl class="data-list">
-          <div class="data-list__row">
-            <dt class="data-list__title">Name</dt>
-            <dd class="data-list__definition">
-              {% if child.value.childName is not empty %}
-                {{ child.value.childName }}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Date of birth</dt>
+          <dd class="data-list__definition">
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.dateOfBirth is not empty %}
+              {{ child.value.party.dateOfBirth | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Gender</dt>
+          <dd class="data-list__definition">
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.gender is not empty %}
+              {% if child.value.party.gender == 'They identify in another way'
+              and child.value.party.genderIdentification is not empty %}
+                <span class="u-block">{{ child.value.party.genderIdentification }}</span>
               {% else %}
-                -
+                <span class="u-block">{{ child.value.party.gender }}</span>
               {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Age</dt>
-            <dd class="data-list__definition">
-              {% if child.value.childDOB is not empty %}
-                {{ child.value.childDOB | age }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Date of birth</dt>
-            <dd class="data-list__definition">
-              {% if child.value.childDOB is not empty %}
-                {{ child.value.childDOB | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Gender</dt>
-            <dd class="data-list__definition">
-              {% if child.value.childGender is not empty %}
-                {% if child.value.childGender == 'They identify in another way'
-                and child.value.childGenderIdentification is not empty %}
-                  <span class="u-block">{{ child.value.childGenderIdentification }}</span>
-                {% else %}
-                  <span class="u-block">{{ child.value.childGender }}</span>
-                {% endif %}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Child's living situation</dt>
-            <dd class="data-list__definition">
-              {% if child.value.livingSituation is not empty %}
-                <span class="u-block">{{ child.value.livingSituation }}</span>
-                  {% if child.value.address is not empty %}
-                    {% if child.value.detailsHidden is not empty and child.value.detailsHidden == "Yes" %}
-                      Confidential
-                    {% else %}
-                      {% if child.value.address.AddressLine1 is not empty %}
-                        <span class="u-comma-before">{{ child.value.address.AddressLine1 }}</span>
-                      {% endif %}
-                      {% if child.value.address.AddressLine2 is not empty %}
-                        <span class="u-comma-before">{{ child.value.address.AddressLine2 }}</span>
-                      {% endif %}
-                      {% if child.value.address.AddressLine3 is not empty %}
-                        <span class="u-comma-before">{{ child.value.address.AddressLine3 }}</span>
-                      {% endif %}
-                      {% if child.value.address.PostTown is not empty %}
-                        <span class="u-comma-before">{{ child.value.address.PostTown }}</span>
-                      {% endif %}
-                      {% if child.value.address.PostCode is not empty %}
-                        <span class="u-comma-before">{{ child.value.address.PostCode }}</span>
-                      {% endif %}
-                      {% if child.value.address.Country is not empty %}
-                        <span class="u-comma-before">{{ child.value.address.Country }}</span>
-                      {% endif %}
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Child's living situation</dt>
+          <dd class="data-list__definition">
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.livingSituation is not empty %}
+              <span class="u-block">{{ child.value.party.livingSituation }}</span>
+                {% if child.value.party.address is not empty %}
+                  {% if child.value.party.detailsHidden is not empty and child.value.party.detailsHidden == "Yes" %}
+                    Confidential
+                  {% else %}
+                    {% if child.value.party.address.AddressLine1 is not empty %}
+                      <span class="u-comma-before">{{ child.value.party.address.AddressLine1 }}</span>
+                    {% endif %}
+                    {% if child.value.party.address.AddressLine2 is not empty %}
+                      <span class="u-comma-before">{{ child.value.party.address.AddressLine2 }}</span>
+                    {% endif %}
+                    {% if child.value.party.address.AddressLine3 is not empty %}
+                      <span class="u-comma-before">{{ child.value.party.address.AddressLine3 }}</span>
+                    {% endif %}
+                    {% if child.value.party.address.PostTown is not empty %}
+                      <span class="u-comma-before">{{ child.value.party.address.PostTown }}</span>
+                    {% endif %}
+                    {% if child.value.party.address.PostCode is not empty %}
+                      <span class="u-comma-before">{{ child.value.party.address.PostCode }}</span>
+                    {% endif %}
+                    {% if child.value.party.address.Country is not empty %}
+                      <span class="u-comma-before">{{ child.value.party.address.Country }}</span>
                     {% endif %}
                   {% endif %}
-                {% if child.value.situationDate is not empty %}
-                  {% if child.value.livingSituation == 'In hospital and soon to be discharged' %}
-                    <span class="u-block">Discharge date: {{ child.value.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
-                  {% elseif child.value.livingSituation == 'Removed by Police, powers end soon' %}
-                    <span class="u-block">Date powers end: {{ child.value.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
-                  {% else %}
-                    <span class="u-block">Date this began: {{ child.value.situationDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
-                  {% endif %}
                 {% endif %}
-              {% else %}
-                -
+              {% if child.value is not empty and child.value.party is not empty and child.value.party.addressChangeDate is not empty %}
+                {% if child.value.party.livingSituation is not empty and child.value.party.livingSituation == 'In hospital and soon to be discharged' %}
+                  <span class="u-block">Discharge date: {{ child.value.party.addressChangeDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
+                {% elseif child.value.party.livingSituation is not empty and child.value.livingSituation == 'Removed by Police, powers end soon' %}
+                  <span class="u-block">Date powers end: {{ child.value.party.addressChangeDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
+                {% else %}
+                  <span class="u-block">Date this began: {{ child.value.party.addressChangeDate | date("d MMMM yyyy", existingFormat="yyyy-MM-dd") }}</span>
+                {% endif %}
               {% endif %}
-            </dd>
-          </div>
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Key dates</dt>
+          <dd class="data-list__definition">
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.keyDates is not empty %}
+              <span class="u-block">{{ child.value.party.keyDates }}</span>
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Care and contact plan</dt>
+          <dd class="data-list__definition">
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.careAndContactPlan is not empty %}
+              <span class="u-block">{{ child.value.party.careAndContactPlan }}</span>
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Considering adoption</dt>
+          <dd class="data-list__definition">
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.adoption is not empty %}
+              <span class="u-block">{{ child.value.party.adoption }}</span>
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        {% if child.value is not empty and child.value.party is not empty and child.value.party.adoption == 'Yes' %}
           <div class="data-list__row">
-            <dt class="data-list__title">Key dates</dt>
+            <dt class="data-list__title">Submitting application for a placement order</dt>
             <dd class="data-list__definition">
-              {% if child.value.keyDates is not empty %}
-                <span class="u-block">{{ child.value.keyDates }}</span>
+              {% if child.value.party.placementOrderApplication is not empty %}
+                <span class="u-block">{{ child.value.party.placementOrderApplication }}</span>
               {% else %}
                 -
               {% endif %}
             </dd>
           </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Care and contact plan</dt>
-            <dd class="data-list__definition">
-              {% if child.value.careAndContact is not empty %}
-                <span class="u-block">{{ child.value.careAndContact }}</span>
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Considering adoption</dt>
-            <dd class="data-list__definition">
-              {% if child.value.adoption is not empty %}
-                <span class="u-block">{{ child.value.adoption }}</span>
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          {% if child.value.adoption == 'Yes' %}
+          {% if child.value.party.placementOrderApplication is not empty and
+          child.value.party.placementOrderApplication == 'Yes' %}
             <div class="data-list__row">
-              <dt class="data-list__title">Submitting application for a placement order</dt>
+              <dt class="data-list__title">Court applying for</dt>
               <dd class="data-list__definition">
-                {% if child.value.placementOrderApplication is not empty %}
-                  <span class="u-block">{{ child.value.placementOrderApplication }}</span>
+                {% if child.value.party.placementCourt is not empty %}
+                  <span class="u-block">{{ child.value.party.placementCourt }}</span>
                 {% else %}
                   -
                 {% endif %}
               </dd>
             </div>
-            {% if child.value.placementOrderApplication is not empty and
-            child.value.placementOrderApplication == 'Yes' %}
-              <div class="data-list__row">
-                <dt class="data-list__title">Court applying for</dt>
-                <dd class="data-list__definition">
-                  {% if child.value.placementCourt is not empty %}
-                    <span class="u-block">{{ child.value.placementCourt }}</span>
-                  {% else %}
-                    -
-                  {% endif %}
-                </dd>
-              </div>
-            {% endif %}
           {% endif %}
-          <div class="data-list__row">
-            <dt class="data-list__title">Mother's name</dt>
-            <dd class="data-list__definition">
-              {% if child.value.mothersName is not empty %}
-                {{ child.value.mothersName }}
-              {% else %}
-                -
+        {% endif %}
+        <div class="data-list__row">
+          <dt class="data-list__title">Mother's name</dt>
+          <dd class="data-list__definition">
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.mothersName is not empty %}
+              {{ child.value.party.mothersName }}
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Father's name</dt>
+          <dd class="data-list__definition">
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.fathersName is not empty %}
+              {{ child.value.party.fathersName }}
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Father has parental responsibility</dt>
+          <dd class="data-list__definition">
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.fathersResponsibility is not empty %}
+              {{ child.value.party.fathersResponsibility }}
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Social worker's name</dt>
+          <dd class="data-list__definition">
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.socialWorkerName is not empty %}
+              {{ child.value.party.socialWorkerName }}
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Social worker's telephone number</dt>
+          <dd class="data-list__definition">
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.socialWorkerTelephoneNumber is not empty and child.value.party.socialWorkerTelephoneNumber.telephoneNumber is not empty %}
+              {{ child.value.party.socialWorkerTelephoneNumber.telephoneNumber }}
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Additional needs</dt>
+          <dd class="data-list__definition">
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.additionalNeeds is not empty %}
+              <span class="u-block">{{child.value.party.additionalNeeds}}</span>
+              {% if child.value.party.additionalNeedsDetails is not empty
+              and child.value.party.additionalNeeds != 'No' %}
+                <span class="u-block">{{ child.value.party.additionalNeedsDetails }}</span>
               {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Father's name</dt>
-            <dd class="data-list__definition">
-              {% if child.value.fathersName is not empty %}
-                {{ child.value.fathersName }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Father has parental responsibility</dt>
-            <dd class="data-list__definition">
-              {% if child.value.fathersResponsibility is not empty %}
-                {{ child.value.fathersResponsibility }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Social worker's name</dt>
-            <dd class="data-list__definition">
-              {% if child.value.socialWorkerName is not empty %}
-                {{ child.value.socialWorkerName }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Social worker's telephone number</dt>
-            <dd class="data-list__definition">
-              {% if child.value.socialWorkerTel is not empty %}
-                {{ child.value.socialWorkerTel }}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Additional needs</dt>
-            <dd class="data-list__definition">
-              {% if child.value.additionalNeeds is not empty %}
-                <span class="u-block">{{child.value.additionalNeeds}}</span>
-                {% if child.value.additionalNeedsDetails is not empty
-                and child.value.additionalNeeds != 'No' %}
-                  <span class="u-block">{{ child.value.additionalNeedsDetails }}</span>
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Litigation capacity issues</dt>
+          <dd class="data-list__definition">
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.litigationIssues is not empty %}
+              {% if child.value.party.litigationIssues == 'YES' %}
+                <span class="u-block">Yes</span>
+                {% if child.value.party.litigationIssuesDetails is not empty %}
+                  <span class="u-block">{{ child.value.party.litigationIssuesDetails }}</span>
                 {% endif %}
+              {% elseif child.value.party.litigationIssues == 'NO' %}
+                <span class="u-block">No</span>
               {% else %}
-                -
+                <span class="u-block">Don't know</span>
               {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Litigation capacity issues</dt>
-            <dd class="data-list__definition">
-              {% if child.value.litigationIssues is not empty %}
-                {% if child.value.litigationIssues == 'YES' %}
-                  <span class="u-block">Yes</span>
-                  {% if child.value.litigationIssuesDetails is not empty %}
-                    <span class="u-block">{{ child.value.litigationIssuesDetails }}</span>
-                  {% endif %}
-                {% elseif child.value.litigationIssues == 'NO' %}
-                  <span class="u-block">No</span>
-                {% else %}
-                  <span class="u-block">Don't know</span>
-                {% endif %}
-              {% else %}
-                -
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+        <div class="data-list__row">
+          <dt class="data-list__title">Confidential contact details</dt>
+          <dd class="data-list__definition">
+            {% if child.value is not empty and child.value.party is not empty and child.value.party.detailsHidden is not empty %}
+              <span class="u-block">{{ child.value.party.detailsHidden }}</span>
+              {% if child.value.party.detailsHiddenReason is not empty
+              and child.value.party.detailsHidden != 'No' %}
+                <span class="u-block">{{ child.value.party.detailsHiddenReason }}</span>
               {% endif %}
-            </dd>
-          </div>
-          <div class="data-list__row">
-            <dt class="data-list__title">Confidential contact details</dt>
-            <dd class="data-list__definition">
-              {% if child.value.detailsHidden is not empty %}
-                <span class="u-block">{{ child.value.detailsHidden }}</span>
-                {% if child.value.detailsHiddenReason is not empty
-                and child.value.detailsHidden != 'No' %}
-                  <span class="u-block">{{ child.value.detailsHiddenReason }}</span>
-                {% endif %}
-              {% else %}
-                -
-              {% endif %}
-            </dd>
-          </div>
-        </dl>
-      {% endif %}
-    {% set counter = counter + 1 %}
+            {% else %}
+              -
+            {% endif %}
+          </dd>
+        </div>
+      </dl>
     {% endfor %}
   {% endif %}
   {% if case_data.respondents1 is not empty and case_data.respondents is empty %}

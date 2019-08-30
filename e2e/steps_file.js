@@ -1,9 +1,18 @@
 /* global process */
 const config = require('./config');
 
-const logIn = require('./pages/login.page');
-const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
+const loginPage = require('./pages/login.page');
+const caseViewPage = require('./pages/caseView.page');
 const eventSummaryPage = require('./pages/eventSummary.page');
+const openApplicationEventPage = require('./pages/events/openApplicationEvent.page');
+const ordersAndDirectionsNeededEventPage  = require('./pages/events/enterOrdersAndDirectionsNeededEvent.page');
+const enterHearingNeededEventPage = require('./pages/events/enterHearingNeededEvent.page');
+const enterChildrenEventPage = require('./pages/events/enterChildrenEvent.page');
+const enterApplicantEventPage  = require('./pages/events/enterApplicantEvent.page');
+const enterGroundsEventPage = require('./pages/events/enterGroundsForApplicationEvent.page');
+const uploadDocumentsEventPage = require('./pages/events/uploadDocumentsEvent.page');
+
+const applicant = require('./fixtures/applicant');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
 
@@ -11,8 +20,23 @@ let baseUrl = process.env.URL || 'http://localhost:3451';
 
 module.exports = function () {
   return actor({
-    logInAndCreateCase(username, password) {
-      logIn.signIn(username, password);
+    async signIn(username, password) {
+      this.amOnPage(process.env.URL || 'http://localhost:3451');
+      this.waitForElement('#global-header');
+
+      const user = await this.grabText('#user-name');
+      if (user !== undefined) {
+        if (user.toLowerCase().includes(username)) {
+          return;
+        }
+        this.signOut();
+      }
+
+      loginPage.signIn(username, password);
+    },
+
+    async logInAndCreateCase(username, password) {
+      await this.signIn(username, password);
       this.click('Create Case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       openApplicationEventPage.populateForm();
@@ -46,9 +70,11 @@ module.exports = function () {
       this.seeCurrentUrlEquals(urlNavigatedTo);
     },
 
-    seeDocument(title, name, status, reason = '') {
+    seeDocument(title, name, status = '', reason = '') {
       this.see(title);
-      this.see(status);
+      if (status !== '') {
+        this.see(status);
+      }
       if (reason !== '') {
         this.see(reason);
       } else {
@@ -57,7 +83,7 @@ module.exports = function () {
     },
 
     seeAnswerInTab(questionNo, complexTypeHeading, question, answer) {
-      const complexType = locate(`.//span[text() = '${complexTypeHeading}']`);
+      const complexType = locate(`.//span[text() = "${complexTypeHeading}"]`);
       const questionRow = locate(`${complexType}/../../../table/tbody/tr[${questionNo}]`);
       this.seeElement(locate(`${questionRow}/th/span`).withText(question));
       if (Array.isArray(answer)) {
@@ -76,9 +102,40 @@ module.exports = function () {
       this.wait(2); // in seconds
     },
 
-    navigateToCaseDetails(caseId) {
-      this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${caseId.replace(/\D/g, '')}`);
-      this.waitForText('Sign Out');
+    async navigateToCaseDetails(caseId) {
+      const normalisedCaseId = caseId.replace(/\D/g, '');
+
+      const currentUrl = await this.grabCurrentUrl();
+      if (!currentUrl.replace(/#.+/g, '').endsWith(normalisedCaseId)) {
+        this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
+        this.waitForText('Sign Out');
+      }
+    },
+
+    async enterMandatoryFields () {
+      caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
+      ordersAndDirectionsNeededEventPage.checkCareOrder();
+      this.continueAndSave();
+      caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
+      enterHearingNeededEventPage.enterTimeFrame();
+      this.continueAndSave();
+      caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
+      enterApplicantEventPage.enterApplicantDetails(applicant);
+      this.continueAndSave();
+      caseViewPage.goToNewActions(config.applicationActions.enterChildren);
+      await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
+      this.continueAndSave();
+      caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
+      enterGroundsEventPage.enterThresholdCriteriaDetails();
+      this.continueAndSave();
+      caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+      uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
+      uploadDocumentsEventPage.uploadSocialWorkStatement(config.testFile);
+      uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
+      uploadDocumentsEventPage.uploadCarePlan(config.testFile);
+      uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
+      uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
+      this.continueAndSave();
     },
   });
 };

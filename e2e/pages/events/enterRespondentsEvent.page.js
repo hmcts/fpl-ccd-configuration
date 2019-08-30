@@ -53,7 +53,11 @@ module.exports = {
     }
     I.fillField(this.fields(elementIndex).respondent.placeOfBirth, respondent.placeOfBirth);
     within(this.fields(elementIndex).respondent.address, () => {
-      postcodeLookup.lookupPostcode(respondent.address);
+      if (elementIndex === 0) {
+        postcodeLookup.lookupPostcode(respondent.address);
+      } else {
+        postcodeLookup.enterAddressManually(respondent.address);
+      }
     });
     I.fillField(this.fields(elementIndex).respondent.telephone, respondent.telephone);
   },

@@ -4,14 +4,14 @@ exports.config = {
   output: './output',
   multiple: {
     parallel: {
-      chunks: parseInt(process.env.PARALLEL_CHUNKS || '3'),
+      chunks: parseInt(process.env.PARALLEL_CHUNKS || '5'),
     },
   },
   helpers: {
     Puppeteer: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
-      restart: true,
-      waitForTimeout: 5000,
+      restart: false,
+      waitForTimeout: 7500,
       chrome: {
         ignoreHTTPSErrors: true,
         args: process.env.PROXY_SERVER ? [

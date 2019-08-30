@@ -36,7 +36,7 @@
     "TabID": "CasePeopleTab",
     "TabLabel": "People in the case",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "children",
+    "CaseFieldID": "children1",
     "TabFieldDisplayOrder": 1
   },
   {

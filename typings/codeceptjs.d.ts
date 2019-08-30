@@ -285,11 +285,13 @@ declare namespace CodeceptJS {
     continueAndSubmit() : void,
     seeEventSubmissionConfirmation(event: string) : void,
     clickHyperlink(link: string, urlNavigatedTo: string) : void,
-    seeDocument(title: string, name: string, status: string, reason?: string) : void,
-    seeAnswerInTab(questionNo: string, complexTypeHeading: string, question: string, answer: string) : void,
+    seeDocument(title: string, name: string, status?: string, reason?: string) : void,
+    seeAnswerInTab(questionNo: string | number, complexTypeHeading: string, question: string, answer: string | string[]) : void,
+    signIn(username: string, password: string) : void,
     signOut() : void,
     say(msg: string) : void,
     retryStep(opts: string) : void,
+    enterMandatoryFields() : void,
   }
 
   export interface config {
@@ -390,7 +392,7 @@ declare namespace CodeceptJS {
   export interface enterChildrenPage {
     fields(childNo: string) : void,
     addChild() : void,
-    enterChildDetails(name: string, day: string, month: string, year: string, gender?: string) : void,
+    enterChildDetails(firstName: string, lastName: string, day: string, month: string, year: string, gender?: string) : void,
     defineChildSituation(day: string, month: string, year: string, situation?: string) : void,
     enterAddress(address: string) : void,
     enterKeyDatesAffectingHearing(keyDates?: string) : void,
