@@ -16,6 +16,8 @@ for role in ${roles[@]}; do
   rolesJson=${rolesJson}'{"code":"'${role}'"}'
 done
 
+echo -e "\nCreating IDAM user: ${email}"
+
 userCreationResponse=$(curl -k --show-error --silent --output /dev/null --write-out "%{http_code}" -X POST \
   ${IDAM_API_BASE_URL:-http://localhost:5000}/testing-support/accounts \
   -H "Content-Type: application/json" \
@@ -33,7 +35,7 @@ userCreationResponse=$(curl -k --show-error --silent --output /dev/null --write-
 
 # Unfortunately trying to create the same user throws 403, so we don't know what went wrong
 if [[ $userCreationResponse -eq 403 ]]; then
-  echo -e "\nUser ${email} already exists"
+  echo "User ${email} already exists"
 elif [[ $userCreationResponse -ne 201  ]]; then
   echo "Unexpected HTTP status code from IDAM: ${userCreationResponse}"
   exit 1
