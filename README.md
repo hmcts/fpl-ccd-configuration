@@ -24,12 +24,13 @@ Creating and starting containers:
 ./ccd compose up -d
 ```
 
-Add users and roles:
+Add services, roles and users (needs to be run in below order):
 
 ```bash
 $ ./bin/configurer/add-services.sh
 $ ./bin/configurer/add-roles.sh
 $ ./bin/configurer/add-users.sh
+
 ```
 
 Load CCD definition:

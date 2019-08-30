@@ -8,6 +8,9 @@ ${dir}/utils/idam-add-role.sh "ccd-import"
 ${dir}/utils/idam-add-role.sh "caseworker"
 ${dir}/utils/idam-add-role.sh "caseworker-publiclaw"
 
+# User used during the CCD import and ccd-role creation
+${dir}/utils/idam-create-caseworker.sh ccd.docker.default@hmcts.net ccd-import CCD_Docker
+
 ${dir}/utils/ccd-add-role.sh caseworker-publiclaw-solicitor
 ${dir}/utils/idam-add-role.sh "caseworker-publiclaw-solicitor"
 ${dir}/utils/ccd-add-role.sh caseworker-publiclaw-courtadmin

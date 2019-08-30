@@ -24,7 +24,7 @@ STATUS=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: applic
     "oauth2ClientSecret": "'${CLIENT_SECRET}'",
     "oauth2RedirectUris": '${REDIRECT_URLS}',
     "oauth2Scope": "openid profile authorities acr roles search-user",
-    "selfRegistrationAllowed": true
+    "selfRegistrationAllowed": '${SELF_REG}'
 }')
 
 if [ $STATUS -eq 201 ]; then
