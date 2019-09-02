@@ -404,7 +404,7 @@ Scenario('local authority enters decision proposal', (I, caseViewPage, enterDeci
   caseViewPage.goToNewActions(config.applicationActions.enterDecisionProposal);
   enterDecisionProposalEventPage.selectDecisionProposal('Lay justices');
   enterDecisionProposalEventPage.enterProposalReason('test');
-  I.continueAndSave();
+  I.seeCheckAnswers('Give reason');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterDecisionProposal);
 });
 
