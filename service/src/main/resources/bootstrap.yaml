@@ -5,3 +5,9 @@ spring:
       paths: /mnt/secrets/fpl
       aliases:
         notify-api-key: NOTIFY_API_KEY
+        fpl-case-service-s2s-secret: IDAM_S2S_AUTH_TOTP_SECRET
+        local-authority-email-to-code-mapping: FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING
+        local-authority-code-to-name-mapping: FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING
+        local-authority-user-mapping: FPL_LOCAL_AUTHORITY_USER_MAPPING
+        local-authority-code-to-hmcts-court-mapping: FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING
+        local-authority-code-to-cafcass-mapping: FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING
