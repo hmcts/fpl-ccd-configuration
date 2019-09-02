@@ -1,6 +1,6 @@
 tags:
-  fpl-ccd-stack: true
-  ccd-idam-pr: true
+  fpl-ccd-stack: false
+  ccd-idam-pr: false
 
 java:
   image: ${IMAGE_NAME}
@@ -14,6 +14,11 @@ java:
     FPL_LOCAL_AUTHORITY_USER_MAPPING: ${FPL_LOCAL_AUTHORITY_USER_MAPPING}
     FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING: ${FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING}
     FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING: ${FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING}
+  keyVaults:
+    fpl:
+      resourceGroup: fpl-case-service
+      secrets:
+        - notify-api-key
 
 ccd:
   ingressHost: ${SERVICE_FQDN}

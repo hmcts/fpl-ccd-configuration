@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    propertiesvolume:
+      prefixed: false
+      paths: /mnt/secrets/fpl
+      aliases:
+        notify-api-key: NOTIFY_API_KEY
