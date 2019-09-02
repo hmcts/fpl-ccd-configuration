@@ -1,6 +1,6 @@
 tags:
-  fpl-ccd-stack: false
-  ccd-idam-pr: false
+  fpl-ccd-stack: true
+  ccd-idam-pr: true
 
 java:
   image: ${IMAGE_NAME}
