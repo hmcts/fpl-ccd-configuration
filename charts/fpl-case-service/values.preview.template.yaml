@@ -12,6 +12,12 @@ java:
       resourceGroup: fpl-case-service
       secrets:
         - notify-api-key
+        - fpl-case-service-s2s-secret
+        - local-authority-email-to-code-mapping
+        - local-authority-code-to-name-mapping
+        - local-authority-user-mapping
+        - local-authority-code-to-hmcts-court-mapping
+        - local-authority-code-to-cafcass-mapping
 
 ccd:
   ingressHost: ${SERVICE_FQDN}
