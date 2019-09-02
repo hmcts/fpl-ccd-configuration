@@ -56,6 +56,7 @@ exports.config = {
     enterFamilyManCaseNumberEventPage: './e2e/pages/events/enterFamilyManCaseNumberEvent.page.js',
     uploadStandardDirectionsDocumentEventPage: './e2e/pages/events/uploadStandardDirectionsDocumentEvent.page.js',
     sendCaseToGatekeeperEventPage: './e2e/pages/events/sendCaseToGatekeeperEvent.page.js',
+    createNoticeOfProceedingsEventPage: './e2e/pages/events/createNoticeOfProceedingsEvent.page.js',
   },
   plugins: {
     autoDelay: {

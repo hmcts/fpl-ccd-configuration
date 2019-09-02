@@ -81,3 +81,15 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', (I, ca
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 });
+
+Scenario('HMCTS admin creates c6 and c6a documents', (I, caseViewPage, enterFamilyManCaseNumberEventPage, createNoticeOfProceedingsEventPage) => {
+  caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+  enterFamilyManCaseNumberEventPage.enterCaseID();
+  I.continueAndSave();
+  // TODO
+  // Enter hearing details
+  caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
+  createNoticeOfProceedingsEventPage.checkC6();
+  createNoticeOfProceedingsEventPage.checkC6A();
+  I.continueAndSubmit();
+});
