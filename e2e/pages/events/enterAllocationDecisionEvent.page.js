@@ -7,7 +7,7 @@ module.exports = {
     proposalReason: '#decisionProposal_proposalReason',
   },
 
-  selectDecisionProposal(proposal) {
+  selectAllocationDecision(proposal) {
     I.waitForElement(this.fields.decisionProposalRadioGroup);
     within(this.fields.decisionProposalRadioGroup, () => {
       I.click(locate('label').withText(proposal));

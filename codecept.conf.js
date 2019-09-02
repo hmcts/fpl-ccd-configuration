@@ -53,7 +53,7 @@ exports.config = {
 
 
     enterAllocationProposalEventPage: './e2e/pages/events/enterAllocationProposalEvent.page.js',
-    enterDecisionProposalEventPage: './e2e/pages/events/enterDecisionProposalEvent.page.js',
+    enterAllocationDecisionEventPage: './e2e/pages/events/enterAllocationDecisionEvent.page.js',
     enterAttendingHearingEventPage: './e2e/pages/events/enterAttendingHearingEvent.page.js',
     uploadDocumentsEventPage: './e2e/pages/events/uploadDocumentsEvent.page.js',
     enterFamilyManCaseNumberEventPage: './e2e/pages/events/enterFamilyManCaseNumberEvent.page.js',
