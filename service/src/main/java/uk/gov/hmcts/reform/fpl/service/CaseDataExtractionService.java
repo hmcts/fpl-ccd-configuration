@@ -18,18 +18,25 @@ import java.util.stream.Collectors;
 public class CaseDataExtractionService {
     public Map<String, String> getNoticeOfProceedingTemplateData(CaseData caseData) {
         return Map.of(
-            "familyManCaseNumber", caseData.getFamilyManCaseNumber() != null
-                ? caseData.getFamilyManCaseNumber() : "",
+            "familyManCaseNumber", StringUtils.defaultIfBlank(caseData.getFamilyManCaseNumber(), ""),
             "todaysDate", LocalDateTime.now().toString(),
             "applicantName", getFirstApplicantName(caseData),
-            "orderTypes", caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
-                ? StringUtils.join(caseData.getOrders().getOrderType(), ", ") : "",
+            "orderTypes", getOrderTypes(caseData),
             "childrenNames", getAllChildrenNames(caseData),
             "hearingDate", "",
-            "venue", "",
+            "hearingVenue", "",
             "preHearingAttendance", "",
             "hearingTime", ""
         );
+    }
+
+    private String getOrderTypes(CaseData caseData) {
+        if (caseData.getOrders() == null || caseData.getOrders().getOrderType() == null) {
+            return "";
+        } else {
+            return StringUtils.defaultIfBlank(StringUtils.join(caseData.getOrders().getOrderType(), ", "),
+                "");
+        }
     }
 
     private String getFirstApplicantName(CaseData caseData) {

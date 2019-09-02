@@ -66,7 +66,7 @@ public class DocumentGeneratorService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        DocmosisRequest requestBody = new DocmosisRequest(docmosisTemplate.getTemplateName(),
+        DocmosisRequest requestBody = new DocmosisRequest(docmosisTemplate.getTemplate(),
             templateData);
 
         HttpEntity<DocmosisRequest> request = new HttpEntity<>(requestBody, headers);
@@ -79,7 +79,7 @@ public class DocumentGeneratorService {
             System.out.println("body" +  ex.getResponseBodyAsString());
         }
 
-        return new DocmosisDocument(docmosisTemplate.getDocumentName(), response);
+        return new DocmosisDocument(docmosisTemplate.getDocumentTitle(), response);
     }
 
     static class DocmosisRequest {

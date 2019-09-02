@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +10,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.interfaces.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.EventValidationService;
@@ -17,10 +22,10 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES;
@@ -73,39 +78,61 @@ public class NoticeOfProceedingsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
 
-        Map<String, String> placeholders = caseDataExtractionService
+        Map<String, String> templateData = caseDataExtractionService
             .getNoticeOfProceedingTemplateData(caseData);
+
         List<DocmosisTemplates> templateTypes = getDocmosisTemplates(caseData);
 
-        Map<String, Object> data = caseDetails.getData();
+        List<Document> uploadedDocuments = generateAndUploadDocuments(userId, authorization, templateData,
+            templateTypes);
 
-        templateTypes.stream()
-            .flatMap(templateType -> Stream.of(documentGeneratorService.generateDocmosisDocument(placeholders,
-                templateType)))
-            .flatMap(docmosisDocument -> Stream.of(uploadDocumentService.uploadPDF(userId, authorization,
-                docmosisDocument.getBytes(), docmosisDocument.getDocumentName())))
-            .forEach(uploadedDocument -> {
-                data.put(String.format("%s_document", uploadedDocument.originalDocumentName),
-                    uploadedDocument.links.binary.href);
-            });
+        List<Element<DocumentReference>> noticeOfProceedings = uploadedDocuments.stream()
+            .map(document -> {
+                return Element.<DocumentReference>builder()
+                    .id(UUID.randomUUID())
+                    .value(DocumentReference.builder()
+                        .filename(document.originalDocumentName)
+                        .url(document.links.self.href)
+                        .binaryUrl(document.links.binary.href)
+                        .build())
+                    .build();
+            }).collect(Collectors.toList());
+
+        Map<String, Object> data = caseDetails.getData();
+        data.put("NoticeOfProceedingsBundle", noticeOfProceedings);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
     }
 
+    private List<Document> generateAndUploadDocuments(String userId,
+                                                      String authorization,
+                                                      Map<String, String> templatePlaceholders,
+                                                      List<DocmosisTemplates> docmosisTemplates) {
+        List<DocmosisDocument> docmosisDocuments = docmosisTemplates.stream()
+            .map(template -> documentGeneratorService.generateDocmosisDocument(templatePlaceholders, template))
+            .collect(Collectors.toList());
+
+        return docmosisDocuments.stream()
+            .map(document -> uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
+                document.getDocumentTitle() + ".pdf"))
+            .collect(Collectors.toList());
+    }
+
     private List<DocmosisTemplates> getDocmosisTemplates(CaseData caseData) {
-        List<DocmosisTemplates> templateTypes = Collections.emptyList();
+        ImmutableList.Builder<DocmosisTemplates> templateTypes = ImmutableList.builder();
 
         if (caseData.getProceedingTypes() != null
             && caseData.getProceedingTypes().contains(NOTICE_OF_PROCEEDINGS_FOR_PARTIES)) {
             templateTypes.add(C6);
+        }
 
-        } else if (caseData.getProceedingTypes() != null
+         if (caseData.getProceedingTypes() != null
             && caseData.getProceedingTypes().contains(NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES)) {
             templateTypes.add(C6A);
         }
 
-        return templateTypes;
+        return templateTypes.build();
     }
 }

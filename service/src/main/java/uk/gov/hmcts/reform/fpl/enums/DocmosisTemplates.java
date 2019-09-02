@@ -1,22 +1,20 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
 public enum DocmosisTemplates {
-    C6("C6.docx", "c6"),
-    C6A("C6a.docx", "c6a");
+    C6("C6.docx", "Notice_of_proceedings_(c6)"),
+    C6A("C6a.docx", "Notice_of_proceedings_(c6a)");
 
-    private final String templateName;
-    private final String documentName;
+    private final String template;
+    private final String documentTitle;
 
-    DocmosisTemplates(String templateName, String documentName) {
-        this.templateName = templateName;
-        this.documentName = documentName;
+    DocmosisTemplates(String template, String documentTitle) {
+        this.template = template;
+        this.documentTitle = documentTitle;
     }
 
-    public String getTemplateName() {
-        return templateName;
+    public String getTemplate() {
+        return template;
     }
 
-    public String getDocumentName() {
-        return documentName;
-    }
+    public String getDocumentTitle() { return documentTitle; }
 }

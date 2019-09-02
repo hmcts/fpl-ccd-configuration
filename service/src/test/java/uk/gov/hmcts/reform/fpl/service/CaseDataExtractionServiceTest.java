@@ -38,7 +38,7 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("orderTypes")).isEqualTo("");
         assertThat(templateData.get("childrenNames")).isEqualTo("");
         assertThat(templateData.get("hearingDate")).isEqualTo("");
-        assertThat(templateData.get("venue")).isEqualTo("");
+        assertThat(templateData.get("hearingVenue")).isEqualTo("");
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("");
         assertThat(templateData.get("hearingTime")).isEqualTo("");
     }
@@ -83,7 +83,7 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("orderTypes")).isEqualTo("CARE_ORDER, EDUCATION_SUPERVISION_ORDER");
         assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark");
         assertThat(templateData.get("hearingDate")).isEqualTo("");
-        assertThat(templateData.get("venue")).isEqualTo("");
+        assertThat(templateData.get("hearingVenue")).isEqualTo("");
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("");
         assertThat(templateData.get("hearingTime")).isEqualTo("");
 

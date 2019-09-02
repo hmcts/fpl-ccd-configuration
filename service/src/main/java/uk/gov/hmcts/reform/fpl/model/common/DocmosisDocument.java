@@ -8,6 +8,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class DocmosisDocument {
-    private final String documentName;
+    private final String documentTitle;
     private final byte[] bytes;
 }

@@ -110,7 +110,6 @@ public class CaseSubmissionController {
             Pair.of("userFullName", userDetailsService.getUserName(authorization))
         );
 
-//        generateInDocmosisAndSaveToDisk(caseDetails);
         Document document = uploadDocumentService.uploadPDF(userId, authorization, pdf, buildFileName(caseDetails));
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
@@ -128,18 +127,6 @@ public class CaseSubmissionController {
             .data(data)
             .build();
     }
-
-//    private void generateInDocmosisAndSaveToDisk(CaseDetails caseDetails) {
-//        Map<String, Object> data = caseDetails.getData();
-//
-//        Map<String, String> placeholders = Map.of("applicant", getApplicantName());
-//        byte[] bytes = documentGeneratorService.generatePDF(placeholders, TornadoDocumentTemplates.C6);
-//        try {
-//            IOUtils.write(bytes, new FileOutputStream("test.pdf"));
-//        } catch (IOException e) {
-//            log.error("Can't save generated document to disc", e);
-//        }
-//    }
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(
