@@ -3,14 +3,7 @@ java:
   environment:
     IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
     IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
-    IDAM_S2S_AUTH_TOTP_SECRET: fake-secret
     CORE_CASE_DATA_API_URL: http://ccd-data-store-api-aat.service.core-compute-aat.internal
     DOCUMENT_MANAGEMENT_URL: http://dm-store-aat.service.core-compute-aat.internal
     CCD_UI_BASE_URL: https://ccd-case-management-web-aat.service.core-compute-aat.internal
-    NOTIFY_API_KEY: fake-key
-    FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING: hmcts.net=>FPLA
-    FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING: FPLA=>FPLA team
-    FPL_LOCAL_AUTHORITY_USER_MAPPING: FPLA=>fake-user-id
-    FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING: FPLA=>FPLA Court:FamilyPublicLaw+fpla-court@gmail.com
-    FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING: FPLA=>FPLA CAFCASS:FamilyPublicLaw+fpla-cafcass@gmail.com
   applicationPort: 4000
