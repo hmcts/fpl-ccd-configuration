@@ -166,7 +166,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "decisionProposal",
+    "CaseFieldID": "allocationDecision",
     "TabFieldDisplayOrder": 8
   },
   {
