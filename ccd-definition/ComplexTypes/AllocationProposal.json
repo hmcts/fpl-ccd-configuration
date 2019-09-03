@@ -5,7 +5,7 @@
     "ListElementCode": "proposal",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "AllocationProposalList",
-    "ElementLabel": "Which level of judge do you recommend for this case test?",
+    "ElementLabel": "Which level of judge do you recommend for this case?",
     "SecurityClassification": "Public"
   },
   {
