@@ -37,7 +37,7 @@ public class CaseData {
     @Valid
     private final List<@NotNull(message = "You need to add details to applicant")
         Element<Applicant>> applicants;
-    private final List<Element<RespondentParty>> respondent;
+    private final List<Element<RespondentParty>> respondents1;
     private final Proceeding proceeding;
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;
@@ -79,5 +79,4 @@ public class CaseData {
     @Valid
     private final List<@NotNull(message = "You need to add details to children")Element<Child>> children1;
     private final List<Element<HearingBooking>> hearingDetails;
-    private final List<Element<Respondent>> respondents1;
 }
