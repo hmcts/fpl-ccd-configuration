@@ -70,18 +70,17 @@ public class NoticeOfProceedingsController {
             .build();
     }
 
-    @PostMapping("/submitted")
-    public AboutToStartOrSubmitCallbackResponse handleSubmitEvent(
+    @PostMapping("/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
             @RequestHeader(value = "authorization") String authorization,
             @RequestHeader(value = "user-id") String userId,
             @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
 
-        Map<String, String> templateData = caseDataExtractionService
-            .getNoticeOfProceedingTemplateData(caseData);
+        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
 
-        List<DocmosisTemplates> templateTypes = getDocmosisTemplates(caseData);
+        List<DocmosisTemplates> templateTypes = getDocmosisTemplateTypes(caseData);
 
         List<Document> uploadedDocuments = generateAndUploadDocuments(userId, authorization, templateData,
             templateTypes);
@@ -98,19 +97,18 @@ public class NoticeOfProceedingsController {
                     .build();
             }).collect(Collectors.toList());
 
-        Map<String, Object> data = caseDetails.getData();
-        data.put("NoticeOfProceedingsBundle", noticeOfProceedings);
+        caseDetails.getData().put("NoticeOfProceedingsBundle", noticeOfProceedings);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
+            .data(caseDetails.getData())
             .build();
     }
 
     private List<Document> generateAndUploadDocuments(String userId,
                                                       String authorization,
                                                       Map<String, String> templatePlaceholders,
-                                                      List<DocmosisTemplates> docmosisTemplates) {
-        List<DocmosisDocument> docmosisDocuments = docmosisTemplates.stream()
+                                                      List<DocmosisTemplates> templates) {
+        List<DocmosisDocument> docmosisDocuments = templates.stream()
             .map(template -> documentGeneratorService.generateDocmosisDocument(templatePlaceholders, template))
             .collect(Collectors.toList());
 
@@ -120,7 +118,7 @@ public class NoticeOfProceedingsController {
             .collect(Collectors.toList());
     }
 
-    private List<DocmosisTemplates> getDocmosisTemplates(CaseData caseData) {
+    private List<DocmosisTemplates> getDocmosisTemplateTypes(CaseData caseData) {
         ImmutableList.Builder<DocmosisTemplates> templateTypes = ImmutableList.builder();
 
         if (caseData.getProceedingTypes() != null
