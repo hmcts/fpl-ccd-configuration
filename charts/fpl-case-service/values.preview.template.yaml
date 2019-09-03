@@ -7,13 +7,17 @@ java:
   ingressHost: ${SERVICE_FQDN}
   environment:
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
-    IDAM_S2S_AUTH_TOTP_SECRET: ${IDAM_S2S_AUTH_TOTP_SECRET}
-    NOTIFY_API_KEY: ${NOTIFY_API_KEY}
-    FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING: ${FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING}
-    FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING: ${FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING}
-    FPL_LOCAL_AUTHORITY_USER_MAPPING: ${FPL_LOCAL_AUTHORITY_USER_MAPPING}
-    FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING: ${FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING}
-    FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING: ${FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING}
+  keyVaults:
+    fpl:
+      resourceGroup: fpl-case-service
+      secrets:
+        - notify-api-key
+        - fpl-case-service-s2s-secret
+        - local-authority-email-to-code-mapping
+        - local-authority-code-to-name-mapping
+        - local-authority-user-mapping
+        - local-authority-code-to-hmcts-court-mapping
+        - local-authority-code-to-cafcass-mapping
 
 ccd:
   ingressHost: ${SERVICE_FQDN}

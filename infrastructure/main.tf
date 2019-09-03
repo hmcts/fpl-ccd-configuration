@@ -62,6 +62,8 @@ module "key-vault" {
   resource_group_name = "${module.case-service.resource_group_name}"
   product_group_object_id = "bb778c38-9e7a-4d03-8dad-4fe0b207e8a3"
   common_tags = "${var.common_tags}"
+  #aks migration
+  managed_identity_object_id = "${var.managed_identity_object_id}"
 }
 
 module "case-service" {
