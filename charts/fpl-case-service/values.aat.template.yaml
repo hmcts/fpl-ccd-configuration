@@ -1,0 +1,25 @@
+tags:
+  fpl-ccd-stack: false
+  ccd-idam-pr: false
+
+java:
+  image: ${IMAGE_NAME}
+  ingressHost: ${SERVICE_FQDN}
+  environment:
+    IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
+    IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
+    CORE_CASE_DATA_API_URL: http://ccd-data-store-api-aat.service.core-compute-aat.internal
+    DOCUMENT_MANAGEMENT_URL: http://dm-store-aat.service.core-compute-aat.internal
+    CCD_UI_BASE_URL: https://ccd-case-management-web-aat.service.core-compute-aat.internal
+  aadIdentityName: family-public-law
+  keyVaults:
+    fpl:
+      resourceGroup: fpl-case-service
+      secrets:
+        - notify-api-key
+        - fpl-case-service-s2s-secret
+        - local-authority-email-to-code-mapping
+        - local-authority-code-to-name-mapping
+        - local-authority-user-mapping
+        - local-authority-code-to-hmcts-court-mapping
+        - local-authority-code-to-cafcass-mapping
