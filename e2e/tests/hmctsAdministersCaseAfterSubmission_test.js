@@ -85,7 +85,6 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', (I, ca
 
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
-  addHearingBookingDetailsEventPage.addHearing();
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   addHearingBookingDetailsEventPage.addHearing();
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
