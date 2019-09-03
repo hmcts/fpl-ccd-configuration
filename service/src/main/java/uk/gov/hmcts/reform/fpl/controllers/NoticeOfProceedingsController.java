@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -70,8 +71,8 @@ public class NoticeOfProceedingsController {
             .build();
     }
 
-    @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
             @RequestHeader(value = "authorization") String authorization,
             @RequestHeader(value = "user-id") String userId,
             @RequestBody @NotNull CallbackRequest callbackRequest) {
@@ -85,19 +86,18 @@ public class NoticeOfProceedingsController {
         List<Document> uploadedDocuments = generateAndUploadDocuments(userId, authorization, templateData,
             templateTypes);
 
-        List<Element<DocumentReference>> noticeOfProceedings = uploadedDocuments.stream()
+        List<Element<Map<Object, Object>>> noticeOfProceedings = uploadedDocuments.stream()
             .map(document -> {
-                return Element.<DocumentReference>builder()
+                return Element.<Map<Object, Object>>builder()
                     .id(UUID.randomUUID())
-                    .value(DocumentReference.builder()
-                        .filename(document.originalDocumentName)
-                        .url(document.links.self.href)
-                        .binaryUrl(document.links.binary.href)
-                        .build())
-                    .build();
+                    .value("document", ImmutableMap.of(
+                        "document_url", document.links.self.href,
+                        "document_filename", document.originalDocumentName,
+                        "document_binary_url", document.links.binary.href
+                    )).build()
             }).collect(Collectors.toList());
 
-        caseDetails.getData().put("NoticeOfProceedingsBundle", noticeOfProceedings);
+        caseDetails.getData().put("noticeOfProceedingsBundle", noticeOfProceedings);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

@@ -19,7 +19,6 @@
     "DisplayContext": "MANDATORY",
     "PageID": 1,
     "PageDisplayOrder": 1,
-    "PageColumnNumber": 1,
-    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/notice-of-proceedings/mid-event"
+    "PageColumnNumber": 1
   }
 ]
