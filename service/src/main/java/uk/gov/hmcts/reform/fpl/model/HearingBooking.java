@@ -11,12 +11,12 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class HearingBooking {
-    private final String hearingType;
+    private final String type;
     private final String hearingTypeDetails;
-    private final String hearingVenue;
+    private final String venue;
     private final LocalDate hearingDate;
     private final String preHearingAttendance;
-    private final String hearingTime;
+    private final String time;
     private final List<String> hearingNeededDetails;
     private final String hearingNeededGiveDetails;
     private final String judgeTitle;

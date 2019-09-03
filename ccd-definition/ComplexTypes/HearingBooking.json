@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "hearingType",
+    "ListElementCode": "type",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "HearingTypeList",
     "ElementLabel": "Type of hearing",
@@ -20,7 +20,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "hearingVenue",
+    "ListElementCode": "venue",
     "FieldType": "Text",
     "ElementLabel": "Venue",
     "SecurityClassification": "Public"
@@ -46,7 +46,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "hearingTime",
+    "ListElementCode": "time",
     "FieldType": "Text",
     "ElementLabel": "Hearing time",
     "HintText": "For example, 2:30pm",

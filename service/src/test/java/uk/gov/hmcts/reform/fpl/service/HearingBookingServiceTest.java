@@ -32,12 +32,12 @@ public class HearingBookingServiceTest {
             .hearingDetails(
                 ImmutableList.of(Element.<HearingBooking>builder()
                     .value(
-                        HearingBooking.builder().hearingTime("2.30").build())
+                        HearingBooking.builder().time("2.30").build())
                     .build()))
             .build();
 
         List<Element<HearingBooking>> hearingList = service.expandHearingBookingCollection(caseData);
 
-        assertThat(hearingList.get(0).getValue().getHearingTime()).isEqualTo("2.30");
+        assertThat(hearingList.get(0).getValue().getTime()).isEqualTo("2.30");
     }
 }

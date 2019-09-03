@@ -4,17 +4,17 @@ module.exports = {
   fields: function (index) {
     return {
       hearingBooking: {
-        hearingType: {
-          caseManagement: `#hearingDetails_${index}_hearingType-CASE_MANAGEMENT`,
+        type: {
+          caseManagement: `#hearingDetails_${index}_type-CASE_MANAGEMENT`,
         },
-        hearingVenue: `#hearingDetails_${index}_hearingVenue`,
+        venue: `#hearingDetails_${index}_venue`,
         date: {
           day: `#hearingDetails_${index}_hearingDate-day`,
           month: `#hearingDetails_${index}_hearingDate-month`,
           year: `#hearingDetails_${index}_hearingDate-year`,
         },
         preHearingAttendance: `#hearingDetails_${index}_preHearingAttendance`,
-        hearingTime: `#hearingDetails_${index}_hearingTime`,
+        time: `#hearingDetails_${index}_time`,
         hearingNeedsBooked: {
           interpreter: `#hearingDetails_${index}_hearingNeededDetails-INTERPRETER`,
           welsh: `#hearingDetails_${index}_hearingNeededDetails-SPOKEN_OR_WRITTEN_WELSH`,
@@ -36,13 +36,13 @@ module.exports = {
   async enterHearingDetails(hearingDetails) {
     const elementIndex = await this.getActiveElementIndex();
 
-    I.click(this.fields(elementIndex).hearingBooking.hearingType);
-    await I.fillField(this.fields(elementIndex).hearingBooking.hearingVenue, hearingDetails.hearingVenue);
+    I.click(this.fields(elementIndex).hearingBooking.type);
+    await I.fillField(this.fields(elementIndex).hearingBooking.venue, hearingDetails.venue);
     I.fillField(this.fields(elementIndex).hearingBooking.date.day, hearingDetails.date.day);
     I.fillField(this.fields(elementIndex).hearingBooking.date.month, hearingDetails.date.month);
     I.fillField(this.fields(elementIndex).hearingBooking.date.year, hearingDetails.date.year);
     I.fillField(this.fields(elementIndex).hearingBooking.preHearingAttendance, hearingDetails.preHearingAttendance);
-    I.fillField(this.fields(elementIndex).hearingBooking.hearingTime, hearingDetails.hearingTime);
+    I.fillField(this.fields(elementIndex).hearingBooking.time, hearingDetails.time);
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.interpreter);
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.welsh);
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.somethingElse);

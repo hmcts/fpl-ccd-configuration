@@ -1,15 +1,15 @@
 module.exports = [
   {
     caseManagement: 'Case management',
-    hearingVenue: 'Venue',
+    venue: 'Venue',
     date: {
       day: '01',
       month: '01',
       year: '2050',
     },
     preHearingAttendance: 'Pre hearing attendance',
-    hearingTime: 'hearing time',
-    hearingType: {
+    time: 'hearing time',
+    type: {
       interpreter: 'Interpreter',
       welsh: 'Spoken or written Welsh',
       somethingElse: 'Something else',
@@ -20,15 +20,15 @@ module.exports = [
   },
   {
     caseManagement: 'Case management',
-    hearingVenue: 'Venue',
+    venue: 'Venue',
     date: {
       day: '02',
       month: '02',
       year: '2060',
     },
     preHearingAttendance: 'Pre hearing attendance',
-    hearingTime: '2.30',
-    hearingType: {
+    time: '2.30',
+    type: {
       interpreter: 'Interpreter',
       welsh: 'Spoken or written Welsh',
       somethingElse: 'Something else',
