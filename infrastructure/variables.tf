@@ -47,3 +47,7 @@ variable "idam_api_url" {
 variable "ccd_ui_base_url" {
   type = "string"
 }
+
+variable "managed_identity_object_id" {
+  default = ""
+}
