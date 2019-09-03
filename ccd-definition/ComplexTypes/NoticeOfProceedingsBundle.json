@@ -4,7 +4,7 @@
     "ID": "NoticeOfProceedingsBundle",
     "ListElementCode": "document",
     "FieldType": "Document",
-    "ElementLabel": "Upload a file",
+    "ElementLabel": "File name",
     "SecurityClassification": "Public"
   }
 ]

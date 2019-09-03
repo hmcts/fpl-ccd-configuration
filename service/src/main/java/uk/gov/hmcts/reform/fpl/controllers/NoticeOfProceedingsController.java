@@ -86,15 +86,18 @@ public class NoticeOfProceedingsController {
         List<Document> uploadedDocuments = generateAndUploadDocuments(userId, authorization, templateData,
             templateTypes);
 
-        List<Element<Map<Object, Object>>> noticeOfProceedings = uploadedDocuments.stream()
+        List<Map<Object, Object>> noticeOfProceedings = uploadedDocuments.stream()
             .map(document -> {
-                return Element.<Map<Object, Object>>builder()
+                return Element.builder()
                     .id(UUID.randomUUID())
-                    .value("document", ImmutableMap.of(
-                        "document_url", document.links.self.href,
-                        "document_filename", document.originalDocumentName,
-                        "document_binary_url", document.links.binary.href
-                    )).build()
+                    .value(ImmutableMap.of(
+                        "document", ImmutableMap.of(
+                            "document_url", document.links.self.href
+                            "document_filename", document.originalDocumentName
+                            "document_binary_url", document.links.binary.href
+                        )
+                    ))
+                    .build();
             }).collect(Collectors.toList());
 
         caseDetails.getData().put("noticeOfProceedingsBundle", noticeOfProceedings);
