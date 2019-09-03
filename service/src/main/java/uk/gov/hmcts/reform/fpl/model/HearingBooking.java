@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class HearingBooking {
     private final String type;
-    private final String hearingTypeDetails;
+    private final String typeDetails;
     private final String venue;
     private final LocalDate date;
     private final String preHearingAttendance;
