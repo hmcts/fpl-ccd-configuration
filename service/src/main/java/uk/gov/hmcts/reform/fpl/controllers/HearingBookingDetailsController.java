@@ -62,7 +62,7 @@ public class HearingBookingDetailsController {
 
         caseData.getHearingDetails().stream()
             .map(Element::getValue)
-            .map(HearingBooking::getHearingDate)
+            .map(HearingBooking::getDate)
             .filter(Objects::nonNull)
             .filter(hearingDate -> !hearingDate.isAfter(LocalDate.now()))
             .findAny()

@@ -9,20 +9,20 @@ module.exports = {
         },
         venue: `#hearingDetails_${index}_venue`,
         date: {
-          day: `#hearingDetails_${index}_hearingDate-day`,
-          month: `#hearingDetails_${index}_hearingDate-month`,
-          year: `#hearingDetails_${index}_hearingDate-year`,
+          day: `#hearingDetails_${index}_date-day`,
+          month: `#hearingDetails_${index}_date-month`,
+          year: `#hearingDetails_${index}_date-year`,
         },
         preHearingAttendance: `#hearingDetails_${index}_preHearingAttendance`,
         time: `#hearingDetails_${index}_time`,
         hearingNeedsBooked: {
-          interpreter: `#hearingDetails_${index}_hearingNeededDetails-INTERPRETER`,
-          welsh: `#hearingDetails_${index}_hearingNeededDetails-SPOKEN_OR_WRITTEN_WELSH`,
-          somethingElse: `#hearingDetails_${index}_hearingNeededDetails-SOMETHING_ELSE`,
+          interpreter: `#hearingDetails_${index}_hearingNeedsBooked-INTERPRETER`,
+          welsh: `#hearingDetails_${index}_hearingNeedsBooked-SPOKEN_OR_WRITTEN_WELSH`,
+          somethingElse: `#hearingDetails_${index}_hearingNeedsBooked-SOMETHING_ELSE`,
         },
-        giveDetails: `#hearingDetails_${index}_hearingNeededGiveDetails`,
+        giveDetails: `#hearingDetails_${index}_hearingNeedsDetails`,
         judgeTitle: `#hearingDetails_${index}_judgeTitle`,
-        judgeFullName: `#hearingDetails_${index}_judgeFullName`,
+        judgeName: `#hearingDetails_${index}_judgeName`,
       },
     };
   },
@@ -48,7 +48,7 @@ module.exports = {
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.somethingElse);
     I.fillField(this.fields(elementIndex).hearingBooking.giveDetails, hearingDetails.giveDetails);
     I.fillField(this.fields(elementIndex).hearingBooking.judgeTitle, hearingDetails.judgeTitle);
-    I.fillField(this.fields(elementIndex).hearingBooking.judgeFullName, hearingDetails.fullName);
+    I.fillField(this.fields(elementIndex).hearingBooking.judgeName, hearingDetails.fullName);
   },
 
   async getActiveElementIndex() {

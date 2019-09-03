@@ -88,7 +88,7 @@ class HearingBookingDetailsControllerTest {
 
     private HearingBooking createHearing(LocalDate hearingDate) {
         return HearingBooking.builder()
-            .hearingDate(hearingDate)
+            .date(hearingDate)
             .build();
     }
 

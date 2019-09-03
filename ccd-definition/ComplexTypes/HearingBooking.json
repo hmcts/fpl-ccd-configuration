@@ -4,14 +4,14 @@
     "ID": "HearingBooking",
     "ListElementCode": "type",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "HearingTypeList",
+    "FieldTypeParameter": "HearingType",
     "ElementLabel": "Type of hearing",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "hearingTypeDetails",
+    "ListElementCode": "typeDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
     "FieldShowCondition": "type=\"OTHER\"",
@@ -28,7 +28,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "hearingDate",
+    "ListElementCode": "date",
     "FieldType": "Date",
     "ElementLabel": "Date",
     "HintText": "For example, 27 09 2019",
@@ -55,7 +55,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "hearingNeededDetails",
+    "ListElementCode": "hearingNeedsBooked",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "HearingNeedsBooked",
     "ElementLabel": "Hearing needs booked",
@@ -64,10 +64,10 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "hearingNeededGiveDetails",
+    "ListElementCode": "hearingNeedsDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
-    "FieldShowCondition": "hearingNeededDetails!=\"NONE\"",
+    "FieldShowCondition": "hearingNeedsBooked!=\"NONE\"",
     "SecurityClassification": "Public"
   },
   {
@@ -90,7 +90,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "judgeFullName",
+    "ListElementCode": "judgeName",
     "FieldType": "Text",
     "ElementLabel": "Full name",
     "SecurityClassification": "Public"
