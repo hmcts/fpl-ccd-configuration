@@ -19,6 +19,7 @@ Before(async (I) => {
     caseId = await I.grabTextFrom('.heading-h1');
     console.log(`Application draft ${caseId} has been created`);
   } else {
+    await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.navigateToCaseDetails(caseId);
   }
 });
@@ -398,14 +399,6 @@ Scenario('local authority enters allocation proposal', (I, caseViewPage, enterAl
   enterAllocationProposalEventPage.enterProposalReason('test');
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationProposal);
-});
-
-Scenario('local authority enters decision proposal', (I, caseViewPage, enterAllocationDecisionEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
-  enterAllocationDecisionEventPage.selectAllocationDecision('Lay justices');
-  enterAllocationDecisionEventPage.enterProposalReason('test');
-  I.seeCheckAnswers('Give reason');
-  I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
 });
 
 Scenario('local authority enters attending hearing',(I, caseViewPage, enterAttendingHearingEventPage) => {
