@@ -75,7 +75,7 @@
     "ID": "HearingBooking",
     "ListElementCode": "judgeMagistrateLabel",
     "FieldType": "Label",
-    "ElementLabel": "## Judge or magistrate",
+    "ElementLabel": "### Judge or magistrate",
     "SecurityClassification": "Public"
   },
   {

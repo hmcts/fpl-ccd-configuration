@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
 import java.time.LocalDate;
@@ -24,10 +25,24 @@ import java.util.Objects;
 @RequestMapping("/callback/add-hearing-bookings")
 public class HearingBookingDetailsController {
     private final MapperService mapperService;
+    private final HearingBookingService hearingBookingService;
 
     @Autowired
-    public HearingBookingDetailsController(MapperService mapperService) {
+    public HearingBookingDetailsController(MapperService mapperService, HearingBookingService hearingBookingService) {
         this.mapperService = mapperService;
+        this.hearingBookingService = hearingBookingService;
+    }
+
+    @PostMapping("/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
+
+        caseDetails.getData().put("hearingDetails", hearingBookingService.expandHearingBookingCollection(caseData));
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .build();
     }
 
     @PostMapping("/mid-event")
