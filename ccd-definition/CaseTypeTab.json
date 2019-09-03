@@ -156,16 +156,6 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "allocationProposal",
-    "TabFieldDisplayOrder": 8
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "LegalBasisTab",
-    "TabLabel": "Legal basis",
-    "TabDisplayOrder": 5,
     "CaseFieldID": "allocationDecision",
     "TabFieldDisplayOrder": 8
   },
@@ -176,8 +166,18 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "hearingPreferences",
+    "CaseFieldID": "allocationProposal",
     "TabFieldDisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "hearingPreferences",
+    "TabFieldDisplayOrder": 10
   },
   {
     "LiveFrom": "01/01/2017",
