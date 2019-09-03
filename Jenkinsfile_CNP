@@ -50,6 +50,7 @@ withPipeline(type, product, component) {
     loadVaultSecrets(serviceSecrets + otherSecrets)
   }
   enableDockerBuild()
+  enableAksStagingDeployment()
   installCharts()
   enableSlackNotifications('#fpla-tech')
 
