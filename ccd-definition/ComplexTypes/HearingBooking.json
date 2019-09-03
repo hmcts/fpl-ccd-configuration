@@ -14,7 +14,7 @@
     "ListElementCode": "hearingTypeDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
-    "FieldShowCondition": "hearingType=\"OTHER\"",
+    "FieldShowCondition": "type=\"OTHER\"",
     "SecurityClassification": "Public"
   },
   {
