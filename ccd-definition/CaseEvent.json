@@ -290,8 +290,8 @@
     "Name": "Allocation decision",
     "Description": "Entering other proceedings and allocation proposals",
     "DisplayOrder": 19,
-    "PreConditionState(s)": "Open",
-    "PostConditionState": "Open",
+    "PreConditionState(s)": "Submitted",
+    "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
     "EndButtonLabel": "Save and continue"
