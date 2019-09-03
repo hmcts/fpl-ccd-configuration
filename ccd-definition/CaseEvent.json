@@ -294,6 +294,7 @@
     "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
     "ShowSummary": "Y",
+    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
   {
