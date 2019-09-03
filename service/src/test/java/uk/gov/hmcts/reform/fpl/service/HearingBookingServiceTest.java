@@ -23,7 +23,7 @@ public class HearingBookingServiceTest {
 
         List<Element<HearingBooking>> alteredHearingList = service.expandHearingBookingCollection(caseData);
 
-        assertThat(alteredHearingList.get(0).getValue()).isNotNull();
+        assertThat(alteredHearingList.size()).isEqualTo(1);
     }
 
     @Test
@@ -38,6 +38,6 @@ public class HearingBookingServiceTest {
 
         List<Element<HearingBooking>> hearingList = service.expandHearingBookingCollection(caseData);
 
-        assertThat(hearingList.get(0).getValue().getHearingTime()).contains("2.30");
+        assertThat(hearingList.get(0).getValue().getHearingTime()).isEqualTo("2.30");
     }
 }

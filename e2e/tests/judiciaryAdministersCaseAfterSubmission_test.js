@@ -3,7 +3,7 @@ const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 
 let caseId;
 
-Feature('Judiciary Case administration after submission');
+Feature('Judiciary case administration after submission');
 
 Before(async (I, caseViewPage, submitApplicationEventPage) => {
   if (!caseId) {
