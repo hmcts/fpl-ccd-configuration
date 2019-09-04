@@ -1,7 +1,3 @@
-tags:
-  fpl-ccd-stack: false
-  ccd-idam-pr: false
-
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
