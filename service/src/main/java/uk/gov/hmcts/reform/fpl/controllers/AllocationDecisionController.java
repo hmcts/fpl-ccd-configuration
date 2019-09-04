@@ -6,11 +6,7 @@ import io.swagger.annotations.Api;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -22,22 +18,19 @@ import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
 
+import javax.validation.constraints.NotNull;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.groups.Default;
-
 import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFileName;
 
 @Api
 @RestController
-@RequestMapping("/callback/case-submission")
-public class CaseSubmissionController {
+@RequestMapping("/callback/allocation-decision")
+public class AllocationDecisionController {
 
     private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
     private final UserDetailsService userDetailsService;
@@ -48,7 +41,7 @@ public class CaseSubmissionController {
     private final ObjectMapper mapper;
 
     @Autowired
-    public CaseSubmissionController(
+    public AllocationDecisionController(
         UserDetailsService userDetailsService,
         DocumentGeneratorService documentGeneratorService,
         UploadDocumentService uploadDocumentService,
@@ -77,6 +70,25 @@ public class CaseSubmissionController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
+    }
+
+    @PostMapping("/for-proposal")
+    public AboutToStartOrSubmitCallbackResponse checkIfAllocationProposalIsMissing(
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        Map<String, Object> data = caseDetails.getData();
+
+        data.put("missingProposal", checkProposal(data));
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .build();
+    }
+
+    private String checkProposal(Map<String, Object> data) {
+        return data.containsKey("allocationProposal") ? "" : "Yes";
     }
 
     @PostMapping("/mid-event")
