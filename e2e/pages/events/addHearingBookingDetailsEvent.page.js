@@ -31,13 +31,14 @@ module.exports = {
 
   addHearing() {
     I.click(this.addHearingButton);
+    I.wait(1);
   },
 
   async enterHearingDetails(hearingDetails) {
     const elementIndex = await this.getActiveElementIndex();
 
     I.click(this.fields(elementIndex).hearingBooking.type);
-    await I.fillField(this.fields(elementIndex).hearingBooking.venue, hearingDetails.venue);
+    I.fillField(this.fields(elementIndex).hearingBooking.venue, hearingDetails.venue);
     I.fillField(this.fields(elementIndex).hearingBooking.date.day, hearingDetails.date.day);
     I.fillField(this.fields(elementIndex).hearingBooking.date.month, hearingDetails.date.month);
     I.fillField(this.fields(elementIndex).hearingBooking.date.year, hearingDetails.date.year);
