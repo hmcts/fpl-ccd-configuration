@@ -79,6 +79,25 @@ public class CaseSubmissionController {
             .build();
     }
 
+    @PostMapping("/for-proposal")
+    public AboutToStartOrSubmitCallbackResponse checkIfAllocationProposalIsMissing(
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+        Map<String, Object> data = caseDetails.getData();
+
+        data.put("missingProposal", checkProposal(data));
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .build();
+    }
+
+    private String checkProposal(Map<String, Object> data) {
+        return data.containsKey("allocationProposal") ? "No" : "Yes";
+    }
+
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -88,13 +107,15 @@ public class CaseSubmissionController {
             && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(caseDetails.getData())
-                .errors(caseValidatorService.validateCaseDetails(caseData, Default.class, EPOGroup.class))
+                //HACK CAN'T BE MERGED
+//                .errors(caseValidatorService.validateCaseDetails(caseData, Default.class, EPOGroup.class))
                 .build();
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(caseValidatorService.validateCaseDetails(caseData))
+            // HACK CAN'T BE MERGED
+//            .errors(caseValidatorService.validateCaseDetails(caseData))
             .build();
     }
 

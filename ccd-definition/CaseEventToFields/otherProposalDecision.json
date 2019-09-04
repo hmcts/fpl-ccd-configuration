@@ -9,7 +9,7 @@
   "PageID": 1,
   "PageDisplayOrder": 1,
   "PageColumnNumber": 1,
-  "FieldShowCondition": "allocationProposal!=\"\""
+  "FieldShowCondition": "missingProposal=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -21,7 +21,7 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "allocationProposal!=\"*\""
+    "FieldShowCondition": "missingProposal=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -33,7 +33,7 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "allocationProposal!=\"\""
+    "FieldShowCondition": "missingProposal=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -52,12 +52,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "otherProposalDecision",
-    "CaseFieldID": "allocationProposal",
+    "CaseFieldID": "missingProposal",
     "PageFieldDisplayOrder": 5,
     "DisplayContext": "READONLY",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "allocationDecision CONTAINS \"DO_NOT_DISPLAY\""
+    "ShowSummaryChangeOption": "N",
+    "FieldShowCondition": "allocationDecision CONTAINS \"DO_NOT_SHOW_THIS_FIELD\""
   }
 ]
