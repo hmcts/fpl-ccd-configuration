@@ -9,7 +9,7 @@
   "PageID": 1,
   "PageDisplayOrder": 1,
   "PageColumnNumber": 1,
-  "FieldShowCondition": "missingProposal=\"No\""
+  "FieldShowCondition": "missingProposal!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -21,7 +21,7 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "missingProposal=\"Yes\""
+    "FieldShowCondition": "missingProposal!=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -33,7 +33,7 @@
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "missingProposal=\"No\""
+    "FieldShowCondition": "missingProposal!=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",

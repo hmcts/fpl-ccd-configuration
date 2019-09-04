@@ -95,7 +95,7 @@ public class CaseSubmissionController {
     }
 
     private String checkProposal(Map<String, Object> data) {
-        return data.containsKey("allocationProposal") ? "No" : "Yes";
+        return data.containsKey("allocationProposal") ? "" : "Yes";
     }
 
     @PostMapping("/mid-event")
