@@ -30,6 +30,7 @@ module.exports = {
 
   addNewProceeding() {
     I.click(this.addProceedingButton);
+    I.wait(1);
   },
 
   selectYesForProceeding() {
