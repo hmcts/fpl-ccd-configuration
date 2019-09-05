@@ -84,13 +84,12 @@ public class CaseData {
     @NotBlank(message = "Enter Familyman case number", groups = NoticeOfProceedingsGroup.class)
     private final String familyManCaseNumber;
     private List<ProceedingType> proceedingTypes;
-
     public List<Element<Applicant>> getAllApplicants() {
         return applicants != null ? applicants : new ArrayList<>();
     }
-
     public List<Element<Child>> getAllChildren() {
         return children1 != null ? children1 : new ArrayList<>();
     }
+    @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
 }
