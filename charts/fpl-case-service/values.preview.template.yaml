@@ -7,7 +7,6 @@ java:
   ingressHost: ${SERVICE_FQDN}
   environment:
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
-    FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING: swansea.gov.uk=>FPLA;hillingdon.gov.uk=>HN
   keyVaults:
     fpl:
       resourceGroup: fpl-case-service
