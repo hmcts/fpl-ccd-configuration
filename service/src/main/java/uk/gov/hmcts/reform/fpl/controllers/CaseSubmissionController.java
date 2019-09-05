@@ -101,15 +101,11 @@ public class CaseSubmissionController {
             && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(caseDetails.getData())
-                //HACK CAN'T BE MERGED
-//                .errors(caseValidatorService.validateCaseDetails(caseData, Default.class, EPOGroup.class))
                 .build();
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            // HACK CAN'T BE MERGED
-//            .errors(caseValidatorService.validateCaseDetails(caseData))
             .build();
     }
 
