@@ -289,7 +289,7 @@
     "ID": "otherProposalDecision",
     "Name": "Allocation decision",
     "Description": "Entering other proceedings and allocation proposals",
-    "DisplayOrder": 19,
+    "DisplayOrder": 1,
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
