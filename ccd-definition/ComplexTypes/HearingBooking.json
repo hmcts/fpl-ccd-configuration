@@ -1,0 +1,98 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "HearingType",
+    "ElementLabel": "Type of hearing",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "typeDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "type=\"OTHER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "venue",
+    "FieldType": "Text",
+    "ElementLabel": "Venue",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "date",
+    "FieldType": "Date",
+    "ElementLabel": "Date",
+    "HintText": "For example, 27 09 2019",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "preHearingAttendance",
+    "FieldType": "Text",
+    "ElementLabel": "Pre-hearing attendance",
+    "HintText": "This is usually one hour before the hearing",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "time",
+    "FieldType": "Text",
+    "ElementLabel": "Hearing time",
+    "HintText": "For example, 2:30pm",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "hearingNeedsBooked",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "HearingNeedsBooked",
+    "ElementLabel": "Hearing needs booked",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "hearingNeedsDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "FieldShowCondition": "hearingNeedsBooked!=\"NONE\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "judgeMagistrateLabel",
+    "FieldType": "Label",
+    "ElementLabel": "### Judge or magistrate",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "judgeTitle",
+    "FieldType": "Text",
+    "ElementLabel": "Title",
+    "HintText": "For example, HHJ",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
+    "ListElementCode": "judgeName",
+    "FieldType": "Text",
+    "ElementLabel": "Full name",
+    "SecurityClassification": "Public"
+  }
+]

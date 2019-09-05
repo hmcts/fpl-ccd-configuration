@@ -20,7 +20,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "Solicitor",
     "ListElementCode": "mobile",
-    "FieldType": "Number",
+    "FieldType": "Text",
     "ElementLabel": "Solicitor's mobile number",
     "HintText": "For example, 07665 545327",
     "SecurityClassification": "Public"

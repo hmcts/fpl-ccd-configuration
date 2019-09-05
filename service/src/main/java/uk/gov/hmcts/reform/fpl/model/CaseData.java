@@ -92,4 +92,5 @@ public class CaseData {
     public List<Element<Child>> getAllChildren() {
         return children1 != null ? children1 : new ArrayList<>();
     }
+    private final List<Element<HearingBooking>> hearingDetails;
 }

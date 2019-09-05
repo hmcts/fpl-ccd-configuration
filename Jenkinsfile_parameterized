@@ -9,8 +9,7 @@ properties([
 ])
 
 List<Map<String, Object>> secrets = [
-  secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN'),
-  secret('notify-api-key', 'NOTIFY_API_KEY')
+  secret('address-lookup-api-key', 'ADDRESS_LOOKUP_TOKEN')
 ]
 
 static Map<String, Object> secret(String secretName, String envVariable) {
