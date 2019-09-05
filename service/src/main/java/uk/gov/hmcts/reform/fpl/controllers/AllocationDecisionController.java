@@ -24,7 +24,7 @@ public class AllocationDecisionController {
 
         Map<String, Object> data = caseDetails.getData();
 
-        data.put("missingAllocationDecision", checkProposal(data));
+        data.put("allocationProposalPresent", checkProposal(data));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)

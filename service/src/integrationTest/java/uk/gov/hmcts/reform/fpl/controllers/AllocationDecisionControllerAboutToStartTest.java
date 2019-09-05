@@ -53,7 +53,7 @@ class AllocationDecisionControllerAboutToStartTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getData())
-            .containsEntry("missingAllocationDecision", "Yes");
+            .containsEntry("allocationProposalPresent", "Yes");
     }
 
     @Test
@@ -76,6 +76,6 @@ class AllocationDecisionControllerAboutToStartTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getData())
-            .containsEntry("missingAllocationDecision", "No");
+            .containsEntry("allocationProposalPresent", "No");
     }
 }
