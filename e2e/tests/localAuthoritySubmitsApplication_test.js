@@ -19,7 +19,6 @@ Before(async (I) => {
     caseId = await I.grabTextFrom('.heading-h1');
     console.log(`Application draft ${caseId} has been created`);
   } else {
-    await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.navigateToCaseDetails(caseId);
   }
 });
