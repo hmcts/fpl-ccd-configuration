@@ -19,7 +19,7 @@ public class AllocationDecisionController {
 
         Map<String, Object> data = caseDetails.getData();
 
-        data.put("missingProposal", checkProposal(data));
+        data.put("missingAllocationDecision", checkProposal(data));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -27,6 +27,6 @@ public class AllocationDecisionController {
     }
 
     private String checkProposal(Map<String, Object> data) {
-        return data.containsKey("allocationProposal") ? "" : "Yes";
+        return data.containsKey("allocationProposal") ? "Yes" : "No";
     }
 }
