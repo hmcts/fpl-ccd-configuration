@@ -116,10 +116,15 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(9, 'Hearing 2', 'Full name', hearingDetails[1].fullName);
 });
 
-Scenario('HMCTS admin creates c6 and c6a documents', (I, caseViewPage, enterFamilyManCaseNumberEventPage, createNoticeOfProceedingsEventPage) => {
+Scenario('HMCTS admin creates c6 and c6a documents', async (I, caseViewPage, enterFamilyManCaseNumberEventPage, createNoticeOfProceedingsEventPage, addHearingBookingDetailsEventPage) => {
   caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID();
   I.continueAndSave();
+  caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
+  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
+  addHearingBookingDetailsEventPage.addHearing();
+  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
+  I.continueAndProvideSummary('summary', 'description');
   caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
   createNoticeOfProceedingsEventPage.checkC6();
   createNoticeOfProceedingsEventPage.checkC6A();
