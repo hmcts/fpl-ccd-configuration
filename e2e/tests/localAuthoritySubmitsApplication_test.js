@@ -76,7 +76,7 @@ Scenario('local authority enters hearing', (I, caseViewPage, enterHearingNeededE
   enterHearingNeededEventPage.enterRespondentsAware();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterHearingNeeded);
-  caseViewPage.selectTab(caseViewPage.tabs.hearing);
+  caseViewPage.selectTab(caseViewPage.tabs.hearings);
   I.seeAnswerInTab(1, 'Hearing needed', 'When do you need a hearing?', enterHearingNeededEventPage.fields.timeFrame.sameDay);
   I.seeAnswerInTab(2, 'Hearing needed', 'Give reason', 'test reason');
   I.seeAnswerInTab(3, 'Hearing needed', 'What type of hearing do you need?', enterHearingNeededEventPage.fields.hearingType.contestedICO);
