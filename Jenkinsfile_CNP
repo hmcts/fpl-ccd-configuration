@@ -9,15 +9,8 @@ def component = "case-service"
 
 def serviceSecrets = [
   'fpl-${env}': [
-    secret('fpl-case-service-s2s-secret', 'IDAM_S2S_AUTH_TOTP_SECRET'),
-    secret('notify-api-key', 'NOTIFY_API_KEY'),
     secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
-    secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
-    secret('local-authority-email-to-code-mapping', 'FPL_LOCAL_AUTHORITY_EMAIL_TO_CODE_MAPPING'),
-    secret('local-authority-code-to-name-mapping', 'FPL_LOCAL_AUTHORITY_CODE_TO_NAME_MAPPING'),
-    secret('local-authority-user-mapping', 'FPL_LOCAL_AUTHORITY_USER_MAPPING'),
-    secret('local-authority-code-to-hmcts-court-mapping', 'FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING'),
-    secret('local-authority-code-to-cafcass-mapping', 'FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING')
+    secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD')
   ]
 ]
 
@@ -57,6 +50,7 @@ withPipeline(type, product, component) {
     loadVaultSecrets(serviceSecrets + otherSecrets)
   }
   enableDockerBuild()
+  enableAksStagingDeployment()
   installCharts()
   enableSlackNotifications('#fpla-tech')
 

@@ -377,5 +377,14 @@
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "DeletionConsent",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "hearingDetails",
+    "Label": "Hearing",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "HearingBooking",
+    "SecurityClassification": "Public"
   }
 ]

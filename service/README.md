@@ -48,7 +48,7 @@ You should get a response similar to this:
   {"status":"UP","diskSpace":{"status":"UP","total":249644974080,"free":137188298752,"threshold":10485760}}
 ```
 
-Change the variable for CCD_DEF_CASE_SERVICE_BASE_URL in bin/import-ccd-definition.sh
+Change the variable for CCD_DEF_CASE_SERVICE_BASE_URL in bin/configurer/utils/fpl-process-definition.sh
  to http://fpl-service:4000 - this ensures the CCD use the docker networking to reach
 the service.
 
@@ -60,7 +60,7 @@ Ensure the Spring Boot is started with local profile
 Configure the notify.api_key if necessary (you can pass them as environment variables when IntelliJ 
 starts the application). 
 
-Ensure the variable CCD_DEF_CASE_SERVICE_BASE_URL bin/import-ccd-definition.sh is set to
+Ensure the variable CCD_DEF_CASE_SERVICE_BASE_URL bin/configurer/utils/fpl-process-definition.sh is set to
 http://docker.for.mac.localhost:4000 - this will use the host machine for CCD, reaching 
 locally running application. 
 

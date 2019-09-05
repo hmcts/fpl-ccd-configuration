@@ -75,7 +75,7 @@ Scenario('local authority enters hearing', (I, caseViewPage, enterHearingNeededE
   enterHearingNeededEventPage.enterRespondentsAware();
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterHearingNeeded);
-  caseViewPage.selectTab(caseViewPage.tabs.hearing);
+  caseViewPage.selectTab(caseViewPage.tabs.hearings);
   I.seeAnswerInTab(1, 'Hearing needed', 'When do you need a hearing?', enterHearingNeededEventPage.fields.timeFrame.sameDay);
   I.seeAnswerInTab(2, 'Hearing needed', 'Give reason', 'test reason');
   I.seeAnswerInTab(3, 'Hearing needed', 'What type of hearing do you need?', enterHearingNeededEventPage.fields.hearingType.contestedICO);
@@ -116,7 +116,7 @@ Scenario('local authority enters children', async (I, caseViewPage, enterChildre
   I.seeAnswerInTab(4, 'Party', 'Last name', 'Stark');
   I.seeAnswerInTab(5, 'Party', 'Date of birth', '1 Aug 2015');
   I.seeAnswerInTab(6, 'Party', 'Gender', 'Boy');
-  I.seeAnswerInTab(7, 'Party', 'Describe child\'s situation', 'Living with respondents');
+  I.seeAnswerInTab(7, 'Party', 'Child\'s living situation', 'Living with respondents');
   I.seeAnswerInTab(8, 'Party', 'What date did they start staying here?', '1 Nov 2017');
   I.seeAnswerInTab(1, 'Current address', 'Building and Street', 'Flat 2');
   I.seeAnswerInTab(2, 'Current address', '', 'Caversham House 15-17');
@@ -141,7 +141,7 @@ Scenario('local authority enters children', async (I, caseViewPage, enterChildre
   I.seeAnswerInTab(4, 'Party', 'Last name', 'Wilson');
   I.seeAnswerInTab(5, 'Party', 'Date of birth', '1 Jul 2016');
   I.seeAnswerInTab(6, 'Party', 'Gender', 'Girl');
-  I.seeAnswerInTab(7, 'Party', 'Describe child\'s situation', 'Living with respondents');
+  I.seeAnswerInTab(7, 'Party', 'Child\'s living situation', 'Living with respondents');
   I.seeAnswerInTab(8, 'Party', 'What date did they start staying here?', '2 Nov 2017');
   I.seeAnswerInTab(1, 'Current address', 'Building and Street', '2 Three Tuns Wynd');
   I.seeAnswerInTab(2, 'Current address', '', 'High Street');
