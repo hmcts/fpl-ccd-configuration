@@ -2,7 +2,7 @@ const config = require('../config.js');
 
 let caseId;
 
-Feature('Application draft (populated draft)');
+Feature('Gatekeeper enters allocation decision after submission');
 
 Before(async (I, caseViewPage, submitApplicationEventPage) => {
   if (!caseId) {
