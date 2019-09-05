@@ -259,7 +259,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "missingAllocationDecision",
     "Label": "Missing allocation decision",
-    "FieldType": "Text",
+    "FieldType": "YesOrNo",
     "SecurityClassification": "Public"
   },
   {
