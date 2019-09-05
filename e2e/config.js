@@ -64,6 +64,7 @@ module.exports = {
     amendInternationalElement: 'International element',
     amendOtherProceedings: 'Other proceedings',
     amendAttendingHearing: 'Attending the hearing',
+    addHearingBookingDetails: 'Add hearing details',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',
