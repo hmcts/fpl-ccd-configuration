@@ -79,28 +79,29 @@ public class NoticeOfProceedingsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
 
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
+        Map<String, String> templateData = caseDataExtractionService
+            .getNoticeOfProceedingTemplateData(caseData, caseDetails.getJurisdiction());
 
         List<DocmosisTemplates> templateTypes = getDocmosisTemplateTypes(caseData);
 
         List<Document> uploadedDocuments = generateAndUploadDocuments(userId, authorization, templateData,
             templateTypes);
 
-        List<Map<Object, Object>> noticeOfProceedings = uploadedDocuments.stream()
+        List<Element> documentsBundle = uploadedDocuments.stream()
             .map(document -> {
                 return Element.builder()
                     .id(UUID.randomUUID())
-                    .value(ImmutableMap.of(
-                        "document", ImmutableMap.of(
-                            "document_url", document.links.self.href
-                            "document_filename", document.originalDocumentName
-                            "document_binary_url", document.links.binary.href
-                        )
-                    ))
+                    .value(ImmutableMap.builder()
+                        .put("document", DocumentReference.builder()
+                            .document_filename(document.originalDocumentName)
+                            .document_url(document.links.self.href)
+                            .document_binary_url(document.links.binary.href)
+                            .build())
+                        .build())
                     .build();
             }).collect(Collectors.toList());
 
-        caseDetails.getData().put("noticeOfProceedingsBundle", noticeOfProceedings);
+        caseDetails.getData().put("noticeOfProceedingsBundle", documentsBundle);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -129,7 +130,7 @@ public class NoticeOfProceedingsController {
             templateTypes.add(C6);
         }
 
-         if (caseData.getProceedingTypes() != null
+        if (caseData.getProceedingTypes() != null
             && caseData.getProceedingTypes().contains(NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES)) {
             templateTypes.add(C6A);
         }

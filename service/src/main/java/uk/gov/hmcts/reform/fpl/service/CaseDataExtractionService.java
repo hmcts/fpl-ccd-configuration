@@ -8,18 +8,23 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class CaseDataExtractionService {
-    public Map<String, String> getNoticeOfProceedingTemplateData(CaseData caseData) {
+    public Map<String, String> getNoticeOfProceedingTemplateData(CaseData caseData, String jurisdiction) {
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
+        String todaysDate = DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime);
+
         return Map.of(
+            "jurisdiction", StringUtils.defaultIfBlank(jurisdiction, ""),
             "familyManCaseNumber", StringUtils.defaultIfBlank(caseData.getFamilyManCaseNumber(), ""),
-            "todaysDate", LocalDateTime.now().toString(),
+            "todaysDate", todaysDate,
             "applicantName", getFirstApplicantName(caseData),
             "orderTypes", getOrderTypes(caseData),
             "childrenNames", getAllChildrenNames(caseData),
@@ -34,42 +39,31 @@ public class CaseDataExtractionService {
         if (caseData.getOrders() == null || caseData.getOrders().getOrderType() == null) {
             return "";
         } else {
-            return StringUtils.defaultIfBlank(StringUtils.join(caseData.getOrders().getOrderType(), ", "),
-                "");
+            return caseData.getOrders().getOrderType().stream()
+                .map(orderType -> orderType.getLabel())
+                .collect(Collectors.joining(", "));
         }
     }
 
     private String getFirstApplicantName(CaseData caseData) {
-        if (caseData.getApplicants() == null) {
-            return "";
-        }
-
-        List<String> applicantNames = caseData.getApplicants().stream()
+        return caseData.getAllApplicants().stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
             .map(Applicant::getParty)
             .filter(Objects::nonNull)
             .map(ApplicantParty::getOrganisationName)
-            .collect(Collectors.toList());
-
-        return applicantNames.get(0);
+            .findFirst()
+            .orElse("");
     }
 
     private String getAllChildrenNames(CaseData caseData) {
-        if (caseData.getChildren1() == null) {
-            return "";
-        }
-
-        List<String> names =  caseData.getChildren1().stream()
+        return caseData.getAllChildren().stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
             .map(Child::getParty)
             .filter(Objects::nonNull)
             .map(childParty -> {
-                return (childParty.getFirstName()) + " "
-                    + (childParty.getLastName());
-            }).collect(Collectors.toList());
-
-        return StringUtils.join(names, ", ");
+                return (childParty.getFirstName()) + " " + (childParty.getLastName());
+            }).collect(Collectors.joining(", "));
     }
 }

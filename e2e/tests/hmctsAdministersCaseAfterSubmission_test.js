@@ -86,10 +86,12 @@ Scenario('HMCTS admin creates c6 and c6a documents', (I, caseViewPage, enterFami
   caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID();
   I.continueAndSave();
-  // TODO
-  // Enter hearing details
   caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
   createNoticeOfProceedingsEventPage.checkC6();
   createNoticeOfProceedingsEventPage.checkC6A();
-  I.continueAndSubmit();
+  I.continueAndProvideSummary('summary', 'description');
+  I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeAnswerInTab('1', 'Notice of proceedings 1', 'File name', 'Notice_of_proceedings_c6.pdf');
+  I.seeAnswerInTab('1', 'Notice of proceedings 2', 'File name', 'Notice_of_proceedings_c6a.pdf');
 });

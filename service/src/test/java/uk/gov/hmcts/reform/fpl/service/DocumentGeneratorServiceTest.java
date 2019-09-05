@@ -95,9 +95,22 @@ class DocumentGeneratorServiceTest {
         byte[] expectedResponse = {1, 2 ,3};
         when(tornadoResponse.getBody()).thenReturn(expectedResponse);
 
-
         DocmosisDocument docmosisDocument = createServiceInstance().generateDocmosisDocument(placeholders, C6);
         assertThat(docmosisDocument.getBytes()).isEqualTo(expectedResponse);
+    }
+
+    @Test
+    void shouldGenerateC6Document() {
+        Map<String, String> placeholders = generateNoticeOfProceedingsTemplate();
+
+        DocmosisDocument docmosisDocument = createServiceInstance().generateDocmosisDocument(placeholders, C6);
+
+        docmosisDocument.getBytes();
+    }
+
+    @Test
+    void shouldGenerateC6aDocument() {
+
     }
 
     private DocumentGeneratorService createServiceInstance() {
@@ -118,5 +131,19 @@ class DocumentGeneratorServiceTest {
         try (PDDocument document = PDDocument.load(bytes)) {
             return new PDFTextStripper().getText(document);
         }
+    }
+
+    private Map<String, String> generateNoticeOfProceedingsTemplate() {
+        return Map.of(
+            "jurisdiction", "Public law",
+            "todaysDate", "1 Jan 2019",
+            "applicantName", "Peter Robinson",
+            "orderTypes", "Emergency protection order",
+            "childrenNames", "Ben Deans, Robin Deans",
+            "hearingDate", "date",
+            "hearingVenue", "",
+            "preHearingAttendance", "",
+            "hearingTime", ""
+        );
     }
 }

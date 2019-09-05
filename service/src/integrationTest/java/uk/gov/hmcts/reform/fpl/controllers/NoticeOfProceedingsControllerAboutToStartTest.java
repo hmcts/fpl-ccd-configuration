@@ -64,6 +64,27 @@ class NoticeOfProceedingsControllerAboutToStartTest {
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
+    @Test
+    void shouldUpdateProceedingLabelToIncludeHearingDate() throws Exception {
+        //TODO
+        //Update to include hearing
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of(
+                    "familyManCaseNumber", "123"
+                ))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(
+            makeRequest(request).getResponse().getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        String proceedingLabel = callbackResponse.getData().get("proceedingLabel").toString();
+
+        assertThat(proceedingLabel).isEqualTo("The case management hearing will be on the");
+    }
+
     private MvcResult makeRequest(CallbackRequest request) throws Exception {
         return mockMvc
             .perform(post("/callback/notice-of-proceedings/about-to-start")

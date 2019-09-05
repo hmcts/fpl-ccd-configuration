@@ -22,17 +22,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 
-
 @ExtendWith(SpringExtension.class)
 class CaseDataExtractionServiceTest {
 
+    private String JURISDICTION = "PUBLICLAW";
     private CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService();
 
     @Test
     void shouldReturnAMapOfEmptyStringsIfCaseDataIsNotPopulated() {
-        CaseData caseData = CaseData.builder().build();
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
 
+        CaseData caseData = CaseData.builder().build();
+        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData,
+            JURISDICTION);
+
+        assertThat(templateData.get("jurisdiction")).isEqualTo("PUBLICLAW");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("");
         assertThat(templateData.get("applicantName")).isEqualTo("");
         assertThat(templateData.get("orderTypes")).isEqualTo("");
@@ -49,7 +52,8 @@ class CaseDataExtractionServiceTest {
             .children1(getPopulatedChildren())
             .build();
 
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
+        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData,
+            JURISDICTION);
         assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark");
     }
 
@@ -59,7 +63,8 @@ class CaseDataExtractionServiceTest {
             .applicants(getPopulatedApplicants())
                 .build();
 
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
+        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData,
+            JURISDICTION);
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
     }
 
@@ -76,17 +81,16 @@ class CaseDataExtractionServiceTest {
                 )).build())
             .build();
 
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
-
+        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData, JURISDICTION);
+        assertThat(templateData.get("jurisdiction")).isEqualTo("PUBLICLAW");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
-        assertThat(templateData.get("orderTypes")).isEqualTo("CARE_ORDER, EDUCATION_SUPERVISION_ORDER");
+        assertThat(templateData.get("orderTypes")).isEqualTo("Care order, Education supervision order");
         assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark");
         assertThat(templateData.get("hearingDate")).isEqualTo("");
         assertThat(templateData.get("hearingVenue")).isEqualTo("");
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("");
         assertThat(templateData.get("hearingTime")).isEqualTo("");
-
     }
 
     private List<Element<Applicant>> getPopulatedApplicants() {
