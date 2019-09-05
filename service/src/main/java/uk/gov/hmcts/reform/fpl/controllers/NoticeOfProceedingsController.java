@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -63,8 +62,10 @@ public class NoticeOfProceedingsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
 
+        HearingBooking hearingBooking = caseDataExtractionService.getMostUrgentHearingBooking(caseData);
+
         caseDetails.getData().put("proceedingLabel", String.format("The case management hearing will be on the %s.",
-            LocalDateTime.now().toString()));
+            hearingBooking.getDate().toString()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

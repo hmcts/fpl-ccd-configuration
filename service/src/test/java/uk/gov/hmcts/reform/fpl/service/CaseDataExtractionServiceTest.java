@@ -10,9 +10,11 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -49,7 +51,7 @@ class CaseDataExtractionServiceTest {
     @Test
     void shouldConcatenateAllChildrenNames() {
         CaseData caseData = CaseData.builder()
-            .children1(getPopulatedChildren())
+            .children1(createPopulatedChildren())
             .build();
 
         Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData,
@@ -60,7 +62,7 @@ class CaseDataExtractionServiceTest {
     @Test
     void shouldReturnFirstApplicantName() {
         CaseData caseData = CaseData.builder()
-            .applicants(getPopulatedApplicants())
+            .applicants(createPopulatedApplicants())
                 .build();
 
         Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData,
@@ -72,8 +74,9 @@ class CaseDataExtractionServiceTest {
     void shouldMapCaseDataPropertiesToTemplatePlaceholderData() {
         CaseData caseData = CaseData.builder()
             .familyManCaseNumber("123")
-            .children1(getPopulatedChildren())
-            .applicants(getPopulatedApplicants())
+            .children1(createPopulatedChildren())
+            .applicants(createPopulatedApplicants())
+            .hearingDetails(createHearingBookings())
             .orders(Orders.builder()
                 .orderType(ImmutableList.<OrderType>of(
                     CARE_ORDER,
@@ -87,13 +90,55 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
         assertThat(templateData.get("orderTypes")).isEqualTo("Care order, Education supervision order");
         assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark");
-        assertThat(templateData.get("hearingDate")).isEqualTo("");
-        assertThat(templateData.get("hearingVenue")).isEqualTo("");
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo("");
-        assertThat(templateData.get("hearingTime")).isEqualTo("");
+        assertThat(templateData.get("hearingDate")).isEqualTo(LocalDate.now().plusDays(1).toString());
+        assertThat(templateData.get("hearingVenue")).isEqualTo("Venue 3");
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo("This is usually one hour before the hearing");
+        assertThat(templateData.get("hearingTime")).isEqualTo("09.15");
     }
 
-    private List<Element<Applicant>> getPopulatedApplicants() {
+    @Test
+    void shouldGetMostUrgentHearingBookingFromACollectionOfHearingBookings() {
+        List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+
+        CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+        HearingBooking sortedHearingBooking = caseDataExtractionService.getMostUrgentHearingBooking(caseData);
+
+        assertThat(sortedHearingBooking.getVenue()).isEqualTo("Venue 3");
+    }
+
+    private List<Element<HearingBooking>> createHearingBookings() {
+        return ImmutableList.of(
+            Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(HearingBooking.builder()
+                    .date(LocalDate.now().plusDays(5))
+                    .venue("Venue 1")
+                    .preHearingAttendance("This is usually one hour before the hearing")
+                    .time("09.15")
+                    .build())
+                .build(),
+            Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(HearingBooking.builder()
+                    .date(LocalDate.now().plusDays(2))
+                    .venue("Venue 2")
+                    .preHearingAttendance("This is usually one hour before the hearing")
+                    .time("09.15")
+                    .build())
+                .build(),
+            Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(HearingBooking.builder()
+                    .date(LocalDate.now().plusDays(1))
+                    .venue("Venue 3")
+                    .preHearingAttendance("This is usually one hour before the hearing")
+                    .time("09.15")
+                    .build())
+                .build()
+        );
+    }
+
+    private List<Element<Applicant>> createPopulatedApplicants() {
         return ImmutableList.of(
             Element.<Applicant>builder()
                 .id(UUID.randomUUID())
@@ -115,7 +160,7 @@ class CaseDataExtractionServiceTest {
                 .build());
     }
 
-    private List<Element<Child>> getPopulatedChildren() {
+    private List<Element<Child>> createPopulatedChildren() {
         return ImmutableList.of(
             Element.<Child>builder()
                 .id(UUID.randomUUID())
