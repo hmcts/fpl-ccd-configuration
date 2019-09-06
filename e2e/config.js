@@ -64,6 +64,7 @@ module.exports = {
     amendOtherProceedings: 'Other proceedings',
     amendAttendingHearing: 'Attending the hearing',
     addHearingBookingDetails: 'Add hearing details',
+    provideStatementOfService: 'Add statement of service (c9)',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',

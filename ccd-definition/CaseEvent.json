@@ -429,6 +429,21 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "addStatementOfService",
+    "Name": "Add statement of service (c9)",
+    "Description": "Add statement of service",
+    "DisplayOrder": 10,
+    "PreConditionState(s)": "Submitted",
+    "PostConditionState": "Submitted",
+    "SecurityClassification": "Public",
+    "ShowSummary": "Y",
+    "ShowEventNotes": "Y",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/statement-of-service/about-to-start",
+    "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingBookingDetails",
     "Name": "Add hearing details",
     "Description": "Add hearing booking details to a case",
