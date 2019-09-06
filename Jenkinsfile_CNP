@@ -94,6 +94,11 @@ withPipeline(type, product, component) {
     archiveCoreCaseDataDefinitions('demo')
   }
 
+  before('smoketest:perftest-staging') {
+    env.URL = "https://ccd-case-management-web-perftest.service.core-compute-perftest.internal"
+    archiveCoreCaseDataDefinitions('perftest')
+  }
+
   before('smoketest:preview') {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
@@ -121,6 +126,14 @@ withPipeline(type, product, component) {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
+  after('smoketest:perftest-staging') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
+
+  after('smoketest:perftest') {
+    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
+  }
+
   before('functionalTest:saat') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
   }
@@ -130,6 +143,10 @@ withPipeline(type, product, component) {
   }
 
   before('functionalTest:demo') {
+    env.SKIP_FUNCTIONAL_TESTS = 'true'
+  }
+
+  before('functionalTest:perftest') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
   }
 

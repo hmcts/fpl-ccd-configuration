@@ -4,7 +4,7 @@ set -eu
 
 environment=${1:-prod}
 
-if [[ ${environment} != "prod" && ${environment} != "aat" && ${environment} != "saat" && ${environment} != "demo" ]]; then
+if [[ ${environment} != "prod" && ${environment} != "aat" && ${environment} != "saat" && ${environment} != "demo" && ${environment} != "perftest" ]]; then
   echo "Environment '${environment}' is not supported!"
   exit 1
 fi
