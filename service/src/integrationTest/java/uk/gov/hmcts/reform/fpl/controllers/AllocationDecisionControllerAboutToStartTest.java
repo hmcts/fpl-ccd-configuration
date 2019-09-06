@@ -39,18 +39,9 @@ class AllocationDecisionControllerAboutToStartTest {
                 .build()).build())
             .build();
 
-        MvcResult response = mockMvc
-            .perform(post("/callback/allocation-decision/about-to-start")
-                .header("authorization", AUTH_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
+        AboutToStartOrSubmitCallbackResponse response = callbackResponse(request);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        assertThat(callbackResponse.getData())
+        assertThat(response.getData())
             .containsEntry("allocationProposalPresent", "Yes");
     }
 
@@ -62,6 +53,14 @@ class AllocationDecisionControllerAboutToStartTest {
                 .build()).build())
             .build();
 
+        AboutToStartOrSubmitCallbackResponse response = callbackResponse(request);
+
+        assertThat(response.getData())
+            .containsEntry("allocationProposalPresent", "No");
+    }
+
+    private AboutToStartOrSubmitCallbackResponse callbackResponse(CallbackRequest request) throws Exception {
+
         MvcResult response = mockMvc
             .perform(post("/callback/allocation-decision/about-to-start")
                 .header("authorization", AUTH_TOKEN)
@@ -73,7 +72,6 @@ class AllocationDecisionControllerAboutToStartTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        assertThat(callbackResponse.getData())
-            .containsEntry("allocationProposalPresent", "No");
+        return callbackResponse;
     }
 }
