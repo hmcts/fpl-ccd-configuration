@@ -623,5 +623,11 @@
     "ID": "DirectionAssignees",
     "ListElementCode": "cafcassDirections",
     "ListElement": "Cafcass"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionAssignees",
+    "ListElementCode": "allParties",
+    "ListElement": "All parties"
   }
 ]

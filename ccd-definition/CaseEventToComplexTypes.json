@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "complyWithDirections",
+    "CaseFieldID": "cafcassDirections",
+    "ListElementCode": "type",
+    "EventElementLabel": "Direction name",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "complyWithDirections",
+    "CaseFieldID": "cafcassDirections",
+    "ListElementCode": "text",
+    "EventElementLabel": "Direction body",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "complyWithDirections",
+    "CaseFieldID": "cafcassDirections",
+    "ListElementCode": "completeBy",
+    "EventElementLabel": "Complete by",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "complyWithDirections",
+    "CaseFieldID": "cafcassDirections",
+    "ListElementCode": "status",
+    "EventElementLabel": "Can you comply?",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "OPTIONAL"
+  }
+]

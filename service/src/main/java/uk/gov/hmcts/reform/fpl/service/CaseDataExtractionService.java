@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class CaseDataExtractionService {
-    public Map<String, String> getNoticeOfProceedingTemplateData(CaseData caseData, String jurisdiction) {
+    public Map<String, Object> getNoticeOfProceedingTemplateData(CaseData caseData, String jurisdiction) {
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
         String todaysDate = DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime);
 

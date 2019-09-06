@@ -2,9 +2,35 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Direction",
-    "ListElementCode": "title",
+    "ListElementCode": "type",
     "FieldType": "Text",
     "ElementLabel": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "readOnly",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is this readOnly?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type CONTAINS \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "text",
+    "FieldType": "TextArea",
+    "ElementLabel": "Direction body",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "readOnly!=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "completeBy",
+    "FieldType": "DateTime",
+    "ElementLabel": "Complete by",
     "SecurityClassification": "Public"
   },
   {
@@ -20,8 +46,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "Direction",
     "ListElementCode": "status",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Has the direction been completed?",
+    "FieldType": "Text",
+    "ElementLabel": "Status",
     "SecurityClassification": "Public"
   }
 ]

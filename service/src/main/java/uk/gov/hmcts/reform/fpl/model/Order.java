@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class CMO {
+public class Order {
     private final String hearingDate;
     private final List<Element<Direction>> directions;
     private final String finished;

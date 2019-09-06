@@ -61,7 +61,7 @@ public class DocumentGeneratorService {
         return converter.convert(template, context);
     }
 
-    public DocmosisDocument generateDocmosisDocument(Map<String, String> templateData,
+    public DocmosisDocument generateDocmosisDocument(Map<String, Object> templateData,
                                                      DocmosisTemplates docmosisTemplate) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -86,9 +86,9 @@ public class DocumentGeneratorService {
         private final String templateName;
         private final String outputFormat;
         private final String outputName;
-        private final Map<String, String> data;
+        private final Map<String, Object> data;
 
-        DocmosisRequest(String templateName, Map<String, String> data) {
+        DocmosisRequest(String templateName, Map<String, Object> data) {
             this.templateName = templateName;
             this.data = data;
             this.outputFormat = "pdf";
@@ -107,7 +107,7 @@ public class DocumentGeneratorService {
             return templateName;
         }
 
-        public Map<String, String> getData() {
+        public Map<String, Object> getData() {
             return data;
         }
     }

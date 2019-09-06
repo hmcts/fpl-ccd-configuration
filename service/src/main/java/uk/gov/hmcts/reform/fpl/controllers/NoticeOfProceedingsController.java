@@ -80,7 +80,7 @@ public class NoticeOfProceedingsController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
 
-        Map<String, String> templateData = caseDataExtractionService
+        Map<String, Object> templateData = caseDataExtractionService
             .getNoticeOfProceedingTemplateData(caseData, caseDetails.getJurisdiction());
 
         List<DocmosisTemplates> templateTypes = getDocmosisTemplateTypes(caseData);
@@ -111,7 +111,7 @@ public class NoticeOfProceedingsController {
 
     private List<Document> generateAndUploadDocuments(String userId,
                                                       String authorization,
-                                                      Map<String, String> templatePlaceholders,
+                                                      Map<String, Object> templatePlaceholders,
                                                       List<DocmosisTemplates> templates) {
         List<DocmosisDocument> docmosisDocuments = templates.stream()
             .map(template -> documentGeneratorService.generateDocmosisDocument(templatePlaceholders, template))

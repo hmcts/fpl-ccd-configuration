@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.CMO;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -61,7 +61,7 @@ class ComplyWithOrdersControllerTest {
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of(
                     "cmoCollection", ImmutableList.of(Element.builder()
-                        .value(CMO.builder()
+                        .value(Order.builder()
                             .directions(cmoDirections)
                             .build())
                         .build()),

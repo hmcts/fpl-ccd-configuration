@@ -323,6 +323,16 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 6,
+    "CaseFieldID": "sdo",
+    "TabFieldDisplayOrder": 15
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
     "TabID": "DirectionsTab",
     "TabLabel": "Directions",
     "TabDisplayOrder": 6,
@@ -338,15 +348,5 @@
     "TabDisplayOrder": 6,
     "CaseFieldID": "cafcassDirections",
     "TabFieldDisplayOrder": 2
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "CMOTab",
-    "TabLabel": "CMO",
-    "TabDisplayOrder": 7,
-    "CaseFieldID": "cmoCollection",
-    "TabFieldDisplayOrder": 1
   }
 ]

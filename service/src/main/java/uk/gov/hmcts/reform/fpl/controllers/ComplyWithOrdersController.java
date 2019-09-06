@@ -33,22 +33,22 @@ public class ComplyWithOrdersController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        // create list of directions where ids that match are updated.
-        List<Element<Direction>> updatedCMO = caseData.getCmoCollection().get(0).getValue().getDirections()
-            .stream()
-            .map((direction) -> caseData.getCafcassDirections()
-                .stream()
-                .filter(x -> x.getId().equals(direction.getId()))
-                .findFirst()
-                .orElse(direction))
-            .collect(toList());
-
-        // remove old list
-        caseData.getCmoCollection().get(0).getValue().getDirections().clear();
-        // add new list
-        caseData.getCmoCollection().get(0).getValue().getDirections().addAll(updatedCMO);
-        // place in case data
-        caseDetails.getData().put("cmoCollection", caseData.getCmoCollection());
+//        // create list of directions where ids that match are updated.
+//        List<Element<Direction>> updatedCMO = caseData.getCmoCollection().get(0).getValue().getDirections()
+//            .stream()
+//            .map((direction) -> caseData.getCafcassDirections()
+//                .stream()
+//                .filter(x -> x.getId().equals(direction.getId()))
+//                .findFirst()
+//                .orElse(direction))
+//            .collect(toList());
+//
+//        // remove old list
+//        caseData.getCmoCollection().get(0).getValue().getDirections().clear();
+//        // add new list
+//        caseData.getCmoCollection().get(0).getValue().getDirections().addAll(updatedCMO);
+//        // place in case data
+//        caseDetails.getData().put("cmoCollection", caseData.getCmoCollection());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

@@ -2,7 +2,8 @@ package uk.gov.hmcts.reform.fpl.enums;
 
 public enum DocmosisTemplates {
     C6("C6.docx", "Notice_of_proceedings_(c6)"),
-    C6A("C6a.docx", "Notice_of_proceedings_(c6a)");
+    C6A("C6a.docx", "Notice_of_proceedings_(c6a)"),
+    SDO("SDO.docx", "SDO");
 
     private final String template;
     private final String documentTitle;

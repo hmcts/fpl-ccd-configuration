@@ -281,6 +281,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "sdo",
+    "Label": "Standard directions order",
+    "FieldType": "Document",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "familyManCaseNumber",
     "Label": "FamilyMan case number",
     "FieldType": "Text",
@@ -426,18 +434,27 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "cmo",
-    "Label": "CMO",
-    "FieldType": "CMO",
+    "ID": "standardDirectionOrder",
+    "Label": "Standard direction order",
+    "FieldType": "StandardDirectionOrder",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "cmoCollection",
-    "Label": "CMO",
+    "ID": "allParties",
+    "Label": "All Parties Directions",
     "FieldType": "Collection",
-    "FieldTypeParameter": "CMO",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityDirections",
+    "Label": "Local Authority Directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
     "SecurityClassification": "Public"
   },
   {
@@ -452,8 +469,26 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "localAuthorityDirections",
-    "Label": "Local Authority Directions",
+    "ID": "parentsAndRespondentsDirections",
+    "Label": "Parents and respondents directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherPartiesDirections",
+    "Label": "Other parties directions",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtDirections",
+    "Label": "Court directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
     "SecurityClassification": "Public"

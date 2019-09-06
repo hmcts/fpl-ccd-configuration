@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,10 +45,13 @@ public class CaseData {
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;
     private final AllocationProposal allocationProposal;
-    private final List<Element<Direction>> directions;
+    private final List<Element<Direction>> allParties;
+    private final List<Element<Direction>> localAuthorityDirections;
+    private final List<Element<Direction>> courtDirections;
     private final List<Element<Direction>> cafcassDirections;
-    private final CMO cmo;
-    private final List<Element<CMO>> cmoCollection;
+    private final List<Element<Direction>> otherPartiesDirections;
+    private final List<Element<Direction>> parentsAndRespondentsDirections;
+    private final Order standardDirectionOrder;
 
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
@@ -96,5 +100,7 @@ public class CaseData {
     }
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
+
+    private LocalDate dateSubmitted;
 
 }

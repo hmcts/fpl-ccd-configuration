@@ -95,7 +95,7 @@ public class CaseSubmissionController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(caseValidatorService.validateCaseDetails(caseData))
+//            .errors(caseValidatorService.validateCaseDetails(caseData))
             .build();
     }
 
