@@ -47,6 +47,9 @@ withPipeline(type, product, component) {
   onMaster {
     loadVaultSecrets(serviceSecrets)
   }
+  onPerftest {
+    loadVaultSecrets(serviceSecrets)
+  }
   onPR {
     loadVaultSecrets(serviceSecrets + otherSecrets)
   }
