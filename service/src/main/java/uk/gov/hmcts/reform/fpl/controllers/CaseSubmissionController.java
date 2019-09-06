@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -28,7 +28,7 @@ import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
@@ -39,7 +39,6 @@ import static uk.gov.hmcts.reform.fpl.utils.SubmittedFormFilenameHelper.buildFil
 @Api
 @RestController
 @RequestMapping("/callback/case-submission")
-@Slf4j
 public class CaseSubmissionController {
 
     private static final String CONSENT_TEMPLATE = "I, %s, believe that the facts stated in this application are true.";
@@ -79,7 +78,18 @@ public class CaseSubmissionController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
+            .errors(validate(mapper.convertValue(data, CaseData.class)))
             .build();
+    }
+
+    private List<String> validate(CaseData caseData) {
+        ImmutableList.Builder<String> builder = ImmutableList.builder();
+
+        if ("FPLA".equals(caseData.getCaseLocalAuthority())) {
+            builder.add("Test local authority cannot submit cases");
+        }
+
+        return builder.build();
     }
 
     @PostMapping("/mid-event")
