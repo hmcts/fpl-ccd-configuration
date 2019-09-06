@@ -4,7 +4,7 @@ plugins {
   id 'pmd'
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.8.RELEASE'
-  id 'org.springframework.boot' version '2.1.7.RELEASE'
+  id 'org.springframework.boot' version '2.1.8.RELEASE'
   id 'com.github.ben-manes.versions' version '0.24.0'
   id 'org.sonarqube' version '2.7.1'
 }
@@ -191,9 +191,6 @@ dependencies {
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
 
   compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.1.2.RELEASE'
-
-//   The below fixes https://nvd.nist.gov/vuln/detail/CVE-2019-12384 while waiting for spring to pull new version
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.9.3'
 
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
