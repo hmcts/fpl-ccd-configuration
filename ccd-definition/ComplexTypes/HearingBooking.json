@@ -83,8 +83,8 @@
     "ID": "HearingBooking",
     "ListElementCode": "judgeTitle",
     "FieldType": "Text",
-    "ElementLabel": "Title",
-    "HintText": "For example, HHJ",
+    "ElementLabel": "Judge or magistrate's title",
+    "HintText": "For example, His Honour Judge or District Judge",
     "SecurityClassification": "Public"
   },
   {
@@ -92,7 +92,7 @@
     "ID": "HearingBooking",
     "ListElementCode": "judgeName",
     "FieldType": "Text",
-    "ElementLabel": "Full name",
+    "ElementLabel": "Judge or magistrate's last name",
     "SecurityClassification": "Public"
   }
 ]
