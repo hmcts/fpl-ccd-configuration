@@ -6,13 +6,8 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.fpl.config.DocumentGeneratorConfiguration;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.templates.DocumentTemplates;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 import uk.gov.hmcts.reform.pdf.generator.exception.MalformedTemplateException;
@@ -22,30 +17,16 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
-
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.emptyCaseDetails;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
 class DocumentGeneratorServiceTest {
-
-    @Mock
-    private RestTemplate restTemplate;
-
-    @Mock
-    private ResponseEntity<byte[]> tornadoResponse;
-
-    private String tornadoUrl = "http://tornado:5433";
 
     @Test
     void shouldGenerateSubmittedFormDocumentWhenCaseHasNoData() throws IOException {
@@ -85,34 +66,6 @@ class DocumentGeneratorServiceTest {
             .isInstanceOf(MalformedTemplateException.class);
     }
 
-    @Test
-    void shouldInvokesTornado() {
-        Map<String, String> placeholders = Map.of("applicant", "John Smith");
-
-        when(restTemplate.exchange(eq(tornadoUrl), eq(HttpMethod.POST), any(), eq(byte[].class)))
-            .thenReturn(tornadoResponse);
-
-        byte[] expectedResponse = {1, 2, 3};
-        when(tornadoResponse.getBody()).thenReturn(expectedResponse);
-
-        DocmosisDocument docmosisDocument = createServiceInstance().generateDocmosisDocument(placeholders, C6);
-        assertThat(docmosisDocument.getBytes()).isEqualTo(expectedResponse);
-    }
-
-    @Test
-    void shouldGenerateC6Document() {
-        Map<String, String> placeholders = generateNoticeOfProceedingsTemplate();
-
-        DocmosisDocument docmosisDocument = createServiceInstance().generateDocmosisDocument(placeholders, C6);
-
-        docmosisDocument.getBytes();
-    }
-
-    @Test
-    void shouldGenerateC6aDocument() {
-
-    }
-
     private DocumentGeneratorService createServiceInstance() {
         return createServiceInstance(Clock.systemDefaultZone());
     }
@@ -121,9 +74,7 @@ class DocumentGeneratorServiceTest {
         return new DocumentGeneratorService(
             new DocumentGeneratorConfiguration().getConverter(clock),
             new DocumentTemplates(),
-            new ObjectMapper(),
-            restTemplate,
-            tornadoUrl
+            new ObjectMapper()
         );
     }
 
@@ -131,19 +82,5 @@ class DocumentGeneratorServiceTest {
         try (PDDocument document = PDDocument.load(bytes)) {
             return new PDFTextStripper().getText(document);
         }
-    }
-
-    private Map<String, String> generateNoticeOfProceedingsTemplate() {
-        return Map.of(
-            "jurisdiction", "Public law",
-            "todaysDate", "1 Jan 2019",
-            "applicantName", "Peter Robinson",
-            "orderTypes", "Emergency protection order",
-            "childrenNames", "Ben Deans, Robin Deans",
-            "hearingDate", "date",
-            "hearingVenue", "",
-            "preHearingAttendance", "",
-            "hearingTime", ""
-        );
     }
 }
