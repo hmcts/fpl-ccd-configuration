@@ -37,6 +37,10 @@ core_case_data:
   api:
     url: http://fake-ccd-data-store-api
 
+docmosis:
+  tornado:
+    url: http://fake-docmosis-url
+
 document_management:
   url: http://fake-document-management-store-api
 

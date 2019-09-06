@@ -23,4 +23,16 @@ public class HearingBookingService {
             return caseData.getHearingDetails();
         }
     }
+
+    public HearingBooking getMostUrgentHearingBooking(CaseData caseData) {
+        if (caseData.getHearingDetails() == null) {
+            return HearingBooking.builder().build();
+        }
+
+        return caseData.getHearingDetails().stream()
+            .map(Element::getValue)
+            .sorted((booking1, booking2) -> booking1.getDate().compareTo(booking2.getDate()))
+            .findFirst()
+            .orElseThrow();
+    }
 }

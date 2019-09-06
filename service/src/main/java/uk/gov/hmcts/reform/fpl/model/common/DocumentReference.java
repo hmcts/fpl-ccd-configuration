@@ -8,7 +8,10 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class DocumentReference {
+    @SuppressWarnings("membername")
     private final String document_url;
+    @SuppressWarnings("membername")
     private final String document_filename;
+    @SuppressWarnings("membername")
     private final String document_binary_url;
 }

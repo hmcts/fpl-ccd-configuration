@@ -1,21 +1,21 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.interfaces.NoticeOfProceedingsGroup;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
 
-import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -84,12 +84,15 @@ public class CaseData {
     @NotBlank(message = "Enter Familyman case number", groups = NoticeOfProceedingsGroup.class)
     private final String familyManCaseNumber;
     private List<ProceedingType> proceedingTypes;
+
     public List<Element<Applicant>> getAllApplicants() {
         return applicants != null ? applicants : new ArrayList<>();
     }
+
     public List<Element<Child>> getAllChildren() {
         return children1 != null ? children1 : new ArrayList<>();
     }
+
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
 }

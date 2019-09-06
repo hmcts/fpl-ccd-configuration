@@ -8,7 +8,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,5 +41,47 @@ public class HearingBookingServiceTest {
         List<Element<HearingBooking>> hearingList = service.expandHearingBookingCollection(caseData);
 
         assertThat(hearingList.get(0).getValue().getTime()).isEqualTo("2.30");
+    }
+
+    @Test
+    void shouldGetMostUrgentHearingBookingFromACollectionOfHearingBookings() {
+        List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+
+        CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+        HearingBooking sortedHearingBooking = service.getMostUrgentHearingBooking(caseData);
+
+        assertThat(sortedHearingBooking.getVenue()).isEqualTo("Venue 3");
+    }
+
+    private List<Element<HearingBooking>> createHearingBookings() {
+        return ImmutableList.of(
+            Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(HearingBooking.builder()
+                    .date(LocalDate.now().plusDays(5))
+                    .venue("Venue 1")
+                    .preHearingAttendance("This is usually one hour before the hearing")
+                    .time("09.15")
+                    .build())
+                .build(),
+            Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(HearingBooking.builder()
+                    .date(LocalDate.now().plusDays(2))
+                    .venue("Venue 2")
+                    .preHearingAttendance("This is usually one hour before the hearing")
+                    .time("09.15")
+                    .build())
+                .build(),
+            Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(HearingBooking.builder()
+                    .date(LocalDate.now().plusDays(1))
+                    .venue("Venue 3")
+                    .preHearingAttendance("This is usually one hour before the hearing")
+                    .time("09.15")
+                    .build())
+                .build()
+        );
     }
 }

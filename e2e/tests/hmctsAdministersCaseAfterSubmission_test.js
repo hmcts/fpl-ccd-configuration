@@ -128,7 +128,7 @@ Scenario('HMCTS admin creates c6 and c6a documents', async (I, caseViewPage, ent
   caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
   createNoticeOfProceedingsEventPage.checkC6();
   createNoticeOfProceedingsEventPage.checkC6A();
-  I.continueAndProvideSummary('summary', 'description');
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeAnswerInTab('1', 'Notice of proceedings 1', 'File name', 'Notice_of_proceedings_c6.pdf');

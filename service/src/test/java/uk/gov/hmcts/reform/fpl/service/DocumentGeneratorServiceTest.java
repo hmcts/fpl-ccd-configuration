@@ -92,7 +92,7 @@ class DocumentGeneratorServiceTest {
         when(restTemplate.exchange(eq(tornadoUrl), eq(HttpMethod.POST), any(), eq(byte[].class)))
             .thenReturn(tornadoResponse);
 
-        byte[] expectedResponse = {1, 2 ,3};
+        byte[] expectedResponse = {1, 2, 3};
         when(tornadoResponse.getBody()).thenReturn(expectedResponse);
 
         DocmosisDocument docmosisDocument = createServiceInstance().generateDocmosisDocument(placeholders, C6);

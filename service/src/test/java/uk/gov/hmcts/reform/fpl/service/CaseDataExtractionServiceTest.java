@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -27,8 +28,13 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDE
 @ExtendWith(SpringExtension.class)
 class CaseDataExtractionServiceTest {
 
+    @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
     private String JURISDICTION = "PUBLICLAW";
-    private CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService();
+
+    private DateFormatterService dateFormatterService = new DateFormatterService();
+    private HearingBookingService hearingBookingService = new HearingBookingService();
+    private CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
+        hearingBookingService);
 
     @Test
     void shouldReturnAMapOfEmptyStringsIfCaseDataIsNotPopulated() {
@@ -84,26 +90,18 @@ class CaseDataExtractionServiceTest {
                 )).build())
             .build();
 
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData, JURISDICTION);
+        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData,
+            JURISDICTION);
         assertThat(templateData.get("jurisdiction")).isEqualTo("PUBLICLAW");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
         assertThat(templateData.get("orderTypes")).isEqualTo("Care order, Education supervision order");
         assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark");
-        assertThat(templateData.get("hearingDate")).isEqualTo(LocalDate.now().plusDays(1).toString());
+        assertThat(templateData.get("hearingDate")).isEqualTo(dateFormatterService
+            .formatLocalDateToString(LocalDate.now().plusDays(1), FormatStyle.LONG));
         assertThat(templateData.get("hearingVenue")).isEqualTo("Venue 3");
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("This is usually one hour before the hearing");
         assertThat(templateData.get("hearingTime")).isEqualTo("09.15");
-    }
-
-    @Test
-    void shouldGetMostUrgentHearingBookingFromACollectionOfHearingBookings() {
-        List<Element<HearingBooking>> hearingBookings = createHearingBookings();
-
-        CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
-        HearingBooking sortedHearingBooking = caseDataExtractionService.getMostUrgentHearingBooking(caseData);
-
-        assertThat(sortedHearingBooking.getVenue()).isEqualTo("Venue 3");
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {

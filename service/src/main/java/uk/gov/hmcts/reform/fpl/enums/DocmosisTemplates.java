@@ -16,5 +16,7 @@ public enum DocmosisTemplates {
         return template;
     }
 
-    public String getDocumentTitle() { return documentTitle; }
+    public String getDocumentTitle() {
+        return documentTitle;
+    }
 }
