@@ -1,0 +1,49 @@
+{
+  "case_details": {
+    "id": "2313",
+    "jurisdiction": "PUBLICLAW",
+    "case_data": {
+      "familyManCaseNumber": "SW123123",
+      "applicants": [
+        {
+          "id": "34c97e1a-eed9-499b-9693-e92496a1f54d",
+          "value": {
+            "party": {
+              "organisationName": "James Nelson"
+            }
+          }
+        }
+      ],
+      "children1": [
+        {
+          "id": "34c97e1a-eed9-499b-9693-e92496a1f54d",
+          "value": {
+            "party": {
+              "firstName": "James",
+              "lastName": "Nelson"
+            }
+          }
+        }
+      ],
+      "hearingDetails": [
+        {
+          "id": "34c97e1a-eed9-499b-9693-e92496a1f54d",
+          "value": {
+            "venue": "Aldgate Tower floor 3",
+            "date": "2001-01-01",
+            "preHearingAttendance": "test",
+            "hearingTime": "09.00pm"
+          }
+        }
+      ],
+      "proceedingTypes": [
+        "NOTICE_OF_PROCEEDINGS_FOR_PARTIES"
+      ],
+      "orders": {
+        "orderType": [
+          "CARE_ORDER"
+        ]
+      }
+    }
+  }
+}

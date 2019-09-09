@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.EventValidationService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -52,7 +51,6 @@ public class NoticeOfProceedingsController {
 
     private final ObjectMapper mapper;
     private final EventValidationService eventValidationService;
-    private final DocumentGeneratorService documentGeneratorService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final CaseDataExtractionService caseDataExtractionService;
@@ -62,7 +60,6 @@ public class NoticeOfProceedingsController {
     @Autowired
     private NoticeOfProceedingsController(ObjectMapper mapper,
                                           EventValidationService eventValidationService,
-                                          DocumentGeneratorService documentGeneratorService,
                                           DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
                                           UploadDocumentService uploadDocumentService,
                                           CaseDataExtractionService caseDataExtractionService,
@@ -70,7 +67,6 @@ public class NoticeOfProceedingsController {
                                           DateFormatterService dateFormatterService) {
         this.mapper = mapper;
         this.eventValidationService = eventValidationService;
-        this.documentGeneratorService = documentGeneratorService;
         this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
         this.caseDataExtractionService = caseDataExtractionService;
