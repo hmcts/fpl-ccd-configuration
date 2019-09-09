@@ -333,7 +333,7 @@
     "Description": "Send email to gatekeeper",
     "DisplayOrder": 3,
     "PreConditionState(s)": "Submitted",
-    "PostConditionState": "Submitted",
+    "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/notify-gatekeeper/submitted",
     "EndButtonLabel": "Save and continue"
