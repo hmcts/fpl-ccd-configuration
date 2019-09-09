@@ -49,7 +49,7 @@ module.exports = {
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.somethingElse);
     I.fillField(this.fields(elementIndex).hearingBooking.giveDetails, hearingDetails.giveDetails);
     I.fillField(this.fields(elementIndex).hearingBooking.judgeTitle, hearingDetails.judgeTitle);
-    I.fillField(this.fields(elementIndex).hearingBooking.judgeName, hearingDetails.fullName);
+    I.fillField(this.fields(elementIndex).hearingBooking.judgeName, hearingDetails.lastName);
   },
 
   async getActiveElementIndex() {
