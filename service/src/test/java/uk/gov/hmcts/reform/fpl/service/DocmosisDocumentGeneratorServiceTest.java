@@ -53,7 +53,7 @@ class DocmosisDocumentGeneratorServiceTest {
 
         try {
             createServiceInstance().generateDocmosisDocument(placeholder, null);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             assertThat(ex instanceof NullPointerException);
         }
     }

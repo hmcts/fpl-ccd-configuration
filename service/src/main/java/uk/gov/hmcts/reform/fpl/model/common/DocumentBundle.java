@@ -8,6 +8,6 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor(onConstructor_ = {@JsonCreator})
-public class BundleDocument {
+public class DocumentBundle {
     private final DocumentReference document;
 }

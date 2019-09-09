@@ -14,24 +14,25 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.mockito.ArgumentMatchers.any;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
+
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.c6Document;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(NoticeOfProceedingsController.class)
@@ -40,14 +41,19 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @MockBean
     private CaseDataExtractionService caseDataExtractionService;
+
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+
     @MockBean
     private UploadDocumentService uploadDocumentService;
+
+    @Autowired
+    private ObjectMapper mapper;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -71,14 +77,17 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
 
         MvcResult response = makeRequest();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        CaseData caseData = MAPPER.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(caseData.getNoticeOfProceedingsBundle().get(0).getValue().getDocument().getDocument_url()).isEqualTo(document.links.self.href);
-        assertThat(caseData.getNoticeOfProceedingsBundle().get(0).getValue().getDocument().getDocument_filename()).isEqualTo(document.originalDocumentName);
-        assertThat(caseData.getNoticeOfProceedingsBundle().get(0).getValue().getDocument().getDocument_binary_url()).isEqualTo(document.links.binary.href);
+        DocumentReference noticeOfProceedingBundle = caseData.getNoticeOfProceedingsBundle().get(0).getValue()
+            .getDocument();
+
+        assertThat(noticeOfProceedingBundle.getDocument_url()).isEqualTo(document.links.self.href);
+        assertThat(noticeOfProceedingBundle.getDocument_filename()).isEqualTo(document.originalDocumentName);
+        assertThat(noticeOfProceedingBundle.getDocument_binary_url()).isEqualTo(document.links.binary.href);
     }
 
     private MvcResult makeRequest() throws Exception {
@@ -96,7 +105,6 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
         return Map.of(
             "jurisdiction", "PUBLICLAW",
             "familyManCaseNumber", "SW123123",
-            "todaysDate", LocalDate.now().format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)),
             "applicantName", "James Nelson",
             "orderTypes", "Care order",
             "childrenNames", "James Nelson",
