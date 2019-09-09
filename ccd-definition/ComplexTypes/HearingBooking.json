@@ -73,14 +73,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "judgeMagistrateLabel",
-    "FieldType": "Label",
-    "ElementLabel": "### Judge or magistrate",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingBooking",
     "ListElementCode": "judgeTitle",
     "FieldType": "Text",
     "ElementLabel": "Judge or magistrate's title",
