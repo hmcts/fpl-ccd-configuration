@@ -17,7 +17,6 @@
     "CaseFieldID": "proceedingTypes",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY",
-    "ShowSummaryChangeOption": "Y",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1
