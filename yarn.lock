@@ -355,10 +355,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codeceptjs@^2.3.0:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.3.0.tgz#2764f7c1562dc722380308abcc49ddc7d20f3354"
-  integrity sha512-HAKAG8Ytv4aVMJ0qqW1lalDm7iyvalftYKiT5j+mNV3YEUmEVAqy1vTKYmWclzDzyEhEpv32BAPiTHXxjJlttg==
+codeceptjs@^2.3.1:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.3.1.tgz#86f0292ad98a8c9b5bfa16e610adc2000c1bbe44"
+  integrity sha512-EDw0rJiBfx1aMQy8wKrc1dsWQ331fpn6jsYyPwZLnAKteq7/l7n1nHGZb4ieX+iQ+NfDjEMG7EvPBCTcRpk9gQ==
   dependencies:
     allure-js-commons "^1.3.2"
     axios "^0.19.0"
@@ -1529,12 +1529,12 @@ ms@2.0.0:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
   integrity sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g=
 
-ms@2.1.1, ms@^2.1.1:
+ms@2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
   integrity sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg==
 
-ms@^2.1.2:
+ms@^2.1.1, ms@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
