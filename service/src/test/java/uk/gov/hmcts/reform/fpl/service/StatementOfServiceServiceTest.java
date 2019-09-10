@@ -29,7 +29,7 @@ public class StatementOfServiceServiceTest {
     @Test
     void shouldReturnRecipientsIfRecipientsIsPrePopulated() {
         CaseData caseData = CaseData.builder()
-            .statementOfService(
+            .recipients(
                 ImmutableList.of(Element.<Recipients>builder()
                     .value(Recipients.builder().name("Recipient name").build())
                     .build()))
