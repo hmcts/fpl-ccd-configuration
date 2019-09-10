@@ -15,7 +15,7 @@ import scala.util.Random
 object IDAM {
   private val randomEmailFeeder =
     Iterator.continually({
-      val email = Random.alphanumeric.take(20).mkString + "@example.local"
+      val email = Random.alphanumeric.take(20).mkString + "@fpla.local"
       val password = "Pazzw0rd123"
       Map(
         "email" -> email,

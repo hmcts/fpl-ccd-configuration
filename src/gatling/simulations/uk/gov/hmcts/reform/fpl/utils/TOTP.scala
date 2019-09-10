@@ -6,6 +6,8 @@ import jodd.util.Base32
 
 import scala.math.{BigInt, pow}
 
+import scala.concurrent.duration._
+
 object TOTP {
   private val codeLength = 6
 
