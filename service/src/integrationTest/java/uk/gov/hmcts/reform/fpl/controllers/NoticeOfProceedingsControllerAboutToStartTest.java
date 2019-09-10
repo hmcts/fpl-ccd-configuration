@@ -63,7 +63,7 @@ class NoticeOfProceedingsControllerAboutToStartTest {
     }
 
     @Test
-    void shouldReturnNoErrorsWhenFamilymanNumberAndHearingIsProvided() throws Exception {
+    void shouldReturnNoErrorsWhenFamilymanNumberAndHearingBookingDetailsIsProvided() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -81,7 +81,7 @@ class NoticeOfProceedingsControllerAboutToStartTest {
     }
 
     @Test
-    void shouldUpdateProceedingLabelToIncludeHearingDate() throws Exception {
+    void shouldUpdateProceedingLabelToIncludeHearingBookingDetailsDate() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
