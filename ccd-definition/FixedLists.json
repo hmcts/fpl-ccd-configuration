@@ -507,7 +507,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "ProceedingType",
     "ListElementCode": "NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES",
-    "ListElement": "Notice of proceedings for parties (c6a)",
+    "ListElement": "Notice of proceedings for non parties (c6a)",
     "DisplayOrder": 2
   },
   {

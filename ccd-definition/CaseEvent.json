@@ -446,7 +446,7 @@
     "ID": "createNoticeOfProceedings",
     "Name": "Create notice of proceedings",
     "Description": "Create notice of proceedings",
-    "DisplayOrder": 9,
+    "DisplayOrder": 10,
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
