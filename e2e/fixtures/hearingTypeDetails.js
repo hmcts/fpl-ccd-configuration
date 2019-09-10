@@ -16,7 +16,7 @@ module.exports = [
     },
     giveDetails: 'Some details',
     judgeTitle: 'Judge title',
-    fullName: 'Judge full name',
+    lastName: 'Judge last name',
   },
   {
     caseManagement: 'Case management',
@@ -35,6 +35,6 @@ module.exports = [
     },
     giveDetails: 'Tom jones is going to be there',
     judgeTitle: 'HHJ',
-    fullName: 'Judge Rinder',
+    lastName: 'Judge Rinder',
   },
 ];
