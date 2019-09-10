@@ -57,7 +57,7 @@
     "ID": "Recipients",
     "ListElementCode": "sentBy",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "StatementOfServiceSentBy",
+    "FieldTypeParameter": "SentBy",
     "ElementLabel": "How were they sent?",
     "SecurityClassification": "Public"
   },

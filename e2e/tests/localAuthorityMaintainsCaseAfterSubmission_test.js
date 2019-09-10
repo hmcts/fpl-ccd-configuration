@@ -52,14 +52,14 @@ Scenario('local authority uploads court bundle', (I, uploadDocumentsEventPage, s
   I.seeDocument('Court bundle', 'mockFile.txt');
 });
 
-Scenario('local authority provides a statements of service', async (I, caseViewPage, loginPage, provideStatementOfServiceEventPage) => {
-  caseViewPage.goToNewActions(config.administrationActions.provideStatementOfService);
-  await provideStatementOfServiceEventPage.enterRecipientDetails(recipients[0]);
-  provideStatementOfServiceEventPage.addRecipient();
-  await provideStatementOfServiceEventPage.enterRecipientDetails(recipients[1]);
-  provideStatementOfServiceEventPage.giveDeclaration();
+Scenario('local authority provides a statements of service', async (I, caseViewPage, loginPage, addStatementOfServiceEventPage) => {
+  caseViewPage.goToNewActions(config.administrationActions.addStatementOfService);
+  await addStatementOfServiceEventPage.enterRecipientDetails(recipients[0]);
+  addStatementOfServiceEventPage.addRecipient();
+  await addStatementOfServiceEventPage.enterRecipientDetails(recipients[1]);
+  addStatementOfServiceEventPage.giveDeclaration();
   I.continueAndSave();
-  I.seeEventSubmissionConfirmation(config.administrationActions.provideStatementOfService);
+  I.seeEventSubmissionConfirmation(config.administrationActions.addStatementOfService);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'Recipients 1', 'Name of recipient', recipients[0].name);
   I.seeAnswerInTab(2, 'Recipients 1', 'Do you have the recipient\'s address?', recipients[0].addressCheck);

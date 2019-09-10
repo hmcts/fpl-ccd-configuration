@@ -31,11 +31,8 @@ public class StatementOfServiceServiceTest {
         CaseData caseData = CaseData.builder()
             .statementOfService(
                 ImmutableList.of(Element.<Recipients>builder()
-                    .value(
-                        Recipients.builder().name("Recipient name").build()
-                    )
-                    .build())
-            )
+                    .value(Recipients.builder().name("Recipient name").build())
+                    .build()))
             .build();
 
         List<Element<Recipients>> recipientList = service.expandRecipientCollection(caseData);

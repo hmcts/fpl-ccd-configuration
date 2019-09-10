@@ -60,7 +60,9 @@ class StatementOfServiceControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        assertThat(callbackResponse.getData()).containsKey("statementOfService");
+        assertThat(callbackResponse.getData())
+                    .containsKey("statementOfService")
+                    .containsEntry("serviceDeclarationLabel", "I, Emma Taylor, have served the documents as stated.");
     }
 }
 

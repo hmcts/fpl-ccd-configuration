@@ -39,13 +39,7 @@ module.exports = {
 
     I.fillField(this.fields(elementIndex).recipients.name, recipients.name);
     I.click(this.fields(elementIndex).recipients.addressCheck);
-    within(this.fields(elementIndex).recipients.address, () => {
-      if (elementIndex === 0) {
-        postcodeLookup.lookupPostcode(recipients.address);
-      } else {
-        postcodeLookup.enterAddressManually(recipients.address);
-      }
-    });
+    this.enterRecipientsAddress(elementIndex, recipients);
     I.fillField(this.fields(elementIndex).recipients.documents, recipients.documents);
     I.fillField(this.fields(elementIndex).recipients.date.day, recipients.date.day);
     I.fillField(this.fields(elementIndex).recipients.date.month, recipients.date.month);
@@ -62,9 +56,17 @@ module.exports = {
     I.checkOption('I agree with this statement');
   },
 
-
   async getActiveElementIndex() {
     return await I.grabNumberOfVisibleElements('//button[text()="Remove"]') - 1;
   },
 
+  enterRecipientsAddress: function (elementIndex, recipients) {
+    within(this.fields(elementIndex).recipients.address, () => {
+      if (elementIndex === 0) {
+        postcodeLookup.lookupPostcode(recipients.address);
+      } else {
+        postcodeLookup.enterAddressManually(recipients.address);
+      }
+    });
+  },
 };

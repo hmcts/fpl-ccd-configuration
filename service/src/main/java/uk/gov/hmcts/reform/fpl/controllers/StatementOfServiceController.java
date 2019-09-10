@@ -28,7 +28,8 @@ public class StatementOfServiceController {
     private final StatementOfServiceService statementOfServiceService;
 
     @Autowired
-    public StatementOfServiceController(UserDetailsService userDetailsService,MapperService mapperService,
+    public StatementOfServiceController(UserDetailsService userDetailsService,
+                                        MapperService mapperService,
                                         StatementOfServiceService statementOfServiceService) {
         this.userDetailsService = userDetailsService;
         this.statementOfServiceService = statementOfServiceService;
