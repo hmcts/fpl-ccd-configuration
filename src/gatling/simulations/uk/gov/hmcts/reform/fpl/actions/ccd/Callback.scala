@@ -23,8 +23,8 @@ trait Callback {
       .post(url = s"/callback/${eventName}/${uri}")
       .header("Authorization", "Bearer ${user_token}")
       .header("ServiceAuthorization", "Bearer ${service_token}")
-      .header("user-id", "0")
-      .body(RawFileBody("callback-request.json"))
+      .header("user-id", "0") // could be taken from JWT
+      .body(RawFileBody("callback-request.json")) // could be more dynamic
       .check(status.is(200))
   }
 }

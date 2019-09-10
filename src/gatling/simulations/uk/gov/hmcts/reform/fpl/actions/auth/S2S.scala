@@ -9,28 +9,20 @@ import uk.gov.hmcts.reform.fpl.config.SystemConfig
 import uk.gov.hmcts.reform.fpl.utils.TOTP
 
 object S2S {
-  private val serviceConcreteNameFeeder =
-    Iterator.continually(
-      Map(
-        "totp" -> TOTP.getPassword(SystemConfig.s2sSecret)
-      )
-    )
-
   val leaseServiceToken: ChainBuilder =
-    feed(serviceConcreteNameFeeder)
-      .exec(
-        http("Lease service token")
-          .post(SystemConfig.s2sUrl + "/lease")
-          .header(ContentType, ApplicationJson)
-          .header(Accept, TextPlain)
-          .body(StringBody(
-            """
+    exec(
+      http("Lease service token")
+        .post(SystemConfig.s2sUrl + "/lease")
+        .header(ContentType, ApplicationJson)
+        .header(Accept, TextPlain)
+        .body(StringBody(
+          s"""
                 {
                   "microservice": "fpl_case_service",
-                  "oneTimePassword": "${totp}"
+                  "oneTimePassword": "${TOTP.getPassword(SystemConfig.s2sSecret)}"
                 }
             """
-          ))
-          .check(bodyString.saveAs("service_token"))
-      )
+        ))
+        .check(bodyString.saveAs("service_token"))
+    )
 }
