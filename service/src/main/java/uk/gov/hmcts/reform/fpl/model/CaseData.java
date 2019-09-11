@@ -79,5 +79,5 @@ public class CaseData {
     @Valid
     private final List<@NotNull(message = "You need to add details to children")Element<Child>> children1;
     private final List<Element<HearingBooking>> hearingDetails;
-    private final List<Element<Recipients>> recipients;
+    private final List<Element<Recipients>> statementOfService;
 }

@@ -42,6 +42,7 @@ public class StatementOfServiceController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
+        System.out.println(caseDetails.getData());
 
         caseDetails.getData().put("statementOfService", statementOfServiceService.expandRecipientCollection(caseData));
 

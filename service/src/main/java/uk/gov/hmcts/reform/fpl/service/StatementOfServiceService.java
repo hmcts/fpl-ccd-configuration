@@ -12,7 +12,7 @@ import java.util.UUID;
 @Service
 public class StatementOfServiceService {
     public List<Element<Recipients>> expandRecipientCollection(CaseData caseData) {
-        if (caseData.getRecipients() == null) {
+        if (caseData.getStatementOfService() == null) {
             List<Element<Recipients>> populatedRecipient = new ArrayList<>();
 
             populatedRecipient.add(Element.<Recipients>builder()
@@ -21,7 +21,7 @@ public class StatementOfServiceService {
                 .build());
             return populatedRecipient;
         } else {
-            return caseData.getRecipients();
+            return caseData.getStatementOfService();
         }
     }
 }
