@@ -57,6 +57,7 @@ exports.config = {
     uploadStandardDirectionsDocumentEventPage: './e2e/pages/events/uploadStandardDirectionsDocumentEvent.page.js',
     sendCaseToGatekeeperEventPage: './e2e/pages/events/sendCaseToGatekeeperEvent.page.js',
     addHearingBookingDetailsEventPage: './e2e/pages/events/addHearingBookingDetailsEvent.page.js',
+    addStatementOfServiceEventPage: './e2e/pages/events/addStatementOfServiceEvent.page.js',
   },
   plugins: {
     autoDelay: {
