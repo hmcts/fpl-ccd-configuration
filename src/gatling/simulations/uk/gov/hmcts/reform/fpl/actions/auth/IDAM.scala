@@ -66,7 +66,7 @@ object IDAM {
           .formParam("response_type", "code")
           .formParam("client_id", SystemConfig.idamClientId)
           .formParam("redirect_uri", SystemConfig.idamRedirectUri)
-          .check(jsonPath("$['code']").saveAs("auth_code"))
+          .check(jsonPath("$['code']").notNull.saveAs("auth_code"))
       )
       .exec(
         http("Exchange authorization code for access token")
@@ -77,7 +77,7 @@ object IDAM {
           .formParam("client_id", SystemConfig.idamClientId)
           .formParam("client_secret", SystemConfig.idamClientSecret)
           .formParam("redirect_uri", SystemConfig.idamRedirectUri)
-          .check(jsonPath("$['access_token']").saveAs("user_token"))
+          .check(jsonPath("$['access_token']").notNull.saveAs("user_token"))
       )
 
   val deleteAccount: ChainBuilder =

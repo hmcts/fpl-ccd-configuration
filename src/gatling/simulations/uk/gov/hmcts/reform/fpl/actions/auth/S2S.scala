@@ -23,6 +23,6 @@ object S2S {
                 }
             """
         ))
-        .check(bodyString.saveAs("service_token"))
+        .check(bodyString.notNull.saveAs("service_token"))
     )
 }
