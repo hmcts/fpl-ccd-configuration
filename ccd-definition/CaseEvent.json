@@ -169,7 +169,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "otherProceedings",
     "Name": "Other proceedings",
-    "Description": "Entering other proceedings and allocation proposals",
+    "Description": "Entering other proceedings and  proposals",
     "DisplayOrder": 12,
     "PreConditionState(s)": "Open",
     "PostConditionState": "Open",
