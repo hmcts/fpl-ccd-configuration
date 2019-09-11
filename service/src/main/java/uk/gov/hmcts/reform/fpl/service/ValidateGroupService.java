@@ -9,15 +9,15 @@ import java.util.stream.Collectors;
 import javax.validation.Validator;
 
 @Service
-public class EventValidationService {
+public class ValidateGroupService {
     private final Validator validator;
 
     @Autowired
-    public EventValidationService(Validator validator) {
+    public ValidateGroupService(Validator validator) {
         this.validator = validator;
     }
 
-    public <T> List<String> validateEvent(T data, Class<?>...groups) {
+    public <T> List<String> validateGroup(T data, Class<?>...groups) {
         return validator.validate(data, groups).stream()
             .map(error -> error.getMessage()).collect(Collectors.toList());
     }

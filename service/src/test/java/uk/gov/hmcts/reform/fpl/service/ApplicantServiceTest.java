@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {ApplicantService.class, ObjectMapper.class})
-class   ApplicantServiceTest {
+class ApplicantServiceTest {
 
     @Autowired
     private ApplicantService service;
@@ -50,7 +50,6 @@ class   ApplicantServiceTest {
         assertThat(service.expandApplicantCollection(caseData)).hasSize(1);
         assertThat(service.expandApplicantCollection(caseData).get(0).getValue().getParty().partyId).isEqualTo(uuid);
     }
-
 
     @Test
     void shouldAddPartyIdAndPartyTypeValuesToApplicant() {
@@ -131,6 +130,4 @@ class   ApplicantServiceTest {
 
         assertThat(applicant.getParty().partyId).isEqualTo(uuid);
     }
-
-
 }

@@ -11,6 +11,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -23,15 +24,13 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.mockito.ArgumentMatchers.any;
-
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 
-import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.c6Document;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 @ActiveProfiles("integration-test")
@@ -41,6 +40,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
+    private static final String C6_DOCUMENT_TITLE = C6.getDocumentTitle();
 
     @MockBean
     private CaseDataExtractionService caseDataExtractionService;
@@ -60,19 +60,23 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
     @Test
     void shouldGenerateC6NoticeOfProceedingsDocument() throws Exception {
         byte[] pdf = {1, 2, 3, 4, 5};
-        Document document = c6Document();
+        Document document = document();
         DocmosisDocument docmosisDocument = DocmosisDocument.builder()
             .bytes(pdf)
-            .documentTitle("notice_of_proceedings_(C6)")
+            .documentTitle(C6_DOCUMENT_TITLE)
             .build();
+
+        CallbackRequest caseDetails = mapper.readValue(readBytes("fixtures/c6CaseData.json"), CallbackRequest.class);
+
+        CaseData caseData = mapper.convertValue(caseDetails.getCaseDetails().getData(), CaseData.class);
 
         Map<String, String> templateData = createTemplatePlaceholders();
 
-        given(caseDataExtractionService.getNoticeOfProceedingTemplateData(any(), any()))
+        given(caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData, "PUBLICLAW"))
             .willReturn(templateData);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
             .willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "notice_of_proceedings_(C6).pdf"))
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, C6_DOCUMENT_TITLE + ".pdf"))
             .willReturn(document);
 
         MvcResult response = makeRequest();
@@ -80,9 +84,11 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        DocumentReference noticeOfProceedingBundle = caseData.getNoticeOfProceedingsBundle().get(0).getValue()
+        assertThat(responseCaseData.getNoticeOfProceedingsBundle().get(0)).isNotNull();
+
+        DocumentReference noticeOfProceedingBundle = responseCaseData.getNoticeOfProceedingsBundle().get(0).getValue()
             .getDocument();
 
         assertThat(noticeOfProceedingBundle.getDocument_url()).isEqualTo(document.links.self.href);

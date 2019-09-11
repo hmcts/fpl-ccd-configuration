@@ -27,6 +27,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+
 @ActiveProfiles("integration-test")
 @WebMvcTest(NoticeOfProceedingsController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -34,6 +36,7 @@ class NoticeOfProceedingsControllerAboutToStartTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
+    private static final LocalDate TODAYS_DATE = LocalDate.now();
 
     @Autowired
     private MockMvc mockMvc;
@@ -45,31 +48,12 @@ class NoticeOfProceedingsControllerAboutToStartTest {
     private DateFormatterService dateFormatterService;
 
     @Test
-    void shouldReturnErrorsWhenFamilymanNumberOrHearingBookingDetailsIsNotProvided() throws Exception {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of())
-                .build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(
-            makeRequest(request).getResponse().getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        assertThat(callbackResponse.getErrors()).containsOnlyOnce(
-            "Enter Familyman case number",
-            "Enter hearing details"
-        );
-    }
-
-    @Test
-    void shouldReturnNoErrorsWhenFamilymanNumberAndHearingBookingDetailsIsProvided() throws Exception {
+    void shouldReturnErrorsWhenFamilymanNumberIsNotProvided() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
                 .data(ImmutableMap.of(
-                    "hearingDetails", createHearingBookings(),
-                    "familyManCaseNumber", "123"
+                    "hearingDetails", createHearingBookings()
                 ))
                 .build())
             .build();
@@ -77,7 +61,7 @@ class NoticeOfProceedingsControllerAboutToStartTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(
             makeRequest(request).getResponse().getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        assertThat(callbackResponse.getErrors()).isEmpty();
+        assertThat(callbackResponse.getErrors()).containsOnlyOnce("Enter Familyman case number");
     }
 
     @Test
@@ -98,8 +82,9 @@ class NoticeOfProceedingsControllerAboutToStartTest {
         String proceedingLabel = callbackResponse.getData().get("proceedingLabel").toString();
 
         String expectedContent = String.format("The case management hearing will be on the %s.", dateFormatterService
-            .formatLocalDateToString(LocalDate.now().plusDays(1), FormatStyle.LONG));
+            .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
 
+        assertThat(callbackResponse.getErrors()).isEmpty();
         assertThat(proceedingLabel).isEqualTo(expectedContent);
     }
 
@@ -118,30 +103,15 @@ class NoticeOfProceedingsControllerAboutToStartTest {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(HearingBooking.builder()
-                    .date(LocalDate.now().plusDays(5))
-                    .venue("Venue 1")
-                    .preHearingAttendance("This is usually one hour before the hearing")
-                    .time("09.15")
-                    .build())
+                .value(createHearingBooking(LocalDate.now().plusDays(5)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(HearingBooking.builder()
-                    .date(LocalDate.now().plusDays(2))
-                    .venue("Venue 2")
-                    .preHearingAttendance("This is usually one hour before the hearing")
-                    .time("09.15")
-                    .build())
+                .value(createHearingBooking(LocalDate.now().plusDays(2)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(HearingBooking.builder()
-                    .date(LocalDate.now().plusDays(1))
-                    .venue("Venue 3")
-                    .preHearingAttendance("This is usually one hour before the hearing")
-                    .time("09.15")
-                    .build())
+                .value(createHearingBooking(TODAYS_DATE))
                 .build()
         );
     }

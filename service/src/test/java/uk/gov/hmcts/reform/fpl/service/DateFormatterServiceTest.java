@@ -35,6 +35,6 @@ class DateFormatterServiceTest {
     }
 
     private LocalDate createDate() {
-        return LocalDate.of(2019,01, 01);
+        return LocalDate.of(2019, 01, 01);
     }
 }

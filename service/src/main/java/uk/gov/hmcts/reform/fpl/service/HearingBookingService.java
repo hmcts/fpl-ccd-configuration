@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Comparator.*;
+
 @Service
 public class HearingBookingService {
 
@@ -26,13 +28,12 @@ public class HearingBookingService {
 
     public HearingBooking getMostUrgentHearingBooking(CaseData caseData) {
         if (caseData.getHearingDetails() == null) {
-            return HearingBooking.builder().build();
+            throw new IllegalStateException("Hearing booking was not present");
         }
 
         return caseData.getHearingDetails().stream()
             .map(Element::getValue)
-            .sorted((booking1, booking2) -> booking1.getDate().compareTo(booking2.getDate()))
-            .findFirst()
-            .orElseThrow();
+            .min(comparing(HearingBooking::getDate))
+            .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
     }
 }

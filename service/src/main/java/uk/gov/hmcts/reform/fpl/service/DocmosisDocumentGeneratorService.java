@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -11,6 +13,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisRequest;
 
 import java.util.Map;
 
@@ -18,6 +21,7 @@ import java.util.Map;
 public class DocmosisDocumentGeneratorService {
     private final RestTemplate restTemplate;
     private final String tornadoUrl;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     DocmosisDocumentGeneratorService(RestTemplate restTemplate,
@@ -31,8 +35,12 @@ public class DocmosisDocumentGeneratorService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        DocmosisRequest requestBody = new DocmosisRequest(docmosisTemplate.getTemplate(),
-            templateData);
+        DocmosisRequest requestBody = DocmosisRequest.builder()
+            .templateName(docmosisTemplate.getTemplate())
+            .data(templateData)
+            .outputFormat("pdf")
+            .outputName("IGNORED")
+            .build();
 
         HttpEntity<DocmosisRequest> request = new HttpEntity<>(requestBody, headers);
 
@@ -41,39 +49,10 @@ public class DocmosisDocumentGeneratorService {
         try {
             response = restTemplate.exchange(tornadoUrl, HttpMethod.POST, request, byte[].class).getBody();
         } catch (HttpClientErrorException.BadRequest ex) {
-            throw new RuntimeException("Docmosis document generation failed" + ex.getResponseBodyAsString());
+            logger.error("Docmosis document generation failed");
+            throw ex;
         }
 
         return new DocmosisDocument(docmosisTemplate.getDocumentTitle(), response);
-    }
-
-    static class DocmosisRequest {
-        private final String templateName;
-        private final String outputFormat;
-        private final String outputName;
-        private final Map<String, String> data;
-
-        DocmosisRequest(String templateName, Map<String, String> data) {
-            this.templateName = templateName;
-            this.data = data;
-            this.outputFormat = "pdf";
-            this.outputName = "IGNORED";
-        }
-
-        public String getOutputName() {
-            return outputName;
-        }
-
-        public String getOutputFormat() {
-            return outputFormat;
-        }
-
-        public String getTemplateName() {
-            return templateName;
-        }
-
-        public Map<String, String> getData() {
-            return data;
-        }
     }
 }

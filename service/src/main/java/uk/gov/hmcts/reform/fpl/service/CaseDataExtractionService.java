@@ -75,8 +75,7 @@ public class CaseDataExtractionService {
             .filter(Objects::nonNull)
             .map(Child::getParty)
             .filter(Objects::nonNull)
-            .map(childParty -> {
-                return (childParty.getFirstName()) + " " + (childParty.getLastName());
-            }).collect(Collectors.joining(", "));
+            .map(childParty -> (childParty.getFirstName()) + " " + (childParty.getLastName()))
+                .collect(Collectors.joining(", "));
     }
 }

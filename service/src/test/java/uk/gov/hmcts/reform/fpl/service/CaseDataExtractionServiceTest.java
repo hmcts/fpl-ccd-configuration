@@ -5,11 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -24,12 +20,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
 @ExtendWith(SpringExtension.class)
 class CaseDataExtractionServiceTest {
 
     @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
-    private String JURISDICTION = "PUBLICLAW";
+    private static final String JURISDICTION = "PUBLICLAW";
+    private static final LocalDate TODAYS_DATE = LocalDate.now();
+
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
@@ -98,85 +99,26 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("orderTypes")).isEqualTo("Care order, Education supervision order");
         assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark");
         assertThat(templateData.get("hearingDate")).isEqualTo(dateFormatterService
-            .formatLocalDateToString(LocalDate.now().plusDays(1), FormatStyle.LONG));
-        assertThat(templateData.get("hearingVenue")).isEqualTo("Venue 3");
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo("This is usually one hour before the hearing");
-        assertThat(templateData.get("hearingTime")).isEqualTo("09.15");
+            .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
+        assertThat(templateData.get("hearingVenue")).isEqualTo("Venue");
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo("08.15am");
+        assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(HearingBooking.builder()
-                    .date(LocalDate.now().plusDays(5))
-                    .venue("Venue 1")
-                    .preHearingAttendance("This is usually one hour before the hearing")
-                    .time("09.15")
-                    .build())
+                .value(createHearingBooking(LocalDate.now().plusDays(5)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(HearingBooking.builder()
-                    .date(LocalDate.now().plusDays(2))
-                    .venue("Venue 2")
-                    .preHearingAttendance("This is usually one hour before the hearing")
-                    .time("09.15")
-                    .build())
+                .value(createHearingBooking(LocalDate.now().plusDays(5)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(HearingBooking.builder()
-                    .date(LocalDate.now().plusDays(1))
-                    .venue("Venue 3")
-                    .preHearingAttendance("This is usually one hour before the hearing")
-                    .time("09.15")
-                    .build())
+                .value(createHearingBooking(TODAYS_DATE))
                 .build()
         );
-    }
-
-    private List<Element<Applicant>> createPopulatedApplicants() {
-        return ImmutableList.of(
-            Element.<Applicant>builder()
-                .id(UUID.randomUUID())
-                .value(Applicant.builder()
-                    .leadApplicantIndicator("No")
-                    .party(ApplicantParty.builder()
-                        .organisationName("Bran Stark")
-                        .build())
-                    .build())
-                .build(),
-            Element.<Applicant>builder()
-                .id(UUID.randomUUID())
-                .value(Applicant.builder()
-                    .leadApplicantIndicator("No")
-                    .party(ApplicantParty.builder()
-                        .organisationName("Sansa Stark")
-                        .build())
-                    .build())
-                .build());
-    }
-
-    private List<Element<Child>> createPopulatedChildren() {
-        return ImmutableList.of(
-            Element.<Child>builder()
-                .id(UUID.randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Bran")
-                        .lastName("Stark")
-                        .build())
-                    .build())
-                .build(),
-            Element.<Child>builder()
-                .id(UUID.randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Sansa")
-                        .lastName("Stark")
-                        .build())
-                    .build())
-                .build());
     }
 }
