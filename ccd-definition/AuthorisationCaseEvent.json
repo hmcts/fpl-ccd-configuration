@@ -258,5 +258,12 @@
     "CaseEventID": "hearingBookingDetails",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addStatementOfService",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRU"
   }
 ]

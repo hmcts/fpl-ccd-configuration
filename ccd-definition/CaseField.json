@@ -427,5 +427,39 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "HearingBooking",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c9Declaration",
+    "Label": "If you send documents to a party's solicitor or a children's guardian, give their details",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "statementOfService",
+    "Label": "Recipients",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Recipients",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "serviceDeclarationLabel",
+    "Label": "Declaration",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "serviceConsent",
+    "Label": " ",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "Consent",
+    "SecurityClassification": "Public"
   }
 ]
