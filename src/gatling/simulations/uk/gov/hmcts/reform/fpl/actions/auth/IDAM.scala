@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.actions.auth
 
-import java.util.Base64
+import java.util.{Base64, UUID}
 
 import io.gatling.core.Predef._
 import io.gatling.core.structure.ChainBuilder
@@ -13,11 +13,15 @@ import scala.concurrent.duration._
 import scala.util.Random
 
 object IDAM {
-  private val randomEmailFeeder =
+  private val runIdentifier = Random.alphanumeric.take(6).mkString
+
+  private val feeder =
     Iterator.continually({
-      val email = Random.alphanumeric.take(20).mkString + "@fpla.local"
+      val id = UUID.randomUUID()
+      val email = s"TEST_FPLA_${runIdentifier}_CASEWORKER_${Random.alphanumeric.take(6).mkString}@fpla.local"
       val password = "Pazzw0rd123"
       Map(
+        "id" -> id,
         "email" -> email,
         "password" -> password,
         "encodedCredentials" -> Base64.getEncoder.encodeToString(s"$email:$password".getBytes)
@@ -25,7 +29,7 @@ object IDAM {
     })
 
   val registerAndSignIn: ChainBuilder =
-    feed(randomEmailFeeder)
+    feed(feeder)
       .exec(
         http("Create IDAM account")
           .post(SystemConfig.idamUrl + "/testing-support/accounts")
@@ -33,10 +37,21 @@ object IDAM {
           .body(StringBody(
             """
               {
+                "id": "${id}",
                 "email": "${email}",
                 "forename": "John",
                 "surname": "Smith",
-                "password": "${password}"
+                "password": "${password}",
+                "roles": [{
+                  "code": "caseworker"
+                }, {
+                  "code": "caseworker-publiclaw"
+                }, {
+                  "code": "caseworker-publiclaw-solicitor"
+                }],
+                "userGroup": {
+                  "code": "caseworker"
+                }
               }
             """
           ))
