@@ -13,11 +13,17 @@ class ApiSimulation extends Simulation {
       .exec(S2S.leaseServiceToken)
       .exec(ApplicationActions.create)
       .exec(ApplicationActions.populateOrdersAndDirectionsNeeded)
-      .exec(ApplicationActions.populateChildren)
-      .exec(ApplicationActions.populateRespondents)
+      .exec(repeat(2) {
+        ApplicationActions.populateChildren
+      })
+      .exec(repeat(2) {
+        ApplicationActions.populateRespondents
+      })
       .exec(ApplicationActions.populateApplicant)
       .exec(ApplicationActions.populateOtherProceedings)
-      .exec(ApplicationActions.uploadDocuments)
+      .exec(repeat(2) {
+        ApplicationActions.uploadDocuments
+      })
       .exec(ApplicationActions.submit)
       .exec(IDAM.deleteAccount)
 
@@ -29,9 +35,14 @@ class ApiSimulation extends Simulation {
     .exec(IDAM.deleteAccount)
 
   setUp(
-    submitApplication.inject(rampUsers(SimulationParams.numberOfUsers).during(SimulationParams.rampUpTimeInSeconds)),
-    deleteApplication.inject(rampUsers(SimulationParams.numberOfUsers).during(SimulationParams.rampUpTimeInSeconds))
+    submitApplication
+      .inject(rampUsers(SimulationParams.numberOfUsers).during(SimulationParams.rampUpTimeInSeconds)),
+    deleteApplication
+      .inject(rampUsers(math.ceil(SimulationParams.numberOfUsers * 0.1).toInt).during(SimulationParams.rampUpTimeInSeconds)) // extra 10% of users delete drafts
   ).protocols(
-    http.baseUrl(SystemConfig.url).contentTypeHeader(ApplicationJson)
+    http
+      .baseUrl(SystemConfig.url)
+      .contentTypeHeader(ApplicationJson)
+      .silentUri(s"${SystemConfig.idamUrl}/.*|${SystemConfig.s2sUrl}/.*")
   )
 }

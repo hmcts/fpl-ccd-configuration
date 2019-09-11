@@ -6,8 +6,9 @@
             <immediateFlush>false</immediateFlush>
         </encoder>
     </appender>
-    <!-- Change log level to TRACE to see all HTTP logs (including responses) -->
-    <logger name="io.gatling.http" level="DEBUG" />
+    <!-- uncomment and set to DEBUG to log all failing HTTP requests -->
+    <!-- uncomment and set to TRACE to log all HTTP requests -->
+    <!--<logger name="io.gatling.http.engine.response" level="TRACE" />-->
     <root level="INFO">
         <appender-ref ref="CONSOLE" />
     </root>

@@ -9,17 +9,27 @@ import io.gatling.http.request.builder.HttpRequestBuilder
 object Callback {
   def triggerCallbacks(actionName: String, eventName: String, callbacks: Callback*): ChainBuilder = {
     val builders = callbacks.map(callback => {
-      new HttpRequestActionBuilder(callback.buildRequest(actionName, eventName))
+      new HttpRequestActionBuilder(callback.buildRequest(eventName))
     })
-    ChainBuilder(builders.toList)
+    group(actionName) {
+      ChainBuilder(builders.toList)
+    }
   }
 }
 
+// Callbacks flow:
+// about-to-start
+//   > [user fills form and clicks continue - takes 5-30s]
+//   > mid-event
+//   > [user clicks submit button - takes 1-3s]
+//   > about-to-submit
+//   > [CCD persists data - takes 0-2s]
+//   > submitted
 trait Callback {
   val uri: String
 
-  def buildRequest(actionName: String, eventName: String): HttpRequestBuilder = {
-    http(s"${actionName} - ${uri} callback")
+  def buildRequest(eventName: String): HttpRequestBuilder = {
+    http(s"${uri} callback")
       .post(url = s"/callback/${eventName}/${uri}")
       .header("Authorization", "Bearer ${user_token}")
       .header("ServiceAuthorization", "Bearer ${service_token}")
