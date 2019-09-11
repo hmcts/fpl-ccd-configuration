@@ -96,7 +96,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "caseIDReference",
+    "CaseFieldID": "statementOfService",
     "TabFieldDisplayOrder": 1
   },
   {
@@ -106,7 +106,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "groundsForEPO",
+    "CaseFieldID": "caseIDReference",
     "TabFieldDisplayOrder": 2
   },
   {
@@ -116,7 +116,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "grounds",
+    "CaseFieldID": "groundsForEPO",
     "TabFieldDisplayOrder": 3
   },
   {
@@ -126,7 +126,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "risks",
+    "CaseFieldID": "grounds",
     "TabFieldDisplayOrder": 4
   },
   {
@@ -136,7 +136,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "factorsParenting",
+    "CaseFieldID": "risks",
     "TabFieldDisplayOrder": 5
   },
   {
@@ -146,7 +146,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "internationalElement",
+    "CaseFieldID": "factorsParenting",
     "TabFieldDisplayOrder": 6
   },
   {
@@ -156,7 +156,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "proceeding",
+    "CaseFieldID": "internationalElement",
     "TabFieldDisplayOrder": 7
   },
   {
@@ -166,7 +166,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "allocationDecision",
+    "CaseFieldID": "proceeding",
     "TabFieldDisplayOrder": 8
   },
   {
@@ -176,7 +176,7 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "allocationProposal",
+    "CaseFieldID": "allocationDecision",
     "TabFieldDisplayOrder": 9
   },
   {
@@ -186,8 +186,18 @@
     "TabID": "LegalBasisTab",
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 5,
-    "CaseFieldID": "hearingPreferences",
+    "CaseFieldID": "allocationProposal",
     "TabFieldDisplayOrder": 10
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "LegalBasisTab",
+    "TabLabel": "Legal basis",
+    "TabDisplayOrder": 5,
+    "CaseFieldID": "hearingPreferences",
+    "TabFieldDisplayOrder": 11
   },
   {
     "LiveFrom": "01/01/2017",
