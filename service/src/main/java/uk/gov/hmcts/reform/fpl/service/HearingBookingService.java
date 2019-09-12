@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Comparator.*;
+import static java.util.Comparator.comparing;
 
 @Service
 public class HearingBookingService {

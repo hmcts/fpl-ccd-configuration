@@ -96,9 +96,6 @@ public class CaseData {
 
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
-<<<<<<< HEAD
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
-=======
     private final List<Element<Recipients>> statementOfService;
->>>>>>> 8848ed4392ba2e0fa8ee3e9c14fea210e42cddf5
 }

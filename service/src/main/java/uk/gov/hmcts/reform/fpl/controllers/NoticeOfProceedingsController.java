@@ -23,9 +23,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
 import java.time.format.FormatStyle;
 
@@ -72,11 +72,13 @@ public class NoticeOfProceedingsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        HearingBooking hearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
+        if (caseData.getFamilyManCaseNumber() != null && caseData.getHearingDetails() != null) {
+            HearingBooking hearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
 
-        caseDetails.getData().put("proceedingLabel", String.format("The case management hearing will be on the %s.",
-            dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG)));
-
+            caseDetails.getData().put("proceedingLabel", String.format("The case management hearing will be on the %s.",
+                dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG)));
+        }
+        
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .errors(eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class))
