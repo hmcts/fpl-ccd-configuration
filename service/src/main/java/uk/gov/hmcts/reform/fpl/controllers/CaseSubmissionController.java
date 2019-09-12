@@ -97,13 +97,13 @@ public class CaseSubmissionController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (caseData != null && caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
-            && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseDetails.getData())
-                .errors(caseValidatorService.validateCaseDetails(caseData, Default.class, EPOGroup.class))
-                .build();
-        }
+//        if (caseData != null && caseData.getOrders() != null && caseData.getOrders().getOrderType() != null
+//            && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
+//            return AboutToStartOrSubmitCallbackResponse.builder()
+//                .data(caseDetails.getData())
+//                .errors(caseValidatorService.validateCaseDetails(caseData, Default.class, EPOGroup.class))
+//                .build();
+//        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
