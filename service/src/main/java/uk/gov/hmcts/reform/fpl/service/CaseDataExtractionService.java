@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -21,19 +22,22 @@ public class CaseDataExtractionService {
 
     private DateFormatterService dateFormatterService;
     private HearingBookingService hearingBookingService;
+    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     @Autowired
     public CaseDataExtractionService(DateFormatterService dateFormatterService,
-                                     HearingBookingService hearingBookingService) {
+                                     HearingBookingService hearingBookingService,
+                                     HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration) {
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
+        this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }
 
-    public Map<String, String> getNoticeOfProceedingTemplateData(CaseData caseData, String jurisdiction) {
+    public Map<String, String> getNoticeOfProceedingTemplateData(CaseData caseData) {
         HearingBooking hearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
 
         return Map.of(
-            "jurisdiction", StringUtils.defaultIfBlank(jurisdiction, ""),
+            "courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName(),
             "familyManCaseNumber", StringUtils.defaultIfBlank(caseData.getFamilyManCaseNumber(), ""),
             "todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG),
             "applicantName", getFirstApplicantName(caseData),

@@ -2,7 +2,8 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatcher;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -15,11 +16,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisRequest;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.progress.ThreadSafeMockingProgress.mockingProgress;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 
 @ExtendWith(SpringExtension.class)
@@ -32,15 +30,16 @@ class DocmosisDocumentGeneratorServiceTest {
 
     private String tornadoUrl = "http://tornado:5433";
 
+    @Captor
+    ArgumentCaptor<HttpEntity<DocmosisRequest>> argumentCaptor;
+
     @Test
     @SuppressWarnings("unchecked")
     void shouldInvokesTornado() {
         Map<String, String> placeholders = getTemplatePlaceholders();
 
-//        when(restTemplate.exchange(eq(tornadoUrl + "/rs/render"), eq(HttpMethod.POST), matcher() , eq(byte[].class)))
-//            .thenReturn(tornadoResponse);
-        when(restTemplate.exchange(any(), any(), any(), any(Class.class), any(Object.class)))
-            .thenReturn(tornadoResponse);
+        when(restTemplate.exchange(eq(tornadoUrl + "/rs/render"), eq(HttpMethod.POST), argumentCaptor.capture(),
+            eq(byte[].class))).thenReturn(tornadoResponse);
 
         byte[] expectedResponse = {1, 2, 3};
         when(tornadoResponse.getBody()).thenReturn(expectedResponse);
@@ -48,37 +47,8 @@ class DocmosisDocumentGeneratorServiceTest {
         DocmosisDocument docmosisDocument = createServiceInstance().generateDocmosisDocument(placeholders, C6);
         assertThat(docmosisDocument.getBytes()).isEqualTo(expectedResponse);
 
-        verify(restTemplate).exchange(eq("wrongUrl"), any(), matcher(), any(Class.class), any(Object.class));
-    }
-
-    public HttpEntity<DocmosisRequest> matcher() {
-        mockingProgress().getArgumentMatcherStorage().reportMatcher(new ArgumentMatcher<HttpEntity<DocmosisRequest>>() {
-            @Override
-            public boolean matches(HttpEntity<DocmosisRequest> argument) {
-                System.out.println("matching");
-                DocmosisRequest body = argument.getBody();
-                return body.getOutputFormat().equals("pdf1");
-            }
-        });
-        return null;
-    }
-
-
-    @Test
-    void shouldThrowNullPointerIfAnInValidDocmosisTemplateEnumIsNotProvided() {
-        Map<String, String> placeholder = getTemplatePlaceholders();
-
-        when(restTemplate.exchange(eq(tornadoUrl + "/rs/render"), eq(HttpMethod.POST), any(), eq(byte[].class)))
-            .thenReturn(tornadoResponse);
-
-        byte[] expectedResponse = {1, 2, 3};
-        when(tornadoResponse.getBody()).thenReturn(expectedResponse);
-
-        try {
-            createServiceInstance().generateDocmosisDocument(placeholder, null);
-        } catch (Exception ex) {
-            assertThat(ex instanceof NullPointerException);
-        }
+        assertThat(argumentCaptor.getValue().getBody().getTemplateName()).isEqualTo(C6.getTemplate());
+        assertThat(argumentCaptor.getValue().getBody().getOutputFormat()).isEqualTo("pdf");
     }
 
     private Map<String, String> getTemplatePlaceholders() {

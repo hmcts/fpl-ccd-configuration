@@ -78,7 +78,7 @@ public class NoticeOfProceedingsController {
             caseDetails.getData().put("proceedingLabel", String.format("The case management hearing will be on the %s.",
                 dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG)));
         }
-        
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .errors(eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class))
@@ -91,10 +91,11 @@ public class NoticeOfProceedingsController {
             @RequestHeader(value = "user-id") String userId,
             @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         Map<String, String> templateData = caseDataExtractionService
-            .getNoticeOfProceedingTemplateData(caseData, caseDetails.getJurisdiction());
+            .getNoticeOfProceedingTemplateData(caseData);
 
         List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData);
 

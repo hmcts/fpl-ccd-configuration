@@ -72,7 +72,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
 
         Map<String, String> templateData = createTemplatePlaceholders();
 
-        given(caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData, "PUBLICLAW"))
+        given(caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData))
             .willReturn(templateData);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
             .willReturn(docmosisDocument);
@@ -109,7 +109,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
 
     private Map<String, String> createTemplatePlaceholders() {
         return Map.of(
-            "jurisdiction", "PUBLICLAW",
+            "courtName", "Swansea Family Court",
             "familyManCaseNumber", "SW123123",
             "applicantName", "James Nelson",
             "orderTypes", "Care order",

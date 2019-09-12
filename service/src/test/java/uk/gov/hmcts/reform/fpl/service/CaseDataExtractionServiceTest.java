@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -26,60 +27,49 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopula
 
 @ExtendWith(SpringExtension.class)
 class CaseDataExtractionServiceTest {
-
     @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
-    private static final String JURISDICTION = "PUBLICLAW";
-    private static final LocalDate TODAYS_DATE = LocalDate.now();
 
+    private static final String LOCAL_AUTHORITY_CODE = "example";
+    private static final String COURT_NAME = "Example Court";
+    private static final String COURT_EMAIL = "example@court.com";
+    private static final String CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL);
+    private static final LocalDate TODAYS_DATE = LocalDate.now();
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
+    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
+
     private CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
-        hearingBookingService);
-
-    @Test
-    void shouldReturnAMapOfEmptyStringsIfCaseDataIsNotPopulated() {
-
-        CaseData caseData = CaseData.builder().build();
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData,
-            JURISDICTION);
-
-        assertThat(templateData.get("jurisdiction")).isEqualTo("PUBLICLAW");
-        assertThat(templateData.get("familyManCaseNumber")).isEqualTo("");
-        assertThat(templateData.get("applicantName")).isEqualTo("");
-        assertThat(templateData.get("orderTypes")).isEqualTo("");
-        assertThat(templateData.get("childrenNames")).isEqualTo("");
-        assertThat(templateData.get("hearingDate")).isEqualTo("");
-        assertThat(templateData.get("hearingVenue")).isEqualTo("");
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo("");
-        assertThat(templateData.get("hearingTime")).isEqualTo("");
-    }
+        hearingBookingService, hmctsCourtLookupConfiguration);
 
     @Test
     void shouldConcatenateAllChildrenNames() {
         CaseData caseData = CaseData.builder()
+            .caseLocalAuthority("example")
+            .hearingDetails(createHearingBookings())
             .children1(createPopulatedChildren())
             .build();
 
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData,
-            JURISDICTION);
+        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
         assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark");
     }
 
     @Test
     void shouldReturnFirstApplicantName() {
         CaseData caseData = CaseData.builder()
+            .caseLocalAuthority("example")
+            .hearingDetails(createHearingBookings())
             .applicants(createPopulatedApplicants())
                 .build();
 
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData,
-            JURISDICTION);
+        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
     }
 
     @Test
     void shouldMapCaseDataPropertiesToTemplatePlaceholderData() {
         CaseData caseData = CaseData.builder()
+            .caseLocalAuthority("example")
             .familyManCaseNumber("123")
             .children1(createPopulatedChildren())
             .applicants(createPopulatedApplicants())
@@ -91,9 +81,8 @@ class CaseDataExtractionServiceTest {
                 )).build())
             .build();
 
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData,
-            JURISDICTION);
-        assertThat(templateData.get("jurisdiction")).isEqualTo("PUBLICLAW");
+        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
+        assertThat(templateData.get("courtName")).isEqualTo("Example Court");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
         assertThat(templateData.get("orderTypes")).isEqualTo("Care order, Education supervision order");
