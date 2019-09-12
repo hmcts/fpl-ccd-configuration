@@ -66,7 +66,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
             .documentTitle(C6_DOCUMENT_TITLE)
             .build();
 
-        CallbackRequest caseDetails = mapper.readValue(readBytes("fixtures/c6CaseData.json"), CallbackRequest.class);
+        CallbackRequest caseDetails = mapper.readValue(readBytes("fixtures/C6CaseData.json"), CallbackRequest.class);
 
         CaseData caseData = mapper.convertValue(caseDetails.getCaseDetails().getData(), CaseData.class);
 
