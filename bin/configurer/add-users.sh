@@ -12,5 +12,4 @@ ${dir}/utils/idam-create-caseworker.sh "siva@hillingdon.gov.uk" "caseworker,case
 ${dir}/utils/idam-create-caseworker.sh "hmcts-admin@example.com" "caseworker,caseworker-publiclaw,caseworker-publiclaw-courtadmin" "(hmcts-admin)"
 ${dir}/utils/idam-create-caseworker.sh "cafcass@example.com" "caseworker,caseworker-publiclaw,caseworker-publiclaw-cafcass" "(cafcass)"
 ${dir}/utils/idam-create-caseworker.sh "gatekeeper@mailnesia.com" "caseworker,caseworker-publiclaw,caseworker-publiclaw-gatekeeper,caseworker-publiclaw-courtadmin" "(gatekeeper)"
-${dir}/utils/idam-create-caseworker.sh "gatekeeper1@mailnesia.com" "caseworker,caseworker-publiclaw,caseworker-publiclaw-gatekeeper,caseworker-publiclaw-courtadmin" "(gatekeeper)"
 ${dir}/utils/idam-create-caseworker.sh "judiciary@mailnesia.com" "caseworker,caseworker-publiclaw,caseworker-publiclaw-judiciary" "(judiciary)"

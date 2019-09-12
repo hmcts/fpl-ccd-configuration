@@ -109,6 +109,7 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(9, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
 });
 
+
 Scenario('HMCTS admin sends email to gatekeeper with a link to the case', (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
   caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
   sendCaseToGatekeeperEventPage.enterEmail();

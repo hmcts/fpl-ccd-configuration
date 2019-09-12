@@ -5,10 +5,10 @@ let caseId;
 
 Feature('Gatekeeper Case administration after submission');
 
-Before(async (I, caseViewPage, submitApplicationEventPage) => {
+Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    await I.enterMandatoryFields();
+    // await I.enterMandatoryFields();
     caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
     I.continueAndSubmit();
@@ -18,6 +18,15 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
     console.log(`Case ${caseId} has been submitted`);
 
     I.signOut();
+
+    await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
+    await I.navigateToCaseDetails(caseId);
+    caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+    sendCaseToGatekeeperEventPage.enterEmail();
+    I.continueAndSave();
+    I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
+    I.signOut();
+
     await I.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
   }
   await I.navigateToCaseDetails(caseId);
