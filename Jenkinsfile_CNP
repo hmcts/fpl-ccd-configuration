@@ -59,6 +59,7 @@ withPipeline(type, product, component) {
   enableDockerBuild()
   enableAksStagingDeployment()
   installCharts()
+  disableLegacyDeployment()
   enableSlackNotifications('#fpla-tech')
 
   env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
