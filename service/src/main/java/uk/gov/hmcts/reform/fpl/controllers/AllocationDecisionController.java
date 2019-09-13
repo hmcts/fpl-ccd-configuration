@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Api
@@ -18,6 +19,7 @@ import java.util.Map;
 public class AllocationDecisionController {
 
     @PostMapping("/about-to-start")
+    @SuppressWarnings("unchecked")
     public AboutToStartOrSubmitCallbackResponse checkIfAllocationProposalIsMissing(
         @RequestHeader(value = "authorization") String authorization,
         @RequestBody CallbackRequest callbackRequest) {
@@ -25,7 +27,8 @@ public class AllocationDecisionController {
 
         Map<String, Object> data = caseDetails.getData();
 
-        data.put("allocationProposalPresent", checkProposal(data));
+        Map<String, Object> allocationDecision = (Map<String, Object>) data.computeIfAbsent("allocationDecision", (key) -> new HashMap<>());
+        allocationDecision.put("allocationProposalPresent", checkProposal(data));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)

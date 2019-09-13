@@ -248,51 +248,11 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "allocationDecision_header",
-    "Label": "## Allocation decision",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "allocationDecision",
-    "Label": " ",
-    "FieldType": "AllocationProposal",
+    "Label": "Allocation decision",
+    "FieldType": "AllocationDecision",
     "SecurityClassification": "Public",
     "ShowSummaryContentOption": "Y"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "allocationProposalPresent",
-    "Label": "allocation proposal has been entered",
-    "FieldType": "YesOrNo",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "allocationDecision_Label",
-    "Label": "The proposed allocation is ${allocationProposal.proposal}.",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "allocationDecision_LabelReason",
-    "Label": "${allocationProposal.proposalReason}",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "missingAllocationDecision_Label",
-    "Label": "The local authority has not made an allocation proposal.",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
