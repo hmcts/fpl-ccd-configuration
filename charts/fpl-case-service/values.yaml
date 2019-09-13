@@ -4,10 +4,10 @@ tags:
 
 java:
   image: hmctspublic.azurecr.io/fpl/case-service:latest
-  memoryRequests: 512Mi
-  cpuRequests: 250m
-  memoryLimits: 1024Mi
-  cpuLimits: 500m
+  memoryRequests: '512Mi'
+  cpuRequests: '250m'
+  memoryLimits: '1024Mi'
+  cpuLimits: '500m'
   environment:
     IDAM_API_URL: https://idam-api.aat.platform.hmcts.net
     IDAM_S2S_AUTH_URL: http://rpe-service-auth-provider-aat.service.core-compute-aat.internal
