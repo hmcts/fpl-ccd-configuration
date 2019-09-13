@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.Map;
 
 public enum DocmosisTemplates {
@@ -12,7 +11,8 @@ public enum DocmosisTemplates {
     private final String documentTitle;
     private final ProceedingType proceedingType;
 
-    private static Map<ProceedingType, DocmosisTemplates> PROCEEDING_TYPE_TO_DOCMOSIS_TEMPLATE = new EnumMap<>(ProceedingType.class);
+    private static Map<ProceedingType, DocmosisTemplates> PROCEEDING_TYPE_TO_DOCMOSIS_TEMPLATE =
+        new EnumMap<>(ProceedingType.class);
 
     static {
         for (DocmosisTemplates docmosisTemplatee : DocmosisTemplates.values()) {
