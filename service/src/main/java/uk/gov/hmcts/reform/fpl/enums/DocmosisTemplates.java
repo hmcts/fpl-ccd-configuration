@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,19 +10,24 @@ public enum DocmosisTemplates {
 
     private final String template;
     private final String documentTitle;
+    private final ProceedingType proceedingType;
 
-    private interface Inner {
-        Map<ProceedingType, DocmosisTemplates> docmosisTemplateToProceedingType = new HashMap<>();
+    private static Map<ProceedingType, DocmosisTemplates> PROCEEDING_TYPE_TO_DOCMOSIS_TEMPLATE = new EnumMap<>(ProceedingType.class);
+
+    static {
+        for (DocmosisTemplates docmosisTemplatee : DocmosisTemplates.values()) {
+            PROCEEDING_TYPE_TO_DOCMOSIS_TEMPLATE.put(docmosisTemplatee.proceedingType, docmosisTemplatee);
+        }
     }
 
     DocmosisTemplates(String template, String documentTitle, ProceedingType proceedingType) {
         this.template = template;
         this.documentTitle = documentTitle;
-        Inner.docmosisTemplateToProceedingType.put(proceedingType, this);
+        this.proceedingType = proceedingType;
     }
 
     public static DocmosisTemplates getFromProceedingType(ProceedingType label) {
-        return Inner.docmosisTemplateToProceedingType.get(label);
+        return PROCEEDING_TYPE_TO_DOCMOSIS_TEMPLATE.get(label);
     }
 
     public String getTemplate() {
