@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,6 +33,7 @@ class AllocationDecisionControllerAboutToStartTest {
     private MockMvc mockMvc;
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldAddYesToMissingAllocationDecision() throws Exception {
 
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
@@ -41,11 +44,13 @@ class AllocationDecisionControllerAboutToStartTest {
 
         AboutToStartOrSubmitCallbackResponse response = callbackResponse(request);
 
-        assertThat(response.getData())
+        Map<String, Object> allocationDecision = (Map<String, Object>) response.getData().get("allocationDecision");
+        assertThat(allocationDecision)
             .containsEntry("allocationProposalPresent", "Yes");
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void shouldAddNoToMissingAllocationDecision() throws Exception {
 
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
@@ -55,7 +60,8 @@ class AllocationDecisionControllerAboutToStartTest {
 
         AboutToStartOrSubmitCallbackResponse response = callbackResponse(request);
 
-        assertThat(response.getData())
+        Map<String, Object> allocationDecision = (Map<String, Object>) response.getData().get("allocationDecision");
+        assertThat(allocationDecision)
             .containsEntry("allocationProposalPresent", "No");
     }
 
