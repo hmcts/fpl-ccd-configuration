@@ -27,7 +27,8 @@ public class AllocationDecisionController {
 
         Map<String, Object> data = caseDetails.getData();
 
-        Map<String, Object> allocationDecision = (Map<String, Object>) data.computeIfAbsent("allocationDecision", (key) -> new HashMap<>());
+        Map<String, Object> allocationDecision = (Map<String, Object>) data
+            .computeIfAbsent("allocationDecision", (key) -> new HashMap<>());
         allocationDecision.put("allocationProposalPresent", checkProposal(data));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
