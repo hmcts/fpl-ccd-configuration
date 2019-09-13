@@ -18,12 +18,12 @@ import javax.validation.Validation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-class EventValidationServiceTest {
-    private ValidateGroupService eventValidationService;
+class ValidateGroupServiceTest {
+    private ValidateGroupService validateGroupService;
 
     @BeforeEach()
     private void setup() {
-        eventValidationService = new ValidateGroupService(Validation
+        validateGroupService = new ValidateGroupService(Validation
             .buildDefaultValidatorFactory()
             .getValidator());
     }
@@ -31,7 +31,7 @@ class EventValidationServiceTest {
     @Test
     void shouldReturnAnErrorIfFamilyManCaseNumberAndHearingBookingDetailsIsNotPopulated() {
         CaseData caseData = CaseData.builder().build();
-        List<String> errors = eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class);
+        List<String> errors = validateGroupService.validateGroup(caseData, NoticeOfProceedingsGroup.class);
 
         assertThat(errors).containsOnlyOnce(
             "Enter Familyman case number",
@@ -49,7 +49,7 @@ class EventValidationServiceTest {
                     .build()))
             .familyManCaseNumber("123")
             .build();
-        List<String> errors = eventValidationService
+        List<String> errors = validateGroupService
             .validateGroup(caseData, NoticeOfProceedingsGroup.class);
 
         assertThat(errors).isEmpty();

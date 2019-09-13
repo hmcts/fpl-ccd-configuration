@@ -72,17 +72,21 @@ public class NoticeOfProceedingsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (caseData.getFamilyManCaseNumber() != null && caseData.getHearingDetails() != null) {
+        if (eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class).isEmpty()) {
             HearingBooking hearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
 
             caseDetails.getData().put("proceedingLabel", String.format("The case management hearing will be on the %s.",
                 dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG)));
-        }
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .errors(eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class))
-            .build();
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(caseDetails.getData())
+                .build();
+        } else {
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(caseDetails.getData())
+                .errors(eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class))
+                .build();
+        }
     }
 
     @PostMapping("/about-to-submit")
@@ -108,9 +112,9 @@ public class NoticeOfProceedingsController {
                     .id(UUID.randomUUID())
                     .value(ImmutableMap.builder()
                         .put("document", DocumentReference.builder()
-                            .document_filename(document.originalDocumentName)
-                            .document_url(document.links.self.href)
-                            .document_binary_url(document.links.binary.href)
+                            .filename(document.originalDocumentName)
+                            .url(document.links.self.href)
+                            .binaryUrl(document.links.binary.href)
                             .build())
                         .build())
                     .build();

@@ -87,14 +87,14 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
 
         CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(responseCaseData.getNoticeOfProceedingsBundle().get(0)).isNotNull();
+        assertThat(responseCaseData.getNoticeOfProceedingsBundle()).hasSize(1);
 
         DocumentReference noticeOfProceedingBundle = responseCaseData.getNoticeOfProceedingsBundle().get(0).getValue()
             .getDocument();
 
-        assertThat(noticeOfProceedingBundle.getDocument_url()).isEqualTo(document.links.self.href);
-        assertThat(noticeOfProceedingBundle.getDocument_filename()).isEqualTo(document.originalDocumentName);
-        assertThat(noticeOfProceedingBundle.getDocument_binary_url()).isEqualTo(document.links.binary.href);
+        assertThat(noticeOfProceedingBundle.getUrl()).isEqualTo(document.links.self.href);
+        assertThat(noticeOfProceedingBundle.getFilename()).isEqualTo(document.originalDocumentName);
+        assertThat(noticeOfProceedingBundle.getBinaryUrl()).isEqualTo(document.links.binary.href);
     }
 
     private MvcResult makeRequest() throws Exception {

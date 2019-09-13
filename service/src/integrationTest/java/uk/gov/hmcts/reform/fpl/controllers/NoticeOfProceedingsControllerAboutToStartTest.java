@@ -84,7 +84,6 @@ class NoticeOfProceedingsControllerAboutToStartTest {
         String expectedContent = String.format("The case management hearing will be on the %s.", dateFormatterService
             .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
 
-        assertThat(callbackResponse.getErrors()).isEmpty();
         assertThat(proceedingLabel).isEqualTo(expectedContent);
     }
 

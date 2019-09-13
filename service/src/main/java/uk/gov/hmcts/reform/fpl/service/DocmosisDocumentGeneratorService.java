@@ -49,7 +49,7 @@ public class DocmosisDocumentGeneratorService {
         try {
             response = restTemplate.exchange(tornadoUrl, HttpMethod.POST, request, byte[].class).getBody();
         } catch (HttpClientErrorException.BadRequest ex) {
-            logger.error("Docmosis document generation failed");
+            logger.error("Docmosis document generation failed" + ex.getResponseBodyAsString());
             throw ex;
         }
 
