@@ -19,6 +19,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
 
     I.signOut();
 
+    //hmcts login and send to gatekeeper
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
     await I.navigateToCaseDetails(caseId);
     caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
