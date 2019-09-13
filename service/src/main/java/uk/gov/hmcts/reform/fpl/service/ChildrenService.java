@@ -16,8 +16,9 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class ChildrenService {
 
+    @SuppressWarnings("squid:S2583")
     public List<Element<Child>> expandChildrenCollection(CaseData caseData) {
-        if (caseData.getChildren1() == null) {
+        if (caseData.getChildren1() == null) { // squid:S2583: value can be null in CCD JSON
             List<Element<Child>> populatedChildren = new ArrayList<>();
 
             populatedChildren.add(Element.<Child>builder()
