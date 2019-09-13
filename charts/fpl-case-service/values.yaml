@@ -4,8 +4,8 @@ tags:
 
 java:
   image: hmctspublic.azurecr.io/fpl/case-service:latest
-  memoryRequests: 256Mi
-  cpuRequests: 125m
+  memoryRequests: 512Mi
+  cpuRequests: 250m
   memoryLimits: 1024Mi
   cpuLimits: 500m
   environment:
