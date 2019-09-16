@@ -25,11 +25,6 @@ module.exports = {
       },
     };
   },
-  addProceedingButton: 'Add new',
-
-  addNewProceeding() {
-    I.click(this.addProceedingButton);
-  },
 
   selectYesForProceeding() {
     I.click(this.fields(undefined).onGoingProceeding.yes);

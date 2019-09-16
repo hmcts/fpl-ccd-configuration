@@ -33,11 +33,6 @@ module.exports = {
       },
     };
   },
-  addRespondentButton: 'Add new',
-
-  addRespondent() {
-    I.click(this.addRespondentButton);
-  },
 
   async enterRespondent(respondent) {
     const elementIndex = await this.getActiveElementIndex();

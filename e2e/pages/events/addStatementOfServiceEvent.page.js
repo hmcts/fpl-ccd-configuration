@@ -26,12 +26,6 @@ module.exports = {
       },
     };
   },
-  addRecipientButton: 'Add new',
-
-  addRecipient() {
-    I.click(this.addRecipientButton);
-    I.wait(1);
-  },
 
   async enterRecipientDetails(recipients) {
     const elementIndex = await this.getActiveElementIndex();

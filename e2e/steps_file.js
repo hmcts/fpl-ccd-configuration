@@ -137,5 +137,9 @@ module.exports = function () {
       uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
       this.continueAndSave();
     },
+
+    async addAnotherElementToCollection() {
+      this.click('Add new');
+    },
   });
 };

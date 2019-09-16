@@ -26,12 +26,6 @@ module.exports = {
       },
     };
   },
-  addHearingButton: 'Add new',
-
-  addHearing() {
-    I.click(this.addHearingButton);
-    I.wait(1);
-  },
 
   async enterHearingDetails(hearingDetails) {
     const elementIndex = await this.getActiveElementIndex();
