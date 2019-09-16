@@ -82,12 +82,12 @@ withPipeline(type, product, component) {
     archiveCoreCaseDataDefinitions('saat')
   }
 
-  before('smoketest:aat-staging') {
+  before('smoketest:aat') {
     env.URL = "https://ccd-case-management-web-aat.service.core-compute-aat.internal"
     archiveCoreCaseDataDefinitions('aat')
   }
 
-  before('smoketest:prod-staging') {
+  before('smoketest:prod') {
     env.URL = "https://ccd-case-management-web-prod.service.core-compute-prod.internal"
     archiveCoreCaseDataDefinitions('prod')
   }
@@ -113,10 +113,6 @@ withPipeline(type, product, component) {
   }
 
   after('smoketest:saat') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-  }
-
-  after('smoketest:aat-staging') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
