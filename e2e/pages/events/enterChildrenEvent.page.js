@@ -44,7 +44,7 @@ module.exports = {
       },
     };
   },
-  addChildButton: '#children1 > div:nth-child(1) > button:nth-child(2)',
+  addChildButton: 'Add new',
 
   addChild() {
     I.click(this.addChildButton);

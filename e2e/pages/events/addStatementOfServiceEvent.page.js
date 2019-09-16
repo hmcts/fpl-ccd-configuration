@@ -26,8 +26,7 @@ module.exports = {
       },
     };
   },
-
-  addRecipientButton: '//*[@id="statementOfService"]/div/button[1]',
+  addRecipientButton: 'Add new',
 
   addRecipient() {
     I.click(this.addRecipientButton);

@@ -33,7 +33,7 @@ module.exports = {
       },
     };
   },
-  addRespondentButton: '#respondents1 > div:nth-child(1) > button:nth-child(2)',
+  addRespondentButton: 'Add new',
 
   addRespondent() {
     I.click(this.addRespondentButton);

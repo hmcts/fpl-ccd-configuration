@@ -26,8 +26,7 @@ module.exports = {
       },
     };
   },
-
-  addHearingButton: '//*[@id="hearingDetails"]/div/button[1]',
+  addHearingButton: 'Add new',
 
   addHearing() {
     I.click(this.addHearingButton);

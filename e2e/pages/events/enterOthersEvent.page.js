@@ -29,7 +29,6 @@ module.exports = {
       },
     };
   },
-
   addOtherButton: 'Add new',
 
   addOther() {

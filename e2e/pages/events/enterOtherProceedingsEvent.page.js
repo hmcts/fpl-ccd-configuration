@@ -25,7 +25,6 @@ module.exports = {
       },
     };
   },
-
   addProceedingButton: 'Add new',
 
   addNewProceeding() {
