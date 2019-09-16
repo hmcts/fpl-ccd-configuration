@@ -92,7 +92,7 @@ appinsights:
 
 fpl:
   local_authority_email_to_code:
-    mapping: 'swansea.gov.uk=>SA;hillingdon.gov.uk=>HN'
+    mapping: 'fpla.local=>FPLA;swansea.gov.uk=>SA;hillingdon.gov.uk=>HN'
   local_authority_code_to_name:
     mapping: 'SA=>Swansea City Council;HN=>London Borough Hillingdon;PCC=>Portsmouth City Council;STF=>Staffordshire County Council;SCC=>Southampton City Council'
   local_authority_code_to_hmcts_court:
@@ -100,4 +100,4 @@ fpl:
   local_authority_code_to_cafcass:
     mapping: 'SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com'
   local_authority_user:
-    mapping: 'SA=>31,32,33;HN=>34,35'
+    mapping: 'FPLA=>0;SA=>31,32,33;HN=>34,35'
