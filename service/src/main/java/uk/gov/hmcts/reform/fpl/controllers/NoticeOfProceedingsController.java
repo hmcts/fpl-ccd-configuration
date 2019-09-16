@@ -106,7 +106,15 @@ public class NoticeOfProceedingsController {
         List<Document> uploadedDocuments = generateAndUploadDocuments(userId, authorization, templateData,
             templateTypes);
 
-        List<Element> documentsBundle = uploadedDocuments.stream()
+        caseDetails.getData().put("noticeOfProceedingsBundle", createNoticeOfProceedingsCaseData(uploadedDocuments));
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .build();
+    }
+
+    private List<Element> createNoticeOfProceedingsCaseData(List<Document> uploadedDocuments) {
+        return uploadedDocuments.stream()
             .map(document -> {
                 return Element.builder()
                     .id(UUID.randomUUID())
@@ -119,12 +127,6 @@ public class NoticeOfProceedingsController {
                         .build())
                     .build();
             }).collect(Collectors.toList());
-
-        caseDetails.getData().put("noticeOfProceedingsBundle", documentsBundle);
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
     }
 
     private List<Document> generateAndUploadDocuments(String userId,

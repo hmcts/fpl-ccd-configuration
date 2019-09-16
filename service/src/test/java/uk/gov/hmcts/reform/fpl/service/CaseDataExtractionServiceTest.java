@@ -46,8 +46,12 @@ class CaseDataExtractionServiceTest {
     void shouldConcatenateAllChildrenNames() {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority("example")
-            .hearingDetails(createHearingBookings())
+            .familyManCaseNumber("123")
             .children1(createPopulatedChildren())
+            .applicants(createPopulatedApplicants())
+            .hearingDetails(createHearingBookings())
+            .orders(Orders.builder()
+                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
             .build();
 
         Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
@@ -58,9 +62,13 @@ class CaseDataExtractionServiceTest {
     void shouldReturnFirstApplicantName() {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority("example")
-            .hearingDetails(createHearingBookings())
+            .familyManCaseNumber("123")
+            .children1(createPopulatedChildren())
             .applicants(createPopulatedApplicants())
-                .build();
+            .hearingDetails(createHearingBookings())
+            .orders(Orders.builder()
+                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
+            .build();
 
         Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");

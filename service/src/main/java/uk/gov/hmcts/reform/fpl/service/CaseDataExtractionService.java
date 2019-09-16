@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -36,30 +35,25 @@ public class CaseDataExtractionService {
     public Map<String, String> getNoticeOfProceedingTemplateData(CaseData caseData) {
         HearingBooking hearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
 
+        // Validation within our frontend ensures that the following data is present
         return Map.of(
             "courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName(),
-            "familyManCaseNumber", StringUtils.defaultIfBlank(caseData.getFamilyManCaseNumber(), ""),
+            "familyManCaseNumber", caseData.getFamilyManCaseNumber(),
             "todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG),
             "applicantName", getFirstApplicantName(caseData),
             "orderTypes", getOrderTypes(caseData),
             "childrenNames", getAllChildrenNames(caseData),
-            "hearingDate", hearingBooking.getDate() != null ? dateFormatterService
-                .formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG) : "",
-            "hearingVenue", StringUtils.defaultIfBlank(hearingBooking.getVenue(), ""),
-            "preHearingAttendance", StringUtils.defaultIfBlank(hearingBooking.getPreHearingAttendance(),
-                ""),
-            "hearingTime", StringUtils.defaultIfBlank(hearingBooking.getTime(), "")
+            "hearingDate", dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG),
+            "hearingVenue", hearingBooking.getVenue(),
+            "preHearingAttendance", hearingBooking.getPreHearingAttendance(),
+            "hearingTime", hearingBooking.getTime()
         );
     }
 
     private String getOrderTypes(CaseData caseData) {
-        if (caseData.getOrders() == null || caseData.getOrders().getOrderType() == null) {
-            return "";
-        } else {
-            return caseData.getOrders().getOrderType().stream()
-                .map(orderType -> orderType.getLabel())
-                .collect(Collectors.joining(", "));
-        }
+        return caseData.getOrders().getOrderType().stream()
+            .map(orderType -> orderType.getLabel())
+            .collect(Collectors.joining(", "));
     }
 
     private String getFirstApplicantName(CaseData caseData) {

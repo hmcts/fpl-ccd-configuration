@@ -34,7 +34,6 @@ class DocmosisDocumentGeneratorServiceTest {
     ArgumentCaptor<HttpEntity<DocmosisRequest>> argumentCaptor;
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldInvokesTornado() {
         Map<String, String> placeholders = getTemplatePlaceholders();
 
