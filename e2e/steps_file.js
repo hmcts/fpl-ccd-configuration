@@ -139,7 +139,9 @@ module.exports = function () {
     },
 
     async addAnotherElementToCollection() {
+      const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
       this.click('Add new');
+      this.waitNumberOfVisibleElements('.collection-title', numberOfElements + 1);
     },
   });
 };

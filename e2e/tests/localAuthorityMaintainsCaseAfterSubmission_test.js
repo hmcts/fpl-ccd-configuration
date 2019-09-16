@@ -55,7 +55,7 @@ Scenario('local authority uploads court bundle', (I, uploadDocumentsEventPage, s
 Scenario('local authority provides a statements of service', async (I, caseViewPage, loginPage, addStatementOfServiceEventPage) => {
   caseViewPage.goToNewActions(config.administrationActions.addStatementOfService);
   await addStatementOfServiceEventPage.enterRecipientDetails(recipients[0]);
-  I.addAnotherElementToCollection();
+  await I.addAnotherElementToCollection();
   await addStatementOfServiceEventPage.enterRecipientDetails(recipients[1]);
   addStatementOfServiceEventPage.giveDeclaration();
   I.continueAndSave();
