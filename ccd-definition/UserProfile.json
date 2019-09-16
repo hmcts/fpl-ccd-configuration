@@ -1,35 +1,35 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "UserIDAMId": "damian@swansea.gov.uk",
+    "UserIDAMId": "damian@swansea.local",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Open"
   },
   {
     "LiveFrom": "01/01/2017",
-    "UserIDAMId": "kurt@swansea.gov.uk",
+    "UserIDAMId": "kurt@swansea.local",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Open"
   },
   {
     "LiveFrom": "01/01/2017",
-    "UserIDAMId": "james@swansea.gov.uk",
+    "UserIDAMId": "james@swansea.local",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Open"
   },
   {
     "LiveFrom": "01/01/2017",
-    "UserIDAMId": "sam@hillingdon.gov.uk",
+    "UserIDAMId": "sam@hillingdon.local",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Open"
   },
   {
     "LiveFrom": "01/01/2017",
-    "UserIDAMId": "siva@hillingdon.gov.uk",
+    "UserIDAMId": "siva@hillingdon.local",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Open"

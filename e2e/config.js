@@ -5,20 +5,20 @@ const defaultPassword = 'Password12';
 module.exports = {
   // users
   swanseaLocalAuthorityUserOne: {
-    forename: 'kurt@swansea.gov.uk',
+    forename: 'kurt@swansea.local',
     surname: '(local-authority)',
   },
   swanseaLocalAuthorityUserTwo: {
-    forename: 'damian@swansea.gov.uk',
+    forename: 'damian@swansea.local',
     surname: '(local-authority)',
   },
   hillingdonLocalAuthorityUserOne: {
-    forename: 'sam@hillingdon.gov.uk',
+    forename: 'sam@hillingdon.local',
     surname: '(local-authority)',
   },
-  swanseaLocalAuthorityEmailUserOne: 'kurt@swansea.gov.uk',
-  swanseaLocalAuthorityEmailUserTwo: 'damian@swansea.gov.uk',
-  hillingdonLocalAuthorityEmailUserOne: 'sam@hillingdon.gov.uk',
+  swanseaLocalAuthorityEmailUserOne: 'kurt@swansea.local',
+  swanseaLocalAuthorityEmailUserTwo: 'damian@swansea.local',
+  hillingdonLocalAuthorityEmailUserOne: 'sam@hillingdon.local',
   localAuthorityPassword: process.env.LA_USER_PASSWORD || defaultPassword,
   hmctsAdminEmail: 'hmcts-admin@example.com',
   hmctsAdminPassword: process.env.CA_USER_PASSWORD || defaultPassword,
@@ -28,7 +28,7 @@ module.exports = {
   gateKeeperPassword: process.env.GATEKEEPER_USER_PASSWORD || defaultPassword,
   judiciaryEmail: 'judiciary@mailnesia.com',
   judiciaryPassword: process.env.JUDICIARY_USER_PASSWORD || defaultPassword,
-  smokeTestLocalAuthorityEmail: process.env.SMOKE_TEST_LA_USER_USERNAME || 'james@swansea.gov.uk',
+  smokeTestLocalAuthorityEmail: process.env.SMOKE_TEST_LA_USER_USERNAME || 'james@swansea.local',
   smokeTestLocalAuthorityPassword: process.env.SMOKE_TEST_LA_USER_PASSWORD || defaultPassword,
   definition: {
     jurisdiction: 'PUBLICLAW',
