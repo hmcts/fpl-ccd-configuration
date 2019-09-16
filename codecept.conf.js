@@ -51,6 +51,7 @@ exports.config = {
     enterInternationalElementEventPage: './e2e/pages/events/enterInternationalElementEvent.page.js',
     enterOtherProceedingsEventPage: './e2e/pages/events/enterOtherProceedingsEvent.page.js',
     enterAllocationProposalEventPage: './e2e/pages/events/enterAllocationProposalEvent.page.js',
+    enterAllocationDecisionEventPage: './e2e/pages/events/enterAllocationDecisionEvent.page.js',
     enterAttendingHearingEventPage: './e2e/pages/events/enterAttendingHearingEvent.page.js',
     uploadDocumentsEventPage: './e2e/pages/events/uploadDocumentsEvent.page.js',
     enterFamilyManCaseNumberEventPage: './e2e/pages/events/enterFamilyManCaseNumberEvent.page.js',

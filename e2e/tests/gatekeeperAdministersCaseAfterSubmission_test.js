@@ -23,6 +23,14 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
   await I.navigateToCaseDetails(caseId);
 });
 
+Scenario('gatekeeper enters allocation decision', (I, caseViewPage, enterAllocationDecisionEventPage) => {
+  caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
+  enterAllocationDecisionEventPage.selectAllocationDecision('Lay justices');
+  enterAllocationDecisionEventPage.enterProposalReason('test');
+  I.seeCheckAnswers('Give reason');
+  I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
+});
+
 Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);

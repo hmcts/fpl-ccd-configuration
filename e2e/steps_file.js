@@ -61,6 +61,13 @@ module.exports = function () {
       eventSummaryPage.submit('Submit');
     },
 
+    seeCheckAnswers(checkAnswerTitle) {
+      this.click('Continue');
+      this.waitForElement('.check-your-answers');
+      this.see(checkAnswerTitle);
+      eventSummaryPage.submit('Save and continue');
+    },
+
     seeEventSubmissionConfirmation(event) {
       this.see(`updated with event: ${event}`);
     },
