@@ -13,6 +13,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.AllocationDecision;
+import uk.gov.hmcts.reform.fpl.model.AllocationProposal;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.util.Map;
 
@@ -25,32 +28,48 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @OverrideAutoConfiguration(enabled = true)
 class AllocationDecisionControllerAboutToStartTest {
 
-    private final AllocationDecisionController controller = new AllocationDecisionController();
     private static final String AUTH_TOKEN = "Bearer token";
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    @Autowired
+    private  ObjectMapper mapper;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldAddYesToMissingAllocationDecision() throws Exception {
+
+        AllocationDecision currentAllocationDecision = AllocationDecision.builder()
+            .proposal("test")
+            .proposalReason("decision reason")
+            .build();
+        AllocationProposal allocationProposal = AllocationProposal.builder()
+            .proposal("proposal")
+            .proposalReason("reason")
+            .build();
 
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
-                .put("allocationProposal","allocation proposal present")
+                .put("allocationProposal", allocationProposal)
+                .put("allocationDecision", currentAllocationDecision)
                 .build()).build())
             .build();
 
         AboutToStartOrSubmitCallbackResponse response = callbackResponse(request);
 
-        Map<String, Object> allocationDecision = (Map<String, Object>) response.getData().get("allocationDecision");
-        assertThat(allocationDecision)
-            .containsEntry("allocationProposalPresent", "Yes");
+        AllocationDecision expectedDecision = AllocationDecision.builder()
+            .proposal("test")
+            .proposalReason("decision reason")
+            .allocationProposalPresent("Yes")
+            .build();
+
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+        AllocationDecision actualAllocationDecision = caseData.getAllocationDecision();
+        assertThat(actualAllocationDecision)
+            .isEqualTo(expectedDecision);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void shouldAddNoToMissingAllocationDecision() throws Exception {
 
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
@@ -60,9 +79,9 @@ class AllocationDecisionControllerAboutToStartTest {
 
         AboutToStartOrSubmitCallbackResponse response = callbackResponse(request);
 
-        Map<String, Object> allocationDecision = (Map<String, Object>) response.getData().get("allocationDecision");
-        assertThat(allocationDecision)
-            .containsEntry("allocationProposalPresent", "No");
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+        assertThat(caseData.getAllocationDecision().getAllocationProposalPresent())
+            .isEqualTo("No");
     }
 
     private AboutToStartOrSubmitCallbackResponse callbackResponse(CallbackRequest request) throws Exception {
@@ -71,11 +90,11 @@ class AllocationDecisionControllerAboutToStartTest {
             .perform(post("/callback/allocation-decision/about-to-start")
                 .header("authorization", AUTH_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsString(request)))
+                .content(mapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andReturn();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         return callbackResponse;
