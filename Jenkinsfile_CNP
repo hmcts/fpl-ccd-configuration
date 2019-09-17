@@ -55,7 +55,6 @@ withPipeline(type, product, component) {
   installCharts()
   enableSlackNotifications('#fpla-tech')
 
-  env.POSTCODE_PLACEHOLDER = '${postcode}'
   env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
 
   after('checkout') {
@@ -77,7 +76,7 @@ withPipeline(type, product, component) {
     }
   }
 
-  before('smoketest:saat-staging') {
+  before('smoketest:saat') {
     env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
     archiveCoreCaseDataDefinitions('saat')
   }
@@ -87,12 +86,7 @@ withPipeline(type, product, component) {
     archiveCoreCaseDataDefinitions('aat')
   }
 
-  before('smoketest:prod') {
-    env.URL = "https://ccd-case-management-web-prod.service.core-compute-prod.internal"
-    archiveCoreCaseDataDefinitions('prod')
-  }
-
-  before('smoketest:demo-staging') {
+  before('smoketest:demo') {
     env.URL = "https://ccd-case-management-web-demo.service.core-compute-demo.internal"
     archiveCoreCaseDataDefinitions('demo')
   }
@@ -108,19 +102,11 @@ withPipeline(type, product, component) {
     env.URL="https://case-management-web-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
   }
 
-  after('smoketest:saat-staging') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-  }
-
   after('smoketest:saat') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
   after('smoketest:aat') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-  }
-
-  after('smoketest:demo-staging') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
@@ -138,6 +124,10 @@ withPipeline(type, product, component) {
 
   before('functionalTest:demo') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
+  }
+
+  after('functionalTest:aat') {
+    archiveCoreCaseDataDefinitions('prod')
   }
 
   after('functionalTest:preview') {
