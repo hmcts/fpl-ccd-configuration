@@ -42,15 +42,15 @@ def registerSmokeTestCallbacks(String env, String url) {
 }
 
 def registerSmokeTestCallbacks(String env, String url, Closure preparationBlock) {
-  before("smoketest:${env}") {
+  steps.before("smoketest:${env}") {
     if (preparationBlock != null) {
       preparationBlock()
     }
 
-    env.URL = url
+    steps.env.URL = url
   }
 
-  after("smoketest:${env}") {
+  steps.after("smoketest:${env}") {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 }
