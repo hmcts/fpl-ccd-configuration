@@ -4,8 +4,10 @@ import java.util.EnumMap;
 import java.util.Map;
 
 public enum DocmosisTemplates {
-    C6("C6.docx", "Notice_of_proceedings_(c6)", ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES),
-    C6A("C6a.docx", "Notice_of_proceedings_(c6a)", ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES);
+    C6("FL-PLW-HNO-ENG-00092.docx",
+        "Notice_of_proceedings_(c6)", ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES),
+    C6A("FL-PLW-HNO-ENG-00093.docx",
+        "Notice_of_proceedings_(c6a)", ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES);
 
     private final String template;
     private final String documentTitle;
