@@ -76,10 +76,6 @@ withPipeline(type, product, component) {
     }
   }
 
-  after('prod:promotion') {
-    archiveCoreCaseDataDefinitions('prod')
-  }
-
   before('smoketest:saat') {
     env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
     archiveCoreCaseDataDefinitions('saat')
@@ -128,6 +124,10 @@ withPipeline(type, product, component) {
 
   before('functionalTest:demo') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
+  }
+
+  after('functionalTest:aat') {
+    archiveCoreCaseDataDefinitions('prod')
   }
 
   after('functionalTest:preview') {
