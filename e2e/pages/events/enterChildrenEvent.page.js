@@ -44,11 +44,6 @@ module.exports = {
       },
     };
   },
-  addChildButton: '#children1 > div:nth-child(1) > button:nth-child(2)',
-
-  addChild() {
-    I.click(this.addChildButton);
-  },
 
   async enterChildDetails(firstName, lastName, day, month, year, gender = 'Boy') {
     const elementIndex = await this.getActiveElementIndex();
