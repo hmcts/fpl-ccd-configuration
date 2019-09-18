@@ -1,6 +1,7 @@
 #!groovy
 
 @Library("Infrastructure")
+import uk.gov.hmcts.contino.ProjectBranch
 
 def type = "java"
 
@@ -49,13 +50,14 @@ withPipeline(type, product, component) {
   onPR {
     loadVaultSecrets(serviceSecrets + otherSecrets)
   }
-  disableLegacyDeployment()
+  if (!new ProjectBranch(env.BRANCH_NAME).isDemo()) {
+    disableLegacyDeployment()
+  }
   enableDockerBuild()
   enableAksStagingDeployment()
   installCharts()
   enableSlackNotifications('#fpla-tech')
 
-  env.POSTCODE_PLACEHOLDER = '${postcode}'
   env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
 
   after('checkout') {
@@ -77,7 +79,7 @@ withPipeline(type, product, component) {
     }
   }
 
-  before('smoketest:saat-staging') {
+  before('smoketest:saat') {
     env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
     archiveCoreCaseDataDefinitions('saat')
   }
@@ -85,11 +87,6 @@ withPipeline(type, product, component) {
   before('smoketest:aat') {
     env.URL = "https://ccd-case-management-web-aat.service.core-compute-aat.internal"
     archiveCoreCaseDataDefinitions('aat')
-  }
-
-  before('smoketest:prod') {
-    env.URL = "https://ccd-case-management-web-prod.service.core-compute-prod.internal"
-    archiveCoreCaseDataDefinitions('prod')
   }
 
   before('smoketest:demo-staging') {
@@ -106,10 +103,6 @@ withPipeline(type, product, component) {
     """
 
     env.URL="https://case-management-web-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
-  }
-
-  after('smoketest:saat-staging') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
   after('smoketest:saat') {
@@ -138,6 +131,10 @@ withPipeline(type, product, component) {
 
   before('functionalTest:demo') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
+  }
+
+  after('functionalTest:aat') {
+    archiveCoreCaseDataDefinitions('prod')
   }
 
   after('functionalTest:preview') {
