@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.AllocationDecision;
 import uk.gov.hmcts.reform.fpl.model.AllocationProposal;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Optional.ofNullable;
