@@ -17,8 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.AllocationDecision;
 import uk.gov.hmcts.reform.fpl.model.AllocationProposal;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
