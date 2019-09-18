@@ -100,4 +100,4 @@ fpl:
   local_authority_code_to_cafcass:
     mapping: 'SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com'
   local_authority_user:
-    mapping: 'FPLA=>0;SA=>acfe91d3-745f-4e60-8272-2cada36152a5,bbea68ea-081b-467c-8574-4c246cdc06d7,b10076d3-e191-4793-94fb-d5c5bacc470b;HN=>b91e9823-09fa-448d-a583-46796100f07e,3fad4b19-9622-4e93-905a-c3448e537ef4'
+    mapping: 'FPLA=>0;SA=>31,32,33;HN=>34,35'
