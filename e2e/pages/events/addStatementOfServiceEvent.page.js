@@ -27,13 +27,6 @@ module.exports = {
     };
   },
 
-  addRecipientButton: '//*[@id="statementOfService"]/div/button[1]',
-
-  addRecipient() {
-    I.click(this.addRecipientButton);
-    I.wait(1);
-  },
-
   async enterRecipientDetails(recipients) {
     const elementIndex = await this.getActiveElementIndex();
 

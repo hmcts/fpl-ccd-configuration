@@ -97,7 +97,7 @@ Scenario('local authority enters children', async (I, caseViewPage, enterChildre
   await enterChildrenEventPage.defineChildAdditionalNeeds();
   await enterChildrenEventPage.defineContactDetailsVisibility();
   await enterChildrenEventPage.enterLitigationIssues('Yes', 'mock reason');
-  enterChildrenEventPage.addChild();
+  await I.addAnotherElementToCollection();
   await enterChildrenEventPage.enterChildDetails('Susan', 'Wilson', '01', '07', '2016', 'Girl');
   await enterChildrenEventPage.defineChildSituation('02', '11', '2017');
   await enterChildrenEventPage.enterAddress(children[1].address);
@@ -168,7 +168,7 @@ Scenario('local authority enters respondents', async (I, caseViewPage, enterResp
   await enterRespondentsEventPage.enterRelationshipToChild('mock reason');
   await enterRespondentsEventPage.enterContactDetailsHidden('Yes', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('Yes', 'mock reason');
-  enterRespondentsEventPage.addRespondent();
+  await I.addAnotherElementToCollection();
   await enterRespondentsEventPage.enterRespondent(respondents[1]);
   await enterRespondentsEventPage.enterRelationshipToChild('mock reason');
   await enterRespondentsEventPage.enterContactDetailsHidden('Yes', 'mock reason');
@@ -246,7 +246,7 @@ Scenario('local authority enters others to be given notice', async (I, caseViewP
   await enterOthersEventPage.enterRelationshipToChild('Tim Smith');
   await enterOthersEventPage.enterContactDetailsHidden('Yes');
   await enterOthersEventPage.enterLitigationIssues('No');
-  enterOthersEventPage.addOther();
+  await I.addAnotherElementToCollection();
   await enterOthersEventPage.enterOtherDetails(others[1]);
   await enterOthersEventPage.enterRelationshipToChild('Tim Smith');
   await enterOthersEventPage.enterContactDetailsHidden('Yes');
@@ -366,7 +366,7 @@ Scenario('local authority enters other proceedings',async (I, caseViewPage, ente
   enterOtherProceedingsEventPage.selectNoForProceeding();
   enterOtherProceedingsEventPage.selectYesForProceeding();
   await enterOtherProceedingsEventPage.enterProceedingInformation(otherProceedings[0]);
-  enterOtherProceedingsEventPage.addNewProceeding();
+  await I.addAnotherElementToCollection();
   await enterOtherProceedingsEventPage.enterProceedingInformation(otherProceedings[1]);
   I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOtherProceedings);
