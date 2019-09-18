@@ -33,11 +33,6 @@ module.exports = {
       },
     };
   },
-  addRespondentButton: '#respondents1 > div:nth-child(1) > button:nth-child(2)',
-
-  addRespondent() {
-    I.click(this.addRespondentButton);
-  },
 
   async enterRespondent(respondent) {
     const elementIndex = await this.getActiveElementIndex();

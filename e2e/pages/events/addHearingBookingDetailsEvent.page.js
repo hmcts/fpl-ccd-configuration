@@ -27,13 +27,6 @@ module.exports = {
     };
   },
 
-  addHearingButton: '//*[@id="hearingDetails"]/div/button[1]',
-
-  addHearing() {
-    I.click(this.addHearingButton);
-    I.wait(1);
-  },
-
   async enterHearingDetails(hearingDetails) {
     const elementIndex = await this.getActiveElementIndex();
 
