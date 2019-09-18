@@ -149,6 +149,7 @@ module.exports = function () {
       const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
       this.click('Add new');
       this.waitNumberOfVisibleElements('.collection-title', numberOfElements + 1);
+      this.wait(0.5); // add extra time to allow slower browsers to render all fields (just extra precaution)
     },
   });
 };
