@@ -14,6 +14,9 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisRequest;
+import uk.gov.hmcts.reform.fpl.config.DocmosisDocumentGenerationConfiguration;
+
+import static uk.gov.hmcts.reform.fpl.config.DocmosisDocumentGenerationConfiguration.DocmosisConfig;
 
 import java.util.Map;
 
@@ -23,14 +26,17 @@ public class DocmosisDocumentGeneratorService {
     private final String tornadoUrl;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String tornadoAccessKey;
+    private final DocmosisDocumentGenerationConfiguration docmosisDocumentGenerationConfiguration;
 
     @Autowired
     DocmosisDocumentGeneratorService(RestTemplate restTemplate,
                                      @Value("${docmosis.tornado.url}") String tornadoUrl,
-                                     @Value("${docmosis.tornado.key}") String tornadoAccessKey) {
+                                     @Value("${docmosis.tornado.key}") String tornadoAccessKey,
+                                     DocmosisDocumentGenerationConfiguration docmosisDocumentGenerationConfiguration) {
         this.restTemplate = restTemplate;
         this.tornadoUrl = tornadoUrl + "/rs/render";
         this.tornadoAccessKey = tornadoAccessKey;
+        this.docmosisDocumentGenerationConfiguration = docmosisDocumentGenerationConfiguration;
     }
 
     public DocmosisDocument generateDocmosisDocument(Map<String, String> templateData,
@@ -38,12 +44,15 @@ public class DocmosisDocumentGeneratorService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        DocmosisConfig docmosisConfig = docmosisDocumentGenerationConfiguration
+            .docmosisConfig(tornadoUrl, tornadoAccessKey);
+
         DocmosisRequest requestBody = DocmosisRequest.builder()
             .templateName(docmosisTemplate.getTemplate())
             .data(templateData)
             .outputFormat("pdf")
             .outputName("IGNORED")
-            .accessKey(tornadoAccessKey)
+            .accessKey(docmosisConfig.getAccessKey())
             .build();
 
         HttpEntity<DocmosisRequest> request = new HttpEntity<>(requestBody, headers);
@@ -51,7 +60,7 @@ public class DocmosisDocumentGeneratorService {
         byte[] response = null;
 
         try {
-            response = restTemplate.exchange(tornadoUrl, HttpMethod.POST, request, byte[].class).getBody();
+            response = restTemplate.exchange(docmosisConfig.getUrl(), HttpMethod.POST, request, byte[].class).getBody();
         } catch (HttpClientErrorException.BadRequest ex) {
             logger.error("Docmosis document generation failed" + ex.getResponseBodyAsString());
             throw ex;
