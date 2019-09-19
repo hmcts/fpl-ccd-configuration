@@ -30,12 +30,6 @@ module.exports = {
     };
   },
 
-  addOtherButton: 'Add new',
-
-  addOther() {
-    I.click(this.addOtherButton);
-  },
-
   async enterOtherDetails(other) {
     const elementIndex = await this.getActiveElementIndex();
 
