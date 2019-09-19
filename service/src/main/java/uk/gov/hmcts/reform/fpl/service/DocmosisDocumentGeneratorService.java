@@ -40,6 +40,7 @@ public class DocmosisDocumentGeneratorService {
             .data(templateData)
             .outputFormat("pdf")
             .outputName("IGNORED")
+            .accessKey("ACCESS_KEY")
             .build();
 
         HttpEntity<DocmosisRequest> request = new HttpEntity<>(requestBody, headers);

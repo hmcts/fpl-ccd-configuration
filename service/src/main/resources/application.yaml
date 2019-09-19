@@ -82,7 +82,8 @@ core_case_data:
 
 docmosis:
   tornado:
-    url: http://localhost:5433
+    url: https://docmosis-development.platform.hmcts.net
+    key: ACCESS_KEY
 
 document_management:
   url: http://localhost:4506

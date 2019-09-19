@@ -12,6 +12,7 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DocmosisRequest {
+    private final String accessKey;
     private final String templateName;
     private final String outputFormat;
     private final String outputName;
