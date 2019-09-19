@@ -12,6 +12,7 @@ services:
     environment:
       - IDAM_API_URL=http://idam-api:8080
       - DOCMOSIS_TORNADO_URL=http://docmosis-tornado:5433
+      - DOCMOSIS_API_KEY
       - DOCUMENT_MANAGEMENT_URL=http://dm-store:8080
       - CORE_CASE_DATA_API_URL=http://ccd-data-store-api:4452
       - IDAM_S2S_AUTH_URL=http://service-auth-provider-api:8080

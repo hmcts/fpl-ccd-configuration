@@ -30,7 +30,7 @@ public class DocmosisDocumentGeneratorService {
     @Autowired
     DocmosisDocumentGeneratorService(RestTemplate restTemplate,
                                      @Value("${docmosis.tornado.url}") String tornadoUrl,
-                                     @Value("${docmosis.tornado.key}") String tornadoAccessKey) {
+                                     @Value("${docmosis.api.key}") String tornadoAccessKey) {
         this.restTemplate = restTemplate;
         this.tornadoUrl = tornadoUrl + "/rs/render";
         this.tornadoAccessKey = tornadoAccessKey;
