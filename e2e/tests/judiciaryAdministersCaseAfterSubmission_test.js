@@ -26,7 +26,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
 Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
-  addHearingBookingDetailsEventPage.addHearing();
+  await I.addAnotherElementToCollection();
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
   I.continueAndProvideSummary('summary', 'description');
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
