@@ -22,15 +22,15 @@ public class DocmosisDocumentGeneratorService {
     private final RestTemplate restTemplate;
     private final String tornadoUrl;
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private final String tornadyKey;
+    private final String tornadoAccessKey;
 
     @Autowired
     DocmosisDocumentGeneratorService(RestTemplate restTemplate,
                                      @Value("${docmosis.tornado.url}") String tornadoUrl,
-                                     @Value("${docmosis.tornado.key}") String tornadoKey) {
+                                     @Value("${docmosis.tornado.key}") String tornadoAccessKey) {
         this.restTemplate = restTemplate;
         this.tornadoUrl = tornadoUrl + "/rs/render";
-        this.tornadyKey = tornadoKey;
+        this.tornadoAccessKey = tornadoAccessKey;
     }
 
     public DocmosisDocument generateDocmosisDocument(Map<String, String> templateData,
@@ -43,7 +43,7 @@ public class DocmosisDocumentGeneratorService {
             .data(templateData)
             .outputFormat("pdf")
             .outputName("IGNORED")
-            .accessKey(tornadyKey)
+            .accessKey(tornadoAccessKey)
             .build();
 
         HttpEntity<DocmosisRequest> request = new HttpEntity<>(requestBody, headers);

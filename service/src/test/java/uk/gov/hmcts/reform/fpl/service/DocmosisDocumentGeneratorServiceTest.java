@@ -30,6 +30,8 @@ class DocmosisDocumentGeneratorServiceTest {
 
     private String tornadoUrl = "http://tornado:5433";
 
+    private String tornadoAccessKey = "";
+
     @Captor
     ArgumentCaptor<HttpEntity<DocmosisRequest>> argumentCaptor;
 
@@ -68,7 +70,8 @@ class DocmosisDocumentGeneratorServiceTest {
     private DocmosisDocumentGeneratorService createServiceInstance() {
         return new DocmosisDocumentGeneratorService(
             restTemplate,
-            tornadoUrl
+            tornadoUrl,
+            tornadoAccessKey
         );
     }
 }
