@@ -12,7 +12,6 @@ def serviceSecrets = [
   'fpl-${env}': [
     secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
     secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
-    secret('docmosis-api-key', 'DOCMOSIS_TORNADO_KEY')
   ]
 ]
 
