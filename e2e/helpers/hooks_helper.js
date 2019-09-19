@@ -25,7 +25,9 @@ module.exports = class HooksHelpers extends Helper {
       };
     });
 
-    fs.writeFileSync(buildOutputFileName(test, 'browser.log'), JSON.stringify(logs, undefined, 2));
+    if (logs.length > 0) {
+      fs.writeFileSync(buildOutputFileName(test, 'browser.log'), JSON.stringify(logs, undefined, 2));
+    }
   }
 
   _afterStep(step) {
