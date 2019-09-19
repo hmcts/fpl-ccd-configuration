@@ -27,6 +27,9 @@ exports.config = {
     PuppeteerHelpers: {
       require: './e2e/helpers/puppeter_helper.js',
     },
+    DumpBrowserLogs: {
+      require: './e2e/helpers/dump_browser_logs_helper.js',
+    },
   },
   include: {
     config: './e2e/config.js',
