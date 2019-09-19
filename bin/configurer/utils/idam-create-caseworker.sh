@@ -4,7 +4,7 @@ set -eu
 
 email=${1}
 rolesStr=${2}
-surname=${3:-"Tester"}
+surname=${4:-"Tester"}
 
 IFS=',' read -ra roles <<< ${rolesStr}
 
