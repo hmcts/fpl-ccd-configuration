@@ -10,7 +10,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.fpl.config.DocmosisDocumentGenerationConfiguration;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisRequest;
 
@@ -32,8 +31,6 @@ class DocmosisDocumentGeneratorServiceTest {
     private String tornadoUrl = "http://tornado:5433";
 
     private String tornadoAccessKey = "";
-
-    private DocmosisDocumentGenerationConfiguration docmosisDocumentGenerationConfiguration;
 
     @Captor
     ArgumentCaptor<HttpEntity<DocmosisRequest>> argumentCaptor;
@@ -71,13 +68,10 @@ class DocmosisDocumentGeneratorServiceTest {
     }
 
     private DocmosisDocumentGeneratorService createServiceInstance() {
-        docmosisDocumentGenerationConfiguration = new DocmosisDocumentGenerationConfiguration();
-
         return new DocmosisDocumentGeneratorService(
             restTemplate,
             tornadoUrl,
-            tornadoAccessKey,
-            docmosisDocumentGenerationConfiguration
+            tornadoAccessKey
         );
     }
 }

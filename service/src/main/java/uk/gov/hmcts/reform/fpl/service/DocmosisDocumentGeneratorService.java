@@ -26,17 +26,14 @@ public class DocmosisDocumentGeneratorService {
     private final String tornadoUrl;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final String tornadoAccessKey;
-    private final DocmosisDocumentGenerationConfiguration docmosisDocumentGenerationConfiguration;
 
     @Autowired
     DocmosisDocumentGeneratorService(RestTemplate restTemplate,
                                      @Value("${docmosis.tornado.url}") String tornadoUrl,
-                                     @Value("${docmosis.tornado.key}") String tornadoAccessKey,
-                                     DocmosisDocumentGenerationConfiguration docmosisDocumentGenerationConfiguration) {
+                                     @Value("${docmosis.tornado.key}") String tornadoAccessKey) {
         this.restTemplate = restTemplate;
         this.tornadoUrl = tornadoUrl + "/rs/render";
         this.tornadoAccessKey = tornadoAccessKey;
-        this.docmosisDocumentGenerationConfiguration = docmosisDocumentGenerationConfiguration;
     }
 
     public DocmosisDocument generateDocmosisDocument(Map<String, String> templateData,
@@ -44,8 +41,8 @@ public class DocmosisDocumentGeneratorService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        DocmosisConfig docmosisConfig = docmosisDocumentGenerationConfiguration
-            .docmosisConfig(tornadoUrl, tornadoAccessKey);
+        DocmosisConfig docmosisConfig = new
+            DocmosisDocumentGenerationConfiguration().docmosisConfig(tornadoUrl, tornadoAccessKey);
 
         DocmosisRequest requestBody = DocmosisRequest.builder()
             .templateName(docmosisTemplate.getTemplate())
