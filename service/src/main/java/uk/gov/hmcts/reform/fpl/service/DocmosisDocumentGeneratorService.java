@@ -11,14 +11,14 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.fpl.config.DocmosisDocumentGenerationConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisRequest;
-import uk.gov.hmcts.reform.fpl.config.DocmosisDocumentGenerationConfiguration;
-
-import static uk.gov.hmcts.reform.fpl.config.DocmosisDocumentGenerationConfiguration.DocmosisConfig;
 
 import java.util.Map;
+
+import static uk.gov.hmcts.reform.fpl.config.DocmosisDocumentGenerationConfiguration.DocmosisConfig;
 
 @Service
 public class DocmosisDocumentGeneratorService {
