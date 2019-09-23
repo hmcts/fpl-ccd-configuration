@@ -33,4 +33,22 @@ module.exports = class PuppeteerHelpers extends Helper {
       return undefined;
     }
   }
+
+  /**
+   * Finds element described by locator.
+   * If element cannot be found immediately function waits globally configured `waitForTimeout`.
+   * If element still cannot be found after the waiting time an undefined is returned.
+   *
+   * @param locator - element CSS locator
+   * @returns {Promise<undefined|*>} - promise holding either an element or undefined if element is not found
+   */
+  async waitForSelector(locator) {
+    const waitTimeout = this.helpers['Puppeteer'].options.waitForTimeout;
+    const context = await this.helpers['Puppeteer']._getContext();
+    try {
+      return await context.waitForSelector(locator, { timeout: waitTimeout });
+    } catch (error) {
+      return undefined;
+    }
+  }
 };

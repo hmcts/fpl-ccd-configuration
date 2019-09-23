@@ -292,6 +292,7 @@ declare namespace CodeceptJS {
     say(msg: string) : void,
     retryStep(opts: string) : void,
     enterMandatoryFields() : void,
+    retryUntilExists(action: Function, locator: string) : void,
   }
 
   export interface config {

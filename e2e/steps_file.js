@@ -40,13 +40,13 @@ module.exports = function () {
       this.click('Create new case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       openApplicationEventPage.populateForm();
-      this.continueAndSave();
+      await this.continueAndSave();
     },
 
-    continueAndSave() {
+    async continueAndSave() { // here
       this.click('Continue');
       this.waitForElement('.check-your-answers');
-      eventSummaryPage.submit('Save and continue');
+      await eventSummaryPage.submit('Save and continue');
     },
 
     continueAndProvideSummary(summary, description) {
@@ -150,6 +150,28 @@ module.exports = function () {
       this.click('Add new');
       this.waitNumberOfVisibleElements('.collection-title', numberOfElements + 1);
       this.wait(0.5); // add extra time to allow slower browsers to render all fields (just extra precaution)
+    },
+
+    /**
+     * Retries defined action util element described by the locator is present.
+     * Note: If element is not present after 3 retries this step throws an error.
+     *
+     * @param action - an action that will be retried until either condition is met or max number of retries is reached
+     * @param locator - locator for an element that is expected to be present upon successful execution of an action
+     * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
+     */
+    async retryUntilExists(action, locator) {
+      const numberOfRetries = 3;
+
+      for (let retryNumber = 1; retryNumber <= numberOfRetries; retryNumber++) {
+        await action();
+        if (await this.waitForSelector(locator) != null) {
+          break;
+        }
+        if (retryNumber === numberOfRetries) {
+          throw new Error(`Maximum number of retries (${numberOfRetries}) has been reached`);
+        }
+      }
     },
   });
 };

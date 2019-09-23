@@ -1,4 +1,4 @@
-const I = actor();
+const { I } = inject();
 
 module.exports = {
 
@@ -7,9 +7,8 @@ module.exports = {
     description: '#field-trigger-description',
   },
 
-  submit(button) {
-    I.click(button);
-    I.waitForElement('.alert-success');
+  async submit(button) {
+    await I.retryUntilExists(() => I.click(button), '.alert-success');
   },
 
   provideSummaryAndSubmit(button, summary, description) {
