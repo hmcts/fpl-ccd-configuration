@@ -4,16 +4,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Direction {
+    private final UUID id;
     private final String type;
-    private final String assignee;
-    private final String status;
     private  String text;
+    private final String status;
+    private final String assignee;
     private String readOnly;
-    //That's need proper datetime type  and parsing
-    private String completeBy;
-
+    private LocalDateTime completeBy;
 }

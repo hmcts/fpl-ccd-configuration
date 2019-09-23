@@ -36,11 +36,11 @@ public class CaseDataExtractionService {
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }
 
-    public Map<String, String> getNoticeOfProceedingTemplateData(CaseData caseData) {
+    public Map<String, Object> getNoticeOfProceedingTemplateData(CaseData caseData) {
         // Validation within our frontend ensures that the following data is present
         Map<String, String> extractedHearingBookingData = getPrioritisedHearingBookingData(caseData);
 
-        Map<String, String> templateData =  Map.of(
+        Map<String, Object> templateData =  Map.of(
             "courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName(),
             "familyManCaseNumber", caseData.getFamilyManCaseNumber(),
             "todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG),
