@@ -12,7 +12,7 @@ module.exports = {
     I.fillField(this.fields.description, description);
   },
 
-  submit(button) {
-    I.retryUntilExists(() => I.click(button), '.alert-success');
+  async submit(button) {
+    await I.retryUntilExists(() => I.click(button), '.alert-success');
   },
 };

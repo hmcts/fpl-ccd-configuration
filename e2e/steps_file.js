@@ -137,22 +137,25 @@ module.exports = function () {
 
     /**
      * Retries defined action util element described by the locator is present.
-     * Note: If element is not present after 3 retries this step throws an error.
+     * Note: If element is not present after 4 tries (run + 3 retries) this step throws an error.
      *
      * @param action - an action that will be retried until either condition is met or max number of retries is reached
      * @param locator - locator for an element that is expected to be present upon successful execution of an action
      * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
      */
     async retryUntilExists(action, locator) {
-      const numberOfRetries = 3;
+      const maxNumberOfTries = 4;
 
-      for (let retryNumber = 1; retryNumber <= numberOfRetries; retryNumber++) {
+      for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
+        if (tryNumber > 1 && (await this.locateSelector(locator)).length > 0) {
+          break;
+        }
         action();
         if (await this.waitForSelector(locator) != null) {
           break;
         }
-        if (retryNumber === numberOfRetries) {
-          throw new Error(`Maximum number of retries (${numberOfRetries}) has been reached`);
+        if (tryNumber === maxNumberOfTries) {
+          throw new Error(`Maximum number of tries (${maxNumberOfTries}) has been reached`);
         }
       }
     },
