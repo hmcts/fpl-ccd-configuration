@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.UUID.randomUUID;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
@@ -74,7 +75,7 @@ public class DraftController {
         if (caseData.getAllParties() == null) {
             OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
 
-            List<Element<Direction>> directions = standardDirectionOrder.getDirections()
+            Map<String, List<Element<Direction>>> directions = standardDirectionOrder.getDirections()
                 .stream()
                 .map(direction ->
                     Element.<Direction>builder()
@@ -83,15 +84,16 @@ public class DraftController {
                             .builder()
                             .type(direction.getTitle())
                             .text(direction.getText())
-                            .assignee("allParties")
+                            .assignee(direction.getAssignee())
                             .readOnly(booleanToYesOrNo(direction.getDisplay().isShowDateOnly()))
                             .build()
                         )
                         .build()
                 )
-                .collect(toList());
+                .collect(groupingBy(element -> element.getValue().getAssignee()));
 
-            caseDetails.getData().put("allParties", directions);
+
+            directions.forEach((key, value) -> caseDetails.getData().put(key, value));
         } else {
 
             // need to repopulate readOnly data
