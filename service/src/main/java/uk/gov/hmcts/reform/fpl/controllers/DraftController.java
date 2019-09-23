@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -34,7 +35,6 @@ import java.util.UUID;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
@@ -62,14 +62,14 @@ public class DraftController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         //pre populate standard directions
-        if (caseData.getStandardDirectionOrder() == null) {
+        if (caseData.getAllParties() == null) {
             List<Element<Direction>> directions = ImmutableList.of(
                 Element.<Direction>builder()
                     .id(UUID.randomUUID())
                     .value(Direction.builder()
                         .type("Arrange an advocates' meeting")
                         .text("Hardcoded directions\n • First document \n • Second document")
-                        .assignee("cafcassDirections")
+                        .assignee("allParties")
                         .readOnly("No")
                         .build())
                     .build(),
@@ -84,24 +84,21 @@ public class DraftController {
                     .build()
             );
 
-            caseDetails.getData().put("standardDirectionOrder", Order.builder().directions(directions).build());
+            caseDetails.getData().put("allParties", directions);
         } else {
 
             // need to repopulate readOnly data
             List<Element<Direction>> directions = caseData.getStandardDirectionOrder().getDirections();
 
             directions.forEach(direction -> {
-                Direction value = direction.getValue();
-                String type = value.getType();
-
-                if (type.equals("Mandatory order title")) {
-                    value.setReadOnly("Yes");
+                if (direction.getValue().getType().equals("Mandatory order title")) {
+                    direction.getValue().setReadOnly("Yes");
                 } else {
-                    value.setReadOnly("No");
+                    direction.getValue().setReadOnly("No");
                 }
             });
 
-            caseDetails.getData().put("standardDirectionOrder", Order.builder().directions(directions).build());
+            caseDetails.getData().put("allParties", directions);
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -129,23 +126,14 @@ public class DraftController {
         @RequestHeader("authorization") String authorization,
         @RequestHeader("user-id") String userId,
         @RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseDetails caseDetails = addDirectionsToOrder(callbackrequest.getCaseDetails());
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        for (Element<Direction> directionElement : caseData.getStandardDirectionOrder().getDirections()) {
-            Direction direction = directionElement.getValue();
-            if (direction.getText() == null) {
-                direction.setText("Hardcoded hidden value");
+        caseData.getStandardDirectionOrder().getDirections().forEach(direction -> {
+            if (direction.getValue().getText() == null) {
+                direction.getValue().setText("Hardcoded hidden value");
             }
-        }
-
-        // sort directions by role
-        Map<String, List<Element<Direction>>> directionsByRole =
-            caseData.getStandardDirectionOrder().getDirections().stream()
-                .collect(groupingBy(direction -> direction.getValue().getAssignee()));
-
-        // add directions into their respective pre defined collections
-        caseDetails.getData().putAll(directionsByRole);
+        });
 
         DocmosisDocument docmosisDocument =
             documentGeneratorService.generateDocmosisDocument(preparePlaceholders(caseData), DocmosisTemplates.SDO);
@@ -164,6 +152,22 @@ public class DraftController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private CaseDetails addDirectionsToOrder(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        List<Element<Direction>> directions = new ArrayList<>();
+        directions.addAll(caseData.getAllParties());
+        directions.addAll(caseData.getCourtDirections());
+        directions.addAll(caseData.getLocalAuthorityDirections());
+        directions.addAll(caseData.getCafcassDirections());
+        directions.addAll(caseData.getOtherPartiesDirections());
+        directions.addAll(caseData.getParentsAndRespondentsDirections());
+
+        caseDetails.getData().put("standardDirectionOrder", Order.builder().directions(directions).build());
+
+        return caseDetails;
     }
 
     @SuppressWarnings("LineLength")
