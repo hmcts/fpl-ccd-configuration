@@ -1,4 +1,4 @@
-version: '2.1'
+version: '2.4'
 services:
   fpl-service:
     build:
@@ -11,8 +11,8 @@ services:
     container_name: fpl-service
     environment:
       - IDAM_API_URL=http://idam-api:8080
-      - DOCMOSIS_TORNADO_URL=http://docmosis-tornado:5433
-      - DOCMOSIS_TORNADO_KEY
+      - DOCMOSIS_TORNADO_URL=http://docmosis-tornado:8080
+      - DOCMOSIS_TORNADO_KEY=fake-key
       - DOCUMENT_MANAGEMENT_URL=http://dm-store:8080
       - CORE_CASE_DATA_API_URL=http://ccd-data-store-api:4452
       - IDAM_S2S_AUTH_URL=http://service-auth-provider-api:8080
@@ -22,7 +22,7 @@ services:
       - FPL_LOCAL_AUTHORITY_USER_MAPPING=SA=>31,32,33;HN=>34,35
       - FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING=SA=>Swansea Family Court:FamilyPublicLaw+sa@gmail.com;HN=>Portsmouth Combined Court:FamilyPublicLaw+hn@gmail.com
       - FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING=SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com
-      - NOTIFY_API_KEY
+      - NOTIFY_API_KEY=fake-key
       - CCD_UI_BASE_URL=http://localhost:3451
       # these environment variables are used by java-logging library
       - APPINSIGHTS_INSTRUMENTATIONKEY=fake-key
@@ -30,7 +30,7 @@ services:
       - $SERVER_PORT:$SERVER_PORT
     networks:
       - default
-      - ccd
+      - ccd-network
   docmosis-tornado:
     image:  skeneventures/docmosis-tornado
     environment:
@@ -42,6 +42,5 @@ services:
     ports:
       - 5433:8080
 networks:
-  ccd:
-    external:
-      name: compose_default
+  ccd-network:
+    external: true
