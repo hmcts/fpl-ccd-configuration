@@ -4,8 +4,12 @@ set -eu
 
 echo user ids script
 
+DATABASE=openidm
+USERNAME=openidm
+HOSTNAME=localhost
 export PGPASSWORD=openidm
 
-psql -U openidm -d openidm -h localhost -p 5051 -c "SELECT objectid FROM openidm.managedobjects"
+userids=$(psql -U $USERNAME -d $DATABASE -h $HOSTNAME -p 5051 -t -c "SELECT objectid FROM managedobjects")
 
-echo finished
+echo user ids are: $userids
+
