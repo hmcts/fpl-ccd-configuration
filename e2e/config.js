@@ -48,6 +48,7 @@ module.exports = {
     enterInternationalElement: 'International element',
     enterOtherProceedings: 'Other proceedings',
     enterAllocationProposal: 'Allocation proposal',
+    enterAllocationDecision: 'Allocation decision',
     enterAttendingHearing: 'Attending the hearing',
     uploadDocuments: 'Documents',
     changeCaseName: 'Change case name',
@@ -65,6 +66,7 @@ module.exports = {
     amendAttendingHearing: 'Attending the hearing',
     addHearingBookingDetails: 'Add hearing details',
     createNoticeOfProceedings: 'Create notice of proceedings',
+    addStatementOfService: 'Add statement of service (c9)',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',

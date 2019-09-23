@@ -1,6 +1,7 @@
 #!groovy
 
 @Library("Infrastructure")
+import uk.gov.hmcts.contino.ProjectBranch
 
 def type = "java"
 
@@ -10,7 +11,7 @@ def component = "case-service"
 def serviceSecrets = [
   'fpl-${env}': [
     secret('smoke-test-la-username', 'SMOKE_TEST_LA_USER_USERNAME'),
-    secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD')
+    secret('smoke-test-la-password', 'SMOKE_TEST_LA_USER_PASSWORD'),
   ]
 ]
 
@@ -49,12 +50,14 @@ withPipeline(type, product, component) {
   onPR {
     loadVaultSecrets(serviceSecrets + otherSecrets)
   }
+  if (!new ProjectBranch(env.BRANCH_NAME).isDemo()) {
+    disableLegacyDeployment()
+  }
   enableDockerBuild()
   enableAksStagingDeployment()
   installCharts()
   enableSlackNotifications('#fpla-tech')
 
-  env.POSTCODE_PLACEHOLDER = '${postcode}'
   env.PROXY_SERVER = "proxyout.reform.hmcts.net:8080"
 
   after('checkout') {
@@ -76,19 +79,14 @@ withPipeline(type, product, component) {
     }
   }
 
-  before('smoketest:saat-staging') {
+  before('smoketest:saat') {
     env.URL = "https://ccd-case-management-web-saat.service.core-compute-saat.internal"
     archiveCoreCaseDataDefinitions('saat')
   }
 
-  before('smoketest:aat-staging') {
+  before('smoketest:aat') {
     env.URL = "https://ccd-case-management-web-aat.service.core-compute-aat.internal"
     archiveCoreCaseDataDefinitions('aat')
-  }
-
-  before('smoketest:prod-staging') {
-    env.URL = "https://ccd-case-management-web-prod.service.core-compute-prod.internal"
-    archiveCoreCaseDataDefinitions('prod')
   }
 
   before('smoketest:demo-staging') {
@@ -107,15 +105,7 @@ withPipeline(type, product, component) {
     env.URL="https://case-management-web-fpl-case-service-pr-${CHANGE_ID}.service.core-compute-preview.internal"
   }
 
-  after('smoketest:saat-staging') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-  }
-
   after('smoketest:saat') {
-    steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
-  }
-
-  after('smoketest:aat-staging') {
     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'output/**/*'
   }
 
@@ -141,6 +131,10 @@ withPipeline(type, product, component) {
 
   before('functionalTest:demo') {
     env.SKIP_FUNCTIONAL_TESTS = 'true'
+  }
+
+  after('functionalTest:aat') {
+    archiveCoreCaseDataDefinitions('prod')
   }
 
   after('functionalTest:preview') {

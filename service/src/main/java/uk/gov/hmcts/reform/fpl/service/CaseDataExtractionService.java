@@ -1,48 +1,59 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
+import java.time.format.FormatStyle;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class CaseDataExtractionService {
-    public Map<String, Object> getNoticeOfProceedingTemplateData(CaseData caseData, String jurisdiction) {
-        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
-        String todaysDate = DateTimeFormatter.ISO_LOCAL_DATE.format(zonedDateTime);
 
+    private DateFormatterService dateFormatterService;
+    private HearingBookingService hearingBookingService;
+    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+
+    @Autowired
+    public CaseDataExtractionService(DateFormatterService dateFormatterService,
+                                     HearingBookingService hearingBookingService,
+                                     HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration) {
+        this.dateFormatterService = dateFormatterService;
+        this.hearingBookingService = hearingBookingService;
+        this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
+    }
+
+    public Map<String, Object> getNoticeOfProceedingTemplateData(CaseData caseData) {
+        HearingBooking hearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
+
+        // Validation within our frontend ensures that the following data is present
         return Map.of(
-            "jurisdiction", StringUtils.defaultIfBlank(jurisdiction, ""),
-            "familyManCaseNumber", StringUtils.defaultIfBlank(caseData.getFamilyManCaseNumber(), ""),
-            "todaysDate", todaysDate,
+            "courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName(),
+            "familyManCaseNumber", caseData.getFamilyManCaseNumber(),
+            "todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG),
             "applicantName", getFirstApplicantName(caseData),
             "orderTypes", getOrderTypes(caseData),
             "childrenNames", getAllChildrenNames(caseData),
-            "hearingDate", "",
-            "hearingVenue", "",
-            "preHearingAttendance", "",
-            "hearingTime", ""
+            "hearingDate", dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG),
+            "hearingVenue", hearingBooking.getVenue(),
+            "preHearingAttendance", hearingBooking.getPreHearingAttendance(),
+            "hearingTime", hearingBooking.getTime()
         );
     }
 
     private String getOrderTypes(CaseData caseData) {
-        if (caseData.getOrders() == null || caseData.getOrders().getOrderType() == null) {
-            return "";
-        } else {
-            return caseData.getOrders().getOrderType().stream()
-                .map(orderType -> orderType.getLabel())
-                .collect(Collectors.joining(", "));
-        }
+        return caseData.getOrders().getOrderType().stream()
+            .map(orderType -> orderType.getLabel())
+            .collect(Collectors.joining(", "));
     }
 
     private String getFirstApplicantName(CaseData caseData) {
@@ -62,8 +73,7 @@ public class CaseDataExtractionService {
             .filter(Objects::nonNull)
             .map(Child::getParty)
             .filter(Objects::nonNull)
-            .map(childParty -> {
-                return (childParty.getFirstName()) + " " + (childParty.getLastName());
-            }).collect(Collectors.joining(", "));
+            .map(childParty -> (childParty.getFirstName()) + " " + (childParty.getLastName()))
+                .collect(Collectors.joining(", "));
     }
 }

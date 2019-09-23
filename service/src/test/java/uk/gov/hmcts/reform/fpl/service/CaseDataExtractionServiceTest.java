@@ -4,15 +4,15 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.time.LocalDate;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -21,59 +21,67 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 
 @ExtendWith(SpringExtension.class)
 class CaseDataExtractionServiceTest {
+    @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
 
-    private String JURISDICTION = "PUBLICLAW";
-    private CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService();
+    private static final String LOCAL_AUTHORITY_CODE = "example";
+    private static final String COURT_NAME = "Example Court";
+    private static final String COURT_EMAIL = "example@court.com";
+    private static final String CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL);
+    private static final LocalDate TODAYS_DATE = LocalDate.now();
 
-    @Test
-    void shouldReturnAMapOfEmptyStringsIfCaseDataIsNotPopulated() {
+    private DateFormatterService dateFormatterService = new DateFormatterService();
+    private HearingBookingService hearingBookingService = new HearingBookingService();
+    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
 
-        CaseData caseData = CaseData.builder().build();
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData,
-            JURISDICTION);
-
-        assertThat(templateData.get("jurisdiction")).isEqualTo("PUBLICLAW");
-        assertThat(templateData.get("familyManCaseNumber")).isEqualTo("");
-        assertThat(templateData.get("applicantName")).isEqualTo("");
-        assertThat(templateData.get("orderTypes")).isEqualTo("");
-        assertThat(templateData.get("childrenNames")).isEqualTo("");
-        assertThat(templateData.get("hearingDate")).isEqualTo("");
-        assertThat(templateData.get("hearingVenue")).isEqualTo("");
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo("");
-        assertThat(templateData.get("hearingTime")).isEqualTo("");
-    }
+    private CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
+        hearingBookingService, hmctsCourtLookupConfiguration);
 
     @Test
     void shouldConcatenateAllChildrenNames() {
         CaseData caseData = CaseData.builder()
-            .children1(getPopulatedChildren())
+            .caseLocalAuthority("example")
+            .familyManCaseNumber("123")
+            .children1(createPopulatedChildren())
+            .applicants(createPopulatedApplicants())
+            .hearingDetails(createHearingBookings())
+            .orders(Orders.builder()
+                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
             .build();
 
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData,
-            JURISDICTION);
+        Map<String, Object> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
         assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark");
     }
 
     @Test
     void shouldReturnFirstApplicantName() {
         CaseData caseData = CaseData.builder()
-            .applicants(getPopulatedApplicants())
-                .build();
+            .caseLocalAuthority("example")
+            .familyManCaseNumber("123")
+            .children1(createPopulatedChildren())
+            .applicants(createPopulatedApplicants())
+            .hearingDetails(createHearingBookings())
+            .orders(Orders.builder()
+                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
+            .build();
 
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData,
-            JURISDICTION);
+        Map<String, Object> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
     }
 
     @Test
     void shouldMapCaseDataPropertiesToTemplatePlaceholderData() {
         CaseData caseData = CaseData.builder()
+            .caseLocalAuthority("example")
             .familyManCaseNumber("123")
-            .children1(getPopulatedChildren())
-            .applicants(getPopulatedApplicants())
+            .children1(createPopulatedChildren())
+            .applicants(createPopulatedApplicants())
+            .hearingDetails(createHearingBookings())
             .orders(Orders.builder()
                 .orderType(ImmutableList.<OrderType>of(
                     CARE_ORDER,
@@ -81,59 +89,33 @@ class CaseDataExtractionServiceTest {
                 )).build())
             .build();
 
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData, JURISDICTION);
-        assertThat(templateData.get("jurisdiction")).isEqualTo("PUBLICLAW");
+        Map<String, Object> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
+        assertThat(templateData.get("courtName")).isEqualTo("Example Court");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
         assertThat(templateData.get("orderTypes")).isEqualTo("Care order, Education supervision order");
         assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark");
-        assertThat(templateData.get("hearingDate")).isEqualTo("");
-        assertThat(templateData.get("hearingVenue")).isEqualTo("");
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo("");
-        assertThat(templateData.get("hearingTime")).isEqualTo("");
+        assertThat(templateData.get("hearingDate")).isEqualTo(dateFormatterService
+            .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
+        assertThat(templateData.get("hearingVenue")).isEqualTo("Venue");
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo("08.15am");
+        assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
     }
 
-    private List<Element<Applicant>> getPopulatedApplicants() {
+    private List<Element<HearingBooking>> createHearingBookings() {
         return ImmutableList.of(
-            Element.<Applicant>builder()
+            Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(Applicant.builder()
-                    .leadApplicantIndicator("No")
-                    .party(ApplicantParty.builder()
-                        .organisationName("Bran Stark")
-                        .build())
-                    .build())
+                .value(createHearingBooking(LocalDate.now().plusDays(5)))
                 .build(),
-            Element.<Applicant>builder()
+            Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(Applicant.builder()
-                    .leadApplicantIndicator("No")
-                    .party(ApplicantParty.builder()
-                        .organisationName("Sansa Stark")
-                        .build())
-                    .build())
-                .build());
-    }
-
-    private List<Element<Child>> getPopulatedChildren() {
-        return ImmutableList.of(
-            Element.<Child>builder()
-                .id(UUID.randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Bran")
-                        .lastName("Stark")
-                        .build())
-                    .build())
+                .value(createHearingBooking(LocalDate.now().plusDays(5)))
                 .build(),
-            Element.<Child>builder()
+            Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("Sansa")
-                        .lastName("Stark")
-                        .build())
-                    .build())
-                .build());
+                .value(createHearingBooking(TODAYS_DATE))
+                .build()
+        );
     }
 }

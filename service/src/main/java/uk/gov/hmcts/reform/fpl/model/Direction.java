@@ -1,11 +1,8 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Builder;
 import lombok.Data;
-
-import java.time.ZonedDateTime;
 
 @Data
 @Builder

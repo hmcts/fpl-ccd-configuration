@@ -61,6 +61,13 @@ module.exports = function () {
       eventSummaryPage.submit('Submit');
     },
 
+    seeCheckAnswers(checkAnswerTitle) {
+      this.click('Continue');
+      this.waitForElement('.check-your-answers');
+      this.see(checkAnswerTitle);
+      eventSummaryPage.submit('Save and continue');
+    },
+
     seeEventSubmissionConfirmation(event) {
       this.see(`updated with event: ${event}`);
     },
@@ -136,6 +143,13 @@ module.exports = function () {
       uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
       uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
       this.continueAndSave();
+    },
+
+    async addAnotherElementToCollection() {
+      const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
+      this.click('Add new');
+      this.waitNumberOfVisibleElements('.collection-title', numberOfElements + 1);
+      this.wait(0.5); // add extra time to allow slower browsers to render all fields (just extra precaution)
     },
   });
 };

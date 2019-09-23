@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,20 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
+
+import java.time.LocalDate;
+import java.time.format.FormatStyle;
+import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(NoticeOfProceedingsController.class)
@@ -25,6 +36,7 @@ class NoticeOfProceedingsControllerAboutToStartTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
+    private static final LocalDate TODAYS_DATE = LocalDate.now();
 
     @Autowired
     private MockMvc mockMvc;
@@ -32,12 +44,17 @@ class NoticeOfProceedingsControllerAboutToStartTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private DateFormatterService dateFormatterService;
+
     @Test
     void shouldReturnErrorsWhenFamilymanNumberIsNotProvided() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
-                .data(ImmutableMap.of())
+                .data(ImmutableMap.of(
+                    "hearingDetails", createHearingBookings()
+                ))
                 .build())
             .build();
 
@@ -48,30 +65,12 @@ class NoticeOfProceedingsControllerAboutToStartTest {
     }
 
     @Test
-    void shouldReturnNoErrorsWhenFamilymanNumberIsProvided() throws Exception {
+    void shouldUpdateProceedingLabelToIncludeHearingBookingDetailsDate() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
                 .data(ImmutableMap.of(
-                    "familyManCaseNumber", "123"
-                ))
-                .build())
-            .build();
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = objectMapper.readValue(
-            makeRequest(request).getResponse().getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        assertThat(callbackResponse.getErrors()).isEmpty();
-    }
-
-    @Test
-    void shouldUpdateProceedingLabelToIncludeHearingDate() throws Exception {
-        //TODO
-        //Update to include hearing
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of(
+                    "hearingDetails", createHearingBookings(),
                     "familyManCaseNumber", "123"
                 ))
                 .build())
@@ -82,7 +81,10 @@ class NoticeOfProceedingsControllerAboutToStartTest {
 
         String proceedingLabel = callbackResponse.getData().get("proceedingLabel").toString();
 
-        assertThat(proceedingLabel).isEqualTo("The case management hearing will be on the");
+        String expectedContent = String.format("The case management hearing will be on the %s.", dateFormatterService
+            .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
+
+        assertThat(proceedingLabel).isEqualTo(expectedContent);
     }
 
     private MvcResult makeRequest(CallbackRequest request) throws Exception {
@@ -94,5 +96,22 @@ class NoticeOfProceedingsControllerAboutToStartTest {
                 .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andReturn();
+    }
+
+    private List<Element<HearingBooking>> createHearingBookings() {
+        return ImmutableList.of(
+            Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(createHearingBooking(LocalDate.now().plusDays(5)))
+                .build(),
+            Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(createHearingBooking(LocalDate.now().plusDays(2)))
+                .build(),
+            Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(createHearingBooking(TODAYS_DATE))
+                .build()
+        );
     }
 }

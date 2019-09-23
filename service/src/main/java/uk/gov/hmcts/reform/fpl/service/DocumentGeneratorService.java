@@ -4,21 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.templates.DocumentTemplates;
 import uk.gov.hmcts.reform.pdf.generator.HTMLToPDFConverter;
-
-import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,20 +21,14 @@ public class DocumentGeneratorService {
     private final HTMLToPDFConverter converter;
     private final DocumentTemplates templates;
     private final ObjectMapper mapper;
-    private final RestTemplate restTemplate;
-    private final String tornadoUrl;
 
     @Autowired
     public DocumentGeneratorService(HTMLToPDFConverter converter,
                                     DocumentTemplates templates,
-                                    ObjectMapper mapper,
-                                    RestTemplate restTemplate,
-                                    @Value("${docmosis.tornado.url}") String tornadoUrl) {
+                                    ObjectMapper mapper) {
         this.converter = converter;
         this.templates = templates;
         this.mapper = mapper;
-        this.restTemplate = restTemplate;
-        this.tornadoUrl = tornadoUrl + "/rs/render";
     }
 
     @SafeVarargs
@@ -59,57 +43,6 @@ public class DocumentGeneratorService {
         byte[] template = templates.getHtmlTemplate();
 
         return converter.convert(template, context);
-    }
-
-    public DocmosisDocument generateDocmosisDocument(Map<String, Object> templateData,
-                                                     DocmosisTemplates docmosisTemplate) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        DocmosisRequest requestBody = new DocmosisRequest(docmosisTemplate.getTemplate(),
-            templateData);
-
-        HttpEntity<DocmosisRequest> request = new HttpEntity<>(requestBody, headers);
-
-        byte[] response = null;
-
-        try {
-            response = restTemplate.exchange(tornadoUrl, HttpMethod.POST, request, byte[].class).getBody();
-        } catch (HttpClientErrorException.BadRequest ex) {
-            System.out.println("body" +  ex.getResponseBodyAsString());
-        }
-
-        return new DocmosisDocument(docmosisTemplate.getDocumentTitle(), response);
-    }
-
-    static class DocmosisRequest {
-        private final String templateName;
-        private final String outputFormat;
-        private final String outputName;
-        private final Map<String, Object> data;
-
-        DocmosisRequest(String templateName, Map<String, Object> data) {
-            this.templateName = templateName;
-            this.data = data;
-            this.outputFormat = "pdf";
-            this.outputName = "IGNORED";
-        }
-
-        public String getOutputName() {
-            return outputName;
-        }
-
-        public String getOutputFormat() {
-            return outputFormat;
-        }
-
-        public String getTemplateName() {
-            return templateName;
-        }
-
-        public Map<String, Object> getData() {
-            return data;
-        }
     }
 
     private CaseDetails populateEmptyCollections(CaseDetails caseDetails) {

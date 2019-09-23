@@ -195,6 +195,14 @@
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
   },
+
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "allocationDecision",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "R"
+  },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
@@ -269,6 +277,13 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "children1",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "statementOfService",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "R"
   }

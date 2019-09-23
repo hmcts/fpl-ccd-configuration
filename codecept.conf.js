@@ -27,6 +27,9 @@ exports.config = {
     PuppeteerHelpers: {
       require: './e2e/helpers/puppeter_helper.js',
     },
+    DumpBrowserLogsHelper: {
+      require: './e2e/helpers/dump_browser_logs_helper.js',
+    },
   },
   include: {
     config: './e2e/config.js',
@@ -51,16 +54,15 @@ exports.config = {
     enterInternationalElementEventPage: './e2e/pages/events/enterInternationalElementEvent.page.js',
     enterOtherProceedingsEventPage: './e2e/pages/events/enterOtherProceedingsEvent.page.js',
     enterAllocationProposalEventPage: './e2e/pages/events/enterAllocationProposalEvent.page.js',
+    enterAllocationDecisionEventPage: './e2e/pages/events/enterAllocationDecisionEvent.page.js',
     enterAttendingHearingEventPage: './e2e/pages/events/enterAttendingHearingEvent.page.js',
     uploadDocumentsEventPage: './e2e/pages/events/uploadDocumentsEvent.page.js',
     enterFamilyManCaseNumberEventPage: './e2e/pages/events/enterFamilyManCaseNumberEvent.page.js',
     uploadStandardDirectionsDocumentEventPage: './e2e/pages/events/uploadStandardDirectionsDocumentEvent.page.js',
     sendCaseToGatekeeperEventPage: './e2e/pages/events/sendCaseToGatekeeperEvent.page.js',
-<<<<<<< HEAD
     createNoticeOfProceedingsEventPage: './e2e/pages/events/createNoticeOfProceedingsEvent.page.js',
-=======
     addHearingBookingDetailsEventPage: './e2e/pages/events/addHearingBookingDetailsEvent.page.js',
->>>>>>> d69ec342cb7c9a67f5bbf5376fcdb121d915921f
+    addStatementOfServiceEventPage: './e2e/pages/events/addStatementOfServiceEvent.page.js',
   },
   plugins: {
     autoDelay: {

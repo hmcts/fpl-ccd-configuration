@@ -86,7 +86,7 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', (I, ca
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
-  addHearingBookingDetailsEventPage.addHearing();
+  await I.addAnotherElementToCollection();
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
   I.continueAndProvideSummary('summary', 'description');
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
@@ -100,8 +100,8 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(6, 'Hearing 1', '', hearingDetails[0].type.welsh);
   I.seeAnswerInTab(6, 'Hearing 1', '', hearingDetails[0].type.somethingElse);
   I.seeAnswerInTab(7, 'Hearing 1', 'Give details', hearingDetails[0].giveDetails);
-  I.seeAnswerInTab(8, 'Hearing 1', 'Title', hearingDetails[0].judgeTitle);
-  I.seeAnswerInTab(9, 'Hearing 1', 'Full name', hearingDetails[0].fullName);
+  I.seeAnswerInTab(8, 'Hearing 1', 'Judge or magistrate\'s title', hearingDetails[0].judgeTitle);
+  I.seeAnswerInTab(9, 'Hearing 1', 'Judge or magistrate\'s last name', hearingDetails[0].lastName);
 
   I.seeAnswerInTab(1, 'Hearing 2', 'Type of hearing', hearingDetails[1].caseManagement);
   I.seeAnswerInTab(2, 'Hearing 2', 'Venue', hearingDetails[1].venue);
@@ -112,18 +112,23 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(6, 'Hearing 2', '', hearingDetails[1].type.welsh);
   I.seeAnswerInTab(6, 'Hearing 2', '', hearingDetails[1].type.somethingElse);
   I.seeAnswerInTab(7, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
-  I.seeAnswerInTab(8, 'Hearing 2', 'Title', hearingDetails[1].judgeTitle);
-  I.seeAnswerInTab(9, 'Hearing 2', 'Full name', hearingDetails[1].fullName);
+  I.seeAnswerInTab(8, 'Hearing 2', 'Judge or magistrate\'s title', hearingDetails[1].judgeTitle);
+  I.seeAnswerInTab(9, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
 });
 
-Scenario('HMCTS admin creates c6 and c6a documents', (I, caseViewPage, enterFamilyManCaseNumberEventPage, createNoticeOfProceedingsEventPage) => {
+Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, enterFamilyManCaseNumberEventPage, createNoticeOfProceedingsEventPage, addHearingBookingDetailsEventPage) => {
   caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID();
   I.continueAndSave();
+  caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
+  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
+  addHearingBookingDetailsEventPage.addHearing();
+  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
+  I.continueAndProvideSummary('summary', 'description');
   caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
   createNoticeOfProceedingsEventPage.checkC6();
   createNoticeOfProceedingsEventPage.checkC6A();
-  I.continueAndProvideSummary('summary', 'description');
+  I.continueAndSave();
   I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeAnswerInTab('1', 'Notice of proceedings 1', 'File name', 'Notice_of_proceedings_c6.pdf');

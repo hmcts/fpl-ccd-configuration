@@ -53,7 +53,7 @@ data "azurerm_key_vault_secret" "notify_api_key" {
 }
 
 module "key-vault" {
-  source = "git@github.com:hmcts/cnp-module-key-vault.git?ref=master"
+  source = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
   name = "fpl-${var.env}"
   product = "${var.product}"
   env = "${var.env}"
@@ -67,7 +67,7 @@ module "key-vault" {
 }
 
 module "case-service" {
-  source              = "git@github.com:hmcts/moj-module-webapp?ref=master"
+  source              = "git@github.com:hmcts/cnp-module-webapp?ref=master"
   product             = "${var.product}-${var.component}"
   location            = "${var.location}"
   env                 = "${var.env}"
