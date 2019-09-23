@@ -5,7 +5,7 @@ spring:
       paths: /mnt/secrets/fpl
       aliases:
         notify-api-key: notify.api_key
-        docmosis-api-key: docmosis.api.key
+        docmosis-api-key: docmosis.tornado.key
         fpl-case-service-s2s-secret: idam.s2s-auth.totp_secret
         local-authority-email-to-code-mapping: fpl.local_authority_email_to_code.mapping
         local-authority-code-to-name-mapping: fpl.local_authority_code_to_name.mapping
