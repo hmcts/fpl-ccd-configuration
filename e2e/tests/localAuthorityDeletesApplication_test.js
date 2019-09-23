@@ -29,12 +29,10 @@ Scenario('local authority tries to submit incomplete case', async (I, caseViewPa
   I.see('You need to add details to grounds for the application');
 });
 
-Scenario('local authority deletes application', async (I, caseViewPage, deleteApplicationEventPage, eventSummaryPage) => {
+Scenario('local authority deletes application', async (I, caseViewPage, deleteApplicationEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.deleteApplication);
   deleteApplicationEventPage.tickDeletionConsent();
-  I.click('Continue');
-  I.waitForElement('.check-your-answers');
-  eventSummaryPage.submit('Delete application');
+  await I.completeEvent('Delete application');
   I.seeEventSubmissionConfirmation(config.applicationActions.deleteApplication);
   I.dontSee(caseViewPage.actionsDropdown);
 });
