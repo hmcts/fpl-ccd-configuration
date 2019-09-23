@@ -34,6 +34,7 @@ ccd:
       NODE_TLS_REJECT_UNAUTHORIZED: 0
       DM_URL: https://gateway-${SERVICE_FQDN}/documents
       DM_URL_REMOTE: https?://(gateway-${SERVICE_FQDN}:443|dm-store-aat.service.core-compute-aat.internal)/documents
+      CCD_ACTIVITY_URL: null
   apiGateway:
     s2sKey: ${CCD_API_GATEWAY_S2S_SECRET}
     idamClientSecret:
