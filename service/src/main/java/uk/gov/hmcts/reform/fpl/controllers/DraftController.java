@@ -71,7 +71,7 @@ public class DraftController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         //pre populate standard directions
-        if (caseData.getStandardDirectionOrder() == null) {
+        if (caseData.getAllParties() == null) {
             OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
 
             List<Element<Direction>> directions = standardDirectionOrder.getDirections()
