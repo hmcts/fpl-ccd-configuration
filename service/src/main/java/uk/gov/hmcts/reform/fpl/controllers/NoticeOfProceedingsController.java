@@ -104,7 +104,7 @@ public class NoticeOfProceedingsController {
             .getNoticeOfProceedingTemplateData(caseData);
 
         List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData);
-
+        
         List<Document> uploadedDocuments = generateAndUploadDocuments(userId, authorization, templateData,
             templateTypes);
 
@@ -150,7 +150,9 @@ public class NoticeOfProceedingsController {
 
         if (caseData.getProceedingTypes().contains(ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES)) {
             proceedingTypes.add(DocmosisTemplates.C6);
-        } else if (caseData.getProceedingTypes().contains(ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES)) {
+        }
+
+        if (caseData.getProceedingTypes().contains(ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES)) {
             proceedingTypes.add(DocmosisTemplates.C6A);
         }
 
