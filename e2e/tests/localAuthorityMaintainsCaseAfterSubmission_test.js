@@ -9,7 +9,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
-    caseViewPage.goToNewActions(config.applicationActions.submitCase);
+    await caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
     await I.completeEvent('Submit');
 
@@ -22,7 +22,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
 });
 
 Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocumentsEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
   uploadDocumentsEventPage.uploadSocialWorkStatement(config.testFile);
   uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
@@ -44,7 +44,7 @@ Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocu
 });
 
 Scenario('local authority uploads court bundle', async (I, uploadDocumentsEventPage, submitApplicationEventPage, caseViewPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsEventPage.uploadCourtBundle(config.testFile);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
@@ -53,7 +53,7 @@ Scenario('local authority uploads court bundle', async (I, uploadDocumentsEventP
 });
 
 Scenario('local authority provides a statements of service', async (I, caseViewPage, loginPage, addStatementOfServiceEventPage) => {
-  caseViewPage.goToNewActions(config.administrationActions.addStatementOfService);
+  await caseViewPage.goToNewActions(config.administrationActions.addStatementOfService);
   await addStatementOfServiceEventPage.enterRecipientDetails(recipients[0]);
   await I.addAnotherElementToCollection();
   await addStatementOfServiceEventPage.enterRecipientDetails(recipients[1]);

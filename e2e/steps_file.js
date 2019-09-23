@@ -44,8 +44,7 @@ module.exports = function () {
     },
 
     async completeEvent(button, changeDetails) {
-      this.click('Continue');
-      this.waitForElement('.check-your-answers');
+      await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
       if (changeDetails != null) {
         eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
       }
@@ -104,22 +103,22 @@ module.exports = function () {
     },
 
     async enterMandatoryFields () {
-      caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
+      await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
       ordersAndDirectionsNeededEventPage.checkCareOrder();
       await this.completeEvent('Save and continue');
-      caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
+      await caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
       enterHearingNeededEventPage.enterTimeFrame();
       await this.completeEvent('Save and continue');
-      caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
+      await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
       enterApplicantEventPage.enterApplicantDetails(applicant);
       await this.completeEvent('Save and continue');
-      caseViewPage.goToNewActions(config.applicationActions.enterChildren);
+      await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
       await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
       await this.completeEvent('Save and continue');
-      caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
+      await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
       enterGroundsEventPage.enterThresholdCriteriaDetails();
       await this.completeEvent('Save and continue');
-      caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+      await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
       uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
       uploadDocumentsEventPage.uploadSocialWorkStatement(config.testFile);
       uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);

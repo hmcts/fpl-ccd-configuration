@@ -9,7 +9,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
-    caseViewPage.goToNewActions(config.applicationActions.submitCase);
+    await caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
     await I.completeEvent('Submit');
 
@@ -24,7 +24,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
 });
 
 Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
-  caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
+  await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await I.addAnotherElementToCollection();
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);

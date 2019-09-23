@@ -9,7 +9,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
-    caseViewPage.goToNewActions(config.applicationActions.submitCase);
+    await caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
     await I.completeEvent('Submit');
 
@@ -24,7 +24,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
 });
 
 Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
-  caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
@@ -32,7 +32,7 @@ Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage
 
 Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage, enterOtherProceedingsEventPage) => {
   async function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {}) {
-    caseViewPage.goToNewActions(event);
+    await caseViewPage.goToNewActions(event);
     I_doActionsOnEditPage();
     await I.completeEvent('Save and continue', { summary: summary, description: description });
     I.seeEventSubmissionConfirmation(event);
@@ -63,7 +63,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
 });
 
 Scenario('HMCTS admin uploads standard directions with other documents', async (I, caseViewPage, uploadStandardDirectionsDocumentEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadStandardDirectionsDocumentEventPage.uploadStandardDirections(config.testFile);
   uploadStandardDirectionsDocumentEventPage.uploadAdditionalDocuments(config.testFile);
   await I.completeEvent('Save and continue');
@@ -77,14 +77,14 @@ Scenario('HMCTS admin uploads standard directions with other documents', async (
 });
 
 Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
-  caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
   sendCaseToGatekeeperEventPage.enterEmail();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 });
 
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
-  caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
+  await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await I.addAnotherElementToCollection();
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);

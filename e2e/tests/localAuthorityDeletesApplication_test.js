@@ -16,8 +16,8 @@ Before(async (I) => {
   }
 });
 
-Scenario('local authority tries to submit incomplete case', (I, caseViewPage, submitApplicationEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.submitCase);
+Scenario('local authority tries to submit incomplete case', async (I, caseViewPage, submitApplicationEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.giveConsent();
   I.click('Continue');
   I.waitForElement('.error-summary-list');
@@ -29,8 +29,8 @@ Scenario('local authority tries to submit incomplete case', (I, caseViewPage, su
   I.see('You need to add details to grounds for the application');
 });
 
-Scenario('local authority deletes application', (I, caseViewPage, deleteApplicationEventPage, eventSummaryPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.deleteApplication);
+Scenario('local authority deletes application', async (I, caseViewPage, deleteApplicationEventPage, eventSummaryPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.deleteApplication);
   deleteApplicationEventPage.tickDeletionConsent();
   I.click('Continue');
   I.waitForElement('.check-your-answers');
