@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,19 +21,21 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
+import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
@@ -45,44 +46,50 @@ public class DraftController {
     private final ObjectMapper mapper;
     private final DocmosisDocumentGeneratorService documentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
+    private final OrdersLookupService ordersLookupService;
+
 
     @Autowired
+
     public DraftController(ObjectMapper mapper,
                            DocmosisDocumentGeneratorService documentGeneratorService,
-                           UploadDocumentService uploadDocumentService) {
+                           UploadDocumentService uploadDocumentService, OrdersLookupService ordersLookupService) {
         this.mapper = mapper;
         this.documentGeneratorService = documentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
+        this.ordersLookupService = ordersLookupService;
+    }
+
+    private String booleanToYesOrNo(boolean value) {
+        return value ? "Yes" : "No";
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(
-        @RequestBody CallbackRequest callbackrequest) {
+        @RequestBody CallbackRequest callbackrequest) throws IOException {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         //pre populate standard directions
-        if (caseData.getAllParties() == null) {
-            List<Element<Direction>> directions = ImmutableList.of(
-                Element.<Direction>builder()
-                    .id(UUID.randomUUID())
-                    .value(Direction.builder()
-                        .type("Arrange an advocates' meeting")
-                        .text("Hardcoded directions\n • First document \n • Second document")
-                        .assignee("allParties")
-                        .readOnly("No")
-                        .build())
-                    .build(),
-                Element.<Direction>builder()
-                    .id(UUID.randomUUID())
-                    .value(Direction.builder()
-                        .type("Mandatory order title")
-                        .text("Not editable direction")
-                        .assignee("allParties")
-                        .readOnly("Yes")
-                        .build())
-                    .build()
-            );
+        if (caseData.getStandardDirectionOrder() == null) {
+            OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
+
+            List<Element<Direction>> directions = standardDirectionOrder.getDirections()
+                .stream()
+                .map(direction ->
+                    Element.<Direction>builder()
+                        .id(randomUUID())
+                        .value(Direction
+                            .builder()
+                            .type(direction.getTitle())
+                            .text(direction.getText())
+                            .assignee("allParties")
+                            .readOnly(booleanToYesOrNo(direction.getDisplay().isShowDateOnly()))
+                            .build()
+                        )
+                        .build()
+                )
+                .collect(toList());
 
             caseDetails.getData().put("allParties", directions);
         } else {
