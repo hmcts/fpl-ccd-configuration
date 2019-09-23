@@ -12,9 +12,13 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 @Service
 public class CaseDataExtractionService {
@@ -32,17 +36,47 @@ public class CaseDataExtractionService {
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }
 
-    public Map<String, Object> getNoticeOfProceedingTemplateData(CaseData caseData) {
-        HearingBooking hearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
-
+    public Map<String, String> getNoticeOfProceedingTemplateData(CaseData caseData) {
         // Validation within our frontend ensures that the following data is present
-        return Map.of(
+        Map<String, String> extractedHearingBookingData = getPrioritisedHearingBookingData(caseData);
+
+        Map<String, String> templateData =  Map.of(
             "courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName(),
             "familyManCaseNumber", caseData.getFamilyManCaseNumber(),
             "todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG),
             "applicantName", getFirstApplicantName(caseData),
             "orderTypes", getOrderTypes(caseData),
-            "childrenNames", getAllChildrenNames(caseData),
+            "childrenNames", getAllChildrenNames(caseData)
+        );
+
+        templateData.putAll(extractedHearingBookingData);
+
+        return templateData;
+    }
+
+    public Map<String, Object> getDraftStandardOrderDirectionTemplateData(CaseData caseData) {
+        Map<String, String> extractedHearingBookingData = getPrioritisedHearingBookingData(caseData);
+
+        Map<String, Object> templateData = Map.of(
+            "familyManCaseId", caseData.getFamilyManCaseNumber(),
+            "generationDateStr",  dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG),
+            "complianceDeadline", dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), FormatStyle.LONG),
+            "children", prepareChildrenDetails(caseData),
+            "directions", prepareDirections(caseData)
+        );
+
+        templateData.putAll(extractedHearingBookingData);
+
+        return templateData;
+    }
+
+    private Map<String, String> getPrioritisedHearingBookingData(CaseData caseData) {
+        HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
+        return getHearingBookingData(prioritisedHearingBooking);
+    }
+
+    private Map<String, String> getHearingBookingData(HearingBooking hearingBooking) {
+        return Map.of(
             "hearingDate", dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG),
             "hearingVenue", hearingBooking.getVenue(),
             "preHearingAttendance", hearingBooking.getPreHearingAttendance(),
@@ -75,5 +109,28 @@ public class CaseDataExtractionService {
             .filter(Objects::nonNull)
             .map(childParty -> (childParty.getFirstName()) + " " + (childParty.getLastName()))
                 .collect(Collectors.joining(", "));
+    }
+
+    private List<Map<String, String>> prepareChildrenDetails(CaseData caseData) {
+        return caseData.getAllChildren()
+            .stream()
+            .map(Element::getValue)
+            .map(Child::getParty)
+            .map(child -> Map.of(
+                "name", child.getFirstName() + " " + child.getLastName(),
+                "gender", defaultIfEmpty(child.getGender(), "unknown"),
+                "dateOfBirth", child.getDateOfBirth().toString()))
+            .collect(toList());
+    }
+
+    private List<Map<String, String>> prepareDirections(CaseData caseData) {
+        return caseData.getStandardDirectionOrder().getDirections()
+            .stream()
+            .map(Element::getValue)
+            .map(direction -> Map.of(
+                "title", direction.getType() + " comply by: " +
+                    (direction.getCompleteBy() != null ? direction.getCompleteBy() : " unknown"),
+                "body", direction.getText()))
+            .collect(toList());
     }
 }

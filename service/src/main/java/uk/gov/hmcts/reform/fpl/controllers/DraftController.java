@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,23 +15,20 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 
 @Api
 @RestController
@@ -41,14 +37,17 @@ public class DraftController {
     private final ObjectMapper mapper;
     private final DocmosisDocumentGeneratorService documentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
+    private final CaseDataExtractionService caseDataExtractionService;
 
     @Autowired
     public DraftController(ObjectMapper mapper,
                            DocmosisDocumentGeneratorService documentGeneratorService,
-                           UploadDocumentService uploadDocumentService) {
+                           UploadDocumentService uploadDocumentService,
+                           CaseDataExtractionService caseDataExtractionService) {
         this.mapper = mapper;
         this.documentGeneratorService = documentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
+        this.caseDataExtractionService = caseDataExtractionService;
     }
 
     @PostMapping("/about-to-start")
@@ -143,63 +142,23 @@ public class DraftController {
         // add directions into their respective pre defined collections
         caseDetails.getData().putAll(directionsByRole);
 
+        Map<String, Object> templateData = caseDataExtractionService.getDraftStandardOrderDirectionTemplateData(caseData);
+
         DocmosisDocument docmosisDocument =
-            documentGeneratorService.generateDocmosisDocument(preparePlaceholders(caseData), DocmosisTemplates.SDO);
+            documentGeneratorService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
+
         byte[] bytes = docmosisDocument.getBytes();
 
         Document document = uploadDocumentService.uploadPDF(userId, authorization, bytes, "Draft.pdf");
 
-        Map<String, Object> data = caseDetails.getData();
-
-        data.put("sdo", ImmutableMap.<String, String>builder()
-            .put("document_url", document.links.self.href)
-            .put("document_binary_url", document.links.binary.href)
-            .put("document_filename", "Draft.pdf")
+        caseDetails.getData().put("sdo", DocumentReference.builder()
+            .url(document.links.self.href)
+            .binaryUrl(document.links.binary.href)
+            .filename("Draft.pdf")
             .build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
-    }
-
-    @SuppressWarnings("LineLength")
-    private Map<String, Object> preparePlaceholders(CaseData caseData) {
-        HearingBooking hearingBooking =
-            caseData.getHearingDetails() != null && caseData.getHearingDetails().get(0) != null ? caseData.getHearingDetails().get(0).getValue() : HearingBooking.builder().build();
-
-        return Map.of(
-            "familyManCaseId", defaultIfEmpty(caseData.getFamilyManCaseNumber(), "DEFAULT"),
-            "generationDateStr", defaultIfEmpty(LocalDate.now().toString(), "DEFAULT"),
-            "hearingVenue", defaultIfEmpty(hearingBooking.getVenue(), "DEFAULT"),
-            "hearingDate", defaultIfEmpty(hearingBooking.getDate() != null ? hearingBooking.getDate().toString() : "DEFAULT", "DEFAULT"),
-            "preHearingAttendance", defaultIfEmpty(hearingBooking.getPreHearingAttendance(), "DEFAULT"),
-            "hearingTime", defaultIfEmpty(hearingBooking.getTime(), "DEFAULT"),
-            "complianceDeadline", defaultIfEmpty(caseData.getDateSubmitted().plusWeeks(26).toString(), "DEFAULT"), //REFACTOR !!!
-            "children", prepareChildren(caseData), //REFACTOR !!!,
-            "directions", prepareDirections(caseData)
-        );
-    }
-
-    @SuppressWarnings("LineLength")
-    private List<Map<String, String>> prepareDirections(CaseData caseData) {
-        return caseData.getStandardDirectionOrder().getDirections()
-            .stream()
-            .map(Element::getValue)
-            .map(direction -> Map.of(
-                "title", direction.getType() + " comply by: " + (direction.getCompleteBy() != null ? direction.getCompleteBy() : " unknown"),
-                "body", direction.getText()))
-            .collect(toList());
-    }
-
-    private List<Map<String, String>> prepareChildren(CaseData caseData) {
-        return caseData.getAllChildren()
-            .stream()
-            .map(Element::getValue)
-            .map(Child::getParty)
-            .map(child -> Map.of(
-                "name", child.getFirstName() + " " + child.getLastName(),
-                "gender", defaultIfEmpty(child.getGender(), "unknown"),
-                "dateOfBirth", child.getDateOfBirth().toString()))
-            .collect(toList());
     }
 }
