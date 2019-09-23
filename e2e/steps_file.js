@@ -21,18 +21,20 @@ let baseUrl = process.env.URL || 'http://localhost:3451';
 module.exports = function () {
   return actor({
     async signIn(username, password) {
-      this.amOnPage(process.env.URL || 'http://localhost:3451');
-      this.waitForElement('#global-header');
+      await this.retryUntilExists(async () => {
+        this.amOnPage(process.env.URL || 'http://localhost:3451');
+        this.waitForElement('#global-header');
 
-      const user = await this.grabText('#user-name');
-      if (user !== undefined) {
-        if (user.toLowerCase().includes(username)) {
-          return;
+        const user = await this.grabText('#user-name');
+        if (user !== undefined) {
+          if (user.toLowerCase().includes(username)) {
+            return;
+          }
+          this.signOut();
         }
-        this.signOut();
-      }
 
-      loginPage.signIn(username, password);
+        loginPage.signIn(username, password);
+      }, '#sign-out');
     },
 
     async logInAndCreateCase(username, password) {
@@ -150,7 +152,7 @@ module.exports = function () {
         if (tryNumber > 1 && (await this.locateSelector(locator)).length > 0) {
           break;
         }
-        action();
+        await action();
         if (await this.waitForSelector(locator) != null) {
           break;
         }
