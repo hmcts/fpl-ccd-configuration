@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
@@ -187,13 +190,15 @@ public class DraftController {
             .stream()
             .map(Element::getValue)
             .map(direction -> Map.of(
-                "title", direction.getType() + " comply by: " + (direction.getCompleteBy() != null
-                    ? direction.getCompleteBy().format(DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy"))
-                    .replace("AM", "am")
-                    .replace("PM", "pm")
-                    : " unknown"),
+                "title", direction.getType() + " comply by: " + (direction.getCompleteBy() != null ? formatDate(direction) : " unknown"),
                 "body", direction.getText()))
             .collect(toList());
+    }
+
+    private String formatDate(@NotNull @Valid Direction direction) {
+        return direction.getCompleteBy().format(DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy"))
+            .replace("AM", "am")
+            .replace("PM", "pm");
     }
 
     private List<Map<String, String>> prepareChildren(CaseData caseData) {
