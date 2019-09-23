@@ -10,7 +10,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
     await I.enterMandatoryFields();
     caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
-    I.continueAndSubmit();
+    await I.completeEvent('Submit');
 
     // eslint-disable-next-line require-atomic-updates
     caseId = await I.grabTextFrom('.heading-h1');

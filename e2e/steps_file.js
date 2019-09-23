@@ -40,32 +40,16 @@ module.exports = function () {
       this.click('Create new case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       openApplicationEventPage.populateForm();
-      await this.continueAndSave();
+      await this.completeEvent('Save and continue');
     },
 
-    async continueAndSave() { // here
+    async completeEvent(button, changeDetails) {
       this.click('Continue');
       this.waitForElement('.check-your-answers');
-      await eventSummaryPage.submit('Save and continue');
-    },
-
-    continueAndProvideSummary(summary, description) {
-      this.click('Continue');
-      this.waitForElement('.check-your-answers');
-      eventSummaryPage.provideSummaryAndSubmit('Save and continue', summary, description);
-    },
-
-    continueAndSubmit() {
-      this.click('Continue');
-      this.waitForElement('.check-your-answers');
-      eventSummaryPage.submit('Submit');
-    },
-
-    seeCheckAnswers(checkAnswerTitle) {
-      this.click('Continue');
-      this.waitForElement('.check-your-answers');
-      this.see(checkAnswerTitle);
-      eventSummaryPage.submit('Save and continue');
+      if (changeDetails != null) {
+        eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
+      }
+      await eventSummaryPage.submit(button);
     },
 
     seeEventSubmissionConfirmation(event) {
@@ -122,19 +106,19 @@ module.exports = function () {
     async enterMandatoryFields () {
       caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
       ordersAndDirectionsNeededEventPage.checkCareOrder();
-      this.continueAndSave();
+      await this.completeEvent('Save and continue');
       caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
       enterHearingNeededEventPage.enterTimeFrame();
-      this.continueAndSave();
+      await this.completeEvent('Save and continue');
       caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
       enterApplicantEventPage.enterApplicantDetails(applicant);
-      this.continueAndSave();
+      await this.completeEvent('Save and continue');
       caseViewPage.goToNewActions(config.applicationActions.enterChildren);
       await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
-      this.continueAndSave();
+      await this.completeEvent('Save and continue');
       caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
       enterGroundsEventPage.enterThresholdCriteriaDetails();
-      this.continueAndSave();
+      await this.completeEvent('Save and continue');
       caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
       uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
       uploadDocumentsEventPage.uploadSocialWorkStatement(config.testFile);
@@ -142,7 +126,7 @@ module.exports = function () {
       uploadDocumentsEventPage.uploadCarePlan(config.testFile);
       uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
       uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
-      this.continueAndSave();
+      await this.completeEvent('Save and continue');
     },
 
     async addAnotherElementToCollection() {
@@ -164,7 +148,7 @@ module.exports = function () {
       const numberOfRetries = 3;
 
       for (let retryNumber = 1; retryNumber <= numberOfRetries; retryNumber++) {
-        await action();
+        action();
         if (await this.waitForSelector(locator) != null) {
           break;
         }

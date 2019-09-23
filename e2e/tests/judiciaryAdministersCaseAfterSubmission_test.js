@@ -11,7 +11,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
     await I.enterMandatoryFields();
     caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
-    I.continueAndSubmit();
+    await I.completeEvent('Submit');
 
     // eslint-disable-next-line require-atomic-updates
     caseId = await I.grabTextFrom('.heading-h1');
@@ -28,7 +28,7 @@ Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage,
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await I.addAnotherElementToCollection();
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
-  I.continueAndProvideSummary('summary', 'description');
+  await I.completeEvent('Save and continue', { summary: 'summary', description: 'description' });
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
   I.seeAnswerInTab(1, 'Hearing 1', 'Type of hearing', hearingDetails[0].caseManagement);
