@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -186,7 +187,11 @@ public class DraftController {
             .stream()
             .map(Element::getValue)
             .map(direction -> Map.of(
-                "title", direction.getType() + " comply by: " + (direction.getCompleteBy() != null ? direction.getCompleteBy() : " unknown"),
+                "title", direction.getType() + " comply by: " + (direction.getCompleteBy() != null
+                    ? direction.getCompleteBy().format(DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy"))
+                    .replace("AM", "am")
+                    .replace("PM", "pm")
+                    : " unknown"),
                 "body", direction.getText()))
             .collect(toList());
     }
