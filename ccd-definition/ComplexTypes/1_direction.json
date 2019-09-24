@@ -4,7 +4,7 @@
     "ID": "Direction",
     "ListElementCode": "type",
     "FieldType": "Text",
-    "ElementLabel": "Direction",
+    "ElementLabel": "Direction title",
     "SecurityClassification": "Public"
   },
   {
@@ -21,7 +21,8 @@
     "ID": "Direction",
     "ListElementCode": "text",
     "FieldType": "TextArea",
-    "ElementLabel": "Direction body",
+    "ElementLabel": "Description",
+    "HintText": "Check the description, you may need to add some details",
     "SecurityClassification": "Public",
     "FieldShowCondition": "readOnly!=\"Yes\""
   },
@@ -30,7 +31,8 @@
     "ID": "Direction",
     "ListElementCode": "completeBy",
     "FieldType": "DateTime",
-    "ElementLabel": "Complete by",
+    "ElementLabel": "Due date and time",
+    "HintText": "For example, 31 3 2016 2 30 00",
     "SecurityClassification": "Public"
   },
   {

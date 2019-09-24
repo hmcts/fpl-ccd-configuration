@@ -26,14 +26,15 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.groupingBy;
@@ -54,7 +55,8 @@ public class DraftController {
 
     public DraftController(ObjectMapper mapper,
                            DocmosisDocumentGeneratorService documentGeneratorService,
-                           UploadDocumentService uploadDocumentService, OrdersLookupService ordersLookupService) {
+                           UploadDocumentService uploadDocumentService,
+                           OrdersLookupService ordersLookupService) {
         this.mapper = mapper;
         this.documentGeneratorService = documentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
@@ -71,7 +73,7 @@ public class DraftController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        //pre populate standard directions
+        //pre populate all standard directions
         if (caseData.getAllParties() == null) {
             OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
 
@@ -80,18 +82,15 @@ public class DraftController {
                 .map(direction ->
                     Element.<Direction>builder()
                         .id(randomUUID())
-                        .value(Direction
-                            .builder()
+                        .value(Direction.builder()
                             .type(direction.getTitle())
                             .text(direction.getText())
                             .assignee(direction.getAssignee())
                             .readOnly(booleanToYesOrNo(direction.getDisplay().isShowDateOnly()))
-                            .build()
-                        )
+                            .build())
                         .build()
                 )
                 .collect(groupingBy(element -> element.getValue().getAssignee()));
-
 
             directions.forEach((key, value) -> caseDetails.getData().put(key, value));
         } else {
@@ -107,7 +106,7 @@ public class DraftController {
                 }
             });
 
-            caseDetails.getData().put("allParties", directions);
+            directions.forEach((key, value) -> caseDetails.getData().put(key, value));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -119,21 +118,6 @@ public class DraftController {
     public AboutToStartOrSubmitCallbackResponse midEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackrequest) {
-        return getAboutToStartOrSubmitCallbackResponse(authorization, userId, callbackrequest);
-    }
-
-    @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackrequest) {
-        return getAboutToStartOrSubmitCallbackResponse(authorization, userId, callbackrequest);
-    }
-
-    private AboutToStartOrSubmitCallbackResponse getAboutToStartOrSubmitCallbackResponse(
-        @RequestHeader("authorization") String authorization,
-        @RequestHeader("user-id") String userId,
         @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = addDirectionsToOrder(callbackrequest.getCaseDetails());
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -157,6 +141,8 @@ public class DraftController {
             .put("document_binary_url", document.links.binary.href)
             .put("document_filename", "Draft.pdf")
             .build());
+
+        System.out.println("caseDetails = " + caseDetails.getData());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

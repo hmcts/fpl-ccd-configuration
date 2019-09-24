@@ -13,7 +13,7 @@ import java.util.UUID;
 public class Direction {
     private final UUID id;
     private final String type;
-    private  String text;
+    private String text;
     private final String status;
     private final String assignee;
     private String readOnly;
