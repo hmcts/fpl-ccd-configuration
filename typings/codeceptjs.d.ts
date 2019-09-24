@@ -281,8 +281,8 @@ declare namespace CodeceptJS {
     navigateToUrl(url: string) : void,
     navigateToCaseDetails(caseId: string) : void,
     logInAndCreateCase(username: string, password: string) : void,
-    continueAndSave() : void,
-    continueAndSubmit() : void,
+    completeEvent(buttonLocator) : Promise<void>,
+    completeEvent(buttonLocator, changeDetails: { summary: string, description: string }) : Promise<void>,
     seeEventSubmissionConfirmation(event: string) : void,
     clickHyperlink(link: string, urlNavigatedTo: string) : void,
     seeDocument(title: string, name: string, status?: string, reason?: string) : void,
@@ -292,6 +292,8 @@ declare namespace CodeceptJS {
     say(msg: string) : void,
     retryStep(opts: string) : void,
     enterMandatoryFields() : void,
+    addAnotherElementToCollection(): void,
+    retryUntilExists(action: Function, locator: string) : void,
   }
 
   export interface config {
