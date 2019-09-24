@@ -5,6 +5,7 @@
     "CaseEventID": "draftSDO",
     "CaseFieldID": "allParties",
     "ListElementCode": "type",
+    "EventElementLabel": " ",
     "FieldDisplayOrder": 1,
     "DisplayContext": "READONLY"
   },

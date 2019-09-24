@@ -40,6 +40,7 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Api
 @RestController
@@ -93,20 +94,6 @@ public class DraftController {
                 .collect(groupingBy(element -> element.getValue().getAssignee()));
 
             directions.forEach((key, value) -> caseDetails.getData().put(key, value));
-        } else {
-
-            // need to repopulate readOnly data
-            List<Element<Direction>> directions = caseData.getStandardDirectionOrder().getDirections();
-
-            directions.forEach(direction -> {
-                if (direction.getValue().getType().equals("Mandatory order title")) {
-                    direction.getValue().setReadOnly("Yes");
-                } else {
-                    direction.getValue().setReadOnly("No");
-                }
-            });
-
-            directions.forEach((key, value) -> caseDetails.getData().put(key, value));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -123,7 +110,7 @@ public class DraftController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         caseData.getStandardDirectionOrder().getDirections().forEach(direction -> {
-            if (direction.getValue().getText() == null) {
+            if (isBlank(direction.getValue().getText())) {
                 direction.getValue().setText("Hardcoded hidden value");
             }
         });
@@ -153,16 +140,28 @@ public class DraftController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<Direction>> directions = new ArrayList<>();
-        directions.addAll(caseData.getAllParties());
-        directions.addAll(caseData.getCourtDirections());
-        directions.addAll(caseData.getLocalAuthorityDirections());
-        directions.addAll(caseData.getCafcassDirections());
-        directions.addAll(caseData.getOtherPartiesDirections());
-        directions.addAll(caseData.getParentsAndRespondentsDirections());
+        directions.addAll(addReadOnlyValuesToDirections(caseData.getAllParties()));
+        directions.addAll(addReadOnlyValuesToDirections(caseData.getCourtDirections()));
+        directions.addAll(addReadOnlyValuesToDirections(caseData.getLocalAuthorityDirections()));
+        directions.addAll(addReadOnlyValuesToDirections(caseData.getCafcassDirections()));
+        directions.addAll(addReadOnlyValuesToDirections(caseData.getOtherPartiesDirections()));
+        directions.addAll(addReadOnlyValuesToDirections(caseData.getParentsAndRespondentsDirections()));
 
         caseDetails.getData().put("standardDirectionOrder", Order.builder().directions(directions).build());
 
         return caseDetails;
+    }
+
+    private List<Element<Direction>> addReadOnlyValuesToDirections(List<Element<Direction>> directions) {
+        directions.forEach(direction -> {
+            if (direction.getValue().getType().equals("Mandatory order title")) {
+                direction.getValue().setReadOnly("Yes");
+            } else {
+                direction.getValue().setReadOnly("No");
+            }
+        });
+
+        return directions;
     }
 
     @SuppressWarnings("LineLength")
