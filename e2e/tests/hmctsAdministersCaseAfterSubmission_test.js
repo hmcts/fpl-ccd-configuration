@@ -119,14 +119,14 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
 Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, enterFamilyManCaseNumberEventPage, createNoticeOfProceedingsEventPage, addHearingBookingDetailsEventPage) => {
   caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID();
-  I.continueAndSave();
-  caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
+  await I.completeEvent('Save and continue');
+  await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
-  I.continueAndProvideSummary('summary', 'description');
-  caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
+  await I.completeEvent('Save and continue', { summary: 'summary', description: 'description' });
+  await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
   createNoticeOfProceedingsEventPage.checkC6();
   createNoticeOfProceedingsEventPage.checkC6A();
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeAnswerInTab('1', 'Notice of proceedings 1', 'File name', 'Notice_of_proceedings_c6.pdf');
