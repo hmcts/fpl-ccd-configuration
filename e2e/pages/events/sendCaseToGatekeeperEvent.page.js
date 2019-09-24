@@ -1,5 +1,5 @@
 
-const I = actor();
+const { I } = inject();
 
 module.exports = {
 
