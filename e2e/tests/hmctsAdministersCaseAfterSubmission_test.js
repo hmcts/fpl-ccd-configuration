@@ -122,6 +122,8 @@ Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseVi
   await I.completeEvent('Save and continue');
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
+  await I.addAnotherElementToCollection();
+  await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
   await I.completeEvent('Save and continue', { summary: 'summary', description: 'description' });
   await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
   createNoticeOfProceedingsEventPage.checkC6();
