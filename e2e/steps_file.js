@@ -159,15 +159,15 @@ module.exports = function () {
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
         output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
         if (tryNumber > 1 && (await this.locateSelector(locator)).length > 0) {
-          output.log(`retryUntilExists(${locator}): element found before retry #${tryNumber - 1} was executed`);
+          output.log(`retryUntilExists(${locator}): element found before try #${tryNumber} was executed`);
           break;
         }
         await action();
         if (await this.waitForSelector(locator) != null) {
-          output.log(`retryUntilExists(${locator}): element found after retry #${tryNumber - 1} was executed`);
+          output.log(`retryUntilExists(${locator}): element found after try #${tryNumber} was executed`);
           break;
         } else {
-          output.debug(`retryUntilExists(${locator}): element not found after retry #${tryNumber - 1} was executed`);
+          output.print(`retryUntilExists(${locator}): element not found after try #${tryNumber} was executed`);
         }
         if (tryNumber === maxNumberOfTries) {
           throw new Error(`Maximum number of tries (${maxNumberOfTries}) has been reached in search for ${locator}`);
