@@ -51,9 +51,9 @@ public class DraftController {
     private final UploadDocumentService uploadDocumentService;
     private final OrdersLookupService ordersLookupService;
 
+    //TODO: show hide entire direction for Is this direction needed?
 
     @Autowired
-
     public DraftController(ObjectMapper mapper,
                            DocmosisDocumentGeneratorService documentGeneratorService,
                            UploadDocumentService uploadDocumentService,
@@ -94,6 +94,15 @@ public class DraftController {
                 .collect(groupingBy(element -> element.getValue().getAssignee()));
 
             directions.forEach((key, value) -> caseDetails.getData().put(key, value));
+        } else {
+
+            // overwrites role collections with values from order object
+            //TODO: Yes / No is not accurate for each direction
+            Map<String, List<Element<Direction>>> directions = caseData.getStandardDirectionOrder().getDirections()
+                .stream()
+                .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee()));
+
+            directions.forEach((key, value) -> caseDetails.getData().put(key, value));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -117,8 +126,8 @@ public class DraftController {
 
         DocmosisDocument docmosisDocument =
             documentGeneratorService.generateDocmosisDocument(preparePlaceholders(caseData), DocmosisTemplates.SDO);
-        byte[] bytes = docmosisDocument.getBytes();
 
+        byte[] bytes = docmosisDocument.getBytes();
         Document document = uploadDocumentService.uploadPDF(userId, authorization, bytes, "Draft.pdf");
 
         Map<String, Object> data = caseDetails.getData();
@@ -129,7 +138,14 @@ public class DraftController {
             .put("document_filename", "Draft.pdf")
             .build());
 
-        System.out.println("caseDetails = " + caseDetails.getData());
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .build();
+    }
+
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = addDirectionsToOrder(callbackrequest.getCaseDetails());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -148,10 +164,13 @@ public class DraftController {
         directions.addAll(addReadOnlyValuesToDirections(caseData.getParentsAndRespondentsDirections()));
 
         caseDetails.getData().put("standardDirectionOrder", Order.builder().directions(directions).build());
+        caseDetails.getData().put("allParties", addReadOnlyValuesToDirections(caseData.getAllParties()));
 
         return caseDetails;
     }
 
+
+    //TODO: need better way of adding Yes / No
     private List<Element<Direction>> addReadOnlyValuesToDirections(List<Element<Direction>> directions) {
         directions.forEach(direction -> {
             if (direction.getValue().getType().equals("Mandatory order title")) {
