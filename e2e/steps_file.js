@@ -99,8 +99,9 @@ module.exports = function () {
 
       const currentUrl = await this.grabCurrentUrl();
       if (!currentUrl.replace(/#.+/g, '').endsWith(normalisedCaseId)) {
-        this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
-        this.waitForText('Sign Out');
+        await this.retryUntilExists(() => {
+          this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
+        }, '#sign-out');
       }
     },
 
