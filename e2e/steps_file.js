@@ -41,7 +41,7 @@ module.exports = function () {
       await this.signIn(username, password);
       this.click('Create new case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
-      openApplicationEventPage.populateForm();
+      await openApplicationEventPage.populateForm();
       await this.completeEvent('Save and continue');
     },
 
