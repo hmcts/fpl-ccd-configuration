@@ -1,4 +1,6 @@
 /* global process */
+const output = require('codeceptjs').output;
+
 const config = require('./config');
 
 const loginPage = require('./pages/login.page');
@@ -23,7 +25,9 @@ module.exports = function () {
     async signIn(username, password) {
       await this.retryUntilExists(async () => {
         this.amOnPage(process.env.URL || 'http://localhost:3451');
-        this.waitForElement('#global-header');
+        if (await this.waitForSelector('#global-header') == null) {
+          return;
+        }
 
         const user = await this.grabText('#user-name');
         if (user !== undefined) {
@@ -139,8 +143,11 @@ module.exports = function () {
     },
 
     /**
-     * Retries defined action util element described by the locator is present.
-     * Note: If element is not present after 4 tries (run + 3 retries) this step throws an error.
+     * Retries defined action util element described by the locator is present. If element is not present
+     * after 4 tries (run + 3 retries) this step throws an error.
+     *
+     * Warning: action logic should avoid framework steps that stop test execution upon step failure as it will
+     *          stop test execution even if there are retries still available. Catching step error does not help.
      *
      * @param action - an action that will be retried until either condition is met or max number of retries is reached
      * @param locator - locator for an element that is expected to be present upon successful execution of an action
@@ -150,15 +157,20 @@ module.exports = function () {
       const maxNumberOfTries = 4;
 
       for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
+        output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
         if (tryNumber > 1 && (await this.locateSelector(locator)).length > 0) {
+          output.log(`retryUntilExists(${locator}): element found before retry #${tryNumber - 1} was executed`);
           break;
         }
         await action();
         if (await this.waitForSelector(locator) != null) {
+          output.log(`retryUntilExists(${locator}): element found after retry #${tryNumber - 1} was executed`);
           break;
+        } else {
+          output.debug(`retryUntilExists(${locator}): element not found after retry #${tryNumber - 1} was executed`);
         }
         if (tryNumber === maxNumberOfTries) {
-          throw new Error(`Maximum number of tries (${maxNumberOfTries}) has been reached`);
+          throw new Error(`Maximum number of tries (${maxNumberOfTries}) has been reached in search for ${locator}`);
         }
       }
     },
