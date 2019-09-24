@@ -60,7 +60,7 @@ public final class ChildParty extends Party {
                       String firstName,
                       String lastName,
                       String organisationName,
-                      Date dateOfBirth,
+                      LocalDate dateOfBirth,
                       Address address,
                       EmailAddress email,
                       Telephone telephoneNumber,

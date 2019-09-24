@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -30,7 +31,7 @@ public final class RespondentParty extends Party {
                            String firstName,
                            String lastName,
                            String organisationName,
-                           Date dateOfBirth,
+                           LocalDate dateOfBirth,
                            Address address,
                            EmailAddress email,
                            Telephone telephoneNumber,

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -18,7 +19,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Service
 public class CaseDataExtractionService {
@@ -36,51 +37,44 @@ public class CaseDataExtractionService {
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }
 
+    // Validation within our frontend ensures that the following data is present
     public Map<String, Object> getNoticeOfProceedingTemplateData(CaseData caseData) {
-        // Validation within our frontend ensures that the following data is present
-        Map<String, String> extractedHearingBookingData = getPrioritisedHearingBookingData(caseData);
 
-        Map<String, Object> templateData =  Map.of(
-            "courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName(),
-            "familyManCaseNumber", caseData.getFamilyManCaseNumber(),
-            "todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG),
-            "applicantName", getFirstApplicantName(caseData),
-            "orderTypes", getOrderTypes(caseData),
-            "childrenNames", getAllChildrenNames(caseData)
-        );
+        Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
 
-        templateData.putAll(extractedHearingBookingData);
-
-        return templateData;
+        return ImmutableMap.<String, Object>builder()
+            .put("courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
+            .put("todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
+            .put("applicantName", getFirstApplicantName(caseData))
+            .put("orderTypes", getOrderTypes(caseData))
+            .put("childrenNames", getAllChildrenNames(caseData))
+            .putAll(extractedHearingBookingData)
+            .build();
     }
 
     public Map<String, Object> getDraftStandardOrderDirectionTemplateData(CaseData caseData) {
-        Map<String, String> extractedHearingBookingData = getPrioritisedHearingBookingData(caseData);
+        Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
 
-        Map<String, Object> templateData = Map.of(
-            "familyManCaseId", caseData.getFamilyManCaseNumber(),
-            "generationDateStr",  dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG),
-            "complianceDeadline", dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), FormatStyle.LONG),
-            "children", prepareChildrenDetails(caseData),
-            "directions", prepareDirections(caseData)
-        );
-
-        templateData.putAll(extractedHearingBookingData);
-
-        return templateData;
+        return ImmutableMap.<String, Object>builder()
+            .put("familyManCaseId", caseData.getFamilyManCaseNumber())
+            .put("generationDateStr",  dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
+            .put("complianceDeadline", dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), FormatStyle.LONG))
+            .put("children", getChildrenDetails(caseData))
+//            .put("directions", getStandardOrderDirections(caseData))
+            .putAll(extractedHearingBookingData)
+            .build();
     }
 
-    private Map<String, String> getPrioritisedHearingBookingData(CaseData caseData) {
+    private Map<String, Object> getHearingBookingData(CaseData caseData) {
         HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
-        return getHearingBookingData(prioritisedHearingBooking);
-    }
 
-    private Map<String, String> getHearingBookingData(HearingBooking hearingBooking) {
-        return Map.of(
-            "hearingDate", dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG),
-            "hearingVenue", hearingBooking.getVenue(),
-            "preHearingAttendance", hearingBooking.getPreHearingAttendance(),
-            "hearingTime", hearingBooking.getTime()
+        return ImmutableMap.of(
+            "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),
+                FormatStyle.LONG),
+            "hearingVenue", prioritisedHearingBooking.getVenue(),
+            "preHearingAttendance", prioritisedHearingBooking.getPreHearingAttendance(),
+            "hearingTime", prioritisedHearingBooking.getTime()
         );
     }
 
@@ -102,35 +96,30 @@ public class CaseDataExtractionService {
     }
 
     private String getAllChildrenNames(CaseData caseData) {
+        return getChildrenDetails(caseData).stream()
+            .map(element -> element.get("name"))
+            .collect(Collectors.joining(", "));
+    }
+
+    private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
         return caseData.getAllChildren().stream()
             .map(Element::getValue)
-            .filter(Objects::nonNull)
             .map(Child::getParty)
-            .filter(Objects::nonNull)
-            .map(childParty -> (childParty.getFirstName()) + " " + (childParty.getLastName()))
-                .collect(Collectors.joining(", "));
-    }
-
-    private List<Map<String, String>> prepareChildrenDetails(CaseData caseData) {
-        return caseData.getAllChildren()
-            .stream()
-            .map(Element::getValue)
-            .map(Child::getParty)
-            .map(child -> Map.of(
+            .map(child -> ImmutableMap.of(
                 "name", child.getFirstName() + " " + child.getLastName(),
-                "gender", defaultIfEmpty(child.getGender(), "unknown"),
-                "dateOfBirth", child.getDateOfBirth().toString()))
+                "gender", defaultIfNull(child.getGender(), "unknown"),
+                "dateOfBirth", "unknown"))
             .collect(toList());
     }
 
-    private List<Map<String, String>> prepareDirections(CaseData caseData) {
-        return caseData.getStandardDirectionOrder().getDirections()
-            .stream()
-            .map(Element::getValue)
-            .map(direction -> Map.of(
-                "title", direction.getType() + " comply by: " +
-                    (direction.getCompleteBy() != null ? direction.getCompleteBy() : " unknown"),
-                "body", direction.getText()))
-            .collect(toList());
-    }
+//    private List<Map<String, String>> getStandardOrderDirections(CaseData caseData) {
+//        return caseData.getStandardDirectionOrder().getDirections()
+//            .stream()
+//            .map(Element::getValue)
+//            .map(direction -> ImmutableMap.of(
+//                "title", direction.getType() + " comply by: " +
+//                    (direction.getCompleteBy() != null ? direction.getCompleteBy() : " unknown"),
+//                "body", direction.getText()))
+//            .collect(toList());
+//    }
 }

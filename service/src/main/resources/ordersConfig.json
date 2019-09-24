@@ -1,0 +1,67 @@
+{
+  "type": "standardDirectionOrder",
+  "language": "ENGLISH",
+  "service": "FPL",
+  "directions": [
+    {
+      "title": "Request permission for expert evidence",
+      "text": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts. ",
+      "assignee": "allParties",
+      "display": {
+        "templateDateFormat": "XX",
+        "directionRemovable": false,
+        "showDateOnly": true
+      }
+    },
+    {
+      "title": "Serve application and documents",
+      "text": "Give all parties access to all documents sent to the court, including:\n\n• the application form\n• annex documents\n• evidential checklist documents\n• any documents sent later on\n",
+      "assignee": "localAuthorityDirections",
+      "display": {
+        "templateDateFormat": "XX",
+        "directionRemovable": false,
+        "showDateOnly": false
+      }
+    },
+    {
+      "title": "Send response to threshold statement to all parties",
+      "text": "Send a written statement to the court and all parties, showing:\n\n• the parents’ response to the local authority’s threshold statement\n• the parents’ proposals for placing the children, immediately and long-term\n• whether they agree to a family group conference if one has not taken place yet\n\nIf the parents do not do this, the court can assume they do not disagree with allegations in the threshold statement.\n",
+      "assignee": "parentsAndRespondentsDirections",
+      "display": {
+        "templateDateFormat": "XX",
+        "directionRemovable": false,
+        "showDateOnly": true
+      }
+    },
+    {
+      "title": "Arrange an advocates’ meeting",
+      "text": "All of the advocates who will appear at the related hearing must attend. ",
+      "assignee": "cafcassDirections",
+      "display": {
+        "templateDateFormat": "XX",
+        "directionRemovable": false,
+        "showDateOnly": true
+      }
+    },
+    {
+      "title": "Object to a request for disclosure",
+      "text": "If you object to the disclosure request, attend the case management hearing or write to the court to explain your objection.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court’s permission.\n",
+      "assignee": "otherPartiesDirections",
+      "display": {
+        "templateDateFormat": "XX",
+        "directionRemovable": false,
+        "showDateOnly": true
+      }
+    },
+    {
+      "title": "Arrange interpreters",
+      "text": "At all hearings, the court must arrange an interpreter for respondents who need one in a language they understand.",
+      "assignee": "courtDirections",
+      "display": {
+        "templateDateFormat": "XX",
+        "directionRemovable": true,
+        "showDateOnly": true
+      }
+    }
+  ]
+}

@@ -40,32 +40,15 @@ module.exports = function () {
       this.click('Create new case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
       openApplicationEventPage.populateForm();
-      this.continueAndSave();
+      await this.completeEvent('Save and continue');
     },
 
-    continueAndSave() {
-      this.click('Continue');
-      this.waitForElement('.check-your-answers');
-      eventSummaryPage.submit('Save and continue');
-    },
-
-    continueAndProvideSummary(summary, description) {
-      this.click('Continue');
-      this.waitForElement('.check-your-answers');
-      eventSummaryPage.provideSummaryAndSubmit('Save and continue', summary, description);
-    },
-
-    continueAndSubmit() {
-      this.click('Continue');
-      this.waitForElement('.check-your-answers');
-      eventSummaryPage.submit('Submit');
-    },
-
-    seeCheckAnswers(checkAnswerTitle) {
-      this.click('Continue');
-      this.waitForElement('.check-your-answers');
-      this.see(checkAnswerTitle);
-      eventSummaryPage.submit('Save and continue');
+    async completeEvent(button, changeDetails) {
+      await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
+      if (changeDetails != null) {
+        eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
+      }
+      await eventSummaryPage.submit(button);
     },
 
     seeEventSubmissionConfirmation(event) {
@@ -120,29 +103,29 @@ module.exports = function () {
     },
 
     async enterMandatoryFields () {
-      caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
+      await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
       ordersAndDirectionsNeededEventPage.checkCareOrder();
-      this.continueAndSave();
-      caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
+      await this.completeEvent('Save and continue');
+      await caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
       enterHearingNeededEventPage.enterTimeFrame();
-      this.continueAndSave();
-      caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
+      await this.completeEvent('Save and continue');
+      await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
       enterApplicantEventPage.enterApplicantDetails(applicant);
-      this.continueAndSave();
-      caseViewPage.goToNewActions(config.applicationActions.enterChildren);
+      await this.completeEvent('Save and continue');
+      await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
       await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
-      this.continueAndSave();
-      caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
+      await this.completeEvent('Save and continue');
+      await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
       enterGroundsEventPage.enterThresholdCriteriaDetails();
-      this.continueAndSave();
-      caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+      await this.completeEvent('Save and continue');
+      await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
       uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
       uploadDocumentsEventPage.uploadSocialWorkStatement(config.testFile);
       uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
       uploadDocumentsEventPage.uploadCarePlan(config.testFile);
       uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
       uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
-      this.continueAndSave();
+      await this.completeEvent('Save and continue');
     },
 
     async addAnotherElementToCollection() {
@@ -150,6 +133,31 @@ module.exports = function () {
       this.click('Add new');
       this.waitNumberOfVisibleElements('.collection-title', numberOfElements + 1);
       this.wait(0.5); // add extra time to allow slower browsers to render all fields (just extra precaution)
+    },
+
+    /**
+     * Retries defined action util element described by the locator is present.
+     * Note: If element is not present after 4 tries (run + 3 retries) this step throws an error.
+     *
+     * @param action - an action that will be retried until either condition is met or max number of retries is reached
+     * @param locator - locator for an element that is expected to be present upon successful execution of an action
+     * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
+     */
+    async retryUntilExists(action, locator) {
+      const maxNumberOfTries = 4;
+
+      for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
+        if (tryNumber > 1 && (await this.locateSelector(locator)).length > 0) {
+          break;
+        }
+        action();
+        if (await this.waitForSelector(locator) != null) {
+          break;
+        }
+        if (tryNumber === maxNumberOfTries) {
+          throw new Error(`Maximum number of tries (${maxNumberOfTries}) has been reached`);
+        }
+      }
     },
   });
 };

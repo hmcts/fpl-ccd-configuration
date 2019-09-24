@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -56,6 +57,7 @@ public class CaseDataGeneratorHelper {
                     .party(ChildParty.builder()
                         .firstName("Bran")
                         .lastName("Stark")
+                        .gender("Male")
                         .build())
                     .build())
                 .build(),

@@ -6,6 +6,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.Address;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -17,7 +18,7 @@ public class Party {
     public final String lastName;
     public final String organisationName;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    public final Date dateOfBirth;
+    public final LocalDate dateOfBirth;
     public final Address address;
     public final EmailAddress email;
     public final Telephone telephoneNumber;

@@ -75,7 +75,7 @@ class CaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldMapCaseDataPropertiesToTemplatePlaceholderData() {
+    void shouldGenerateNoticeOfProceedingsTemplateData() {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority("example")
             .familyManCaseNumber("123")
@@ -100,6 +100,20 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("hearingVenue")).isEqualTo("Venue");
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("08.15am");
         assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
+    }
+
+    @Test
+    void shouldMapChildrenDetailsForDraftSDOTemplate() {
+        CaseData caseData = CaseData.builder()
+            .caseLocalAuthority("example")
+            .familyManCaseNumber("123")
+            .children1(createPopulatedChildren())
+            .applicants(createPopulatedApplicants())
+            .hearingDetails(createHearingBookings())
+            .dateSubmitted(LocalDate.now())
+            .build();
+
+        Map<String, Object> templateData = caseDataExtractionService.getDraftStandardOrderDirectionTemplateData(caseData);
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {

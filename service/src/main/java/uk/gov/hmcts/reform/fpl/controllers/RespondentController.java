@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,7 @@ public class RespondentController {
             .map(Respondent::getParty)
             .map(Party::getDateOfBirth)
             .filter(Objects::nonNull)
-            .anyMatch(dob -> dob.after(new Date()))) {
+            .anyMatch(dob -> dob.isAfter(LocalDate.now()))) {
             errors.add("Date of birth cannot be in the future");
         }
 

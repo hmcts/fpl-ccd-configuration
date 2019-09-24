@@ -650,5 +650,23 @@
     "ID": "DirectionAssignees",
     "ListElementCode": "allParties",
     "ListElement": "All parties"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionAssignees",
+    "ListElementCode": "parentsAndRespondentsDirections",
+    "ListElement": "Parents and other respondents"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionAssignees",
+    "ListElementCode": "otherPartiesDirections",
+    "ListElement": "Other parties"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionAssignees",
+    "ListElementCode": "courtDirections",
+    "ListElement": "Court directions"
   }
 ]

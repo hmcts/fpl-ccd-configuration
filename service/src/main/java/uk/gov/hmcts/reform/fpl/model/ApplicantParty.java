@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.TelephoneContacts;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasContactDirection;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasTelephoneOrMobile;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.validation.Valid;
@@ -43,7 +44,7 @@ public class ApplicantParty extends Party implements TelephoneContacts {
                            String firstName,
                            String lastName,
                            String organisationName,
-                           Date dateOfBirth,
+                           LocalDate dateOfBirth,
                            Address address,
                            EmailAddress email,
                            Telephone telephoneNumber,
