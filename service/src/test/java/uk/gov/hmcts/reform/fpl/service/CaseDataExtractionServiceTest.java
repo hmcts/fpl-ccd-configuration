@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDE
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStandardDirectionOrders;
 
 @ExtendWith(SpringExtension.class)
 class CaseDataExtractionServiceTest {
@@ -34,6 +36,7 @@ class CaseDataExtractionServiceTest {
     private static final String COURT_EMAIL = "example@court.com";
     private static final String CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL);
     private static final LocalDate TODAYS_DATE = LocalDate.now();
+    private static final LocalDateTime TODAYS_DATE_TIME = LocalDateTime.now();
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
@@ -105,15 +108,49 @@ class CaseDataExtractionServiceTest {
     @Test
     void shouldMapChildrenDetailsForDraftSDOTemplate() {
         CaseData caseData = CaseData.builder()
-            .caseLocalAuthority("example")
             .familyManCaseNumber("123")
             .children1(createPopulatedChildren())
-            .applicants(createPopulatedApplicants())
             .hearingDetails(createHearingBookings())
             .dateSubmitted(LocalDate.now())
+            .standardDirectionOrder(createStandardDirectionOrders())
             .build();
 
         Map<String, Object> templateData = caseDataExtractionService.getDraftStandardOrderDirectionTemplateData(caseData);
+
+        List<Map<String, String>> expectedChildren = List.of(
+            Map.of(
+                "name", "Bran Stark",
+                "gender", "Male",
+                "dateOfBirth", dateFormatterService.formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG)),
+            Map.of(
+                "name", "Sansa Stark",
+                "gender", "unknown",
+                "dateOfBirth", "unknown")
+        );
+
+        // TODO
+        // Mock LocalDateTime.now()
+        List<Map<String, String>> expectedDirections = List.of(
+            Map.of(
+                "title", String.format("Test SDO type comply by: %s", TODAYS_DATE_TIME),
+                "body", "Test body 1"),
+            Map.of(
+                "title", String.format("Test SDO type comply by: %s", TODAYS_DATE_TIME),
+                "body", "Test body 2")
+        );
+
+        assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
+        assertThat(templateData.get("generationDateStr")).isEqualTo(dateFormatterService
+            .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
+        assertThat(templateData.get("complianceDeadline")).isEqualTo(dateFormatterService
+            .formatLocalDateToString(TODAYS_DATE.plusWeeks(26), FormatStyle.LONG));
+        assertThat(templateData.get("children")).isEqualTo(expectedChildren);
+        assertThat(templateData.get("hearingDate")).isEqualTo(dateFormatterService
+            .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
+        assertThat(templateData.get("hearingVenue")).isEqualTo("Venue");
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo("08.15am");
+        assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
+        assertThat(templateData.get("directions")).isEqualTo(expectedDirections);
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {

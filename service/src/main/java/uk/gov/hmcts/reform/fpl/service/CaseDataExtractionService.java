@@ -57,11 +57,11 @@ public class CaseDataExtractionService {
         Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
 
         return ImmutableMap.<String, Object>builder()
-            .put("familyManCaseId", caseData.getFamilyManCaseNumber())
+            .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("generationDateStr",  dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
             .put("complianceDeadline", dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), FormatStyle.LONG))
             .put("children", getChildrenDetails(caseData))
-//            .put("directions", getStandardOrderDirections(caseData))
+            .put("directions", getStandardOrderDirections(caseData))
             .putAll(extractedHearingBookingData)
             .build();
     }
@@ -108,18 +108,19 @@ public class CaseDataExtractionService {
             .map(child -> ImmutableMap.of(
                 "name", child.getFirstName() + " " + child.getLastName(),
                 "gender", defaultIfNull(child.getGender(), "unknown"),
-                "dateOfBirth", "unknown"))
+                "dateOfBirth", child.getDateOfBirth() == null ? "unknown":
+                    dateFormatterService.formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG)))
             .collect(toList());
     }
 
-//    private List<Map<String, String>> getStandardOrderDirections(CaseData caseData) {
-//        return caseData.getStandardDirectionOrder().getDirections()
-//            .stream()
-//            .map(Element::getValue)
-//            .map(direction -> ImmutableMap.of(
-//                "title", direction.getType() + " comply by: " +
-//                    (direction.getCompleteBy() != null ? direction.getCompleteBy() : " unknown"),
-//                "body", direction.getText()))
-//            .collect(toList());
-//    }
+    private List<Map<String, String>> getStandardOrderDirections(CaseData caseData) {
+        return caseData.getStandardDirectionOrder().getDirections()
+            .stream()
+            .map(Element::getValue)
+            .map(direction -> ImmutableMap.of(
+                "title", direction.getType() + " comply by: " +
+                    (direction.getCompleteBy() != null ? direction.getCompleteBy() : " unknown"),
+                "body", direction.getText()))
+            .collect(toList());
+    }
 }

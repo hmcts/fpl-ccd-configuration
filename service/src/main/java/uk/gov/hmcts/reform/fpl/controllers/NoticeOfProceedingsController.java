@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.interfaces.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -91,9 +93,9 @@ public class NoticeOfProceedingsController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
-            @RequestHeader(value = "authorization") String authorization,
-            @RequestHeader(value = "user-id") String userId,
-            @RequestBody @NotNull CallbackRequest callbackRequest) {
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestHeader(value = "user-id") String userId,
+        @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -144,8 +146,16 @@ public class NoticeOfProceedingsController {
     }
 
     private List<DocmosisTemplates> getProceedingTemplateTypes(CaseData caseData) {
-        return caseData.getProceedingTypes().stream()
-            .map(DocmosisTemplates::getFromProceedingType)
-            .collect(Collectors.toList());
+        ImmutableList.Builder<DocmosisTemplates> proceedingTypes = ImmutableList.builder();
+
+        if (caseData.getProceedingTypes().contains(ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES)) {
+            proceedingTypes.add(DocmosisTemplates.C6);
+        }
+
+        if (caseData.getProceedingTypes().contains(ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES)) {
+            proceedingTypes.add(DocmosisTemplates.C6A);
+        }
+
+        return proceedingTypes.build();
     }
 }

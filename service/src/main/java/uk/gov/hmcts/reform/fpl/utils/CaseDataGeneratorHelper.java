@@ -5,11 +5,13 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,6 +60,7 @@ public class CaseDataGeneratorHelper {
                         .firstName("Bran")
                         .lastName("Stark")
                         .gender("Male")
+                        .dateOfBirth(LocalDate.now())
                         .build())
                     .build())
                 .build(),
@@ -70,5 +73,28 @@ public class CaseDataGeneratorHelper {
                         .build())
                     .build())
                 .build());
+    }
+
+
+    public static Order createStandardDirectionOrders() {
+        return Order.builder()
+            .directions(ImmutableList.of(
+                Element.<Direction>builder()
+                    .id(UUID.randomUUID())
+                    .value(Direction.builder()
+                        .type("Test SDO type")
+                        .text("Test body 1")
+                        .completeBy(LocalDateTime.now())
+                        .build())
+                    .build(),
+                Element.<Direction>builder()
+                    .id(UUID.randomUUID())
+                    .value(Direction.builder()
+                        .type("Test SDO type")
+                        .text("Test body 2")
+                        .completeBy(LocalDateTime.now())
+                        .build())
+                    .build()
+            )).build();
     }
 }
