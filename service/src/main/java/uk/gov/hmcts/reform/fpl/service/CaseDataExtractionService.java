@@ -62,7 +62,8 @@ public class CaseDataExtractionService {
             .put("courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("generationDate",  dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
-            .put("complianceDeadline", dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), FormatStyle.LONG))
+            .put("complianceDeadline", dateFormatterService
+                .formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), FormatStyle.LONG))
             .put("children", getChildrenDetails(caseData))
             .put("directions", getStandardOrderDirections(caseData))
             .putAll(extractedHearingBookingData)
@@ -111,7 +112,7 @@ public class CaseDataExtractionService {
             .map(child -> ImmutableMap.of(
                 "name", child.getFirstName() + " " + child.getLastName(),
                 "gender", defaultIfNull(child.getGender(), "unknown"),
-                "dateOfBirth", child.getDateOfBirth() == null ? "unknown":
+                "dateOfBirth", child.getDateOfBirth() == null ? "unknown" :
                     dateFormatterService.formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG)))
             .collect(toList());
     }

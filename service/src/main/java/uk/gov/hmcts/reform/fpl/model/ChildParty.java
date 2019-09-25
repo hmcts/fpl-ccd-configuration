@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.validation.constraints.NotBlank;
 

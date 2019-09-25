@@ -17,8 +17,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 
-import java.time.ZonedDateTime;
-import java.util.Date;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,11 +30,13 @@ class RespondentMidEventControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final String ERROR_MESSAGE = "Date of birth cannot be in the future";
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     void shouldReturnDateOfBirthErrorsForRespondentWhenFutureDateOfBirth() throws Exception {
@@ -48,7 +49,7 @@ class RespondentMidEventControllerTest {
                             "id", "",
                             "value", Respondent.builder()
                                 .party(RespondentParty.builder()
-                                    .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
+                                    .dateOfBirth(LocalDate.now().plusDays(1))
                                     .build())
                                 .build()
                         )
@@ -73,7 +74,7 @@ class RespondentMidEventControllerTest {
                             "id", "",
                             "value", Respondent.builder()
                                 .party(RespondentParty.builder()
-                                    .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
+                                    .dateOfBirth(LocalDate.now().plusDays(1))
                                     .build())
                                 .build()
                         ),
@@ -81,7 +82,7 @@ class RespondentMidEventControllerTest {
                             "id", "",
                             "value", Respondent.builder()
                                 .party(RespondentParty.builder()
-                                    .dateOfBirth(Date.from(ZonedDateTime.now().plusDays(1).toInstant()))
+                                    .dateOfBirth(LocalDate.now().plusDays(1))
                                     .build())
                                 .build()
                         )
@@ -106,7 +107,7 @@ class RespondentMidEventControllerTest {
                             "id", "",
                             "value", Respondent.builder()
                                 .party(RespondentParty.builder()
-                                    .dateOfBirth(Date.from(ZonedDateTime.now().minusDays(1).toInstant()))
+                                    .dateOfBirth(LocalDate.now().minusDays(1))
                                     .build())
                                 .build()
                         )
@@ -126,11 +127,11 @@ class RespondentMidEventControllerTest {
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsString(request)))
+                .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andReturn();
 
-        return MAPPER.readValue(response.getResponse()
+        return objectMapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 }

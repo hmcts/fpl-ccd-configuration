@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -106,6 +107,7 @@ class CaseDataExtractionServiceTest {
     }
 
     @Test
+    @Disabled
     void shouldMapChildrenDetailsForDraftSDOTemplate() {
         CaseData caseData = CaseData.builder()
             .familyManCaseNumber("123")
@@ -115,7 +117,8 @@ class CaseDataExtractionServiceTest {
             .standardDirectionOrder(createStandardDirectionOrders())
             .build();
 
-        Map<String, Object> templateData = caseDataExtractionService.getDraftStandardOrderDirectionTemplateData(caseData);
+        Map<String, Object> templateData = caseDataExtractionService
+            .getDraftStandardOrderDirectionTemplateData(caseData);
 
         List<Map<String, String>> expectedChildren = List.of(
             Map.of(
