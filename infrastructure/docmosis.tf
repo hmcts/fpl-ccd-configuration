@@ -1,5 +1,5 @@
 provider "azurerm" {
-  alias: "docmosis"
+  alias = "docmosis"
   subscription_id = "${var.docmosis_subscription_id}"
 }
 
@@ -20,6 +20,3 @@ resource "azurerm_key_vault_secret" "docmosis-api-key" {
   value        = "${data.azurerm_key_vault_secret.docmosis-api-key.value}"
   key_vault_id =  "${module.key-vault.key_vault_id}"
 }
-
-
-
