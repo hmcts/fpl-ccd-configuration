@@ -24,7 +24,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
     await I.navigateToCaseDetails(caseId);
     caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
     sendCaseToGatekeeperEventPage.enterEmail();
-    I.continueAndSave();
+    await I.completeEvent('Save and continue');
     I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
     I.signOut();
 
