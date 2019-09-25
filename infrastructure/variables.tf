@@ -58,7 +58,6 @@ variable "docmosis_subscription_id" {
 
 variable "docmosis_resource_group" {
   default = "docmosis-iaas-dev-rg"
-
 }
 
 variable "docmosis_vault" {
