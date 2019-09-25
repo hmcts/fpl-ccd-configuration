@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.model.configuration;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.xhtmlrenderer.css.parser.property.PrimitivePropertyBuilders;
 
 @Data
 @Builder

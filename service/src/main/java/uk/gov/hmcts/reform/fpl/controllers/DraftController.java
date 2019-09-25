@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.groupingBy;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Api
 @RestController
 @RequestMapping("/callback/draft-SDO")
@@ -48,18 +50,13 @@ public class DraftController {
     public DraftController(ObjectMapper mapper,
                            DocmosisDocumentGeneratorService documentGeneratorService,
                            UploadDocumentService uploadDocumentService,
-                           OrdersLookupService ordersLookupService,
-                           CaseDataExtractionService caseDataExtractionService) {
+                           CaseDataExtractionService caseDataExtractionService,
+                           OrdersLookupService ordersLookupService) {
         this.mapper = mapper;
         this.documentGeneratorService = documentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
         this.ordersLookupService = ordersLookupService;
         this.caseDataExtractionService = caseDataExtractionService;
-
-    }
-
-    private String booleanToYesOrNo(boolean value) {
-        return value ? "Yes" : "No";
     }
 
     @PostMapping("/about-to-start")
@@ -68,7 +65,7 @@ public class DraftController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        //pre populate standard directions
+        //pre populate all standard directions
         if (caseData.getAllParties() == null) {
             OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
 
@@ -77,34 +74,17 @@ public class DraftController {
                 .map(direction ->
                     Element.<Direction>builder()
                         .id(randomUUID())
-                        .value(Direction
-                            .builder()
+                        .value(Direction.builder()
                             .type(direction.getTitle())
                             .text(direction.getText())
                             .assignee(direction.getAssignee())
                             .readOnly(booleanToYesOrNo(direction.getDisplay().isShowDateOnly()))
-                            .build()
-                        )
+                            .build())
                         .build()
                 )
                 .collect(groupingBy(element -> element.getValue().getAssignee()));
 
-
             directions.forEach((key, value) -> caseDetails.getData().put(key, value));
-        } else {
-
-            // need to repopulate readOnly data
-            List<Element<Direction>> directions = caseData.getStandardDirectionOrder().getDirections();
-
-            directions.forEach(direction -> {
-                if (direction.getValue().getType().equals("Mandatory order title")) {
-                    direction.getValue().setReadOnly("Yes");
-                } else {
-                    direction.getValue().setReadOnly("No");
-                }
-            });
-
-            caseDetails.getData().put("allParties", directions);
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -117,26 +97,11 @@ public class DraftController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackrequest) {
-        return getAboutToStartOrSubmitCallbackResponse(authorization, userId, callbackrequest);
-    }
-
-    @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackrequest) {
-        return getAboutToStartOrSubmitCallbackResponse(authorization, userId, callbackrequest);
-    }
-
-    private AboutToStartOrSubmitCallbackResponse getAboutToStartOrSubmitCallbackResponse(
-        @RequestHeader("authorization") String authorization,
-        @RequestHeader("user-id") String userId,
-        @RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = addDirectionsToOrder(callbackrequest.getCaseDetails());
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         caseData.getStandardDirectionOrder().getDirections().forEach(direction -> {
-            if (direction.getValue().getText() == null) {
+            if (isBlank(direction.getValue().getText())) {
                 direction.getValue().setText("Hardcoded hidden value");
             }
         });
@@ -147,9 +112,8 @@ public class DraftController {
         DocmosisDocument docmosisDocument =
             documentGeneratorService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
 
-        byte[] bytes = docmosisDocument.getBytes();
-
-        Document document = uploadDocumentService.uploadPDF(userId, authorization, bytes, "Draft.pdf");
+        Document document = uploadDocumentService.uploadPDF(userId, authorization, docmosisDocument.getBytes(),
+            "Draft.pdf");
 
         caseDetails.getData().put("sdo", DocumentReference.builder()
             .url(document.links.self.href)
@@ -166,15 +130,31 @@ public class DraftController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<Direction>> directions = new ArrayList<>();
-        directions.addAll(caseData.getAllParties());
-        directions.addAll(caseData.getCourtDirections());
-        directions.addAll(caseData.getLocalAuthorityDirections());
-        directions.addAll(caseData.getCafcassDirections());
-        directions.addAll(caseData.getOtherPartiesDirections());
-        directions.addAll(caseData.getParentsAndRespondentsDirections());
+        directions.addAll(addReadOnlyValuesToDirections(caseData.getAllParties()));
+        directions.addAll(addReadOnlyValuesToDirections(caseData.getCourtDirections()));
+        directions.addAll(addReadOnlyValuesToDirections(caseData.getLocalAuthorityDirections()));
+        directions.addAll(addReadOnlyValuesToDirections(caseData.getCafcassDirections()));
+        directions.addAll(addReadOnlyValuesToDirections(caseData.getOtherPartiesDirections()));
+        directions.addAll(addReadOnlyValuesToDirections(caseData.getParentsAndRespondentsDirections()));
 
         caseDetails.getData().put("standardDirectionOrder", Order.builder().directions(directions).build());
 
         return caseDetails;
+    }
+
+    private List<Element<Direction>> addReadOnlyValuesToDirections(List<Element<Direction>> directions) {
+        directions.forEach(direction -> {
+            if (direction.getValue().getType().equals("Mandatory order title")) {
+                direction.getValue().setReadOnly("Yes");
+            } else {
+                direction.getValue().setReadOnly("No");
+            }
+        });
+
+        return directions;
+    }
+
+    private String booleanToYesOrNo(boolean value) {
+        return value ? "Yes" : "No";
     }
 }

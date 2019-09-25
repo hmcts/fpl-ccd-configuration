@@ -8,10 +8,12 @@ import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +59,9 @@ public class CaseDataExtractionService {
         Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
 
         return ImmutableMap.<String, Object>builder()
+            .put("courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
-            .put("generationDateStr",  dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
+            .put("generationDate",  dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
             .put("complianceDeadline", dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), FormatStyle.LONG))
             .put("children", getChildrenDetails(caseData))
             .put("directions", getStandardOrderDirections(caseData))
@@ -117,10 +120,16 @@ public class CaseDataExtractionService {
         return caseData.getStandardDirectionOrder().getDirections()
             .stream()
             .map(Element::getValue)
-            .map(direction -> ImmutableMap.of(
-                "title", direction.getType() + " comply by: " +
-                    (direction.getCompleteBy() != null ? direction.getCompleteBy() : " unknown"),
+            .map(direction -> Map.of(
+                "title", direction.getType() + " comply by: " + (direction.getCompleteBy() != null
+                    ? formatDate(direction) : " unknown"),
                 "body", direction.getText()))
             .collect(toList());
+    }
+
+    private String formatDate(Direction direction) {
+        return direction.getCompleteBy().format(DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy"))
+            .replace("AM", "am")
+            .replace("PM", "pm");
     }
 }
