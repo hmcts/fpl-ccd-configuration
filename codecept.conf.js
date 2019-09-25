@@ -103,7 +103,6 @@ exports.config = {
         stdout: '-',
         options: {
           reportDir: './output',
-          reportFilename: 'index',
           inlineAssets: true,
           json: false,
         },
