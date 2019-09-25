@@ -120,7 +120,7 @@ Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseVi
   await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
   createNoticeOfProceedingsEventPage.checkC6();
   createNoticeOfProceedingsEventPage.checkC6A();
-  await I.completeEvent('Save and continue');
+  await I.completeEvent('Save and continue', { summary: 'summary', description: 'description' });
   I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeAnswerInTab('1', 'Notice of proceedings 1', 'File name', 'Notice_of_proceedings_c6.pdf');
