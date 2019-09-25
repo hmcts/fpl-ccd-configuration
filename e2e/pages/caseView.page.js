@@ -1,4 +1,4 @@
-const I = actor();
+const { I } = inject();
 
 module.exports = {
 
@@ -13,11 +13,10 @@ module.exports = {
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
 
-  goToNewActions(actionSelected) {
+  async goToNewActions(actionSelected) {
     I.waitForElement(this.actionsDropdown);
     I.selectOption(this.actionsDropdown, actionSelected);
-    I.click(this.goButton);
-    I.waitForElement('ccd-case-event-trigger');
+    await I.retryUntilExists(() => I.click(this.goButton), 'ccd-case-event-trigger');
   },
 
   selectTab(tab) {

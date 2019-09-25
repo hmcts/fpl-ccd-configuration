@@ -5,7 +5,7 @@ plugins {
   id 'jacoco'
   id 'io.spring.dependency-management' version '1.0.8.RELEASE'
   id 'org.springframework.boot' version '2.1.8.RELEASE'
-  id 'com.github.ben-manes.versions' version '0.24.0'
+  id 'com.github.ben-manes.versions' version '0.25.0'
   id 'org.sonarqube' version '2.7.1'
 }
 
@@ -190,7 +190,7 @@ dependencies {
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
 
-  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.1.2.RELEASE'
+  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.1.3.RELEASE'
 
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -206,7 +206,7 @@ dependencies {
   compile group: 'uk.gov.hmcts.reform', name: 'core-case-data-store-client', version: '4.6.4'
   compile group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: '3.0.0'
 
-  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.14.2-RELEASE'
+  compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.0-RELEASE'
 
   compile group: 'com.google.guava', name: 'guava', version: '28.1-jre'
   compile group: 'commons-io', name: 'commons-io', version: '2.6'
@@ -217,7 +217,7 @@ dependencies {
     exclude group: 'junit', module: 'junit'
   }
   testCompile group: 'org.junit.jupiter', name :'junit-jupiter', version: '5.4.2'
-  testCompile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.16'
+  testCompile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.17'
 
   integrationTestCompile configurations.testRuntime {
     exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'

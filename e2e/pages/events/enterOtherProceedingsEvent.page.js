@@ -1,4 +1,4 @@
-const I = actor();
+const { I } = inject();
 
 module.exports = {
   fields: function(index) {
@@ -24,12 +24,6 @@ module.exports = {
         no: `#proceeding_${index}sameGuardianNeeded-No`,
       },
     };
-  },
-
-  addProceedingButton: 'Add new',
-
-  addNewProceeding() {
-    I.click(this.addProceedingButton);
   },
 
   selectYesForProceeding() {

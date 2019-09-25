@@ -1,4 +1,6 @@
 /* global process */
+const output = require('codeceptjs').output;
+
 const config = require('./config');
 
 const loginPage = require('./pages/login.page');
@@ -21,44 +23,38 @@ let baseUrl = process.env.URL || 'http://localhost:3451';
 module.exports = function () {
   return actor({
     async signIn(username, password) {
-      this.amOnPage(process.env.URL || 'http://localhost:3451');
-      this.waitForElement('#global-header');
-
-      const user = await this.grabText('#user-name');
-      if (user !== undefined) {
-        if (user.toLowerCase().includes(username)) {
+      await this.retryUntilExists(async () => {
+        this.amOnPage(process.env.URL || 'http://localhost:3451');
+        if (await this.waitForSelector('#global-header') == null) {
           return;
         }
-        this.signOut();
-      }
 
-      loginPage.signIn(username, password);
+        const user = await this.grabText('#user-name');
+        if (user !== undefined) {
+          if (user.toLowerCase().includes(username)) {
+            return;
+          }
+          this.signOut();
+        }
+
+        loginPage.signIn(username, password);
+      }, '#sign-out');
     },
 
     async logInAndCreateCase(username, password) {
       await this.signIn(username, password);
       this.click('Create new case');
       this.waitForElement(`#cc-jurisdiction > option[value="${config.definition.jurisdiction}"]`);
-      openApplicationEventPage.populateForm();
-      this.continueAndSave();
+      await openApplicationEventPage.populateForm();
+      await this.completeEvent('Save and continue');
     },
 
-    continueAndSave() {
-      this.click('Continue');
-      this.waitForElement('.check-your-answers');
-      eventSummaryPage.submit('Save and continue');
-    },
-
-    continueAndProvideSummary(summary, description) {
-      this.click('Continue');
-      this.waitForElement('.check-your-answers');
-      eventSummaryPage.provideSummaryAndSubmit('Save and continue', summary, description);
-    },
-
-    continueAndSubmit() {
-      this.click('Continue');
-      this.waitForElement('.check-your-answers');
-      eventSummaryPage.submit('Submit');
+    async completeEvent(button, changeDetails) {
+      await this.retryUntilExists(() => this.click('Continue'), '.check-your-answers');
+      if (changeDetails != null) {
+        eventSummaryPage.provideSummary(changeDetails.summary, changeDetails.description);
+      }
+      await eventSummaryPage.submit(button);
     },
 
     seeCheckAnswers(checkAnswerTitle) {
@@ -114,35 +110,76 @@ module.exports = function () {
 
       const currentUrl = await this.grabCurrentUrl();
       if (!currentUrl.replace(/#.+/g, '').endsWith(normalisedCaseId)) {
-        this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
-        this.waitForText('Sign Out');
+        await this.retryUntilExists(() => {
+          this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
+        }, '#sign-out');
       }
     },
 
     async enterMandatoryFields () {
-      caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
+      await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
       ordersAndDirectionsNeededEventPage.checkCareOrder();
-      this.continueAndSave();
-      caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
+      await this.completeEvent('Save and continue');
+      await caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
       enterHearingNeededEventPage.enterTimeFrame();
-      this.continueAndSave();
-      caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
+      await this.completeEvent('Save and continue');
+      await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
       enterApplicantEventPage.enterApplicantDetails(applicant);
-      this.continueAndSave();
-      caseViewPage.goToNewActions(config.applicationActions.enterChildren);
+      await this.completeEvent('Save and continue');
+      await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
       await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
-      this.continueAndSave();
-      caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
+      await this.completeEvent('Save and continue');
+      await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
       enterGroundsEventPage.enterThresholdCriteriaDetails();
-      this.continueAndSave();
-      caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+      await this.completeEvent('Save and continue');
+      await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
       uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
       uploadDocumentsEventPage.uploadSocialWorkStatement(config.testFile);
       uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
       uploadDocumentsEventPage.uploadCarePlan(config.testFile);
       uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
       uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
-      this.continueAndSave();
+      await this.completeEvent('Save and continue');
+    },
+
+    async addAnotherElementToCollection() {
+      const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
+      this.click('Add new');
+      this.waitNumberOfVisibleElements('.collection-title', numberOfElements + 1);
+      this.wait(0.5); // add extra time to allow slower browsers to render all fields (just extra precaution)
+    },
+
+    /**
+     * Retries defined action util element described by the locator is present. If element is not present
+     * after 4 tries (run + 3 retries) this step throws an error.
+     *
+     * Warning: action logic should avoid framework steps that stop test execution upon step failure as it will
+     *          stop test execution even if there are retries still available. Catching step error does not help.
+     *
+     * @param action - an action that will be retried until either condition is met or max number of retries is reached
+     * @param locator - locator for an element that is expected to be present upon successful execution of an action
+     * @returns {Promise<void>} - promise holding no result if resolved or error if rejected
+     */
+    async retryUntilExists(action, locator) {
+      const maxNumberOfTries = 4;
+
+      for (let tryNumber = 1; tryNumber <= maxNumberOfTries; tryNumber++) {
+        output.log(`retryUntilExists(${locator}): starting try #${tryNumber}`);
+        if (tryNumber > 1 && (await this.locateSelector(locator)).length > 0) {
+          output.log(`retryUntilExists(${locator}): element found before try #${tryNumber} was executed`);
+          break;
+        }
+        await action();
+        if (await this.waitForSelector(locator) != null) {
+          output.log(`retryUntilExists(${locator}): element found after try #${tryNumber} was executed`);
+          break;
+        } else {
+          output.print(`retryUntilExists(${locator}): element not found after try #${tryNumber} was executed`);
+        }
+        if (tryNumber === maxNumberOfTries) {
+          throw new Error(`Maximum number of tries (${maxNumberOfTries}) has been reached in search for ${locator}`);
+        }
+      }
     },
   });
 };

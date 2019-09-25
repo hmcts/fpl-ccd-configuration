@@ -1,4 +1,4 @@
-const I = actor();
+const { I } = inject();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
@@ -25,13 +25,6 @@ module.exports = {
         post: `#statementOfService_${index}_postOfficeAddress`,
       },
     };
-  },
-
-  addRecipientButton: '//*[@id="statementOfService"]/div/button[1]',
-
-  addRecipient() {
-    I.click(this.addRecipientButton);
-    I.wait(1);
   },
 
   async enterRecipientDetails(recipients) {

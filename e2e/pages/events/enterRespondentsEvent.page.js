@@ -1,4 +1,4 @@
-const I = actor();
+const { I } = inject();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
@@ -32,11 +32,6 @@ module.exports = {
         };
       },
     };
-  },
-  addRespondentButton: '#respondents1 > div:nth-child(1) > button:nth-child(2)',
-
-  addRespondent() {
-    I.click(this.addRespondentButton);
   },
 
   async enterRespondent(respondent) {

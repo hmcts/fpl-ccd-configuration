@@ -9,9 +9,9 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
-    caseViewPage.goToNewActions(config.applicationActions.submitCase);
+    await caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
-    I.continueAndSubmit();
+    await I.completeEvent('Submit');
 
     // eslint-disable-next-line require-atomic-updates
     caseId = await I.grabTextFrom('.heading-h1');
@@ -21,8 +21,8 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
   }
 });
 
-Scenario('local authority uploads documents', (I, caseViewPage, uploadDocumentsEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocumentsEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
   uploadDocumentsEventPage.uploadSocialWorkStatement(config.testFile);
   uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
@@ -31,7 +31,7 @@ Scenario('local authority uploads documents', (I, caseViewPage, uploadDocumentsE
   uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
   uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
   uploadDocumentsEventPage.uploadAdditionalDocuments(config.testFile);
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeDocument('Social work chronology', '', 'To follow', 'mock reason');
@@ -43,22 +43,22 @@ Scenario('local authority uploads documents', (I, caseViewPage, uploadDocumentsE
   I.seeDocument('Checklist document', 'mockFile.txt', 'Attached');
 });
 
-Scenario('local authority uploads court bundle', (I, uploadDocumentsEventPage, submitApplicationEventPage, caseViewPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+Scenario('local authority uploads court bundle', async (I, uploadDocumentsEventPage, submitApplicationEventPage, caseViewPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsEventPage.uploadCourtBundle(config.testFile);
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeDocument('Court bundle', 'mockFile.txt');
 });
 
 Scenario('local authority provides a statements of service', async (I, caseViewPage, loginPage, addStatementOfServiceEventPage) => {
-  caseViewPage.goToNewActions(config.administrationActions.addStatementOfService);
+  await caseViewPage.goToNewActions(config.administrationActions.addStatementOfService);
   await addStatementOfServiceEventPage.enterRecipientDetails(recipients[0]);
-  addStatementOfServiceEventPage.addRecipient();
+  await I.addAnotherElementToCollection();
   await addStatementOfServiceEventPage.enterRecipientDetails(recipients[1]);
   addStatementOfServiceEventPage.giveDeclaration();
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addStatementOfService);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'Recipients 1', 'Name of recipient', recipients[0].name);

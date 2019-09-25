@@ -9,9 +9,9 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
-    caseViewPage.goToNewActions(config.applicationActions.submitCase);
+    await caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
-    I.continueAndSubmit();
+    await I.completeEvent('Submit');
 
     // eslint-disable-next-line require-atomic-updates
     caseId = await I.grabTextFrom('.heading-h1');
@@ -33,20 +33,21 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('gatekeeper enters allocation decision', (I, caseViewPage, enterAllocationDecisionEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
+
+Scenario('gatekeeper enters allocation decision', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectAllocationDecision('Lay justices');
   enterAllocationDecisionEventPage.enterProposalReason('test');
-  I.seeCheckAnswers('Give reason');
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
 });
 
 Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
-  caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
+  await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
-  addHearingBookingDetailsEventPage.addHearing();
+  await I.addAnotherElementToCollection();
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
-  I.continueAndProvideSummary('summary', 'description');
+  await I.completeEvent('Save and continue', { summary: 'summary', description: 'description' });
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
   I.seeAnswerInTab(1, 'Hearing 1', 'Type of hearing', hearingDetails[0].caseManagement);

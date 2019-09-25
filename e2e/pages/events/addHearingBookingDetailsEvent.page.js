@@ -1,4 +1,4 @@
-const I = actor();
+const { I } = inject();
 
 module.exports = {
   fields: function (index) {
@@ -25,13 +25,6 @@ module.exports = {
         judgeName: `#hearingDetails_${index}_judgeName`,
       },
     };
-  },
-
-  addHearingButton: '//*[@id="hearingDetails"]/div/button[1]',
-
-  addHearing() {
-    I.click(this.addHearingButton);
-    I.wait(1);
   },
 
   async enterHearingDetails(hearingDetails) {

@@ -23,15 +23,15 @@ Before(async (I) => {
   }
 });
 
-Scenario('local authority changes case name', (I, caseViewPage, changeCaseNameEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.changeCaseName);
+Scenario('local authority changes case name', async (I, caseViewPage, changeCaseNameEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.changeCaseName);
   changeCaseNameEventPage.changeCaseName();
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.changeCaseName);
 });
 
-Scenario('local authority enters orders and directions', (I, caseViewPage, enterOrdersAndDirectionsNeededEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
+Scenario('local authority enters orders and directions', async (I, caseViewPage, enterOrdersAndDirectionsNeededEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
   enterOrdersAndDirectionsNeededEventPage.checkCareOrder();
   enterOrdersAndDirectionsNeededEventPage.checkInterimCareOrder();
   enterOrdersAndDirectionsNeededEventPage.checkSupervisionOrder();
@@ -53,7 +53,7 @@ Scenario('local authority enters orders and directions', (I, caseViewPage, enter
   enterOrdersAndDirectionsNeededEventPage.enterOrderDetails('Test');
   enterOrdersAndDirectionsNeededEventPage.checkDirections();
   enterOrdersAndDirectionsNeededEventPage.enterDirections('Test');
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOrdersAndDirectionsNeeded);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeAnswerInTab(1, 'Orders and directions needed', 'Which orders do you need?', ['Care order', 'Interim care order', 'Supervision order', 'Interim supervision order', 'Education supervision order', 'Emergency protection order', 'Other order under part 4 of the Children Act 1989']);
@@ -66,14 +66,14 @@ Scenario('local authority enters orders and directions', (I, caseViewPage, enter
   I.seeAnswerInTab(8, 'Orders and directions needed', 'Give details', 'Test');
 });
 
-Scenario('local authority enters hearing', (I, caseViewPage, enterHearingNeededEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
+Scenario('local authority enters hearing', async (I, caseViewPage, enterHearingNeededEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
   enterHearingNeededEventPage.enterTimeFrame();
   enterHearingNeededEventPage.enterHearingType();
   enterHearingNeededEventPage.enterWithoutNoticeHearing();
   enterHearingNeededEventPage.enterReducedHearing();
   enterHearingNeededEventPage.enterRespondentsAware();
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterHearingNeeded);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
   I.seeAnswerInTab(1, 'Hearing needed', 'When do you need a hearing?', enterHearingNeededEventPage.fields.timeFrame.sameDay);
@@ -85,7 +85,7 @@ Scenario('local authority enters hearing', (I, caseViewPage, enterHearingNeededE
 });
 
 Scenario('local authority enters children', async (I, caseViewPage, enterChildrenEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterChildren);
+  await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
   await enterChildrenEventPage.enterChildDetails('Bran', 'Stark', '01', '08', '2015');
   await enterChildrenEventPage.defineChildSituation('01', '11', '2017');
   await enterChildrenEventPage.enterAddress(children[0].address);
@@ -97,7 +97,7 @@ Scenario('local authority enters children', async (I, caseViewPage, enterChildre
   await enterChildrenEventPage.defineChildAdditionalNeeds();
   await enterChildrenEventPage.defineContactDetailsVisibility();
   await enterChildrenEventPage.enterLitigationIssues('Yes', 'mock reason');
-  enterChildrenEventPage.addChild();
+  await I.addAnotherElementToCollection();
   await enterChildrenEventPage.enterChildDetails('Susan', 'Wilson', '01', '07', '2016', 'Girl');
   await enterChildrenEventPage.defineChildSituation('02', '11', '2017');
   await enterChildrenEventPage.enterAddress(children[1].address);
@@ -109,7 +109,7 @@ Scenario('local authority enters children', async (I, caseViewPage, enterChildre
   await enterChildrenEventPage.defineChildAdditionalNeeds();
   await enterChildrenEventPage.defineContactDetailsVisibility();
   await enterChildrenEventPage.enterLitigationIssues('No');
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(3, 'Party', 'First name', 'Bran');
@@ -163,17 +163,17 @@ Scenario('local authority enters children', async (I, caseViewPage, enterChildre
 });
 
 Scenario('local authority enters respondents', async (I, caseViewPage, enterRespondentsEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
+  await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
   await enterRespondentsEventPage.enterRespondent(respondents[0]);
   await enterRespondentsEventPage.enterRelationshipToChild('mock reason');
   await enterRespondentsEventPage.enterContactDetailsHidden('Yes', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('Yes', 'mock reason');
-  enterRespondentsEventPage.addRespondent();
+  await I.addAnotherElementToCollection();
   await enterRespondentsEventPage.enterRespondent(respondents[1]);
   await enterRespondentsEventPage.enterRelationshipToChild('mock reason');
   await enterRespondentsEventPage.enterContactDetailsHidden('Yes', 'mock reason');
   await enterRespondentsEventPage.enterLitigationIssues('No');
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRespondents);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(3, 'Party', 'First name', respondents[0].firstName);
@@ -212,11 +212,11 @@ Scenario('local authority enters respondents', async (I, caseViewPage, enterResp
   I.seeAnswerInTab(13, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
 });
 
-Scenario('local authority enters applicant', (I, caseViewPage, enterApplicantEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
+Scenario('local authority enters applicant', async (I, caseViewPage, enterApplicantEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
   enterApplicantEventPage.enterApplicantDetails(applicant);
   enterApplicantEventPage.enterSolicitorDetails(solicitor);
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterApplicant);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(3, 'Party', 'Name of applicant', applicant.name);
@@ -241,17 +241,17 @@ Scenario('local authority enters applicant', (I, caseViewPage, enterApplicantEve
 });
 
 Scenario('local authority enters others to be given notice', async (I, caseViewPage, enterOthersEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterOthers);
+  await caseViewPage.goToNewActions(config.applicationActions.enterOthers);
   await enterOthersEventPage.enterOtherDetails(others[0]);
   await enterOthersEventPage.enterRelationshipToChild('Tim Smith');
   await enterOthersEventPage.enterContactDetailsHidden('Yes');
   await enterOthersEventPage.enterLitigationIssues('No');
-  enterOthersEventPage.addOther();
+  await I.addAnotherElementToCollection();
   await enterOthersEventPage.enterOtherDetails(others[1]);
   await enterOthersEventPage.enterRelationshipToChild('Tim Smith');
   await enterOthersEventPage.enterContactDetailsHidden('Yes');
   await enterOthersEventPage.enterLitigationIssues('Yes', 'mock reason');
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOthers);
   caseViewPage.selectTab(caseViewPage.tabs.casePeople);
   I.seeAnswerInTab(1, 'Person 1', 'Full name', 'John Smith');
@@ -288,35 +288,35 @@ Scenario('local authority enters others to be given notice', async (I, caseViewP
   I.seeAnswerInTab(11, 'Other person 1', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
 });
 
-Scenario('local authority enters grounds for non EPO application', (I, caseViewPage, enterGroundsForApplicationEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
+Scenario('local authority enters grounds for non EPO application', async (I, caseViewPage, enterGroundsForApplicationEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
   enterGroundsForApplicationEventPage.enterThresholdCriteriaDetails();
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterGrounds);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'How does this case meet the threshold criteria?', '', 'Not receiving care that would be reasonably expected from a parent');
 });
 
-Scenario('local authority enters grounds for EPO application', (I, caseViewPage, enterGroundsForApplicationEventPage, enterOrdersAndDirectionsNeededEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
+Scenario('local authority enters grounds for EPO application', async (I, caseViewPage, enterGroundsForApplicationEventPage, enterOrdersAndDirectionsNeededEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
   enterOrdersAndDirectionsNeededEventPage.checkEmergencyProtectionOrder();
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOrdersAndDirectionsNeeded);
-  caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
+  await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
   enterGroundsForApplicationEventPage.enterGroundsForEmergencyProtectionOrder();
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterGrounds);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'How are there grounds for an emergency protection order?', '', [enterGroundsForApplicationEventPage.fields.groundsForApplication.harmIfNotMoved, enterGroundsForApplicationEventPage.fields.groundsForApplication.harmIfMoved, enterGroundsForApplicationEventPage.fields.groundsForApplication.urgentAccessRequired]);
 });
 
-Scenario('local authority enters risk and harm to children', (I, caseViewPage, enterRiskAndHarmToChildrenEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterRiskAndHarmToChildren);
+Scenario('local authority enters risk and harm to children', async (I, caseViewPage, enterRiskAndHarmToChildrenEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.enterRiskAndHarmToChildren);
   enterRiskAndHarmToChildrenEventPage.completePhysicalHarm();
   enterRiskAndHarmToChildrenEventPage.completeEmotionalHarm();
   enterRiskAndHarmToChildrenEventPage.completeSexualAbuse();
   enterRiskAndHarmToChildrenEventPage.completeNeglect();
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterRiskAndHarmToChildren);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'Risks and harm to children', 'Physical harm including non-accidental injury', 'Yes');
@@ -327,12 +327,12 @@ Scenario('local authority enters risk and harm to children', (I, caseViewPage, e
   I.seeAnswerInTab(6, 'Risks and harm to children', 'Select all that apply', ['Past harm', 'Future risk of harm']);
 });
 
-Scenario('local authority enters factors affecting parenting', (I, caseViewPage, enterFactorsAffectingParentingEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterFactorsAffectingParenting);
+Scenario('local authority enters factors affecting parenting', async (I, caseViewPage, enterFactorsAffectingParentingEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.enterFactorsAffectingParenting);
   enterFactorsAffectingParentingEventPage.completeAlcoholOrDrugAbuse();
   enterFactorsAffectingParentingEventPage.completeDomesticViolence();
   enterFactorsAffectingParentingEventPage.completeAnythingElse();
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterFactorsAffectingParenting);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'Factors affecting parenting', 'Alcohol or drug abuse', 'Yes');
@@ -343,11 +343,11 @@ Scenario('local authority enters factors affecting parenting', (I, caseViewPage,
   I.seeAnswerInTab(6, 'Factors affecting parenting', 'Give details', 'mock reason');
 });
 
-Scenario('local authority enters international element', (I, caseViewPage, enterInternationalElementEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterInternationalElement);
+Scenario('local authority enters international element', async (I, caseViewPage, enterInternationalElementEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.enterInternationalElement);
   enterInternationalElementEventPage.fillForm();
   I.see('Give reason');
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterInternationalElement);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'International element', 'Are there any suitable carers outside of the UK?', 'Yes');
@@ -362,13 +362,13 @@ Scenario('local authority enters international element', (I, caseViewPage, enter
 });
 
 Scenario('local authority enters other proceedings',async (I, caseViewPage, enterOtherProceedingsEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterOtherProceedings);
+  await caseViewPage.goToNewActions(config.applicationActions.enterOtherProceedings);
   enterOtherProceedingsEventPage.selectNoForProceeding();
   enterOtherProceedingsEventPage.selectYesForProceeding();
   await enterOtherProceedingsEventPage.enterProceedingInformation(otherProceedings[0]);
-  enterOtherProceedingsEventPage.addNewProceeding();
+  await I.addAnotherElementToCollection();
   await enterOtherProceedingsEventPage.enterProceedingInformation(otherProceedings[1]);
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterOtherProceedings);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'Other proceedings', 'Are there any past or ongoing proceedings relevant to this case?', 'Yes');
@@ -392,23 +392,23 @@ Scenario('local authority enters other proceedings',async (I, caseViewPage, ente
   I.seeAnswerInTab(9, 'Additional proceedings 1', 'Is the same guardian needed?', 'Yes');
 });
 
-Scenario('local authority enters allocation proposal', (I, caseViewPage, enterAllocationProposalEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
+Scenario('local authority enters allocation proposal', async (I, caseViewPage, enterAllocationProposalEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
   enterAllocationProposalEventPage.selectAllocationProposal('Lay justices');
   enterAllocationProposalEventPage.enterProposalReason('test');
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationProposal);
 });
 
-Scenario('local authority enters attending hearing',(I, caseViewPage, enterAttendingHearingEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.enterAttendingHearing);
+Scenario('local authority enters attending hearing',async (I, caseViewPage, enterAttendingHearingEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.enterAttendingHearing);
   enterAttendingHearingEventPage.enterInterpreter();
   enterAttendingHearingEventPage.enterWelshProceedings();
   enterAttendingHearingEventPage.enterIntermediary();
   enterAttendingHearingEventPage.enterDisabilityAssistance();
   enterAttendingHearingEventPage.enterExtraSecurityMeasures();
   enterAttendingHearingEventPage.enterSomethingElse();
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAttendingHearing);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
   I.seeAnswerInTab(1, 'Attending the hearing', 'Interpreter', 'Yes');
@@ -423,8 +423,8 @@ Scenario('local authority enters attending hearing',(I, caseViewPage, enterAtten
   I.seeAnswerInTab(10, 'Attending the hearing', 'Give details', 'I need this for this person');
 });
 
-Scenario('local authority uploads documents', (I, caseViewPage, uploadDocumentsEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+Scenario('local authority uploads documents', async (I, caseViewPage, uploadDocumentsEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
   uploadDocumentsEventPage.uploadSocialWorkStatement(config.testFile);
   uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
@@ -433,7 +433,7 @@ Scenario('local authority uploads documents', (I, caseViewPage, uploadDocumentsE
   uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
   uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
   uploadDocumentsEventPage.uploadAdditionalDocuments(config.testFile);
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeDocument('Social work chronology', '', 'To follow', 'mock reason');
@@ -445,17 +445,17 @@ Scenario('local authority uploads documents', (I, caseViewPage, uploadDocumentsE
   I.seeDocument('Checklist document', 'mockFile.txt', 'Attached');
 });
 
-Scenario('local authority tries to submit without giving consent', (I, caseViewPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.submitCase);
+Scenario('local authority tries to submit without giving consent', async (I, caseViewPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   I.see(`I, ${config.swanseaLocalAuthorityUserOne.forename} ${config.swanseaLocalAuthorityUserOne.surname}, believe that the facts stated in this application are true.`);
   I.click('Continue');
   I.seeInCurrentUrl('/submitApplication');
 });
 
-Scenario('local authority submits after giving consent', (I, caseViewPage, submitApplicationEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.submitCase);
+Scenario('local authority submits after giving consent', async (I, caseViewPage, submitApplicationEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.giveConsent();
-  I.continueAndSubmit();
+  await I.completeEvent('Submit');
   I.seeEventSubmissionConfirmation(config.applicationActions.submitCase);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.see('council_v_Smith.pdf');
