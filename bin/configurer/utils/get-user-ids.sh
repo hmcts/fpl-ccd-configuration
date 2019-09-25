@@ -9,7 +9,7 @@ USERNAME=openidm
 HOSTNAME=localhost
 export PGPASSWORD=openidm
 
-userids=$(psql -U $USERNAME -d $DATABASE -h $HOSTNAME -p 5051 -t -c "SELECT fullobject-> 'userName' as userName, fullobject-> '_id' as id FROM managedobjects WHERE fullobject->>'sn' = '(local-authority)';")
+userids=$(docker run -e PGPASSWORD='openidm' --rm --network ccd-network postgres:11-alpine psql --host shared-db  --username openidm --tuples-only  --command "SELECT fullobject->'userName',fullobject->'_id',fullobject->'sn' from managedObjects WHERE fullobject->>'sn' = 'Tester';" openidm)
 
 echo user ids are: $userids
 
