@@ -59,6 +59,7 @@ public class NotifyGatekeeperController {
                         .type(direction.getTitle())
                         .text(direction.getText())
                         .assignee(direction.getAssignee())
+                        .directionRemovable(booleanToYesOrNo(direction.getDisplay().isDirectionRemovable()))
                         .readOnly(booleanToYesOrNo(direction.getDisplay().isShowDateOnly()))
                         .build())
                     .build()

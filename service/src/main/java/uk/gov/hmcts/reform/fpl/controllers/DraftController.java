@@ -33,9 +33,10 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Api
 @RestController
@@ -44,8 +45,6 @@ public class DraftController {
     private final ObjectMapper mapper;
     private final DocmosisDocumentGeneratorService documentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
-
-    //TODO: show hide entire direction for Is this direction needed?
 
     @Autowired
     public DraftController(ObjectMapper mapper,
@@ -56,6 +55,24 @@ public class DraftController {
         this.uploadDocumentService = uploadDocumentService;
     }
 
+    @PostMapping("/about-to-start")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if (!isNull(caseData.getStandardDirectionOrder())) {
+            Map<String, List<Element<Direction>>> directions = caseData.getStandardDirectionOrder().getDirections()
+                .stream()
+                .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee()));
+
+            directions.forEach((key, value) -> caseDetails.getData().put(key, value));
+        }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .build();
+    }
+
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse midEvent(
         @RequestHeader(value = "authorization") String authorization,
@@ -64,11 +81,10 @@ public class DraftController {
         CaseDetails caseDetails = addDirectionsToOrder(callbackrequest.getCaseDetails());
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseData.getStandardDirectionOrder().getDirections().forEach(direction -> {
-            if (isBlank(direction.getValue().getText())) {
-                direction.getValue().setText("Hardcoded hidden value");
-            }
-        });
+        caseData.getStandardDirectionOrder().getDirections()
+            .stream()
+            .filter(direction -> direction.getValue().getText().isBlank())
+            .forEach(direction -> direction.getValue().setText("Hardcoded hidden value"));
 
         DocmosisDocument docmosisDocument =
             documentGeneratorService.generateDocmosisDocument(preparePlaceholders(caseData), DocmosisTemplates.SDO);
@@ -91,10 +107,25 @@ public class DraftController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = addDirectionsToOrder(callbackrequest.getCaseDetails());
+        CaseDetails caseDetailsBefore = addDirectionsToOrder(callbackrequest.getCaseDetailsBefore());
+        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+
+        CaseDetails caseDetailsAfter = addDirectionsToOrder(callbackrequest.getCaseDetails());
+        CaseData caseData = mapper.convertValue(caseDetailsAfter.getData(), CaseData.class);
+
+        caseData.getStandardDirectionOrder().getDirections()
+            .forEach((direction) -> caseDataBefore.getStandardDirectionOrder().getDirections()
+                .stream()
+                .filter(oldDirection -> oldDirection.getId().equals(direction.getId()))
+                .forEach(oldDirection -> {
+                    direction.getValue().setReadOnly(oldDirection.getValue().getReadOnly());
+                    direction.getValue().setDirectionRemovable(oldDirection.getValue().getDirectionRemovable());
+                }));
+
+        caseDetailsAfter.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(caseDetailsAfter.getData())
             .build();
     }
 
@@ -102,16 +133,24 @@ public class DraftController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<Direction>> directions = new ArrayList<>();
-        directions.addAll(caseData.getAllParties());
-        directions.addAll(caseData.getCourtDirections());
-        directions.addAll(caseData.getLocalAuthorityDirections());
-        directions.addAll(caseData.getCafcassDirections());
-        directions.addAll(caseData.getOtherPartiesDirections());
-        directions.addAll(caseData.getParentsAndRespondentsDirections());
+        directions.addAll(filterDirectionsNotRequired(caseData.getAllParties()));
+        directions.addAll(filterDirectionsNotRequired(caseData.getCourtDirections()));
+        directions.addAll(filterDirectionsNotRequired(caseData.getLocalAuthorityDirections()));
+        directions.addAll(filterDirectionsNotRequired(caseData.getCafcassDirections()));
+        directions.addAll(filterDirectionsNotRequired(caseData.getOtherPartiesDirections()));
+        directions.addAll(filterDirectionsNotRequired(caseData.getParentsAndRespondentsDirections()));
 
         caseDetails.getData().put("standardDirectionOrder", Order.builder().directions(directions).build());
 
         return caseDetails;
+    }
+
+    // TODO: what do we do with directions where a user has said it is not needed? Currently are removed. This is wrong.
+    @SuppressWarnings("LineLength")
+    private List<Element<Direction>> filterDirectionsNotRequired(List<Element<Direction>> directions) {
+        return directions.stream()
+            .filter(directionElement -> directionElement.getValue().getDirectionNeeded() == null || directionElement.getValue().getDirectionNeeded().equals("Yes"))
+            .collect(toList());
     }
 
     @SuppressWarnings("LineLength")

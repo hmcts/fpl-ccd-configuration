@@ -17,5 +17,7 @@ public class Direction {
     private final String status;
     private final String assignee;
     private String readOnly;
+    private String directionRemovable;
+    private String directionNeeded;
     private LocalDateTime completeBy;
 }
