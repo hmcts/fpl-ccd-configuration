@@ -15,8 +15,8 @@ useridswithoutwhitespace=$(echo $userids | tr -d ' ')
 
 echo user ids are $useridswithoutwhitespace
 
-sed -i '' "s/31,32,33/$useridswithoutwhitespace/" "../../../service/src/main/resources/application.yaml"
-sed -i '' "s/31,32,33/$useridswithoutwhitespace/" "../../../build/resources/main/application.yaml"
+sed -i '' "s/31,32,33/$useridswithoutwhitespace/" "../../../service/src/main/resources/application-test.yaml"
+sed -i '' "s/31,32,33/$useridswithoutwhitespace/" "../../../build/resources/main/application-test.yaml"
 
 echo test script finished
 

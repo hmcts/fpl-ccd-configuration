@@ -15,7 +15,7 @@ public class LocalAuthorityUserLookupConfiguration {
 
     private final Map<String, List<String>> mapping;
 
-    public LocalAuthorityUserLookupConfiguration(@Value("${fpl.local_authority_user.mapping}") String config) {
+    public LocalAuthorityUserLookupConfiguration(@Value("${fpl-test.local_authority_user_test.mapping}") String config) {
         this.mapping = LookupConfigParser.parseStringListValue(config);
     }
 
