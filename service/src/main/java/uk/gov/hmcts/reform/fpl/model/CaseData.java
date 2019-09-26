@@ -48,6 +48,7 @@ public class CaseData {
     private final FactorsParenting factorsParenting;
     private final AllocationProposal allocationProposal;
     private final List<Element<Direction>> allParties;
+    private final List<Element<Direction>> allPartiesCustom;
     private final List<Element<Direction>> localAuthorityDirections;
     private final List<Element<Direction>> courtDirections;
     private final List<Element<Direction>> cafcassDirections;
