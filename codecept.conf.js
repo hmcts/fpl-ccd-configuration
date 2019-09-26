@@ -9,7 +9,7 @@ exports.config = {
   },
   helpers: {
     Puppeteer: {
-      show: process.env.SHOW_BROWSER_WINDOW || false,
+      show: (process.env.SHOW_BROWSER_WINDOW || 'false') === 'true',
       restart: false,
       waitForTimeout: 7500,
       chrome: {
@@ -17,7 +17,7 @@ exports.config = {
         args: process.env.PROXY_SERVER ? [
           `--proxy-server=${process.env.PROXY_SERVER}`,
         ] : [],
-        devtools: process.env.SHOW_BROWSER_WINDOW || false,
+        devtools: (process.env.SHOW_BROWSER_WINDOW || 'false') === 'true',
       },
       windowSize: '1280x960',
     },
@@ -84,7 +84,7 @@ exports.config = {
       fullPageScreenshots: true,
     },
     stepByStepReport: {
-      enabled: true,
+      enabled: (process.env.ENABLE_STEP_BY_STEP_REPORT || 'false') === 'true',
       ignoreSteps: [
         /grab*/,
         /locate*/,
