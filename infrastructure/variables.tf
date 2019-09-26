@@ -52,6 +52,14 @@ variable "managed_identity_object_id" {
   default = ""
 }
 
-variable "docmosis_vault_name" {
+variable "docmosis_subscription_id" {
+  default = "fa397675-6ddf-4cb0-b1fc-bc7df0e51bf4"
+}
+
+variable "docmosis_resource_group" {
+  default = "docmosis-iaas-dev-rg"
+}
+
+variable "docmosis_vault" {
   default = "docmosisiaasdevkv"
 }
