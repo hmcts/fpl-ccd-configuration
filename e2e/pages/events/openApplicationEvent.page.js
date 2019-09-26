@@ -1,4 +1,4 @@
-const I = actor();
+const { I } = inject();
 
 module.exports = {
 
@@ -13,11 +13,13 @@ module.exports = {
   startButton: 'Start',
   continueButton: 'Continue',
 
-  populateForm() {
-    I.selectOption(this.fields.jurisdiction, 'Family Public Law');
-    I.selectOption(this.fields.caseType, 'Care, supervision and EPOs');
-    I.selectOption(this.fields.event, 'Start application');
-    I.click(this.startButton);
+  async populateForm() {
+    await I.retryUntilExists(() => {
+      I.selectOption(this.fields.jurisdiction, 'Family Public Law');
+      I.selectOption(this.fields.caseType, 'Care, supervision and EPOs');
+      I.selectOption(this.fields.event, 'Start application');
+      I.click(this.startButton);
+    }, this.enterCaseNamePage.caseName);
     this.enterCaseName();
   },
 

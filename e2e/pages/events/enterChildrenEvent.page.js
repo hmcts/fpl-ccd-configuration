@@ -1,4 +1,4 @@
-const I = actor();
+const { I } = inject();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
@@ -43,11 +43,6 @@ module.exports = {
         litigationIssuesDetails: `#children1_${index}_party_litigationIssuesDetails`,
       },
     };
-  },
-  addChildButton: '#children1 > div:nth-child(1) > button:nth-child(2)',
-
-  addChild() {
-    I.click(this.addChildButton);
   },
 
   async enterChildDetails(firstName, lastName, day, month, year, gender = 'Boy') {

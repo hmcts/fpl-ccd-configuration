@@ -9,9 +9,9 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
-    caseViewPage.goToNewActions(config.applicationActions.submitCase);
+    await caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
-    I.continueAndSubmit();
+    await I.completeEvent('Submit');
 
     // eslint-disable-next-line require-atomic-updates
     caseId = await I.grabTextFrom('.heading-h1');
@@ -23,18 +23,18 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('HMCTS admin enters FamilyMan reference number', (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
-  caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
   enterFamilyManCaseNumberEventPage.enterCaseID();
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
 });
 
-Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage, enterOtherProceedingsEventPage) => {
-  function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {}) {
-    caseViewPage.goToNewActions(event);
+Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage, enterOtherProceedingsEventPage) => {
+  async function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {}) {
+    await caseViewPage.goToNewActions(event);
     I_doActionsOnEditPage();
-    I.continueAndProvideSummary(summary, description);
+    await I.completeEvent('Save and continue', { summary: summary, description: description });
     I.seeEventSubmissionConfirmation(event);
     I.see(summary);
     I.see(description);
@@ -43,30 +43,30 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
   const summaryText = 'Summary of change';
   const descriptionText = 'Description of change';
 
-  I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendChildren,
+  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendChildren,
     summaryText, descriptionText);
 
-  I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendRespondents,
+  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendRespondents,
     summaryText, descriptionText);
 
-  I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendOther,
+  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendOther,
     summaryText, descriptionText);
 
-  I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendInternationalElement,
+  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendInternationalElement,
     summaryText, descriptionText);
 
-  I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendOtherProceedings,
+  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendOtherProceedings,
     summaryText, descriptionText, () => enterOtherProceedingsEventPage.selectNoForProceeding());
 
-  I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendAttendingHearing,
+  await I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(config.administrationActions.amendAttendingHearing,
     summaryText, descriptionText);
 });
 
-Scenario('HMCTS admin uploads standard directions with other documents', (I, caseViewPage, uploadStandardDirectionsDocumentEventPage) => {
-  caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+Scenario('HMCTS admin uploads standard directions with other documents', async (I, caseViewPage, uploadStandardDirectionsDocumentEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadStandardDirectionsDocumentEventPage.uploadStandardDirections(config.testFile);
   uploadStandardDirectionsDocumentEventPage.uploadAdditionalDocuments(config.testFile);
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.see('mockFile.txt');
@@ -76,19 +76,19 @@ Scenario('HMCTS admin uploads standard directions with other documents', (I, cas
   I.seeAnswerInTab('2', 'Other documents 2', 'Upload a file', 'mockFile.txt');
 });
 
-Scenario('HMCTS admin sends email to gatekeeper with a link to the case', (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
-  caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
   sendCaseToGatekeeperEventPage.enterEmail();
-  I.continueAndSave();
+  await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 });
 
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
-  caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
+  await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
-  addHearingBookingDetailsEventPage.addHearing();
+  await I.addAnotherElementToCollection();
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
-  I.continueAndProvideSummary('summary', 'description');
+  await I.completeEvent('Save and continue', { summary: 'summary', description: 'description' });
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
   I.seeAnswerInTab(1, 'Hearing 1', 'Type of hearing', hearingDetails[0].caseManagement);
@@ -100,8 +100,8 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(6, 'Hearing 1', '', hearingDetails[0].type.welsh);
   I.seeAnswerInTab(6, 'Hearing 1', '', hearingDetails[0].type.somethingElse);
   I.seeAnswerInTab(7, 'Hearing 1', 'Give details', hearingDetails[0].giveDetails);
-  I.seeAnswerInTab(8, 'Hearing 1', 'Title', hearingDetails[0].judgeTitle);
-  I.seeAnswerInTab(9, 'Hearing 1', 'Full name', hearingDetails[0].fullName);
+  I.seeAnswerInTab(8, 'Hearing 1', 'Judge or magistrate\'s title', hearingDetails[0].judgeTitle);
+  I.seeAnswerInTab(9, 'Hearing 1', 'Judge or magistrate\'s last name', hearingDetails[0].lastName);
 
   I.seeAnswerInTab(1, 'Hearing 2', 'Type of hearing', hearingDetails[1].caseManagement);
   I.seeAnswerInTab(2, 'Hearing 2', 'Venue', hearingDetails[1].venue);
@@ -112,6 +112,6 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(6, 'Hearing 2', '', hearingDetails[1].type.welsh);
   I.seeAnswerInTab(6, 'Hearing 2', '', hearingDetails[1].type.somethingElse);
   I.seeAnswerInTab(7, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
-  I.seeAnswerInTab(8, 'Hearing 2', 'Title', hearingDetails[1].judgeTitle);
-  I.seeAnswerInTab(9, 'Hearing 2', 'Full name', hearingDetails[1].fullName);
+  I.seeAnswerInTab(8, 'Hearing 2', 'Judge or magistrate\'s title', hearingDetails[1].judgeTitle);
+  I.seeAnswerInTab(9, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
 });

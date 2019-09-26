@@ -256,7 +256,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "AllocationProposalList",
     "ListElementCode": "Lay justices",
-    "ListElement": "Lay justices",
+    "ListElement": "Lay justices (magistrates)",
     "DisplayOrder": 1
   },
   {
@@ -597,5 +597,26 @@
     "ListElementCode": "NONE",
     "ListElement": "None",
     "DisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SentBy",
+    "ListElementCode": "EMAIL",
+    "ListElement": "email",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SentBy",
+    "ListElementCode": "POST",
+    "ListElement": "post",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "SentBy",
+    "ListElementCode": "GIVEN_IN_PERSON",
+    "ListElement": "given in person",
+    "DisplayOrder": 3
   }
 ]
