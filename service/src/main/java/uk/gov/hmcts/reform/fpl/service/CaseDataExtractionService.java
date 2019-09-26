@@ -55,6 +55,8 @@ public class CaseDataExtractionService {
             .build();
     }
 
+    // TODO
+    // No need to pass in CaseData to each method. Refactor to only use required model
     public Map<String, Object> getDraftStandardOrderDirectionTemplateData(CaseData caseData) {
         Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
 
@@ -66,6 +68,7 @@ public class CaseDataExtractionService {
                 .formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), FormatStyle.LONG))
             .put("children", getChildrenDetails(caseData))
             .put("directions", getStandardOrderDirections(caseData))
+            .put("respondents", getRespondentsDetails(caseData))
             .putAll(extractedHearingBookingData)
             .build();
     }
@@ -99,6 +102,17 @@ public class CaseDataExtractionService {
             .orElse("");
     }
 
+    // TODO
+    // Respondents is not mandatory. Check with BA what we do when we do not have respondents
+    private List<Map<String, String>> getRespondentsDetails(CaseData caseData) {
+        return caseData.getRespondents1().stream()
+            .map(Element::getValue)
+            .map(respondent -> ImmutableMap.of(
+                "name", respondent.getFirstName() + " " + respondent.getLastName(),
+                "relationshipToChild", respondent.getRelationshipToChild()))
+            .collect(toList());
+    }
+
     private String getAllChildrenNames(CaseData caseData) {
         return getChildrenDetails(caseData).stream()
             .map(element -> element.get("name"))
@@ -110,6 +124,8 @@ public class CaseDataExtractionService {
             .map(Element::getValue)
             .map(Child::getParty)
             .map(child -> ImmutableMap.of(
+                // TODO
+                // Joining name is common theme. Move to util method and use static import
                 "name", child.getFirstName() + " " + child.getLastName(),
                 "gender", defaultIfNull(child.getGender(), "unknown"),
                 "dateOfBirth", child.getDateOfBirth() == null ? "unknown" :
@@ -128,6 +144,8 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
+    // TODO
+    // Move to seperate service
     private String formatDate(Direction direction) {
         return direction.getCompleteBy().format(DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy"))
             .replace("AM", "am")
