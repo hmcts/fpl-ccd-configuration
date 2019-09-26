@@ -51,3 +51,7 @@ variable "ccd_ui_base_url" {
 variable "managed_identity_object_id" {
   default = ""
 }
+
+variable "docmosis_vault_name" {
+  default = "docmosisiaasdevkv"
+}
