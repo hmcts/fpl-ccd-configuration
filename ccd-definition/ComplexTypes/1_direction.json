@@ -19,6 +19,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Direction",
+    "ListElementCode": "custom",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is this a custom direction?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "type CONTAINS \"DO NOT SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
     "ListElementCode": "directionRemovable",
     "FieldType": "YesOrNo",
     "ElementLabel": "Is this direction Needed?",

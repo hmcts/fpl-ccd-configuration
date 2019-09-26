@@ -29,6 +29,176 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "type",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "text",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "completeBy",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ParentsAndRespondentsDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "parentsAndRespondentsDirections",
+    "ListElementCode": "type",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ParentsAndRespondentsDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "parentsAndRespondentsDirections",
+    "ListElementCode": "text",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ParentsAndRespondentsDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "parentsAndRespondentsDirections",
+    "ListElementCode": "completeBy",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CafcassDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "cafcassDirections",
+    "ListElementCode": "type",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CafcassDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "cafcassDirections",
+    "ListElementCode": "text",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CafcassDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "cafcassDirections",
+    "ListElementCode": "completeBy",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "otherPartiesDirections",
+    "ListElementCode": "type",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "otherPartiesDirections",
+    "ListElementCode": "text",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "otherPartiesDirections",
+    "ListElementCode": "completeBy",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "type",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "readOnly",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "directionRemovable",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "directionNeeded",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "text",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CourtDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "completeBy",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
     "CaseEventID": "complyWithDirections",
     "CaseFieldID": "cafcassDirections",

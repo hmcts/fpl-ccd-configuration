@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ import java.util.Map;
 
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.groupingBy;
-
 import static java.util.stream.Collectors.toList;
 
 @Api
@@ -41,18 +39,15 @@ public class DraftController {
     private final DocmosisDocumentGeneratorService documentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final CaseDataExtractionService caseDataExtractionService;
-    private final OrdersLookupService ordersLookupService;
 
     @Autowired
     public DraftController(ObjectMapper mapper,
                            DocmosisDocumentGeneratorService documentGeneratorService,
                            UploadDocumentService uploadDocumentService,
-                           CaseDataExtractionService caseDataExtractionService,
-                           OrdersLookupService ordersLookupService) {
+                           CaseDataExtractionService caseDataExtractionService) {
         this.mapper = mapper;
         this.documentGeneratorService = documentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
-        this.ordersLookupService = ordersLookupService;
         this.caseDataExtractionService = caseDataExtractionService;
     }
 
@@ -64,6 +59,7 @@ public class DraftController {
         if (!isNull(caseData.getStandardDirectionOrder())) {
             Map<String, List<Element<Direction>>> directions = caseData.getStandardDirectionOrder().getDirections()
                 .stream()
+                .filter(x -> x.getValue().getCustom() == null)
                 .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee()));
 
             directions.forEach((key, value) -> caseDetails.getData().put(key, value));
@@ -84,7 +80,7 @@ public class DraftController {
 
         caseData.getStandardDirectionOrder().getDirections()
             .stream()
-            .filter(direction -> direction.getValue().getText().isBlank())
+            .filter(direction -> direction.getValue().getText() == null)
             .forEach(direction -> direction.getValue().setText("Hardcoded hidden value"));
 
         Map<String, Object> templateData = caseDataExtractionService
@@ -136,6 +132,11 @@ public class DraftController {
 
         List<Element<Direction>> directions = new ArrayList<>();
         directions.addAll(filterDirectionsNotRequired(caseData.getAllParties()));
+
+        if (!isNull(caseData.getAllPartiesCustom())) {
+            directions.addAll(assignCustomDirections(caseData.getAllPartiesCustom(), "allParties"));
+        }
+
         directions.addAll(filterDirectionsNotRequired(caseData.getCourtDirections()));
         directions.addAll(filterDirectionsNotRequired(caseData.getLocalAuthorityDirections()));
         directions.addAll(filterDirectionsNotRequired(caseData.getCafcassDirections()));
@@ -147,15 +148,23 @@ public class DraftController {
         return caseDetails;
     }
 
+    // TODO: need to add custom directions for other parties.
+    // TODO: this will be used to assign custom directions. Will probably be called when draft = final.
+    private List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions, String assignee) {
+        return directions.stream().map(element -> Element.<Direction>builder()
+            .value(element.getValue().toBuilder()
+                .assignee(assignee)
+                .custom("Yes")
+                .build())
+            .build())
+            .collect(toList());
+    }
+
     // TODO: what do we do with directions where a user has said it is not needed? Currently are removed. This is wrong.
     @SuppressWarnings("LineLength")
     private List<Element<Direction>> filterDirectionsNotRequired(List<Element<Direction>> directions) {
         return directions.stream()
             .filter(directionElement -> directionElement.getValue().getDirectionNeeded() == null || directionElement.getValue().getDirectionNeeded().equals("Yes"))
             .collect(toList());
-    }
-
-    private String booleanToYesOrNo(boolean value) {
-        return value ? "Yes" : "No";
     }
 }

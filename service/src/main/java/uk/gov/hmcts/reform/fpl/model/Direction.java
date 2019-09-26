@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Direction {
     private final UUID id;
@@ -19,5 +19,6 @@ public class Direction {
     private String readOnly;
     private String directionRemovable;
     private String directionNeeded;
+    private String custom;
     private LocalDateTime completeBy;
 }
