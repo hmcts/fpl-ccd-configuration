@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -30,21 +31,22 @@ import java.util.Map;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 
 @Api
 @RestController
 @RequestMapping("/callback/draft-SDO")
-public class DraftController {
+public class DraftOrdersController {
     private final ObjectMapper mapper;
     private final DocmosisDocumentGeneratorService documentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final CaseDataExtractionService caseDataExtractionService;
 
     @Autowired
-    public DraftController(ObjectMapper mapper,
-                           DocmosisDocumentGeneratorService documentGeneratorService,
-                           UploadDocumentService uploadDocumentService,
-                           CaseDataExtractionService caseDataExtractionService) {
+    public DraftOrdersController(ObjectMapper mapper,
+                                 DocmosisDocumentGeneratorService documentGeneratorService,
+                                 UploadDocumentService uploadDocumentService,
+                                 CaseDataExtractionService caseDataExtractionService) {
         this.mapper = mapper;
         this.documentGeneratorService = documentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
@@ -60,7 +62,7 @@ public class DraftController {
             Map<String, List<Element<Direction>>> directions = caseData.getStandardDirectionOrder().getDirections()
                 .stream()
                 .filter(x -> x.getValue().getCustom() == null)
-                .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee()));
+                .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee().getValue()));
 
             directions.forEach((key, value) -> caseDetails.getData().put(key, value));
         }
@@ -71,7 +73,7 @@ public class DraftController {
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse midEvent(
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackrequest) {
@@ -134,7 +136,7 @@ public class DraftController {
         directions.addAll(filterDirectionsNotRequired(caseData.getAllParties()));
 
         if (!isNull(caseData.getAllPartiesCustom())) {
-            directions.addAll(assignCustomDirections(caseData.getAllPartiesCustom(), "allParties"));
+            directions.addAll(assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES));
         }
 
         directions.addAll(filterDirectionsNotRequired(caseData.getCourtDirections()));
@@ -150,7 +152,7 @@ public class DraftController {
 
     // TODO: need to add custom directions for other parties.
     // TODO: this will be used to assign custom directions. Will probably be called when draft = final.
-    private List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions, String assignee) {
+    private List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions, DirectionAssignee assignee) {
         return directions.stream().map(element -> Element.<Direction>builder()
             .value(element.getValue().toBuilder()
                 .assignee(assignee)

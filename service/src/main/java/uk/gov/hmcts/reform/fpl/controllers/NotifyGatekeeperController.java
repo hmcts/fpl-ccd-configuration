@@ -64,7 +64,7 @@ public class NotifyGatekeeperController {
                         .build())
                     .build()
             )
-            .collect(groupingBy(element -> element.getValue().getAssignee()));
+            .collect(groupingBy(element -> element.getValue().getAssignee().getValue()));
 
         directions.forEach((key, value) -> caseDetails.getData().put(key, value));
 
