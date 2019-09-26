@@ -83,6 +83,15 @@ exports.config = {
       enabled: true,
       fullPageScreenshots: true,
     },
+    stepByStepReport: {
+      enabled: true,
+      ignoreSteps: [
+        /grab*/,
+        /locate*/,
+        /retry*/,
+        /wait*/,
+      ],
+    },
   },
   tests: './e2e/tests/*_test.js',
   mocha: {
