@@ -1,0 +1,3 @@
+fpl:
+  local_authority_user:
+    mapping: 'FPLA=>0;SA=>bb95132e-c7ae-4c8d-9884-902324a1a285,3f7a63d9-d5e2-4677-bdc9-ae4311da61dc,f2041740-2495-4c09-892a-59b2aa925631,be8b841e-4d15-4531-bfbd-5e9287365882,56dc3b89-5fc4-4e29-a36a-fcd8bcfb06fd,f589de6e-c97f-49df-b783-896a270569db;HN=>34,35'

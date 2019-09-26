@@ -1,3 +1,0 @@
-fpl-test:
-  local_authority_user_test:
-    mapping: 'FPLA=>0;SA=>89bdb6f3-7575-425c-b2b3-930a1bb597c7,b085c73f-7a93-4308-8204-7621a3cbe4c3,8d05233e-e424-4e84-8723-2b812b7f17ce,4519af4b-79b2-49db-a56b-5d3123ebf8c3,8ae3a38d-9e74-4a8d-9c21-35b72e0ed7e1,6b74d2b6-6181-4f98-ab58-cdf76a19a58d;HN=>34,35'
