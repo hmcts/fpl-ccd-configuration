@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,19 +62,35 @@ public class CaseDataExtractionService {
         Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
 
         return ImmutableMap.<String, Object>builder()
-            .put("courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
-            .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
+            .put("courtName", caseData.getCaseLocalAuthority() != null
+                ? hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName() : "unknown")
+            .put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), "unknown"))
             .put("generationDate",  dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
-            .put("complianceDeadline", dateFormatterService
-                .formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26), FormatStyle.LONG))
+            .put("complianceDeadline", caseData.getDateSubmitted() != null
+                ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26),
+                FormatStyle.LONG) : "unknown")
             .put("children", getChildrenDetails(caseData))
             .put("directions", getStandardOrderDirections(caseData))
-            .put("respondents", getRespondentsDetails(caseData))
+            .put("respondents", getRespondentsNameAndRelationship(caseData))
+            .put("applicantName", getFirstApplicantName(caseData))
             .putAll(extractedHearingBookingData)
             .build();
     }
 
     private Map<String, Object> getHearingBookingData(CaseData caseData) {
+
+        // TODO
+        // Rethink how we structure hearing. c6 c6a has defined hearing as flat properties
+        if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
+            return ImmutableMap.of(
+                "hearingDate", "unknown",
+                "hearingVenue", "unknown",
+                "preHearingAttendance", "unknown",
+                "hearingTime", "unknown",
+                "judgeName", "unknown"
+            );
+        }
+
         HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
 
         return ImmutableMap.of(
@@ -81,7 +98,9 @@ public class CaseDataExtractionService {
                 FormatStyle.LONG),
             "hearingVenue", prioritisedHearingBooking.getVenue(),
             "preHearingAttendance", prioritisedHearingBooking.getPreHearingAttendance(),
-            "hearingTime", prioritisedHearingBooking.getTime()
+            "hearingTime", prioritisedHearingBooking.getTime(),
+            "judgeName", prioritisedHearingBooking.getJudgeTitle() + " "
+                + prioritisedHearingBooking.getJudgeName()
         );
     }
 
@@ -92,6 +111,11 @@ public class CaseDataExtractionService {
     }
 
     private String getFirstApplicantName(CaseData caseData) {
+
+        if (caseData.getAllApplicants() == null || caseData.getAllApplicants().isEmpty()) {
+            return "unknown";
+        }
+
         return caseData.getAllApplicants().stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
@@ -104,12 +128,18 @@ public class CaseDataExtractionService {
 
     // TODO
     // Respondents is not mandatory. Check with BA what we do when we do not have respondents
-    private List<Map<String, String>> getRespondentsDetails(CaseData caseData) {
+    private List<Map<String, String>> getRespondentsNameAndRelationship(CaseData caseData) {
+
+        if (caseData.getRespondents1() == null || caseData.getRespondents1().isEmpty()) {
+            return ImmutableList.of();
+        }
+
         return caseData.getRespondents1().stream()
             .map(Element::getValue)
             .map(respondent -> ImmutableMap.of(
-                "name", respondent.getFirstName() + " " + respondent.getLastName(),
-                "relationshipToChild", respondent.getRelationshipToChild()))
+                "name", defaultIfNull(respondent.getFirstName(), "unknown") + " "
+                    + defaultIfNull(respondent.getLastName(), "unknown"),
+                "relationshipToChild", defaultIfNull(respondent.getRelationshipToChild(), "unknown")))
             .collect(toList());
     }
 
@@ -120,6 +150,11 @@ public class CaseDataExtractionService {
     }
 
     private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
+
+        if (caseData.getChildren1() == null) {
+            return ImmutableList.of();
+        }
+
         return caseData.getAllChildren().stream()
             .map(Element::getValue)
             .map(Child::getParty)
@@ -134,6 +169,12 @@ public class CaseDataExtractionService {
     }
 
     private List<Map<String, String>> getStandardOrderDirections(CaseData caseData) {
+
+        if (caseData.getStandardDirectionOrder() == null
+            || caseData.getStandardDirectionOrder().getDirections() == null) {
+            return ImmutableList.of();
+        }
+
         return caseData.getStandardDirectionOrder().getDirections()
             .stream()
             .map(Element::getValue)

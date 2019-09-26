@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
@@ -96,5 +97,26 @@ public class CaseDataGeneratorHelper {
                         .build())
                     .build()
             )).build();
+    }
+
+    public static List<Element<RespondentParty>> createRespondents() {
+        return ImmutableList.of(
+            Element.<RespondentParty>builder()
+                .id(UUID.randomUUID())
+                .value(RespondentParty.builder()
+                    .firstName("Timothy")
+                    .lastName("Jones")
+                    .relationshipToChild("Father")
+                    .build())
+                .build(),
+            Element.<RespondentParty>builder()
+                .id(UUID.randomUUID())
+                .value(RespondentParty.builder()
+                    .firstName("Sarah")
+                    .lastName("Simpson")
+                    .relationshipToChild("Mother")
+                    .build())
+                .build()
+        );
     }
 }

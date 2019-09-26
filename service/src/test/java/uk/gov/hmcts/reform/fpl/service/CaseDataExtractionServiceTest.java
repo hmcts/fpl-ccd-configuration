@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -26,6 +25,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDE
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStandardDirectionOrders;
 
 @ExtendWith(SpringExtension.class)
@@ -107,18 +107,36 @@ class CaseDataExtractionServiceTest {
     }
 
     @Test
-    @Disabled
-    void shouldMapChildrenDetailsForDraftSDOTemplate() {
+    void shouldMapEmptyCaseDataForDraftSDO() {
+        CaseData caseData = CaseData.builder().build();
+
+        Map<String, Object> templateData = caseDataExtractionService
+            .getDraftStandardOrderDirectionTemplateData(caseData);
+
+        assertThat(templateData.get("courtName")).isEqualTo("unknown");
+        assertThat(templateData.get("familyManCaseNumber")).isEqualTo("unknown");
+        assertThat(templateData.get("generationDate")).isEqualTo(dateFormatterService
+            .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
+        assertThat(templateData.get("complianceDeadline")).isEqualTo("unknown");
+        assertThat(templateData.get("children")).isEqualTo(ImmutableList.of());
+        assertThat(templateData.get("hearingDate")).isEqualTo("unknown");
+        assertThat(templateData.get("hearingVenue")).isEqualTo("unknown");
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo("unknown");
+        assertThat(templateData.get("hearingTime")).isEqualTo("unknown");
+        assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
+    }
+
+    @Test
+    void shouldMapCompleteCaseDataForSDOTemplate() {
         CaseData caseData = CaseData.builder()
+            .caseLocalAuthority("example")
             .familyManCaseNumber("123")
             .children1(createPopulatedChildren())
             .hearingDetails(createHearingBookings())
             .dateSubmitted(LocalDate.now())
+            .respondents1(createRespondents())
             .standardDirectionOrder(createStandardDirectionOrders())
             .build();
-
-        Map<String, Object> templateData = caseDataExtractionService
-            .getDraftStandardOrderDirectionTemplateData(caseData);
 
         List<Map<String, String>> expectedChildren = List.of(
             Map.of(
@@ -142,8 +160,23 @@ class CaseDataExtractionServiceTest {
                 "body", "Test body 2")
         );
 
+        List<Map<String, String>> expectedRespondents = List.of(
+            Map.of(
+                "name", "Timothy Jones",
+                "relationshipToChild", "Father"
+            ),
+            Map.of(
+                "name", "Sarah Simpson",
+                "relationshipToChild", "Mother"
+            )
+        );
+
+        Map<String, Object> templateData = caseDataExtractionService
+            .getDraftStandardOrderDirectionTemplateData(caseData);
+
+        assertThat(templateData.get("courtName")).isEqualTo("Example Court");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
-        assertThat(templateData.get("generationDateStr")).isEqualTo(dateFormatterService
+        assertThat(templateData.get("generationDate")).isEqualTo(dateFormatterService
             .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
         assertThat(templateData.get("complianceDeadline")).isEqualTo(dateFormatterService
             .formatLocalDateToString(TODAYS_DATE.plusWeeks(26), FormatStyle.LONG));
@@ -153,7 +186,7 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("hearingVenue")).isEqualTo("Venue");
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("08.15am");
         assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
-        assertThat(templateData.get("directions")).isEqualTo(expectedDirections);
+        assertThat(templateData.get("respondents")).isEqualTo(expectedRespondents);
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {
