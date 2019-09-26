@@ -38,6 +38,7 @@ class CaseDataExtractionServiceTest {
     private static final String CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL);
     private static final LocalDate TODAYS_DATE = LocalDate.now();
     private static final LocalDateTime TODAYS_DATE_TIME = LocalDateTime.now();
+    private static final String EMPTY_STATE_PLACEHOLDER = "BLANK - please complete";
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
@@ -113,16 +114,16 @@ class CaseDataExtractionServiceTest {
         Map<String, Object> templateData = caseDataExtractionService
             .getDraftStandardOrderDirectionTemplateData(caseData);
 
-        assertThat(templateData.get("courtName")).isEqualTo("unknown");
-        assertThat(templateData.get("familyManCaseNumber")).isEqualTo("unknown");
+        assertThat(templateData.get("courtName")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
+        assertThat(templateData.get("familyManCaseNumber")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
         assertThat(templateData.get("generationDate")).isEqualTo(dateFormatterService
             .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
-        assertThat(templateData.get("complianceDeadline")).isEqualTo("unknown");
+        assertThat(templateData.get("complianceDeadline")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
         assertThat(templateData.get("children")).isEqualTo(ImmutableList.of());
-        assertThat(templateData.get("hearingDate")).isEqualTo("unknown");
-        assertThat(templateData.get("hearingVenue")).isEqualTo("unknown");
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo("unknown");
-        assertThat(templateData.get("hearingTime")).isEqualTo("unknown");
+        assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
+        assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
+        assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
         assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
     }
 
@@ -145,8 +146,8 @@ class CaseDataExtractionServiceTest {
                 "dateOfBirth", dateFormatterService.formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG)),
             Map.of(
                 "name", "Sansa Stark",
-                "gender", "unknown",
-                "dateOfBirth", "unknown")
+                "gender", EMPTY_STATE_PLACEHOLDER,
+                "dateOfBirth", EMPTY_STATE_PLACEHOLDER)
         );
 
         // TODO

@@ -31,6 +31,8 @@ public class CaseDataExtractionService {
     private HearingBookingService hearingBookingService;
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
+    private static final String EMPTY_STATE_PLACEHOLDER = "BLANK - please complete";
+
     @Autowired
     public CaseDataExtractionService(DateFormatterService dateFormatterService,
                                      HearingBookingService hearingBookingService,
@@ -63,12 +65,13 @@ public class CaseDataExtractionService {
 
         return ImmutableMap.<String, Object>builder()
             .put("courtName", caseData.getCaseLocalAuthority() != null
-                ? hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName() : "unknown")
-            .put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), "unknown"))
+                ? hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName()
+                : EMPTY_STATE_PLACEHOLDER)
+            .put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_STATE_PLACEHOLDER))
             .put("generationDate",  dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
             .put("complianceDeadline", caseData.getDateSubmitted() != null
                 ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26),
-                FormatStyle.LONG) : "unknown")
+                FormatStyle.LONG) : EMPTY_STATE_PLACEHOLDER)
             .put("children", getChildrenDetails(caseData))
             .put("directions", getStandardOrderDirections(caseData))
             .put("respondents", getRespondentsNameAndRelationship(caseData))
@@ -83,11 +86,11 @@ public class CaseDataExtractionService {
         // Rethink how we structure hearing. c6 c6a has defined hearing as flat properties
         if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
             return ImmutableMap.of(
-                "hearingDate", "unknown",
-                "hearingVenue", "unknown",
-                "preHearingAttendance", "unknown",
-                "hearingTime", "unknown",
-                "judgeName", "unknown"
+                "hearingDate", EMPTY_STATE_PLACEHOLDER,
+                "hearingVenue", EMPTY_STATE_PLACEHOLDER,
+                "preHearingAttendance", EMPTY_STATE_PLACEHOLDER,
+                "hearingTime", EMPTY_STATE_PLACEHOLDER,
+                "judgeName", EMPTY_STATE_PLACEHOLDER
             );
         }
 
@@ -113,7 +116,7 @@ public class CaseDataExtractionService {
     private String getFirstApplicantName(CaseData caseData) {
 
         if (caseData.getAllApplicants() == null || caseData.getAllApplicants().isEmpty()) {
-            return "unknown";
+            return EMPTY_STATE_PLACEHOLDER;
         }
 
         return caseData.getAllApplicants().stream()
@@ -137,9 +140,10 @@ public class CaseDataExtractionService {
         return caseData.getRespondents1().stream()
             .map(Element::getValue)
             .map(respondent -> ImmutableMap.of(
-                "name", defaultIfNull(respondent.getFirstName(), "unknown") + " "
-                    + defaultIfNull(respondent.getLastName(), "unknown"),
-                "relationshipToChild", defaultIfNull(respondent.getRelationshipToChild(), "unknown")))
+                    "name", respondent.getFirstName() == null && respondent.getLastName() == null
+                    ? EMPTY_STATE_PLACEHOLDER : defaultIfNull(respondent.getFirstName(), "") + " "
+                    + defaultIfNull(respondent.getLastName(), ""),
+                "relationshipToChild", defaultIfNull(respondent.getRelationshipToChild(), EMPTY_STATE_PLACEHOLDER)))
             .collect(toList());
     }
 
@@ -162,8 +166,8 @@ public class CaseDataExtractionService {
                 // TODO
                 // Joining name is common theme. Move to util method and use static import
                 "name", child.getFirstName() + " " + child.getLastName(),
-                "gender", defaultIfNull(child.getGender(), "unknown"),
-                "dateOfBirth", child.getDateOfBirth() == null ? "unknown" :
+                "gender", defaultIfNull(child.getGender(), EMPTY_STATE_PLACEHOLDER),
+                "dateOfBirth", child.getDateOfBirth() == null ? EMPTY_STATE_PLACEHOLDER :
                     dateFormatterService.formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG)))
             .collect(toList());
     }
