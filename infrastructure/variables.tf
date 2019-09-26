@@ -1,12 +1,12 @@
 variable "subscription" {}
 
 variable "product" {
-  type    = "string"
+  type = "string"
 }
 
 variable "raw_product" {
   type    = "string"
-  default = "fpl" // jenkins-library overrides product for PRs and adds e.g. pr-1-fpl
+  default = "fpl"    // jenkins-library overrides product for PRs and adds e.g. pr-1-fpl
 }
 
 variable "component" {
@@ -51,7 +51,11 @@ variable "ccd_ui_base_url" {
 variable "managed_identity_object_id" {
   default = ""
 }
-
-variable "docmosis_vault_name" {
-  default = "docmosisiaasdevkv"
+variable "enable_ase" {
+  default = true
+}
+variable "appinsights_location" {
+  type        = "string"
+  default     = "West Europe"
+  description = "Location for Application Insights"
 }
