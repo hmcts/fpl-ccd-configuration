@@ -1,6 +1,0 @@
-spring:
-  profiles: local,user-mappings
-
-fpl:
-  local_authority_user:
-    mapping: 'FPLA=>0;SA=>31,32,33;HN=>34,35'
