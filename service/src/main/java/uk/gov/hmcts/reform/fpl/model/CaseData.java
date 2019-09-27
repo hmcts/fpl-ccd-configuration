@@ -50,10 +50,15 @@ public class CaseData {
     private final List<Element<Direction>> allParties;
     private final List<Element<Direction>> allPartiesCustom;
     private final List<Element<Direction>> localAuthorityDirections;
+    private final List<Element<Direction>> localAuthorityDirectionsCustom;
     private final List<Element<Direction>> courtDirections;
+    private final List<Element<Direction>> courtDirectionsCustom;
     private final List<Element<Direction>> cafcassDirections;
+    private final List<Element<Direction>> cafcassDirectionsCustom;
     private final List<Element<Direction>> otherPartiesDirections;
+    private final List<Element<Direction>> otherPartiesDirectionsCustom;
     private final List<Element<Direction>> parentsAndRespondentsDirections;
+    private final List<Element<Direction>> parentsAndRespondentsCustom;
     private final Order standardDirectionOrder;
 
     @NotNull(message = "You need to add details to hearing needed")

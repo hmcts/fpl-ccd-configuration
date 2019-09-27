@@ -32,6 +32,11 @@ import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 
 @Api
 @RestController
@@ -129,37 +134,62 @@ public class DraftOrdersController {
             .build();
     }
 
+    //TODO: refactor this method. Makes me want to vomit
     private CaseDetails addDirectionsToOrder(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
         List<Element<Direction>> directions = new ArrayList<>();
+
         directions.addAll(filterDirectionsNotRequired(caseData.getAllParties()));
 
         if (!isNull(caseData.getAllPartiesCustom())) {
             directions.addAll(assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES));
         }
 
-        directions.addAll(filterDirectionsNotRequired(caseData.getCourtDirections()));
         directions.addAll(filterDirectionsNotRequired(caseData.getLocalAuthorityDirections()));
-        directions.addAll(filterDirectionsNotRequired(caseData.getCafcassDirections()));
-        directions.addAll(filterDirectionsNotRequired(caseData.getOtherPartiesDirections()));
+
+        if (!isNull(caseData.getLocalAuthorityDirectionsCustom())) {
+            directions.addAll(assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(), LOCAL_AUTHORITY));
+        }
+
         directions.addAll(filterDirectionsNotRequired(caseData.getParentsAndRespondentsDirections()));
+
+        if (!isNull(caseData.getParentsAndRespondentsCustom())) {
+            directions.addAll(
+                assignCustomDirections(caseData.getParentsAndRespondentsCustom(), PARENTS_AND_RESPONDENTS));
+        }
+
+        directions.addAll(filterDirectionsNotRequired(caseData.getCafcassDirections()));
+
+        if (!isNull(caseData.getCafcassDirectionsCustom())) {
+            directions.addAll(assignCustomDirections(caseData.getCafcassDirectionsCustom(), CAFCASS));
+        }
+
+        directions.addAll(filterDirectionsNotRequired(caseData.getOtherPartiesDirections()));
+
+        if (!isNull(caseData.getOtherPartiesDirectionsCustom())) {
+            directions.addAll(assignCustomDirections(caseData.getCafcassDirectionsCustom(), OTHERS));
+        }
+
+        directions.addAll(filterDirectionsNotRequired(caseData.getCourtDirections()));
+
+        if (!isNull(caseData.getAllPartiesCustom())) {
+            directions.addAll(assignCustomDirections(caseData.getCourtDirections(), COURT));
+        }
 
         caseDetails.getData().put("standardDirectionOrder", Order.builder().directions(directions).build());
 
         return caseDetails;
     }
 
-    // TODO: need to add custom directions for other parties.
-    // TODO: this will be used to assign custom directions. Will probably be called when draft = final.
     private List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
                                                             DirectionAssignee assignee) {
-        return directions.stream().map(element -> Element.<Direction>builder()
-            .value(element.getValue().toBuilder()
-                .assignee(assignee)
-                .custom("Yes")
+        return directions.stream()
+            .map(element -> Element.<Direction>builder()
+                .value(element.getValue().toBuilder()
+                    .assignee(assignee)
+                    .custom("Yes")
+                    .build())
                 .build())
-            .build())
             .collect(toList());
     }
 
