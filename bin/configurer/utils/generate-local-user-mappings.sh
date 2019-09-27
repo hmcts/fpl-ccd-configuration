@@ -2,7 +2,7 @@
 
 set -eu
 
-SPRING_PROFILES=local,user-mappings
+SPRING_PROFILES=user-mappings
 
 userids=$(docker run -e PGPASSWORD='openidm' --rm --network ccd-network postgres:11-alpine psql --host shared-db  --username openidm --tuples-only  --command "SELECT string_agg(fullobject->>'_id',',') from managedObjects WHERE fullobject->>'sn' = '(local-authority)';" openidm)
 
