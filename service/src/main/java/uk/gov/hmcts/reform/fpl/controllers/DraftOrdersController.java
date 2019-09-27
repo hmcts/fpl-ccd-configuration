@@ -59,6 +59,9 @@ public class DraftOrdersController {
         this.caseDataExtractionService = caseDataExtractionService;
     }
 
+    //TODO: prepopulate dates for orders 5 and 9 as hearing date
+    //TODO: prepopulate dates for orders 11 and 15 as hearing date -2
+
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
@@ -86,11 +89,6 @@ public class DraftOrdersController {
         CaseDetails caseDetails = addDirectionsToOrder(callbackrequest.getCaseDetails());
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseData.getStandardDirectionOrder().getDirections()
-            .stream()
-            .filter(direction -> direction.getValue().getText() == null)
-            .forEach(direction -> direction.getValue().setText("Hardcoded hidden value"));
-
         Map<String, Object> templateData = caseDataExtractionService
             .getDraftStandardOrderDirectionTemplateData(caseData);
 
@@ -117,18 +115,22 @@ public class DraftOrdersController {
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
         CaseDetails caseDetailsAfter = addDirectionsToOrder(callbackrequest.getCaseDetails());
-        CaseData caseData = mapper.convertValue(caseDetailsAfter.getData(), CaseData.class);
+        CaseData caseDataWithValuesRemoved = mapper.convertValue(caseDetailsAfter.getData(), CaseData.class);
 
-        caseData.getStandardDirectionOrder().getDirections()
-            .forEach((direction) -> caseDataBefore.getStandardDirectionOrder().getDirections()
+        // persist read only, removable values and text
+        caseDataWithValuesRemoved.getStandardDirectionOrder().getDirections()
+            .forEach((directionWithValueRemoved) -> caseDataBefore.getStandardDirectionOrder().getDirections()
                 .stream()
-                .filter(oldDirection -> oldDirection.getId().equals(direction.getId()))
-                .forEach(oldDirection -> {
-                    direction.getValue().setReadOnly(oldDirection.getValue().getReadOnly());
-                    direction.getValue().setDirectionRemovable(oldDirection.getValue().getDirectionRemovable());
-                }));
+                .filter(direction -> direction.getId().equals(directionWithValueRemoved.getId()))
+                .peek(direction -> {
+                    directionWithValueRemoved.getValue().setReadOnly(direction.getValue().getReadOnly());
+                    directionWithValueRemoved.getValue().setDirectionRemovable(
+                        direction.getValue().getDirectionRemovable());
+                })
+                .filter(direction -> !direction.getValue().getReadOnly().equals("No"))
+                .forEach(direction -> directionWithValueRemoved.getValue().setText(direction.getValue().getText())));
 
-        caseDetailsAfter.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
+        caseDetailsAfter.getData().put("standardDirectionOrder", caseDataWithValuesRemoved.getStandardDirectionOrder());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsAfter.getData())

@@ -84,7 +84,6 @@ public class CaseDataExtractionService {
                 ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26),
                 FormatStyle.LONG) : EMPTY_STATE_PLACEHOLDER)
             .put("children", getChildrenDetails(caseData))
-            .put("directions", getStandardOrderDirections(caseData, standardDirectionOrder.getDirections()))
             .put("respondents", getRespondentsNameAndRelationship(caseData))
             .put("applicantName", getFirstApplicantName(caseData))
             .putAll(extractedHearingBookingData)
