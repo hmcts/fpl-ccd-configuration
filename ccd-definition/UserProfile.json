@@ -15,13 +15,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "UserIDAMId": "test@swansea.gov.uk",
-    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
-    "WorkBasketDefaultState": "Open"
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "UserIDAMId": "james@swansea.gov.uk",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
