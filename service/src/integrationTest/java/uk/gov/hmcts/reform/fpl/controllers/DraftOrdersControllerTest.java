@@ -49,15 +49,15 @@ class DraftOrdersControllerTest {
 
     @Test
     void aboutToStartCallbackShouldSplitDirectionsIntoSeparateCollections() throws Exception {
-        String TITLE = "example direction";
+        String title = "example direction";
 
         List<Direction> directions = ImmutableList.of(
-            Direction.builder().type(TITLE).assignee(ALL_PARTIES).build(),
-            Direction.builder().type(TITLE).assignee(LOCAL_AUTHORITY).build(),
-            Direction.builder().type(TITLE).assignee(PARENTS_AND_RESPONDENTS).build(),
-            Direction.builder().type(TITLE).assignee(CAFCASS).build(),
-            Direction.builder().type(TITLE).assignee(OTHERS).build(),
-            Direction.builder().type(TITLE).assignee(COURT).build()
+            Direction.builder().type(title).assignee(ALL_PARTIES).build(),
+            Direction.builder().type(title).assignee(LOCAL_AUTHORITY).build(),
+            Direction.builder().type(title).assignee(PARENTS_AND_RESPONDENTS).build(),
+            Direction.builder().type(title).assignee(CAFCASS).build(),
+            Direction.builder().type(title).assignee(OTHERS).build(),
+            Direction.builder().type(title).assignee(COURT).build()
         );
 
         Order sdo = Order.builder().directions(buildDirections(directions)).build();

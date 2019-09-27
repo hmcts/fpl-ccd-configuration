@@ -152,7 +152,8 @@ public class DraftOrdersController {
 
     // TODO: need to add custom directions for other parties.
     // TODO: this will be used to assign custom directions. Will probably be called when draft = final.
-    private List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions, DirectionAssignee assignee) {
+    private List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
+                                                            DirectionAssignee assignee) {
         return directions.stream().map(element -> Element.<Direction>builder()
             .value(element.getValue().toBuilder()
                 .assignee(assignee)
