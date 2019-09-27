@@ -57,9 +57,10 @@ class CaseDataExtractionServiceTest {
     @BeforeEach
     public void setup() {
         // required for DI
-         this.caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
+        this.caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
             hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService);
     }
+
     @Test
     void shouldConcatenateAllChildrenNames() {
         CaseData caseData = CaseData.builder()

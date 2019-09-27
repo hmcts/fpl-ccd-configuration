@@ -43,7 +43,8 @@ public class CaseDataExtractionService {
     @Autowired
     public CaseDataExtractionService(DateFormatterService dateFormatterService,
                                      HearingBookingService hearingBookingService,
-                                     HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration, OrdersLookupService ordersLookupService) {
+                                     HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
+                                     OrdersLookupService ordersLookupService) {
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
@@ -150,7 +151,7 @@ public class CaseDataExtractionService {
         return caseData.getRespondents1().stream()
             .map(Element::getValue)
             .map(respondent -> ImmutableMap.of(
-                    "name", respondent.getFirstName() == null && respondent.getLastName() == null
+                "name", respondent.getFirstName() == null && respondent.getLastName() == null
                     ? EMPTY_STATE_PLACEHOLDER : defaultIfNull(respondent.getFirstName(), "") + " "
                     + defaultIfNull(respondent.getLastName(), ""),
                 "relationshipToChild", defaultIfNull(respondent.getRelationshipToChild(), EMPTY_STATE_PLACEHOLDER)))
@@ -182,7 +183,8 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    private List<Map<String, String>> getStandardOrderDirections(CaseData caseData, List<DirectionConfiguration> directions) {
+    private List<Map<String, String>> getStandardOrderDirections(CaseData caseData,
+                                                                 List<DirectionConfiguration> directions) {
 
         if (caseData.getStandardDirectionOrder() == null
             || caseData.getStandardDirectionOrder().getDirections() == null) {
@@ -199,7 +201,8 @@ public class CaseDataExtractionService {
     }
 
 
-    private String formatTitle(Direction direction, List<DirectionConfiguration> direcions) {
+    @SuppressWarnings("LineLength")
+    private String formatTitle(Direction direction, List<DirectionConfiguration> directions) {
         @AllArgsConstructor
         @NoArgsConstructor
         @Data
@@ -208,14 +211,15 @@ public class CaseDataExtractionService {
             private Display.Due due = Display.Due.BY;
         }
 
-        DateFormattingConfig dateFormattingConfig = direcions.stream()
+        DateFormattingConfig dateFormattingConfig = directions.stream()
             .filter(directionConfiguration -> directionConfiguration.getTitle().equals(direction.getType()))
             .map(DirectionConfiguration::getDisplay)
             .map(display -> new DateFormattingConfig(display.getTemplateDateFormat(), display.getDue()))
             .findAny()
             .orElseGet(DateFormattingConfig::new);
 
-        return String.format("%s %s %s", direction.getType(), dateFormattingConfig.due.toString().toLowerCase(), (direction.getCompleteBy() != null
-            ? dateFormatterService.formatLocalDateTimeBaseUsingFormat(direction.getCompleteBy(), dateFormattingConfig.getPattern()) : "unknown"));
+        return String.format("%s %s %s", direction.getType(), dateFormattingConfig.due.toString().toLowerCase(),
+            (direction.getCompleteBy() != null ? dateFormatterService.formatLocalDateTimeBaseUsingFormat(direction.getCompleteBy(),
+                dateFormattingConfig.getPattern()) : "unknown"));
     }
 }
