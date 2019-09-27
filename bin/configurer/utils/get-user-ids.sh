@@ -7,4 +7,3 @@ userids=$(docker run -e PGPASSWORD='openidm' --rm --network ccd-network postgres
 useridsformatted=$(echo $userids | tr -d ' ')
 
 sed -i '' "s/31,32,33/$useridsformatted/" "../../../service/src/main/resources/application-user-mappings.yaml"
-sed -i '' "s/31,32,33/$useridsformatted/" "../../../build/resources/main/application-user-mappings.yaml"
