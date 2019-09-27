@@ -1,8 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
@@ -11,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -19,7 +24,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -29,6 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStandardDirectionOrders;
 
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, JsonOrdersLookupService.class})
 class CaseDataExtractionServiceTest {
     @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
 
@@ -44,9 +49,17 @@ class CaseDataExtractionServiceTest {
     private HearingBookingService hearingBookingService = new HearingBookingService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
 
-    private CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
-        hearingBookingService, hmctsCourtLookupConfiguration);
+    @Autowired
+    private OrdersLookupService ordersLookupService;
 
+    private CaseDataExtractionService caseDataExtractionService;
+
+    @BeforeEach
+    public void setup() {
+        // required for DI
+         this.caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
+            hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService);
+    }
     @Test
     void shouldConcatenateAllChildrenNames() {
         CaseData caseData = CaseData.builder()
@@ -108,7 +121,7 @@ class CaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldMapEmptyCaseDataForDraftSDO() {
+    void shouldMapEmptyCaseDataForDraftSDO() throws IOException {
         CaseData caseData = CaseData.builder().build();
 
         Map<String, Object> templateData = caseDataExtractionService
@@ -128,7 +141,7 @@ class CaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldMapCompleteCaseDataForSDOTemplate() {
+    void shouldMapCompleteCaseDataForSDOTemplate() throws IOException {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority("example")
             .familyManCaseNumber("123")

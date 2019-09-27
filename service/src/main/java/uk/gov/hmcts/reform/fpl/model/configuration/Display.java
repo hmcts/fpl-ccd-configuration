@@ -20,7 +20,7 @@ public class Display {
      */
     private Due due;
 
-    private String templateDateForm;
+    private String templateDateFormat;
     /**
      * What fields should be used to prepopulate dueBy (optional sa it can be null so no prepopulation should happen.
      * It looks like for now we will have only hearing.

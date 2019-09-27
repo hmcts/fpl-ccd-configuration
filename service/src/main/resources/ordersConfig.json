@@ -8,7 +8,8 @@
       "text": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts. ",
       "assignee": "ALL_PARTIES",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
         "showDateOnly": true
       }
@@ -18,7 +19,8 @@
       "text": "Make an application to the court if you believe any party or witness needs help with:\n\n• understanding proceedings and their role in them in court\n• putting their views to the court\n• instructing their representatives before, during and after the hearing\n• attending the hearing without significant distress\n\nIf possible, include in your application:\n\n• why the party or witness would benefit from help\n• the kind of help that would benefit them the most in giving evidence or participating, and is practically possible\n• written confirmation from any relevant witnesses of their view\n",
       "assignee": "ALL_PARTIES",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
         "showDateOnly": true
       }
@@ -28,7 +30,8 @@
       "text": "Serve requests for disclosure on any third parties, for example the police or a hospital.\n\nIf you plan to ask for a disclosure order at the case management hearing, let the third party know in writing. Include a copy of this order.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court’s permission.  \n",
       "assignee": "ALL_PARTIES",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
         "showDateOnly": true
       }
@@ -38,7 +41,8 @@
       "text": "Parties and their legal representatives must attend the pre-hearing and hearing",
       "assignee": "ALL_PARTIES",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "ON",
+        "templateDateFormat": "d MMMM yyyy 'at' h:mma",
         "directionRemovable": false,
         "showDateOnly": false
       }
@@ -48,7 +52,8 @@
       "text": "Contact anyone who might want to be a carer if your preferred plan proves to be impossible. Give their contact details to the Local Authority.",
       "assignee": "ALL_PARTIES",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
         "showDateOnly": true
       }
@@ -58,7 +63,8 @@
       "text": "Give all parties access to all documents sent to the court, including:\n\n• the application form\n• annex documents\n• evidential checklist documents\n• any documents sent later on\n",
       "assignee": "LOCAL_AUTHORITY",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
         "showDateOnly": false
       }
@@ -68,7 +74,8 @@
       "text": "• Social work chronology\n• Social work statement\n• Family tree (genogram)\n• Social work assessment\n• Care plan\n• Threshold document\n• Index of checklist documents\n",
       "assignee": "LOCAL_AUTHORITY",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
         "showDateOnly": false
       }
@@ -78,7 +85,8 @@
       "text": "Contact the parents to make sure there is a complete family tree showing family members who could be alternative carers.",
       "assignee": "LOCAL_AUTHORITY",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
         "showDateOnly": true
       }
@@ -88,7 +96,8 @@
       "text": "Send translations of case documents to respondents who need them in a language they understand.\n\nThis must include documents that the local authority relies on to support allegations and explain why they have made their application for an order.\n",
       "assignee": "LOCAL_AUTHORITY",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": true,
         "showDateOnly": true
       }
@@ -98,7 +107,8 @@
       "text": "It must comply with practice direction 27A from Family Procedure Rules 2010.",
       "assignee": "LOCAL_AUTHORITY",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
         "showDateOnly": true
       }
@@ -108,7 +118,8 @@
       "text": "Send to the court and all parties.",
       "assignee": "LOCAL_AUTHORITY",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
         "showDateOnly": true
       }
@@ -118,7 +129,8 @@
       "text": "The court has jurisdiction, based on all of the relevant law and facts, for example habitual residency. \n\nIf there is an issue, consider it urgently. Ask the relevant state authority for information needed to decide where jurisdiction lies. Bring this information to the case management hearing at .\n\nIf the child is a foreign national, tell the consulate or embassy in writing that these proceedings are happening. Invite any representations to be made to the court.\n",
       "assignee": "LOCAL_AUTHORITY",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": true,
         "showDateOnly": false
       }
@@ -128,7 +140,8 @@
       "text": "Send a written statement to the court and all parties, showing:\n\n• the parents’ response to the local authority’s threshold statement\n• the parents’ proposals for placing the children, immediately and long-term\n• whether they agree to a family group conference if one has not taken place yet\n\nIf the parents do not do this, the court can assume they do not disagree with allegations in the threshold statement.\n",
       "assignee": "PARENTS_AND_RESPONDENTS",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
         "showDateOnly": true
       }
@@ -138,7 +151,8 @@
       "text": "All of the advocates who will appear at the related hearing must attend. ",
       "assignee": "CAFCASS",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
         "showDateOnly": true
       }
@@ -148,7 +162,8 @@
       "text": "Send to the court and all parties.",
       "assignee": "CAFCASS",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
         "showDateOnly": true
       }
@@ -158,8 +173,8 @@
       "text": "Preferably",
       "assignee": "CAFCASS",
       "display": {
-        "templateDateFormat": "XX",
-        "directionRemovable": false,
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "showDateOnly": false
       }
     },
@@ -168,7 +183,8 @@
       "text": "If you object to the disclosure request, attend the case management hearing or write to the court to explain your objection.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court’s permission.\n",
       "assignee": "OTHERS",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
         "showDateOnly": true
       }
@@ -178,7 +194,8 @@
       "text": "At all hearings, the court must arrange an interpreter for respondents who need one in a language they understand.",
       "assignee": "COURT",
       "display": {
-        "templateDateFormat": "XX",
+        "due": "BY",
+        "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": true,
         "showDateOnly": true
       }
