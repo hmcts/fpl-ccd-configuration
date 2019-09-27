@@ -2,7 +2,7 @@
 
 module.exports = class HooksHelpers extends Helper {
   _test(test) {
-    test.retries(parseInt(process.env.TEST_RETRIES || '2'));
+    test.retries(parseInt(process.env.TEST_RETRIES || '0'));
   }
 
   _afterStep(step) {

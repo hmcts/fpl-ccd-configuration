@@ -27,6 +27,9 @@ exports.config = {
     PuppeteerHelpers: {
       require: './e2e/helpers/puppeter_helper.js',
     },
+    DumpBrowserLogsHelper: {
+      require: './e2e/helpers/dump_browser_logs_helper.js',
+    },
   },
   include: {
     config: './e2e/config.js',
@@ -82,4 +85,28 @@ exports.config = {
     },
   },
   tests: './e2e/tests/*_test.js',
+  mocha: {
+    reporterOptions: {
+      'codeceptjs-cli-reporter': {
+        stdout: '-',
+        options: {
+          steps: false,
+        },
+      },
+      'mocha-junit-reporter': {
+        stdout: '-',
+        options: {
+          mochaFile: 'test-results/result.xml',
+        },
+      },
+      'mochawesome': {
+        stdout: '-',
+        options: {
+          reportDir: './output',
+          inlineAssets: true,
+          json: false,
+        },
+      },
+    },
+  },
 };
