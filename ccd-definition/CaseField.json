@@ -175,7 +175,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "courtBundle",
-    "Label": "5. Court bundle",
+    "Label": "8. Court bundle",
     "FieldType": "CourtBundle",
     "SecurityClassification": "Public"
   },
