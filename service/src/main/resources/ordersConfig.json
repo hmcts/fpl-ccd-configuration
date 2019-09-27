@@ -89,7 +89,7 @@
       "assignee": "LOCAL_AUTHORITY",
       "display": {
         "templateDateFormat": "XX",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": true
       }
     },
@@ -119,7 +119,7 @@
       "assignee": "LOCAL_AUTHORITY",
       "display": {
         "templateDateFormat": "XX",
-        "directionRemovable": false,
+        "directionRemovable": true,
         "showDateOnly": false
       }
     },
