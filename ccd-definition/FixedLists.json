@@ -636,37 +636,37 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionAssignees",
-    "ListElementCode": "localAuthorityDirections",
+    "ListElementCode": "LOCAL_AUTHORITY",
     "ListElement": "Local Authority"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionAssignees",
-    "ListElementCode": "cafcassDirections",
+    "ListElementCode": "CAFCASS",
     "ListElement": "Cafcass"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionAssignees",
-    "ListElementCode": "allParties",
+    "ListElementCode": "ALL_PARTIES",
     "ListElement": "All parties"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionAssignees",
-    "ListElementCode": "parentsAndRespondentsDirections",
+    "ListElementCode": "PARENTS_AND_RESPONDENTS",
     "ListElement": "Parents and other respondents"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionAssignees",
-    "ListElementCode": "otherPartiesDirections",
+    "ListElementCode": "OTHERS",
     "ListElement": "Other parties"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionAssignees",
-    "ListElementCode": "courtDirections",
+    "ListElementCode": "COURT",
     "ListElement": "Court directions"
   }
 ]

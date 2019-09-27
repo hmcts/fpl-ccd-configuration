@@ -8,12 +8,9 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 @Data
 @Builder
 @AllArgsConstructor
-public class DirectionConfiguration {
+class DirectionConfiguration {
     private final String title;
     private final String text;
-    // full role name
     private final DirectionAssignee assignee;
-
     private final Display display;
-
 }
