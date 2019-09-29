@@ -164,9 +164,10 @@ class DraftOrdersControllerTest {
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        List<Element<Direction>> localAuthorityDirections = caseData.getStandardDirectionOrder().getDirections().stream()
-            .filter(direction -> direction.getValue().getAssignee() == LOCAL_AUTHORITY)
-            .collect(toList());
+        List<Element<Direction>> localAuthorityDirections =
+            caseData.getStandardDirectionOrder().getDirections().stream()
+                .filter(direction -> direction.getValue().getAssignee() == LOCAL_AUTHORITY)
+                .collect(toList());
 
         assertThat(localAuthorityDirections).isEqualTo(fullyPopulatedDirection);
     }
@@ -191,14 +192,14 @@ class DraftOrdersControllerTest {
             .collect(toList());
     }
 
-    private List<Direction> extractDirections(List<Element<Direction>> directions) {
-        return directions.stream().map(Element::getValue).collect(toList());
-    }
-
     private List<Element<Direction>> buildDirections(Direction direction) {
         return ImmutableList.of(Element.<Direction>builder()
             .id(UUID.randomUUID())
             .value(direction)
             .build());
+    }
+
+    private List<Direction> extractDirections(List<Element<Direction>> directions) {
+        return directions.stream().map(Element::getValue).collect(toList());
     }
 }
