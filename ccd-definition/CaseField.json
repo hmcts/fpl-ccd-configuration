@@ -476,15 +476,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "directions",
-    "Label": "Directions",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Direction",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "standardDirectionOrder",
     "Label": "Standard direction order",
     "FieldType": "StandardDirectionOrder",

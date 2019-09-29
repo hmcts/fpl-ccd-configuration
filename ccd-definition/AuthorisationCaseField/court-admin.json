@@ -376,5 +376,19 @@
     "CaseFieldID": "courtDirections",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "C"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "sdo",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "standardDirectionOrder",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
   }
 ]
