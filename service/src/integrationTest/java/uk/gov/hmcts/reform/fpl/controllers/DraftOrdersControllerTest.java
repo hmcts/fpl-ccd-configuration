@@ -3,11 +3,11 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -15,16 +15,22 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.util.List;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
@@ -33,11 +39,18 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
 class DraftOrdersControllerTest {
+
+    @MockBean
+    private DocmosisDocumentGeneratorService documentGeneratorService;
+
+    @MockBean
+    private UploadDocumentService uploadDocumentService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -90,18 +103,23 @@ class DraftOrdersControllerTest {
         assertThat(extractDirections(caseData.getCourtDirections())).containsOnly(directions.get(5));
     }
 
-    @Disabled
     @Test
     void midEventShouldGenerateDraftStandardDirectionDocument() throws Exception {
+        byte[] pdf = {1, 2, 3, 4, 5};
+        DocmosisDocument docmosisDocument = new DocmosisDocument("title", pdf);
+        Document document = document();
+
+        given(documentGeneratorService.generateDocmosisDocument(any(), any()))
+            .willReturn(docmosisDocument);
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "Draft.pdf"))
+            .willReturn(document);
+
         List<Element<Direction>> directions = buildDirections(
             ImmutableList.of(Direction.builder().text("example").assignee(LOCAL_AUTHORITY).build())
         );
 
-        //TODO: need to add directions for all parties. Currently throws null pointer
         CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of(LOCAL_AUTHORITY.getValue(), directions))
-                .build())
+            .caseDetails(createCaseDetails(directions))
             .build();
 
         MvcResult response = mockMvc
@@ -116,12 +134,15 @@ class DraftOrdersControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        assertThat(callbackResponse.getData().get("sdo")).isNotNull();
+        assertThat(callbackResponse.getData()).containsEntry("sdo", ImmutableMap.builder()
+            .put("document_binary_url", document.links.binary.href)
+            .put("document_filename", "Draft.pdf")
+            .put("document_url", document.links.self.href)
+            .build());
     }
 
-    //TODO: aboutToSubmit test assert standardDirectionOrder is as expected.
     @Test
-    void aboutToSubmitShouldPopulateHiddenCCDFieldsToPersistData() throws Exception {
+    void aboutToSubmitShouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() throws Exception {
         UUID uuid = UUID.randomUUID();
 
         List<Element<Direction>> fullyPopulatedDirection = ImmutableList.of(Element.<Direction>builder()
