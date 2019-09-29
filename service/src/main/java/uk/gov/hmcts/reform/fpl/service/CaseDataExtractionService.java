@@ -86,6 +86,8 @@ public class CaseDataExtractionService {
             .put("children", getChildrenDetails(caseData))
             .put("respondents", getRespondentsNameAndRelationship(caseData))
             .put("applicantName", getFirstApplicantName(caseData))
+            .put("standardDirectionOrders",
+                getStandardOrderDirections(caseData, standardDirectionOrder.getDirections()))
             .putAll(extractedHearingBookingData)
             .build();
     }
@@ -190,12 +192,14 @@ public class CaseDataExtractionService {
             return ImmutableList.of();
         }
 
+        //TODO: null pointer is thrown when direction.getText() is null. Hidden values added in aboutToSubmit currently
+        // Have set defaultIfNull for now.
         return caseData.getStandardDirectionOrder().getDirections()
             .stream()
             .map(Element::getValue)
-            .map(direction -> Map.of(
+            .map(direction -> ImmutableMap.of(
                 "title", formatTitle(direction, directions),
-                "body", direction.getText()))
+                "body", defaultIfNull(direction.getText(), "BLANK")))
             .collect(toList());
     }
 
