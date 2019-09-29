@@ -44,7 +44,8 @@
         "due": "ON",
         "templateDateFormat": "d MMMM yyyy 'at' h:mma",
         "directionRemovable": false,
-        "showDateOnly": false
+        "showDateOnly": false,
+        "delta": "0"
       }
     },
     {
@@ -88,7 +89,8 @@
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
-        "showDateOnly": true
+        "showDateOnly": true,
+        "delta": "0"
       }
     },
     {
@@ -110,7 +112,8 @@
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
-        "showDateOnly": true
+        "showDateOnly": true,
+        "delta": "-2"
       }
     },
     {
@@ -154,7 +157,8 @@
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
         "directionRemovable": false,
-        "showDateOnly": true
+        "showDateOnly": true,
+        "delta": "-2"
       }
     },
     {
@@ -175,6 +179,7 @@
       "display": {
         "due": "BY",
         "templateDateFormat": "h:mma, d MMMM yyyy",
+        "directionRemovable": false,
         "showDateOnly": false
       }
     },

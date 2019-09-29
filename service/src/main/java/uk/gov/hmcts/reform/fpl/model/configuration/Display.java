@@ -35,7 +35,7 @@ public class Display {
     /**
      * How many units due date is shifted by.
      */
-    private int delta;
+    private String delta;
 
     /**
      * I don't think this one makes sense - what would be point of shifting deadline post the hearing date?.
