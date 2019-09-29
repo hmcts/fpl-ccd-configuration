@@ -368,25 +368,5 @@
     "TabDisplayOrder": 7,
     "CaseFieldID": "sdo",
     "TabFieldDisplayOrder": 15
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "DirectionsTab",
-    "TabLabel": "Directions",
-    "TabDisplayOrder": 8,
-    "CaseFieldID": "localAuthorityDirections",
-    "TabFieldDisplayOrder": 1
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "DirectionsTab",
-    "TabLabel": "Directions",
-    "TabDisplayOrder": 8,
-    "CaseFieldID": "cafcassDirections",
-    "TabFieldDisplayOrder": 2
   }
 ]
