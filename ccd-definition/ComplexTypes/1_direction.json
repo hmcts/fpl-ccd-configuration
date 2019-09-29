@@ -56,20 +56,20 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Direction",
-    "ListElementCode": "completeBy",
-    "FieldType": "DateTime",
-    "ElementLabel": "Due date and time",
-    "HintText": "For example, 31 3 2016 2 30 00",
+    "ListElementCode": "assignee",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "DirectionAssignees",
+    "ElementLabel": "For",
     "SecurityClassification": "Public",
     "FieldShowCondition": "directionNeeded!=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "Direction",
-    "ListElementCode": "assignee",
-    "FieldType": "FixedList",
-    "FieldTypeParameter": "DirectionAssignees",
-    "ElementLabel": "Assignee",
+    "ListElementCode": "completeBy",
+    "FieldType": "DateTime",
+    "ElementLabel": "Due date and time",
+    "HintText": "For example, 31 3 2016 2 30 00",
     "SecurityClassification": "Public",
     "FieldShowCondition": "directionNeeded!=\"No\""
   },
