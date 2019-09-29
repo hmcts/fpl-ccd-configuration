@@ -1,0 +1,30 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityCustomDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "localAuthorityDirectionsCustom",
+    "ListElementCode": "type",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityCustomDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "localAuthorityDirectionsCustom",
+    "ListElementCode": "text",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "LocalAuthorityCustomDirections",
+    "CaseEventID": "draftSDO",
+    "CaseFieldID": "localAuthorityDirectionsCustom",
+    "ListElementCode": "completeBy",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
+  }
+]
