@@ -106,6 +106,8 @@ public class DraftOrdersController {
             .build();
     }
 
+
+    //TODO: readonly value hides info from tab view of standard directions order
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetailsBefore = addDirectionsToOrder(callbackrequest.getCaseDetailsBefore());
@@ -116,16 +118,17 @@ public class DraftOrdersController {
 
         // persist read only, removable values and text
         caseDataWithValuesRemoved.getStandardDirectionOrder().getDirections()
-            .forEach((directionWithValueRemoved) -> caseDataBefore.getStandardDirectionOrder().getDirections()
+            .forEach((directionToAddValue) -> caseDataBefore.getStandardDirectionOrder().getDirections()
                 .stream()
-                .filter(direction -> direction.getId().equals(directionWithValueRemoved.getId()))
-                .peek(direction -> {
-                    directionWithValueRemoved.getValue().setReadOnly(direction.getValue().getReadOnly());
-                    directionWithValueRemoved.getValue().setDirectionRemovable(
-                        direction.getValue().getDirectionRemovable());
-                })
-                .filter(direction -> !direction.getValue().getReadOnly().equals("No"))
-                .forEach(direction -> directionWithValueRemoved.getValue().setText(direction.getValue().getText())));
+                .filter(direction -> direction.getId().equals(directionToAddValue.getId()))
+                .forEach(direction -> {
+                    directionToAddValue.getValue().setReadOnly(direction.getValue().getReadOnly());
+                    directionToAddValue.getValue().setDirectionRemovable(direction.getValue().getDirectionRemovable());
+
+                    if (!direction.getValue().getReadOnly().equals("No")) {
+                        directionToAddValue.getValue().setText(direction.getValue().getText());
+                    }
+                }));
 
         caseDetailsAfter.getData().put("standardDirectionOrder", caseDataWithValuesRemoved.getStandardDirectionOrder());
 
