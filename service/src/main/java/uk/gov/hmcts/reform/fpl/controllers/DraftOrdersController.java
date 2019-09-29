@@ -59,9 +59,6 @@ public class DraftOrdersController {
         this.caseDataExtractionService = caseDataExtractionService;
     }
 
-    //TODO: prepopulate dates for orders 5 and 9 as hearing date
-    //TODO: prepopulate dates for orders 11 and 15 as hearing date -2
-
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
@@ -196,7 +193,7 @@ public class DraftOrdersController {
             .collect(toList());
     }
 
-    // TODO: what do we do with directions where a user has said it is not needed? Currently are removed. This is wrong.
+    // TODO: what do we do with directions where a user has said it is not needed?
     @SuppressWarnings("LineLength")
     private List<Element<Direction>> filterDirectionsNotRequired(List<Element<Direction>> directions) {
         return directions.stream()
