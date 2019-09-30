@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -27,6 +28,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
@@ -121,7 +123,7 @@ public class CaseDataExtractionService {
 
     private String getOrderTypes(CaseData caseData) {
         return caseData.getOrders().getOrderType().stream()
-            .map(orderType -> orderType.getLabel())
+            .map(OrderType::getLabel)
             .collect(Collectors.joining(", "));
     }
 
@@ -167,7 +169,7 @@ public class CaseDataExtractionService {
 
     private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
 
-        if (caseData.getChildren1() == null) {
+        if (isNull(caseData.getChildren1())) {
             return ImmutableList.of();
         }
 

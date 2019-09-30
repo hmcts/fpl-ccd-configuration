@@ -118,7 +118,7 @@ public class DraftOrdersController {
 
         // persist read only, removable values and text
         caseDataWithValuesRemoved.getStandardDirectionOrder().getDirections()
-            .forEach((directionToAddValue) -> caseDataBefore.getStandardDirectionOrder().getDirections()
+            .forEach(directionToAddValue -> caseDataBefore.getStandardDirectionOrder().getDirections()
                 .stream()
                 .filter(direction -> direction.getId().equals(directionToAddValue.getId()))
                 .forEach(direction -> {
