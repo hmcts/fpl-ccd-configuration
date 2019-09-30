@@ -316,6 +316,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
+    "CaseFieldID": "documents_checklist_document",
     "TabFieldDisplayOrder": 10
   },
   {
