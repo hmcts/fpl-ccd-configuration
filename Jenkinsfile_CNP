@@ -77,6 +77,8 @@ withPipeline(type, product, component) {
         }
       }
     }
+
+    publishToCosmosDb(steps, params, 'dbs/jenkins/colls/fpl-test-metrics', env.WORKSPACE, 'metrics')
   }
 
   before('smoketest:saat') {
