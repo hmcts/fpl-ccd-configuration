@@ -10,7 +10,9 @@ services:
     image: hmctspublic.azurecr.io/fpl/case-service
     container_name: fpl-service
     environment:
-      - IDAM_API_URL=http://sidam-api:5000
+      - IDAM_API_URL=http://idam-api:8080
+      - DOCMOSIS_TORNADO_URL=http://docmosis-tornado:8080
+      - DOCMOSIS_TORNADO_KEY
       - DOCUMENT_MANAGEMENT_URL=http://dm-store:8080
       - CORE_CASE_DATA_API_URL=http://ccd-data-store-api:4452
       - IDAM_S2S_AUTH_URL=http://service-auth-provider-api:8080
@@ -22,6 +24,17 @@ services:
     networks:
       - default
       - ccd
+  docmosis-tornado:
+    image: alexisgayte/docmosis
+    environment:
+      # not supported in current version of Tornado
+      DOCMOSIS_KEY: "XXX"
+      DOCMOSIS_SITE: "Free Trial License"
+    volumes:
+      - ./docker/docmosis/templates:/tmp/working/templates:rw
+      - ./docker/docmosis/prefs.xml:/root/.java/.userPrefs/com/docmosis/webserver/prefs.xml:ro
+    ports:
+      - 5433:80
 networks:
   ccd:
     external:
