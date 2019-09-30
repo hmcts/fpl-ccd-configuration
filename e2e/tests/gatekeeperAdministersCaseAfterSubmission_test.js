@@ -1,11 +1,12 @@
 const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
+const directions = require('../fixtures/directions.js');
 
 let caseId;
 
 Feature('Gatekeeper Case administration after submission');
 
-Before(async (I, caseViewPage, submitApplicationEventPage) => {
+Before(async (I, caseViewPage, sendCaseToGatekeeperEventPage, submitApplicationEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
@@ -18,6 +19,15 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
     console.log(`Case ${caseId} has been submitted`);
 
     I.signOut();
+
+    await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
+    await I.navigateToCaseDetails(caseId);
+    await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+    sendCaseToGatekeeperEventPage.enterEmail();
+    await I.completeEvent('Save and continue');
+
+    I.signOut();
+
     await I.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
   }
   await I.navigateToCaseDetails(caseId);
@@ -36,7 +46,7 @@ Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await I.addAnotherElementToCollection();
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
-  await I.completeEvent('Save and continue', { summary: 'summary', description: 'description' });
+  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
   I.seeAnswerInTab(1, 'Hearing 1', 'Type of hearing', hearingDetails[0].caseManagement);
@@ -62,4 +72,15 @@ Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage
   I.seeAnswerInTab(7, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
   I.seeAnswerInTab(8, 'Hearing 2', 'Judge or magistrate\'s title', hearingDetails[1].judgeTitle);
   I.seeAnswerInTab(9, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
+});
+
+Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+  await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
+  I.seeAnswerInTab(1, 'Directions 1', 'Direction title', 'Request permission for expert evidence');
+  I.seeAnswerInTab(5, 'Directions 1', 'For', 'All parties');
+  I.seeAnswerInTab(6, 'Directions 1', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
 });
