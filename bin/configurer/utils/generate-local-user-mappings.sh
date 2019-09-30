@@ -13,8 +13,7 @@ function get_user_ids() {
 swansea_user_ids=$(echo $(get_user_ids swansea) | tr -d ' ')
 hillingdon_user_ids=$(echo $(get_user_ids hillingdon) | tr -d ' ')
 
-cd $resources_dir
-cat > application-user-mappings.yaml <<EOL
+cat > ${resources_dir}/application-user-mappings.yaml <<EOL
 spring:
   profiles: user-mappings
 
