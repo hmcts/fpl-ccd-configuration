@@ -2,18 +2,18 @@
 
 set -eu
 
-SPRING_PROFILES=user-mappings
+swanseauserids=$(docker run -e PGPASSWORD='openidm' --rm --network ccd-network postgres:11-alpine psql --host shared-db  --username openidm --tuples-only  --command "SELECT string_agg(fullobject->>'_id',',') FROM managedObjects WHERE fullobject->>'userName' LIKE '%swansea%';" openidm)
+hillingdonuserids=$(docker run -e PGPASSWORD='openidm' --rm --network ccd-network postgres:11-alpine psql --host shared-db  --username openidm --tuples-only  --command "SELECT string_agg(fullobject->>'_id',',') FROM managedObjects WHERE fullobject->>'userName' LIKE '%hillingdon%';" openidm)
 
-userids=$(docker run -e PGPASSWORD='openidm' --rm --network ccd-network postgres:11-alpine psql --host shared-db  --username openidm --tuples-only  --command "SELECT string_agg(fullobject->>'_id',',') from managedObjects WHERE fullobject->>'sn' = '(local-authority)';" openidm)
-
-useridsformatted=$(echo $userids | tr -d ' ')
+swanseauseridsformatted=$(echo $swanseauserids | tr -d ' ')
+hillingdonuseridsformatted=$(echo $hillingdonuserids | tr -d ' ')
 
 cd ../../../service/src/main/resources
 cat > application-user-mappings.yaml <<EOL
 spring:
-  profiles: ${SPRING_PROFILES}
+  profiles: user-mappings
 
 fpl:
   local_authority_user:
-    mapping: 'FPLA=>0;SA=>${useridsformatted};HN=>34,35'
+    mapping: 'FPLA=>0;SA=>${swanseauseridsformatted};HN=>${hillingdonuseridsformatted}'
 EOL
