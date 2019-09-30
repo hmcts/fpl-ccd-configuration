@@ -212,6 +212,7 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("cafcassDirections")).isEqualTo(ImmutableList.of(createStandardOrder(CAFCASS)));
         assertThat(templateData.get("otherPartiesDirections")).isEqualTo(ImmutableList.of(createStandardOrder(OTHERS)));
         assertThat(templateData.get("courtDirections")).isEqualTo(ImmutableList.of(createStandardOrder(COURT)));
+        createHearingBookings().get(0).getValue()
     }
 
     private Order createStandardDirectionOrders() {
