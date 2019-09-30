@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +9,9 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -36,7 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStandardOrder;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStandardDirectionOrders;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, JsonOrdersLookupService.class})
@@ -153,9 +150,6 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("courtDirections")).isNull();
     }
 
-    // TODO
-    // Disabled due to time difference issue between CaseDataGeneratorHelper and CaseDataExtractionService
-    @Disabled
     @Test
     void shouldMapCompleteCaseDataForSDOTemplate() throws IOException {
         CaseData caseData = CaseData.builder()
@@ -165,7 +159,7 @@ class CaseDataExtractionServiceTest {
             .hearingDetails(createHearingBookings())
             .dateSubmitted(LocalDate.now())
             .respondents1(createRespondents())
-            .standardDirectionOrder(createStandardDirectionOrders())
+            .standardDirectionOrder(createStandardDirectionOrders(TODAYS_DATE_TIME))
             .build();
 
         Map<String, Object> templateData = caseDataExtractionService
@@ -184,12 +178,7 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("08.15am");
         assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
         assertThat(templateData.get("respondents")).isEqualTo(getExpectedRespondents());
-        assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirection());
-        assertThat(templateData.get("localAuthorityDirections")).isEqualTo(getExpectedDirection());
-        assertThat(templateData.get("parentsAndRespondentsDirections")).isEqualTo(getExpectedDirection());
-        assertThat(templateData.get("cafcassDirections")).isEqualTo(getExpectedDirection());
-        assertThat(templateData.get("otherPartiesDirections")).isEqualTo(getExpectedDirection());
-        assertThat(templateData.get("courtDirections")).isEqualTo(getExpectedDirection());
+        assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirections());
     }
 
     private List<Map<String, String>> getExpectedChildren() {
@@ -218,25 +207,17 @@ class CaseDataExtractionServiceTest {
         );
     }
 
-    private List<Map<String, String>> getExpectedDirection() {
+    private List<Map<String, String>> getExpectedDirections() {
         return List.of(
             Map.of(
-                "title", String.format("Mock SDO type by %s",
+                "title", String.format("Test SDO type 1 on %s",
+                    TODAYS_DATE_TIME.format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma", Locale.UK))),
+                "body", "Test body 1"),
+            Map.of(
+                "title", String.format("Test SDO type 2 by %s",
                     TODAYS_DATE_TIME.format(DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy", Locale.UK))),
-                "body", "Mock body")
+                "body", "Test body 2")
         );
-    }
-
-    private Order createStandardDirectionOrders() {
-        return Order.builder()
-            .directions(ImmutableList.of(
-                createStandardOrder(DirectionAssignee.ALL_PARTIES),
-                createStandardOrder(DirectionAssignee.LOCAL_AUTHORITY),
-                createStandardOrder(DirectionAssignee.PARENTS_AND_RESPONDENTS),
-                createStandardOrder(DirectionAssignee.CAFCASS),
-                createStandardOrder(DirectionAssignee.OTHERS),
-                createStandardOrder(DirectionAssignee.COURT)))
-            .build();
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {

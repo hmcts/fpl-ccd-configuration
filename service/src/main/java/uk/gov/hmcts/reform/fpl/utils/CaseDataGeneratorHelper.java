@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.collect.ImmutableList;
-import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -15,6 +15,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 
 public class CaseDataGeneratorHelper {
     private static final LocalDateTime TODAYS_DATE_TIME = LocalDateTime.now();
@@ -54,27 +56,6 @@ public class CaseDataGeneratorHelper {
                 .build());
     }
 
-    public static List<Element<RespondentParty>> createRespondents() {
-        return ImmutableList.of(
-            Element.<RespondentParty>builder()
-                .id(UUID.randomUUID())
-                .value(RespondentParty.builder()
-                    .firstName("Timothy")
-                    .lastName("Jones")
-                    .relationshipToChild("Father")
-                    .build())
-                .build(),
-            Element.<RespondentParty>builder()
-                .id(UUID.randomUUID())
-                .value(RespondentParty.builder()
-                    .firstName("Sarah")
-                    .lastName("Simpson")
-                    .relationshipToChild("Mother")
-                    .build())
-                .build()
-        );
-    }
-
     public static List<Element<Child>> createPopulatedChildren() {
         return ImmutableList.of(
             Element.<Child>builder()
@@ -99,16 +80,48 @@ public class CaseDataGeneratorHelper {
                 .build());
     }
 
-    public static Element<Direction> createStandardOrder(DirectionAssignee type) {
-        return Element.<Direction>builder()
-            .value(Direction.builder()
-                .type("Mock SDO type")
-                .text("Mock body")
-                .assignee(type)
-                .readOnly("Yes")
-                .directionNeeded("No")
-                .completeBy(TODAYS_DATE_TIME)
-                .build())
-            .build();
+    public static Order createStandardDirectionOrders(LocalDateTime todaysDateTime) {
+        return Order.builder()
+            .directions(ImmutableList.of(
+                Element.<Direction>builder()
+                    .id(UUID.randomUUID())
+                    .value(Direction.builder()
+                        .type("Test SDO type 1")
+                        .text("Test body 1")
+                        .completeBy(todaysDateTime)
+                        .assignee(ALL_PARTIES)
+                        .build())
+                    .build(),
+                Element.<Direction>builder()
+                    .id(UUID.randomUUID())
+                    .value(Direction.builder()
+                        .type("Test SDO type 2")
+                        .text("Test body 2")
+                        .completeBy(todaysDateTime)
+                        .assignee(ALL_PARTIES)
+                    .build())
+                    .build()
+            )).build();
+    }
+
+    public static List<Element<RespondentParty>> createRespondents() {
+        return ImmutableList.of(
+            Element.<RespondentParty>builder()
+                .id(UUID.randomUUID())
+                .value(RespondentParty.builder()
+                    .firstName("Timothy")
+                    .lastName("Jones")
+                    .relationshipToChild("Father")
+                    .build())
+                .build(),
+            Element.<RespondentParty>builder()
+                .id(UUID.randomUUID())
+                .value(RespondentParty.builder()
+                    .firstName("Sarah")
+                    .lastName("Simpson")
+                    .relationshipToChild("Mother")
+                    .build())
+                .build()
+        );
     }
 }

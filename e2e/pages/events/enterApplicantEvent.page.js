@@ -1,4 +1,4 @@
-const I = actor();
+const { I } = inject();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
