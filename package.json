@@ -5,10 +5,11 @@
   "devDependencies": {
     "babel-eslint": "^10.0.3",
     "codeceptjs": "^2.3.2",
-    "eslint": "6.4.0",
+    "eslint": "6.5.0",
     "eslint-plugin-codeceptjs": "^1.1.0",
-    "husky": "^3.0.5",
+    "husky": "^3.0.7",
     "mocha-junit-reporter": "^1.23.1",
+    "mocha-multi": "^1.1.3",
     "mochawesome": "^4.1.0",
     "puppeteer": "^1.20.0"
   },
@@ -16,8 +17,8 @@
     "lint": "eslint e2e",
     "typings": "codeceptjs def && mv steps.d.ts typings/codeceptjs.d.ts",
     "test": "codeceptjs run-multiple parallel",
-    "test:functional": "MOCHAWESOME_REPORTDIR=output MOCHAWESOME_REPORTFILENAME=functional MOCHAWESOME_JSON=false codeceptjs run-multiple parallel --invert --grep @smoke-tests --reporter mochawesome",
-    "test:smoke": "MOCHA_FILE=test-results/result.xml codeceptjs run --grep @smoke-tests --reporter mocha-junit-reporter"
+    "test:functional": "MOCHAWESOME_REPORTFILENAME=functional codeceptjs run-multiple parallel --invert --grep @smoke-tests --reporter mocha-multi",
+    "test:smoke": "MOCHAWESOME_REPORTFILENAME=smoke codeceptjs run --grep @smoke-tests --reporter mocha-multi"
   },
   "husky": {
     "hooks": {

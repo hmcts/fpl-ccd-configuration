@@ -11,7 +11,8 @@ exports.config = {
     Puppeteer: {
       show: process.env.SHOW_BROWSER_WINDOW || false,
       restart: false,
-      waitForTimeout: 7500,
+      keepCookies: true,
+      waitForTimeout: 10000,
       chrome: {
         ignoreHTTPSErrors: true,
         args: process.env.PROXY_SERVER ? [
@@ -85,4 +86,28 @@ exports.config = {
     },
   },
   tests: './e2e/tests/*_test.js',
+  mocha: {
+    reporterOptions: {
+      'codeceptjs-cli-reporter': {
+        stdout: '-',
+        options: {
+          steps: false,
+        },
+      },
+      'mocha-junit-reporter': {
+        stdout: '-',
+        options: {
+          mochaFile: 'test-results/result.xml',
+        },
+      },
+      'mochawesome': {
+        stdout: '-',
+        options: {
+          reportDir: './output',
+          inlineAssets: true,
+          json: false,
+        },
+      },
+    },
+  },
 };
