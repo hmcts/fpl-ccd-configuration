@@ -71,9 +71,20 @@ public class CaseDataExtractionService {
     // TODO
     // No need to pass in CaseData to each method. Refactor to only use required model
     public Map<String, Object> getDraftStandardOrderDirectionTemplateData(CaseData caseData) throws IOException {
-        Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
-
         OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
+        Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
+        groupedDirections(caseData).forEach((key, value) -> {
+
+            ImmutableMap.of()
+
+
+            value.stream()
+                .map(Element::getValue)
+                .map(direction -> ImmutableMap.of(
+                    "title", formatTitle(direction, standardDirectionOrder.getDirections()),
+                    "body", defaultIfNull(direction.getText(), EMPTY_STATE_PLACEHOLDER)))
+                .collect(toList());
+        }));
 
         return ImmutableMap.<String, Object>builder()
             .put("courtName", caseData.getCaseLocalAuthority() != null
@@ -88,8 +99,6 @@ public class CaseDataExtractionService {
             .put("respondents", getRespondentsNameAndRelationship(caseData))
             .put("applicantName", getFirstApplicantName(caseData))
             .putAll(groupedDirections(caseData))
-            .put("standardDirectionOrders",
-                getStandardOrderDirections(caseData, standardDirectionOrder.getDirections()))
             .putAll(extractedHearingBookingData)
             .build();
     }
@@ -151,16 +160,6 @@ public class CaseDataExtractionService {
 
         Map<String, List<Element<Direction>>> groupedDirections = caseData.getStandardDirectionOrder().getDirections()
             .stream().collect(groupingBy(direction -> direction.getValue().getAssignee().getValue()));
-
-        groupedDirections.forEach((key, value) -> {
-            value.forEach(directionElement -> {
-                Direction direction = directionElement.getValue();
-                return ImmutableMap.of(
-                    "title", formatTitle(direction, directions),
-                    "body", defaultIfNull(direction.getText(), EMPTY_STATE_PLACEHOLDER)))
-                );
-            });
-        });
     }
 
     private List<Map<String, String>> getRespondentsNameAndRelationship(CaseData caseData) {
