@@ -57,8 +57,6 @@ public class NotifyGatekeeperController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<HearingBooking> booking = caseData.getHearingDetails().stream().map(Element::getValue).collect(toList());
-
         OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
 
         Map<String, List<Element<Direction>>> directions = standardDirectionOrder.getDirections()
@@ -66,7 +64,11 @@ public class NotifyGatekeeperController {
             .map(direction -> {
                 LocalDateTime completeBy = null;
 
-                if (direction.getDisplay().getDelta() != null) {
+                if (direction.getDisplay().getDelta() != null && caseData.getHearingDetails() != null) {
+                    List<HearingBooking> booking = caseData.getHearingDetails().stream()
+                        .map(Element::getValue)
+                        .collect(toList());
+
                     completeBy = buildDateTime(
                         booking.get(0).getDate(), Integer.parseInt(direction.getDisplay().getDelta()));
                 }
