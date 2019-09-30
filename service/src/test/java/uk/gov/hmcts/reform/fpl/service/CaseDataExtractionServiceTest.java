@@ -18,8 +18,10 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -150,7 +152,7 @@ class CaseDataExtractionServiceTest {
             .hearingDetails(createHearingBookings())
             .dateSubmitted(LocalDate.now())
             .respondents1(createRespondents())
-            .standardDirectionOrder(createStandardDirectionOrders())
+            .standardDirectionOrder(createStandardDirectionOrders(TODAYS_DATE_TIME))
             .build();
 
         List<Map<String, String>> expectedChildren = List.of(
@@ -164,15 +166,15 @@ class CaseDataExtractionServiceTest {
                 "dateOfBirth", EMPTY_STATE_PLACEHOLDER)
         );
 
-        // TODO
-        // Mock LocalDateTime.now()
         List<Map<String, String>> expectedDirections = List.of(
             Map.of(
-                "title", String.format("Test SDO type comply by: %s", TODAYS_DATE_TIME),
-                "body", "Test body 1"),
+                "title", String.format("Test SDO type 1 on %s",
+                    TODAYS_DATE_TIME.format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma", Locale.UK))),
+                    "body", "Test body 1"),
             Map.of(
-                "title", String.format("Test SDO type comply by: %s", TODAYS_DATE_TIME),
-                "body", "Test body 2")
+                "title", String.format("Test SDO type 2 by %s",
+                    TODAYS_DATE_TIME.format(DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy", Locale.UK))),
+                    "body", "Test body 2")
         );
 
         List<Map<String, String>> expectedRespondents = List.of(
@@ -202,6 +204,7 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("08.15am");
         assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
         assertThat(templateData.get("respondents")).isEqualTo(expectedRespondents);
+        assertThat(templateData.get("standardDirectionOrders")).isEqualTo(expectedDirections);
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {

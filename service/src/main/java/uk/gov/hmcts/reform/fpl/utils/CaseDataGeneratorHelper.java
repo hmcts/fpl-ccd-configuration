@@ -77,23 +77,23 @@ public class CaseDataGeneratorHelper {
     }
 
 
-    public static Order createStandardDirectionOrders() {
+    public static Order createStandardDirectionOrders(LocalDateTime todaysDateTime) {
         return Order.builder()
             .directions(ImmutableList.of(
                 Element.<Direction>builder()
                     .id(UUID.randomUUID())
                     .value(Direction.builder()
-                        .type("Test SDO type")
+                        .type("Test SDO type 1")
                         .text("Test body 1")
-                        .completeBy(LocalDateTime.now())
+                        .completeBy(todaysDateTime)
                         .build())
                     .build(),
                 Element.<Direction>builder()
                     .id(UUID.randomUUID())
                     .value(Direction.builder()
-                        .type("Test SDO type")
+                        .type("Test SDO type 2")
                         .text("Test body 2")
-                        .completeBy(LocalDateTime.now())
+                        .completeBy(todaysDateTime)
                         .build())
                     .build()
             )).build();
