@@ -26,6 +26,3 @@ fpl:
   local_authority_user:
     mapping: 'FPLA=>0;SA=>${swansea_user_ids_formatted};HN=>${hillingdon_user_ids_formatted}'
 EOL
-
-
-
