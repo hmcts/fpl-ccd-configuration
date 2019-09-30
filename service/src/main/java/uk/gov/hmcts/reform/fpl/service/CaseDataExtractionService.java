@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
@@ -59,7 +60,7 @@ public class CaseDataExtractionService {
     }
 
     // TODO
-    // No need to pass in CaseData to each method. Refactor to only use required model
+    // No need to pass in CaseData to each method. Refactor to only use required model type
     public Map<String, Object> getDraftStandardOrderDirectionTemplateData(CaseData caseData) {
         Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
 
@@ -73,9 +74,9 @@ public class CaseDataExtractionService {
                 ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26),
                 FormatStyle.LONG) : EMPTY_STATE_PLACEHOLDER)
             .put("children", getChildrenDetails(caseData))
-            .put("directions", getStandardOrderDirections(caseData))
             .put("respondents", getRespondentsNameAndRelationship(caseData))
             .put("applicantName", getFirstApplicantName(caseData))
+            .putAll(groupedDirections(caseData))
             .putAll(extractedHearingBookingData)
             .build();
     }
@@ -129,8 +130,16 @@ public class CaseDataExtractionService {
             .orElse("");
     }
 
-    // TODO
-    // Respondents is not mandatory. Check with BA what we do when we do not have respondents
+    private Map<String, List<Element<Direction>>> groupedDirections(CaseData caseData) {
+        if (caseData.getStandardDirectionOrder() == null
+            || caseData.getStandardDirectionOrder().getDirections() == null) {
+            return ImmutableMap.of();
+        }
+
+        return caseData.getStandardDirectionOrder().getDirections().stream()
+            .collect(groupingBy(direction -> direction.getValue().getAssignee().getValue()));
+    }
+
     private List<Map<String, String>> getRespondentsNameAndRelationship(CaseData caseData) {
 
         if (caseData.getRespondents1() == null || caseData.getRespondents1().isEmpty()) {

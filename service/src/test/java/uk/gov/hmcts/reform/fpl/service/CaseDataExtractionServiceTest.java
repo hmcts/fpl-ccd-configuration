@@ -5,14 +5,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +21,19 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStandardDirectionOrders;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStandardOrder;
 
 @ExtendWith(SpringExtension.class)
 class CaseDataExtractionServiceTest {
@@ -37,7 +44,6 @@ class CaseDataExtractionServiceTest {
     private static final String COURT_EMAIL = "example@court.com";
     private static final String CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL);
     private static final LocalDate TODAYS_DATE = LocalDate.now();
-    private static final LocalDateTime TODAYS_DATE_TIME = LocalDateTime.now();
     private static final String EMPTY_STATE_PLACEHOLDER = "BLANK - please complete";
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
@@ -125,6 +131,12 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
         assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
         assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
+        assertThat(templateData.get("allParties")).isNull();
+        assertThat(templateData.get("localAuthorityDirections")).isNull();
+        assertThat(templateData.get("parentsAndRespondentsDirections")).isNull();
+        assertThat(templateData.get("cafcassDirections")).isNull();
+        assertThat(templateData.get("otherPartiesDirections")).isNull();
+        assertThat(templateData.get("courtDirections")).isNull();
     }
 
     @Test
@@ -148,17 +160,6 @@ class CaseDataExtractionServiceTest {
                 "name", "Sansa Stark",
                 "gender", EMPTY_STATE_PLACEHOLDER,
                 "dateOfBirth", EMPTY_STATE_PLACEHOLDER)
-        );
-
-        // TODO
-        // Mock LocalDateTime.now()
-        List<Map<String, String>> expectedDirections = List.of(
-            Map.of(
-                "title", String.format("Test SDO type comply by: %s", TODAYS_DATE_TIME),
-                "body", "Test body 1"),
-            Map.of(
-                "title", String.format("Test SDO type comply by: %s", TODAYS_DATE_TIME),
-                "body", "Test body 2")
         );
 
         List<Map<String, String>> expectedRespondents = List.of(
@@ -188,6 +189,26 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("08.15am");
         assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
         assertThat(templateData.get("respondents")).isEqualTo(expectedRespondents);
+        assertThat(templateData.get("allParties")).isEqualTo(ImmutableList.of(createStandardOrder(ALL_PARTIES)));
+        assertThat(templateData.get("localAuthorityDirections")).isEqualTo(ImmutableList.of(
+            createStandardOrder(LOCAL_AUTHORITY)));
+        assertThat(templateData.get("parentsAndRespondentsDirections")).isEqualTo(ImmutableList.of(
+            createStandardOrder(PARENTS_AND_RESPONDENTS)));
+        assertThat(templateData.get("cafcassDirections")).isEqualTo(ImmutableList.of(createStandardOrder(CAFCASS)));
+        assertThat(templateData.get("otherPartiesDirections")).isEqualTo(ImmutableList.of(createStandardOrder(OTHERS)));
+        assertThat(templateData.get("courtDirections")).isEqualTo(ImmutableList.of(createStandardOrder(COURT)));
+    }
+
+    private Order createStandardDirectionOrders() {
+        return Order.builder()
+            .directions(ImmutableList.of(
+                createStandardOrder(DirectionAssignee.ALL_PARTIES),
+                createStandardOrder(DirectionAssignee.LOCAL_AUTHORITY),
+                createStandardOrder(DirectionAssignee.PARENTS_AND_RESPONDENTS),
+                createStandardOrder(DirectionAssignee.CAFCASS),
+                createStandardOrder(DirectionAssignee.OTHERS),
+                createStandardOrder(DirectionAssignee.COURT)))
+            .build();
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {
@@ -203,7 +224,6 @@ class CaseDataExtractionServiceTest {
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
                 .value(createHearingBooking(TODAYS_DATE))
-                .build()
-        );
+                .build());
     }
 }
