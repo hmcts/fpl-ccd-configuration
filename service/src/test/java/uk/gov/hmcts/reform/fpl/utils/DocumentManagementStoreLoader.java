@@ -19,6 +19,11 @@ public class DocumentManagementStoreLoader {
         return mapper.readValue(response, Document.class);
     }
 
+    public static Document c6Document() throws IOException {
+        String response = ResourceReader.readString("document-management-store-api/c6Document.json");
+        return mapper.readValue(response, Document.class);
+    }
+
     public static UploadResponse successfulDocumentUploadResponse() throws IOException {
         String response = ResourceReader.readString("document-management-store-api/responses/upload-success.json");
         return mapper.readValue(response, UploadResponse.class);
