@@ -12,10 +12,10 @@ function GetUserIds()
 }
 
 GetUserIds swansea
-swansea_user_ids_formatted=$(echo $user_ids | tr -d ' ')
+swansea_user_ids_formatted=$(echo ${user_ids} | tr -d ' ')
 
 GetUserIds hillingdon
-hillingdon_user_ids_formatted=$(echo $user_ids | tr -d ' ')
+hillingdon_user_ids_formatted=$(echo ${user_ids} | tr -d ' ')
 
 cd $resources_dir
 cat > application-user-mappings.yaml <<EOL
