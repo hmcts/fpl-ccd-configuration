@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -12,9 +15,12 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
+import uk.gov.hmcts.reform.fpl.model.configuration.Display;
+import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 
+import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
@@ -28,19 +34,22 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Service
 public class CaseDataExtractionService {
 
-    private DateFormatterService dateFormatterService;
-    private HearingBookingService hearingBookingService;
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final DateFormatterService dateFormatterService;
+    private final HearingBookingService hearingBookingService;
+    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final OrdersLookupService ordersLookupService;
 
     private static final String EMPTY_STATE_PLACEHOLDER = "BLANK - please complete";
 
     @Autowired
     public CaseDataExtractionService(DateFormatterService dateFormatterService,
                                      HearingBookingService hearingBookingService,
-                                     HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration) {
+                                     HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
+                                     OrdersLookupService ordersLookupService) {
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
+        this.ordersLookupService = ordersLookupService;
     }
 
     // Validation within our frontend ensures that the following data is present
@@ -60,16 +69,18 @@ public class CaseDataExtractionService {
     }
 
     // TODO
-    // No need to pass in CaseData to each method. Refactor to only use required model type
-    public Map<String, Object> getDraftStandardOrderDirectionTemplateData(CaseData caseData) {
+    // No need to pass in CaseData to each method. Refactor to only use required model
+    public Map<String, Object> getDraftStandardOrderDirectionTemplateData(CaseData caseData) throws IOException {
         Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
+
+        OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
 
         return ImmutableMap.<String, Object>builder()
             .put("courtName", caseData.getCaseLocalAuthority() != null
                 ? hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName()
                 : EMPTY_STATE_PLACEHOLDER)
             .put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_STATE_PLACEHOLDER))
-            .put("generationDate",  dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
+            .put("generationDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
             .put("complianceDeadline", caseData.getDateSubmitted() != null
                 ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26),
                 FormatStyle.LONG) : EMPTY_STATE_PLACEHOLDER)
@@ -77,6 +88,8 @@ public class CaseDataExtractionService {
             .put("respondents", getRespondentsNameAndRelationship(caseData))
             .put("applicantName", getFirstApplicantName(caseData))
             .putAll(groupedDirections(caseData))
+            .put("standardDirectionOrders",
+                getStandardOrderDirections(caseData, standardDirectionOrder.getDirections()))
             .putAll(extractedHearingBookingData)
             .build();
     }
@@ -136,8 +149,18 @@ public class CaseDataExtractionService {
             return ImmutableMap.of();
         }
 
-        return caseData.getStandardDirectionOrder().getDirections().stream()
-            .collect(groupingBy(direction -> direction.getValue().getAssignee().getValue()));
+        Map<String, List<Element<Direction>>> groupedDirections = caseData.getStandardDirectionOrder().getDirections()
+            .stream().collect(groupingBy(direction -> direction.getValue().getAssignee().getValue()));
+
+        groupedDirections.forEach((key, value) -> {
+            value.forEach(directionElement -> {
+                Direction direction = directionElement.getValue();
+                return ImmutableMap.of(
+                    "title", formatTitle(direction, directions),
+                    "body", defaultIfNull(direction.getText(), EMPTY_STATE_PLACEHOLDER)))
+                );
+            });
+        });
     }
 
     private List<Map<String, String>> getRespondentsNameAndRelationship(CaseData caseData) {
@@ -149,7 +172,7 @@ public class CaseDataExtractionService {
         return caseData.getRespondents1().stream()
             .map(Element::getValue)
             .map(respondent -> ImmutableMap.of(
-                    "name", respondent.getFirstName() == null && respondent.getLastName() == null
+                "name", respondent.getFirstName() == null && respondent.getLastName() == null
                     ? EMPTY_STATE_PLACEHOLDER : defaultIfNull(respondent.getFirstName(), "") + " "
                     + defaultIfNull(respondent.getLastName(), ""),
                 "relationshipToChild", defaultIfNull(respondent.getRelationshipToChild(), EMPTY_STATE_PLACEHOLDER)))
@@ -181,28 +204,45 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    private List<Map<String, String>> getStandardOrderDirections(CaseData caseData) {
+    private List<Map<String, String>> getStandardOrderDirections(CaseData caseData,
+                                                                 List<DirectionConfiguration> directions) {
 
         if (caseData.getStandardDirectionOrder() == null
             || caseData.getStandardDirectionOrder().getDirections() == null) {
             return ImmutableList.of();
         }
 
+        //TODO: null pointer is thrown when direction.getText() is null. Hidden values added in aboutToSubmit currently
+        // Have set defaultIfNull for now.
         return caseData.getStandardDirectionOrder().getDirections()
             .stream()
             .map(Element::getValue)
-            .map(direction -> Map.of(
-                "title", direction.getType() + " comply by: " + (direction.getCompleteBy() != null
-                    ? formatDate(direction) : " unknown"),
-                "body", direction.getText()))
+            .map(direction -> ImmutableMap.of(
+                "title", formatTitle(direction, directions),
+                "body", defaultIfNull(direction.getText(), EMPTY_STATE_PLACEHOLDER)))
             .collect(toList());
     }
 
-    // TODO
-    // Move to seperate service
-    private String formatDate(Direction direction) {
-        return direction.getCompleteBy().format(DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy"))
-            .replace("AM", "am")
-            .replace("PM", "pm");
+    @SuppressWarnings("LineLength")
+    private String formatTitle(Direction direction, List<DirectionConfiguration> directions) {
+        @AllArgsConstructor
+        @NoArgsConstructor
+        @Data
+        class DateFormattingConfig {
+            private String pattern = "h:mma, d MMMM yyyy";
+            private Display.Due due = Display.Due.BY;
+        }
+
+        DateFormattingConfig dateFormattingConfig = directions.stream()
+            .filter(directionConfiguration -> directionConfiguration.getTitle().equals(direction.getType()))
+            .map(DirectionConfiguration::getDisplay)
+            .map(display -> new DateFormattingConfig(display.getTemplateDateFormat(), display.getDue()))
+            .findAny()
+            .orElseGet(DateFormattingConfig::new);
+
+        return String.format("%s %s %s", direction.getType(), dateFormattingConfig.due.toString().toLowerCase(),
+            (direction.getCompleteBy() != null ? dateFormatterService
+                .formatLocalDateTimeBaseUsingFormat(direction.getCompleteBy(),
+                dateFormattingConfig.getPattern()) : "unknown"));
     }
 }

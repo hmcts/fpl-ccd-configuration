@@ -2,6 +2,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
+    "ListElementCode": "hearingDate",
+    "FieldType": "Date",
+    "ElementLabel": "The date of the hearing",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
     "ListElementCode": "directions",
     "FieldType": "Collection",
     "ElementLabel": "Directions",
@@ -11,9 +19,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
-    "ListElementCode": "orderDoc",
-    "FieldType": "Document",
-    "ElementLabel": "Drafts",
+    "ListElementCode": "finished",
+    "FieldType": "Text",
+    "ElementLabel": "Has the order been completed?",
     "SecurityClassification": "Public",
     "FieldShowCondition": "directions CONTAINS \"DO NOT SHOW\""
   }

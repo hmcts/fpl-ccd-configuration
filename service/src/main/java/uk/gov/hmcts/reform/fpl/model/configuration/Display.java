@@ -20,7 +20,7 @@ public class Display {
      */
     private Due due;
 
-    private String templateDateForm;
+    private String templateDateFormat;
     /**
      * What fields should be used to prepopulate dueBy (optional sa it can be null so no prepopulation should happen.
      * It looks like for now we will have only hearing.
@@ -35,7 +35,7 @@ public class Display {
     /**
      * How many units due date is shifted by.
      */
-    private int delta;
+    private String delta;
 
     /**
      * I don't think this one makes sense - what would be point of shifting deadline post the hearing date?.

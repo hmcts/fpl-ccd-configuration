@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,11 @@ import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 
 @Api
 @RestController
@@ -76,14 +82,9 @@ public class DraftOrdersController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackrequest) {
+        @RequestBody CallbackRequest callbackrequest) throws IOException {
         CaseDetails caseDetails = addDirectionsToOrder(callbackrequest.getCaseDetails());
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        caseData.getStandardDirectionOrder().getDirections()
-            .stream()
-            .filter(direction -> direction.getValue().getText() == null)
-            .forEach(direction -> direction.getValue().setText("Hardcoded hidden value"));
 
         Map<String, Object> templateData = caseDataExtractionService
             .getDraftStandardOrderDirectionTemplateData(caseData);
@@ -105,65 +106,97 @@ public class DraftOrdersController {
             .build();
     }
 
+
+    //TODO: readonly value hides info from tab view of standard directions order
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetailsBefore = addDirectionsToOrder(callbackrequest.getCaseDetailsBefore());
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
         CaseDetails caseDetailsAfter = addDirectionsToOrder(callbackrequest.getCaseDetails());
-        CaseData caseData = mapper.convertValue(caseDetailsAfter.getData(), CaseData.class);
+        CaseData caseDataWithValuesRemoved = mapper.convertValue(caseDetailsAfter.getData(), CaseData.class);
 
-        caseData.getStandardDirectionOrder().getDirections()
-            .forEach((direction) -> caseDataBefore.getStandardDirectionOrder().getDirections()
+        // persist read only, removable values and text
+        caseDataWithValuesRemoved.getStandardDirectionOrder().getDirections()
+            .forEach((directionToAddValue) -> caseDataBefore.getStandardDirectionOrder().getDirections()
                 .stream()
-                .filter(oldDirection -> oldDirection.getId().equals(direction.getId()))
-                .forEach(oldDirection -> {
-                    direction.getValue().setReadOnly(oldDirection.getValue().getReadOnly());
-                    direction.getValue().setDirectionRemovable(oldDirection.getValue().getDirectionRemovable());
+                .filter(direction -> direction.getId().equals(directionToAddValue.getId()))
+                .forEach(direction -> {
+                    directionToAddValue.getValue().setReadOnly(direction.getValue().getReadOnly());
+                    directionToAddValue.getValue().setDirectionRemovable(direction.getValue().getDirectionRemovable());
+
+                    if (!direction.getValue().getReadOnly().equals("No")) {
+                        directionToAddValue.getValue().setText(direction.getValue().getText());
+                    }
                 }));
 
-        caseDetailsAfter.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
+        caseDetailsAfter.getData().put("standardDirectionOrder", caseDataWithValuesRemoved.getStandardDirectionOrder());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsAfter.getData())
             .build();
     }
 
+    //TODO: refactor this method. Makes me want to vomit
     private CaseDetails addDirectionsToOrder(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
         List<Element<Direction>> directions = new ArrayList<>();
+
         directions.addAll(filterDirectionsNotRequired(caseData.getAllParties()));
 
         if (!isNull(caseData.getAllPartiesCustom())) {
             directions.addAll(assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES));
         }
 
-        directions.addAll(filterDirectionsNotRequired(caseData.getCourtDirections()));
         directions.addAll(filterDirectionsNotRequired(caseData.getLocalAuthorityDirections()));
-        directions.addAll(filterDirectionsNotRequired(caseData.getCafcassDirections()));
-        directions.addAll(filterDirectionsNotRequired(caseData.getOtherPartiesDirections()));
+
+        if (!isNull(caseData.getLocalAuthorityDirectionsCustom())) {
+            directions.addAll(assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(), LOCAL_AUTHORITY));
+        }
+
         directions.addAll(filterDirectionsNotRequired(caseData.getParentsAndRespondentsDirections()));
+
+        if (!isNull(caseData.getParentsAndRespondentsCustom())) {
+            directions.addAll(
+                assignCustomDirections(caseData.getParentsAndRespondentsCustom(), PARENTS_AND_RESPONDENTS));
+        }
+
+        directions.addAll(filterDirectionsNotRequired(caseData.getCafcassDirections()));
+
+        if (!isNull(caseData.getCafcassDirectionsCustom())) {
+            directions.addAll(assignCustomDirections(caseData.getCafcassDirectionsCustom(), CAFCASS));
+        }
+
+        directions.addAll(filterDirectionsNotRequired(caseData.getOtherPartiesDirections()));
+
+        if (!isNull(caseData.getOtherPartiesDirectionsCustom())) {
+            directions.addAll(assignCustomDirections(caseData.getCafcassDirectionsCustom(), OTHERS));
+        }
+
+        directions.addAll(filterDirectionsNotRequired(caseData.getCourtDirections()));
+
+        if (!isNull(caseData.getAllPartiesCustom())) {
+            directions.addAll(assignCustomDirections(caseData.getCourtDirections(), COURT));
+        }
 
         caseDetails.getData().put("standardDirectionOrder", Order.builder().directions(directions).build());
 
         return caseDetails;
     }
 
-    // TODO: need to add custom directions for other parties.
-    // TODO: this will be used to assign custom directions. Will probably be called when draft = final.
     private List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
                                                             DirectionAssignee assignee) {
-        return directions.stream().map(element -> Element.<Direction>builder()
-            .value(element.getValue().toBuilder()
-                .assignee(assignee)
-                .custom("Yes")
+        return directions.stream()
+            .map(element -> Element.<Direction>builder()
+                .value(element.getValue().toBuilder()
+                    .assignee(assignee)
+                    .custom("Yes")
+                    .build())
                 .build())
-            .build())
             .collect(toList());
     }
 
-    // TODO: what do we do with directions where a user has said it is not needed? Currently are removed. This is wrong.
+    // TODO: what do we do with directions where a user has said it is not needed?
     @SuppressWarnings("LineLength")
     private List<Element<Direction>> filterDirectionsNotRequired(List<Element<Direction>> directions) {
         return directions.stream()
