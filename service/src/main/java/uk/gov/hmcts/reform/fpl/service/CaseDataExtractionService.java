@@ -32,6 +32,8 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Service
+// TODO
+// No longer a very readable service. Consider splitting into NoticeOfProceedingsService and SDOService
 public class CaseDataExtractionService {
 
     private final DateFormatterService dateFormatterService;
@@ -71,20 +73,7 @@ public class CaseDataExtractionService {
     // TODO
     // No need to pass in CaseData to each method. Refactor to only use required model
     public Map<String, Object> getDraftStandardOrderDirectionTemplateData(CaseData caseData) throws IOException {
-        OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
         Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
-        groupedDirections(caseData).forEach((key, value) -> {
-
-            ImmutableMap.of()
-
-
-            value.stream()
-                .map(Element::getValue)
-                .map(direction -> ImmutableMap.of(
-                    "title", formatTitle(direction, standardDirectionOrder.getDirections()),
-                    "body", defaultIfNull(direction.getText(), EMPTY_STATE_PLACEHOLDER)))
-                .collect(toList());
-        }));
 
         return ImmutableMap.<String, Object>builder()
             .put("courtName", caseData.getCaseLocalAuthority() != null
@@ -98,15 +87,12 @@ public class CaseDataExtractionService {
             .put("children", getChildrenDetails(caseData))
             .put("respondents", getRespondentsNameAndRelationship(caseData))
             .put("applicantName", getFirstApplicantName(caseData))
-            .putAll(groupedDirections(caseData))
+            .putAll(getGroupedDirections(caseData))
             .putAll(extractedHearingBookingData)
             .build();
     }
 
     private Map<String, Object> getHearingBookingData(CaseData caseData) {
-
-        // TODO
-        // Rethink how we structure hearing. c6 c6a has defined hearing as flat properties
         if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
             return ImmutableMap.of(
                 "hearingDate", EMPTY_STATE_PLACEHOLDER,
@@ -152,14 +138,32 @@ public class CaseDataExtractionService {
             .orElse("");
     }
 
-    private Map<String, List<Element<Direction>>> groupedDirections(CaseData caseData) {
+    private Map<String, List<Map<String, String>>> getGroupedDirections(CaseData caseData) throws IOException {
+        OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
+
         if (caseData.getStandardDirectionOrder() == null
             || caseData.getStandardDirectionOrder().getDirections() == null) {
             return ImmutableMap.of();
         }
 
         Map<String, List<Element<Direction>>> groupedDirections = caseData.getStandardDirectionOrder().getDirections()
-            .stream().collect(groupingBy(direction -> direction.getValue().getAssignee().getValue()));
+            .stream()
+            .collect(groupingBy(direction -> direction.getValue().getAssignee().getValue()));
+
+        ImmutableMap.Builder<String, List<Map<String, String>>> formattedDirections = ImmutableMap.builder();
+
+        groupedDirections.forEach((key, value) -> {
+            List<Map<String, String>> directionsList = value.stream()
+                .map(Element::getValue)
+                .map(direction -> ImmutableMap.of(
+                    "title", formatTitle(direction, standardDirectionOrder.getDirections()),
+                    "body", defaultIfNull(direction.getText(), EMPTY_STATE_PLACEHOLDER)))
+                .collect(toList());
+
+            formattedDirections.put(key, directionsList);
+        });
+
+        return formattedDirections.build();
     }
 
     private List<Map<String, String>> getRespondentsNameAndRelationship(CaseData caseData) {
@@ -203,26 +207,6 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    private List<Map<String, String>> getStandardOrderDirections(CaseData caseData,
-                                                                 List<DirectionConfiguration> directions) {
-
-        if (caseData.getStandardDirectionOrder() == null
-            || caseData.getStandardDirectionOrder().getDirections() == null) {
-            return ImmutableList.of();
-        }
-
-        //TODO: null pointer is thrown when direction.getText() is null. Hidden values added in aboutToSubmit currently
-        // Have set defaultIfNull for now.
-        return caseData.getStandardDirectionOrder().getDirections()
-            .stream()
-            .map(Element::getValue)
-            .map(direction -> ImmutableMap.of(
-                "title", formatTitle(direction, directions),
-                "body", defaultIfNull(direction.getText(), EMPTY_STATE_PLACEHOLDER)))
-            .collect(toList());
-    }
-
-    @SuppressWarnings("LineLength")
     private String formatTitle(Direction direction, List<DirectionConfiguration> directions) {
         @AllArgsConstructor
         @NoArgsConstructor

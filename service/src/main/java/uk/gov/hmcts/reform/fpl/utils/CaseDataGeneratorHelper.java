@@ -13,12 +13,11 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
 public class CaseDataGeneratorHelper {
-    private static final LocalDateTime TODAYS_DATE_TIME = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+    private static final LocalDateTime TODAYS_DATE_TIME = LocalDateTime.now();
 
     private CaseDataGeneratorHelper() {
         // NO-OP
@@ -103,8 +102,8 @@ public class CaseDataGeneratorHelper {
     public static Element<Direction> createStandardOrder(DirectionAssignee type) {
         return Element.<Direction>builder()
             .value(Direction.builder()
-                .type("Mock type")
-                .text("Mock text")
+                .type("Mock SDO type")
+                .text("Mock body")
                 .assignee(type)
                 .readOnly("Yes")
                 .directionNeeded("No")
