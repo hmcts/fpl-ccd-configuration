@@ -168,11 +168,7 @@ public class CaseDataExtractionService {
     }
 
     private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
-
-        if (isNull(caseData.getChildren1())) {
-            return ImmutableList.of();
-        }
-
+        // children is validated as not null
         return caseData.getAllChildren().stream()
             .map(Element::getValue)
             .map(Child::getParty)
