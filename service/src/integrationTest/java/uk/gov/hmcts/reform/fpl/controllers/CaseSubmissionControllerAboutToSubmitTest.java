@@ -32,14 +32,19 @@ class CaseSubmissionControllerAboutToSubmitTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @MockBean
     private UserDetailsService userDetailsService;
+
     @MockBean
     private DocumentGeneratorService documentGeneratorService;
+
     @MockBean
     private UploadDocumentService uploadDocumentService;
+
+    @Autowired
+    private ObjectMapper mapper;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -84,7 +89,7 @@ class CaseSubmissionControllerAboutToSubmitTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getData())

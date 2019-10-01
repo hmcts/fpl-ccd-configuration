@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.utils.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 
 import java.util.List;
 import java.util.Map;
