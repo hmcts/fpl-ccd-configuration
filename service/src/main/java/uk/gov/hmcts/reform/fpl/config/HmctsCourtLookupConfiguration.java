@@ -47,6 +47,5 @@ public class HmctsCourtLookupConfiguration {
             return email;
         }
     }
-
 }
 

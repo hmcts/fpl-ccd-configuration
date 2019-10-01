@@ -51,7 +51,6 @@ class ApplicantServiceTest {
         assertThat(service.expandApplicantCollection(caseData).get(0).getValue().getParty().partyId).isEqualTo(uuid);
     }
 
-
     @Test
     void shouldAddPartyIdAndPartyTypeValuesToApplicant() {
         List<Element<Applicant>> applicants = ImmutableList.of(
@@ -131,6 +130,4 @@ class ApplicantServiceTest {
 
         assertThat(applicant.getParty().partyId).isEqualTo(uuid);
     }
-
-
 }
