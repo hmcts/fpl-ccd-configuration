@@ -4,6 +4,7 @@ const output = require('codeceptjs').output;
 const glob = require('glob');
 
 const ReportAggregator = require('../reporters/json-file-reporter/report-aggregator');
+const { stringify } = require('../reporters/json-file-reporter/utils');
 
 /**
  * Reads files found using defined glob expression.
@@ -32,7 +33,7 @@ module.exports = function () {
 
   if (aggregate !== undefined) {
     const outputFilePath = `${config.output}/metrics`;
-    fs.writeFileSync(outputFilePath, aggregate);
+    fs.writeFileSync(outputFilePath, stringify(aggregate));
     output.log(`Aggregated metrics has been saved to ${outputFilePath}`);
   }
 };

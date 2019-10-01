@@ -2,6 +2,8 @@ const fs = require('fs');
 
 const Base = require('mocha/lib/reporters/base');
 
+const { stringify } = require('./utils');
+
 exports = module.exports = function JSONReporter(runner, options) {
   Base.call(this, runner, options);
 
@@ -79,13 +81,4 @@ function cleanCircularReferences(obj) {
       return value;
     })
   );
-}
-
-/**
- * Converts a JavaScript value to a JSON string in pretty format
- */
-function stringify(value) {
-  const replacer = undefined;
-  const indentationSize = 2;
-  return JSON.stringify(value, replacer, indentationSize);
 }
