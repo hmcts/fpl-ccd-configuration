@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
-import uk.gov.hmcts.reform.fpl.config.utils.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 
 import java.util.List;
 import java.util.Map;

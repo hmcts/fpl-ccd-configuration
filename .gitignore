@@ -33,3 +33,6 @@ service/out
 # helm charts
 requirements.lock
 charts/*/charts/*.tgz
+
+# user mappings file
+application-user-mappings.yaml

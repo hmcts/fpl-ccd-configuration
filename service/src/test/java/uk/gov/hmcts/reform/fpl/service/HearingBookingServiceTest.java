@@ -8,14 +8,18 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
 @ExtendWith(SpringExtension.class)
-public class HearingBookingServiceTest {
+class HearingBookingServiceTest {
 
     private final HearingBookingService service = new HearingBookingService();
+    private static final LocalDate TODAYS_DATE = LocalDate.now();
 
     @Test
     void shouldReturnAnEmptyHearingBookingIfHearingDetailsIsNull() {
@@ -39,5 +43,29 @@ public class HearingBookingServiceTest {
         List<Element<HearingBooking>> hearingList = service.expandHearingBookingCollection(caseData);
 
         assertThat(hearingList.get(0).getValue().getTime()).isEqualTo("2.30");
+    }
+
+    @Test
+    void shouldGetMostUrgentHearingBookingFromACollectionOfHearingBookings() {
+        List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+
+        CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
+        HearingBooking sortedHearingBooking = service.getMostUrgentHearingBooking(caseData);
+
+        assertThat(sortedHearingBooking.getDate()).isEqualTo(TODAYS_DATE);
+    }
+
+    private List<Element<HearingBooking>> createHearingBookings() {
+        return ImmutableList.of(
+            Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(createHearingBooking(LocalDate.now().plusDays(5))).build(),
+            Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(createHearingBooking(LocalDate.now().plusDays(2))).build(),
+            Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(createHearingBooking(TODAYS_DATE)).build()
+        );
     }
 }
