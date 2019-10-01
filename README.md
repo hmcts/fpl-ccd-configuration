@@ -33,10 +33,13 @@ e.g. [direnv](https://direnv.net).
 
 The values can be found on [Confluence](https://tools.hmcts.net/confluence/x/eQP3P).
 
+Run the final script each time new LA users are added in order to fix access segregation locally
+
 ```bash
 $ ./bin/configurer/add-services.sh
 $ ./bin/configurer/add-roles.sh
 $ ./bin/configurer/add-users.sh
+$ ./bin/configurer/utils/generate-local-user-mappings.sh
 
 ```
 
@@ -75,10 +78,10 @@ To show tests in browser window as they run please set `SHOW_BROWSER_WINDOW` env
 SHOW_BROWSER_WINDOW=true yarn test
 ```
 
-To disable retry upon test failure please set `TEST_RETRIES` environment variable to `0`. By default 2 retries are enabled. 
+To enable retry upon test failure please set `TEST_RETRIES` environment variable to desired positive value. By default no retries are enabled. 
 
 ```$bash
-TEST_RETRIES=0 yarn test
+TEST_RETRIES=2 yarn test
 ```
 
 ## Service:
