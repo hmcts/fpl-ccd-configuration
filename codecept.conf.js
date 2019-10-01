@@ -108,6 +108,9 @@ exports.config = {
           json: false,
         },
       },
+      '../../e2e/reporters/json-file-reporter': {
+        stdout: '-',
+      },
     },
   },
 };
