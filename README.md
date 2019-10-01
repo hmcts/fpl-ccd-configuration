@@ -19,7 +19,7 @@ git submodule init
 git submodule update
 ```
 
-You must run this command once.
+You must run this command once to enable modules.
 ```
 ./ccd enable backend frontend  sidam sidam-local sidam-local-ccd dm-store
 ```
