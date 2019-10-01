@@ -19,14 +19,14 @@ git submodule init
 git submodule update
 ```
 
-Creating and starting containers:
-```
-./ccd compose up -d
-```
-
 You must run this command once.
 ```
 ./ccd enable backend frontend  sidam sidam-local sidam-local-ccd dm-store
+```
+
+Creating and starting containers:
+```
+./ccd compose up -d
 ```
 
 Add services, roles and users (needs to be run in below order).
