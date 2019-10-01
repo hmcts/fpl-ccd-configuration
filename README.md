@@ -24,6 +24,11 @@ Creating and starting containers:
 ./ccd compose up -d
 ```
 
+You must run this command once.
+```
+./ccd enable backend frontend  sidam sidam-local sidam-local-ccd dm-store
+```
+
 Add services, roles and users (needs to be run in below order).
 
 Make sure the `IDAM_ADMIN_USER` and `IDAM_ADMIN_PASSWORD` env variables are set to IDAM initial user.
