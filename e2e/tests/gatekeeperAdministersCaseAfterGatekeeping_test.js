@@ -3,7 +3,7 @@ const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 
 let caseId;
 
-Feature('Gatekeeper Case administration after submission');
+Feature('Gatekeeper Case administration after gatekeeping');
 
 Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperEventPage) => {
   if (!caseId) {
