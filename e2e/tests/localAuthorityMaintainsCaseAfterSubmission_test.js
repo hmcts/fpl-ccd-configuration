@@ -21,6 +21,6 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
   }
 });
 
-Scenario('local authority uploads documents', uploadDocs.uploadDocuments);
+Scenario('local authority uploads documents', uploadDocs.uploadDocuments());
 
-Scenario('local authority uploads court bundle', uploadDocs.uploadCourtBundle);
+Scenario('local authority uploads court bundle', uploadDocs.uploadCourtBundle());
