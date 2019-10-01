@@ -1,5 +1,9 @@
-function sum(total, value) {
-  return total + (value || 0);
+function sum(result, value) {
+  return result + (value || 0);
+}
+
+function flatten(result, array) {
+  return result.concat(array);
 }
 
 class ReportAggregator {
@@ -25,9 +29,9 @@ class ReportAggregator {
         failures: metrics.map(value => value.stats.failures).reduce(sum, 0),
         duration: metrics.map(value => value.stats.duration).reduce(sum, 0),
       },
-      passes: metrics.flatMap(value => value.passes),
-      pending: metrics.flatMap(value => value.pending),
-      failures: metrics.flatMap(value => value.failures),
+      passes: metrics.map(value => value.passes).reduce(flatten, []),
+      pending: metrics.map(value => value.pending).reduce(flatten, []),
+      failures: metrics.map(value => value.failures).reduce(flatten, []),
     };
   }
 }
