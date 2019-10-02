@@ -216,8 +216,10 @@ dependencies {
 
   testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot) {
     exclude group: 'junit', module: 'junit'
+    exclude group: 'org.mockito', module: 'mockito-core'
   }
   testCompile group: 'org.junit.jupiter', name :'junit-jupiter', version: '5.5.2'
+  testCompile group: 'org.mockito', name :'mockito-core', version: '3.0.0'
   testCompile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.17'
 
   integrationTestCompile configurations.testRuntime {
