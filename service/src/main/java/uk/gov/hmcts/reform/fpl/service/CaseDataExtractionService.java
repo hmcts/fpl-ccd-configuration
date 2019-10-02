@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
@@ -41,6 +40,7 @@ public class CaseDataExtractionService {
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
+    private final DirectionHelperService directionHelperService;
 
     private static final String EMPTY_STATE_PLACEHOLDER = "BLANK - please complete";
 
@@ -48,11 +48,13 @@ public class CaseDataExtractionService {
     public CaseDataExtractionService(DateFormatterService dateFormatterService,
                                      HearingBookingService hearingBookingService,
                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                     OrdersLookupService ordersLookupService) {
+                                     OrdersLookupService ordersLookupService,
+                                     DirectionHelperService directionHelperService) {
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.ordersLookupService = ordersLookupService;
+        this.directionHelperService = directionHelperService;
     }
 
     // Validation within our frontend ensures that the following data is present
@@ -147,9 +149,8 @@ public class CaseDataExtractionService {
             return ImmutableMap.of();
         }
 
-        Map<String, List<Element<Direction>>> groupedDirections = caseData.getStandardDirectionOrder().getDirections()
-            .stream()
-            .collect(groupingBy(direction -> direction.getValue().getAssignee().getValue()));
+        Map<String, List<Element<Direction>>> groupedDirections = directionHelperService.orderDirectionsByAssignee(
+            caseData.getStandardDirectionOrder().getDirections());
 
         ImmutableMap.Builder<String, List<Map<String, String>>> formattedDirections = ImmutableMap.builder();
 
@@ -223,6 +224,6 @@ public class CaseDataExtractionService {
         return String.format("%s %s %s", direction.getType(), dateFormattingConfig.due.toString().toLowerCase(),
             (direction.getCompleteBy() != null ? dateFormatterService
                 .formatLocalDateTimeBaseUsingFormat(direction.getCompleteBy(),
-                dateFormattingConfig.getPattern()) : "unknown"));
+                    dateFormattingConfig.getPattern()) : "unknown"));
     }
 }
