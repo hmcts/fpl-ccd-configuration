@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -21,23 +20,15 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.Objects.isNull;
-import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.toList;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 
 @Api
 @RestController
@@ -47,16 +38,19 @@ public class DraftOrdersController {
     private final DocmosisDocumentGeneratorService documentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final CaseDataExtractionService caseDataExtractionService;
+    private final DirectionHelperService directionHelperService;
 
     @Autowired
     public DraftOrdersController(ObjectMapper mapper,
                                  DocmosisDocumentGeneratorService documentGeneratorService,
                                  UploadDocumentService uploadDocumentService,
-                                 CaseDataExtractionService caseDataExtractionService) {
+                                 CaseDataExtractionService caseDataExtractionService,
+                                 DirectionHelperService directionHelperService) {
         this.mapper = mapper;
         this.documentGeneratorService = documentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
         this.caseDataExtractionService = caseDataExtractionService;
+        this.directionHelperService = directionHelperService;
     }
 
     @PostMapping("/about-to-start")
@@ -65,10 +59,8 @@ public class DraftOrdersController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (!isNull(caseData.getStandardDirectionOrder())) {
-            Map<String, List<Element<Direction>>> directions = caseData.getStandardDirectionOrder().getDirections()
-                .stream()
-                .filter(x -> x.getValue().getCustom() == null)
-                .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee().getValue()));
+            Map<String, List<Element<Direction>>> directions = directionHelperService.orderDirectionsByAssignee(
+                caseData.getStandardDirectionOrder().getDirections());
 
             directions.forEach((key, value) -> caseDetails.getData().put(key, value));
         }
@@ -106,8 +98,6 @@ public class DraftOrdersController {
             .build();
     }
 
-
-    //TODO: readonly value hides info from tab view of standard directions order
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetailsBefore = addDirectionsToOrder(callbackrequest.getCaseDetailsBefore());
@@ -116,91 +106,21 @@ public class DraftOrdersController {
         CaseDetails caseDetailsAfter = addDirectionsToOrder(callbackrequest.getCaseDetails());
         CaseData caseDataWithValuesRemoved = mapper.convertValue(caseDetailsAfter.getData(), CaseData.class);
 
-        // persist read only, removable values and text
-        caseDataWithValuesRemoved.getStandardDirectionOrder().getDirections()
-            .forEach(directionToAddValue -> caseDataBefore.getStandardDirectionOrder().getDirections()
-                .stream()
-                .filter(direction -> direction.getId().equals(directionToAddValue.getId()))
-                .forEach(direction -> {
-                    directionToAddValue.getValue().setReadOnly(direction.getValue().getReadOnly());
-                    directionToAddValue.getValue().setDirectionRemovable(direction.getValue().getDirectionRemovable());
+        Order orderWithValues = directionHelperService.persistHiddenDirectionValues(
+            caseDataBefore.getStandardDirectionOrder(), caseDataWithValuesRemoved.getStandardDirectionOrder());
 
-                    if (!direction.getValue().getReadOnly().equals("No")) {
-                        directionToAddValue.getValue().setText(direction.getValue().getText());
-                    }
-                }));
-
-        caseDetailsAfter.getData().put("standardDirectionOrder", caseDataWithValuesRemoved.getStandardDirectionOrder());
+        caseDetailsAfter.getData().put("standardDirectionOrder", orderWithValues);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsAfter.getData())
             .build();
     }
 
-    //TODO: refactor this method. Makes me want to vomit
     private CaseDetails addDirectionsToOrder(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        List<Element<Direction>> directions = new ArrayList<>();
 
-        directions.addAll(filterDirectionsNotRequired(caseData.getAllParties()));
-
-        if (!isNull(caseData.getAllPartiesCustom())) {
-            directions.addAll(assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES));
-        }
-
-        directions.addAll(filterDirectionsNotRequired(caseData.getLocalAuthorityDirections()));
-
-        if (!isNull(caseData.getLocalAuthorityDirectionsCustom())) {
-            directions.addAll(assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(), LOCAL_AUTHORITY));
-        }
-
-        directions.addAll(filterDirectionsNotRequired(caseData.getParentsAndRespondentsDirections()));
-
-        if (!isNull(caseData.getParentsAndRespondentsCustom())) {
-            directions.addAll(
-                assignCustomDirections(caseData.getParentsAndRespondentsCustom(), PARENTS_AND_RESPONDENTS));
-        }
-
-        directions.addAll(filterDirectionsNotRequired(caseData.getCafcassDirections()));
-
-        if (!isNull(caseData.getCafcassDirectionsCustom())) {
-            directions.addAll(assignCustomDirections(caseData.getCafcassDirectionsCustom(), CAFCASS));
-        }
-
-        directions.addAll(filterDirectionsNotRequired(caseData.getOtherPartiesDirections()));
-
-        if (!isNull(caseData.getOtherPartiesDirectionsCustom())) {
-            directions.addAll(assignCustomDirections(caseData.getCafcassDirectionsCustom(), OTHERS));
-        }
-
-        directions.addAll(filterDirectionsNotRequired(caseData.getCourtDirections()));
-
-        if (!isNull(caseData.getAllPartiesCustom())) {
-            directions.addAll(assignCustomDirections(caseData.getCourtDirections(), COURT));
-        }
-
-        caseDetails.getData().put("standardDirectionOrder", Order.builder().directions(directions).build());
+        caseDetails.getData().put("standardDirectionOrder", directionHelperService.createOrder(caseData));
 
         return caseDetails;
-    }
-
-    private List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
-                                                            DirectionAssignee assignee) {
-        return directions.stream()
-            .map(element -> Element.<Direction>builder()
-                .value(element.getValue().toBuilder()
-                    .assignee(assignee)
-                    .custom("Yes")
-                    .build())
-                .build())
-            .collect(toList());
-    }
-
-    // TODO: what do we do with directions where a user has said it is not needed?
-    @SuppressWarnings("LineLength")
-    private List<Element<Direction>> filterDirectionsNotRequired(List<Element<Direction>> directions) {
-        return directions.stream()
-            .filter(directionElement -> directionElement.getValue().getDirectionNeeded() == null || directionElement.getValue().getDirectionNeeded().equals("Yes"))
-            .collect(toList());
     }
 }
