@@ -37,7 +37,7 @@ public class CaseDataExtractionService {
 
         // Validation within our frontend ensures that the following data is present
         return Map.of(
-            "courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName(),
+            "courtName", getCourtName(caseData),
             "familyManCaseNumber", caseData.getFamilyManCaseNumber(),
             "todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG),
             "applicantName", getFirstApplicantName(caseData),
@@ -48,6 +48,10 @@ public class CaseDataExtractionService {
             "preHearingAttendance", hearingBooking.getPreHearingAttendance(),
             "hearingTime", hearingBooking.getTime()
         );
+    }
+
+    private String getCourtName(CaseData caseData) {
+        return hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName();
     }
 
     private String getOrderTypes(CaseData caseData) {

@@ -176,7 +176,7 @@ class CaseValidatorServiceTest {
                 .reason(ImmutableList.of("reason"))
                 .build())
             .grounds(Grounds.builder()
-                .thresholdReason(ImmutableList.of("reason"))
+                .thresholdReason(ImmutableList. of("reason"))
                 .thresholdDetails("Details")
                 .build())
             .orders(Orders.builder()

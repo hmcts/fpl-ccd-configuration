@@ -59,7 +59,7 @@ public class LookupConfigParser {
         checkArgument(!isNullOrEmpty(config), "Mapping configuration cannot be empty");
 
         return Arrays.stream(config.split(MAPPING_SEPARATOR))
-            .map(entry -> entry.split(ENTRY_SEPARATOR, 2))
+            .map(entry -> entry.split(ENTRY_SEPARATOR, 3))
             .collect(toImmutableMap(
                 entry -> checkNotNull(emptyToNull(entry[0]), "Mapping key cannot be empty"),
                 entry -> valueParser.parse(checkNotNull(emptyToNull(entry[1]), "Mapping value cannot be empty"))

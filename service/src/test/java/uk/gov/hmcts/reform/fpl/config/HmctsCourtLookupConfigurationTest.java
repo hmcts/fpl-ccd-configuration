@@ -11,7 +11,6 @@ class HmctsCourtLookupConfigurationTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_NAME = "Example Court";
     private static final String COURT_EMAIL = "example@court.com";
-
     private static final String CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL);
 
     private HmctsCourtLookupConfiguration configuration = new HmctsCourtLookupConfiguration(CONFIG);
