@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
@@ -178,6 +179,7 @@ public class CaseDataExtractionService {
 
         return caseData.getRespondents1().stream()
             .map(Element::getValue)
+            .map(Respondent::getParty)
             .map(respondent -> ImmutableMap.of(
                 "name", respondent.getFirstName() == null && respondent.getLastName() == null
                     ? EMPTY_STATE_PLACEHOLDER : defaultIfNull(respondent.getFirstName(), "") + " "

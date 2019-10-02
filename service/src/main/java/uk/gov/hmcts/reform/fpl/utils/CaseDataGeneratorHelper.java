@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
@@ -99,27 +100,31 @@ public class CaseDataGeneratorHelper {
                         .text("Test body 2")
                         .completeBy(todaysDateTime)
                         .assignee(ALL_PARTIES)
-                    .build())
+                        .build())
                     .build()
             )).build();
     }
 
-    public static List<Element<RespondentParty>> createRespondents() {
+    public static List<Element<Respondent>> createRespondents() {
         return ImmutableList.of(
-            Element.<RespondentParty>builder()
+            Element.<Respondent>builder()
                 .id(UUID.randomUUID())
-                .value(RespondentParty.builder()
-                    .firstName("Timothy")
-                    .lastName("Jones")
-                    .relationshipToChild("Father")
+                .value(Respondent.builder().party(
+                    RespondentParty.builder()
+                        .firstName("Timothy")
+                        .lastName("Jones")
+                        .relationshipToChild("Father")
+                        .build())
                     .build())
                 .build(),
-            Element.<RespondentParty>builder()
+            Element.<Respondent>builder()
                 .id(UUID.randomUUID())
-                .value(RespondentParty.builder()
-                    .firstName("Sarah")
-                    .lastName("Simpson")
-                    .relationshipToChild("Mother")
+                .value(Respondent.builder().party(
+                    RespondentParty.builder()
+                        .firstName("Sarah")
+                        .lastName("Simpson")
+                        .relationshipToChild("Mother")
+                        .build())
                     .build())
                 .build()
         );
