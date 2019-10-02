@@ -78,6 +78,7 @@ public class CaseDataExtractionService {
     public Map<String, Object> getDraftStandardOrderDirectionTemplateData(CaseData caseData) throws IOException {
         Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
 
+        List<Map<String, String>> respondentsNameAndRelationship = getRespondentsNameAndRelationship(caseData);
         return ImmutableMap.<String, Object>builder()
             .put("courtName", caseData.getCaseLocalAuthority() != null
                 ? hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName()
@@ -88,7 +89,8 @@ public class CaseDataExtractionService {
                 ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26),
                 FormatStyle.LONG) : EMPTY_STATE_PLACEHOLDER)
             .put("children", getChildrenDetails(caseData))
-            .put("respondents", getRespondentsNameAndRelationship(caseData))
+            .put("respondents", respondentsNameAndRelationship)
+            .put("respondentsProvided", respondentsNameAndRelationship.size() > 0)
             .put("applicantName", getFirstApplicantName(caseData))
             .putAll(getGroupedDirections(caseData))
             .putAll(extractedHearingBookingData)
