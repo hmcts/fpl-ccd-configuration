@@ -1,9 +1,29 @@
 function sum(result, value) {
-  return result + (value || 0);
+  if (result == null) {
+    return value;
+  }
+  return result + value;
 }
 
 function flatten(result, array) {
+  if (result == null) {
+    return array;
+  }
   return result.concat(array);
+}
+
+function min(result, value) {
+  if (result == null) {
+    return value;
+  }
+  return value.localeCompare(result) < 0 ? value : result;
+}
+
+function max(result, value) {
+  if (result == null) {
+    return value;
+  }
+  return value.localeCompare(result) > 0 ? value : result;
 }
 
 class ReportAggregator {
@@ -27,6 +47,8 @@ class ReportAggregator {
         passes: metrics.map(value => value.stats.passes).reduce(sum, 0),
         pending: metrics.map(value => value.stats.pending).reduce(sum, 0),
         failures: metrics.map(value => value.stats.failures).reduce(sum, 0),
+        start: metrics.map(value => value.stats.start).reduce(min, undefined),
+        end: metrics.map(value => value.stats.end).reduce(max, undefined),
         duration: metrics.map(value => value.stats.duration).reduce(sum, 0),
       },
       passes: metrics.map(value => value.passes).reduce(flatten, []),

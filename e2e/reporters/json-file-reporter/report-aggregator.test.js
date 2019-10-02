@@ -18,6 +18,8 @@ describe('ReportAggregator', () => {
         passes: 0,
         pending: 0,
         failures: 0,
+        start: undefined,
+        end: undefined,
         duration: 0,
       },
       passes: [],
@@ -34,6 +36,8 @@ describe('ReportAggregator', () => {
         passes: 1,
         pending: 0,
         failures: 0,
+        start: '2019-12-31T23:59:59.000Z',
+        end: '2019-12-31T23:59:59.999Z',
         duration: 100,
       },
       passes: [{
@@ -51,6 +55,8 @@ describe('ReportAggregator', () => {
         passes: 1,
         pending: 0,
         failures: 0,
+        start: '2019-12-31T23:59:59.000Z',
+        end: '2019-12-31T23:59:59.999Z',
         duration: 100,
       },
       passes: [{
@@ -65,11 +71,27 @@ describe('ReportAggregator', () => {
   it('returns aggregated metrics when input array has more than one element', () => {
     const metrics = [{
       stats: {
+        suites: 0,
+        tests: 0,
+        passes: 0,
+        pending: 0,
+        failures: 0,
+        start: '2019-12-31T23:59:59.001Z',
+        end: '2019-12-31T23:59:59.998Z',
+        duration: 0,
+      },
+      passes: [],
+      pending: [],
+      failures: [],
+    }, {
+      stats: {
         suites: 1,
         tests: 0,
         passes: 1,
         pending: 0,
         failures: 0,
+        start: '2019-12-31T23:59:59.000Z',
+        end: '2019-12-31T23:59:59.999Z',
         duration: 100,
       },
       passes: [{
@@ -85,6 +107,8 @@ describe('ReportAggregator', () => {
         passes: 1,
         pending: 0,
         failures: 1,
+        start: '2019-12-31T23:59:59.001Z',
+        end: '2019-12-31T23:59:59.998Z',
         duration: 199,
       },
       passes: [{
@@ -109,6 +133,8 @@ describe('ReportAggregator', () => {
         passes: 2,
         pending: 0,
         failures: 1,
+        start: '2019-12-31T23:59:59.000Z',
+        end: '2019-12-31T23:59:59.999Z',
         duration: 299,
       },
       passes: [{
