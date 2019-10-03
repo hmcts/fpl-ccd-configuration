@@ -465,5 +465,13 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "C2Upload",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "tempC2",
+    "Label": "Upload C2",
+    "FieldType": "C2Upload",
+    "SecurityClassification": "Public"
   }
 ]
