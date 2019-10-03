@@ -46,7 +46,8 @@
     "CaseFieldID": "courtDirections",
     "ListElementCode": "text",
     "FieldDisplayOrder": 5,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "OPTIONAL",
+    "FieldShowCondition": "courtDirections.readOnly!=\"Yes\" AND courtDirections.directionNeeded!=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
