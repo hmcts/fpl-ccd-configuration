@@ -9,9 +9,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.Event;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -19,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -37,14 +43,24 @@ public class NotifyGatekeeperController {
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final OrdersLookupService ordersLookupService;
+    private final CoreCaseDataApi coreCaseDataApi;
+    private final AuthTokenGenerator authTokenGenerator;
+    private final IdamClient idamClient;
+
 
     @Autowired
     public NotifyGatekeeperController(ObjectMapper mapper,
                                       ApplicationEventPublisher applicationEventPublisher,
-                                      OrdersLookupService ordersLookupService) {
+                                      OrdersLookupService ordersLookupService,
+                                      CoreCaseDataApi coreCaseDataApi,
+                                      AuthTokenGenerator authTokenGenerator,
+                                      IdamClient idamClient) {
         this.mapper = mapper;
         this.applicationEventPublisher = applicationEventPublisher;
         this.ordersLookupService = ordersLookupService;
+        this.coreCaseDataApi = coreCaseDataApi;
+        this.authTokenGenerator = authTokenGenerator;
+        this.idamClient = idamClient;
     }
 
     private String booleanToYesOrNo(boolean value) {
@@ -101,6 +117,40 @@ public class NotifyGatekeeperController {
         @RequestBody CallbackRequest callbackRequest) {
 
         applicationEventPublisher.publishEvent(new NotifyGatekeeperEvent(callbackRequest, authorization, userId));
+
+        //////////////////////////////////////////////////////////////////////////
+
+//        String userToken = idamClient.authenticateUser("", "");
+//        System.out.println("userToken = " + userToken);
+//        String systemUpdateUserId = idamClient.getUserDetails(userToken).getId();
+//        System.out.println("userId = " + userId);
+//
+//        StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
+//            userToken,
+//            authTokenGenerator.generate(),
+//            systemUpdateUserId,
+//            callbackRequest.getCaseDetails().getJurisdiction(),
+//            callbackRequest.getCaseDetails().getCaseTypeId(),
+//            callbackRequest.getCaseDetails().getId().toString(),
+//            "");
+//
+//        CaseDataContent caseDataContent = CaseDataContent.builder()
+//            .eventToken(startEventResponse.getToken())
+//            .event(Event.builder()
+//                .id(startEventResponse.getEventId())
+//                .build())
+//            .data(data)
+//            .build();
+//
+//        coreCaseDataApi.submitEventForCaseWorker(
+//            userToken,
+//            authTokenGenerator.generate(),
+//            systemUpdateUserId,
+//            callbackRequest.getCaseDetails().getJurisdiction(),
+//            callbackRequest.getCaseDetails().getCaseTypeId(),
+//            callbackRequest.getCaseDetails().getId().toString(),
+//            true,
+//            caseDataContent);
     }
 
     private LocalDateTime buildDateTime(LocalDate date, int delta) {
