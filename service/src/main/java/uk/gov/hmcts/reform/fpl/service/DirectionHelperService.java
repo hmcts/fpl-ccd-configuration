@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.groupingBy;
@@ -89,8 +90,17 @@ public class DirectionHelperService {
     }
 
     public Map<String, List<Element<Direction>>> orderDirectionsByAssignee(List<Element<Direction>> directions) {
+        AtomicInteger at = new AtomicInteger(2);
         return directions.stream()
             .filter(x -> x.getValue().getCustom() == null)
+            .map(direction -> {
+                Direction.DirectionBuilder directionBuilder = direction.getValue().toBuilder();
+
+                return Element.<Direction>builder()
+                    .id(direction.getId())
+                    .value(directionBuilder.type(at.getAndIncrement() + ". " + direction.getValue().getType()).build())
+                    .build();
+            })
             .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee().getValue()));
     }
 
