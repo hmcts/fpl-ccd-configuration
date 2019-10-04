@@ -68,12 +68,18 @@ public class CaseDataExtractionService {
     }
 
     private String getAllChildrenNames(CaseData caseData) {
-        return caseData.getAllChildren().stream()
+        String childrenNames = caseData.getAllChildren().stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
             .map(Child::getParty)
             .filter(Objects::nonNull)
             .map(childParty -> (childParty.getFirstName()) + " " + (childParty.getLastName()))
-                .collect(Collectors.joining(", "));
+            .collect(Collectors.joining(", "));
+
+        StringBuilder stringBuilder = new StringBuilder(childrenNames);
+        stringBuilder.replace(childrenNames.lastIndexOf(","), childrenNames.lastIndexOf(",") + 1, "and");
+        childrenNames = stringBuilder.toString();
+
+        return childrenNames;
     }
 }

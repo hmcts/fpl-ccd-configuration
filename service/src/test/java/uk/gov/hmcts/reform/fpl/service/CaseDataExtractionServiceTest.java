@@ -55,7 +55,7 @@ class CaseDataExtractionServiceTest {
             .build();
 
         Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
-        assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark");
+        assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark and Jon Snow");
     }
 
     @Test
@@ -94,7 +94,7 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
         assertThat(templateData.get("orderTypes")).isEqualTo("Care order, Education supervision order");
-        assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark");
+        assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark and Jon Snow");
         assertThat(templateData.get("hearingDate")).isEqualTo(dateFormatterService
             .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
         assertThat(templateData.get("hearingVenue")).isEqualTo("Venue");
