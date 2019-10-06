@@ -10,6 +10,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisRequest;
 
@@ -28,9 +29,8 @@ class DocmosisDocumentGeneratorServiceTest {
     @Mock
     private ResponseEntity<byte[]> tornadoResponse;
 
-    private String tornadoUrl = "http://tornado:5433";
-
-    private String tornadoAccessKey = "";
+    @Mock
+    private DocmosisConfiguration docmosisDocumentGenerationConfiguration;
 
     @Captor
     ArgumentCaptor<HttpEntity<DocmosisRequest>> argumentCaptor;
@@ -39,8 +39,8 @@ class DocmosisDocumentGeneratorServiceTest {
     void shouldInvokesTornado() {
         Map<String, Object> placeholders = getTemplatePlaceholders();
 
-        when(restTemplate.exchange(eq(tornadoUrl + "/rs/render"), eq(HttpMethod.POST), argumentCaptor.capture(),
-            eq(byte[].class))).thenReturn(tornadoResponse);
+        when(restTemplate.exchange(eq(docmosisDocumentGenerationConfiguration.getUrl() + "/rs/render"),
+            eq(HttpMethod.POST), argumentCaptor.capture(), eq(byte[].class))).thenReturn(tornadoResponse);
 
         byte[] expectedResponse = {1, 2, 3};
         when(tornadoResponse.getBody()).thenReturn(expectedResponse);
@@ -70,8 +70,7 @@ class DocmosisDocumentGeneratorServiceTest {
     private DocmosisDocumentGeneratorService createServiceInstance() {
         return new DocmosisDocumentGeneratorService(
             restTemplate,
-            tornadoUrl,
-            tornadoAccessKey
+            docmosisDocumentGenerationConfiguration
         );
     }
 }

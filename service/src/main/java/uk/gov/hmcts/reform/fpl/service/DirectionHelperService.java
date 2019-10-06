@@ -90,9 +90,15 @@ public class DirectionHelperService {
     }
 
     public Map<String, List<Element<Direction>>> orderDirectionsByAssignee(List<Element<Direction>> directions) {
-        AtomicInteger at = new AtomicInteger(2);
         return directions.stream()
             .filter(x -> x.getValue().getCustom() == null)
+            .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee().getValue()));
+    }
+
+    public List<Element<Direction>> numberDirections(List<Element<Direction>> directions) {
+        AtomicInteger at = new AtomicInteger(2);
+
+        return directions.stream()
             .map(direction -> {
                 Direction.DirectionBuilder directionBuilder = direction.getValue().toBuilder();
 
@@ -101,7 +107,8 @@ public class DirectionHelperService {
                     .value(directionBuilder.type(at.getAndIncrement() + ". " + direction.getValue().getType()).build())
                     .build();
             })
-            .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee().getValue()));
+            .collect(toList());
+
     }
 
     private List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,

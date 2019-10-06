@@ -12,12 +12,13 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Builder
@@ -59,7 +60,7 @@ public class CaseData {
     private final List<Element<Direction>> parentsAndRespondentsDirections;
     private final List<Element<Direction>> parentsAndRespondentsCustom;
     private final Order standardDirectionOrder;
-
+    private final AllocationDecision allocationDecision;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
     private final Hearing hearing;

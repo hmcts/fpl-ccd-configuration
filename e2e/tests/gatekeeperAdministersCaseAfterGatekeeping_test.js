@@ -4,9 +4,9 @@ const directions = require('../fixtures/directions.js');
 
 let caseId;
 
-Feature('Gatekeeper Case administration after submission');
+Feature('Gatekeeper Case administration after gatekeeping');
 
-Before(async (I, caseViewPage, sendCaseToGatekeeperEventPage, submitApplicationEventPage) => {
+Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
@@ -20,18 +20,19 @@ Before(async (I, caseViewPage, sendCaseToGatekeeperEventPage, submitApplicationE
 
     I.signOut();
 
+    //hmcts login and send to gatekeeper
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
     await I.navigateToCaseDetails(caseId);
-    await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+    caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
     sendCaseToGatekeeperEventPage.enterEmail();
     await I.completeEvent('Save and continue');
-
     I.signOut();
 
     await I.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
   }
   await I.navigateToCaseDetails(caseId);
 });
+
 
 Scenario('gatekeeper enters allocation decision', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);

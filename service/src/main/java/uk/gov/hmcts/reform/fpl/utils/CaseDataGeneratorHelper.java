@@ -20,7 +20,6 @@ import java.util.UUID;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 
 public class CaseDataGeneratorHelper {
-    private static final LocalDateTime TODAYS_DATE_TIME = LocalDateTime.now();
 
     private CaseDataGeneratorHelper() {
         // NO-OP
@@ -81,7 +80,7 @@ public class CaseDataGeneratorHelper {
                 .build());
     }
 
-    public static Order createStandardDirectionOrders(LocalDateTime todaysDateTime) {
+    public static Order createStandardDirectionOrders(LocalDateTime today) {
         return Order.builder()
             .directions(ImmutableList.of(
                 Element.<Direction>builder()
@@ -89,7 +88,7 @@ public class CaseDataGeneratorHelper {
                     .value(Direction.builder()
                         .type("Test SDO type 1")
                         .text("Test body 1")
-                        .completeBy(todaysDateTime)
+                        .completeBy(today)
                         .assignee(ALL_PARTIES)
                         .build())
                     .build(),
@@ -98,7 +97,7 @@ public class CaseDataGeneratorHelper {
                     .value(Direction.builder()
                         .type("Test SDO type 2")
                         .text("Test body 2")
-                        .completeBy(todaysDateTime)
+                        .completeBy(today)
                         .assignee(ALL_PARTIES)
                         .build())
                     .build()

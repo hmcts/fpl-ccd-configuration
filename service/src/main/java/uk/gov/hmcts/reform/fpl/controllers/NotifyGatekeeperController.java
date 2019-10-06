@@ -13,10 +13,7 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.ccd.client.model.Event;
-import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -119,38 +116,39 @@ public class NotifyGatekeeperController {
         applicationEventPublisher.publishEvent(new NotifyGatekeeperEvent(callbackRequest, authorization, userId));
 
         //////////////////////////////////////////////////////////////////////////
+        //TODO: callback from submitted event to prepopulate standard directions
 
-//        String userToken = idamClient.authenticateUser("", "");
-//        System.out.println("userToken = " + userToken);
-//        String systemUpdateUserId = idamClient.getUserDetails(userToken).getId();
-//        System.out.println("userId = " + userId);
-//
-//        StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
-//            userToken,
-//            authTokenGenerator.generate(),
-//            systemUpdateUserId,
-//            callbackRequest.getCaseDetails().getJurisdiction(),
-//            callbackRequest.getCaseDetails().getCaseTypeId(),
-//            callbackRequest.getCaseDetails().getId().toString(),
-//            "");
-//
-//        CaseDataContent caseDataContent = CaseDataContent.builder()
-//            .eventToken(startEventResponse.getToken())
-//            .event(Event.builder()
-//                .id(startEventResponse.getEventId())
-//                .build())
-//            .data(data)
-//            .build();
-//
-//        coreCaseDataApi.submitEventForCaseWorker(
-//            userToken,
-//            authTokenGenerator.generate(),
-//            systemUpdateUserId,
-//            callbackRequest.getCaseDetails().getJurisdiction(),
-//            callbackRequest.getCaseDetails().getCaseTypeId(),
-//            callbackRequest.getCaseDetails().getId().toString(),
-//            true,
-//            caseDataContent);
+        //        String userToken = idamClient.authenticateUser("", "");
+        //        System.out.println("userToken = " + userToken);
+        //        String systemUpdateUserId = idamClient.getUserDetails(userToken).getId();
+        //        System.out.println("userId = " + userId);
+        //
+        //        StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
+        //            userToken,
+        //            authTokenGenerator.generate(),
+        //            systemUpdateUserId,
+        //            callbackRequest.getCaseDetails().getJurisdiction(),
+        //            callbackRequest.getCaseDetails().getCaseTypeId(),
+        //            callbackRequest.getCaseDetails().getId().toString(),
+        //            "");
+        //
+        //        CaseDataContent caseDataContent = CaseDataContent.builder()
+        //            .eventToken(startEventResponse.getToken())
+        //            .event(Event.builder()
+        //                .id(startEventResponse.getEventId())
+        //                .build())
+        //            .data(data)
+        //            .build();
+        //
+        //        coreCaseDataApi.submitEventForCaseWorker(
+        //            userToken,
+        //            authTokenGenerator.generate(),
+        //            systemUpdateUserId,
+        //            callbackRequest.getCaseDetails().getJurisdiction(),
+        //            callbackRequest.getCaseDetails().getCaseTypeId(),
+        //            callbackRequest.getCaseDetails().getId().toString(),
+        //            true,
+        //            caseDataContent);
     }
 
     private LocalDateTime buildDateTime(LocalDate date, int delta) {

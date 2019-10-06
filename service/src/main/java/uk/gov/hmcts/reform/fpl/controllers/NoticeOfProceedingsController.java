@@ -30,10 +30,8 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
 import java.time.format.FormatStyle;
-
 import java.util.List;
 import java.util.Map;
-
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -100,8 +98,7 @@ public class NoticeOfProceedingsController {
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Map<String, Object> templateData = caseDataExtractionService
-            .getNoticeOfProceedingTemplateData(caseData);
+        Map<String, Object> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
 
         List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData);
 

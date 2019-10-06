@@ -58,20 +58,22 @@ public class CaseDataExtractionService {
         this.directionHelperService = directionHelperService;
     }
 
-    // Validation within our frontend ensures that the following data is present
     public Map<String, Object> getNoticeOfProceedingTemplateData(CaseData caseData) {
+        HearingBooking hearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
 
-        Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
-
-        return ImmutableMap.<String, Object>builder()
-            .put("courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
-            .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
-            .put("todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
-            .put("applicantName", getFirstApplicantName(caseData))
-            .put("orderTypes", getOrderTypes(caseData))
-            .put("childrenNames", getAllChildrenNames(caseData))
-            .putAll(extractedHearingBookingData)
-            .build();
+        // Validation within our frontend ensures that the following data is present
+        return Map.of(
+            "courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName(),
+            "familyManCaseNumber", caseData.getFamilyManCaseNumber(),
+            "todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG),
+            "applicantName", getFirstApplicantName(caseData),
+            "orderTypes", getOrderTypes(caseData),
+            "childrenNames", getAllChildrenNames(caseData),
+            "hearingDate", dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG),
+            "hearingVenue", hearingBooking.getVenue(),
+            "preHearingAttendance", hearingBooking.getPreHearingAttendance(),
+            "hearingTime", hearingBooking.getTime()
+        );
     }
 
     // TODO
@@ -129,11 +131,6 @@ public class CaseDataExtractionService {
     }
 
     private String getFirstApplicantName(CaseData caseData) {
-
-        if (caseData.getAllApplicants() == null || caseData.getAllApplicants().isEmpty()) {
-            return EMPTY_STATE_PLACEHOLDER;
-        }
-
         return caseData.getAllApplicants().stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
@@ -147,13 +144,12 @@ public class CaseDataExtractionService {
     private Map<String, List<Map<String, String>>> getGroupedDirections(CaseData caseData) throws IOException {
         OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
 
-        if (caseData.getStandardDirectionOrder() == null
-            || caseData.getStandardDirectionOrder().getDirections() == null) {
+        if (caseData.getStandardDirectionOrder() == null) {
             return ImmutableMap.of();
         }
 
         Map<String, List<Element<Direction>>> groupedDirections = directionHelperService.orderDirectionsByAssignee(
-            caseData.getStandardDirectionOrder().getDirections());
+            directionHelperService.numberDirections(caseData.getStandardDirectionOrder().getDirections()));
 
         ImmutableMap.Builder<String, List<Map<String, String>>> formattedDirections = ImmutableMap.builder();
 
@@ -188,12 +184,6 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    private String getAllChildrenNames(CaseData caseData) {
-        return getChildrenDetails(caseData).stream()
-            .map(element -> element.get("name"))
-            .collect(Collectors.joining(", "));
-    }
-
     private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
         // children is validated as not null
         return caseData.getAllChildren().stream()
@@ -207,6 +197,17 @@ public class CaseDataExtractionService {
                 "dateOfBirth", child.getDateOfBirth() == null ? EMPTY_STATE_PLACEHOLDER :
                     dateFormatterService.formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG)))
             .collect(toList());
+    }
+
+    private String getAllChildrenNames(CaseData caseData) {
+        return caseData.getAllChildren().stream()
+            .map(Element::getValue)
+            .filter(Objects::nonNull)
+            .map(Child::getParty)
+            .filter(Objects::nonNull)
+            .map(childParty -> (childParty.getFirstName()) + " " + (childParty.getLastName()))
+            .collect(Collectors.joining(", "));
+
     }
 
     private String formatTitle(Direction direction, List<DirectionConfiguration> directions) {
