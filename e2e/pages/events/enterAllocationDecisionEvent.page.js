@@ -4,9 +4,6 @@ const allocationDecisionRadioGroup = '#allocationDecision_proposal';
 const allocationDecisionRadioPrefix = 'allocationDecision_proposal-';
 const proposalReason = '#allocationDecision_proposalReason';
 const judgeLevelRadioNo = '#allocationDecision_judgeLevelRadio-';
-const allocationDecisionRadioGroupCorrected = '#allocationDecision_proposalCorrected';
-const allocationDecisionCorrectedRadioPrefix = 'allocationDecision_proposalCorrected-';
-const proposalReasonCorrected = '#allocationDecision_proposalReasonCorrected';
 
 module.exports = {
 
@@ -21,14 +18,5 @@ module.exports = {
 
   selectCorrectLevelOfJudge(radioSelection) {
     I.click(judgeLevelRadioNo + radioSelection);
-  },
-
-  selectAllocationDecisionCorrect(proposal) {
-    I.waitForElement(allocationDecisionRadioGroupCorrected);
-    I.click(locate('input').withAttr({id: allocationDecisionCorrectedRadioPrefix + proposal}));
-  },
-
-  enterProposalReasonCorrected(reason) {
-    I.fillField(proposalReasonCorrected, reason);
   },
 };
