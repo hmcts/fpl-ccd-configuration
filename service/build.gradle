@@ -140,6 +140,11 @@ dependencyCheck {
     // Disable scanning of .NET related binaries
     assemblyEnabled = false
   }
+  analyzedTypes = ['jar']
+  scanConfigurations = configurations.findAll {
+    !it.name.startsWith('checkstyle') && !it.name.startsWith('jacoco') && !it.name.startsWith('integrationTest') &&
+      !it.name.startsWith('smokeTest') && !it.name.startsWith('functionalTest')
+  }.collect { it.name }
 }
 
 sonarqube {
