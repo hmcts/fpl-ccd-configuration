@@ -48,7 +48,7 @@ Scenario('gatekeeper enters allocation decision without proposal', async (I, cas
 
 
 //Setting up for next Scenario
-caseId = null;
+caseId = undefined;
 allocationProposalSelected = true;
 
 Scenario('gatekeeper enters allocation decision with incorrect proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
