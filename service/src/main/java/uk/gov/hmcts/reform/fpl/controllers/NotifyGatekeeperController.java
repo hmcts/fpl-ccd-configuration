@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.ccd.client.CoreCaseDataClientAutoConfiguration;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -63,9 +64,9 @@ public class NotifyGatekeeperController {
         this.idamClient = idamClient;
     }
 
-    @Value("${system-update.username}")
+    @Value("${fpl.system_update.username}")
     private String userName;
-    @Value("${system-update.password}")
+    @Value("${fpl.system_update.password}")
     private String password;
 
     private String booleanToYesOrNo(boolean value) {
@@ -133,7 +134,7 @@ public class NotifyGatekeeperController {
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
             callbackRequest.getCaseDetails().getId().toString(),
-            "draftSDO");
+            "populateSDO");
 
         System.out.println("startEventResponse = " + startEventResponse);
 

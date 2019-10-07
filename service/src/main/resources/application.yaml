@@ -76,6 +76,10 @@ idam:
   s2s-auth:
     url: http://localhost:4502
     totp_secret: AABBCCDDEEFFGGHH
+  client:
+    id: fpl
+    redirect_uri: https://localhost:9000/oauth2/callback
+    secret: OOOOOOOOOOOOOOOO
 
 core_case_data:
   api:
@@ -109,3 +113,6 @@ fpl:
     mapping: 'SA=>Swansea Family Court:FamilyPublicLaw+sa@gmail.com;HN=>Portsmouth Combined Court:FamilyPublicLaw+hn@gmail.com'
   local_authority_code_to_cafcass:
     mapping: 'SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com'
+  system_update:
+    username: 'fpl-system-update@mailnesia.com'
+    password: 'Password12'
