@@ -64,6 +64,9 @@ fpl:
     mapping: 'example=>cafcass:cafcass@cafcass.com'
   local_authority_user:
     mapping: 'example=>1,2,3'
+  system_update:
+    username: 'fpl-system-update@mailnesia.com'
+    password: 'Password12'
 
 ---
 
