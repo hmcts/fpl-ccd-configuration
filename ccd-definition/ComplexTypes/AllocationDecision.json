@@ -29,34 +29,6 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationDecision",
-    "ListElementCode": "proposal",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "AllocationProposalList",
-    "ElementLabel": "Which level of judge is needed for this case?",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "allocationProposalPresent!=\"Yes\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AllocationDecision",
-    "ListElementCode": "proposalReason",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give reason",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "allocationProposalPresent!=\"Yes\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AllocationDecision",
-    "ListElementCode": "allocationProposalPresent",
-    "FieldType": "YesOrNo",
-    "ElementLabel": "Is allocation proposal present?",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "allocationProposalPresent=\"DO_NOT_SHOW\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "AllocationDecision",
     "ListElementCode": "judgeLevelRadio",
     "FieldType": "YesOrNo",
     "ElementLabel": "Is this the right level of judge?",
@@ -66,20 +38,29 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationDecision",
-    "ListElementCode": "proposalCorrected",
+    "ListElementCode": "proposal",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "AllocationProposalList",
     "ElementLabel": "Which level of judge is needed for this case?",
-    "FieldShowCondition": "judgeLevelRadio=\"No\"",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "allocationProposalPresent!=\"Yes\" OR judgeLevelRadio=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationDecision",
-    "ListElementCode": "proposalReasonCorrected",
+    "ListElementCode": "proposalReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "judgeLevelRadio=\"No\""
+    "FieldShowCondition": "allocationProposalPresent!=\"Yes\" OR judgeLevelRadio=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationDecision",
+    "ListElementCode": "allocationProposalPresent",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is allocation proposal present?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "allocationProposalPresent=\"DO_NOT_SHOW\""
   }
 ]
