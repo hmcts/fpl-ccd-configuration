@@ -1,4 +1,5 @@
 const config = require('../config.js');
+const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 
 let caseId;
 let allocationProposalSelected;
@@ -59,7 +60,7 @@ Scenario('gatekeeper enters allocation decision with incorrect proposal', async 
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
 });
 
-/*Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
+Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await I.addAnotherElementToCollection();
@@ -90,4 +91,4 @@ Scenario('gatekeeper enters allocation decision with incorrect proposal', async 
   I.seeAnswerInTab(7, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
   I.seeAnswerInTab(8, 'Hearing 2', 'Judge or magistrate\'s title', hearingDetails[1].judgeTitle);
   I.seeAnswerInTab(9, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
-});*/
+});
