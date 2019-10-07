@@ -41,14 +41,14 @@ Scenario('gatekeeper enters allocation decision', async (I, caseViewPage, enterA
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
 });
 
-Scenario('gatekeeper enters allocation decision with incorrect proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
+/*Scenario('gatekeeper enters allocation decision with incorrect proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('No');
   enterAllocationDecisionEventPage.selectAllocationDecisionCorrected('Lay justices');
   enterAllocationDecisionEventPage.enterProposalReasonCorrected('test');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
-});
+});*/
 
 Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
