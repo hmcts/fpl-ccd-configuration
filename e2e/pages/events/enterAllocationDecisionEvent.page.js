@@ -4,7 +4,7 @@ const allocationDecisionRadioGroup = '#allocationDecision_proposal';
 const allocationDecisionRadioPrefix = 'allocationDecision_proposal-';
 const proposalReason = '#allocationDecision_proposalReason';
 const judgeLevelRadioNo = '#allocationDecision_judgeLevelRadio-';
-const allocationDecisionRadioGroupCorrected = '#allocationDecision_proposalCorrectedl';
+const allocationDecisionRadioGroupCorrected = '#allocationDecision_proposalCorrected';
 const allocationDecisionCorrectedRadioPrefix = 'allocationDecision_proposalCorrected-';
 const proposalReasonCorrected = '#allocationDecision_proposalReasonCorrected';
 

@@ -1,13 +1,17 @@
 const config = require('../config.js');
-const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 
 let caseId;
+let allocationProposalSelected;
 
 Feature('Gatekeeper Case administration after gatekeeping');
 
 Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+    if(allocationProposalSelected)
+    {
+      await I.enterAllocationProposal();
+    }
     await I.enterMandatoryFields();
     await caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
@@ -41,16 +45,21 @@ Scenario('gatekeeper enters allocation decision without proposal', async (I, cas
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
 });
 
-/*Scenario('gatekeeper enters allocation decision with incorrect proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
+
+//Setting up for next Scenario
+caseId = null;
+allocationProposalSelected = true;
+
+Scenario('gatekeeper enters allocation decision with incorrect proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
   enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('No');
-  enterAllocationDecisionEventPage.selectAllocationDecisionCorrected('Lay justices');
+  enterAllocationDecisionEventPage.selectAllocationDecisionCorrect('Lay justices');
   enterAllocationDecisionEventPage.enterProposalReasonCorrected('test');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
-});*/
+});
 
-Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
+/*Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await I.addAnotherElementToCollection();
@@ -81,4 +90,4 @@ Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage
   I.seeAnswerInTab(7, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
   I.seeAnswerInTab(8, 'Hearing 2', 'Judge or magistrate\'s title', hearingDetails[1].judgeTitle);
   I.seeAnswerInTab(9, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
-});
+});*/
