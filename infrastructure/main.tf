@@ -15,6 +15,7 @@ locals {
   IDAM_S2S_AUTH_URL       = "http://rpe-service-auth-provider-${local.local_env}.service.${local.local_ase}.internal"
   DOCUMENT_MANAGEMENT_URL = "http://dm-store-${local.local_env}.service.${local.local_ase}.internal"
   CORE_CASE_DATA_API_URL  = "http://ccd-data-store-api-${local.local_env}.service.${local.local_ase}.internal"
+  DOCMOSIS_API_URL        = "https://docmosis-development.platform.hmcts.net"
 }
 
 resource "azurerm_resource_group" "rg" {
@@ -63,6 +64,11 @@ data "azurerm_key_vault_secret" "local_authority_code_to_cafcass_mapping" {
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "docmosis_api_key" {
+  name      = "docmosis-api-key"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
 data "azurerm_key_vault_secret" "notify_api_key" {
   name      = "notify-api-key"
   vault_uri = "${module.key-vault.key_vault_uri}"
@@ -101,6 +107,8 @@ module "case-service" {
     IDAM_API_URL                                    = "${var.idam_api_url}"
     IDAM_S2S_AUTH_URL                               = "${local.IDAM_S2S_AUTH_URL}"
     IDAM_S2S_AUTH_TOTP_SECRET                       = "${data.azurerm_key_vault_secret.s2s_secret.value}"
+    DOCMOSIS_TORNADO_URL                            = "${local.DOCMOSIS_API_URL}"
+    DOCMOSIS_TORNADO_KEY                            = "${data.azurerm_key_vault_secret.docmosis_api_key.value}"
     DOCUMENT_MANAGEMENT_URL                         = "${local.DOCUMENT_MANAGEMENT_URL}"
     CORE_CASE_DATA_API_URL                          = "${local.CORE_CASE_DATA_API_URL}"
     CCD_UI_BASE_URL                                 = "${var.ccd_ui_base_url}"
