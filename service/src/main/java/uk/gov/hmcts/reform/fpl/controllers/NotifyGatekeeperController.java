@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,9 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.Event;
+import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -60,13 +63,17 @@ public class NotifyGatekeeperController {
         this.idamClient = idamClient;
     }
 
+    @Value("${system-update.username}")
+    private String userName;
+    @Value("${system-update.password}")
+    private String password;
+
     private String booleanToYesOrNo(boolean value) {
         return value ? "Yes" : "No";
     }
 
-    @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackrequest) throws IOException {
+    @SuppressWarnings("LineLength")
+    private Map<String, Object> populateStandardDirections(@RequestBody CallbackRequest callbackrequest) throws IOException {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -101,54 +108,56 @@ public class NotifyGatekeeperController {
             .collect(groupingBy(element -> element.getValue().getAssignee().getValue()));
 
         directions.forEach((key, value) -> caseDetails.getData().put(key, value));
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
+        return caseDetails.getData();
     }
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackRequest) {
-
-        applicationEventPublisher.publishEvent(new NotifyGatekeeperEvent(callbackRequest, authorization, userId));
+        @RequestBody CallbackRequest callbackRequest) throws IOException {
 
         //////////////////////////////////////////////////////////////////////////
         //TODO: callback from submitted event to prepopulate standard directions
 
-        //        String userToken = idamClient.authenticateUser("", "");
-        //        System.out.println("userToken = " + userToken);
-        //        String systemUpdateUserId = idamClient.getUserDetails(userToken).getId();
-        //        System.out.println("userId = " + userId);
-        //
-        //        StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
-        //            userToken,
-        //            authTokenGenerator.generate(),
-        //            systemUpdateUserId,
-        //            callbackRequest.getCaseDetails().getJurisdiction(),
-        //            callbackRequest.getCaseDetails().getCaseTypeId(),
-        //            callbackRequest.getCaseDetails().getId().toString(),
-        //            "");
-        //
-        //        CaseDataContent caseDataContent = CaseDataContent.builder()
-        //            .eventToken(startEventResponse.getToken())
-        //            .event(Event.builder()
-        //                .id(startEventResponse.getEventId())
-        //                .build())
-        //            .data(data)
-        //            .build();
-        //
-        //        coreCaseDataApi.submitEventForCaseWorker(
-        //            userToken,
-        //            authTokenGenerator.generate(),
-        //            systemUpdateUserId,
-        //            callbackRequest.getCaseDetails().getJurisdiction(),
-        //            callbackRequest.getCaseDetails().getCaseTypeId(),
-        //            callbackRequest.getCaseDetails().getId().toString(),
-        //            true,
-        //            caseDataContent);
+        String userToken = idamClient.authenticateUser(userName, password);
+        System.out.println("userToken = " + userToken);
+
+        String systemUpdateUserId = idamClient.getUserDetails(userToken).getId();
+        System.out.println("userId = " + userId);
+
+        StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
+            userToken,
+            authTokenGenerator.generate(),
+            systemUpdateUserId,
+            callbackRequest.getCaseDetails().getJurisdiction(),
+            callbackRequest.getCaseDetails().getCaseTypeId(),
+            callbackRequest.getCaseDetails().getId().toString(),
+            "draftSDO");
+
+        System.out.println("startEventResponse = " + startEventResponse);
+
+        CaseDataContent caseDataContent = CaseDataContent.builder()
+            .eventToken(startEventResponse.getToken())
+            .event(Event.builder()
+                .id(startEventResponse.getEventId())
+                .build())
+            .data(populateStandardDirections(callbackRequest))
+            .build();
+
+        System.out.println("caseDataContent = " + caseDataContent);
+
+        coreCaseDataApi.submitEventForCaseWorker(
+            userToken,
+            authTokenGenerator.generate(),
+            systemUpdateUserId,
+            callbackRequest.getCaseDetails().getJurisdiction(),
+            callbackRequest.getCaseDetails().getCaseTypeId(),
+            callbackRequest.getCaseDetails().getId().toString(),
+            true,
+            caseDataContent);
+
+        applicationEventPublisher.publishEvent(new NotifyGatekeeperEvent(callbackRequest, authorization, userId));
     }
 
     private LocalDateTime buildDateTime(LocalDate date, int delta) {

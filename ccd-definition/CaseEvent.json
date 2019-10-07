@@ -350,7 +350,6 @@
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
     "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/notify-gatekeeper/submitted",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/notify-gatekeeper/about-to-submit",
     "EndButtonLabel": "Save and continue"
   },
   {

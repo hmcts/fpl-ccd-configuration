@@ -50,8 +50,8 @@ class CaseDataExtractionServiceTest {
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
     private DirectionHelperService directionHelperService = new DirectionHelperService();
+    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
 
     @Autowired
     private OrdersLookupService ordersLookupService;
