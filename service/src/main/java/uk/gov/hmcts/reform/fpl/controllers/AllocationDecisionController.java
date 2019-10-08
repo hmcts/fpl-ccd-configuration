@@ -78,6 +78,13 @@ public class AllocationDecisionController {
             Map<String, Object> data = caseDetails.getData();
             data.put("allocationDecision", decisionBuilder.build());
         }
+        else
+        {
+            decisionBuilder.proposal(caseData.getAllocationDecision().getProposal());
+            decisionBuilder.proposalReason(caseData.getAllocationDecision().getProposalReason());
+            Map<String, Object> data = caseDetails.getData();
+            data.put("allocationDecision", decisionBuilder.build());
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
