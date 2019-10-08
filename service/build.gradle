@@ -140,6 +140,11 @@ dependencyCheck {
     // Disable scanning of .NET related binaries
     assemblyEnabled = false
   }
+  analyzedTypes = ['jar']
+  scanConfigurations = configurations.findAll {
+    !it.name.startsWith('checkstyle') && !it.name.startsWith('jacoco') && !it.name.startsWith('integrationTest') &&
+      !it.name.startsWith('smokeTest') && !it.name.startsWith('functionalTest')
+  }.collect { it.name }
 }
 
 sonarqube {
@@ -186,7 +191,7 @@ dependencies {
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
 
-  compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.4'
+  compile group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: '0.0.5'
   compile group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: '0.0.4'
   compile group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformLogging
   compile group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformLogging
