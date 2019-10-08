@@ -32,22 +32,16 @@ public class UploadDocumentService {
     public Document uploadPDF(String userId, String authorization, byte[] pdf, String fileName) {
         MultipartFile file = new InMemoryMultipartFile("files", fileName, MediaType.APPLICATION_PDF_VALUE, pdf);
 
+        UploadResponse response = documentUploadClient.upload(authorization,
+            authTokenGenerator.generate(), userId, newArrayList(file));
 
-        try {
-            UploadResponse response = documentUploadClient.upload(authorization,
-                authTokenGenerator.generate(), userId, newArrayList(file));
+        Document document = response.getEmbedded().getDocuments().stream()
+            .findFirst()
+            .orElseThrow(() ->
+                new RuntimeException("Document upload failed due to empty result"));
 
-            Document document = response.getEmbedded().getDocuments().stream()
-                .findFirst()
-                .orElseThrow(() ->
-                    new RuntimeException("Document upload failed due to empty result"));
+        logger.debug("Document upload resulted with links: {}, {}", document.links.self.href, document.links.binary.href);
 
-            logger.debug("Document upload resulted with links: {}, {}", document.links.self.href, document.links.binary.href);
-
-            return document;
-        } catch (HttpClientErrorException.UnprocessableEntity ex) {
-            logger.info("Body: {}", ex.getResponseBodyAsString());
-            throw ex;
-        }
+        return document;
     }
 }

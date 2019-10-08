@@ -71,11 +71,6 @@ class PopulateStandardDirectionsHandlerTest {
     void before() {
         populateStandardDirectionsHandler = new PopulateStandardDirectionsHandler(objectMapper,
             ordersLookupService, coreCaseDataApi, authTokenGenerator, idamClient, userConfig, directionHelperService);
-    }
-
-    @Test
-    void shouldPopulateStandardDirections() throws IOException {
-        CallbackRequest callbackRequest = callbackRequest();
 
         given(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(TOKEN);
 
@@ -84,6 +79,11 @@ class PopulateStandardDirectionsHandlerTest {
             .build());
 
         given(authTokenGenerator.generate()).willReturn(AUTH_TOKEN);
+    }
+
+    @Test
+    void shouldPopulateStandardDirectionsWhenPopulatedDisplayInConfiguration() throws IOException {
+        CallbackRequest callbackRequest = callbackRequest();
 
         given(coreCaseDataApi.startEventForCaseWorker(
             TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, CASE_EVENT))
@@ -101,6 +101,47 @@ class PopulateStandardDirectionsHandlerTest {
                     .text("Example Direction")
                     .display(Display.builder()
                         .delta("0")
+                        .due(Display.Due.BY)
+                        .templateDateFormat("h:mma, d MMMM yyyy")
+                        .directionRemovable(false)
+                        .build())
+                    .build()
+            ))
+            .build());
+
+        populateStandardDirectionsHandler.populateStandardDirections(
+            new PopulateStandardDirectionsEvent(callbackRequest, "", ""));
+
+        verify(coreCaseDataApi, times(1)).submitEventForCaseWorker(
+            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
+                .eventToken(TOKEN)
+                .event(Event.builder()
+                    .id(CASE_EVENT)
+                    .build())
+                .data(callbackRequest.getCaseDetails().getData())
+                .build());
+    }
+
+    @Test
+    void shouldPopulateStandardDirectionsWhenNullDeltaValueInConfiguration() throws IOException {
+        CallbackRequest callbackRequest = callbackRequest();
+
+        given(coreCaseDataApi.startEventForCaseWorker(
+            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, CASE_EVENT))
+            .willReturn(StartEventResponse.builder()
+                .caseDetails(callbackRequest.getCaseDetails())
+                .eventId(CASE_EVENT)
+                .token(TOKEN)
+                .build());
+
+        given(ordersLookupService.getStandardDirectionOrder()).willReturn(OrderDefinition.builder()
+            .directions(ImmutableList.of(
+                DirectionConfiguration.builder()
+                    .assignee(LOCAL_AUTHORITY)
+                    .title("Direction")
+                    .text("Example Direction")
+                    .display(Display.builder()
+                        .delta(null)
                         .due(Display.Due.BY)
                         .templateDateFormat("h:mma, d MMMM yyyy")
                         .directionRemovable(false)

@@ -82,6 +82,7 @@ public class CaseDataExtractionService {
         Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
 
         List<Map<String, String>> respondentsNameAndRelationship = getRespondentsNameAndRelationship(caseData);
+
         return ImmutableMap.<String, Object>builder()
             .put("courtName", caseData.getCaseLocalAuthority() != null
                 ? hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName()
@@ -93,7 +94,7 @@ public class CaseDataExtractionService {
                 FormatStyle.LONG) : EMPTY_STATE_PLACEHOLDER)
             .put("children", getChildrenDetails(caseData))
             .put("respondents", respondentsNameAndRelationship)
-            .put("respondentsProvided", respondentsNameAndRelationship.size() > 0)
+            .put("respondentsProvided", respondentsNameAndRelationship.isEmpty())
             .put("applicantName", getFirstApplicantName(caseData))
             .putAll(getGroupedDirections(caseData))
             .putAll(extractedHearingBookingData)
@@ -190,8 +191,6 @@ public class CaseDataExtractionService {
             .map(Element::getValue)
             .map(Child::getParty)
             .map(child -> ImmutableMap.of(
-                // TODO
-                // Joining name is common theme. Move to util method and use static import
                 "name", child.getFirstName() + " " + child.getLastName(),
                 "gender", defaultIfNull(child.getGender(), EMPTY_STATE_PLACEHOLDER),
                 "dateOfBirth", child.getDateOfBirth() == null ? EMPTY_STATE_PLACEHOLDER :

@@ -121,8 +121,7 @@ public class PopulateStandardDirectionsHandler {
                 .map(Element::getValue)
                 .collect(toList());
 
-            completeBy = buildDateTime(
-                booking.get(0).getDate(), Integer.parseInt(direction.getDisplay().getDelta()));
+            completeBy = buildDateTime(booking.get(0).getDate(), Integer.parseInt(direction.getDisplay().getDelta()));
         }
         return completeBy;
     }
@@ -130,5 +129,4 @@ public class PopulateStandardDirectionsHandler {
     private LocalDateTime buildDateTime(LocalDate date, int delta) {
         return date.plusDays(delta).atStartOfDay();
     }
-
 }

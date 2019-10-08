@@ -11,7 +11,7 @@ public class DocmosisDocumentGenerationConfiguration {
 
     @Bean
     public DocmosisConfig docmosisConfig(@Value("${docmosis.tornado.url}") String url,
-                                                @Value("${docmosis.tornado.key}") String accessKey) {
+                                         @Value("${docmosis.tornado.key}") String accessKey) {
         return new DocmosisConfig(url, accessKey);
     }
 
