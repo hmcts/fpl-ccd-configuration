@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -14,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.Event;
 import uk.gov.hmcts.reform.ccd.client.model.StartEventResponse;
+import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -40,29 +40,27 @@ public class PopulateStandardDirectionsHandler {
     private final CoreCaseDataApi coreCaseDataApi;
     private final AuthTokenGenerator authTokenGenerator;
     private final IdamClient idamClient;
+    private final SystemUpdateUserConfiguration userConfig;
 
     @Autowired
     public PopulateStandardDirectionsHandler(ObjectMapper mapper,
                                              OrdersLookupService ordersLookupService,
                                              CoreCaseDataApi coreCaseDataApi,
                                              AuthTokenGenerator authTokenGenerator,
-                                             IdamClient idamClient) {
+                                             IdamClient idamClient,
+                                             SystemUpdateUserConfiguration userConfig) {
         this.mapper = mapper;
         this.ordersLookupService = ordersLookupService;
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
         this.idamClient = idamClient;
+        this.userConfig = userConfig;
     }
-
-    @Value("${fpl.system_update.username}")
-    private String userName;
-    @Value("${fpl.system_update.password}")
-    private String password;
 
     @Async
     @EventListener
     public void populateStandardDirections(PopulateStandardDirectionsEvent event) throws IOException {
-        String userToken = idamClient.authenticateUser(userName, password);
+        String userToken = idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
         String systemUpdateUserId = idamClient.getUserDetails(userToken).getId();
 
         StartEventResponse startEventResponse = coreCaseDataApi.startEventForCaseWorker(
