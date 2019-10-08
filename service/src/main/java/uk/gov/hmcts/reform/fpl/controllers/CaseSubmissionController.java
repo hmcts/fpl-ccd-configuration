@@ -78,7 +78,7 @@ public class CaseSubmissionController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
-            .errors(validate(mapper.convertValue(data, CaseData.class)))
+            //.errors(validate(mapper.convertValue(data, CaseData.class)))
             .build();
     }
 
@@ -101,13 +101,13 @@ public class CaseSubmissionController {
             && caseData.getOrders().getOrderType().contains(OrderType.EMERGENCY_PROTECTION_ORDER)) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(caseDetails.getData())
-                .errors(caseValidatorService.validateCaseDetails(caseData, Default.class, EPOGroup.class))
+                //.errors(caseValidatorService.validateCaseDetails(caseData, Default.class, EPOGroup.class))
                 .build();
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(caseValidatorService.validateCaseDetails(caseData))
+            //.errors(caseValidatorService.validateCaseDetails(caseData))
             .build();
     }
 
@@ -122,7 +122,7 @@ public class CaseSubmissionController {
             Pair.of("userFullName", userDetailsService.getUserName(authorization))
         );
 
-        Document document = uploadDocumentService.uploadPDF(userId, authorization, pdf, buildFileName(caseDetails));
+        /*Document document = uploadDocumentService.uploadPDF(userId, authorization, pdf, buildFileName(caseDetails));
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
@@ -133,10 +133,10 @@ public class CaseSubmissionController {
             .put("document_url", document.links.self.href)
             .put("document_binary_url", document.links.binary.href)
             .put("document_filename", document.originalDocumentName)
-            .build());
+            .build());*/
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
+            //.data(data)
             .build();
     }
 

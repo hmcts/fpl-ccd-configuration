@@ -51,6 +51,7 @@ public class AllocationDecisionController {
         Map<String, Object> data = caseDetails.getData();
         data.put("allocationDecision", decisionBuilder.build());
 
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
@@ -58,5 +59,28 @@ public class AllocationDecisionController {
 
     private String checkIfAllocationProposalIsPresent(AllocationProposal data) {
         return data != null && StringUtils.isNotEmpty(data.getProposal()) ? "Yes" : "No";
+    }
+
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        AllocationDecision allocationDecision = caseData.getAllocationDecision();
+
+        AllocationDecision.AllocationDecisionBuilder decisionBuilder = ofNullable(allocationDecision)
+            .map(AllocationDecision::toBuilder)
+            .orElse(AllocationDecision.builder());
+
+        if(caseData.getAllocationDecision().getProposal() == null)
+        {
+            decisionBuilder.proposal(caseData.getAllocationProposal().getProposal());
+            Map<String, Object> data = caseDetails.getData();
+            data.put("allocationDecision", decisionBuilder.build());
+        }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .build();
     }
 }
