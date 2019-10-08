@@ -36,7 +36,7 @@ class RespondentMidEventControllerTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper MAPPER;
 
     @Test
     void shouldReturnDateOfBirthErrorsForRespondentWhenFutureDateOfBirth() throws Exception {
@@ -127,11 +127,11 @@ class RespondentMidEventControllerTest {
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(MAPPER.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andReturn();
 
-        return objectMapper.readValue(response.getResponse()
+        return MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 }

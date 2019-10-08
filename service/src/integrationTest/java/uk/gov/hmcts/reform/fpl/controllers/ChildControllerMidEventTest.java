@@ -37,7 +37,7 @@ class ChildControllerMidEventTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ObjectMapper MAPPER;
 
     @Test
     void shouldReturnDateOfBirthErrorWhenFutureDateOfBirth() throws Exception {
@@ -55,7 +55,7 @@ class ChildControllerMidEventTest {
     }
 
     @Test
-    void shouldReturnDateOfBirthErrorhenThereIsMultipleChildren() throws Exception {
+    void shouldReturnDateOfBirthErrorWhenThereIsMultipleChildren() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -117,11 +117,11 @@ class ChildControllerMidEventTest {
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsBytes(request)))
+                .content(MAPPER.writeValueAsBytes(request)))
             .andExpect(status().isOk())
             .andReturn();
 
-        return objectMapper.readValue(response.getResponse()
+        return MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 }

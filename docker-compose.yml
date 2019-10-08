@@ -1,4 +1,4 @@
-version: '2.4'
+version: '2.1'
 services:
   fpl-service:
     build:
@@ -10,9 +10,9 @@ services:
     image: hmctspublic.azurecr.io/fpl/case-service
     container_name: fpl-service
     environment:
-      - IDAM_API_URL=http://idam-api:8080
+      - IDAM_API_URL=http://idam-api:5000
       - DOCMOSIS_TORNADO_URL=http://docmosis-tornado:8080
-      - DOCMOSIS_TORNADO_KEY=fake-key
+      - DOCMOSIS_TORNADO_KEY
       - DOCUMENT_MANAGEMENT_URL=http://dm-store:8080
       - CORE_CASE_DATA_API_URL=http://ccd-data-store-api:4452
       - IDAM_S2S_AUTH_URL=http://service-auth-provider-api:8080
