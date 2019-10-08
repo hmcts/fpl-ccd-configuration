@@ -72,14 +72,11 @@ public class AllocationDecisionController {
             .map(AllocationDecision::toBuilder)
             .orElse(AllocationDecision.builder());
 
-        if(caseData.getAllocationDecision().getProposal() == null)
-        {
+        if (caseData.getAllocationDecision().getProposal() == null) {
             decisionBuilder.proposal(caseData.getAllocationProposal().getProposal());
             Map<String, Object> data = caseDetails.getData();
             data.put("allocationDecision", decisionBuilder.build());
-        }
-        else
-        {
+        } else {
             decisionBuilder.proposal(caseData.getAllocationDecision().getProposal());
             decisionBuilder.proposalReason(caseData.getAllocationDecision().getProposalReason());
             Map<String, Object> data = caseDetails.getData();
