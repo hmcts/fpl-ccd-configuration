@@ -88,6 +88,7 @@ exports.config = {
     },
   },
   tests: './e2e/tests/*_test.js',
+  teardownAll: require('./e2e/hooks/aggregate-metrics'),
   mocha: {
     reporterOptions: {
       'codeceptjs-cli-reporter': {
@@ -109,6 +110,9 @@ exports.config = {
           inlineAssets: true,
           json: false,
         },
+      },
+      '../../e2e/reporters/json-file-reporter/reporter': {
+        stdout: '-',
       },
     },
   },
