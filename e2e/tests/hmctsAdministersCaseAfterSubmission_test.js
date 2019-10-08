@@ -76,6 +76,22 @@ Scenario('HMCTS admin uploads standard directions with other documents', async (
   I.seeAnswerInTab('2', 'Other documents 2', 'Upload a file', 'mockFile.txt');
 });
 
+Scenario('HMCTS admin uploads C2 to case', async (I, caseViewPage, uploadC2EventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.c2Upload);
+  uploadC2EventPage.uploadc2(config.testFile, 'Rachel Zane C2');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.c2Upload);
+  await caseViewPage.goToNewActions(config.administrationActions.c2Upload);
+  uploadC2EventPage.uploadc2(config.testFile, 'Jessica Pearson C2');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.c2Upload);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeAnswerInTab('1', 'C2 1', 'Upload a file', 'mockFile.txt');
+  I.seeAnswerInTab('2', 'C2 1', 'Description', 'Rachel Zane C2');
+  I.seeAnswerInTab('1', 'C2 2', 'Upload a file', 'mockFile.txt');
+  I.seeAnswerInTab('2', 'C2 2', 'Description', 'Jessica Pearson C2');
+});
+
 Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
   sendCaseToGatekeeperEventPage.enterEmail();
