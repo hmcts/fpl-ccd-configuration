@@ -148,7 +148,7 @@ public class CaseDataExtractionService {
             return ImmutableMap.of();
         }
 
-        Map<String, List<Element<Direction>>> groupedDirections = directionHelperService.orderDirectionsByAssignee(
+        Map<String, List<Element<Direction>>> groupedDirections = directionHelperService.sortDirectionsByAssignee(
             directionHelperService.numberDirections(caseData.getStandardDirectionOrder().getDirections()));
 
         ImmutableMap.Builder<String, List<Map<String, String>>> formattedDirections = ImmutableMap.builder();
@@ -220,7 +220,8 @@ public class CaseDataExtractionService {
         }
 
         DateFormattingConfig dateFormattingConfig = directions.stream()
-            .filter(directionConfiguration -> directionConfiguration.getTitle().equals(direction.getType()))
+            .filter(directionConfiguration ->
+                directionConfiguration.getTitle().equals(direction.getType().substring(3)))
             .map(DirectionConfiguration::getDisplay)
             .map(display -> new DateFormattingConfig(display.getTemplateDateFormat(), display.getDue()))
             .findAny()

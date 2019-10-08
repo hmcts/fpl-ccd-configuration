@@ -19,7 +19,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
+import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
@@ -29,8 +31,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.UUID.randomUUID;
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 @Component
@@ -41,6 +41,7 @@ public class PopulateStandardDirectionsHandler {
     private final AuthTokenGenerator authTokenGenerator;
     private final IdamClient idamClient;
     private final SystemUpdateUserConfiguration userConfig;
+    private final DirectionHelperService directionHelperService;
 
     @Autowired
     public PopulateStandardDirectionsHandler(ObjectMapper mapper,
@@ -48,13 +49,15 @@ public class PopulateStandardDirectionsHandler {
                                              CoreCaseDataApi coreCaseDataApi,
                                              AuthTokenGenerator authTokenGenerator,
                                              IdamClient idamClient,
-                                             SystemUpdateUserConfiguration userConfig) {
+                                             SystemUpdateUserConfiguration userConfig,
+                                             DirectionHelperService directionHelperService) {
         this.mapper = mapper;
         this.ordersLookupService = ordersLookupService;
         this.coreCaseDataApi = coreCaseDataApi;
         this.authTokenGenerator = authTokenGenerator;
         this.idamClient = idamClient;
         this.userConfig = userConfig;
+        this.directionHelperService = directionHelperService;
     }
 
     @Async
@@ -98,40 +101,30 @@ public class PopulateStandardDirectionsHandler {
 
         OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
 
-        Map<String, List<Element<Direction>>> directions = standardDirectionOrder.getDirections()
+        List<Element<Direction>> directions = standardDirectionOrder.getDirections()
             .stream()
-            .map(direction -> {
-                LocalDateTime completeBy = null;
+            .map(direction -> directionHelperService.constructDirectionForCCD(
+                direction, getCompleteByDate(caseData, direction)))
+            .collect(toList());
 
-                if (direction.getDisplay().getDelta() != null && caseData.getHearingDetails() != null) {
-                    List<HearingBooking> booking = caseData.getHearingDetails().stream()
-                        .map(Element::getValue)
-                        .collect(toList());
+        directionHelperService.sortDirectionsByAssignee(directions)
+            .forEach((key, value) -> caseDetails.getData().put(key, value));
 
-                    completeBy = buildDateTime(
-                        booking.get(0).getDate(), Integer.parseInt(direction.getDisplay().getDelta()));
-                }
-
-                return Element.<Direction>builder()
-                    .id(randomUUID())
-                    .value(Direction.builder()
-                        .type(direction.getTitle())
-                        .text(direction.getText())
-                        .assignee(direction.getAssignee())
-                        .directionRemovable(booleanToYesOrNo(direction.getDisplay().isDirectionRemovable()))
-                        .readOnly(booleanToYesOrNo(direction.getDisplay().isShowDateOnly()))
-                        .completeBy(completeBy)
-                        .build())
-                    .build();
-            })
-            .collect(groupingBy(element -> element.getValue().getAssignee().getValue()));
-
-        directions.forEach((key, value) -> caseDetails.getData().put(key, value));
         return caseDetails.getData();
     }
 
-    private String booleanToYesOrNo(boolean value) {
-        return value ? "Yes" : "No";
+    private LocalDateTime getCompleteByDate(CaseData caseData, DirectionConfiguration direction) {
+        LocalDateTime completeBy = null;
+
+        if (direction.getDisplay().getDelta() != null && caseData.getHearingDetails() != null) {
+            List<HearingBooking> booking = caseData.getHearingDetails().stream()
+                .map(Element::getValue)
+                .collect(toList());
+
+            completeBy = buildDateTime(
+                booking.get(0).getDate(), Integer.parseInt(direction.getDisplay().getDelta()));
+        }
+        return completeBy;
     }
 
     private LocalDateTime buildDateTime(LocalDate date, int delta) {

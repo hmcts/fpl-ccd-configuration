@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,8 +150,6 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("courtDirections")).isNull();
     }
 
-    //TODO: assertions suggest the format of complete times for each direction should be different. They are not.
-    @Disabled
     @Test
     void shouldMapCompleteCaseDataForSDOTemplate() throws IOException {
         CaseData caseData = CaseData.builder()

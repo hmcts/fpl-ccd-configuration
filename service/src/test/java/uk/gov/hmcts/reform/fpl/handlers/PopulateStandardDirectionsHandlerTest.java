@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
+import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -64,10 +65,12 @@ class PopulateStandardDirectionsHandlerTest {
 
     private PopulateStandardDirectionsHandler populateStandardDirectionsHandler;
 
+    private DirectionHelperService directionHelperService = new DirectionHelperService();
+
     @BeforeEach
     void before() {
         populateStandardDirectionsHandler = new PopulateStandardDirectionsHandler(objectMapper,
-            ordersLookupService, coreCaseDataApi, authTokenGenerator, idamClient, userConfig);
+            ordersLookupService, coreCaseDataApi, authTokenGenerator, idamClient, userConfig, directionHelperService);
     }
 
     @Test

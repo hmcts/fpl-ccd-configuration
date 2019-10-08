@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -104,7 +103,6 @@ class DraftOrdersControllerTest {
         assertThat(extractDirections(caseData.getCourtDirections())).containsOnly(directions.get(5));
     }
 
-    @Disabled
     @Test
     void midEventShouldGenerateDraftStandardDirectionDocument() throws Exception {
         byte[] pdf = {1, 2, 3, 4, 5};
@@ -199,11 +197,12 @@ class DraftOrdersControllerTest {
         return CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
                 .put(LOCAL_AUTHORITY.getValue(), directions)
-                .put(ALL_PARTIES.getValue(), buildDirections(Direction.builder().build()))
-                .put(PARENTS_AND_RESPONDENTS.getValue(), buildDirections(Direction.builder().build()))
-                .put(CAFCASS.getValue(), buildDirections(Direction.builder().build()))
-                .put(OTHERS.getValue(), buildDirections(Direction.builder().build()))
-                .put(COURT.getValue(), buildDirections(Direction.builder().build()))
+                .put(ALL_PARTIES.getValue(), buildDirections(Direction.builder().assignee(ALL_PARTIES).build()))
+                .put(PARENTS_AND_RESPONDENTS.getValue(),
+                    buildDirections(Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build()))
+                .put(CAFCASS.getValue(), buildDirections(Direction.builder().assignee(CAFCASS).build()))
+                .put(OTHERS.getValue(), buildDirections(Direction.builder().assignee(OTHERS).build()))
+                .put(COURT.getValue(), buildDirections(Direction.builder().assignee(COURT).build()))
                 .build())
             .build();
     }

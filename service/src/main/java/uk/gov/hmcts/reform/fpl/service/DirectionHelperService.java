@@ -6,13 +6,16 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Objects.isNull;
+import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
@@ -109,7 +112,7 @@ public class DirectionHelperService {
      * @param directions a list of directions with various assignees.
      * @return Map of role name, list of directions.
      */
-    public Map<String, List<Element<Direction>>> orderDirectionsByAssignee(List<Element<Direction>> directions) {
+    public Map<String, List<Element<Direction>>> sortDirectionsByAssignee(List<Element<Direction>> directions) {
         return directions.stream()
             .filter(x -> x.getValue().getCustom() == null)
             .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee().getValue()));
@@ -134,8 +137,33 @@ public class DirectionHelperService {
                     .build();
             })
             .collect(toList());
-
     }
+
+    /**
+     * Takes a direction from a configuration file and builds a CCD direction.
+     *
+     * @param direction  the direction taken from json config.
+     * @param completeBy the date to be completed by. Can be null.
+     * @return Direction to be stored in CCD.
+     */
+    public Element<Direction> constructDirectionForCCD(DirectionConfiguration direction, LocalDateTime completeBy) {
+        return Element.<Direction>builder()
+            .id(randomUUID())
+            .value(Direction.builder()
+                .type(direction.getTitle())
+                .text(direction.getText())
+                .assignee(direction.getAssignee())
+                .directionRemovable(booleanToYesOrNo(direction.getDisplay().isDirectionRemovable()))
+                .readOnly(booleanToYesOrNo(direction.getDisplay().isShowDateOnly()))
+                .completeBy(completeBy)
+                .build())
+            .build();
+    }
+
+    private String booleanToYesOrNo(boolean value) {
+        return value ? "Yes" : "No";
+    }
+
 
     private List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
                                                             DirectionAssignee assignee) {
