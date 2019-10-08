@@ -74,6 +74,16 @@ data "azurerm_key_vault_secret" "notify_api_key" {
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "system_update_user_username" {
+  name      = "system-update-user-username"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
+data "azurerm_key_vault_secret" "system_update_user_password" {
+  name      = "system-update-user-password"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
 module "key-vault" {
   source                  = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
   name                    = "fpl-${var.env}"
@@ -118,6 +128,8 @@ module "case-service" {
     FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING = "${data.azurerm_key_vault_secret.local_authority_code_to_hmcts_court_mapping.value}"
     FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING     = "${data.azurerm_key_vault_secret.local_authority_code_to_cafcass_mapping.value}"
     NOTIFY_API_KEY                                  = "${data.azurerm_key_vault_secret.notify_api_key.value}"
+    FPL_SYSTEM_UPDATE_USERNAME                      = "${data.azurerm_key_vault_secret.system_update_user_username.value}"
+    FPL_SYSTEM_UPDATE_PASSWORD                      = "${data.azurerm_key_vault_secret.system_update_user_password.value}"
 
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE  = false

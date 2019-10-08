@@ -19,6 +19,8 @@ java:
         - local-authority-user-mapping
         - local-authority-code-to-hmcts-court-mapping
         - local-authority-code-to-cafcass-mapping
+        - system-update-user-username
+        - system-update-user-password
 
 ccd:
   ingressHost: ${SERVICE_FQDN}
