@@ -50,8 +50,7 @@ public class AllocationDecisionController {
 
         Map<String, Object> data = caseDetails.getData();
         data.put("allocationDecision", decisionBuilder.build());
-
-
+        
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
