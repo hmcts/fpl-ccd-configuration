@@ -23,19 +23,17 @@ services:
       - $SERVER_PORT:$SERVER_PORT
     networks:
       - default
-      - ccd
+      - ccd-network
   docmosis-tornado:
-    image: alexisgayte/docmosis
+    image: skeneventures/docmosis-tornado
     environment:
       # not supported in current version of Tornado
       DOCMOSIS_KEY: "XXX"
       DOCMOSIS_SITE: "Free Trial License"
     volumes:
-      - ./docker/docmosis/templates:/tmp/working/templates:rw
-      - ./docker/docmosis/prefs.xml:/root/.java/.userPrefs/com/docmosis/webserver/prefs.xml:ro
+      - ./docker/docmosis/templates:/home/docmosis/templates:rw
     ports:
-      - 5433:80
+      - 5433:8080
 networks:
-  ccd:
-    external:
-      name: compose_default
+  ccd-network:
+      external: true
