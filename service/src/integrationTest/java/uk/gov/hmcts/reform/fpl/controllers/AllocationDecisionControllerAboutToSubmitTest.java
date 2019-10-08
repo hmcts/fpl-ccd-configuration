@@ -63,6 +63,36 @@ class AllocationDecisionControllerAboutToSubmitTest {
             .isEqualTo(expectedDecision);
     }
 
+    @Test
+    void incorrectAllocationProposal() throws Exception {
+
+        AllocationDecision allocationDecisionWithoutProposal = AllocationDecision.builder()
+            .proposal("Lay justices")
+            .build();
+        AllocationProposal allocationProposal = AllocationProposal.builder()
+            .proposal("District judge")
+            .proposalReason("reason")
+            .build();
+
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .data(ImmutableMap.<String, Object>builder()
+                .put("allocationProposal", allocationProposal)
+                .put("allocationDecision", allocationDecisionWithoutProposal)
+                .build()).build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = callbackResponse(request);
+
+        AllocationDecision expectedDecision = AllocationDecision.builder()
+            .proposal("Lay justices")
+            .build();
+
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+        AllocationDecision actualAllocationDecision = caseData.getAllocationDecision();
+        assertThat(actualAllocationDecision)
+            .isEqualTo(expectedDecision);
+    }
+
     private AboutToStartOrSubmitCallbackResponse callbackResponse(CallbackRequest request) throws Exception {
 
         MvcResult response = mockMvc
