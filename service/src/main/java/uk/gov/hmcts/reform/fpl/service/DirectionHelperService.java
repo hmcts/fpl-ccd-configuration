@@ -22,9 +22,18 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 
+/**
+ * A service that helps with the sorting and editing of directions.
+ */
 @Service
 public class DirectionHelperService {
 
+    /**
+     * Combines role directions into a single List of directions within an Order object.
+     *
+     * @param caseData data containing all the directions by role.
+     * @return Order object.
+     */
     public Order createOrder(CaseData caseData) {
         List<Element<Direction>> directions = new ArrayList<>();
 
@@ -68,15 +77,19 @@ public class DirectionHelperService {
         return Order.builder().directions(directions).build();
     }
 
+    /**
+     * Adds values that would otherwise be lost in CCD to directions.
+     * Values include readOnly, directionRemovable and text.
+     *
+     * @param orderWithHiddenValues an order object that should be generated using original case data.
+     * @param orderToAddValues      an order object that should be generated using case data edited through a ccd event.
+     * @return Order object with hidden values persisted.
+     */
     public Order persistHiddenDirectionValues(Order orderWithHiddenValues, Order orderToAddValues) {
         orderToAddValues.getDirections()
             .forEach(directionToAddValue -> orderWithHiddenValues.getDirections()
                 .stream()
-                .filter(direction -> {
-                    System.out.println("direction = " + direction);
-
-                    return direction.getId().equals(directionToAddValue.getId());
-                })
+                .filter(direction -> direction.getId().equals(directionToAddValue.getId()))
                 .forEach(direction -> {
                     directionToAddValue.getValue().setReadOnly(direction.getValue().getReadOnly());
                     directionToAddValue.getValue().setDirectionRemovable(direction.getValue().getDirectionRemovable());
@@ -89,12 +102,25 @@ public class DirectionHelperService {
         return orderToAddValues;
     }
 
+    /**
+     * Splits a list of directions into a map where the key is the role of the direction assignee and the value is the
+     * list of directions belonging to the role.
+     *
+     * @param directions a list of directions with various assignees.
+     * @return Map of role name, list of directions.
+     */
     public Map<String, List<Element<Direction>>> orderDirectionsByAssignee(List<Element<Direction>> directions) {
         return directions.stream()
             .filter(x -> x.getValue().getCustom() == null)
             .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee().getValue()));
     }
 
+    /**
+     * Iterates over a list of directions and adds numbers to the type starting from 2.
+     *
+     * @param directions a list of directions.
+     * @return a list of directions with numbered type.
+     */
     public List<Element<Direction>> numberDirections(List<Element<Direction>> directions) {
         AtomicInteger at = new AtomicInteger(2);
 
@@ -125,11 +151,10 @@ public class DirectionHelperService {
             .collect(toList());
     }
 
-    // TODO: what do we do with directions where a user has said it is not needed?
-    @SuppressWarnings("LineLength")
     private List<Element<Direction>> filterDirectionsNotRequired(List<Element<Direction>> directions) {
         return directions.stream()
-            .filter(directionElement -> directionElement.getValue().getDirectionNeeded() == null || directionElement.getValue().getDirectionNeeded().equals("Yes"))
+            .filter(directionElement -> directionElement.getValue().getDirectionNeeded() == null
+                || directionElement.getValue().getDirectionNeeded().equals("Yes"))
             .collect(toList());
     }
 

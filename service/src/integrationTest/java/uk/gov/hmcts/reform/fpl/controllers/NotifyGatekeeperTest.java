@@ -11,15 +11,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
+import uk.gov.hmcts.reform.fpl.handlers.PopulateStandardDirectionsHandler;
 import uk.gov.service.notify.NotificationClient;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -35,12 +34,16 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 @OverrideAutoConfiguration(enabled = true)
 class NotifyGatekeeperTest {
 
+    private static final String TOKEN = "1";
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final String GATEKEEPER_EMAIL = "FamilyPublicLaw+gatekeeper@gmail.com";
 
     @MockBean
     private NotificationClient notificationClient;
+
+    @MockBean
+    private PopulateStandardDirectionsHandler populateStandardDirectionsHandler;
 
     @Autowired
     private MockMvc mockMvc;
@@ -49,26 +52,18 @@ class NotifyGatekeeperTest {
     private ObjectMapper mapper;
 
     @Test
-    void shouldReturnPopulatedDirectionsByRoleInAboutToSubmit() throws Exception {
-        MvcResult response = mockMvc
-            .perform(post("/callback/notify-gatekeeper/about-to-submit")
+    void shouldReturnPopulatedDirectionsByRoleInSubmittedCallback() throws Exception {
+        mockMvc
+            .perform(post("/callback/notify-gatekeeper/submitted")
                 .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(callbackRequest())))
             .andExpect(status().isOk())
             .andReturn();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-        assertThat(caseData.getAllParties()).isNotEmpty();
-        assertThat(caseData.getLocalAuthorityDirections()).isNotEmpty();
-        assertThat(caseData.getParentsAndRespondentsDirections()).isNotEmpty();
-        assertThat(caseData.getCafcassDirections()).isNotEmpty();
-        assertThat(caseData.getOtherPartiesDirections()).isNotEmpty();
-        assertThat(caseData.getCourtDirections()).isNotEmpty();
+        verify(populateStandardDirectionsHandler, times(1)).populateStandardDirections(
+            any(PopulateStandardDirectionsEvent.class));
     }
 
     @Test

@@ -82,7 +82,8 @@ class PopulateStandardDirectionsHandlerTest {
 
         given(authTokenGenerator.generate()).willReturn(AUTH_TOKEN);
 
-        given(coreCaseDataApi.startEventForCaseWorker(TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, CASE_EVENT))
+        given(coreCaseDataApi.startEventForCaseWorker(
+            TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, CASE_EVENT))
             .willReturn(StartEventResponse.builder()
                 .caseDetails(callbackRequest.getCaseDetails())
                 .eventId(CASE_EVENT)
