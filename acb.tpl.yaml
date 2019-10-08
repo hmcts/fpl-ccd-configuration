@@ -3,6 +3,7 @@ version: 1.0
 steps:
   - id: build-image
     build: -t {{.Run.Registry}}/{{CI_IMAGE_TAG}} .
+    when: ["-"]
     keep: true
   - id: push-image
     push:
