@@ -68,6 +68,7 @@ class AllocationDecisionControllerAboutToSubmitTest {
 
         AllocationDecision allocationDecisionWithoutProposal = AllocationDecision.builder()
             .proposal("Lay justices")
+            .judgeLevelRadio("No")
             .build();
         AllocationProposal allocationProposal = AllocationProposal.builder()
             .proposal("District judge")

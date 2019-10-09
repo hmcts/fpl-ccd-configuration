@@ -50,7 +50,7 @@ public class AllocationDecisionController {
 
         Map<String, Object> data = caseDetails.getData();
         data.put("allocationDecision", decisionBuilder.build());
-        
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
@@ -70,17 +70,18 @@ public class AllocationDecisionController {
         AllocationDecision.AllocationDecisionBuilder decisionBuilder = ofNullable(allocationDecision)
             .map(AllocationDecision::toBuilder)
             .orElse(AllocationDecision.builder());
+        decisionBuilder.judgeLevelRadio(null);
 
         if (caseData.getAllocationDecision().getProposal() == null) {
             decisionBuilder.proposal(caseData.getAllocationProposal().getProposal());
-            Map<String, Object> data = caseDetails.getData();
-            data.put("allocationDecision", decisionBuilder.build());
-        } else {
-            decisionBuilder.proposal(caseData.getAllocationDecision().getProposal());
-            decisionBuilder.proposalReason(caseData.getAllocationDecision().getProposalReason());
-            Map<String, Object> data = caseDetails.getData();
-            data.put("allocationDecision", decisionBuilder.build());
         }
+        else
+        {
+            decisionBuilder.judgeLevelRadio(null);
+        }
+
+        Map<String, Object> data = caseDetails.getData();
+        data.put("allocationDecision", decisionBuilder.build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

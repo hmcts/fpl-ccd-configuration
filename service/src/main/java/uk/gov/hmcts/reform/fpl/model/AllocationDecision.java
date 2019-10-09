@@ -15,4 +15,6 @@ public class AllocationDecision  {
     private final String proposal;
     private final String proposalReason;
     private final String allocationProposalPresent;
+
+    private final String judgeLevelRadio;
 }
