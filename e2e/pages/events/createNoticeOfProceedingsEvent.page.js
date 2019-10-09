@@ -7,14 +7,14 @@ module.exports = {
       c6a: locate('input').withAttr({id: 'proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES'}),
     },
     judgeTitleRadioGroup: {
-      groupName: "#judgeAndLegalAdvisor_judgeTitle",
+      groupName: '#judgeAndLegalAdvisor_judgeTitle',
       herHonourJudge: 'Her Honour Judge',
       hisHonourJudge: 'His Honour Judge',
       deputyDistrictJudge: 'Deputy District Judge',
-      magistrates: "Magistrates (JP)"
+      magistrates: 'Magistrates (JP)',
     },
     judgeLastName: '#judgeAndLegalAdvisor_judgeLastName',
-    legalAdvisorName: '#judgeAndLegalAdvisor_legalAdvisorName'
+    legalAdvisorName: '#judgeAndLegalAdvisor_legalAdvisorName',
   },
 
   checkC6() {
@@ -26,9 +26,9 @@ module.exports = {
   },
 
   selectJudgeTitle() {
-      within(this.fields.judgeTitleRadioGroup.groupName, () => {
-        I.click(locate('label').withText(this.fields.judgeTitleRadioGroup.herHonourJudge));
-      });
+    within(this.fields.judgeTitleRadioGroup.groupName, () => {
+      I.click(locate('label').withText(this.fields.judgeTitleRadioGroup.herHonourJudge));
+    });
   },
 
   enterJudgeLastName(judgeLastName) {
@@ -37,5 +37,5 @@ module.exports = {
 
   enterLegalAdvisorName(legalAdvisorName) {
     I.fillField(this.fields.legalAdvisorName, legalAdvisorName);
-  }
+  },
 };

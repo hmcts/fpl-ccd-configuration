@@ -121,8 +121,8 @@ Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseVi
   createNoticeOfProceedingsEventPage.checkC6();
   createNoticeOfProceedingsEventPage.checkC6A();
   await createNoticeOfProceedingsEventPage.selectJudgeTitle();
-  await createNoticeOfProceedingsEventPage.enterJudgeLastName("Sarah Simpson");
-  await createNoticeOfProceedingsEventPage.enterLegalAdvisorName("Ian Watson");
+  await createNoticeOfProceedingsEventPage.enterJudgeLastName('Sarah Simpson');
+  await createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
