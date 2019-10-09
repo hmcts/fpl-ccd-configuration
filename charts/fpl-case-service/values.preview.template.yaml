@@ -7,6 +7,8 @@ java:
   ingressHost: ${SERVICE_FQDN}
   environment:
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
+    IDAM_CLIENT_ID: fpl
+    IDAM_CLIENT_REDIRECT_URI: https://${SERVICE_FQDN}/oauth2/callback
   keyVaults:
     fpl:
       resourceGroup: fpl-case-service
@@ -14,6 +16,7 @@ java:
         - notify-api-key
         - docmosis-api-key
         - fpl-case-service-s2s-secret
+        - fpl-case-service-idam-client-secret
         - local-authority-email-to-code-mapping
         - local-authority-code-to-name-mapping
         - local-authority-user-mapping
