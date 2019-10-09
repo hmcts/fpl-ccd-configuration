@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.pebble;
 
-import uk.gov.hmcts.reform.fpl.config.utils.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 
 import java.util.Map;
 

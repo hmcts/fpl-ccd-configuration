@@ -1,20 +1,17 @@
 const { I } = inject();
 
+const allocationDecisionRadioGroup = '#allocationDecision_proposal';
+const allocationDecisionRadioPrefix = 'allocationDecision_proposal-';
+const proposalReason = '#allocationDecision_proposalReason';
+
 module.exports = {
 
-  fields: {
-    allocationDecisionRadioGroup: '#allocationDecision_proposal',
-    proposalReason: '#allocationDecision_proposalReason',
-  },
-
   selectAllocationDecision(proposal) {
-    I.waitForElement(this.fields.allocationDecisionRadioGroup);
-    within(this.fields.allocationDecisionRadioGroup, () => {
-      I.click(locate('label').withText(proposal));
-    });
+    I.waitForElement(allocationDecisionRadioGroup);
+    I.click(locate('input').withAttr({id: allocationDecisionRadioPrefix + proposal}));
   },
 
   enterProposalReason(reason) {
-    I.fillField(this.fields.proposalReason, reason);
+    I.fillField(proposalReason, reason);
   },
 };
