@@ -58,5 +58,6 @@ public class C2UploadControllerTest {
         assertThat(expectedC2Document.getC2upload().getUrl()).isEqualTo(document.links.self.href);
         assertThat(expectedC2Document.getC2upload().getFilename()).isEqualTo(document.originalDocumentName);
         assertThat(expectedC2Document.getC2upload().getBinaryUrl()).isEqualTo(document.links.binary.href);
+        assertThat(expectedC2Document.getC2UploadDescription()).isEqualTo("test");
     }
 }
