@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -9,12 +10,15 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 
 @Service
 public class CaseDataExtractionService {
@@ -33,20 +37,48 @@ public class CaseDataExtractionService {
     }
 
     public Map<String, String> getNoticeOfProceedingTemplateData(CaseData caseData) {
-        HearingBooking hearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
+        Map<String, String> hearingBookingData = getHearingBookingData(caseData);
 
         // Validation within our frontend ensures that the following data is present
-        return Map.of(
-            "courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName(),
-            "familyManCaseNumber", caseData.getFamilyManCaseNumber(),
-            "todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG),
-            "applicantName", getFirstApplicantName(caseData),
-            "orderTypes", getOrderTypes(caseData),
-            "childrenNames", getAllChildrenNames(caseData),
-            "hearingDate", dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG),
-            "hearingVenue", hearingBooking.getVenue(),
-            "preHearingAttendance", hearingBooking.getPreHearingAttendance(),
-            "hearingTime", hearingBooking.getTime()
+
+        return ImmutableMap.<String, String>builder()
+            .put("courtLocation", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
+            .put("todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
+            .put("applicantName", getFirstApplicantName(caseData))
+            .put("orderTypes", getOrderTypes(caseData))
+            .put("childrenNames", getAllChildrenNames(caseData))
+            .put("judgeTitleAndName", formatJudgeTitleAndName(caseData))
+            .put("legalAdvisorName", caseData.getJudgeAndLegalAdvisor() == null
+                || caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName() == null ? ""
+                : caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName())
+            .putAll(hearingBookingData)
+            .build();
+    }
+
+    private String formatJudgeTitleAndName(CaseData caseData) {
+        if (caseData.getJudgeAndLegalAdvisor() == null || caseData.getJudgeAndLegalAdvisor().getJudgeTitle() == null) {
+            return "";
+        }
+
+        JudgeAndLegalAdvisor judgeOrMagistrateTitle = caseData.getJudgeAndLegalAdvisor();
+
+        if (caseData.getJudgeAndLegalAdvisor().getJudgeTitle() == MAGISTRATES) {
+            return judgeOrMagistrateTitle.getJudgeFullName() + " (JP)";
+        } else {
+            return judgeOrMagistrateTitle.getJudgeTitle().getLabel() + " " + judgeOrMagistrateTitle.getJudgeLastName();
+        }
+    }
+
+    private Map<String, String> getHearingBookingData(CaseData caseData) {
+        HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
+
+        return ImmutableMap.of(
+            "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),
+                FormatStyle.LONG),
+            "hearingVenue", prioritisedHearingBooking.getVenue(),
+            "preHearingAttendance", prioritisedHearingBooking.getPreHearingAttendance(),
+            "hearingTime", prioritisedHearingBooking.getTime()
         );
     }
 
@@ -76,9 +108,13 @@ public class CaseDataExtractionService {
             .map(childParty -> (childParty.getFirstName()) + " " + (childParty.getLastName()))
             .collect(Collectors.joining(", "));
 
-        StringBuilder stringBuilder = new StringBuilder(childrenNames);
-        stringBuilder.replace(childrenNames.lastIndexOf(","), childrenNames.lastIndexOf(",") + 1, "and");
-        childrenNames = stringBuilder.toString();
+        if (childrenNames.contains(",")) {
+            StringBuilder stringBuilder = new StringBuilder(childrenNames);
+            stringBuilder.replace(childrenNames.lastIndexOf(","),
+                childrenNames.lastIndexOf(",") + 1, " and");
+
+            childrenNames = stringBuilder.toString();
+        }
 
         return childrenNames;
     }

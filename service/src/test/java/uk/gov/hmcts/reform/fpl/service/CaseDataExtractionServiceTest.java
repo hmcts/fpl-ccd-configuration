@@ -7,9 +7,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
@@ -19,6 +22,8 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -43,7 +48,7 @@ class CaseDataExtractionServiceTest {
         hearingBookingService, hmctsCourtLookupConfiguration);
 
     @Test
-    void shouldConcatenateAllChildrenNames() {
+    void shouldApplySentenceFormattingToMultipleChildNames() {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority("example")
             .familyManCaseNumber("123")
@@ -56,6 +61,51 @@ class CaseDataExtractionServiceTest {
 
         Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
         assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark and Jon Snow");
+    }
+
+    @Test
+    void shouldNotApplySentenceFormattingToSingularChildName() {
+        CaseData caseData = CaseData.builder()
+            .caseLocalAuthority("example")
+            .familyManCaseNumber("123")
+            .children1(ImmutableList.of(
+                Element.<Child>builder()
+                    .id(UUID.randomUUID())
+                    .value(Child.builder()
+                        .party(ChildParty.builder()
+                            .firstName("Bran")
+                            .lastName("Stark")
+                            .build())
+                        .build())
+                    .build()))
+            .applicants(createPopulatedApplicants())
+            .hearingDetails(createHearingBookings())
+            .orders(Orders.builder()
+                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
+            .build();
+
+        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
+        assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark");
+    }
+
+    @Test
+    void shouldFormatMagistrateFullNameWithJPAnnotation() {
+        CaseData caseData = CaseData.builder()
+            .caseLocalAuthority("example")
+            .familyManCaseNumber("123")
+            .children1(createPopulatedChildren())
+            .applicants(createPopulatedApplicants())
+            .hearingDetails(createHearingBookings())
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(MAGISTRATES)
+                .judgeFullName("James Nelson")
+                .build())
+            .orders(Orders.builder()
+                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
+            .build();
+
+        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
+        assertThat(templateData.get("judgeTitleAndName")).isEqualTo("James Nelson (JP)");
     }
 
     @Test
@@ -82,6 +132,7 @@ class CaseDataExtractionServiceTest {
             .children1(createPopulatedChildren())
             .applicants(createPopulatedApplicants())
             .hearingDetails(createHearingBookings())
+            .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
             .orders(Orders.builder()
                 .orderType(ImmutableList.<OrderType>of(
                     CARE_ORDER,
@@ -90,7 +141,7 @@ class CaseDataExtractionServiceTest {
             .build();
 
         Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
-        assertThat(templateData.get("courtName")).isEqualTo("Example Court");
+        assertThat(templateData.get("courtLocation")).isEqualTo("Example Court");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
         assertThat(templateData.get("orderTypes")).isEqualTo("Care order, Education supervision order");
@@ -100,6 +151,16 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("hearingVenue")).isEqualTo("Venue");
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("08.15am");
         assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
+        assertThat(templateData.get("judgeTitleAndName")).isEqualTo("His Honour Judge Samuel Davidson");
+        assertThat(templateData.get("legalAdvisorName")).isEqualTo("John Bishop");
+    }
+
+    private JudgeAndLegalAdvisor createJudgeAndLegalAdvisor() {
+        return JudgeAndLegalAdvisor.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName("Samuel Davidson")
+            .legalAdvisorName("John Bishop")
+            .build();
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {

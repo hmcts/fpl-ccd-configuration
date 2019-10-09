@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
 
 import java.util.ArrayList;
@@ -99,4 +100,5 @@ public class CaseData {
     private final List<Element<HearingBooking>> hearingDetails;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;
+    private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
 }
