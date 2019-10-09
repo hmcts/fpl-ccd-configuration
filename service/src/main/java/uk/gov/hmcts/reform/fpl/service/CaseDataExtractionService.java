@@ -94,7 +94,7 @@ public class CaseDataExtractionService {
                 FormatStyle.LONG) : EMPTY_STATE_PLACEHOLDER)
             .put("children", getChildrenDetails(caseData))
             .put("respondents", respondentsNameAndRelationship)
-            .put("respondentsProvided", respondentsNameAndRelationship.isEmpty())
+            .put("respondentsProvided", !respondentsNameAndRelationship.isEmpty())
             .put("applicantName", getFirstApplicantName(caseData))
             .putAll(getGroupedDirections(caseData))
             .putAll(extractedHearingBookingData)

@@ -75,11 +75,21 @@ public class DraftOrdersController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackrequest) throws IOException {
-        CaseDetails caseDetails = addDirectionsToOrder(callbackrequest.getCaseDetails());
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseDetails caseDetailsBefore = addDirectionsToOrder(callbackrequest.getCaseDetailsBefore());
+        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+
+        CaseDetails caseDetailsAfter = addDirectionsToOrder(callbackrequest.getCaseDetails());
+        CaseData caseDataWithValuesRemoved = mapper.convertValue(caseDetailsAfter.getData(), CaseData.class);
+
+        Order orderWithValues = directionHelperService.persistHiddenDirectionValues(
+            caseDataBefore.getStandardDirectionOrder(), caseDataWithValuesRemoved.getStandardDirectionOrder());
+
+        CaseData.CaseDataBuilder caseDataBuilder = caseDataWithValuesRemoved.toBuilder();
+
+        caseDataBuilder.standardDirectionOrder(orderWithValues);
 
         Map<String, Object> templateData = caseDataExtractionService
-            .getDraftStandardOrderDirectionTemplateData(caseData);
+            .getDraftStandardOrderDirectionTemplateData(caseDataBuilder.build());
 
         DocmosisDocument docmosisDocument =
             documentGeneratorService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
@@ -87,14 +97,14 @@ public class DraftOrdersController {
         Document document = uploadDocumentService.uploadPDF(userId, authorization, docmosisDocument.getBytes(),
             "Draft.pdf");
 
-        caseDetails.getData().put("sdo", DocumentReference.builder()
+        caseDetailsAfter.getData().put("sdo", DocumentReference.builder()
             .url(document.links.self.href)
             .binaryUrl(document.links.binary.href)
             .filename("Draft.pdf")
             .build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(caseDetailsAfter.getData())
             .build();
     }
 

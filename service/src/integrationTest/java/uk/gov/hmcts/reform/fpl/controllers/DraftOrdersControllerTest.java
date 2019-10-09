@@ -115,11 +115,16 @@ class DraftOrdersControllerTest {
             .willReturn(document);
 
         List<Element<Direction>> directions = buildDirections(
-            ImmutableList.of(Direction.builder().text("example").assignee(LOCAL_AUTHORITY).build())
+            ImmutableList.of(Direction.builder()
+                .text("example")
+                .assignee(LOCAL_AUTHORITY)
+                .readOnly("No")
+                .build())
         );
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(createCaseDetails(directions))
+            .caseDetailsBefore(createCaseDetails(directions))
             .build();
 
         MvcResult response = mockMvc
@@ -209,6 +214,7 @@ class DraftOrdersControllerTest {
 
     private List<Element<Direction>> buildDirections(List<Direction> directions) {
         return directions.stream().map(direction -> Element.<Direction>builder()
+            .id(UUID.randomUUID())
             .value(direction)
             .build())
             .collect(toList());
