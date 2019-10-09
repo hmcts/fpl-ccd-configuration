@@ -92,13 +92,6 @@ Scenario('HMCTS admin uploads C2 to case', async (I, caseViewPage, uploadC2Event
   I.seeAnswerInTab('2', 'C2 2', 'Description', 'Jessica Pearson C2');
 });
 
-Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
-  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-  sendCaseToGatekeeperEventPage.enterEmail();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
-});
-
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
@@ -130,6 +123,14 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(7, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
   I.seeAnswerInTab(8, 'Hearing 2', 'Judge or magistrate\'s title', hearingDetails[1].judgeTitle);
   I.seeAnswerInTab(9, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
+});
+
+
+Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+  sendCaseToGatekeeperEventPage.enterEmail();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 });
 
 // Disabled as permissions to create / view notice of proceeding documents has been temporarily disabled. Enable once updates to c6 and c6a have been made
