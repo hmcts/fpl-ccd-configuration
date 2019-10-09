@@ -7,8 +7,8 @@ java:
   ingressHost: ${SERVICE_FQDN}
   environment:
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
-    IDAM_CLIENT_ID: fpl
-    IDAM_CLIENT_REDIRECT_URI: https://${SERVICE_FQDN}/oauth2/callback
+    IDAM_CLIENT_ID: fpl_case_service
+    IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
   keyVaults:
     fpl:
       resourceGroup: fpl-case-service
