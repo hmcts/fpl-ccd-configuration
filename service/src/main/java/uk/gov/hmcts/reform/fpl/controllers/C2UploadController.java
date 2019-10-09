@@ -25,7 +25,6 @@ public class C2UploadController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
 
-
         List<Object> uploadC2 = (List<Object>) data.computeIfAbsent("uploadC2", (notUsed) -> Lists.newArrayList());
 
         Map<String, Object> newElement = new HashMap<>();
