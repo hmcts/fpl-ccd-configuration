@@ -37,12 +37,8 @@ class AllocationDecisionControllerAboutToSubmitTest {
     @Test
     void shouldAddCorrectAllocationDecisionProposal() throws Exception {
 
-        AllocationDecision allocationDecisionWithoutProposal = AllocationDecision.builder()
-            .build();
-        AllocationProposal allocationProposal = AllocationProposal.builder()
-            .proposal("District judge")
-            .proposalReason("reason")
-            .build();
+        AllocationDecision allocationDecisionWithoutProposal = createAllocationDecision(null,null);
+        AllocationProposal allocationProposal = createAllocationProposal("District judge","reason");
 
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
@@ -66,19 +62,13 @@ class AllocationDecisionControllerAboutToSubmitTest {
     @Test
     void incorrectAllocationProposal() throws Exception {
 
-        AllocationDecision allocationDecisionWithoutProposal = AllocationDecision.builder()
-            .proposal("Lay justices")
-            .judgeLevelRadio("No")
-            .build();
-        AllocationProposal allocationProposal = AllocationProposal.builder()
-            .proposal("District judge")
-            .proposalReason("reason")
-            .build();
+        AllocationDecision allocationDecisionWithProposal = createAllocationDecision("Lay justices","No");
+        AllocationProposal allocationProposal = createAllocationProposal("District judge","reason");
 
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
                 .put("allocationProposal", allocationProposal)
-                .put("allocationDecision", allocationDecisionWithoutProposal)
+                .put("allocationDecision", allocationDecisionWithProposal)
                 .build()).build())
             .build();
 
@@ -108,5 +98,23 @@ class AllocationDecisionControllerAboutToSubmitTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         return callbackResponse;
+    }
+
+    private AllocationDecision createAllocationDecision(String proposal,String judgeLevelRadio) throws Exception {
+
+        AllocationDecision allocationDecision = AllocationDecision.builder()
+            .proposal(proposal)
+            .judgeLevelRadio(judgeLevelRadio)
+            .build();
+        return allocationDecision;
+    }
+
+    private AllocationProposal createAllocationProposal(String proposal,String proposalReason) throws Exception {
+
+        AllocationProposal allocationProposal = AllocationProposal.builder()
+            .proposal(proposal)
+            .proposalReason(proposalReason)
+            .build();
+        return allocationProposal;
     }
 }

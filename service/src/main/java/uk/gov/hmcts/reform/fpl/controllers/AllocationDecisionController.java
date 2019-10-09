@@ -74,9 +74,7 @@ public class AllocationDecisionController {
 
         if (caseData.getAllocationDecision().getProposal() == null) {
             decisionBuilder.proposal(caseData.getAllocationProposal().getProposal());
-        }
-        else
-        {
+        } else {
             decisionBuilder.judgeLevelRadio(null);
         }
 
