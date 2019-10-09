@@ -70,7 +70,6 @@ public class AllocationDecisionController {
         AllocationDecision.AllocationDecisionBuilder decisionBuilder = ofNullable(allocationDecision)
             .map(AllocationDecision::toBuilder)
             .orElse(AllocationDecision.builder());
-        decisionBuilder.judgeLevelRadio(null);
 
         if (caseData.getAllocationDecision().getProposal() == null) {
             decisionBuilder.proposal(caseData.getAllocationProposal().getProposal());
