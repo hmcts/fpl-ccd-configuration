@@ -39,6 +39,11 @@ data "azurerm_key_vault_secret" "s2s_secret" {
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "idam_client_secret" {
+  name      = "fpl-case-service-idam-client-secret"
+  vault_uri = "${module.key-vault.key_vault_uri}"
+}
+
 data "azurerm_key_vault_secret" "local_authority_email_to_code_mapping" {
   name      = "local-authority-email-to-code-mapping"
   vault_uri = "${module.key-vault.key_vault_uri}"
@@ -117,6 +122,9 @@ module "case-service" {
     IDAM_API_URL                                    = "${var.idam_api_url}"
     IDAM_S2S_AUTH_URL                               = "${local.IDAM_S2S_AUTH_URL}"
     IDAM_S2S_AUTH_TOTP_SECRET                       = "${data.azurerm_key_vault_secret.s2s_secret.value}"
+    IDAM_CLIENT_SECRET                              = "${data.azurerm_key_vault_secret.idam_client_secret.value}"
+    IDAM_CLIENT_ID:                                 = "${var.idam_client_id}"
+    IDAM_CLIENT_REDIRECT_URI:                       = "${var.idam_client_redirect_uri}"
     DOCMOSIS_TORNADO_URL                            = "${local.DOCMOSIS_API_URL}"
     DOCMOSIS_TORNADO_KEY                            = "${data.azurerm_key_vault_secret.docmosis_api_key.value}"
     DOCUMENT_MANAGEMENT_URL                         = "${local.DOCUMENT_MANAGEMENT_URL}"

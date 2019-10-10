@@ -8,6 +8,8 @@ java:
     DOCUMENT_MANAGEMENT_URL: http://dm-store-aat.service.core-compute-aat.internal
     CCD_UI_BASE_URL: https://ccd-case-management-web-aat.service.core-compute-aat.internal
     DOCMOSIS_TORNADO_URL: https://docmosis-development.platform.hmcts.net
+    IDAM_CLIENT_ID: fpl_case_service
+    IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
   aadIdentityName: family-public-law
   keyVaults:
     fpl:
@@ -16,6 +18,7 @@ java:
         - notify-api-key
         - docmosis-api-key
         - fpl-case-service-s2s-secret
+        - fpl-case-service-idam-client-secret
         - local-authority-email-to-code-mapping
         - local-authority-code-to-name-mapping
         - local-authority-user-mapping
@@ -23,3 +26,4 @@ java:
         - local-authority-code-to-cafcass-mapping
         - system-update-user-username
         - system-update-user-password
+
