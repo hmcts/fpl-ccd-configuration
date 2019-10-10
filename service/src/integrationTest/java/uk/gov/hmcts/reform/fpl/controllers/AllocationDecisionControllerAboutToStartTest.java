@@ -69,6 +69,103 @@ class AllocationDecisionControllerAboutToStartTest {
     }
 
     @Test
+    void shouldAddNullToJudgeLevelRadio() throws Exception {
+
+        AllocationProposal allocationProposal = AllocationProposal.builder()
+            .proposal("proposal")
+            .proposalReason("reason")
+            .build();
+
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .data(ImmutableMap.<String, Object>builder()
+                .put("allocationProposal", allocationProposal)
+                .build()).build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = callbackResponse(request);
+
+        AllocationDecision expectedDecision = AllocationDecision.builder()
+            .judgeLevelRadio(null)
+            .allocationProposalPresent("Yes")
+            .build();
+
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+        AllocationDecision actualAllocationDecision = caseData.getAllocationDecision();
+        assertThat(actualAllocationDecision)
+            .isEqualTo(expectedDecision);
+    }
+
+    @Test
+    void shouldAddYesToJudgeLevelRadio() throws Exception {
+
+        AllocationProposal allocationProposal = AllocationProposal.builder()
+            .proposal("proposal")
+            .proposalReason("reason")
+            .build();
+
+        AllocationDecision allocationDecision = AllocationDecision.builder()
+            .proposal("proposal")
+            .proposalReason("reason")
+            .build();
+
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .data(ImmutableMap.<String, Object>builder()
+                .put("allocationProposal", allocationProposal)
+                .put("allocationDecision", allocationDecision)
+                .build()).build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = callbackResponse(request);
+
+        AllocationDecision expectedDecision = AllocationDecision.builder()
+            .judgeLevelRadio("Yes")
+            .proposal("proposal")
+            .proposalReason("reason")
+            .allocationProposalPresent("Yes")
+            .build();
+
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+        AllocationDecision actualAllocationDecision = caseData.getAllocationDecision();
+        assertThat(actualAllocationDecision)
+            .isEqualTo(expectedDecision);
+    }
+
+    @Test
+    void shouldAddNoToJudgeLevelRadio() throws Exception {
+
+        AllocationProposal allocationProposal = AllocationProposal.builder()
+            .proposal("proposal")
+            .proposalReason("reason")
+            .build();
+
+        AllocationDecision allocationDecision = AllocationDecision.builder()
+            .proposal("wrong proposal")
+            .proposalReason("reason")
+            .build();
+
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .data(ImmutableMap.<String, Object>builder()
+                .put("allocationProposal", allocationProposal)
+                .put("allocationDecision", allocationDecision)
+                .build()).build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = callbackResponse(request);
+
+        AllocationDecision expectedDecision = AllocationDecision.builder()
+            .judgeLevelRadio("No")
+            .proposal("wrong proposal")
+            .proposalReason("reason")
+            .allocationProposalPresent("Yes")
+            .build();
+
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+        AllocationDecision actualAllocationDecision = caseData.getAllocationDecision();
+        assertThat(actualAllocationDecision)
+            .isEqualTo(expectedDecision);
+    }
+
+    @Test
     void shouldAddNoToMissingAllocationDecision() throws Exception {
 
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
