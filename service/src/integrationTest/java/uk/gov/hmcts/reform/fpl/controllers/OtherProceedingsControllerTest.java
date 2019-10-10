@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Proceeding;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -79,9 +78,8 @@ public class OtherProceedingsControllerTest {
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(Proceeding proceeding) throws Exception {
-        HashMap<String, Object> map = MAPPER.readValue(MAPPER.writeValueAsString(proceeding),
-            new TypeReference<Map<String, Object>>() {
-            });
+        Map<String, Object> map = MAPPER.readValue(MAPPER.writeValueAsString(proceeding), new TypeReference<>() {
+        });
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
