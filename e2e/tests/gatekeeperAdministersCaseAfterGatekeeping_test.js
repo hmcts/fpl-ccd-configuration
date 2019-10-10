@@ -2,17 +2,12 @@ const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 
 let caseId;
-let allocationProposalSelected;
 
 Feature('Gatekeeper Case administration after gatekeeping');
 
 Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
-    if(allocationProposalSelected)
-    {
-      await I.enterAllocationProposal();
-    }
     await I.enterMandatoryFields();
     await caseViewPage.goToNewActions(config.applicationActions.submitCase);
     submitApplicationEventPage.giveConsent();
@@ -46,21 +41,12 @@ Scenario('gatekeeper enters allocation decision without proposal', async (I, cas
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
 });
 
-
-//Setting up for next Scenario
-caseId = undefined;
-allocationProposalSelected = true;
-
-Scenario('gatekeeper enters allocation decision with incorrect proposal', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
+Scenario('gatekeeper enters allocation decision', async (I, caseViewPage, enterAllocationDecisionEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAllocationDecision);
-  enterAllocationDecisionEventPage.selectCorrectLevelOfJudge('No');
-  enterAllocationDecisionEventPage.selectAllocationDecision('District judge');
+  enterAllocationDecisionEventPage.selectAllocationDecision('Lay justices');
   enterAllocationDecisionEventPage.enterProposalReason('test');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
-  caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
-  I.seeAnswerInTab(1, 'Allocation decision', 'Which level of judge is needed for this case?', 'District judge');
-  I.seeAnswerInTab(2, 'Allocation decision', 'Give reason', 'test');
 });
 
 Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
