@@ -58,6 +58,7 @@ class AllocationDecisionControllerAboutToStartTest {
         AllocationDecision expectedDecision = AllocationDecision.builder()
             .proposal("test")
             .proposalReason("decision reason")
+            .judgeLevelRadio("No")
             .allocationProposalPresent("Yes")
             .build();
 

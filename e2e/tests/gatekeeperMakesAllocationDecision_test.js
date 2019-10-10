@@ -52,5 +52,3 @@ Scenario('gatekeeper enters allocation decision with correct allocation proposal
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationDecision);
   caseViewPage.selectTab(caseViewPage.tabs.legalBasis);
 });
-
-

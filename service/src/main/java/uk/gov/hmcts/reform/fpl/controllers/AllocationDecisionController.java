@@ -48,24 +48,18 @@ public class AllocationDecisionController {
 
         decisionBuilder.allocationProposalPresent(checkIfAllocationProposalIsPresent(caseData.getAllocationProposal()));
 
-        if(checkIfAllocationProposalIsPresent(caseData.getAllocationProposal()) != "No")
-        {
-            if(checkIfAllocationDecisionIsPresent(caseData.getAllocationDecision()) != "No")
-            {
-                if(caseData.getAllocationProposal().getProposal().equals(caseData.getAllocationDecision().getProposal()))
-                {
+        if (checkIfAllocationProposalIsPresent(caseData.getAllocationProposal()) == "Yes") {
+            if (checkIfAllocationDecisionIsPresent(caseData.getAllocationDecision()) == "Yes") {
+                if (caseData.getAllocationProposal().getProposal()
+                    .equals(caseData.getAllocationDecision().getProposal())) {
                     decisionBuilder.judgeLevelRadio("Yes");
-                }
-                else {
+                } else {
                     decisionBuilder.judgeLevelRadio("No");
                 }
-            } else
-            {
+            } else {
                 decisionBuilder.judgeLevelRadio(null);
             }
-
         }
-
 
         Map<String, Object> data = caseDetails.getData();
         data.put("allocationDecision", decisionBuilder.build());
