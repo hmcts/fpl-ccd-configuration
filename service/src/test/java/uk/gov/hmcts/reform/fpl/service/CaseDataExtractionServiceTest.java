@@ -107,6 +107,21 @@ class CaseDataExtractionServiceTest {
         Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("James Nelson (JP)");
     }
+    
+    @Test
+    void shouldSetJudgeTitleAndNameToEmptyStringIfNotInCaseData() {
+        CaseData caseData = CaseData.builder()
+            .caseLocalAuthority("example")
+            .familyManCaseNumber("123")
+            .children1(createPopulatedChildren())
+            .applicants(createPopulatedApplicants())
+            .hearingDetails(createHearingBookings())
+            .orders(Orders.builder()
+                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
+            .build();
+        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
+        assertThat(templateData.get("judgeTitleAndName")).isEqualTo("");
+    }
 
     @Test
     void shouldReturnFirstApplicantName() {
