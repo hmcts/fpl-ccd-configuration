@@ -118,8 +118,8 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
 
 Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
-  createNoticeOfProceedingsEventPage.checkC6();
-  createNoticeOfProceedingsEventPage.checkC6A();
+  await createNoticeOfProceedingsEventPage.checkC6();
+  await createNoticeOfProceedingsEventPage.checkC6A();
   await createNoticeOfProceedingsEventPage.selectJudgeTitle();
   await createNoticeOfProceedingsEventPage.enterJudgeLastName('Sarah Simpson');
   await createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
