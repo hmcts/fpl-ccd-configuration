@@ -48,8 +48,8 @@ public class AllocationDecisionController {
 
         decisionBuilder.allocationProposalPresent(checkIfAllocationProposalIsPresent(caseData.getAllocationProposal()));
 
-        if (checkIfAllocationProposalIsPresent(caseData.getAllocationProposal()) == "Yes") {
-            if (checkIfAllocationDecisionIsPresent(caseData.getAllocationDecision()) == "Yes") {
+        if (checkIfAllocationProposalIsPresent(caseData.getAllocationProposal()).equals("Yes")) {
+            if (checkIfAllocationDecisionIsPresent(caseData.getAllocationDecision()).equals("Yes")) {
                 if (caseData.getAllocationProposal().getProposal()
                     .equals(caseData.getAllocationDecision().getProposal())) {
                     decisionBuilder.judgeLevelRadio("Yes");
