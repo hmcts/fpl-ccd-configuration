@@ -42,7 +42,7 @@ public class CaseDataExtractionService {
         // Validation within our frontend ensures that the following data is present
 
         return ImmutableMap.<String, String>builder()
-            .put("courtLocation", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName())
+            .put("courtName", getCourtName(caseData))
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
             .put("applicantName", getFirstApplicantName(caseData))
@@ -54,6 +54,10 @@ public class CaseDataExtractionService {
                 : caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName())
             .putAll(hearingBookingData)
             .build();
+    }
+
+    private String getCourtName(CaseData caseData) {
+        return hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName();
     }
 
     private String formatJudgeTitleAndName(CaseData caseData) {

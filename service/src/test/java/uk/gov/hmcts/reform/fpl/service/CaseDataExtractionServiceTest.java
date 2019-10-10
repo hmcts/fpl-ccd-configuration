@@ -141,7 +141,7 @@ class CaseDataExtractionServiceTest {
             .build();
 
         Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
-        assertThat(templateData.get("courtLocation")).isEqualTo("Example Court");
+        assertThat(templateData.get("courtName")).isEqualTo("Example Court");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
         assertThat(templateData.get("orderTypes")).isEqualTo("Care order, Education supervision order");
