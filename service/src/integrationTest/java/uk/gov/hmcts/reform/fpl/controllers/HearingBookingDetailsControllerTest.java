@@ -87,38 +87,38 @@ class HearingBookingDetailsControllerTest {
 
     private HearingBooking createHearing(LocalDate hearingDate) {
         return HearingBooking.builder()
-                             .date(hearingDate)
-                             .build();
+            .date(hearingDate)
+            .build();
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(HearingBooking hearingDetail) throws Exception {
         Map<String, Object> map = objectMapper.readValue(objectMapper.writeValueAsString(hearingDetail),
-                                                         new TypeReference<>() {
-                                                         });
+            new TypeReference<>() {
+            });
 
         CallbackRequest request = CallbackRequest.builder()
-                                                 .caseDetails(CaseDetails.builder()
-                                                                         .id(12345L)
-                                                                         .data(ImmutableMap.<String, Object>builder()
-                                                                                   .put("hearingDetails",
-                                                                                        ImmutableList.of(
-                                                                                            Element.builder()
-                                                                                                   .value(map)
-                                                                                                   .build()))
-                                                                                   .build())
-                                                                         .build())
-                                                 .build();
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.<String, Object>builder()
+                    .put("hearingDetails",
+                        ImmutableList.of(
+                            Element.builder()
+                                .value(map)
+                                .build()))
+                    .build())
+                .build())
+            .build();
 
         MvcResult response = mockMvc
             .perform(post("/callback/add-hearing-bookings/mid-event")
-                         .header("authorization", AUTH_TOKEN)
-                         .header("user-id", USER_ID)
-                         .contentType(MediaType.APPLICATION_JSON)
-                         .content(objectMapper.writeValueAsString(request)))
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andReturn();
 
         return objectMapper.readValue(response.getResponse()
-                                              .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 }
