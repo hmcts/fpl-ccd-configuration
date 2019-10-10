@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.config;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.fpl.config.utils.LookupConfigParser;
@@ -31,10 +32,10 @@ public class HmctsCourtLookupConfiguration {
         return checkNotNull(mapping.get(localAuthorityCode), "Local authority '" + localAuthorityCode + "' not found");
     }
 
-    @Data
+    @RequiredArgsConstructor
     public static class Court {
-        private final String name;
-        private final String email;
+        @Getter private final String name;
+        @Getter private final String email;
     }
 }
 
