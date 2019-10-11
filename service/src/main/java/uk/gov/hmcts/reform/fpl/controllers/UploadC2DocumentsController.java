@@ -44,7 +44,7 @@ public class UploadC2DocumentsController {
         List<Element<C2DocumentBundle>> c2DocumentBundle = caseData.getC2DocumentBundle() == null
             ? Lists.newArrayList() : caseData.getC2DocumentBundle();
 
-        c2DocumentBundle.add(Element.<uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle>builder()
+        c2DocumentBundle.add(Element.<C2DocumentBundle>builder()
             .id(UUID.randomUUID())
             .value(caseData.getTemporaryC2Document())
             .build());
