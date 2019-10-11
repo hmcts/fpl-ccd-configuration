@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.TestMulti;
+import uk.gov.hmcts.reform.fpl.model.common.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
@@ -14,12 +14,12 @@ import static java.util.Comparator.comparing;
 @Service
 public class HearingBookingService {
 
-    public List<Element<HearingBooking>> expandHearingBookingCollection(CaseData caseData, TestMulti testMulti) {
+    public List<Element<HearingBooking>> expandHearingBookingCollection(CaseData caseData, DynamicList dynamicList) {
         if (caseData.getHearingDetails() == null) {
             List<Element<HearingBooking>> populatedHearing = new ArrayList<>();
 
             populatedHearing.add(Element.<HearingBooking>builder()
-                .value(HearingBooking.builder().judgeTitle("test").TestMulti(testMulti).build())
+                .value(HearingBooking.builder().venueList(dynamicList).build())
                 .build());
 
             return populatedHearing;

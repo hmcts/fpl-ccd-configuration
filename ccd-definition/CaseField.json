@@ -19,7 +19,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "testMulti",
+    "ID": "venueList",
     "Label": "Testing multi fields",
     "FieldType": "DynamicList",
     "SecurityClassification": "Public"

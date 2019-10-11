@@ -13,10 +13,14 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.TestMulti;
+import uk.gov.hmcts.reform.fpl.model.common.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.configuration.HearingVenue;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.HearingVenueLookupService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,43 +32,24 @@ import java.util.Objects;
 public class HearingBookingDetailsController {
     private final MapperService mapperService;
     private final HearingBookingService hearingBookingService;
+    private final HearingVenueLookupService lookupService;
 
     @Autowired
-    public HearingBookingDetailsController(MapperService mapperService, HearingBookingService hearingBookingService) {
+    public HearingBookingDetailsController(MapperService mapperService, HearingBookingService hearingBookingService, HearingVenueLookupService lookupService) {
         this.mapperService = mapperService;
         this.hearingBookingService = hearingBookingService;
+        this.lookupService = lookupService;
     }
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) throws IOException {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
 
-        List<String> courts;
+        List<HearingVenue> hearingVenues = lookupService.getHearingVenues();
+        DynamicList hearingVenuesDynamic = DynamicList.toDynamicList(hearingVenues);
 
-        courts = List.of("CENTRAL FAMILY COURT, 76-78 UPPER RICHMOND ROAD, PUTNEY",
-            "CENTRAL FAMILY COURT, COURT HOUSE, KENNINGTON ROAD",
-            "CENTRAL FAMILY COURT, GEE STREET COURT HOUSE, LONDON",
-            "CENTRAL FAMILY COURT, GLOUCESTER HOUSE, FELTHAM, TW14 0LR");
-
-        List<TestMulti.CodeLabel> courtCodes = new ArrayList<>();
-
-        for (String court : courts) {
-            TestMulti.CodeLabel code = TestMulti.CodeLabel.builder().code(court.toUpperCase()).label(court).build();
-            courtCodes.add(code);
-        }
-
-        TestMulti testMulti = TestMulti.builder()
-            .list_items(courtCodes)
-            .value(TestMulti.CodeLabel.builder().code(" ").build())
-            .build();
-
-        caseDetails.getData().put("testMulti", testMulti);
-
-
-        caseDetails.getData().put("hearingDetails", hearingBookingService.expandHearingBookingCollection(caseData,testMulti));
-
-        System.out.println("Case details are" + caseDetails.getData());
+        caseDetails.getData().put("hearingDetails", hearingBookingService.expandHearingBookingCollection(caseData,hearingVenuesDynamic));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
