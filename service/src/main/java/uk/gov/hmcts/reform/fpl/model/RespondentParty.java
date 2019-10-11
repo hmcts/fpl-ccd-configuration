@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -14,6 +16,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonDeserialize(builder = RespondentParty.RespondentPartyBuilder.class)
 public final class RespondentParty extends Party {
     private final String gender;
     private final String genderIdentification;
@@ -24,7 +27,7 @@ public final class RespondentParty extends Party {
     private final String litigationIssues;
     private final String litigationIssuesDetails;
 
-    @Builder(toBuilder = true)
+    @Builder(toBuilder = true, builderClassName = "RespondentPartyBuilder")
     public RespondentParty(String partyId,
                            PartyType partyType,
                            String firstName,
@@ -52,5 +55,9 @@ public final class RespondentParty extends Party {
         this.contactDetailsHiddenReason = contactDetailsHiddenReason;
         this.litigationIssues = litigationIssues;
         this.litigationIssuesDetails = litigationIssuesDetails;
+    }
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class RespondentPartyBuilder {
     }
 }
