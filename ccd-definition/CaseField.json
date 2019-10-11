@@ -460,18 +460,18 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadC2",
+    "ID": "C2DocumentBundle",
     "Label": "C2",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C2Upload",
+    "FieldTypeParameter": "C2DocumentBundle",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "tempC2",
+    "ID": "temporaryC2Document",
     "Label": "Upload C2",
-    "FieldType": "C2Upload",
+    "FieldType": "C2DocumentBundle",
     "SecurityClassification": "Public"
   }
 ]

@@ -338,14 +338,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "uploadC2",
+    "CaseFieldID": "C2DocumentBundle",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "tempC2",
+    "CaseFieldID": "temporaryC2Document",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRUD"
   }

@@ -1,16 +1,16 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2Upload",
-    "ListElementCode": "c2upload",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "Upload a file",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C2Upload",
-    "ListElementCode": "c2UploadDescription",
+    "ID": "C2DocumentBundle",
+    "ListElementCode": "description",
     "FieldType": "TextArea",
     "ElementLabel": "Description",
     "SecurityClassification": "Public"

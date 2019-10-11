@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(C2UploadController.class)
+@WebMvcTest(uploadC2DocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
 public class C2UploadControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";

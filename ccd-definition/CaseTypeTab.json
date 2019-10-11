@@ -296,7 +296,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 6,
-    "CaseFieldID": "uploadC2",
+    "CaseFieldID": "C2DocumentBundle",
     "TabFieldDisplayOrder": 10
   },
   {
