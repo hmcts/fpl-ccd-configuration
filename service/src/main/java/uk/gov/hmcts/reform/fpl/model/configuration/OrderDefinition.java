@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderDefinition {
     // I wanted to use OrderType but it's already something else, what can we use here
-    private final String orderType;
+    private final String type;
     private final Language language;
     private final String service;
     private final List<DirectionConfiguration> directions;
