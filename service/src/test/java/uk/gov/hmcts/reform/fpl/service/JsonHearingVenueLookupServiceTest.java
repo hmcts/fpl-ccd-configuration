@@ -1,11 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.model.common.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.configuration.HearingVenue;
 
 import java.io.IOException;
@@ -22,10 +25,16 @@ public class JsonHearingVenueLookupServiceTest {
     @Autowired
     private HearingVenueLookupService lookupService;
 
-    @Test
-    void getHearingVenues() throws IOException {
-        List<HearingVenue> hearingVenues = lookupService.getHearingVenues();
+    private List<HearingVenue> hearingVenues;
 
+    @BeforeEach
+    void setUp() throws IOException {
+        // Reset the list in case one of the tests alters it
+        hearingVenues = lookupService.getHearingVenues();
+    }
+
+    @Test
+    void getHearingVenues() {
         // Assert that the correct number have been pulled
         assertEquals(EXPECTED_SIZE, hearingVenues.size());
 
@@ -42,5 +51,15 @@ public class JsonHearingVenueLookupServiceTest {
             .build();
 
         assertEquals(venue, actual);
+    }
+
+    @Test
+    void toDynamicList() {
+        DynamicList list = DynamicList.toDynamicList(hearingVenues, 0);
+
+        DynamicListElement value = hearingVenues.get(0).toDynamicElement();
+
+        assertEquals(EXPECTED_SIZE, list.getListItems().size());
+        assertEquals(value, list.getValue());
     }
 }
