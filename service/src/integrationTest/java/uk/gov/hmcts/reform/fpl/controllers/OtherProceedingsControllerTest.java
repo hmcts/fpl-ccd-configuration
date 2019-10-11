@@ -75,7 +75,7 @@ public class OtherProceedingsControllerTest {
 
     private Proceeding createProceeding(String onGoingProceeding) {
         return new Proceeding(onGoingProceeding, "", "", "", "",
-                              "", "", "", "", "", "");
+            "", "", "", "", "", "");
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(Proceeding proceeding) throws Exception {
@@ -83,24 +83,22 @@ public class OtherProceedingsControllerTest {
         });
 
         CallbackRequest request = CallbackRequest.builder()
-                                                 .caseDetails(CaseDetails.builder()
-                                                                         .id(12345L)
-                                                                         .data(
-                                                                             ImmutableMap.<String, Object>builder().put(
-                                                                                 "proceeding", map).build())
-                                                                         .build())
-                                                 .build();
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.<String, Object>builder().put("proceeding", map).build())
+                .build())
+            .build();
 
         MvcResult response = mockMvc
             .perform(post("/callback/enter-other-proceedings/mid-event")
-                         .header("authorization", AUTH_TOKEN)
-                         .header("user-id", USER_ID)
-                         .contentType(MediaType.APPLICATION_JSON)
-                         .content(MAPPER.writeValueAsString(request)))
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(MAPPER.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andReturn();
 
         return MAPPER.readValue(response.getResponse()
-                                        .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 }
