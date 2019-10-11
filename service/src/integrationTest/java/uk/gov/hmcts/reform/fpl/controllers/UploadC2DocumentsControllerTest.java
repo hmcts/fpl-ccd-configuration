@@ -21,9 +21,9 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(uploadC2DocumentsController.class)
+@WebMvcTest(UploadC2DocumentsController.class)
 @OverrideAutoConfiguration(enabled = true)
-public class C2UploadControllerTest {
+class UploadC2DocumentsControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
 
@@ -50,14 +50,13 @@ public class C2UploadControllerTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        C2DocumentBundle expectedC2Document = caseData.getC2DocumentBundle().get(0).getValue();
 
-        assertThat(caseData.getUploadC2()).hasSize(1);
-
-        C2DocumentBundle expectedC2Document = caseData.getUploadC2().get(0).getValue();
-
-        assertThat(expectedC2Document.getC2upload().getUrl()).isEqualTo(document.links.self.href);
-        assertThat(expectedC2Document.getC2upload().getFilename()).isEqualTo(document.originalDocumentName);
-        assertThat(expectedC2Document.getC2upload().getBinaryUrl()).isEqualTo(document.links.binary.href);
-        assertThat(expectedC2Document.getC2UploadDescription()).isEqualTo("test");
+        assertThat(caseData.getTemporaryC2Document()).isNull();
+        assertThat(caseData.getC2DocumentBundle()).hasSize(1);
+        assertThat(expectedC2Document.getDocument().getUrl()).isEqualTo(document.links.self.href);
+        assertThat(expectedC2Document.getDocument().getFilename()).isEqualTo(document.originalDocumentName);
+        assertThat(expectedC2Document.getDocument().getBinaryUrl()).isEqualTo(document.links.binary.href);
+        assertThat(expectedC2Document.getDescription()).isEqualTo("test");
     }
 }

@@ -8,13 +8,13 @@
           "EMERGENCY_PROTECTION_ORDER"
         ]
       },
-      "tempC2": {
-        "c2upload": {
+      "temporaryC2Document": {
+        "document": {
           "document_url": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
           "document_binary_url": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
           "document_filename": "file.pdf"
         },
-        "c2UploadDescription": "test"
+        "description": "test"
       }
     }
   }

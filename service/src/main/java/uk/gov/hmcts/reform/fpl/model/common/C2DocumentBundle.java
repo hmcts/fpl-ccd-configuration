@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @Builder
 public class C2DocumentBundle {
-    private final DocumentReference c2upload;
-    private final String c2UploadDescription;
+    private final DocumentReference document;
+    private final String description;
 }

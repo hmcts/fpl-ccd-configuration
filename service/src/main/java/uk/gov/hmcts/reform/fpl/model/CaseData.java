@@ -100,5 +100,7 @@ public class CaseData {
     private final List<Element<HearingBooking>> hearingDetails;
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;
-    private final List<Element<C2DocumentBundle>> uploadC2;
+    private final C2DocumentBundle temporaryC2Document;
+    @SuppressWarnings("MemberName")
+    private final List<Element<C2DocumentBundle>> C2DocumentBundle;
 }
