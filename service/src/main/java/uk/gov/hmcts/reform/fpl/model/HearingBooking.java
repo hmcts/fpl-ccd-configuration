@@ -21,4 +21,5 @@ public class HearingBooking {
     private final String hearingNeedsDetails;
     private final String judgeTitle;
     private final String judgeName;
+    private final List TestMulti;
 }

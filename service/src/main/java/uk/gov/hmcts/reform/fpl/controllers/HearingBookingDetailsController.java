@@ -40,8 +40,6 @@ public class HearingBookingDetailsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("hearingDetails", hearingBookingService.expandHearingBookingCollection(caseData));
-
         List<String> courts;
 
         courts = List.of("CENTRAL FAMILY COURT, 76-78 UPPER RICHMOND ROAD, PUTNEY",
@@ -62,6 +60,9 @@ public class HearingBookingDetailsController {
             .build();
 
         caseDetails.getData().put("testMulti", testMulti);
+
+
+        caseDetails.getData().put("hearingDetails", hearingBookingService.expandHearingBookingCollection(caseData));
 
         System.out.println("Case details are" + caseDetails.getData());
 
