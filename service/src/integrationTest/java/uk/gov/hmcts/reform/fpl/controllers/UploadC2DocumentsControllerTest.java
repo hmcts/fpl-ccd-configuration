@@ -48,21 +48,23 @@ class UploadC2DocumentsControllerTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        C2DocumentBundle existingC2Document = caseData.getC2DocumentBundle().get(0).getValue();
-        C2DocumentBundle appendedC2Document = caseData.getC2DocumentBundle().get(1).getValue();
 
         assertThat(caseData.getTemporaryC2Document()).isNull();
         assertThat(caseData.getC2DocumentBundle()).hasSize(2);
+
+        C2DocumentBundle existingC2Document = caseData.getC2DocumentBundle().get(0).getValue();
+        C2DocumentBundle appendedC2Document = caseData.getC2DocumentBundle().get(1).getValue();
+
         assertC2DocumentBundle(existingC2Document, "C2 document one");
         assertC2DocumentBundle(appendedC2Document, "C2 document two");
     }
 
-    private void assertC2DocumentBundle(C2DocumentBundle C2DocumentBundle, String description) throws Exception {
+    private void assertC2DocumentBundle(C2DocumentBundle documentBundle, String description) throws Exception {
         Document document = document();
 
-        assertThat(C2DocumentBundle.getDocument().getUrl()).isEqualTo(document.links.self.href);
-        assertThat(C2DocumentBundle.getDocument().getFilename()).isEqualTo(document.originalDocumentName);
-        assertThat(C2DocumentBundle.getDocument().getBinaryUrl()).isEqualTo(document.links.binary.href);
-        assertThat(C2DocumentBundle.getDescription()).isEqualTo(description);
+        assertThat(documentBundle.getDocument().getUrl()).isEqualTo(document.links.self.href);
+        assertThat(documentBundle.getDocument().getFilename()).isEqualTo(document.originalDocumentName);
+        assertThat(documentBundle.getDocument().getBinaryUrl()).isEqualTo(document.links.binary.href);
+        assertThat(documentBundle.getDescription()).isEqualTo(description);
     }
 }
