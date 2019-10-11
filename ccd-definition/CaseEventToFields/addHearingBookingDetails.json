@@ -11,17 +11,5 @@
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/add-hearing-bookings/mid-event"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "hearingBookingDetails",
-    "CaseFieldID": "venueList",
-    "PageFieldDisplayOrder": 2,
-    "DisplayContext": "OPTIONAL",
-    "PageID": 1,
-    "ShowSummaryChangeOption": "Y",
-    "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
   }
 ]

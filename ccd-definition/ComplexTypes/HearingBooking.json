@@ -28,6 +28,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
+    "ListElementCode": "venueList",
+    "FieldType": "DynamicList",
+    "FieldTypeParameter": "VenueListDynamic",
+    "ElementLabel": "Venue drop down",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
     "ListElementCode": "date",
     "FieldType": "Date",
     "ElementLabel": "Date",
@@ -50,15 +59,6 @@
     "FieldType": "Text",
     "ElementLabel": "Hearing time",
     "HintText": "For example, 2:30pm",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingBooking",
-    "ListElementCode": "venueList",
-    "FieldType": "DynamicList",
-    "FieldTypeParameter": "VenueListDynamic",
-    "ElementLabel": "Venue-iteration-dynamic",
     "SecurityClassification": "Public"
   },
   {
