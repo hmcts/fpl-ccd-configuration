@@ -67,7 +67,7 @@ module.exports = {
     addHearingBookingDetails: 'Add hearing details',
     createNoticeOfProceedings: 'Create notice of proceedings',
     addStatementOfService: 'Add statement of service (c9)',
-    c2Upload: 'Upload a C2',
+    uploadC2Documents: 'Upload a C2',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',

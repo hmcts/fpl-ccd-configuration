@@ -76,15 +76,15 @@ Scenario('HMCTS admin uploads standard directions with other documents', async (
   I.seeAnswerInTab('2', 'Other documents 2', 'Upload a file', 'mockFile.txt');
 });
 
-Scenario('HMCTS admin uploads C2 to case', async (I, caseViewPage, uploadC2EventPage) => {
-  await caseViewPage.goToNewActions(config.administrationActions.c2Upload);
-  uploadC2EventPage.uploadc2(config.testFile, 'Rachel Zane C2');
+Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
+  uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.c2Upload);
-  await caseViewPage.goToNewActions(config.administrationActions.c2Upload);
-  uploadC2EventPage.uploadc2(config.testFile, 'Jessica Pearson C2');
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
+  await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
+  uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Jessica Pearson C2');
   await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.c2Upload);
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeAnswerInTab('1', 'C2 1', 'Upload a file', 'mockFile.txt');
   I.seeAnswerInTab('2', 'C2 1', 'Description', 'Rachel Zane C2');

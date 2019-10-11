@@ -1,16 +1,13 @@
 const { I } = inject();
 
 module.exports = {
-  documents: {
-    c2: '#tempC2_c2upload',
-  },
-
   fields: {
-    c2Description: '#tempC2_c2UploadDescription',
+    uploadC2: '#temporaryC2Document_document',
+    description: '#temporaryC2Document_description',
   },
 
-  uploadc2(file, description) {
-    I.attachFile(this.documents.c2, file);
-    I.fillField(this.fields.c2Description, description);
+  uploadC2Document(file, description) {
+    I.attachFile(this.fields.uploadC2, file);
+    I.fillField(this.fields.description, description);
   },
 };
