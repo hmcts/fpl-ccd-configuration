@@ -55,6 +55,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
+    "ListElementCode": "testMulti",
+    "FieldType": "DynamicList",
+    "FieldTypeParameter": "VenueListDynamic",
+    "ElementLabel": "Venue-iteration-dynamic",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingBooking",
     "ListElementCode": "hearingNeedsBooked",
     "FieldType": "MultiSelectList",
     "FieldTypeParameter": "HearingNeedsBooked",
