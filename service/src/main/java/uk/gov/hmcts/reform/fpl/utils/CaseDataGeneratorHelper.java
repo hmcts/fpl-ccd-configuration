@@ -31,6 +31,8 @@ public class CaseDataGeneratorHelper {
             .venue("Venue")
             .preHearingAttendance("08.15am")
             .time("09.15am")
+            .judgeTitle("HHJ")
+            .judgeName("Judith Law")
             .build();
     }
 
