@@ -62,7 +62,7 @@ public class HearingBookingDetailsController {
         caseDetails.getData().put("testMulti", testMulti);
 
 
-        caseDetails.getData().put("hearingDetails", hearingBookingService.expandHearingBookingCollection(caseData));
+        caseDetails.getData().put("hearingDetails", hearingBookingService.expandHearingBookingCollection(caseData,testMulti));
 
         System.out.println("Case details are" + caseDetails.getData());
 
