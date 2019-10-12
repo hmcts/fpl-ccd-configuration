@@ -95,12 +95,12 @@ public class DraftOrdersController {
             documentGeneratorService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
 
         Document document = uploadDocumentService.uploadPDF(userId, authorization, docmosisDocument.getBytes(),
-            "Draft.pdf");
+            "draft-standard-directions-order.pdf");
 
         caseDetailsAfter.getData().put("sdo", DocumentReference.builder()
             .url(document.links.self.href)
             .binaryUrl(document.links.binary.href)
-            .filename("Draft.pdf")
+            .filename(document.originalDocumentName)
             .build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()

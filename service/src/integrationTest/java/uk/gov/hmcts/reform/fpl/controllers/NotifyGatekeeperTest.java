@@ -33,8 +33,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 @WebMvcTest(NotifyGatekeeperController.class)
 @OverrideAutoConfiguration(enabled = true)
 class NotifyGatekeeperTest {
-
-    private static final String TOKEN = "1";
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final String GATEKEEPER_EMAIL = "FamilyPublicLaw+gatekeeper@gmail.com";
