@@ -18,23 +18,23 @@ services:
       - IDAM_S2S_AUTH_URL=http://service-auth-provider-api:8080
       - CCD_UI_BASE_URL=http://localhost:3451
       - SPRING_PROFILES_ACTIVE=local,user-mappings
+      - NOTIFY_API_KEY
       # these environment variables are used by java-logging library
     ports:
       - $SERVER_PORT:$SERVER_PORT
     networks:
       - default
-      - ccd
+      - ccd-network
   docmosis-tornado:
-    image: alexisgayte/docmosis
+    image: skeneventures/docmosis-tornado
     environment:
       # not supported in current version of Tornado
       DOCMOSIS_KEY: "XXX"
       DOCMOSIS_SITE: "Free Trial License"
     volumes:
-      - ./docker/docmosis/templates:/tmp/working/templates:rw
-      - ./docker/docmosis/prefs.xml:/root/.java/.userPrefs/com/docmosis/webserver/prefs.xml:ro
+      - ./docker/docmosis/templates:/home/docmosis/templates:rw
     ports:
-      - 5433:80
+      - 5433:8080
 networks:
   ccd-network:
-    external: true
+      external: true
