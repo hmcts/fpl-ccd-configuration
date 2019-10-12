@@ -106,12 +106,12 @@ class DraftOrdersControllerTest {
     @Test
     void midEventShouldGenerateDraftStandardDirectionDocument() throws Exception {
         byte[] pdf = {1, 2, 3, 4, 5};
-        DocmosisDocument docmosisDocument = new DocmosisDocument("title", pdf);
+        DocmosisDocument docmosisDocument = new DocmosisDocument("draft-standard-directions-order.pdf", pdf);
         Document document = document();
 
         given(documentGeneratorService.generateDocmosisDocument(any(), any()))
             .willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "Draft.pdf"))
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-standard-directions-order.pdf"))
             .willReturn(document);
 
         List<Element<Direction>> directions = buildDirections(
@@ -139,9 +139,11 @@ class DraftOrdersControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
+        System.out.println("callbackResponse = " + callbackResponse.getData());
+
         assertThat(callbackResponse.getData()).containsEntry("sdo", ImmutableMap.builder()
             .put("document_binary_url", document.links.binary.href)
-            .put("document_filename", "Draft.pdf")
+            .put("document_filename", "draft-standard-directions-order.pdf")
             .put("document_url", document.links.self.href)
             .build());
     }

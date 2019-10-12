@@ -100,7 +100,7 @@ public class DraftOrdersController {
         caseDetailsAfter.getData().put("sdo", DocumentReference.builder()
             .url(document.links.self.href)
             .binaryUrl(document.links.binary.href)
-            .filename(document.originalDocumentName)
+            .filename("draft-standard-directions-order.pdf")
             .build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
