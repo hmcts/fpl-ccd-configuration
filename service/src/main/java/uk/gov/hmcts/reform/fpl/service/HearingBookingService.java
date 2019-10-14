@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -15,9 +13,6 @@ import static java.util.Comparator.comparing;
 
 @Service
 public class HearingBookingService {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
 
     public List<Element<HearingBooking>> expandHearingBookingCollection(CaseData caseData, DynamicList venues) {
         if (caseData.getHearingDetails() == null) {
