@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.model.common;
+package uk.gov.hmcts.reform.fpl.model.common.dynamic;
 
 import lombok.Builder;
 import lombok.Data;

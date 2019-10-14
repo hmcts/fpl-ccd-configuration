@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.model.common;
+package uk.gov.hmcts.reform.fpl.model.common.dynamic;
 
 /**
  * Class that allows another to be converted into a {@link DynamicListElement}.

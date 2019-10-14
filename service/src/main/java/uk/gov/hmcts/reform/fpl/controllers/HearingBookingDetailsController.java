@@ -12,9 +12,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.TestMulti;
-import uk.gov.hmcts.reform.fpl.model.common.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.configuration.HearingVenue;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookupService;
@@ -22,7 +21,6 @@ import uk.gov.hmcts.reform.fpl.service.MapperService;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,21 +33,26 @@ public class HearingBookingDetailsController {
     private final HearingVenueLookupService lookupService;
 
     @Autowired
-    public HearingBookingDetailsController(MapperService mapperService, HearingBookingService hearingBookingService, HearingVenueLookupService lookupService) {
+    public HearingBookingDetailsController(MapperService mapperService, HearingBookingService hearingBookingService,
+                                           HearingVenueLookupService lookupService) {
         this.mapperService = mapperService;
         this.hearingBookingService = hearingBookingService;
         this.lookupService = lookupService;
     }
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) throws IOException {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(
+        @RequestBody CallbackRequest callbackrequest) throws IOException {
+
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
 
         List<HearingVenue> hearingVenues = lookupService.getHearingVenues();
         DynamicList hearingVenuesDynamic = DynamicList.toDynamicList(hearingVenues);
 
-        caseDetails.getData().put("hearingDetails", hearingBookingService.expandHearingBookingCollection(caseData,hearingVenuesDynamic));
+        caseDetails.getData()
+            .put("hearingDetails",
+                hearingBookingService.expandHearingBookingCollection(caseData, hearingVenuesDynamic));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

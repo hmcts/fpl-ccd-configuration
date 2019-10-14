@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.fpl.model.configuration;
 
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.model.common.DynamicElementParser;
-import uk.gov.hmcts.reform.fpl.model.common.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicElementParser;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 @Data
 @Builder
