@@ -10,8 +10,6 @@ class CourtLevelAllocationServiceTest {
 
     private final CourtLevelAllocationService courtAllocationService = new CourtLevelAllocationService();
 
-    //TODO: extract integration tests to unit test level.
-
     @Test
     void shouldAddYesToMissingAllocationDecision() {
         CaseData caseData = CaseData.builder()
