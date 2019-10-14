@@ -34,10 +34,13 @@ class AllocationDecisionControllerAboutToStartTest {
     @Autowired
     private MockMvc mockMvc;
 
-    //TODO: One or two tests here to test happy / sad path.
-    //rest can be extracted, I have moved the first test on line 41 already
-
-    private AboutToStartOrSubmitCallbackResponse callbackResponse(CallbackRequest request) throws Exception {
+    @Test
+    void shouldPopulateAllocationDecision() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of("data", "some data"))
+                .build())
+            .build();
 
         MvcResult response = mockMvc
             .perform(post("/callback/allocation-decision/about-to-start")
@@ -50,6 +53,6 @@ class AllocationDecisionControllerAboutToStartTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        return callbackResponse;
+        assertThat(callbackResponse.getData()).containsKey("allocationDecision");
     }
 }
