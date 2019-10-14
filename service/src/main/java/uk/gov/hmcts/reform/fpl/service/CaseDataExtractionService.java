@@ -9,11 +9,13 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -38,50 +40,48 @@ public class CaseDataExtractionService {
     }
 
     public Map<String, String> getNoticeOfProceedingTemplateData(CaseData caseData) {
-        Map<String, String> hearingBookingData = getHearingBookingData(caseData);
+        Map<String, String> hearingBookingData = getHearingBookingData(caseData.getHearingDetails());
 
         // Validation within our frontend ensures that the following data is present
         return ImmutableMap.<String, String>builder()
-            .put("courtName", getCourtName(caseData))
+            .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
-            .put("applicantName", getFirstApplicantName(caseData))
-            .put("orderTypes", getOrderTypes(caseData))
-            .put("childrenNames", getAllChildrenNames(caseData))
-            .put("judgeTitleAndName", formatJudgeTitleAndName(caseData))
-            .put("legalAdvisorName", getLegalAdvisorName(caseData))
+            .put("applicantName", getFirstApplicantName(caseData.getApplicants()))
+            .put("orderTypes", getOrderTypes(caseData.getOrders()))
+            .put("childrenNames", getAllChildrenNames(caseData.getAllChildren()))
+            .put("judgeTitleAndName", formatJudgeTitleAndName(caseData.getJudgeAndLegalAdvisor()))
+            .put("legalAdvisorName", getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .putAll(hearingBookingData)
             .build();
     }
 
-    private String getCourtName(CaseData caseData) {
-        return hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName();
+    private String getCourtName(String courtName) {
+        return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
     }
 
-    private String getLegalAdvisorName(CaseData caseData) {
-        if (caseData.getJudgeAndLegalAdvisor() == null) {
+    private String getLegalAdvisorName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        if (judgeAndLegalAdvisor == null) {
             return "";
         }
 
-        return defaultIfNull(caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName(), "");
+        return defaultIfNull(judgeAndLegalAdvisor.getLegalAdvisorName(), "");
     }
 
-    private String formatJudgeTitleAndName(CaseData caseData) {
-        if (caseData.getJudgeAndLegalAdvisor() == null || caseData.getJudgeAndLegalAdvisor().getJudgeTitle() == null) {
+    private String formatJudgeTitleAndName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        if (judgeAndLegalAdvisor == null || judgeAndLegalAdvisor.getJudgeTitle() == null) {
             return "";
         }
 
-        JudgeAndLegalAdvisor judgeOrMagistrateTitle = caseData.getJudgeAndLegalAdvisor();
-
-        if (caseData.getJudgeAndLegalAdvisor().getJudgeTitle() == MAGISTRATES) {
-            return judgeOrMagistrateTitle.getJudgeFullName() + " (JP)";
+        if (judgeAndLegalAdvisor.getJudgeTitle() == MAGISTRATES) {
+            return judgeAndLegalAdvisor.getJudgeFullName() + " (JP)";
         } else {
-            return judgeOrMagistrateTitle.getJudgeTitle().getLabel() + " " + judgeOrMagistrateTitle.getJudgeLastName();
+            return judgeAndLegalAdvisor.getJudgeTitle().getLabel() + " " + judgeAndLegalAdvisor.getJudgeLastName();
         }
     }
 
-    private Map<String, String> getHearingBookingData(CaseData caseData) {
-        HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
+    private Map<String, String> getHearingBookingData(List<Element<HearingBooking>> hearingBookings) {
+        HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(hearingBookings);
 
         return ImmutableMap.of(
             "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),
@@ -92,14 +92,14 @@ public class CaseDataExtractionService {
         );
     }
 
-    private String getOrderTypes(CaseData caseData) {
-        return caseData.getOrders().getOrderType().stream()
+    private String getOrderTypes(Orders orders) {
+        return orders.getOrderType().stream()
             .map(orderType -> orderType.getLabel())
             .collect(Collectors.joining(", "));
     }
 
-    private String getFirstApplicantName(CaseData caseData) {
-        return caseData.getAllApplicants().stream()
+    private String getFirstApplicantName(List<Element<Applicant>> applicants) {
+        return applicants.stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
             .map(Applicant::getParty)
@@ -109,8 +109,8 @@ public class CaseDataExtractionService {
             .orElse("");
     }
 
-    private String getAllChildrenNames(CaseData caseData) {
-        String childrenNames = caseData.getAllChildren().stream()
+    private String getAllChildrenNames(List<Element<Child>> children) {
+        String childrenNames = children.stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
             .map(Child::getParty)

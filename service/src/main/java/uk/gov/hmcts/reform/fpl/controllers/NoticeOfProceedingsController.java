@@ -75,7 +75,8 @@ public class NoticeOfProceedingsController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class).isEmpty()) {
-            HearingBooking hearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
+            HearingBooking hearingBooking = hearingBookingService
+                .getMostUrgentHearingBooking(caseData.getHearingDetails());
 
             caseDetails.getData().put("proceedingLabel", String.format("The case management hearing will be on the %s.",
                 dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG)));
