@@ -29,6 +29,66 @@ class CourtAllocationServiceTest {
         assertThat(courtAllocationService.createDecision(caseData)).isEqualTo(expectedDecision);
     }
 
+    @Test
+    void shouldAddNoToMissingAllocationDecision() {
+        CaseData caseData = CaseData.builder()
+            .build();
+
+        AllocationDecision expectedDecision = AllocationDecision.builder()
+            .allocationProposalPresent("No")
+            .build();
+
+        assertThat(courtAllocationService.createDecision(caseData)).isEqualTo(expectedDecision);
+    }
+
+    @Test
+    void shouldAddNullToJudgeLevelRadio() {
+        CaseData caseData = CaseData.builder()
+            .allocationProposal(createAllocationDecision("proposal", "reason"))
+            .build();
+
+        AllocationDecision expectedDecision = AllocationDecision.builder()
+            .judgeLevelRadio(null)
+            .allocationProposalPresent("Yes")
+            .build();
+
+        assertThat(courtAllocationService.createDecision(caseData)).isEqualTo(expectedDecision);
+    }
+
+    @Test
+    void shouldAddYesToJudgeLevelRadio() {
+        CaseData caseData = CaseData.builder()
+            .allocationDecision(createAllocationDecision("proposal", "reason"))
+            .allocationProposal(createAllocationDecision("proposal", "reason"))
+            .build();
+
+        AllocationDecision expectedDecision = AllocationDecision.builder()
+            .judgeLevelRadio("Yes")
+            .proposal("proposal")
+            .proposalReason("reason")
+            .allocationProposalPresent("Yes")
+            .build();
+
+        assertThat(courtAllocationService.createDecision(caseData)).isEqualTo(expectedDecision);
+    }
+
+    @Test
+    void shouldAddNoToJudgeLevelRadio() {
+        CaseData caseData = CaseData.builder()
+            .allocationDecision(createAllocationDecision("wrong proposal", "reason"))
+            .allocationProposal(createAllocationDecision("proposal", "reason"))
+            .build();
+
+        AllocationDecision expectedDecision = AllocationDecision.builder()
+            .judgeLevelRadio("No")
+            .proposal("wrong proposal")
+            .proposalReason("reason")
+            .allocationProposalPresent("Yes")
+            .build();
+
+        assertThat(courtAllocationService.createDecision(caseData)).isEqualTo(expectedDecision);
+    }
+
     private AllocationDecision createAllocationDecision(String proposal, String reason) {
         return AllocationDecision.builder()
             .proposal(proposal)
