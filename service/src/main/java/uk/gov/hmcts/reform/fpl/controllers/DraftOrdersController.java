@@ -32,7 +32,7 @@ import static java.util.Objects.isNull;
 
 @Api
 @RestController
-@RequestMapping("/callback/draft-SDO")
+@RequestMapping("/callback/draft-standard-directions")
 public class DraftOrdersController {
     private final ObjectMapper mapper;
     private final DocmosisDocumentGeneratorService documentGeneratorService;

@@ -83,7 +83,7 @@ class DraftOrdersControllerTest {
                 .build())
             .build();
 
-        MvcResult response = makeRequest(request);
+        MvcResult response = makeRequest(request, "about-to-start");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -122,14 +122,7 @@ class DraftOrdersControllerTest {
             .caseDetailsBefore(createCaseDetails(directions))
             .build();
 
-        MvcResult response = mockMvc
-            .perform(post("/callback/draft-SDO/mid-event")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
+        MvcResult response = makeRequest(request, "mid-event");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -174,14 +167,7 @@ class DraftOrdersControllerTest {
             .caseDetails(createCaseDetails(directionWithShowHideValuesRemoved))
             .build();
 
-        MvcResult response = mockMvc
-            .perform(post("/callback/draft-SDO/about-to-submit")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
+        MvcResult response = makeRequest(request, "about-to-submit");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -196,10 +182,11 @@ class DraftOrdersControllerTest {
         assertThat(localAuthorityDirections).isEqualTo(fullyPopulatedDirection);
     }
 
-    private MvcResult makeRequest(CallbackRequest request) throws Exception {
+    private MvcResult makeRequest(CallbackRequest request, String endpoint) throws Exception {
         return mockMvc
-            .perform(post("/callback/draft-SDO/about-to-start")
+            .perform(post("/callback/draft-standard-directions/" + endpoint)
                 .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(request)))
             .andExpect(status().isOk())
