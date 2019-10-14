@@ -130,7 +130,7 @@ class CaseDataExtractionServiceTest {
         CaseData caseData = CaseData.builder().build();
 
         Map<String, Object> templateData = caseDataExtractionService
-            .getDraftStandardOrderDirectionTemplateData(caseData);
+            .getStandardOrderDirectionData(caseData);
 
         assertThat(templateData.get("courtName")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
@@ -164,7 +164,7 @@ class CaseDataExtractionServiceTest {
             .build();
 
         Map<String, Object> templateData = caseDataExtractionService
-            .getDraftStandardOrderDirectionTemplateData(caseData);
+            .getStandardOrderDirectionData(caseData);
 
         assertThat(templateData.get("courtName")).isEqualTo("Example Court");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
@@ -194,7 +194,7 @@ class CaseDataExtractionServiceTest {
             .build();
 
         Map<String, Object> templateData = caseDataExtractionService
-            .getDraftStandardOrderDirectionTemplateData(caseData);
+            .getStandardOrderDirectionData(caseData);
 
         assertThat(templateData.get("courtName")).isEqualTo("Example Court");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");

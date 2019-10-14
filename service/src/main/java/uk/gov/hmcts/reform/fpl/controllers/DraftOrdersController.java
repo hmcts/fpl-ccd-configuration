@@ -35,19 +35,19 @@ import static java.util.Objects.isNull;
 @RequestMapping("/callback/draft-standard-directions")
 public class DraftOrdersController {
     private final ObjectMapper mapper;
-    private final DocmosisDocumentGeneratorService documentGeneratorService;
+    private final DocmosisDocumentGeneratorService docmosisService;
     private final UploadDocumentService uploadDocumentService;
     private final CaseDataExtractionService caseDataExtractionService;
     private final DirectionHelperService directionHelperService;
 
     @Autowired
     public DraftOrdersController(ObjectMapper mapper,
-                                 DocmosisDocumentGeneratorService documentGeneratorService,
+                                 DocmosisDocumentGeneratorService docmosisService,
                                  UploadDocumentService uploadDocumentService,
                                  CaseDataExtractionService caseDataExtractionService,
                                  DirectionHelperService directionHelperService) {
         this.mapper = mapper;
-        this.documentGeneratorService = documentGeneratorService;
+        this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
         this.caseDataExtractionService = caseDataExtractionService;
         this.directionHelperService = directionHelperService;
@@ -75,61 +75,44 @@ public class DraftOrdersController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackrequest) throws IOException {
-        CaseData caseDataBefore = mapper.convertValue(callbackrequest.getCaseDetailsBefore().getData(), CaseData.class);
-        Order orderBefore = directionHelperService.createOrder(caseDataBefore);
+        CaseDetails caseDetailsWithValues = persistHiddenUiValuesForDirections(callbackrequest);
+        CaseData caseData = mapper.convertValue(caseDetailsWithValues.getData(), CaseData.class);
 
-        CaseDetails caseDetailsAfter = addDirectionsToOrder(callbackrequest.getCaseDetails());
-        CaseData caseDataWithValuesRemoved = mapper.convertValue(caseDetailsAfter.getData(), CaseData.class);
+        CaseData.CaseDataBuilder caseDataBuilder = caseData.toBuilder();
+        caseDataBuilder.standardDirectionOrder(caseData.getStandardDirectionOrder());
 
-        directionHelperService.persistHiddenDirectionValues(
-            orderBefore, caseDataWithValuesRemoved.getStandardDirectionOrder());
+        Document document = getDocument(
+            authorization,
+            userId,
+            caseDataExtractionService.getStandardOrderDirectionData(caseDataBuilder.build())
+        );
 
-        CaseData.CaseDataBuilder caseDataBuilder = caseDataWithValuesRemoved.toBuilder();
+        Order.OrderBuilder orderBuilder = caseData.getStandardDirectionOrder().toBuilder()
+            .orderDoc(DocumentReference.builder()
+                .url(document.links.self.href)
+                .binaryUrl(document.links.binary.href)
+                .filename("draft-standard-directions-order.pdf")
+                .build());
 
-        caseDataBuilder.standardDirectionOrder(caseDataWithValuesRemoved.getStandardDirectionOrder());
-
-        Map<String, Object> templateData = caseDataExtractionService
-            .getDraftStandardOrderDirectionTemplateData(caseDataBuilder.build());
-
-        DocmosisDocument docmosisDocument =
-            documentGeneratorService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
-
-        Document document = uploadDocumentService.uploadPDF(userId, authorization, docmosisDocument.getBytes(),
-            "draft-standard-directions-order.pdf");
-
-        //TODO: add document as part of standardDirectionOrder object
-
-        Order.OrderBuilder order = caseDataWithValuesRemoved.getStandardDirectionOrder().toBuilder();
-
-        order.orderDoc(DocumentReference.builder()
-            .url(document.links.self.href)
-            .binaryUrl(document.links.binary.href)
-            .filename("draft-standard-directions-order.pdf")
-            .build());
-
-        caseDetailsAfter.getData().put("standardDirectionOrder", order.build());
+        caseDetailsWithValues.getData().put("standardDirectionOrder", orderBuilder.build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetailsAfter.getData())
+            .data(caseDetailsWithValues.getData())
             .build();
     }
 
-    @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
-        CaseData caseDataBefore = mapper.convertValue(callbackrequest.getCaseDetailsBefore().getData(), CaseData.class);
+    private CaseDetails persistHiddenUiValuesForDirections(CallbackRequest callbackRequest) {
+        CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
         Order orderBefore = directionHelperService.createOrder(caseDataBefore);
 
-        CaseDetails caseDetailsAfter = addDirectionsToOrder(callbackrequest.getCaseDetails());
-        CaseData caseDataWithValuesRemoved = mapper.convertValue(caseDetailsAfter.getData(), CaseData.class);
+        CaseDetails caseDetails = addDirectionsToOrder(callbackRequest.getCaseDetails());
+        CaseData caseDataAfter = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        directionHelperService.persistHiddenDirectionValues(
-            orderBefore, caseDataWithValuesRemoved.getStandardDirectionOrder());
+        directionHelperService.persistHiddenDirectionValues(orderBefore, caseDataAfter.getStandardDirectionOrder());
 
-        caseDetailsAfter.getData().put("standardDirectionOrder", caseDataWithValuesRemoved.getStandardDirectionOrder());
+        caseDetails.getData().put("standardDirectionOrder", caseDataAfter.getStandardDirectionOrder());
 
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetailsAfter.getData())
-            .build();
+        return callbackRequest.getCaseDetails();
     }
 
     private CaseDetails addDirectionsToOrder(CaseDetails caseDetails) {
@@ -138,5 +121,23 @@ public class DraftOrdersController {
         caseDetails.getData().put("standardDirectionOrder", directionHelperService.createOrder(caseData));
 
         return caseDetails;
+    }
+
+    private Document getDocument(@RequestHeader("authorization") String authorization,
+                                 @RequestHeader("user-id") String userId,
+                                 Map<String, Object> templateData) {
+        DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
+
+        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
+            "draft-standard-directions-order.pdf");
+    }
+
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = persistHiddenUiValuesForDirections(callbackRequest);
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .build();
     }
 }

@@ -78,7 +78,7 @@ public class CaseDataExtractionService {
 
     // TODO
     // No need to pass in CaseData to each method. Refactor to only use required model
-    public Map<String, Object> getDraftStandardOrderDirectionTemplateData(CaseData caseData) throws IOException {
+    public Map<String, Object> getStandardOrderDirectionData(CaseData caseData) throws IOException {
         Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
 
         List<Map<String, String>> respondentsNameAndRelationship = getRespondentsNameAndRelationship(caseData);
