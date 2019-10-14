@@ -36,7 +36,7 @@ public class UploadC2DocumentsController {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        data.put("C2DocumentBundle", buildC2DocumentBundle(caseData));
+        data.put("c2DocumentBundle", buildC2DocumentBundle(caseData));
         data.remove("temporaryC2Document");
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
