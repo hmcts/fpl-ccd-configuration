@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.AllocationDecision;
+import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.CourtAllocationService;
+import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
 
 import java.util.Map;
 
@@ -24,24 +24,22 @@ import static java.util.Optional.ofNullable;
 @RequestMapping("/callback/allocation-decision")
 public class AllocationDecisionController {
     private final ObjectMapper mapper;
-    private final CourtAllocationService service;
+    private final CourtLevelAllocationService service;
 
     @Autowired
-    public AllocationDecisionController(ObjectMapper mapper, CourtAllocationService service) {
+    public AllocationDecisionController(ObjectMapper mapper, CourtLevelAllocationService service) {
         this.mapper = mapper;
         this.service = service;
     }
 
     @PostMapping("/about-to-start")
-    //TODO: naming convention for controllers in the past has always been handle this, handle that
-    // this should probably change. Controllers handle the callback, the service handles the logic.
-    public AboutToStartOrSubmitCallbackResponse checkIfAllocationProposalIsMissing(
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(
         @RequestHeader(value = "authorization") String authorization,
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        AllocationDecision allocationDecision = service.createDecision(caseData);
+        Allocation allocationDecision = service.createDecision(caseData);
 
         Map<String, Object> data = caseDetails.getData();
         data.put("allocationDecision", allocationDecision);
@@ -57,11 +55,11 @@ public class AllocationDecisionController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        AllocationDecision allocationDecision = caseData.getAllocationDecision();
+        Allocation allocationDecision = caseData.getAllocationDecision();
 
-        AllocationDecision.AllocationDecisionBuilder decisionBuilder = ofNullable(allocationDecision)
-            .map(AllocationDecision::toBuilder)
-            .orElse(AllocationDecision.builder());
+        Allocation.AllocationBuilder decisionBuilder = ofNullable(allocationDecision)
+            .map(Allocation::toBuilder)
+            .orElse(Allocation.builder());
 
         if (caseData.getAllocationDecision().getProposal() == null) {
             decisionBuilder.proposal(caseData.getAllocationProposal().getProposal());

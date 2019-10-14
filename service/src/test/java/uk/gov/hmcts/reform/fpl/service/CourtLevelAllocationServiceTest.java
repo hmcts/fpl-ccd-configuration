@@ -1,14 +1,14 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.model.AllocationDecision;
+import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CourtAllocationServiceTest {
+class CourtLevelAllocationServiceTest {
 
-    private final CourtAllocationService courtAllocationService = new CourtAllocationService();
+    private final CourtLevelAllocationService courtAllocationService = new CourtLevelAllocationService();
 
     //TODO: extract integration tests to unit test level.
 
@@ -19,7 +19,7 @@ class CourtAllocationServiceTest {
             .allocationProposal(createAllocationDecision("proposal", "reason"))
             .build();
 
-        AllocationDecision expectedDecision = AllocationDecision.builder()
+        Allocation expectedDecision = Allocation.builder()
             .proposal("test")
             .proposalReason("decision reason")
             .judgeLevelRadio("No")
@@ -34,7 +34,7 @@ class CourtAllocationServiceTest {
         CaseData caseData = CaseData.builder()
             .build();
 
-        AllocationDecision expectedDecision = AllocationDecision.builder()
+        Allocation expectedDecision = Allocation.builder()
             .allocationProposalPresent("No")
             .build();
 
@@ -47,7 +47,7 @@ class CourtAllocationServiceTest {
             .allocationProposal(createAllocationDecision("proposal", "reason"))
             .build();
 
-        AllocationDecision expectedDecision = AllocationDecision.builder()
+        Allocation expectedDecision = Allocation.builder()
             .judgeLevelRadio(null)
             .allocationProposalPresent("Yes")
             .build();
@@ -62,7 +62,7 @@ class CourtAllocationServiceTest {
             .allocationProposal(createAllocationDecision("proposal", "reason"))
             .build();
 
-        AllocationDecision expectedDecision = AllocationDecision.builder()
+        Allocation expectedDecision = Allocation.builder()
             .judgeLevelRadio("Yes")
             .proposal("proposal")
             .proposalReason("reason")
@@ -79,7 +79,7 @@ class CourtAllocationServiceTest {
             .allocationProposal(createAllocationDecision("proposal", "reason"))
             .build();
 
-        AllocationDecision expectedDecision = AllocationDecision.builder()
+        Allocation expectedDecision = Allocation.builder()
             .judgeLevelRadio("No")
             .proposal("wrong proposal")
             .proposalReason("reason")
@@ -89,8 +89,8 @@ class CourtAllocationServiceTest {
         assertThat(courtAllocationService.createDecision(caseData)).isEqualTo(expectedDecision);
     }
 
-    private AllocationDecision createAllocationDecision(String proposal, String reason) {
-        return AllocationDecision.builder()
+    private Allocation createAllocationDecision(String proposal, String reason) {
+        return Allocation.builder()
             .proposal(proposal)
             .proposalReason(reason)
             .build();

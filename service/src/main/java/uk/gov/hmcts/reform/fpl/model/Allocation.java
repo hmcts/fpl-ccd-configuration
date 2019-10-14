@@ -13,9 +13,7 @@ import lombok.Data;
 // Just double check
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
-//TODO: rename class to reflect being used for proposal and decision. CCD can be different objects, here we can be
-// clever and have one object OR I guess you could extend and have a new class with just the new fields. Up to you.
-public class AllocationDecision {
+public class Allocation {
     /*
         The below are called proposal as ideally we would like to reuse the allocationProposal complex type,
         but had some issues with labels so there is another complex type. The field could be renamed as tech debt.

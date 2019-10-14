@@ -13,8 +13,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.AllocationDecision;
-import uk.gov.hmcts.reform.fpl.model.AllocationProposal;
+import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +36,7 @@ class AllocationDecisionControllerAboutToSubmitTest {
     @Test
     void shouldAddCorrectAllocationDecisionProposal() throws Exception {
 
-        AllocationDecision allocationDecisionWithoutProposal = createAllocationDecision(null,null);
+        Allocation allocationDecisionWithoutProposal = createAllocationDecision(null,null);
         AllocationProposal allocationProposal = createAllocationProposal("District judge","reason");
 
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
@@ -49,12 +48,12 @@ class AllocationDecisionControllerAboutToSubmitTest {
 
         AboutToStartOrSubmitCallbackResponse response = callbackResponse(request);
 
-        AllocationDecision expectedDecision = AllocationDecision.builder()
+        Allocation expectedDecision = Allocation.builder()
             .proposal("District judge")
             .build();
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
-        AllocationDecision actualAllocationDecision = caseData.getAllocationDecision();
+        Allocation actualAllocationDecision = caseData.getAllocationDecision();
         assertThat(actualAllocationDecision)
             .isEqualTo(expectedDecision);
     }
@@ -62,7 +61,7 @@ class AllocationDecisionControllerAboutToSubmitTest {
     @Test
     void incorrectAllocationProposal() throws Exception {
 
-        AllocationDecision allocationDecisionWithProposal = createAllocationDecision("Lay justices","No");
+        Allocation allocationDecisionWithProposal = createAllocationDecision("Lay justices","No");
         AllocationProposal allocationProposal = createAllocationProposal("District judge","reason");
 
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
@@ -74,12 +73,12 @@ class AllocationDecisionControllerAboutToSubmitTest {
 
         AboutToStartOrSubmitCallbackResponse response = callbackResponse(request);
 
-        AllocationDecision expectedDecision = AllocationDecision.builder()
+        Allocation expectedDecision = Allocation.builder()
             .proposal("Lay justices")
             .build();
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
-        AllocationDecision actualAllocationDecision = caseData.getAllocationDecision();
+        Allocation actualAllocationDecision = caseData.getAllocationDecision();
         assertThat(actualAllocationDecision)
             .isEqualTo(expectedDecision);
     }
@@ -100,9 +99,9 @@ class AllocationDecisionControllerAboutToSubmitTest {
         return callbackResponse;
     }
 
-    private AllocationDecision createAllocationDecision(String proposal,String judgeLevelRadio) throws Exception {
+    private Allocation createAllocationDecision(String proposal, String judgeLevelRadio) throws Exception {
 
-        AllocationDecision allocationDecision = AllocationDecision.builder()
+        Allocation allocationDecision = Allocation.builder()
             .proposal(proposal)
             .judgeLevelRadio(judgeLevelRadio)
             .build();

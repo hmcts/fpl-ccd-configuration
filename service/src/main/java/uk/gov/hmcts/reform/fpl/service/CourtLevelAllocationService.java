@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.model.AllocationDecision;
+import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import static java.util.Optional.ofNullable;
@@ -10,10 +10,10 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 @Service
 
 //TODO: CourtLevel in name would be nice
-public class CourtAllocationService {
+public class CourtLevelAllocationService {
 
-    public AllocationDecision createDecision(CaseData caseData) {
-        AllocationDecision.AllocationDecisionBuilder decisionBuilder =
+    public Allocation createDecision(CaseData caseData) {
+        Allocation.AllocationBuilder decisionBuilder =
             populateDecision(caseData.getAllocationDecision());
 
         decisionBuilder.allocationProposalPresent(checkIfAllocationIsPresent(caseData.getAllocationProposal()));
@@ -34,14 +34,14 @@ public class CourtAllocationService {
     }
 
     //TODO: some of this logic is used in aboutToSubmit
-    private AllocationDecision.AllocationDecisionBuilder populateDecision(AllocationDecision allocationDecision) {
+    private Allocation.AllocationBuilder populateDecision(Allocation allocationDecision) {
         return ofNullable(allocationDecision)
-            .map(AllocationDecision::toBuilder)
-            .orElse(AllocationDecision.builder());
+            .map(Allocation::toBuilder)
+            .orElse(Allocation.builder());
     }
 
     //TODO: defaultIfNull. Could we
-    private String checkIfAllocationIsPresent(AllocationDecision data) {
+    private String checkIfAllocationIsPresent(Allocation data) {
         return data != null && isNotEmpty(data.getProposal()) ? "Yes" : "No";
     }
 }
