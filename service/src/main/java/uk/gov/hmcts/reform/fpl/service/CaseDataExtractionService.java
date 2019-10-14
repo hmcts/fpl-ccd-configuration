@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 
 @Service
@@ -40,7 +41,6 @@ public class CaseDataExtractionService {
         Map<String, String> hearingBookingData = getHearingBookingData(caseData);
 
         // Validation within our frontend ensures that the following data is present
-
         return ImmutableMap.<String, String>builder()
             .put("courtName", getCourtName(caseData))
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
@@ -49,15 +49,21 @@ public class CaseDataExtractionService {
             .put("orderTypes", getOrderTypes(caseData))
             .put("childrenNames", getAllChildrenNames(caseData))
             .put("judgeTitleAndName", formatJudgeTitleAndName(caseData))
-            .put("legalAdvisorName", caseData.getJudgeAndLegalAdvisor() == null
-                || caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName() == null ? ""
-                : caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName())
+            .put("legalAdvisorName", getLegalAdvisorName(caseData))
             .putAll(hearingBookingData)
             .build();
     }
 
     private String getCourtName(CaseData caseData) {
         return hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName();
+    }
+
+    private String getLegalAdvisorName(CaseData caseData) {
+        if (caseData.getJudgeAndLegalAdvisor() == null) {
+            return "";
+        }
+
+        return defaultIfNull(caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName(), "");
     }
 
     private String formatJudgeTitleAndName(CaseData caseData) {
