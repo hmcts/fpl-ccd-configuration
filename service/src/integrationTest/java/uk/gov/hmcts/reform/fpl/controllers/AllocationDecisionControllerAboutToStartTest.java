@@ -34,6 +34,9 @@ class AllocationDecisionControllerAboutToStartTest {
     @Autowired
     private MockMvc mockMvc;
 
+    //TODO: One or two tests here to test happy / sad path.
+    //rest can be extracted, I have moved the first test on line 41 already
+
     @Test
     void shouldAddYesToMissingAllocationDecision() throws Exception {
 

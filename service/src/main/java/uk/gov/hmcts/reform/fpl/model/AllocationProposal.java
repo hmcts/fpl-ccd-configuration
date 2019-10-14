@@ -7,6 +7,9 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
+
+//TODO: remove class
+
 public class AllocationProposal {
     private final String proposal;
     private final String proposalReason;

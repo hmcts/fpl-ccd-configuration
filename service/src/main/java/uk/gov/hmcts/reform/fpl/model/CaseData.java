@@ -45,7 +45,7 @@ public class CaseData {
     private final Proceeding proceeding;
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;
-    private final AllocationProposal allocationProposal;
+    private final AllocationDecision allocationProposal;
     private final AllocationDecision allocationDecision;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
