@@ -290,14 +290,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "sdo",
-    "Label": "Standard directions order",
-    "FieldType": "Document",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "familyManCaseNumber",
     "Label": "FamilyMan case number",
     "FieldType": "Text",

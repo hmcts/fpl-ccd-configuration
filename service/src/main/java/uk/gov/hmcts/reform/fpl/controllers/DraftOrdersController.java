@@ -97,11 +97,17 @@ public class DraftOrdersController {
         Document document = uploadDocumentService.uploadPDF(userId, authorization, docmosisDocument.getBytes(),
             "draft-standard-directions-order.pdf");
 
-        caseDetailsAfter.getData().put("sdo", DocumentReference.builder()
+        //TODO: add document as part of standardDirectionOrder object
+
+        Order.OrderBuilder order = caseDataWithValuesRemoved.getStandardDirectionOrder().toBuilder();
+
+        order.orderDoc(DocumentReference.builder()
             .url(document.links.self.href)
             .binaryUrl(document.links.binary.href)
             .filename("draft-standard-directions-order.pdf")
             .build());
+
+        caseDetailsAfter.getData().put("standardDirectionOrder", order.build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsAfter.getData())

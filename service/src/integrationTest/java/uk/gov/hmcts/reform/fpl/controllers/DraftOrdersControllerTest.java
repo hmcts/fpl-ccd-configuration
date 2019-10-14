@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
@@ -97,6 +98,7 @@ class DraftOrdersControllerTest {
         assertThat(extractDirections(caseData.getCourtDirections())).containsOnly(directions.get(5));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void midEventShouldGenerateDraftStandardDirectionDocument() throws Exception {
         byte[] pdf = {1, 2, 3, 4, 5};
@@ -113,8 +115,7 @@ class DraftOrdersControllerTest {
                 .directionText("example")
                 .assignee(LOCAL_AUTHORITY)
                 .readOnly("No")
-                .build())
-        );
+                .build()));
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(createCaseDetails(directions))
@@ -133,11 +134,14 @@ class DraftOrdersControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        assertThat(callbackResponse.getData()).containsEntry("sdo", ImmutableMap.builder()
-            .put("document_binary_url", document.links.binary.href)
-            .put("document_filename", "draft-standard-directions-order.pdf")
-            .put("document_url", document.links.self.href)
-            .build());
+        Map<String, Object> sdo = (Map<String, Object>) callbackResponse.getData().get("standardDirectionOrder");
+
+        assertThat(sdo).containsEntry(
+            "orderDoc", ImmutableMap.builder()
+                .put("document_binary_url", document.links.binary.href)
+                .put("document_filename", "draft-standard-directions-order.pdf")
+                .put("document_url", document.links.self.href)
+                .build());
     }
 
     @Test
