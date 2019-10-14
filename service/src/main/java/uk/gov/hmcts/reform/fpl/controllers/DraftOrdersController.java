@@ -75,18 +75,18 @@ public class DraftOrdersController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackrequest) throws IOException {
-        CaseDetails caseDetailsBefore = addDirectionsToOrder(callbackrequest.getCaseDetailsBefore());
-        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+        CaseData caseDataBefore = mapper.convertValue(callbackrequest.getCaseDetailsBefore().getData(), CaseData.class);
+        Order orderBefore = directionHelperService.createOrder(caseDataBefore);
 
         CaseDetails caseDetailsAfter = addDirectionsToOrder(callbackrequest.getCaseDetails());
         CaseData caseDataWithValuesRemoved = mapper.convertValue(caseDetailsAfter.getData(), CaseData.class);
 
-        Order orderWithValues = directionHelperService.persistHiddenDirectionValues(
-            caseDataBefore.getStandardDirectionOrder(), caseDataWithValuesRemoved.getStandardDirectionOrder());
+        directionHelperService.persistHiddenDirectionValues(
+            orderBefore, caseDataWithValuesRemoved.getStandardDirectionOrder());
 
         CaseData.CaseDataBuilder caseDataBuilder = caseDataWithValuesRemoved.toBuilder();
 
-        caseDataBuilder.standardDirectionOrder(orderWithValues);
+        caseDataBuilder.standardDirectionOrder(caseDataWithValuesRemoved.getStandardDirectionOrder());
 
         Map<String, Object> templateData = caseDataExtractionService
             .getDraftStandardOrderDirectionTemplateData(caseDataBuilder.build());
@@ -110,16 +110,16 @@ public class DraftOrdersController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetailsBefore = addDirectionsToOrder(callbackrequest.getCaseDetailsBefore());
-        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+        CaseData caseDataBefore = mapper.convertValue(callbackrequest.getCaseDetailsBefore().getData(), CaseData.class);
+        Order orderBefore = directionHelperService.createOrder(caseDataBefore);
 
         CaseDetails caseDetailsAfter = addDirectionsToOrder(callbackrequest.getCaseDetails());
         CaseData caseDataWithValuesRemoved = mapper.convertValue(caseDetailsAfter.getData(), CaseData.class);
 
-        Order orderWithValues = directionHelperService.persistHiddenDirectionValues(
-            caseDataBefore.getStandardDirectionOrder(), caseDataWithValuesRemoved.getStandardDirectionOrder());
+        directionHelperService.persistHiddenDirectionValues(
+            orderBefore, caseDataWithValuesRemoved.getStandardDirectionOrder());
 
-        caseDetailsAfter.getData().put("standardDirectionOrder", orderWithValues);
+        caseDetailsAfter.getData().put("standardDirectionOrder", caseDataWithValuesRemoved.getStandardDirectionOrder());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetailsAfter.getData())

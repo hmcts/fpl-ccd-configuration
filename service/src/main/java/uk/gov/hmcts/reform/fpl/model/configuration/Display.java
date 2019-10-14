@@ -48,7 +48,7 @@ public class Display {
     private boolean directionRemovable;
 
     /**
-     * If true the body (text) of the direction should be hidden.
+     * If true the body (directionText) of the direction should be hidden.
      */
     private boolean showDateOnly;
 }

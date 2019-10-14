@@ -42,6 +42,7 @@ public class PopulateStandardDirectionsHandler {
     private final IdamClient idamClient;
     private final SystemUpdateUserConfiguration userConfig;
     private final DirectionHelperService directionHelperService;
+    private static final Boolean IGNORE_WARNING = true;
 
     @Autowired
     public PopulateStandardDirectionsHandler(ObjectMapper mapper,
@@ -90,7 +91,7 @@ public class PopulateStandardDirectionsHandler {
             event.getCallbackRequest().getCaseDetails().getJurisdiction(),
             event.getCallbackRequest().getCaseDetails().getCaseTypeId(),
             event.getCallbackRequest().getCaseDetails().getId().toString(),
-            true,
+            IGNORE_WARNING,
             caseDataContent);
     }
 

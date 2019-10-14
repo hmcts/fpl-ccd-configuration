@@ -13,13 +13,13 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Direction {
     private final UUID id;
-    private final String type;
-    private String text;
+    private final String directionType;
+    private String directionText;
     private final String status;
     private final DirectionAssignee assignee;
     private String readOnly;
     private String directionRemovable;
     private String directionNeeded;
     private String custom;
-    private LocalDateTime completeBy;
+    private LocalDateTime dateToBeCompletedBy;
 }

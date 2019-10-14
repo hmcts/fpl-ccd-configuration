@@ -203,8 +203,8 @@ class PopulateStandardDirectionsHandlerTest {
             .first()
             .isEqualTo(ImmutableMap.of(
                 "assignee", "LOCAL_AUTHORITY",
-                "text", "• Test body's 1 \n\n• Two",
-                "type", "Direction",
+                "directionText", "• Test body's 1 \n\n• Two",
+                "directionType", "Direction",
                 "directionRemovable", "No",
                 "readOnly", "No"));
 

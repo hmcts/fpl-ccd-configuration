@@ -9,8 +9,9 @@ import lombok.Data;
 @AllArgsConstructor
 public class AllocationDecision  {
     /*
-        The below are called proposal as ideally we would like to reuse the allocationProposal complex type,
-        but had some issues with labels so there is another complex type. The field could be renamed as tech debt.
+        The below are called proposal as ideally we would like to reuse the allocationProposal complex directionType,
+        but had some issues with labels so there is another complex directionType.
+        The field could be renamed as tech debt.
      */
     private final String proposal;
     private final String proposalReason;

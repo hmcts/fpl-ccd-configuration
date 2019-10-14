@@ -66,12 +66,12 @@ class DraftOrdersControllerTest {
         String title = "example direction";
 
         List<Direction> directions = ImmutableList.of(
-            Direction.builder().type(title).assignee(ALL_PARTIES).build(),
-            Direction.builder().type(title).assignee(LOCAL_AUTHORITY).build(),
-            Direction.builder().type(title).assignee(PARENTS_AND_RESPONDENTS).build(),
-            Direction.builder().type(title).assignee(CAFCASS).build(),
-            Direction.builder().type(title).assignee(OTHERS).build(),
-            Direction.builder().type(title).assignee(COURT).build()
+            Direction.builder().directionType(title).assignee(ALL_PARTIES).build(),
+            Direction.builder().directionType(title).assignee(LOCAL_AUTHORITY).build(),
+            Direction.builder().directionType(title).assignee(PARENTS_AND_RESPONDENTS).build(),
+            Direction.builder().directionType(title).assignee(CAFCASS).build(),
+            Direction.builder().directionType(title).assignee(OTHERS).build(),
+            Direction.builder().directionType(title).assignee(COURT).build()
         );
 
         Order sdo = Order.builder().directions(buildDirections(directions)).build();
@@ -82,13 +82,7 @@ class DraftOrdersControllerTest {
                 .build())
             .build();
 
-        MvcResult response = mockMvc
-            .perform(post("/callback/draft-SDO/about-to-start")
-                .header("authorization", AUTH_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
+        MvcResult response = makeRequest(request);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -109,14 +103,14 @@ class DraftOrdersControllerTest {
         DocmosisDocument docmosisDocument = new DocmosisDocument("draft-standard-directions-order.pdf", pdf);
         Document document = document();
 
-        given(documentGeneratorService.generateDocmosisDocument(any(), any()))
-            .willReturn(docmosisDocument);
+        given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+
         given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-standard-directions-order.pdf"))
             .willReturn(document);
 
         List<Element<Direction>> directions = buildDirections(
             ImmutableList.of(Direction.builder()
-                .text("example")
+                .directionText("example")
                 .assignee(LOCAL_AUTHORITY)
                 .readOnly("No")
                 .build())
@@ -139,8 +133,6 @@ class DraftOrdersControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        System.out.println("callbackResponse = " + callbackResponse.getData());
-
         assertThat(callbackResponse.getData()).containsEntry("sdo", ImmutableMap.builder()
             .put("document_binary_url", document.links.binary.href)
             .put("document_filename", "draft-standard-directions-order.pdf")
@@ -155,8 +147,8 @@ class DraftOrdersControllerTest {
         List<Element<Direction>> fullyPopulatedDirection = ImmutableList.of(Element.<Direction>builder()
             .id(uuid)
             .value(Direction.builder()
-                .type("exampleDirection")
-                .text("example")
+                .directionType("exampleDirection")
+                .directionText("example")
                 .assignee(LOCAL_AUTHORITY)
                 .directionRemovable("Yes")
                 .directionNeeded(null)
@@ -167,7 +159,7 @@ class DraftOrdersControllerTest {
         List<Element<Direction>> directionWithShowHideValuesRemoved = ImmutableList.of(Element.<Direction>builder()
             .id(uuid)
             .value(Direction.builder()
-                .type("exampleDirection")
+                .directionType("exampleDirection")
                 .assignee(LOCAL_AUTHORITY)
                 .directionNeeded(null)
                 .build())
@@ -198,6 +190,16 @@ class DraftOrdersControllerTest {
                 .collect(toList());
 
         assertThat(localAuthorityDirections).isEqualTo(fullyPopulatedDirection);
+    }
+
+    private MvcResult makeRequest(CallbackRequest request) throws Exception {
+        return mockMvc
+            .perform(post("/callback/draft-SDO/about-to-start")
+                .header("authorization", AUTH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andReturn();
     }
 
     private CaseDetails createCaseDetails(List<Element<Direction>> directions) {

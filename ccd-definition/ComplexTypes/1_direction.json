@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Direction",
-    "ListElementCode": "type",
+    "ListElementCode": "directionType",
     "FieldType": "Text",
     "ElementLabel": "Direction title",
     "SecurityClassification": "Public"
@@ -65,7 +65,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Direction",
-    "ListElementCode": "completeBy",
+    "ListElementCode": "dateToBeCompletedBy",
     "FieldType": "DateTime",
     "ElementLabel": "Due date and time",
     "HintText": "For example, 31 3 2016 2 30 00",

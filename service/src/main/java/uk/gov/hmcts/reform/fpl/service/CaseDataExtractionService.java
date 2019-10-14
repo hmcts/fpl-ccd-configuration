@@ -159,7 +159,7 @@ public class CaseDataExtractionService {
                 .map(Element::getValue)
                 .map(direction -> ImmutableMap.of(
                     "title", formatTitle(direction, standardDirectionOrder.getDirections()),
-                    "body", defaultIfNull(direction.getText(), EMPTY_STATE_PLACEHOLDER)))
+                    "body", defaultIfNull(direction.getDirectionText(), EMPTY_STATE_PLACEHOLDER)))
                 .collect(toList());
 
             formattedDirections.put(key, directionsList);
@@ -220,15 +220,16 @@ public class CaseDataExtractionService {
 
         DateFormattingConfig dateFormattingConfig = directions.stream()
             .filter(directionConfiguration ->
-                directionConfiguration.getTitle().equals(direction.getType().substring(3)))
+                directionConfiguration.getTitle().equals(direction.getDirectionType().substring(3)))
             .map(DirectionConfiguration::getDisplay)
             .map(display -> new DateFormattingConfig(display.getTemplateDateFormat(), display.getDue()))
             .findAny()
             .orElseGet(DateFormattingConfig::new);
 
-        return String.format("%s %s %s", direction.getType(), dateFormattingConfig.due.toString().toLowerCase(),
-            (direction.getCompleteBy() != null ? dateFormatterService
-                .formatLocalDateTimeBaseUsingFormat(direction.getCompleteBy(),
+        return String.format(
+            "%s %s %s", direction.getDirectionType(), dateFormattingConfig.due.toString().toLowerCase(),
+            (direction.getDateToBeCompletedBy() != null ? dateFormatterService
+                .formatLocalDateTimeBaseUsingFormat(direction.getDateToBeCompletedBy(),
                     dateFormattingConfig.getPattern()) : "unknown"));
     }
 }
