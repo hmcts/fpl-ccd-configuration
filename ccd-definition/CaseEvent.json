@@ -472,6 +472,18 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "populateSDO",
+    "Name": "Populate standard directions",
+    "Description": "Populate standard directions",
+    "DisplayOrder": 13,
+    "PreConditionState(s)": "Submitted",
+    "PostConditionState": "Gatekeeping",
+    "SecurityClassification": "Public",
+    "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "otherAllocationDecision",
     "Name": "Allocation decision",
     "Description": "Entering other proceedings and allocation proposals",
@@ -604,18 +616,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "populateSDO",
-    "Name": "Populate standard directions",
-    "Description": "Populate standard directions",
-    "DisplayOrder": 1,
-    "PreConditionState(s)": "Submitted",
-    "PostConditionState": "Gatekeeping",
-    "SecurityClassification": "Public",
-    "EndButtonLabel": "Save and continue"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftSDO",
     "Name": "Draft standard directions",
     "Description": "Draft standard directions",
@@ -633,7 +633,7 @@
     "ID": "uploadStandardDirectionsAfterGatekeeping",
     "Name": "Documents",
     "Description": "Upload standard directions",
-    "DisplayOrder": 1,
+    "DisplayOrder": 11,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
