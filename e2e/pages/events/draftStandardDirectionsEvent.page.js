@@ -18,7 +18,7 @@ module.exports = {
     };
   },
 
-  async enterDate(party, index, direction) {
+  async enterDate(party, direction, index = 0) {
     I.fillField(this.fields(party, index).direction.dueDate.day, direction.dueDate.day);
     I.fillField(this.fields(party, index).direction.dueDate.month, direction.dueDate.month);
     I.fillField(this.fields(party, index).direction.dueDate.year, direction.dueDate.year);
@@ -28,16 +28,16 @@ module.exports = {
   },
 
   async enterDatesForDirections(direction) {
-    await this.enterDate('allParties', 0, direction);
+    await this.enterDate('allParties', direction);
     await I.retryUntilExists(() => I.click('Continue'), '#localAuthorityDirections');
-    await this.enterDate('localAuthorityDirections', 0, direction);
+    await this.enterDate('localAuthorityDirections', direction);
     await I.retryUntilExists(() => I.click('Continue'), '#parentsAndRespondentsDirections');
-    await this.enterDate('parentsAndRespondentsDirections', 0, direction);
+    await this.enterDate('parentsAndRespondentsDirections', direction);
     await I.retryUntilExists(() => I.click('Continue'), '#cafcassDirections');
-    await this.enterDate('cafcassDirections', 0, direction);
+    await this.enterDate('cafcassDirections', direction);
     await I.retryUntilExists(() => I.click('Continue'), '#otherPartiesDirections');
-    await this.enterDate('otherPartiesDirections', 0, direction);
+    await this.enterDate('otherPartiesDirections', direction);
     await I.retryUntilExists(() => I.click('Continue'), '#courtDirections');
-    await this.enterDate('courtDirections', 0, direction);
+    await this.enterDate('courtDirections', direction);
   },
 };
