@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @Builder(toBuilder = true)
-@AllArgsConstructori
+@AllArgsConstructor
 
 public class Allocation {
     /*
