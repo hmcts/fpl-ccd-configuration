@@ -17,8 +17,6 @@ import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
 
 import java.util.Map;
 
-import static java.util.Optional.ofNullable;
-
 @Api
 @RestController
 @RequestMapping("/callback/allocation-decision")
