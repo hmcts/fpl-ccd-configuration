@@ -29,11 +29,21 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AllocationDecision",
+    "ListElementCode": "judgeLevelRadio",
+    "FieldType": "YesOrNo",
+    "ElementLabel": "Is this the right level of judge?",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "allocationProposalPresent!=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AllocationDecision",
     "ListElementCode": "proposal",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "AllocationProposalList",
     "ElementLabel": "Which level of judge is needed for this case?",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "allocationProposalPresent!=\"Yes\" OR judgeLevelRadio=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -41,7 +51,8 @@
     "ListElementCode": "proposalReason",
     "FieldType": "TextArea",
     "ElementLabel": "Give reason",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "allocationProposalPresent!=\"Yes\" OR judgeLevelRadio=\"No\""
   },
   {
     "LiveFrom": "01/01/2017",
