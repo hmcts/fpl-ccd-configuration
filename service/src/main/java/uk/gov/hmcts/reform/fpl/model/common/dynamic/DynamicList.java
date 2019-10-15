@@ -88,7 +88,7 @@ public class DynamicList {
      * Prepares this class for storage in CCD by clearing the list items.
      */
     public void prepareForStorage() {
-        // FIXME: 14/10/2019 Remove if not needed
+        // TODO: 14/10/2019 Remove if not needed
         listItems.clear();
     }
 
