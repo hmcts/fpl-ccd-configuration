@@ -24,7 +24,7 @@
     "ID": "CafcassDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "cafcassDirections",
-    "ListElementCode": "type",
+    "ListElementCode": "directionType",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY"
@@ -44,7 +44,7 @@
     "ID": "CafcassDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "cafcassDirections",
-    "ListElementCode": "text",
+    "ListElementCode": "directionText",
     "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL",
     "FieldShowCondition": "cafcassDirections.readOnly!=\"Yes\" AND cafcassDirections.directionNeeded!=\"No\""
@@ -54,7 +54,7 @@
     "ID": "CafcassDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "cafcassDirections",
-    "ListElementCode": "completeBy",
+    "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
   }

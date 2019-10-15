@@ -46,7 +46,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Direction",
-    "ListElementCode": "text",
+    "ListElementCode": "directionText",
     "FieldType": "TextArea",
     "ElementLabel": "Description",
     "HintText": "Check the description, you may need to add some details",

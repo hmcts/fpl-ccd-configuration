@@ -24,7 +24,7 @@
     "ID": "ParentsAndRespondentsDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "parentsAndRespondentsDirections",
-    "ListElementCode": "type",
+    "ListElementCode": "directionType",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY"
@@ -44,7 +44,7 @@
     "ID": "ParentsAndRespondentsDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "parentsAndRespondentsDirections",
-    "ListElementCode": "text",
+    "ListElementCode": "directionText",
     "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL",
     "FieldShowCondition": "parentsAndRespondentsDirections.readOnly!=\"Yes\" AND parentsAndRespondentsDirections.directionNeeded!=\"No\""
@@ -54,7 +54,7 @@
     "ID": "ParentsAndRespondentsDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "parentsAndRespondentsDirections",
-    "ListElementCode": "completeBy",
+    "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
   }

@@ -24,7 +24,7 @@
     "ID": "OtherPartiesDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "otherPartiesDirections",
-    "ListElementCode": "type",
+    "ListElementCode": "directionType",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY"
@@ -44,7 +44,7 @@
     "ID": "OtherPartiesDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "otherPartiesDirections",
-    "ListElementCode": "text",
+    "ListElementCode": "directionText",
     "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL",
     "FieldShowCondition": "otherPartiesDirections.readOnly!=\"Yes\" AND otherPartiesDirections.directionNeeded!=\"No\""
@@ -54,7 +54,7 @@
     "ID": "OtherPartiesDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "otherPartiesDirections",
-    "ListElementCode": "completeBy",
+    "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
   }

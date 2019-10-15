@@ -24,7 +24,7 @@
     "ID": "LocalAuthorityDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "type",
+    "ListElementCode": "directionType",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY"
@@ -44,7 +44,7 @@
     "ID": "LocalAuthorityDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "text",
+    "ListElementCode": "directionText",
     "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL",
     "FieldShowCondition": "localAuthorityDirections.readOnly!=\"Yes\" AND localAuthorityDirections.directionNeeded!=\"No\""
@@ -54,7 +54,7 @@
     "ID": "LocalAuthorityDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "completeBy",
+    "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
   }

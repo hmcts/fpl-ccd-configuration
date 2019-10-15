@@ -24,7 +24,7 @@
     "ID": "CourtDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "courtDirections",
-    "ListElementCode": "type",
+    "ListElementCode": "directionType",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY"
@@ -44,7 +44,7 @@
     "ID": "CourtDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "courtDirections",
-    "ListElementCode": "text",
+    "ListElementCode": "directionText",
     "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL",
     "FieldShowCondition": "courtDirections.readOnly!=\"Yes\" AND courtDirections.directionNeeded!=\"No\""
@@ -54,7 +54,7 @@
     "ID": "CourtDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "courtDirections",
-    "ListElementCode": "completeBy",
+    "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
   }

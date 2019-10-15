@@ -4,7 +4,7 @@
     "ID": "AllPartiesCustomDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "allPartiesCustom",
-    "ListElementCode": "type",
+    "ListElementCode": "directionType",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL"
@@ -14,7 +14,7 @@
     "ID": "AllPartiesCustomDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "allPartiesCustom",
-    "ListElementCode": "text",
+    "ListElementCode": "directionText",
     "FieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL"
   },
@@ -23,7 +23,7 @@
     "ID": "AllPartiesCustomDirections",
     "CaseEventID": "draftSDO",
     "CaseFieldID": "allPartiesCustom",
-    "ListElementCode": "completeBy",
+    "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"
   }
