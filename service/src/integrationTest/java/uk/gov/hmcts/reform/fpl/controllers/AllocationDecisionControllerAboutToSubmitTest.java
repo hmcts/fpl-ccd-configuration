@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.Allocation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -21,26 +22,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("integration-test")
 @WebMvcTest(AllocationDecisionController.class)
 @OverrideAutoConfiguration(enabled = true)
-class AllocationDecisionControllerAboutToStartTest {
-
+class AllocationDecisionControllerAboutToSubmitTest {
     private static final String AUTH_TOKEN = "Bearer token";
 
     @Autowired
-    private  ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    void shouldPopulateAllocationDecision() throws Exception {
+    void shouldPopulateAllocationDecisionWhenSubmitting() throws Exception {
+        Allocation allocationDecision = createAllocation("Lay justices", "Reason");
+
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of("data", "some data"))
+                .data(ImmutableMap.of("allocationDecision", allocationDecision))
                 .build())
             .build();
 
         MvcResult response = mockMvc
-            .perform(post("/callback/allocation-decision/about-to-start")
+            .perform(post("/callback/allocation-decision/about-to-submit")
                 .header("authorization", AUTH_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(request)))
@@ -51,5 +53,28 @@ class AllocationDecisionControllerAboutToStartTest {
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
         assertThat(callbackResponse.getData()).containsKey("allocationDecision");
+    }
+
+    private AboutToStartOrSubmitCallbackResponse callbackResponse(CallbackRequest request) throws Exception {
+        MvcResult response = mockMvc
+            .perform(post("/callback/allocation-decision/about-to-submit")
+                .header("authorization", AUTH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        return callbackResponse;
+    }
+
+    private Allocation createAllocation(String proposal, String judgeLevelRadio) throws Exception {
+        Allocation allocationDecision = Allocation.builder()
+            .proposal(proposal)
+            .judgeLevelRadio(judgeLevelRadio)
+            .build();
+        return allocationDecision;
     }
 }
