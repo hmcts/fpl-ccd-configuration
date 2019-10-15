@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
@@ -42,6 +43,7 @@ public class PopulateStandardDirectionsHandler {
     private final IdamClient idamClient;
     private final SystemUpdateUserConfiguration userConfig;
     private final DirectionHelperService directionHelperService;
+    private final HearingBookingService hearingBookingService;
     private static final Boolean IGNORE_WARNING = true;
 
     @Autowired
@@ -51,7 +53,7 @@ public class PopulateStandardDirectionsHandler {
                                              AuthTokenGenerator authTokenGenerator,
                                              IdamClient idamClient,
                                              SystemUpdateUserConfiguration userConfig,
-                                             DirectionHelperService directionHelperService) {
+                                             DirectionHelperService directionHelperService, HearingBookingService hearingBookingService) {
         this.mapper = mapper;
         this.ordersLookupService = ordersLookupService;
         this.coreCaseDataApi = coreCaseDataApi;
@@ -59,6 +61,7 @@ public class PopulateStandardDirectionsHandler {
         this.idamClient = idamClient;
         this.userConfig = userConfig;
         this.directionHelperService = directionHelperService;
+        this.hearingBookingService = hearingBookingService;
     }
 
     @Async
@@ -118,11 +121,9 @@ public class PopulateStandardDirectionsHandler {
         LocalDateTime completeBy = null;
 
         if (direction.getDisplay().getDelta() != null && caseData.getHearingDetails() != null) {
-            List<HearingBooking> booking = caseData.getHearingDetails().stream()
-                .map(Element::getValue)
-                .collect(toList());
+            HearingBooking mostUrgentBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
 
-            completeBy = buildDateTime(booking.get(0).getDate(), Integer.parseInt(direction.getDisplay().getDelta()));
+            completeBy = buildDateTime(mostUrgentBooking.getDate(), Integer.parseInt(direction.getDisplay().getDelta()));
         }
         return completeBy;
     }
