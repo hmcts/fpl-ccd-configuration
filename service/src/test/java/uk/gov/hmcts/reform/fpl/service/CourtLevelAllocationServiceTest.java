@@ -11,7 +11,7 @@ class CourtLevelAllocationServiceTest {
     private final CourtLevelAllocationService courtAllocationService = new CourtLevelAllocationService();
 
     @Test
-    void shouldAddYesToMissingAllocationDecision() {
+    void shouldAddYesWhenAllocationDecisionPresent() {
         CaseData caseData = CaseData.builder()
             .allocationDecision(createAllocation("test", "decision reason"))
             .allocationProposal(createAllocation("proposal", "reason"))
@@ -28,7 +28,7 @@ class CourtLevelAllocationServiceTest {
     }
 
     @Test
-    void shouldAddNoToMissingAllocationDecision() {
+    void shouldAddNoWhenAllocationDecisionNotPresent() {
         CaseData caseData = CaseData.builder()
             .build();
 
@@ -40,7 +40,7 @@ class CourtLevelAllocationServiceTest {
     }
 
     @Test
-    void shouldAddNullToJudgeLevelRadio() {
+    void shouldAddNullToJudgeLevelRadioWhenAllocationDecisionHasNotBeenMade() {
         CaseData caseData = CaseData.builder()
             .allocationProposal(createAllocation("proposal", "reason"))
             .build();
@@ -54,7 +54,7 @@ class CourtLevelAllocationServiceTest {
     }
 
     @Test
-    void shouldAddYesToJudgeLevelRadio() {
+    void shouldAddYesToJudgeLevelRadioWhenAllocationProposalIsCorrect() {
         CaseData caseData = CaseData.builder()
             .allocationDecision(createAllocation("proposal", "reason"))
             .allocationProposal(createAllocation("proposal", "reason"))
@@ -71,7 +71,7 @@ class CourtLevelAllocationServiceTest {
     }
 
     @Test
-    void shouldAddNoToJudgeLevelRadio() {
+    void shouldAddNoToJudgeLevelRadioWhenAllocationProposalIsIncorrect() {
         CaseData caseData = CaseData.builder()
             .allocationDecision(createAllocation("wrong proposal", "reason"))
             .allocationProposal(createAllocation("proposal", "reason"))
@@ -88,7 +88,7 @@ class CourtLevelAllocationServiceTest {
     }
 
     @Test
-    void shouldSetAllocationDecisionIfNull() {
+    void shouldSetAllocationDecisionWhenNull() {
         CaseData caseData = CaseData.builder()
             .allocationProposal(createAllocation("proposal", "reason"))
             .allocationDecision(createAllocation(null, null))

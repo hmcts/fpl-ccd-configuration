@@ -10,11 +10,9 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 @Service
 
 public class CourtLevelAllocationService {
-
     public Allocation createDecision(CaseData caseData) {
         Allocation.AllocationBuilder decisionBuilder =
             populateDecision(caseData.getAllocationDecision());
-
         decisionBuilder.allocationProposalPresent(checkIfAllocationIsPresent(caseData.getAllocationProposal()));
 
         if (checkIfAllocationIsPresent(caseData.getAllocationProposal()).equals("Yes")) {

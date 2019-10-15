@@ -3,7 +3,7 @@ const { I } = inject();
 const allocationDecisionRadioGroup = '#allocationDecision_proposal';
 const allocationDecisionRadioPrefix = 'allocationDecision_proposal-';
 const proposalReason = '#allocationDecision_proposalReason';
-const judgeLevelRadioNo = '#allocationDecision_judgeLevelRadio-';
+const judgeLevelRadio = '#allocationDecision_judgeLevelRadio-';
 
 module.exports = {
 
@@ -17,6 +17,6 @@ module.exports = {
   },
 
   selectCorrectLevelOfJudge(radioSelection) {
-    I.click(judgeLevelRadioNo + radioSelection);
+    I.click(judgeLevelRadio + radioSelection);
   },
 };
