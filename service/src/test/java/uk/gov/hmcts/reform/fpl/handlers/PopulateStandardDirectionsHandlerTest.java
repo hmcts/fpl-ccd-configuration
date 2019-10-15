@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -40,7 +41,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, HearingBookingService.class})
 class PopulateStandardDirectionsHandlerTest {
     private static final String CASE_EVENT = "populateSDO";
     private static final String TOKEN = "1";
@@ -64,6 +65,9 @@ class PopulateStandardDirectionsHandlerTest {
     private SystemUpdateUserConfiguration userConfig;
 
     @Autowired
+    private HearingBookingService hearingBookingService;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     private PopulateStandardDirectionsHandler populateStandardDirectionsHandler;
@@ -73,7 +77,7 @@ class PopulateStandardDirectionsHandlerTest {
     @BeforeEach
     void before() {
         populateStandardDirectionsHandler = new PopulateStandardDirectionsHandler(objectMapper,
-            ordersLookupService, coreCaseDataApi, authTokenGenerator, idamClient, userConfig, directionHelperService);
+            ordersLookupService, coreCaseDataApi, authTokenGenerator, idamClient, userConfig, directionHelperService, hearingBookingService);
 
         given(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(TOKEN);
 
