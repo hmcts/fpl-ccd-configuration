@@ -26,7 +26,7 @@ class AllocationDecisionControllerAboutToSubmitTest {
     private static final String AUTH_TOKEN = "Bearer token";
 
     @Autowired
-    private  ObjectMapper mapper;
+    private ObjectMapper mapper;
 
     @Autowired
     private MockMvc mockMvc;
@@ -35,10 +35,10 @@ class AllocationDecisionControllerAboutToSubmitTest {
     void shouldPopulateAllocationDecisionWhenSubmitting() throws Exception {
         Allocation allocationDecision = createAllocation("Lay justices", "Reason");
 
-        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
-            .data(ImmutableMap.<String, Object>builder()
-                .put("allocationDecision", allocationDecision)
-                .build()).build())
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of("allocationDecision", allocationDecision))
+                .build())
             .build();
 
         MvcResult response = mockMvc
