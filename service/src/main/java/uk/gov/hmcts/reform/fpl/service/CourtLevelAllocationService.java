@@ -8,7 +8,6 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Service
-
 public class CourtLevelAllocationService {
     public Allocation createDecision(CaseData caseData) {
         Allocation.AllocationBuilder decisionBuilder =

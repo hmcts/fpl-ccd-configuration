@@ -8,7 +8,6 @@ import lombok.Data;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 public class Allocation {
-
     private final String proposal;
     private final String proposalReason;
     private final String allocationProposalPresent;

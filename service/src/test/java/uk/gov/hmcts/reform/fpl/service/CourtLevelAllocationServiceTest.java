@@ -88,7 +88,7 @@ class CourtLevelAllocationServiceTest {
     }
 
     @Test
-    void shouldSetAllocationDecisionWhenNull() {
+    void shouldSetAllocationDecisionEqualToAllocationProposalWhenNull() {
         CaseData caseData = CaseData.builder()
             .allocationProposal(createAllocation("proposal", "reason"))
             .allocationDecision(createAllocation(null, null))
