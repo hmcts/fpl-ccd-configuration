@@ -50,26 +50,14 @@ public class AllocationDecisionController {
     }
 
     @PostMapping("/about-to-submit")
-    // TODO: logic of controller can be extract to service. Could the createDecision method be used??
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Allocation allocationDecision = caseData.getAllocationDecision();
-
-        Allocation.AllocationBuilder decisionBuilder = ofNullable(allocationDecision)
-            .map(Allocation::toBuilder)
-            .orElse(Allocation.builder());
-
-        if (caseData.getAllocationDecision().getProposal() == null) {
-            decisionBuilder.proposal(caseData.getAllocationProposal().getProposal());
-            decisionBuilder.judgeLevelRadio(null);
-        } else {
-            decisionBuilder.judgeLevelRadio(null);
-        }
+        Allocation allocationDecision = service.setAllocationDecisionIfNull(caseData);
 
         Map<String, Object> data = caseDetails.getData();
-        data.put("allocationDecision", decisionBuilder.build());
+        data.put("allocationDecision", allocationDecision);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

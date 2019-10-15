@@ -9,7 +9,6 @@ import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 @Service
 
-//TODO: CourtLevel in name would be nice
 public class CourtLevelAllocationService {
 
     public Allocation createDecision(CaseData caseData) {
@@ -30,10 +29,10 @@ public class CourtLevelAllocationService {
                 decisionBuilder.judgeLevelRadio(null);
             }
         }
+
         return decisionBuilder.build();
     }
 
-    //TODO: some of this logic is used in aboutToSubmit
     private Allocation.AllocationBuilder populateDecision(Allocation allocationDecision) {
         return ofNullable(allocationDecision)
             .map(Allocation::toBuilder)
@@ -43,5 +42,20 @@ public class CourtLevelAllocationService {
     //TODO: defaultIfNull. Could we
     private String checkIfAllocationIsPresent(Allocation data) {
         return data != null && isNotEmpty(data.getProposal()) ? "Yes" : "No";
+    }
+
+    public Allocation setAllocationDecisionIfNull(CaseData caseData) {
+        Allocation.AllocationBuilder decisionBuilder =
+            populateDecision(caseData.getAllocationDecision());
+
+        if (caseData.getAllocationDecision().getProposal() == null) {
+            decisionBuilder.proposal(caseData.getAllocationProposal().getProposal());
+            decisionBuilder.judgeLevelRadio(null);
+        } else {
+            // Setting radio here as to not display the question in tab
+            decisionBuilder.judgeLevelRadio(null);
+        }
+
+        return decisionBuilder.build();
     }
 }
