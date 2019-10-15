@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.model.configuration.HearingVenue;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookupService;
@@ -22,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.service.MapperService;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 
 @Api
 @RestController
@@ -70,18 +70,24 @@ public class HearingBookingDetailsController {
     }
 
     private List<String> validate(CaseDetails caseDetails) {
-        ImmutableList.Builder<String> errors = ImmutableList.builder();
+        ImmutableSet.Builder<String> errors = ImmutableSet.builder();
 
         CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
 
-        caseData.getHearingDetails().stream()
-            .map(Element::getValue)
-            .map(HearingBooking::getDate)
-            .filter(Objects::nonNull)
-            .filter(hearingDate -> !hearingDate.isAfter(LocalDate.now()))
-            .findAny()
-            .ifPresent(error -> errors.add("Enter a future date"));
+        for (Element<HearingBooking> hearingBookingElement : caseData.getHearingDetails()) {
+            HearingBooking value = hearingBookingElement.getValue();
+            DynamicListElement selectedVenue = value.getVenueList().getValue();
+            LocalDate hearingDate = value.getDate();
 
-        return errors.build();
+            if (hearingDate != null && !hearingDate.isAfter(LocalDate.now())) {
+                errors.add("Enter a future date");
+            }
+
+            if (selectedVenue != null && selectedVenue.getCode().equals(DynamicListElement.DEFAULT_CODE)) {
+                errors.add("Select a hearing venue");
+            }
+        }
+
+        return errors.build().asList();
     }
 }

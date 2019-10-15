@@ -12,6 +12,9 @@ import lombok.Data;
 @Builder
 public class DynamicListElement {
 
+    public static final String DEFAULT_CODE = "-1";
+    public static final String DEFAULT_LABEL = "";
+
     /**
      * Property that maps to the value attribute of the option tag.
      */

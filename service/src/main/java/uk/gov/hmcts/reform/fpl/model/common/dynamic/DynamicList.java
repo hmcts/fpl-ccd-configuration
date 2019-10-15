@@ -7,6 +7,9 @@ import lombok.Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.DEFAULT_CODE;
+import static uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement.DEFAULT_LABEL;
+
 /**
  * Representation of a CCD Dynamic List which is then converted to a select dropdown list.
  */
@@ -41,7 +44,7 @@ public class DynamicList {
      * Converts a list of elements to the appropriate structure to then be handled correctly by CCD.
      *
      * @param elements elements to convert into options for the dropdown
-     * @param index    index of the element that will become the default selected value
+     * @param index    index of the element that will become the default selected value, < 0 is an empty element
      * @param <T>      a class that implements {@link DynamicElementParser#toDynamicElement()}
      * @return a {@link DynamicList} to be sent to CCD
      */
@@ -49,11 +52,16 @@ public class DynamicList {
                                                                              int index) {
         DynamicListElement selected;
 
+        if (index >= elements.size()) {
+            throw new IllegalArgumentException(String.format("The given index (%d) must be less than elements.size()",
+                index));
+        }
+
         if (index >= 0) {
             selected = elements.get(index).toDynamicElement();
         } else {
             // Create an empty selected value
-            selected = DynamicListElement.builder().code("-1").label("").build();
+            selected = DynamicListElement.builder().code(DEFAULT_CODE).label(DEFAULT_LABEL).build();
         }
 
         return toDynamicList(elements, selected);
