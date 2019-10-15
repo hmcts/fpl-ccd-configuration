@@ -76,8 +76,8 @@ class PopulateStandardDirectionsHandlerTest {
 
     @BeforeEach
     void before() {
-        populateStandardDirectionsHandler = new PopulateStandardDirectionsHandler(objectMapper,
-            ordersLookupService, coreCaseDataApi, authTokenGenerator, idamClient, userConfig, directionHelperService, hearingBookingService);
+        populateStandardDirectionsHandler = new PopulateStandardDirectionsHandler(objectMapper, ordersLookupService,
+            coreCaseDataApi, authTokenGenerator, idamClient, userConfig, directionHelperService, hearingBookingService);
 
         given(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(TOKEN);
 

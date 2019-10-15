@@ -53,7 +53,8 @@ public class PopulateStandardDirectionsHandler {
                                              AuthTokenGenerator authTokenGenerator,
                                              IdamClient idamClient,
                                              SystemUpdateUserConfiguration userConfig,
-                                             DirectionHelperService directionHelperService, HearingBookingService hearingBookingService) {
+                                             DirectionHelperService directionHelperService,
+                                             HearingBookingService hearingBookingService) {
         this.mapper = mapper;
         this.ordersLookupService = ordersLookupService;
         this.coreCaseDataApi = coreCaseDataApi;
@@ -123,7 +124,8 @@ public class PopulateStandardDirectionsHandler {
         if (direction.getDisplay().getDelta() != null && caseData.getHearingDetails() != null) {
             HearingBooking mostUrgentBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
 
-            completeBy = buildDateTime(mostUrgentBooking.getDate(), Integer.parseInt(direction.getDisplay().getDelta()));
+            completeBy = buildDateTime(mostUrgentBooking.getDate(),
+                Integer.parseInt(direction.getDisplay().getDelta()));
         }
         return completeBy;
     }
