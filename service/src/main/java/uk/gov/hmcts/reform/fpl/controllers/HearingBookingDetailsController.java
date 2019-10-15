@@ -63,6 +63,12 @@ public class HearingBookingDetailsController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
+        // !! IF NEEDED !!
+        // Maybe add the storage preparation here or in the submit-event
+        // CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
+        // caseData.getHearingDetails().forEach(element -> element.getValue().getVenueList().prepareForStorage());
+        // !! IF NEEDED !!
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .errors(validate(caseDetails))
@@ -75,15 +81,16 @@ public class HearingBookingDetailsController {
         CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
 
         for (Element<HearingBooking> hearingBookingElement : caseData.getHearingDetails()) {
-            HearingBooking value = hearingBookingElement.getValue();
-            DynamicListElement selectedVenue = value.getVenueList().getValue();
-            LocalDate hearingDate = value.getDate();
+            HearingBooking booking = hearingBookingElement.getValue();
+            LocalDate hearingDate = booking.getDate();
+            DynamicList venueList = booking.getVenueList();
 
             if (hearingDate != null && !hearingDate.isAfter(LocalDate.now())) {
                 errors.add("Enter a future date");
             }
 
-            if (selectedVenue != null && selectedVenue.getCode().equals(DynamicListElement.DEFAULT_CODE)) {
+            // Shouldn't happen but just to make sure
+            if (venueList != null && venueList.getValue().getCode().equals(DynamicListElement.DEFAULT_CODE)) {
                 errors.add("Select a hearing venue");
             }
         }
