@@ -459,7 +459,28 @@
           "document_filename": "form.pdf",
           "document_binary_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e/binary"
         }
-      }
+      },
+      "temporaryC2Document": {
+        "document": {
+          "document_url": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
+          "document_binary_url": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
+          "document_filename": "file.pdf"
+        },
+        "description": "C2 document two"
+      },
+      "c2DocumentBundle": [
+        {
+          "id": "76d8cc29-9085-4e22-a6f7-f86bfb77f020",
+          "value": {
+            "document": {
+              "document_url": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
+              "document_binary_url": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
+              "document_filename": "file.pdf"
+            },
+            "description": "C2 document one"
+          }
+        }
+      ]
     }
   },
   "case_details_before": {},
