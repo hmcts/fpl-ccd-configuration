@@ -8,19 +8,6 @@
     "case_data": {
       "gateKeeperEmail": "FamilyPublicLaw+gatekeeper@gmail.com",
       "caseLocalAuthority": "example",
-      "tempC2": [
-        {
-          "id": "76d8cc29-9085-4e22-a6f7-f86bfb77f020",
-          "value": {
-            "c2UploadDescription": "Additional document one",
-            "c2Upload": {
-              "document_url": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8",
-              "document_filename": "form.pdf",
-              "document_binary_url": "http://dm-store:8080/documents/13e82628-1f45-4879-b8bc-5e431f3dd3a8/binary"
-            }
-          }
-        }
-      ],
       "risks": {
         "neglect": "Yes",
         "sexualAbuse": "Yes",
