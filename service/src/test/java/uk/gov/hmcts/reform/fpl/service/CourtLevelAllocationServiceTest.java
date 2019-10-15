@@ -13,8 +13,8 @@ class CourtLevelAllocationServiceTest {
     @Test
     void shouldAddYesToMissingAllocationDecision() {
         CaseData caseData = CaseData.builder()
-            .allocationDecision(createAllocationDecision("test", "decision reason"))
-            .allocationProposal(createAllocationDecision("proposal", "reason"))
+            .allocationDecision(createAllocation("test", "decision reason"))
+            .allocationProposal(createAllocation("proposal", "reason"))
             .build();
 
         Allocation expectedDecision = Allocation.builder()
@@ -42,7 +42,7 @@ class CourtLevelAllocationServiceTest {
     @Test
     void shouldAddNullToJudgeLevelRadio() {
         CaseData caseData = CaseData.builder()
-            .allocationProposal(createAllocationDecision("proposal", "reason"))
+            .allocationProposal(createAllocation("proposal", "reason"))
             .build();
 
         Allocation expectedDecision = Allocation.builder()
@@ -56,8 +56,8 @@ class CourtLevelAllocationServiceTest {
     @Test
     void shouldAddYesToJudgeLevelRadio() {
         CaseData caseData = CaseData.builder()
-            .allocationDecision(createAllocationDecision("proposal", "reason"))
-            .allocationProposal(createAllocationDecision("proposal", "reason"))
+            .allocationDecision(createAllocation("proposal", "reason"))
+            .allocationProposal(createAllocation("proposal", "reason"))
             .build();
 
         Allocation expectedDecision = Allocation.builder()
@@ -73,8 +73,8 @@ class CourtLevelAllocationServiceTest {
     @Test
     void shouldAddNoToJudgeLevelRadio() {
         CaseData caseData = CaseData.builder()
-            .allocationDecision(createAllocationDecision("wrong proposal", "reason"))
-            .allocationProposal(createAllocationDecision("proposal", "reason"))
+            .allocationDecision(createAllocation("wrong proposal", "reason"))
+            .allocationProposal(createAllocation("proposal", "reason"))
             .build();
 
         Allocation expectedDecision = Allocation.builder()
@@ -87,7 +87,27 @@ class CourtLevelAllocationServiceTest {
         assertThat(courtAllocationService.createDecision(caseData)).isEqualTo(expectedDecision);
     }
 
-    private Allocation createAllocationDecision(String proposal, String reason) {
+    @Test
+    void shouldSetAllocationDecisionIfNull() {
+        CaseData caseData = CaseData.builder()
+            .allocationProposal(createAllocation("proposal", "reason"))
+            .allocationDecision(createAllocation(null, null))
+            .build();
+
+        Allocation expectedDecision = Allocation.builder()
+            .judgeLevelRadio(null)
+            .proposal("proposal")
+            .proposalReason("reason")
+            .allocationProposalPresent(null)
+            .judgeLevelRadio(null)
+            .build();
+
+        Allocation allocationDecision = courtAllocationService.setAllocationDecisionIfNull(caseData);
+
+        assertThat(allocationDecision.equals(expectedDecision));
+    }
+
+    private Allocation createAllocation(String proposal, String reason) {
         return Allocation.builder()
             .proposal(proposal)
             .proposalReason(reason)
