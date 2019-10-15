@@ -23,4 +23,8 @@ public class HearingBooking {
     private final String judgeTitle;
     private final String judgeName;
     private final DynamicList venueList;
+
+    // TODO: 15/10/2019 When actual integration occurs and we remove venue for the dynamic list
+    //   we should create a getVenue method that returns the label of the selected value in the dynamic list
+    //   Not implemented yet as this would mess with current design
 }
