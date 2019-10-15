@@ -39,7 +39,6 @@ public class CourtLevelAllocationService {
             .orElse(Allocation.builder());
     }
 
-    //TODO: defaultIfNull. Could we
     private String checkIfAllocationIsPresent(Allocation data) {
         return data != null && isNotEmpty(data.getProposal()) ? "Yes" : "No";
     }
