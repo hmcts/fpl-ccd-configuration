@@ -9,10 +9,6 @@ import lombok.Data;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 
-//TODO: This annotation should stop java from pushing values with null values to ccd (which would error)
-// Just double check
-@JsonInclude(JsonInclude.Include.NON_NULL)
-
 public class Allocation {
     /*
         The below are called proposal as ideally we would like to reuse the allocationProposal complex type,
