@@ -37,7 +37,7 @@ class AllocationDecisionControllerAboutToSubmitTest {
     void shouldAddCorrectAllocationDecisionProposal() throws Exception {
 
         Allocation allocationDecisionWithoutProposal = createAllocationDecision(null,null);
-        AllocationProposal allocationProposal = createAllocationProposal("District judge","reason");
+        Allocation allocationProposal = createAllocationProposal("District judge","reason");
 
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
@@ -62,7 +62,7 @@ class AllocationDecisionControllerAboutToSubmitTest {
     void incorrectAllocationProposal() throws Exception {
 
         Allocation allocationDecisionWithProposal = createAllocationDecision("Lay justices","No");
-        AllocationProposal allocationProposal = createAllocationProposal("District judge","reason");
+        Allocation allocationProposal = createAllocationProposal("District judge","reason");
 
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
@@ -108,9 +108,9 @@ class AllocationDecisionControllerAboutToSubmitTest {
         return allocationDecision;
     }
 
-    private AllocationProposal createAllocationProposal(String proposal,String proposalReason) throws Exception {
+    private Allocation createAllocationProposal(String proposal,String proposalReason) throws Exception {
 
-        AllocationProposal allocationProposal = AllocationProposal.builder()
+        Allocation allocationProposal = Allocation.builder()
             .proposal(proposal)
             .proposalReason(proposalReason)
             .build();
