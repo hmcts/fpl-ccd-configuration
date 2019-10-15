@@ -116,4 +116,28 @@ class AllocationDecisionControllerAboutToSubmitTest {
             .build();
         return allocationProposal;
     }
+
+    @Test
+    void shouldPopulateAllocationDecision() throws Exception {
+        Allocation allocationDecision = createAllocationDecision("Lay justices", "Reason");
+
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .data(ImmutableMap.<String, Object>builder()
+                .put("allocationDecision", allocationDecision)
+                .build()).build())
+            .build();
+
+        MvcResult response = mockMvc
+            .perform(post("/callback/allocation-decision/about-to-submit")
+                .header("authorization", AUTH_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(callbackResponse.getData()).containsKey("allocationDecision");
+    }
 }
