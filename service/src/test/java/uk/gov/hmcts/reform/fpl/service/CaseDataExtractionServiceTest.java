@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopula
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 
 @ExtendWith(SpringExtension.class)
-class CaseDataExtractionServiceTest {
+class   CaseDataExtractionServiceTest {
     @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -49,12 +49,8 @@ class CaseDataExtractionServiceTest {
 
     @Test
     void shouldApplySentenceFormattingToMultipleChildNames() {
-        CaseData caseData = CaseData.builder()
-            .caseLocalAuthority("example")
-            .familyManCaseNumber("123")
+        CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
-            .applicants(createPopulatedApplicants())
-            .hearingDetails(createHearingBookings())
             .orders(Orders.builder()
                 .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
             .build();
@@ -65,9 +61,7 @@ class CaseDataExtractionServiceTest {
 
     @Test
     void shouldNotApplySentenceFormattingToSingularChildName() {
-        CaseData caseData = CaseData.builder()
-            .caseLocalAuthority("example")
-            .familyManCaseNumber("123")
+        CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(ImmutableList.of(
                 Element.<Child>builder()
                     .id(UUID.randomUUID())
@@ -78,8 +72,6 @@ class CaseDataExtractionServiceTest {
                             .build())
                         .build())
                     .build()))
-            .applicants(createPopulatedApplicants())
-            .hearingDetails(createHearingBookings())
             .orders(Orders.builder()
                 .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
             .build();
@@ -90,12 +82,8 @@ class CaseDataExtractionServiceTest {
 
     @Test
     void shouldFormatMagistrateFullNameWithJPAnnotation() {
-        CaseData caseData = CaseData.builder()
-            .caseLocalAuthority("example")
-            .familyManCaseNumber("123")
+        CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
-            .applicants(createPopulatedApplicants())
-            .hearingDetails(createHearingBookings())
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(MAGISTRATES)
                 .judgeFullName("James Nelson")
@@ -110,12 +98,8 @@ class CaseDataExtractionServiceTest {
     
     @Test
     void shouldSetJudgeTitleAndNameToEmptyStringIfNotInCaseData() {
-        CaseData caseData = CaseData.builder()
-            .caseLocalAuthority("example")
-            .familyManCaseNumber("123")
+        CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
-            .applicants(createPopulatedApplicants())
-            .hearingDetails(createHearingBookings())
             .orders(Orders.builder()
                 .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
             .build();
@@ -125,12 +109,8 @@ class CaseDataExtractionServiceTest {
 
     @Test
     void shouldReturnFirstApplicantName() {
-        CaseData caseData = CaseData.builder()
-            .caseLocalAuthority("example")
-            .familyManCaseNumber("123")
+        CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
-            .applicants(createPopulatedApplicants())
-            .hearingDetails(createHearingBookings())
             .orders(Orders.builder()
                 .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
             .build();
@@ -141,12 +121,8 @@ class CaseDataExtractionServiceTest {
 
     @Test
     void shouldMapCaseDataPropertiesToTemplatePlaceholderData() {
-        CaseData caseData = CaseData.builder()
-            .caseLocalAuthority("example")
-            .familyManCaseNumber("123")
+        CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
-            .applicants(createPopulatedApplicants())
-            .hearingDetails(createHearingBookings())
             .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
             .orders(Orders.builder()
                 .orderType(ImmutableList.<OrderType>of(
@@ -193,5 +169,13 @@ class CaseDataExtractionServiceTest {
                 .value(createHearingBooking(TODAYS_DATE))
                 .build()
         );
+    }
+
+    private CaseData.CaseDataBuilder initNoticeOfProceedingCaseData() {
+        return CaseData.builder()
+            .caseLocalAuthority("example")
+            .familyManCaseNumber("123")
+            .applicants(createPopulatedApplicants())
+            .hearingDetails(createHearingBookings());
     }
 }
