@@ -74,53 +74,40 @@ public class DraftOrdersController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackrequest) throws IOException {
-        CaseDetails caseDetailsWithValues = persistHiddenUiValuesForDirections(callbackrequest);
-        CaseData caseData = mapper.convertValue(caseDetailsWithValues.getData(), CaseData.class);
+        @RequestBody CallbackRequest callbackRequest) throws IOException {
+        CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
+        List<Element<Direction>> directionsBefore = directionHelperService.combineAllDirections(caseDataBefore);
 
-        CaseData.CaseDataBuilder caseDataBuilder = caseData.toBuilder();
-        caseDataBuilder.standardDirectionOrder(caseData.getStandardDirectionOrder());
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        CaseData updated = caseData.toBuilder()
+            .standardDirectionOrder(Order.builder()
+                .directions(directionHelperService.combineAllDirections(caseData))
+                .build())
+            .build();
+
+        directionHelperService.persistHiddenDirectionValues(
+            directionsBefore, updated.getStandardDirectionOrder().getDirections());
 
         Document document = getDocument(
             authorization,
             userId,
-            caseDataExtractionService.getStandardOrderDirectionData(caseDataBuilder.build())
+            caseDataExtractionService.getStandardOrderDirectionData(updated)
         );
 
-        Order.OrderBuilder orderBuilder = caseData.getStandardDirectionOrder().toBuilder()
+        Order.OrderBuilder orderBuilder = updated.getStandardDirectionOrder().toBuilder()
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
                 .filename("draft-standard-directions-order.pdf")
                 .build());
 
-        caseDetailsWithValues.getData().put("standardDirectionOrder", orderBuilder.build());
+        caseDetails.getData().put("standardDirectionOrder", orderBuilder.build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetailsWithValues.getData())
+            .data(caseDetails.getData())
             .build();
-    }
-
-    private CaseDetails persistHiddenUiValuesForDirections(CallbackRequest callbackRequest) {
-        CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
-        Order orderBefore = directionHelperService.createOrder(caseDataBefore);
-
-        CaseDetails caseDetails = addDirectionsToOrder(callbackRequest.getCaseDetails());
-        CaseData caseDataAfter = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        directionHelperService.persistHiddenDirectionValues(orderBefore, caseDataAfter.getStandardDirectionOrder());
-
-        caseDetails.getData().put("standardDirectionOrder", caseDataAfter.getStandardDirectionOrder());
-
-        return callbackRequest.getCaseDetails();
-    }
-
-    private CaseDetails addDirectionsToOrder(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        caseDetails.getData().put("standardDirectionOrder", directionHelperService.createOrder(caseData));
-
-        return caseDetails;
     }
 
     private Document getDocument(@RequestHeader("authorization") String authorization,
@@ -132,9 +119,26 @@ public class DraftOrdersController {
             "draft-standard-directions-order.pdf");
     }
 
+    // post needs to add yes/no for readonly / removable maybe text
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = persistHiddenUiValuesForDirections(callbackRequest);
+        CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
+        List<Element<Direction>> directionsBefore = directionHelperService.combineAllDirections(caseDataBefore);
+
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        CaseData updated = caseData.toBuilder()
+            .standardDirectionOrder(Order.builder()
+                .directions(directionHelperService.combineAllDirections(caseData))
+                .orderDoc(caseData.getStandardDirectionOrder().getOrderDoc())
+                .build())
+            .build();
+
+        directionHelperService.persistHiddenDirectionValues(
+            directionsBefore, updated.getStandardDirectionOrder().getDirections());
+
+        caseDetails.getData().put("standardDirectionOrder", updated.getStandardDirectionOrder());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

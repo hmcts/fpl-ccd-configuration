@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -180,6 +181,7 @@ class DraftOrdersControllerTest {
                 .collect(toList());
 
         assertThat(localAuthorityDirections).isEqualTo(fullyPopulatedDirection);
+        assertThat(caseData.getStandardDirectionOrder().getOrderDoc()).isNotNull();
     }
 
     private MvcResult makeRequest(CallbackRequest request, String endpoint) throws Exception {
@@ -203,6 +205,13 @@ class DraftOrdersControllerTest {
                 .put(CAFCASS.getValue(), buildDirections(Direction.builder().assignee(CAFCASS).build()))
                 .put(OTHERS.getValue(), buildDirections(Direction.builder().assignee(OTHERS).build()))
                 .put(COURT.getValue(), buildDirections(Direction.builder().assignee(COURT).build()))
+                .put("standardDirectionOrder", Order.builder()
+                    .orderDoc(DocumentReference.builder()
+                        .binaryUrl("url")
+                        .filename("file name")
+                        .url("")
+                        .build())
+                    .build())
                 .build())
             .build();
     }

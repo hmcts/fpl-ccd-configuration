@@ -4,7 +4,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 
@@ -33,12 +32,12 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPON
 public class DirectionHelperService {
 
     /**
-     * Combines role directions into a single List of directions within an Order object.
+     * Combines role directions into a single List of directions.
      *
      * @param caseData data containing all the directions by role.
-     * @return Order object.
-     */
-    public Order createOrder(CaseData caseData) {
+     * @return directions.
+     **/
+    public List<Element<Direction>> combineAllDirections(CaseData caseData) {
         List<Element<Direction>> directions = new ArrayList<>();
 
         directions.addAll(filterDirectionsNotRequired(caseData.getAllParties()));
@@ -65,19 +64,20 @@ public class DirectionHelperService {
 
         directions.addAll(assignCustomDirections(caseData.getCourtDirectionsCustom(), COURT));
 
-        return Order.builder().directions(directions).build();
+        return directions;
     }
 
     /**
      * Adds values that would otherwise be lost in CCD to directions.
      * Values include readOnly, directionRemovable and directionText.
      *
-     * @param orderWithHiddenValues an order object that should be generated using original case data.
-     * @param orderToAddValues      an order object that should be generated using case data edited through a ccd event.
+     * @param directionWithValues  an order object that should be generated using original case data.
+     * @param directionToAddValues an order object that should be generated using case data edited through a ccd event.
      */
-    public void persistHiddenDirectionValues(Order orderWithHiddenValues, Order orderToAddValues) {
-        orderToAddValues.getDirections()
-            .forEach(directionToAddValue -> orderWithHiddenValues.getDirections()
+    public void persistHiddenDirectionValues(List<Element<Direction>> directionWithValues,
+                                             List<Element<Direction>> directionToAddValues) {
+        directionToAddValues
+            .forEach(directionToAddValue -> directionWithValues
                 .stream()
                 .filter(direction -> direction.getId().equals(directionToAddValue.getId()))
                 .forEach(direction -> {
