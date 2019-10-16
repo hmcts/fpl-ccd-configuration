@@ -46,7 +46,8 @@ public class CaseData {
     private final Proceeding proceeding;
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;
-    private final AllocationProposal allocationProposal;
+    private final Allocation allocationProposal;
+    private final Allocation allocationDecision;
     private final List<Element<Direction>> allParties;
     private final List<Element<Direction>> allPartiesCustom;
     private final List<Element<Direction>> localAuthorityDirections;
@@ -60,7 +61,6 @@ public class CaseData {
     private final List<Element<Direction>> parentsAndRespondentsDirections;
     private final List<Element<Direction>> parentsAndRespondentsCustom;
     private final Order standardDirectionOrder;
-    private final AllocationDecision allocationDecision;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
     private final Hearing hearing;
