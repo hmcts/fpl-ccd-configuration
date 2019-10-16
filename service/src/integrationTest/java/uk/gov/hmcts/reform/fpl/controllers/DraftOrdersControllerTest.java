@@ -46,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
+@SuppressWarnings("unchecked")
 class DraftOrdersControllerTest {
 
     @MockBean
@@ -99,7 +100,6 @@ class DraftOrdersControllerTest {
         assertThat(extractDirections(caseData.getCourtDirections())).containsOnly(directions.get(5));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     void midEventShouldGenerateDraftStandardDirectionDocument() throws Exception {
         byte[] pdf = {1, 2, 3, 4, 5};
@@ -118,9 +118,17 @@ class DraftOrdersControllerTest {
                 .readOnly("No")
                 .build()));
 
+        Order order = Order.builder()
+            .directions(directions)
+            .build();
+
         CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(createCaseDetails(directions))
-            .caseDetailsBefore(createCaseDetails(directions))
+            .caseDetails(CaseDetails.builder()
+                .data(createCaseDataMap(directions).put("standardDirectionOrder", order).build())
+                .build())
+            .caseDetailsBefore(CaseDetails.builder()
+                .data(createCaseDataMap(directions).build())
+                .build())
             .build();
 
         MvcResult response = makeRequest(request, "mid-event");
@@ -163,9 +171,24 @@ class DraftOrdersControllerTest {
                 .build())
             .build());
 
+        Order order = Order.builder()
+            .directions(fullyPopulatedDirection)
+            .orderDoc(DocumentReference.builder()
+                .binaryUrl("url")
+                .filename("file name")
+                .url("")
+                .build())
+            .build();
+
         CallbackRequest request = CallbackRequest.builder()
-            .caseDetailsBefore(createCaseDetails(fullyPopulatedDirection))
-            .caseDetails(createCaseDetails(directionWithShowHideValuesRemoved))
+            .caseDetails(CaseDetails.builder()
+                .data(createCaseDataMap(directionWithShowHideValuesRemoved)
+                    .put("standardDirectionOrder", order)
+                    .build())
+                .build())
+            .caseDetailsBefore(CaseDetails.builder()
+                .data(createCaseDataMap(fullyPopulatedDirection).build())
+                .build())
             .build();
 
         MvcResult response = makeRequest(request, "about-to-submit");
@@ -195,25 +218,17 @@ class DraftOrdersControllerTest {
             .andReturn();
     }
 
-    private CaseDetails createCaseDetails(List<Element<Direction>> directions) {
-        return CaseDetails.builder()
-            .data(ImmutableMap.<String, Object>builder()
-                .put(LOCAL_AUTHORITY.getValue(), directions)
-                .put(ALL_PARTIES.getValue(), buildDirections(Direction.builder().assignee(ALL_PARTIES).build()))
-                .put(PARENTS_AND_RESPONDENTS.getValue(),
-                    buildDirections(Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build()))
-                .put(CAFCASS.getValue(), buildDirections(Direction.builder().assignee(CAFCASS).build()))
-                .put(OTHERS.getValue(), buildDirections(Direction.builder().assignee(OTHERS).build()))
-                .put(COURT.getValue(), buildDirections(Direction.builder().assignee(COURT).build()))
-                .put("standardDirectionOrder", Order.builder()
-                    .orderDoc(DocumentReference.builder()
-                        .binaryUrl("url")
-                        .filename("file name")
-                        .url("")
-                        .build())
-                    .build())
-                .build())
-            .build();
+    private ImmutableMap.Builder createCaseDataMap(List<Element<Direction>> directions) {
+        ImmutableMap.Builder builder = ImmutableMap.<String, Object>builder();
+
+        return builder
+            .put(LOCAL_AUTHORITY.getValue(), directions)
+            .put(ALL_PARTIES.getValue(), buildDirections(Direction.builder().assignee(ALL_PARTIES).build()))
+            .put(PARENTS_AND_RESPONDENTS.getValue(),
+                buildDirections(Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build()))
+            .put(CAFCASS.getValue(), buildDirections(Direction.builder().assignee(CAFCASS).build()))
+            .put(OTHERS.getValue(), buildDirections(Direction.builder().assignee(OTHERS).build()))
+            .put(COURT.getValue(), buildDirections(Direction.builder().assignee(COURT).build()));
     }
 
     private List<Element<Direction>> buildDirections(List<Direction> directions) {

@@ -76,7 +76,8 @@ public class DraftOrdersController {
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
-        List<Element<Direction>> directionsBefore = directionHelperService.combineAllDirections(caseDataBefore);
+
+        List<Element<Direction>> directionsBefore = getDirectionsWithHiddenValues(caseDataBefore);
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -110,20 +111,12 @@ public class DraftOrdersController {
             .build();
     }
 
-    private Document getDocument(@RequestHeader("authorization") String authorization,
-                                 @RequestHeader("user-id") String userId,
-                                 Map<String, Object> templateData) {
-        DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
-
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-            "draft-standard-directions-order.pdf");
-    }
-
     // post needs to add yes/no for readonly / removable maybe text
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
-        List<Element<Direction>> directionsBefore = directionHelperService.combineAllDirections(caseDataBefore);
+
+        List<Element<Direction>> directionsBefore = getDirectionsWithHiddenValues(caseDataBefore);
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -143,5 +136,25 @@ public class DraftOrdersController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private List<Element<Direction>> getDirectionsWithHiddenValues(CaseData caseDataBefore) {
+        List<Element<Direction>> directionsBefore;
+
+        if (caseDataBefore.getStandardDirectionOrder() == null) {
+            directionsBefore = directionHelperService.combineAllDirections(caseDataBefore);
+        } else {
+            directionsBefore = caseDataBefore.getStandardDirectionOrder().getDirections();
+        }
+        return directionsBefore;
+    }
+
+    private Document getDocument(@RequestHeader("authorization") String authorization,
+                                 @RequestHeader("user-id") String userId,
+                                 Map<String, Object> templateData) {
+        DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
+
+        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
+            "draft-standard-directions-order.pdf");
     }
 }
