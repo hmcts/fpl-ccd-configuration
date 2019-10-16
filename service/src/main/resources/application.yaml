@@ -106,6 +106,6 @@ fpl:
   local_authority_code_to_name:
     mapping: 'SA=>Swansea City Council;HN=>London Borough Hillingdon;PCC=>Portsmouth City Council;STF=>Staffordshire County Council;SCC=>Southampton City Council'
   local_authority_code_to_hmcts_court:
-    mapping: 'SA=>Family Court sitting at Swansea:FamilyPublicLaw+sa@gmail.com;HN=>Family Court sitting at Portsmouth:FamilyPublicLaw+hn@gmail.com'
+    mapping: 'SA=>Family Court sitting at Swansea:FamilyPublicLaw+sa@gmail.com;HN=>Family Court sitting at West London:FamilyPublicLaw+hn@gmail.com'
   local_authority_code_to_cafcass:
     mapping: 'SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com'
