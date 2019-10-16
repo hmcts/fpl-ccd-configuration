@@ -13,6 +13,7 @@ const enterChildrenEventPage = require('./pages/events/enterChildrenEvent.page')
 const enterApplicantEventPage  = require('./pages/events/enterApplicantEvent.page');
 const enterGroundsEventPage = require('./pages/events/enterGroundsForApplicationEvent.page');
 const uploadDocumentsEventPage = require('./pages/events/uploadDocumentsEvent.page');
+const enterAllocationProposalEventPage = require('./pages/events/enterAllocationProposalEvent.page');
 
 const applicant = require('./fixtures/applicant');
 
@@ -114,6 +115,12 @@ module.exports = function () {
           this.amOnPage(`${baseUrl}/case/${config.definition.jurisdiction}/${config.definition.caseType}/${normalisedCaseId}`);
         }, '#sign-out');
       }
+    },
+
+    async enterAllocationProposal () {
+      await caseViewPage.goToNewActions(config.applicationActions.enterAllocationProposal);
+      enterAllocationProposalEventPage.selectAllocationProposal('District judge');
+      await this.completeEvent('Save and continue');
     },
 
     async enterMandatoryFields () {

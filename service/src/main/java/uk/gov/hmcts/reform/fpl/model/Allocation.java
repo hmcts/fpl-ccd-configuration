@@ -5,9 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
-public class AllocationProposal {
+public class Allocation {
     private final String proposal;
     private final String proposalReason;
+    private final String allocationProposalPresent;
+    private final String judgeLevelRadio;
 }
