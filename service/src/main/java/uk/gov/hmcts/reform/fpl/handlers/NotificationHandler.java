@@ -71,7 +71,7 @@ public class NotificationHandler {
         String reference = String.valueOf(caseDetails.getId());
         String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
 
-        System.out.println("Params are" + parameters);
+        System.out.println("Params are" + parameters + "reference is" + reference);
         sendNotification(CAFCASS_SUBMISSION_TEMPLATE, email, parameters, reference);
     }
 
@@ -92,20 +92,7 @@ public class NotificationHandler {
 
         Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("cafcass", "cafcass")
-            .put("localAuthority", "Example Local Authority")
-            .put("dataPresent", "Yes")
-            .put("fullStop", "No")
-            .put("orders0", "^Emergency protection order")
-            .put("orders1", "")
-            .put("orders2", "")
-            .put("orders3", "")
-            .put("orders4", "")
-            .put("directionsAndInterim", "^Information on the whereabouts of the child")
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + "PUBLICLAW" + "/" + "CARE_SUPERVISION_EPO" + "/12345")
-            .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "Same day")
-            .put("ordersAndDirections","orders")
+            .put("familyManCaseNumber", "SA18C01507")
             .build();
 
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
@@ -115,7 +102,7 @@ public class NotificationHandler {
         /*String reference = String.valueOf(caseDetails.getId());*/
         String reference = "12345";
         String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
-        sendNotification(CAFCASS_SUBMISSION_TEMPLATE, email, expectedParameters, reference);
+        sendNotification(SDO_TEMPLATE, email, expectedParameters, reference);
     }
 
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {

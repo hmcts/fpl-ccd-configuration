@@ -148,6 +148,5 @@ public class CaseSubmissionController {
         @RequestBody @NotNull CallbackRequest callbackRequest) {
 
         applicationEventPublisher.publishEvent(new SubmittedCaseEvent(callbackRequest, authorization, userId));
-        applicationEventPublisher.publishEvent(new SDOSubmittedEvent(callbackRequest, authorization, userId));
     }
 }
