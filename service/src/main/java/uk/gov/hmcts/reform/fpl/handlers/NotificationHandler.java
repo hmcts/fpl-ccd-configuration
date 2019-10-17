@@ -89,27 +89,19 @@ public class NotificationHandler {
 
     @EventListener
     public void sendSDOToCafcass(SDOSubmittedEvent event) {
-
-        Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("cafcass", "cafcass")
-            .put("familyManCaseNumber", "SA18C01507")
-            .build();
-
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
-        /*Map<String, Object> parameters = cafcassEmailContentProvider
-            .buildCafcassSubmissionNotification(caseDetails, localAuthorityCode);*/
-        /*String reference = String.valueOf(caseDetails.getId());*/
-        String reference = "12345";
+        Map<String, Object> parameters = cafcassEmailContentProvider
+            .buildCafcassSDOSubmissionNotification(caseDetails, localAuthorityCode);
+        String reference = String.valueOf(caseDetails.getId());
         String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
-        sendNotification(SDO_TEMPLATE, email, expectedParameters, reference);
+        sendNotification(SDO_TEMPLATE, email, parameters, reference);
     }
 
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
         logger.debug("Sending submission notification (with template id: {}) to {}", templateId, email);
         try {
             notificationClient.sendEmail(templateId, email, parameters, reference);
-            System.out.println("Email sent");
         } catch (NotificationClientException e) {
             logger.error("Failed to send submission notification (with template id: {}) to {}", templateId, email, e);
         }

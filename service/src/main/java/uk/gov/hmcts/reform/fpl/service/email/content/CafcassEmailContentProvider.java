@@ -30,4 +30,11 @@ public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
             .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .build();
     }
+
+    public Map<String, Object> buildCafcassSDOSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
+        return super.getCasePersonalisationBuilder(caseDetails)
+            .put("cafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
+            .put("familyManCaseNumber", "SA18C01507")
+            .build();
+    }
 }
