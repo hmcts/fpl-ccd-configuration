@@ -18,6 +18,4 @@ java:
     enabled: true
     primaryIngressHost: '{{ .Release.Name }}.service.core-compute-preview.internal'
     prefix: web
-  ingressIP: ${INGRESS_IP}
-  consulIP: ${CONSUL_IP}
 

@@ -38,5 +38,3 @@ java:
     enabled: true
     primaryIngressHost: '{{ .Release.Name }}.service.core-compute-preview.internal'
     prefix: api
-  ingressIP: ${INGRESS_IP}
-  consulIP: ${CONSUL_IP}
