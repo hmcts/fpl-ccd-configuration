@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopula
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 
 @ExtendWith(SpringExtension.class)
-class   CaseDataExtractionServiceTest {
+class CaseDataExtractionServiceTest {
     @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -48,7 +48,7 @@ class   CaseDataExtractionServiceTest {
         hearingBookingService, hmctsCourtLookupConfiguration);
 
     @Test
-    void shouldApplySentenceFormattingToMultipleChildNames() {
+    void shouldApplySentenceFormattingWhenMultipleChildrenExistOnCase() {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .orders(Orders.builder()
@@ -60,7 +60,7 @@ class   CaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldNotApplySentenceFormattingToSingularChildName() {
+    void shouldNotApplySentenceFormattingWhenOnlyOneChildExistsOnCase() {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(ImmutableList.of(
                 Element.<Child>builder()
@@ -81,7 +81,7 @@ class   CaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldFormatMagistrateFullNameWithJPAnnotation() {
+    void shouldFormatMagistrateFullNameWhenJudgeTitleIsSetToMagistrate() {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
@@ -97,7 +97,7 @@ class   CaseDataExtractionServiceTest {
     }
     
     @Test
-    void shouldSetJudgeTitleAndNameToEmptyStringIfNotInCaseData() {
+    void shouldSetJudgeTitleAndNameToEmptyStringWhenJudgeTitleAndNameIsEmpty() {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .orders(Orders.builder()
@@ -108,7 +108,7 @@ class   CaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldReturnFirstApplicantName() {
+    void shouldReturnFirstApplicantNameWhenMultipleApplicantsArePresent() {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .orders(Orders.builder()
@@ -120,7 +120,7 @@ class   CaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldMapCaseDataPropertiesToTemplatePlaceholderData() {
+    void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated() {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
