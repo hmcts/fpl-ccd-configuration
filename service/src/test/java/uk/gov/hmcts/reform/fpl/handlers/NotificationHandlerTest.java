@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
+import uk.gov.hmcts.reform.fpl.events.SDOSubmittedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
@@ -164,5 +165,40 @@ class NotificationHandlerTest {
 
         verify(notificationClient, times(1)).sendEmail(
             eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq(GATEKEEPER_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
+    }
+
+    @Test
+    void shouldSendSDOEmailToCafcass() throws IOException, NotificationClientException {
+        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
+            .put("cafcass", CAFCASS_NAME)
+            .put("localAuthority", "Example Local Authority")
+            .put("dataPresent", "Yes")
+            .put("fullStop", "No")
+            .put("orders0", "^Emergency protection order")
+            .put("orders1", "")
+            .put("orders2", "")
+            .put("orders3", "")
+            .put("orders4", "")
+            .put("directionsAndInterim", "^Information on the whereabouts of the child")
+            .put("reference", "12345")
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .put("timeFramePresent", "Yes")
+            .put("timeFrameValue", "Same day")
+            .put("ordersAndDirections","orders")
+            .build();
+
+        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+            .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
+
+        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+            .willReturn("Example Local Authority");
+
+        given(cafcassEmailContentProvider.buildCafcassSubmissionNotification(callbackRequest().getCaseDetails(),
+            LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
+
+        notificationHandler.sendSDOToCafcass(new SDOSubmittedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+
+        verify(notificationClient, times(1)).sendEmail(
+            eq(CAFCASS_SUBMISSION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
     }
 }
