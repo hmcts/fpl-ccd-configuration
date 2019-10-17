@@ -10,7 +10,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class OrderDefinition {
-    // I wanted to use OrderType but it's already something else, what can we use here
     private final String type;
     private final Language language;
     private final String service;

@@ -13,8 +13,8 @@ import javax.validation.constraints.Size;
 @Builder
 @AllArgsConstructor
 public class Orders {
-    @NotNull(message = "Select at least one directionType of order")
-    @Size(min = 1, message = "Select at least one directionType of order")
+    @NotNull(message = "Select at least one type of order")
+    @Size(min = 1, message = "Select at least one type of order")
     private final List<OrderType> orderType;
     private final String directions;
     private final List<String> emergencyProtectionOrderDirections;
