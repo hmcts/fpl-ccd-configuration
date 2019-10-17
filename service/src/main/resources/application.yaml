@@ -99,7 +99,7 @@ ccd:
 
 appinsights:
   instrumentationkey: fake-key
-
+ 
 fpl:
   local_authority_email_to_code:
     mapping: 'fpla.local=>FPLA;swansea.gov.uk=>SA;hillingdon.gov.uk=>HN'
