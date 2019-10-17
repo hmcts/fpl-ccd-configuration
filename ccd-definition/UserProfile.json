@@ -57,6 +57,13 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "UserIDAMId": "samgatekeeper@mailnesia.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
+    "WorkBasketDefaultState": "Gatekeeping"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "UserIDAMId": "judiciary@mailnesia.com",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
