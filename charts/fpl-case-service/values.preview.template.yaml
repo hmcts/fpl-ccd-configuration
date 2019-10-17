@@ -6,6 +6,7 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
+    IDAM_API_URL: http://api-fpl-sidam-preview.service.core-compute-preview.internal
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
   keyVaults:
     fpl:
@@ -24,6 +25,8 @@ ccd:
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
+  idamApiUrl: http://api-fpl-sidam-preview.service.core-compute-preview.internal
+  idamWebUrl: http://web-fpl-sidam-preview.service.core-compute-preview.internal
   idam-pr:
     releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
     redirect_uris:
