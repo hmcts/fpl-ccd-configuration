@@ -1,0 +1,42 @@
+java:
+  releaseNameOverride: '{{ .Release.Name }}-sidam-api'
+  image: hmctspublic.azurecr.io/idam/api:preview
+  applicationPort: 5000
+  environment:
+    JAVA_OPTS: -Xms256m -Xms1024m
+    STRATEGIC_API_URL: https://api-{{ .Release.Name }}.service.core-compute-preview.internal
+    STRATEGIC_ADMIN_URL: https://admin-web-{{ .Release.Name }}.service.core-compute-preview.internal
+    STRATEGIC_WEBPUBLIC_URL: https://public-web-{{ .Release.Name }}.service.core-compute-preview.internal
+    SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-sidam-database/openidm?currentSchema=fridam
+    SPRING_DATASOURCE_USERNAME: openidm
+    SPRING_DATASOURCE_PASSWORD: openidm
+    IDAM_SPI_FORGEROCK_AM_ROOT: http://{{ .Release.Name }}-sidam-fr-am:8080/openam
+    IDAM_SPI_FORGEROCK_AM_TOPLEVELHOST: '{{ .Release.Name }}-sidam-fr-am'
+    IDAM_SPI_FORGEROCK_AM_USERNAME: amadmin
+    IDAM_SPI_FORGEROCK_AM_PASSWORD: Pa55word11
+    IDAM_SPI_FORGEROCK_AM_JWKSURIFOROAUTH2CLIENTS: http://{{ .Release.Name }}-sidam-fr-am:8080/openam/oauth2/hmcts/connect/jwk_uri
+    IDAM_SPI_FORGEROCK_IDM_ROOT: http://{{ .Release.Name }}-sidam-fr-idm:18080/openidm
+    IDAM_SPI_FORGEROCK_IDM_USERNAME: openidm-admin
+    IDAM_SPI_FORGEROCK_IDM_PASSWORD: openidm-admin
+    SECURITY_OAUTH2_CLIENT_CLIENTSECRET: password
+    SECURITY_OAUTH2_CLIENT_PRE_ESTABLISHED_REDIRECT_URI: https://public-web-{{ .Release.Name }}.service.core-compute-preview.internal/login
+    SECURITY_OAUTH2_CLIENT_REGISTERED_REDIRECT_URI: https://public-web-{{ .Release.Name }}.service.core-compute-preview.internal/login
+    IDAMHEALTHCHECK_AM_ENABLED: false
+    IDAMHEALTHCHECK_IDM_ENABLED: false
+    MANAGEMENT_SECURITY_ENABLED: false
+    TESTING_SUPPORT_ENABLED: true
+    APPSETTING_NODE_PATH: /opt/app
+  memoryRequests: 512Mi
+  cpuRequests: 250m
+  memoryLimits: 2048Mi
+  cpuLimits: 1000m
+  readinessPath: /health
+  livenessPath: /health
+  pdb:
+    enabled: false
+  registerAdditionalDns:
+    enabled: true
+    primaryIngressHost: '{{ .Release.Name }}.service.core-compute-preview.internal'
+    prefix: api
+  ingressIP: ${INGRESS_IP}
+  consulIP: ${CONSUL_IP}

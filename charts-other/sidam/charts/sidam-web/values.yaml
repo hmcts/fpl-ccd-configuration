@@ -1,0 +1,23 @@
+java:
+  releaseNameOverride: '{{ .Release.Name }}-sidam-web'
+  image: hmctspublic.azurecr.io/idam/web-public:preview
+  applicationPort: 8080
+  environment:
+    JAVA_OPTS: -Xms256m -Xms1024m
+    STRATEGIC_SERVICE_URL: http://{{ .Release.Name }}-sidam-api
+    MANAGEMENT_SECURITY_ENABLED: false
+  memoryRequests: 512Mi
+  cpuRequests: 250m
+  memoryLimits: 2048Mi
+  cpuLimits: 1000m
+  readinessPath: /health
+  livenessPath: /health
+  pdb:
+    enabled: false
+  registerAdditionalDns:
+    enabled: true
+    primaryIngressHost: '{{ .Release.Name }}.service.core-compute-preview.internal'
+    prefix: web
+  ingressIP: ${INGRESS_IP}
+  consulIP: ${CONSUL_IP}
+
