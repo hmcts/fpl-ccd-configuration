@@ -19,13 +19,11 @@ public class UploadDocumentController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse aboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-        String state = caseDetails.getState();
-
-        String displayCourtBundle = state.equals("Open") ? "No" : "Yes";
-
         Map<String, Object> data = caseDetails.getData();
 
+        // Check if the court bundle should be visible
+        String state = caseDetails.getState();
+        String displayCourtBundle = state.equals("Open") ? "No" : "Yes";
         data.put("displayCourtBundle", displayCourtBundle);
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
