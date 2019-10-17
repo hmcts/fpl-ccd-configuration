@@ -4,15 +4,15 @@ module.exports = {
   fields: function (party, index) {
     return {
       direction: {
-        title: `#${party}_${index}_type`,
-        description: `#${party}_${index}_text`,
+        title: `#${party}_${index}_directionType`,
+        description: `#${party}_${index}_directionText`,
         dueDate: {
-          day: `#${party}_${index}_completeBy-day`,
-          month: `#${party}_${index}_completeBy-month`,
-          year: `#${party}_${index}_completeBy-year`,
-          hour: `#${party}_${index}_completeBy-hour`,
-          minute: `#${party}_${index}_completeBy-minute`,
-          second: `#${party}_${index}_completeBy-second`,
+          day: `#${party}_${index}_dateToBeCompletedBy-day`,
+          month: `#${party}_${index}_dateToBeCompletedBy-month`,
+          year: `#${party}_${index}_dateToBeCompletedBy-year`,
+          hour: `#${party}_${index}_dateToBeCompletedBy-hour`,
+          minute: `#${party}_${index}_dateToBeCompletedBy-minute`,
+          second: `#${party}_${index}_dateToBeCompletedBy-second`,
         },
       },
     };
