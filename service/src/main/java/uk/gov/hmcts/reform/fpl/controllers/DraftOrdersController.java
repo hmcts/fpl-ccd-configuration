@@ -111,7 +111,6 @@ public class DraftOrdersController {
             .build();
     }
 
-    // post needs to add yes/no for readonly / removable maybe text
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
