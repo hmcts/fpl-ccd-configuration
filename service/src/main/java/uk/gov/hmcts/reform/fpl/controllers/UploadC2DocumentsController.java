@@ -17,7 +17,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -48,7 +49,7 @@ public class UploadC2DocumentsController {
         @RequestHeader(value = "authorization") String authorization) {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-
+        
         data.put("c2DocumentBundle", buildC2DocumentBundle(caseData, authorization));
         data.remove("temporaryC2Document");
 
@@ -59,14 +60,16 @@ public class UploadC2DocumentsController {
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(caseData.getC2DocumentBundle(),
             Lists.newArrayList());
 
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
+
         c2DocumentBundle.add(Element.<C2DocumentBundle>builder()
             .id(UUID.randomUUID())
             .value(C2DocumentBundle.builder()
                 .author(userDetailsService.getUserName(authorization))
                 .description(caseData.getTemporaryC2Document().getDescription())
                 .document(caseData.getTemporaryC2Document().getDocument())
-                .uploadedDateTime(dateFormatterService.formatLocalDateTimeBaseUsingFormat(LocalDateTime.now(),
-                    "h:mma, d MMMM yyyy"))
+                .uploadedDateTime(dateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
+                        .toLocalDateTime(), "h:mma, d MMMM yyyy"))
                 .build())
             .build());
 

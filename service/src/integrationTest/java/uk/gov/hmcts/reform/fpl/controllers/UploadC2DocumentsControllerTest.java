@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -12,13 +13,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -33,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 class UploadC2DocumentsControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
+    private static final ZonedDateTime ZONE_DATE_TIME = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
     @MockBean
     private UserDetailsService userDetailsService;
@@ -47,7 +51,32 @@ class UploadC2DocumentsControllerTest {
     private DateFormatterService dateFormatterService;
 
     @Test
-    void shouldCreateC2DocumentBundleWithValidCaseData() throws Exception {
+    void shouldCreateC2DocumentBundle() throws Exception {
+        given(userDetailsService.getUserName(AUTH_TOKEN))
+            .willReturn("Emma Taylor");
+
+        CallbackRequest request = createCallbackRequestWithTempC2Bundle();
+
+        MvcResult response = performResponseCallBack(request);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getTemporaryC2Document()).isNull();
+        assertThat(caseData.getC2DocumentBundle()).hasSize(1);
+
+        C2DocumentBundle uploadedC2DocumentBundle = caseData.getC2DocumentBundle().get(0).getValue();
+
+        assertC2BundleDocument(uploadedC2DocumentBundle, "Test description");
+        assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo("Emma Taylor");
+        assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(dateFormatterService
+            .formatLocalDateTimeBaseUsingFormat(ZONE_DATE_TIME.toLocalDateTime(), "h:mma, d MMMM yyyy"));
+    }
+
+    @Test
+    void shouldAppendAnAdditionalC2DocumentBundleWhenAC2DocumentBundleIsPresent() throws Exception {
         given(userDetailsService.getUserName(AUTH_TOKEN))
             .willReturn("Emma Taylor");
 
@@ -55,14 +84,7 @@ class UploadC2DocumentsControllerTest {
             .caseDetails(callbackRequest().getCaseDetails())
             .build();
 
-        MvcResult response = mockMvc
-            .perform(post("/callback/upload-c2/about-to-submit")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
+        MvcResult response = performResponseCallBack(request);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -80,7 +102,7 @@ class UploadC2DocumentsControllerTest {
 
         assertThat(appendedC2Document.getAuthor()).isEqualTo("Emma Taylor");
         assertThat(appendedC2Document.getUploadedDateTime()).isEqualTo(dateFormatterService
-            .formatLocalDateTimeBaseUsingFormat(LocalDateTime.now(), "h:mma, d MMMM yyyy"));
+            .formatLocalDateTimeBaseUsingFormat(ZONE_DATE_TIME.toLocalDateTime(), "h:mma, d MMMM yyyy"));
     }
 
     private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) throws Exception {
@@ -90,5 +112,31 @@ class UploadC2DocumentsControllerTest {
         assertThat(documentBundle.getDocument().getFilename()).isEqualTo(document.originalDocumentName);
         assertThat(documentBundle.getDocument().getBinaryUrl()).isEqualTo(document.links.binary.href);
         assertThat(documentBundle.getDescription()).isEqualTo(description);
+    }
+
+    private CallbackRequest createCallbackRequestWithTempC2Bundle() {
+        return CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of(
+                    "temporaryC2Document", ImmutableMap.of(
+                        "document", ImmutableMap.of(
+                            "document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
+                            "document_binary_url",
+                            "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
+                            "document_filename", "file.pdf"),
+                        "description", "Test description")))
+                .build())
+            .build();
+    }
+
+    private MvcResult performResponseCallBack(CallbackRequest request) throws Exception {
+        return mockMvc
+            .perform(post("/callback/upload-c2/about-to-submit")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andReturn();
     }
 }
