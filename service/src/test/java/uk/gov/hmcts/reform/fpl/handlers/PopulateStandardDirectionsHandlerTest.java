@@ -204,13 +204,12 @@ class PopulateStandardDirectionsHandlerTest {
         assertThat(objectMapper.convertValue(
             callbackRequest.getCaseDetails().getData().get("localAuthorityDirections"), List.class).get(0))
             .extracting("value")
-            .first()
-            .isEqualTo(ImmutableMap.of(
+            .isEqualTo(ImmutableList.of(ImmutableMap.of(
                 "assignee", "LOCAL_AUTHORITY",
                 "directionText", "• Test body's 1 \n\n• Two",
                 "directionType", "Direction",
                 "directionRemovable", "No",
-                "readOnly", "No"));
+                "readOnly", "No")));
 
         verify(coreCaseDataApi, times(1)).submitEventForCaseWorker(
             TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()
