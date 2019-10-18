@@ -47,6 +47,11 @@ class UploadC2DocumentsControllerTest {
     private DateFormatterService dateFormatterService;
 
     @Test
+    void shouldCreateC2DocumentBundleWithValidCaseDataAndNotifiyNonHmctsParty() throws Exception {
+
+    }
+
+    @Test
     void shouldCreateC2DocumentBundleWithValidCaseData() throws Exception {
         given(userDetailsService.getUserName(AUTH_TOKEN))
             .willReturn("Emma Taylor");
