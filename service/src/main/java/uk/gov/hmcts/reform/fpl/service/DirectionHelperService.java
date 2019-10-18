@@ -41,27 +41,27 @@ public class DirectionHelperService {
     public List<Element<Direction>> combineAllDirections(CaseData caseData) {
         List<Element<Direction>> directions = new ArrayList<>();
 
-        directions.addAll(filterDirectionsNotRequired(caseData.getAllParties()));
+        directions.addAll(caseData.getAllParties());
 
         directions.addAll(assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES));
 
-        directions.addAll(filterDirectionsNotRequired(caseData.getLocalAuthorityDirections()));
+        directions.addAll(caseData.getLocalAuthorityDirections());
 
         directions.addAll(assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(), LOCAL_AUTHORITY));
 
-        directions.addAll(filterDirectionsNotRequired(caseData.getParentsAndRespondentsDirections()));
+        directions.addAll(caseData.getParentsAndRespondentsDirections());
 
         directions.addAll(assignCustomDirections(caseData.getParentsAndRespondentsCustom(), PARENTS_AND_RESPONDENTS));
 
-        directions.addAll(filterDirectionsNotRequired(caseData.getCafcassDirections()));
+        directions.addAll(caseData.getCafcassDirections());
 
         directions.addAll(assignCustomDirections(caseData.getCafcassDirectionsCustom(), CAFCASS));
 
-        directions.addAll(filterDirectionsNotRequired(caseData.getOtherPartiesDirections()));
+        directions.addAll(caseData.getOtherPartiesDirections());
 
         directions.addAll(assignCustomDirections(caseData.getOtherPartiesDirectionsCustom(), OTHERS));
 
-        directions.addAll(filterDirectionsNotRequired(caseData.getCourtDirections()));
+        directions.addAll(caseData.getCourtDirections());
 
         directions.addAll(assignCustomDirections(caseData.getCourtDirectionsCustom(), COURT));
 
@@ -172,11 +172,5 @@ public class DirectionHelperService {
         } else {
             return emptyList();
         }
-    }
-
-    private List<Element<Direction>> filterDirectionsNotRequired(List<Element<Direction>> directions) {
-        directions.removeIf(directionElement -> "No".equals(directionElement.getValue().getDirectionNeeded()));
-
-        return directions;
     }
 }

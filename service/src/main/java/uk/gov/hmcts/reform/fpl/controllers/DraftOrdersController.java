@@ -93,6 +93,9 @@ public class DraftOrdersController {
         directionHelperService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
+        updated.getStandardDirectionOrder().getDirections()
+            .removeIf(directionElement -> "No".equals(directionElement.getValue().getDirectionNeeded()));
+
         Document document = getDocument(
             authorization,
             userId,
