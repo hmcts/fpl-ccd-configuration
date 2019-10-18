@@ -16,7 +16,7 @@ public class Direction {
     private final String directionType;
     private String directionText;
     private final String status;
-    private final DirectionAssignee assignee;
+    private DirectionAssignee assignee;
     private String readOnly;
     private String directionRemovable;
     private String directionNeeded;

@@ -22,11 +22,14 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -39,18 +42,21 @@ public class DraftOrdersController {
     private final UploadDocumentService uploadDocumentService;
     private final CaseDataExtractionService caseDataExtractionService;
     private final DirectionHelperService directionHelperService;
+    private final OrdersLookupService ordersLookupService;
 
     @Autowired
     public DraftOrdersController(ObjectMapper mapper,
                                  DocmosisDocumentGeneratorService docmosisService,
                                  UploadDocumentService uploadDocumentService,
                                  CaseDataExtractionService caseDataExtractionService,
-                                 DirectionHelperService directionHelperService) {
+                                 DirectionHelperService directionHelperService,
+                                 OrdersLookupService ordersLookupService) {
         this.mapper = mapper;
         this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
         this.caseDataExtractionService = caseDataExtractionService;
         this.directionHelperService = directionHelperService;
+        this.ordersLookupService = ordersLookupService;
     }
 
     @PostMapping("/about-to-start")
@@ -75,10 +81,6 @@ public class DraftOrdersController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) throws IOException {
-        CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
-
-        List<Element<Direction>> directionsBefore = getDirectionsWithHiddenValues(caseDataBefore);
-
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -89,7 +91,7 @@ public class DraftOrdersController {
             .build();
 
         directionHelperService.persistHiddenDirectionValues(
-            directionsBefore, updated.getStandardDirectionOrder().getDirections());
+            getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
         Document document = getDocument(
             authorization,
@@ -112,11 +114,8 @@ public class DraftOrdersController {
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(), CaseData.class);
-
-        List<Element<Direction>> directionsBefore = getDirectionsWithHiddenValues(caseDataBefore);
-
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
+        @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -128,7 +127,7 @@ public class DraftOrdersController {
             .build();
 
         directionHelperService.persistHiddenDirectionValues(
-            directionsBefore, updated.getStandardDirectionOrder().getDirections());
+            getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
         caseDetails.getData().put("standardDirectionOrder", updated.getStandardDirectionOrder());
 
@@ -137,15 +136,11 @@ public class DraftOrdersController {
             .build();
     }
 
-    private List<Element<Direction>> getDirectionsWithHiddenValues(CaseData caseDataBefore) {
-        List<Element<Direction>> directionsBefore;
-
-        if (caseDataBefore.getStandardDirectionOrder() == null) {
-            directionsBefore = directionHelperService.combineAllDirections(caseDataBefore);
-        } else {
-            directionsBefore = caseDataBefore.getStandardDirectionOrder().getDirections();
-        }
-        return directionsBefore;
+    private List<Element<Direction>> getConfigDirectionsWithHiddenValues() throws IOException {
+        return ordersLookupService.getStandardDirectionOrder().getDirections()
+            .stream()
+            .map(direction -> directionHelperService.constructDirectionForCCD(direction, LocalDateTime.now()))
+            .collect(Collectors.toList());
     }
 
     private Document getDocument(@RequestHeader("authorization") String authorization,

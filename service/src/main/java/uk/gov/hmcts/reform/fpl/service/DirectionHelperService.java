@@ -18,6 +18,7 @@ import static java.util.Objects.isNull;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -79,10 +80,13 @@ public class DirectionHelperService {
         directionToAddValues
             .forEach(directionToAddValue -> directionWithValues
                 .stream()
-                .filter(direction -> direction.getId().equals(directionToAddValue.getId()))
+                .filter(direction ->
+                    direction.getValue().getDirectionType().equals(directionToAddValue.getValue().getDirectionType()))
                 .forEach(direction -> {
                     directionToAddValue.getValue().setReadOnly(direction.getValue().getReadOnly());
                     directionToAddValue.getValue().setDirectionRemovable(direction.getValue().getDirectionRemovable());
+                    directionToAddValue.getValue().setAssignee(defaultIfNull(
+                        directionToAddValue.getValue().getAssignee(), direction.getValue().getAssignee()));
 
                     if (!direction.getValue().getReadOnly().equals("No")) {
                         directionToAddValue.getValue().setDirectionText(direction.getValue().getDirectionText());

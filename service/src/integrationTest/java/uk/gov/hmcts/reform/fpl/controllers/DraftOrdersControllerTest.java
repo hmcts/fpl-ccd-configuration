@@ -126,9 +126,6 @@ class DraftOrdersControllerTest {
             .caseDetails(CaseDetails.builder()
                 .data(createCaseDataMap(directions).put("standardDirectionOrder", order).build())
                 .build())
-            .caseDetailsBefore(CaseDetails.builder()
-                .data(createCaseDataMap(directions).build())
-                .build())
             .build();
 
         MvcResult response = makeRequest(request, "mid-event");
@@ -153,21 +150,22 @@ class DraftOrdersControllerTest {
         List<Element<Direction>> fullyPopulatedDirection = ImmutableList.of(Element.<Direction>builder()
             .id(uuid)
             .value(Direction.builder()
-                .directionType("exampleDirection")
-                .directionText("example")
+                .directionType("Identify alternative carers")
+                .directionText("Contact the parents to make sure there is a complete family tree showing family"
+                    + " members who could be alternative carers.")
                 .assignee(LOCAL_AUTHORITY)
                 .directionRemovable("Yes")
-                .directionNeeded(null)
                 .readOnly("Yes")
+                .directionRemovable("No")
                 .build())
             .build());
 
         List<Element<Direction>> directionWithShowHideValuesRemoved = ImmutableList.of(Element.<Direction>builder()
             .id(uuid)
             .value(Direction.builder()
-                .directionType("exampleDirection")
+                .directionType("Identify alternative carers")
                 .assignee(LOCAL_AUTHORITY)
-                .directionNeeded(null)
+                .readOnly("Yes")
                 .build())
             .build());
 
@@ -185,9 +183,6 @@ class DraftOrdersControllerTest {
                 .data(createCaseDataMap(directionWithShowHideValuesRemoved)
                     .put("standardDirectionOrder", order)
                     .build())
-                .build())
-            .caseDetailsBefore(CaseDetails.builder()
-                .data(createCaseDataMap(fullyPopulatedDirection).build())
                 .build())
             .build();
 
