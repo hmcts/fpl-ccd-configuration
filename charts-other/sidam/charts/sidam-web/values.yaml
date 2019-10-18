@@ -1,6 +1,6 @@
 java:
   releaseNameOverride: '{{ .Release.Name }}-sidam-web'
-  image: hmctspublic.azurecr.io/idam/web-public:preview
+  image: hmctspublic.azurecr.io/idam/web-public:stable
   applicationPort: 8080
   environment:
     JAVA_OPTS: -Xms256m -Xms1024m

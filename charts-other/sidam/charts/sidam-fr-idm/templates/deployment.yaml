@@ -21,6 +21,8 @@ spec:
           image: hmctsprivate.azurecr.io/idam/idam-fr-idm:latest
           imagePullPolicy: IfNotPresent
           env:
+            - name: JAVA_TOOL_OPTIONS
+              value: -Dcom.sun.management.jmxremote.port=9010 -Dcom.sun.management.jmxremote.local.only=false -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=vm-ubuntu16 -Dcom.sun.management.jmxremote.rmi.port=9010
             - name: JAVA_OPTS
               value: -Xms256m -Xmx1024m
           resources:
@@ -31,4 +33,7 @@ spec:
               memory: 2048Mi
               cpu: 1000m
           ports:
-            - containerPort: 18080
+            - name: jmx
+              containerPort: 9010
+            - name: web
+              containerPort: 18080
