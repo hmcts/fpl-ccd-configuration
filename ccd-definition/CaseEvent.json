@@ -210,7 +210,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadDocuments",
-    "Name": "Documents (ALL)",
+    "Name": "Documents",
     "Description": "Upload documents",
     "DisplayOrder": 14,
     "PreConditionState(s)": "*",
