@@ -157,6 +157,7 @@ public class CaseDataExtractionService {
         groupedDirections.forEach((key, value) -> {
             List<Map<String, String>> directionsList = value.stream()
                 .map(Element::getValue)
+                .filter(direction -> "No".equals(direction.getDirectionNeeded()))
                 .map(direction -> ImmutableMap.of(
                     "title", formatTitle(direction, standardDirectionOrder.getDirections()),
                     "body", defaultIfNull(direction.getDirectionText(), EMPTY_STATE_PLACEHOLDER)))
