@@ -287,20 +287,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadDocumentsAfterSubmission",
-    "Name": "Documents",
-    "Description": "Upload documents after submission",
-    "DisplayOrder": 1,
-    "PreConditionState(s)": "Submitted",
-    "PostConditionState": "Submitted",
-    "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "addFamilyManCaseNumber",
     "Name": "Add case number",
     "Description": "Add case number",
@@ -588,20 +574,6 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "Y",
-    "EndButtonLabel": "Save and continue"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadDocumentsAfterGatekeeping",
-    "Name": "Documents",
-    "Description": "Upload documents",
-    "DisplayOrder": 9,
-    "PreConditionState(s)": "Gatekeeping",
-    "PostConditionState": "Gatekeeping",
-    "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
   },
   {
