@@ -31,7 +31,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.io.IOException;
 import java.util.List;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -204,12 +204,12 @@ class PopulateStandardDirectionsHandlerTest {
         assertThat(objectMapper.convertValue(
             callbackRequest.getCaseDetails().getData().get("localAuthorityDirections"), List.class).get(0))
             .extracting("value")
-            .isEqualTo(ImmutableList.of(ImmutableMap.of(
+            .isEqualTo(ImmutableMap.of(
                 "assignee", "LOCAL_AUTHORITY",
                 "directionText", "• Test body's 1 \n\n• Two",
                 "directionType", "Direction",
                 "directionRemovable", "No",
-                "readOnly", "No")));
+                "readOnly", "No"));
 
         verify(coreCaseDataApi, times(1)).submitEventForCaseWorker(
             TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()

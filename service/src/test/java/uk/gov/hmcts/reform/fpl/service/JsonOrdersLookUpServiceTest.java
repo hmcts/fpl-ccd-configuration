@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 
 import java.io.IOException;
 
-import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.model.configuration.Language.ENGLISH;
