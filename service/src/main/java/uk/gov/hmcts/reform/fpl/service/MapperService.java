@@ -25,4 +25,11 @@ public class MapperService {
             throw new MappingException(ex);
         }
     }
+
+    /**
+     * get {@link ObjectMapper} instead of having to reinitialize, we just use this service.
+     */
+    public ObjectMapper getObjectMapper() {
+        return mapper;
+    }
 }

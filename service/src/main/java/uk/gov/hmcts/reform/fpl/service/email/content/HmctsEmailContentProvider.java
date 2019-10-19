@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -8,24 +8,29 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
+import uk.gov.hmcts.reform.fpl.service.MapperService;
 
 import java.time.format.FormatStyle;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
 
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final ObjectMapper mapper;
+    private final MapperService mapper;
     private final DateFormatterService dateFormatterService;
 
     @Autowired
     public HmctsEmailContentProvider(LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                     ObjectMapper mapper,
+                                     MapperService mapper,
                                      DateFormatterService dateFormatterService,
                                      @Value("${ccd.ui.base.url}") String uiBaseUrl) {
         super(uiBaseUrl);
@@ -45,15 +50,24 @@ public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
     public Map<String, Object> buildC2UploadNotification(final CaseDetails caseDetails,
                                                          final String localAuthorityCode) {
         // Validation within our frontend ensures that the following data is present
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = mapper.getObjectMapper().convertValue(caseDetails.getData(), CaseData.class);
+
+        List<Map<String, Object>> respondents1 = mapper.getObjectMapper().convertValue(
+            caseDetails.getData().get("respondents1"), new TypeReference<>() {});
+
+        List<Respondent> respondents = respondents1.stream()
+            .map(respondent ->
+                mapper.getObjectMapper().convertValue(respondent.get("value"), Respondent.class))
+            .collect(toList());
+
         return Map.of(
             "court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName(),
-            "lastNameOfRespondent", caseData.getRespondents1()
+            "lastNameOfRespondent", respondents
                 .stream()
                 .filter(Objects::nonNull)
                 .findFirst()
-                .get().getValue().getLastName(),
-            "familymanID", caseData.getFamilyManCaseNumber(),
+                .get().getParty().getLastName(),
+            "familyManCaseNumber", caseData.getFamilyManCaseNumber(),
             "hearingDate", dateFormatterService.formatLocalDateToString(
                 caseData.getHearingDetails()
                 .stream()
