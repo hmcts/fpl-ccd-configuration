@@ -16,7 +16,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "description",
     "EventElementLabel": "Description",
-    "FieldDisplayOrder": 1,
+    "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -36,7 +36,7 @@
     "CaseFieldID": "temporaryC2Document",
     "ListElementCode": "description",
     "EventElementLabel": "Description",
-    "FieldDisplayOrder": 1,
+    "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   }
 ]

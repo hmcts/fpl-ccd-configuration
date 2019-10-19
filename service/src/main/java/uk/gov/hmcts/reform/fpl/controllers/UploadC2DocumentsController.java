@@ -13,15 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.events.C2UploadNotifyEvent;
-import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
-import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -68,14 +67,16 @@ public class UploadC2DocumentsController {
         List<Element<C2DocumentBundle>> c2DocumentBundle = defaultIfNull(caseData.getC2DocumentBundle(),
             Lists.newArrayList());
 
+        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
+
         c2DocumentBundle.add(Element.<C2DocumentBundle>builder()
             .id(UUID.randomUUID())
             .value(C2DocumentBundle.builder()
                 .author(userDetailsService.getUserName(authorization))
                 .description(caseData.getTemporaryC2Document().getDescription())
                 .document(caseData.getTemporaryC2Document().getDocument())
-                .uploadedDateTime(dateFormatterService.formatLocalDateTimeBaseUsingFormat(LocalDateTime.now(),
-                    "h:mma, d MMMM yyyy"))
+                .uploadedDateTime(dateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
+                        .toLocalDateTime(), "h:mma, d MMMM yyyy"))
                 .build())
             .build());
 
