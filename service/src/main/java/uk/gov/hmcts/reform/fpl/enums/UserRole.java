@@ -13,37 +13,37 @@ public enum UserRole {
 
     LOCAL_AUTHORITY {
         public List<String> getRoles() {
-            return roles(DEFAULT.getRoles(), "caseworker-publiclaw-solicitor");
+            return addRoles(DEFAULT.getRoles(), "caseworker-publiclaw-solicitor");
         }
     },
 
-    HNCTS_ADMIN {
+    HMCTS_ADMIN {
         public List<String> getRoles() {
-            return roles(DEFAULT.getRoles(),"caseworker-publiclaw-courtadmin");
+            return addRoles(DEFAULT.getRoles(),"caseworker-publiclaw-courtadmin");
         }
     },
 
     CAFCASS {
         public List<String> getRoles() {
-            return roles(DEFAULT.getRoles(),"caseworker-publiclaw-cafcass");
+            return addRoles(DEFAULT.getRoles(),"caseworker-publiclaw-cafcass");
         }
     },
 
     GATEKEEPER {
         public List<String> getRoles() {
-            return roles(DEFAULT.getRoles(), "caseworker-publiclaw-gatekeeper");
+            return addRoles(DEFAULT.getRoles(), "caseworker-publiclaw-gatekeeper");
         }
     },
 
     JUDICIARY {
         public List<String> getRoles() {
-            return roles(DEFAULT.getRoles(), "caseworker-publiclaw-gatekeeper");
+            return addRoles(DEFAULT.getRoles(), "caseworker-publiclaw-gatekeeper");
         }
     };
 
     public abstract List<String> getRoles();
 
-    private static List<String> roles(final List<String> existingRoles, final String roleToAdd) {
+    private static List<String> addRoles(final List<String> existingRoles, final String roleToAdd) {
         List<String> userRoles = new ArrayList<>(existingRoles);
         userRoles.add(roleToAdd);
         return userRoles;

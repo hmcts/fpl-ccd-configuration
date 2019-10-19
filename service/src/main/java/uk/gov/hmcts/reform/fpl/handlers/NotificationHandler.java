@@ -77,10 +77,11 @@ public class NotificationHandler {
         UserDetails userDetails = userDetailsService.getUserDetails(caseEvent.getAuthorization());
         List<String> roles = userDetails.getRoles();
 
-        if (!UserRole.HNCTS_ADMIN.getRoles().contains(roles)) {
+        if (!UserRole.HMCTS_ADMIN.getRoles().containsAll(roles)) {
             CaseDetails caseDetailsFromEvent = caseEvent.getCallbackRequest().getCaseDetails();
             String localAuthorityCode = (String) caseDetailsFromEvent.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
-            Map<String, Object> parameters = hmctsEmailContentProvider.buildC2UploadNotification(caseDetailsFromEvent);
+            Map<String, Object> parameters = hmctsEmailContentProvider.buildC2UploadNotification(
+                caseDetailsFromEvent, localAuthorityCode);
             String reference = Long.toString(caseDetailsFromEvent.getId());
 
             String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
