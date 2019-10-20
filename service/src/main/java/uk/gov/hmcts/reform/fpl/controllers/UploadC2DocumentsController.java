@@ -51,16 +51,23 @@ public class UploadC2DocumentsController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestBody CallbackRequest callbackrequest,
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId) {
+        @RequestHeader(value = "authorization") String authorization) {
         Map<String, Object> data = callbackrequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         data.put("c2DocumentBundle", buildC2DocumentBundle(caseData, authorization));
         data.remove("temporaryC2Document");
 
-        applicationEventPublisher.publishEvent(new C2UploadNotifyEvent(callbackrequest, authorization, userId));
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestHeader(value = "user-id") String userId,
+        @RequestBody CallbackRequest callbackRequest) {
+
+        applicationEventPublisher.publishEvent(new C2UploadNotifyEvent(callbackRequest, authorization, userId));
     }
 
     private List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData, String authorization) {
