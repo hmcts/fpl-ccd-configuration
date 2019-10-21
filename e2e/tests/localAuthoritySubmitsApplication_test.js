@@ -190,7 +190,7 @@ Scenario('local authority enters respondents', async (I, caseViewPage, enterResp
   I.seeAnswerInTab(6, 'Current address', 'Country', respondents[0].address.country);
   I.seeAnswerInTab(1, 'Telephone', 'Telephone', respondents[0].telephone);
   I.seeAnswerInTab(10, 'Party', 'What is the respondent’s relationship to the child or children in this case?', 'mock reason');
-  I.seeAnswerInTab(11, 'Party', 'Do you need contact details hidden from anyone?', 'Yes');
+  I.seeAnswerInTab(11, 'Party', 'Do you need contact details hidden from other parties?', 'Yes');
   I.seeAnswerInTab(12, 'Party', 'Give reason', 'mock reason');
   I.seeAnswerInTab(13, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'Yes');
   I.seeAnswerInTab(14, 'Party', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
@@ -208,7 +208,7 @@ Scenario('local authority enters respondents', async (I, caseViewPage, enterResp
   I.seeAnswerInTab(6, 'Current address', 'Country', respondents[1].address.country);
   I.seeAnswerInTab(1, 'Telephone', 'Telephone', respondents[1].telephone);
   I.seeAnswerInTab(10, 'Party', 'What is the respondent’s relationship to the child or children in this case?', 'mock reason');
-  I.seeAnswerInTab(11, 'Party', 'Do you need contact details hidden from anyone?', 'Yes');
+  I.seeAnswerInTab(11, 'Party', 'Do you need contact details hidden from other parties?', 'Yes');
   I.seeAnswerInTab(12, 'Party', 'Give reason', 'mock reason');
   I.seeAnswerInTab(13, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
 });
