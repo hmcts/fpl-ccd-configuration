@@ -110,7 +110,8 @@ public class NoticeOfProceedingsController {
 
         List<Element> noticeOfProceedingCaseData = createNoticeOfProceedingsCaseData(uploadedDocuments);
 
-        if (callbackRequest.getCaseDetailsBefore() != null) {
+        if (callbackRequest.getCaseDetailsBefore() != null
+            && callbackRequest.getCaseDetailsBefore().getData().get("noticeOfProceedingsBundle") != null) {
             CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(),
                 CaseData.class);
 
