@@ -9,12 +9,14 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SDOSubmittedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -29,25 +31,30 @@ public class NotificationHandler {
 
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
+    private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
     private final HmctsEmailContentProvider hmctsEmailContentProvider;
     private final CafcassEmailContentProvider cafcassEmailContentProvider;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
+    private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final NotificationClient notificationClient;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     public NotificationHandler(HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
                                CafcassLookupConfiguration cafcassLookupConfiguration,
+                               LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration,
                                NotificationClient notificationClient,
                                HmctsEmailContentProvider hmctsEmailContentProvider,
                                CafcassEmailContentProvider cafcassEmailContentProvider,
-                               GatekeeperEmailContentProvider gatekeeperEmailContentProvider) {
+                               GatekeeperEmailContentProvider gatekeeperEmailContentProvider, LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider) {
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.cafcassLookupConfiguration = cafcassLookupConfiguration;
+        this.localAuthorityEmailLookupConfiguration = localAuthorityEmailLookupConfiguration;
         this.notificationClient = notificationClient;
         this.hmctsEmailContentProvider = hmctsEmailContentProvider;
         this.cafcassEmailContentProvider = cafcassEmailContentProvider;
         this.gatekeeperEmailContentProvider = gatekeeperEmailContentProvider;
+        this.localAuthorityEmailContentProvider = localAuthorityEmailContentProvider;
     }
 
     @EventListener
@@ -71,7 +78,6 @@ public class NotificationHandler {
         String reference = String.valueOf(caseDetails.getId());
         String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
 
-        System.out.println("Params are" + parameters + "reference is" + reference);
         sendNotification(CAFCASS_SUBMISSION_TEMPLATE, email, parameters, reference);
     }
 
@@ -95,6 +101,17 @@ public class NotificationHandler {
             .buildCafcassSDOSubmissionNotification(caseDetails, localAuthorityCode);
         String reference = String.valueOf(caseDetails.getId());
         String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
+        sendNotification(SDO_TEMPLATE, email, parameters, reference);
+    }
+
+    @EventListener
+    public void sendSDOToLocalAuthority(SDOSubmittedEvent event) {
+        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
+        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+        Map<String, Object> parameters = localAuthorityEmailContentProvider
+            .buildLocalAuthoritySDOSubmissionNotification(caseDetails, localAuthorityCode);
+        String reference = Long.toString(caseDetails.getId());
+        String email = localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode).getEmail();
         sendNotification(SDO_TEMPLATE, email, parameters, reference);
     }
 

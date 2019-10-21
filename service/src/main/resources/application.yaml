@@ -109,3 +109,5 @@ fpl:
     mapping: 'SA=>Swansea Family Court:FamilyPublicLaw+sa@gmail.com;HN=>Portsmouth Combined Court:FamilyPublicLaw+hn@gmail.com'
   local_authority_code_to_cafcass:
     mapping: 'SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com'
+  local_authority_code_to_local_authority:
+    mapping: 'SA=>Swansea Local Authority:FamilyPublicLaw+sa@gmail.com;HN=>Hillingdon Local Authority:FamilyPublicLaw+hn-sdo-submitted@gmail.com'
