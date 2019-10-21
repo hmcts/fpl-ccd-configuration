@@ -118,6 +118,8 @@ withPipeline(type, product, component) {
   before('smoketest:preview') {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+      unset CCD_CONFIGURER_IMPORTER_USERNAME
+      unset CCD_CONFIGURER_IMPORTER_PASSWORD
       
       ./bin/configurer/add-roles.sh
       ./bin/configurer/import-ccd-definition.sh
