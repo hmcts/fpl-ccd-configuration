@@ -5,29 +5,40 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
+import uk.gov.hmcts.reform.fpl.events.C2UploadNotifyEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
+import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.FormatStyle;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
@@ -67,8 +78,65 @@ class NotificationHandlerTest {
     @Mock
     private GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
 
+    @MockBean
+    private UserDetailsService userDetailsService;
+
     @InjectMocks
     private NotificationHandler notificationHandler;
+
+    private final DateFormatterService dateFormatterService = new DateFormatterService();
+
+    @Test
+    void shouldNotNotifyHmctsPAdminOnC2Upload() throws IOException, NotificationClientException {
+        final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
+            .put("court", COURT_NAME)
+            .put("lastNameOfRespondent", "Test Lastname")
+            .put("familyManCaseNumber", "SACCCCCCCC5676576567")
+            .put("hearingDate", dateFormatterService.formatLocalDateToString(LocalDate.now().plusMonths(4), FormatStyle.MEDIUM))
+            .build();
+
+        given(userDetailsService.getUserDetails(AUTH_TOKEN))
+            .willReturn(new UserDetails("1", "hmcts-admin@test.com",
+                "Hmcts", "Test", UserRole.HMCTS_ADMIN.getRoles()));
+
+        given(hmctsEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails(),
+            LOCAL_AUTHORITY_CODE)).willReturn(parameters);
+
+        notificationHandler.sendNotificationForC2Upload(new C2UploadNotifyEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
+            userDetailsService.getUserDetails(AUTH_TOKEN)));
+
+        verify(notificationClient, times(0)).sendEmail(
+            isNull(), isNull(), isNull(), isNull());
+    }
+
+    @Test
+    void shouldNotifyNonHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
+        final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
+            .put("court", COURT_NAME)
+            .put("lastNameOfRespondent", "Test Lastname")
+            .put("familyManCaseNumber", "SACCCCCCCC5676576567")
+            .put("hearingDate", dateFormatterService.formatLocalDateToString(LocalDate.now().plusMonths(4), FormatStyle.MEDIUM))
+            .build();
+
+        given(userDetailsService.getUserDetails(AUTH_TOKEN))
+            .willReturn(new UserDetails("1", "hmcts-non-admin@test.com",
+                "Hmcts", "Test", UserRole.LOCAL_AUTHORITY.getRoles()));
+
+        given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
+            .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS));
+
+        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+            .willReturn("Example Local Authority");
+
+        given(hmctsEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails(),
+            LOCAL_AUTHORITY_CODE)).willReturn(parameters);
+
+        notificationHandler.sendNotificationForC2Upload(new C2UploadNotifyEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
+            userDetailsService.getUserDetails(AUTH_TOKEN)));
+
+        verify(notificationClient, times(1)).sendEmail(
+            eq(C2_UPLOAD_SUBMISSION_TEMPLATE), notNull(), eq(parameters), eq("12345"));
+    }
 
     @Test
     void shouldSendEmailToHmcts() throws IOException, NotificationClientException {

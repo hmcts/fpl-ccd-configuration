@@ -73,8 +73,8 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void sendNotificationForC2Upload(C2UploadNotifyEvent caseEvent) {
-        UserDetails userDetails = userDetailsService.getUserDetails(caseEvent.getAuthorization());
+    public void sendNotificationForC2Upload(final C2UploadNotifyEvent caseEvent) {
+        UserDetails userDetails = caseEvent.getUserDetails();
         List<String> roles = userDetails.getRoles();
 
         if (!UserRole.HMCTS_ADMIN.getRoles().containsAll(roles)) {

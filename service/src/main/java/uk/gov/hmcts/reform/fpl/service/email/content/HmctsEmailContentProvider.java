@@ -73,7 +73,8 @@ public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
                 .stream()
                 .filter(Objects::nonNull)
                 .findFirst()
-                .get().getValue().getDate(), FormatStyle.MEDIUM)
+                .get().getValue().getDate(), FormatStyle.MEDIUM),
+            "reference", String.valueOf(caseDetails.getId())
         );
     }
 }

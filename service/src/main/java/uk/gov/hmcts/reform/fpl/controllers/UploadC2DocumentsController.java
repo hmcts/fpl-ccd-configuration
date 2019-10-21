@@ -67,7 +67,8 @@ public class UploadC2DocumentsController {
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
 
-        applicationEventPublisher.publishEvent(new C2UploadNotifyEvent(callbackRequest, authorization, userId));
+        applicationEventPublisher.publishEvent(new C2UploadNotifyEvent(callbackRequest, authorization, userId,
+            userDetailsService.getUserDetails(authorization)));
     }
 
     private List<Element<C2DocumentBundle>> buildC2DocumentBundle(CaseData caseData, String authorization) {
