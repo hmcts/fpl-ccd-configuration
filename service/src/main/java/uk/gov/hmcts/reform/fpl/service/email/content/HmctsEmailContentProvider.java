@@ -8,14 +8,18 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
+import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -62,19 +66,29 @@ public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
 
         return Map.of(
             "court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName(),
-            "lastNameOfRespondent", respondents
-                .stream()
-                .filter(Objects::nonNull)
-                .findFirst()
-                .get().getParty().getLastName(),
+            "lastNameOfRespondent", (getRespondent1(respondents).isPresent() ? getRespondent1(respondents).get() : ""),
             "familyManCaseNumber", caseData.getFamilyManCaseNumber(),
-            "hearingDate", dateFormatterService.formatLocalDateToString(
-                caseData.getHearingDetails()
-                .stream()
-                .filter(Objects::nonNull)
-                .findFirst()
-                .get().getValue().getDate(), FormatStyle.MEDIUM),
+            "hearingDate",
+            dateFormatterService.formatLocalDateToString((getHearingBooking(caseData).isPresent()
+                    ? getHearingBooking(caseData).get().getValue().getDate()
+                    : LocalDate.now()), FormatStyle.MEDIUM),
             "reference", String.valueOf(caseDetails.getId())
         );
+    }
+
+    private Optional<Element<HearingBooking>> getHearingBooking(final CaseData caseData) {
+        return caseData.getHearingDetails()
+        .stream()
+        .filter(Objects::nonNull)
+        .findFirst();
+    }
+
+    private Optional<String> getRespondent1(final List<Respondent> respondents) {
+        Optional<Respondent> optionalRespondent = respondents
+                .stream()
+                .filter(Objects::nonNull)
+                .findFirst();
+
+        return optionalRespondent.map(respondent -> respondent.getParty().getLastName());
     }
 }
