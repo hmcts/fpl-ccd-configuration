@@ -87,7 +87,7 @@ class NotificationHandlerTest {
     private final DateFormatterService dateFormatterService = new DateFormatterService();
 
     @Test
-    void shouldNotNotifyHmctsPAdminOnC2Upload() throws IOException, NotificationClientException {
+    void shouldNotNotifyHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
         final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
             .put("court", COURT_NAME)
             .put("lastNameOfRespondent", "Test Lastname")
