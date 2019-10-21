@@ -43,7 +43,13 @@ public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
         CaseData caseData = service.mapObject(caseDetails.getData(), CaseData.class);
         String leadRespondentsName = caseData.getRespondents1().get(0).getValue().getParty().getLastName();
         String leadRespondentsNameCapitalized = leadRespondentsName.substring(0, 1).toUpperCase() + leadRespondentsName.substring(1).toLowerCase();
+        String familyManCaseNumber = caseData.getFamilyManCaseNumber();
+        String hearingDate = caseData.getHearingDetails().get(0).getValue().getDate().toString();
 
+        System.out.println("Case data is" + caseData);
+
+        System.out.println(familyManCaseNumber);
+        System.out.println(hearingDate);
 
         return super.getCasePersonalisationBuilder(caseDetails)
             .put("cafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
