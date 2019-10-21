@@ -12,4 +12,3 @@ spec:
     app.kubernetes.io/name: {{ .Release.Name }}-{{ .Chart.Name }}
   ports:
     - port: 18080
-      targetPort: 18080
