@@ -11,11 +11,7 @@ spec:
   selector:
     app.kubernetes.io/name: {{ .Release.Name }}-{{ .Chart.Name }}
   ports:
-    - name: jxm
-      port: 9010
-      targetPort: 9010
-    - name: web
-      port: 18080
+    - port: 18080
       targetPort: 18080
 
 ---
@@ -33,9 +29,5 @@ spec:
   selector:
     app.kubernetes.io/name: {{ .Release.Name }}-{{ .Chart.Name }}
   ports:
-    - name: jxm
-      port: 9010
-      targetPort: 9010
-    - name: web
-      port: 18080
+    - port: 18080
       targetPort: 18080
