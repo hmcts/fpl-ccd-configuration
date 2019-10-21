@@ -10,6 +10,10 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Map;
 
 @Service
@@ -44,12 +48,17 @@ public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
         String leadRespondentsName = caseData.getRespondents1().get(0).getValue().getParty().getLastName();
         String leadRespondentsNameCapitalized = leadRespondentsName.substring(0, 1).toUpperCase() + leadRespondentsName.substring(1).toLowerCase();
         String familyManCaseNumber = caseData.getFamilyManCaseNumber();
-        String hearingDate = caseData.getHearingDetails().get(0).getValue().getDate().toString();
+        LocalDate hearingDate = caseData.getHearingDetails().get(0).getValue().getDate();
 
         System.out.println("Case data is" + caseData);
 
         System.out.println(familyManCaseNumber);
-        System.out.println(hearingDate);
+
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
+        String formattedString = hearingDate.format(formatter);
+
+        System.out.println(formattedString);
 
         return super.getCasePersonalisationBuilder(caseDetails)
             .put("cafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
