@@ -18,6 +18,7 @@ java:
         - fpl-case-service-s2s-secret
         - local-authority-email-to-code-mapping
         - local-authority-code-to-name-mapping
+        - local-authority-user-mapping
         - local-authority-code-to-hmcts-court-mapping
         - local-authority-code-to-cafcass-mapping
 
