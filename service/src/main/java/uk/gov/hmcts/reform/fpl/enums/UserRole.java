@@ -37,7 +37,7 @@ public enum UserRole {
 
     JUDICIARY {
         public List<String> getRoles() {
-            return addRoles(DEFAULT.getRoles(), "caseworker-publiclaw-gatekeeper");
+            return addRoles(DEFAULT.getRoles(), "caseworker-publiclaw-judiciary");
         }
     };
 
