@@ -8,13 +8,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -47,12 +42,13 @@ public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
 
         CaseData caseData = service.mapObject(caseDetails.getData(), CaseData.class);
         String leadRespondentsName = caseData.getRespondents1().get(0).getValue().getParty().getLastName();
-        System.out.println(leadRespondentsName);
+        String leadRespondentsNameCapitalized = leadRespondentsName.substring(0, 1).toUpperCase() + leadRespondentsName.substring(1).toLowerCase();
 
 
         return super.getCasePersonalisationBuilder(caseDetails)
             .put("cafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
             .put("familyManCaseNumber", "SA18C01507")
+            .put("leadRespondentsName", leadRespondentsNameCapitalized)
             .build();
     }
 }
