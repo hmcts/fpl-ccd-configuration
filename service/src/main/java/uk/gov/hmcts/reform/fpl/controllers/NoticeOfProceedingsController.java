@@ -104,15 +104,42 @@ public class NoticeOfProceedingsController {
             .getNoticeOfProceedingTemplateData(caseData);
 
         List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData);
-        
+
         List<Document> uploadedDocuments = generateAndUploadDocuments(userId, authorization, templateData,
             templateTypes);
 
-        caseDetails.getData().put("noticeOfProceedingsBundle", createNoticeOfProceedingsCaseData(uploadedDocuments));
+        List<Element> noticeOfProceedingCaseData = createNoticeOfProceedingsCaseData(uploadedDocuments);
+
+        if (callbackRequest.getCaseDetailsBefore() != null) {
+            CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(),
+                CaseData.class);
+
+            noticeOfProceedingCaseData.addAll(getRemovedDocumentBundles(caseDataBefore, templateTypes));
+        }
+
+        caseDetails.getData().put("noticeOfProceedingsBundle", noticeOfProceedingCaseData);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private List<Element> getRemovedDocumentBundles(CaseData caseData, List<DocmosisTemplates> templateTypes) {
+        List<String> templateTypeTitles = templateTypes.stream().map(DocmosisTemplates::getDocumentTitle)
+            .collect(Collectors.toList());
+
+        ImmutableList.Builder<Element> removedDocumentBundles = ImmutableList.builder();
+
+        caseData.getNoticeOfProceedingsBundle().forEach(element -> {
+            String filename = element.getValue().getDocument().getFilename();
+            filename = filename.substring(0, filename.lastIndexOf("."));
+
+            if (templateTypeTitles.stream().parallel().noneMatch(filename::equals)) {
+                removedDocumentBundles.add(element);
+            }
+        });
+
+        return removedDocumentBundles.build();
     }
 
     private List<Element> createNoticeOfProceedingsCaseData(List<Document> uploadedDocuments) {
