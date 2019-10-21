@@ -47,20 +47,22 @@ public abstract class AbstractEmailContentProvider {
     }
 
     protected ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(CaseDetails caseDetails, CaseData caseData) {
-        LocalDate hearingDate = caseData.getHearingDetails().get(0).getValue().getDate();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
-        String formattedHearingDate = hearingDate.format(formatter);
-
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("leadRespondentsName", capitalizeString(caseData.getRespondents1().get(0).getValue().getParty().getLastName()))
-            .put("hearingDate",formattedHearingDate)
+            .put("hearingDate",formatDate(caseData.getHearingDetails().get(0).getValue().getDate()))
             .put("reference", String.valueOf(caseDetails.getId()))
             .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
     }
 
     private String capitalizeString(String unformattedString) {
         return unformattedString.substring(0, 1).toUpperCase() + unformattedString.substring(1).toLowerCase();
+    }
+
+    private String formatDate(LocalDate unformattedDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
+        String formattedHearingDate = unformattedDate.format(formatter);
+        return formattedHearingDate;
     }
 
     private List<String> buildOrdersAndDirections(Map<String, Object> optionalOrders) {
