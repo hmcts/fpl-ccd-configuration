@@ -1,12 +1,18 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.MapperService;
 
+import javax.annotation.Nullable;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +42,23 @@ public abstract class AbstractEmailContentProvider {
             .put("fullStop", !ordersAndDirections.isEmpty() ? "No" : "Yes")
             .put("timeFramePresent", timeFrame.isPresent() ? "Yes" : "No")
             .put("timeFrameValue", timeFrame.orElse(""))
+            .put("reference", String.valueOf(caseDetails.getId()))
+            .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
+    }
+
+    protected ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(CaseDetails caseDetails, CaseData caseData) {
+
+        String leadRespondentsName = caseData.getRespondents1().get(0).getValue().getParty().getLastName();
+        String leadRespondentsNameCapitalized = leadRespondentsName.substring(0, 1).toUpperCase() + leadRespondentsName.substring(1).toLowerCase();
+
+        LocalDate hearingDate = caseData.getHearingDetails().get(0).getValue().getDate();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
+        String formattedHearingDate = hearingDate.format(formatter);
+
+        return ImmutableMap.<String, Object>builder()
+            .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
+            .put("leadRespondentsName", leadRespondentsNameCapitalized)
+            .put("hearingDate",formattedHearingDate)
             .put("reference", String.valueOf(caseDetails.getId()))
             .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
     }

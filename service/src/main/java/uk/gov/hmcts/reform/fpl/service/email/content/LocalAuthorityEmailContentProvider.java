@@ -35,18 +35,9 @@ public class LocalAuthorityEmailContentProvider extends AbstractEmailContentProv
 
     public Map<String, Object> buildLocalAuthoritySDOSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
         CaseData caseData = service.mapObject(caseDetails.getData(), CaseData.class);
-        String leadRespondentsName = caseData.getRespondents1().get(0).getValue().getParty().getLastName();
-        String leadRespondentsNameCapitalized = leadRespondentsName.substring(0, 1).toUpperCase() + leadRespondentsName.substring(1).toLowerCase();
-        String familyManCaseNumber = caseData.getFamilyManCaseNumber();
-        LocalDate hearingDate = caseData.getHearingDetails().get(0).getValue().getDate();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
-        String formattedHearingDate = hearingDate.format(formatter);
 
-        return super.getCasePersonalisationBuilder(caseDetails)
+        return super.getSDOPersonalisationBuilder(caseDetails, caseData)
             .put("cafcass", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
-            .put("familyManCaseNumber", familyManCaseNumber)
-            .put("leadRespondentsName", leadRespondentsNameCapitalized)
-            .put("hearingDate",formattedHearingDate)
             .build();
     }
 }
