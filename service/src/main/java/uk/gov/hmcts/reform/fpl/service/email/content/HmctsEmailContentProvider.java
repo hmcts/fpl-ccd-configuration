@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -60,35 +61,41 @@ public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
             caseDetails.getData().get("respondents1"), new TypeReference<>() {});
 
         List<Respondent> respondents = respondents1.stream()
-            .map(respondent ->
-                mapper.getObjectMapper().convertValue(respondent.get("value"), Respondent.class))
+            .map(respondent -> mapper.getObjectMapper().convertValue(respondent.get("value"), Respondent.class))
             .collect(toList());
 
-        return Map.of(
-            "court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName(),
-            "lastNameOfRespondent", (getRespondent1(respondents).isPresent() ? getRespondent1(respondents).get() : ""),
-            "familyManCaseNumber", caseData.getFamilyManCaseNumber(),
-            "hearingDate",
-            dateFormatterService.formatLocalDateToString((getHearingBooking(caseData).isPresent()
-                    ? getHearingBooking(caseData).get().getValue().getDate()
-                    : LocalDate.now()), FormatStyle.MEDIUM),
-            "reference", String.valueOf(caseDetails.getId())
-        );
+        return super.getCasePersonalisationBuilder(caseDetails)
+            .put("court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
+            .put("lastNameOfRespondent", getRespondent1Lastname(respondents))
+            .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
+            .put("hearingDate", dateFormatterService.formatLocalDateToString(
+                getHearingBookingDate(caseData), FormatStyle.MEDIUM))
+            .build();
     }
 
-    private Optional<Element<HearingBooking>> getHearingBooking(final CaseData caseData) {
-        return caseData.getHearingDetails()
-        .stream()
-        .filter(Objects::nonNull)
-        .findFirst();
+    private LocalDate getHearingBookingDate(final CaseData caseData) {
+        Optional<Element<HearingBooking>> optionalHearingBookingElement = caseData.getHearingDetails()
+            .stream()
+            .filter(Objects::nonNull)
+            .findFirst();
+
+        if (optionalHearingBookingElement.isPresent()) {
+            return optionalHearingBookingElement.get().getValue().getDate();
+        }
+
+        return LocalDate.now();
     }
 
-    private Optional<String> getRespondent1(final List<Respondent> respondents) {
+    private String getRespondent1Lastname(final List<Respondent> respondents) {
         Optional<Respondent> optionalRespondent = respondents
                 .stream()
                 .filter(Objects::nonNull)
                 .findFirst();
 
-        return optionalRespondent.map(respondent -> respondent.getParty().getLastName());
+        if (optionalRespondent.isPresent()) {
+            return optionalRespondent.get().getParty().getLastName();
+        }
+
+        return StringUtils.EMPTY;
     }
 }
