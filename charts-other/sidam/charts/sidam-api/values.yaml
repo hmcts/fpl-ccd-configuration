@@ -7,7 +7,7 @@ java:
     STRATEGIC_API_URL: https://api-{{ .Release.Name }}.service.core-compute-preview.internal
     STRATEGIC_ADMIN_URL: https://admin-web-{{ .Release.Name }}.service.core-compute-preview.internal
     STRATEGIC_WEBPUBLIC_URL: https://public-web-{{ .Release.Name }}.service.core-compute-preview.internal
-    SPRING_DATASOURCE_URL: jdbc:postgresql://{{ .Release.Name }}-sidam-database/openidm?currentSchema=fridam
+    SPRING_DATASOURCE_URL: jdbc:postgresql://shared-db/openidm?currentSchema=fridam
     SPRING_DATASOURCE_USERNAME: openidm
     SPRING_DATASOURCE_PASSWORD: openidm
     IDAM_SPI_FORGEROCK_AM_ROOT: http://fr-am:8080/openam
