@@ -355,10 +355,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codeceptjs@^2.3.3:
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.3.3.tgz#f77561233f76b59a51b5cd765ecca8c67a31c723"
-  integrity sha512-rf07OH6nNphp0m8qWGVqzQ7jAg2urq/DEoq9nm5t01gP6OgXJVKX6qFEsoZWxunLTvogCpiVZKzUCmh23FhxHw==
+codeceptjs@^2.3.5:
+  version "2.3.5"
+  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.3.5.tgz#ff52fe8c434bc8c60fb7a4f9decacbf3cb71c38a"
+  integrity sha512-oIU4sQA+cJkA7PGAF2wiqsj4Ez5ZtaJMdpZv3cLxbOfpIbO3e0L/D7Z1muTtLCOWv7y1J0Kzfb3niOaojJ6SiQ==
   dependencies:
     allure-js-commons "^1.3.2"
     axios "^0.19.0"
@@ -380,7 +380,7 @@ codeceptjs@^2.3.3:
     mocha "^6.2.0"
     mocha-junit-reporter "^1.23.1"
     ms "^2.1.2"
-    parse-function "^5.2.10"
+    parse-function "5.2.11"
     promise-retry "^1.1.1"
     requireg "^0.1.8"
     resq "^1.6.0"
@@ -1779,10 +1779,10 @@ parent-module@^1.0.0:
   dependencies:
     callsites "^3.0.0"
 
-parse-function@^5.2.10:
-  version "5.2.10"
-  resolved "https://registry.yarnpkg.com/parse-function/-/parse-function-5.2.10.tgz#6a057d5d7b2a026aed81bd26cb6863b5741de25f"
-  integrity sha512-ImvYblMk0ieHcFRK3WSyEgxuawHPLyqweT7POZYLj8eMD9uG0IScE+G0QHTvFscsLDQRD5p0Rtwl3GrfBByQfg==
+parse-function@5.2.11:
+  version "5.2.11"
+  resolved "https://registry.yarnpkg.com/parse-function/-/parse-function-5.2.11.tgz#89ca2e30b05ecec41e6e12ede647c25839e75036"
+  integrity sha512-2nQChgTKz80awFjQqs93ZzgQPOykT+BXomHUfwMdIben3PT2uohAPot+h5D+PNa0T+odzjuMZUMOoCyJfnej1Q==
   dependencies:
     arrify "1.0.1"
     babylon "7.0.0-beta.47"
