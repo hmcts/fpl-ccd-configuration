@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
@@ -34,7 +35,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Service
@@ -93,6 +96,8 @@ public class CaseDataExtractionService {
         List<Map<String, String>> respondentsNameAndRelationship = getRespondentsNameAndRelationship(caseData);
 
         ImmutableMap.Builder data = ImmutableMap.<String, Object>builder()
+            .put("judgeAndLegalAdvisor",
+                prepareJudgeAndLegalAdvisor(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()))
             .put("courtName", caseData.getCaseLocalAuthority() != null
                 ? hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName()
                 : EMPTY_STATE_PLACEHOLDER)
@@ -121,6 +126,23 @@ public class CaseDataExtractionService {
         }
 
         return data.build();
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> prepareJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        ImmutableMap.Builder map = ImmutableMap.<String, Object>builder();
+        map.put("judgeTitle", defaultIfNull(judgeAndLegalAdvisor.getJudgeTitle().getLabel(), EMPTY_STATE_PLACEHOLDER));
+        map.put("legalAdvisorName", defaultIfNull(judgeAndLegalAdvisor.getLegalAdvisorName(), EMPTY_STATE_PLACEHOLDER));
+
+        if (!isBlank(judgeAndLegalAdvisor.getJudgeLastName())) {
+            map.put("judgeLastName", judgeAndLegalAdvisor.getJudgeLastName());
+        }
+
+        if (!isBlank(judgeAndLegalAdvisor.getJudgeFullName())) {
+            map.put("judgeFullName", judgeAndLegalAdvisor.getJudgeFullName());
+        }
+
+        return map.build();
     }
 
     private Map<String, Object> getHearingBookingData(CaseData caseData) {

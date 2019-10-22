@@ -92,6 +92,7 @@ public class DraftOrdersController {
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
                 .directions(directionHelperService.combineAllDirections(caseData))
+                .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
                 .build())
             .build();
 
@@ -129,9 +130,6 @@ public class DraftOrdersController {
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
                 .directions(directionHelperService.combineAllDirections(caseData))
-                .orderDoc(caseData.getStandardDirectionOrder().getOrderDoc().toBuilder()
-                    .filename(documentFilename(caseData.getStandardDirectionOrder().getOrderStatus()))
-                    .build())
                 .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
                 .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
                 .build())
@@ -140,7 +138,20 @@ public class DraftOrdersController {
         directionHelperService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
-        caseDetails.getData().put("standardDirectionOrder", updated.getStandardDirectionOrder());
+        Document document = getDocument(
+            authorization,
+            userId,
+            caseDataExtractionService.getStandardOrderDirectionData(updated)
+        );
+
+        Order.OrderBuilder orderBuilder = updated.getStandardDirectionOrder().toBuilder()
+            .orderDoc(DocumentReference.builder()
+                .url(document.links.self.href)
+                .binaryUrl(document.links.binary.href)
+                .filename(documentFilename(caseData.getStandardDirectionOrder().getOrderStatus()))
+                .build());
+
+        caseDetails.getData().put("standardDirectionOrder", orderBuilder.build());
         caseDetails.getData().remove("judgeAndLegalAdvisor");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -164,7 +175,6 @@ public class DraftOrdersController {
             "draft-standard-directions-order.pdf");
     }
 
-    // this method will eventually build a new final document I imagine...
     private String documentFilename(OrderStatus status) {
         if (status == OrderStatus.SEALED) {
             return "standard-directions-order.pdf";
