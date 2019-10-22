@@ -428,7 +428,7 @@ Scenario('local authority uploads documents', caseDocs.uploadDocuments());
 
 Scenario('local authority cannot upload court bundle', async (I, caseViewPage, uploadDocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-  I.dontSee(uploadDocumentsEventPage.documents.courtBundle);
+  I.dontSeeElement(uploadDocumentsEventPage.documents.courtBundle);
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
 });
