@@ -16,5 +16,5 @@ public class DocmosisRequest {
     private final String templateName;
     private final String outputFormat;
     private final String outputName;
-    private final Map<String, String> data;
+    private final Map<String, Object> data;
 }

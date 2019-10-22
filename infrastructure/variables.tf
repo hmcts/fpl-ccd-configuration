@@ -71,3 +71,11 @@ variable "docmosis_resource_group" {
 variable "docmosis_vault" {
   default = "docmosisiaasdevkv"
 }
+
+variable "idam_client_id" {
+  type = "string"
+}
+
+variable "idam_client_redirect_uri" {
+  type = "string"
+}

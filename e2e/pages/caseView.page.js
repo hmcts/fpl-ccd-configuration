@@ -5,6 +5,7 @@ module.exports = {
   file: 'mockFile.txt',
   tabs: {
     orders: 'Orders',
+    draftOrders: 'Draft orders',
     hearings: 'Hearings',
     casePeople: 'People in the case',
     legalBasis: 'Legal basis',
