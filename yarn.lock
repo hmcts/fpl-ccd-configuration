@@ -355,7 +355,7 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codeceptjs@^2.3.2:
+codeceptjs@2.3.2:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.3.2.tgz#b08f36c0a7fed41b6e37550da6634314a46dd521"
   integrity sha512-wSd4x4lx22v0FHE7z3TamPw/OYVRwGAr5N3otb/fkiq7wtIlpI0IayxBC7IG4gJT0cUmq4Pc1pNAw49faFUYIA==
