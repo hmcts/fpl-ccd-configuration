@@ -130,7 +130,8 @@
     "DisplayContext": "READONLY",
     "PageID": 1,
     "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "FieldShowCondition": "courtBundle = \"HIDE_ME\""
   },
   {
     "LiveFrom": "01/01/2017",
