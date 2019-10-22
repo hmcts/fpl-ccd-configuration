@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -81,7 +81,7 @@ public class ChildController {
                 .map(Child::getParty)
                 .map(Party::getDateOfBirth)
                 .filter(Objects::nonNull)
-                .filter(dateOfBirth -> dateOfBirth.after(new Date()))
+                .filter(dateOfBirth -> dateOfBirth.isAfter(LocalDate.now()))
                 .findAny()
                 .ifPresent(date -> errors.add("Date of birth cannot be in the future"));
         }
