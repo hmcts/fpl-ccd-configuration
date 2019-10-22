@@ -38,8 +38,8 @@ public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
 
     public Map<String, Object> buildCafcassSDOSubmissionNotification(CaseDetails caseDetails,
                                                                      String localAuthorityCode) {
-        CaseData caseData = service.mapObject(caseDetails.getData(), CaseData.class);
 
+        CaseData caseData = service.mapObject(caseDetails.getData(), CaseData.class);
         return super.getSDOPersonalisationBuilder(caseDetails, caseData)
             .put("cafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
             .build();

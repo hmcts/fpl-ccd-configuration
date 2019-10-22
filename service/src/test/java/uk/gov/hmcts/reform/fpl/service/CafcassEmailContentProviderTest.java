@@ -6,11 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,6 +37,9 @@ class CafcassEmailContentProviderTest {
 
     @Mock
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+
+    @Mock
+    MapperService mapperService;
 
     @InjectMocks
     private CafcassEmailContentProvider cafcassEmailContentProvider;
@@ -86,6 +91,31 @@ class CafcassEmailContentProviderTest {
             .willReturn("Example Local Authority");
 
         assertThat(cafcassEmailContentProvider.buildCafcassSubmissionNotification(emptyCaseDetails(),
+            LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
+    }
+
+    @Test
+    void shouldReturnExpectedMapWithValidSDODetails() throws IOException {
+        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
+            .put("cafcass", CAFCASS_NAME)
+            .put("localAuthority", "Example Local Authority")
+            .put("familyManCaseNumber", "12345")
+            .put("leadRespondentsName", "Moley")
+            .put("hearingDate", "27 Oct 2020")
+            .put("reference", "12345")
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
+
+        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+            .willReturn(new Cafcass(CAFCASS_NAME, COURT_EMAIL_ADDRESS));
+
+        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+            .willReturn("Example Local Authority");
+
+        given(mapperService.mapObject(Mockito.any(), Mockito.any()))
+            .willReturn(CaseData.builder().build());
+
+        assertThat(cafcassEmailContentProvider.buildCafcassSDOSubmissionNotification(populatedCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
     }
 }
