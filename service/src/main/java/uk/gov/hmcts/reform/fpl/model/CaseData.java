@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class CaseData {
     @NotBlank(message = "Enter a case name")
@@ -41,12 +42,25 @@ public class CaseData {
     @Valid
     private final List<@NotNull(message = "You need to add details to applicant")
         Element<Applicant>> applicants;
-    private final List<Element<RespondentParty>> respondents1;
+    private final List<Element<Respondent>> respondents1;
     private final Proceeding proceeding;
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;
     private final Allocation allocationProposal;
     private final Allocation allocationDecision;
+    private final List<Element<Direction>> allParties;
+    private final List<Element<Direction>> allPartiesCustom;
+    private final List<Element<Direction>> localAuthorityDirections;
+    private final List<Element<Direction>> localAuthorityDirectionsCustom;
+    private final List<Element<Direction>> courtDirections;
+    private final List<Element<Direction>> courtDirectionsCustom;
+    private final List<Element<Direction>> cafcassDirections;
+    private final List<Element<Direction>> cafcassDirectionsCustom;
+    private final List<Element<Direction>> otherPartiesDirections;
+    private final List<Element<Direction>> otherPartiesDirectionsCustom;
+    private final List<Element<Direction>> parentsAndRespondentsDirections;
+    private final List<Element<Direction>> parentsAndRespondentsCustom;
+    private final Order standardDirectionOrder;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
     private final Hearing hearing;
@@ -82,7 +96,7 @@ public class CaseData {
     private final Document socialWorkEvidenceTemplateDocument;
     @NotNull(message = "You need to add details to children")
     @Valid
-    private final List<@NotNull(message = "You need to add details to children")Element<Child>> children1;
+    private final List<@NotNull(message = "You need to add details to children") Element<Child>> children1;
     @NotBlank(message = "Enter Familyman case number", groups = NoticeOfProceedingsGroup.class)
     private final String familyManCaseNumber;
     private List<ProceedingType> proceedingTypes;
@@ -97,6 +111,9 @@ public class CaseData {
 
     @NotNull(message = "Enter hearing details", groups = NoticeOfProceedingsGroup.class)
     private final List<Element<HearingBooking>> hearingDetails;
+
+    private LocalDate dateSubmitted;
+
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;
 }
