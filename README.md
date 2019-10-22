@@ -89,6 +89,15 @@ To enable retry upon test failure please set `TEST_RETRIES` environment variable
 TEST_RETRIES=2 yarn test
 ```
 
+### Docmosis Tornado
+
+Some of the functionality requires Docmosis Tornado to be started. 
+
+It requires `DOCMOSIS_KEY` to be exposed as environment variable on your machine.
+ 
+Docker-compose runs FPL Service as well, refer the  [service README](service/README.md) 
+for additional explanation what's required to get the FPL service started by Docker Compose.  
+
 ## Creating sample case via E2E tests
 
 E2E tests can be used to create sample case with mandatory sections only. To do so please run the following command:
