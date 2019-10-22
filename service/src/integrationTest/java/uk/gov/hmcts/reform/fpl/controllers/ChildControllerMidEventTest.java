@@ -17,8 +17,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 
-import java.time.ZonedDateTime;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,11 +31,13 @@ class ChildControllerMidEventTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final String ERROR_MESSAGE = "Date of birth cannot be in the future";
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @Test
     void shouldReturnDateOfBirthErrorWhenFutureDateOfBirth() throws Exception {
@@ -44,7 +45,7 @@ class ChildControllerMidEventTest {
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
                 .data(ImmutableMap.of("children1", ImmutableList.of(
-                    createChildrenElement(ZonedDateTime.now().plusDays(1)))))
+                    createChildrenElement(LocalDate.now().plusDays(1)))))
                 .build())
             .build();
 
@@ -54,14 +55,14 @@ class ChildControllerMidEventTest {
     }
 
     @Test
-    void shouldReturnDateOfBirthErrorhenThereIsMultipleChildren() throws Exception {
+    void shouldReturnDateOfBirthErrorWhenThereIsMultipleChildren() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
                 .data(ImmutableMap.of(
                     "children1", ImmutableList.of(
-                        createChildrenElement(ZonedDateTime.now().plusDays(1)),
-                        createChildrenElement(ZonedDateTime.now().plusDays(1))
+                        createChildrenElement(LocalDate.now().plusDays(1)),
+                        createChildrenElement(LocalDate.now().plusDays(1))
                     )))
                 .build())
             .build();
@@ -77,7 +78,7 @@ class ChildControllerMidEventTest {
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
                 .data(ImmutableMap.of("children1", ImmutableList.of(
-                    createChildrenElement(ZonedDateTime.now().minusDays(1)))))
+                    createChildrenElement(LocalDate.now().minusDays(1)))))
                 .build())
             .build();
 
@@ -100,12 +101,12 @@ class ChildControllerMidEventTest {
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
-    private Map<String, Object> createChildrenElement(ZonedDateTime dateOfBirth) {
+    private Map<String, Object> createChildrenElement(LocalDate dateOfBirth) {
         return ImmutableMap.of(
             "id", "",
             "value", Child.builder()
                 .party(ChildParty.builder()
-                    .dateOfBirth(Date.from(dateOfBirth.toInstant()))
+                    .dateOfBirth(dateOfBirth)
                     .build())
                 .build());
     }
@@ -116,11 +117,11 @@ class ChildControllerMidEventTest {
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsBytes(request)))
+                .content(mapper.writeValueAsBytes(request)))
             .andExpect(status().isOk())
             .andReturn();
 
-        return MAPPER.readValue(response.getResponse()
+        return mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 }

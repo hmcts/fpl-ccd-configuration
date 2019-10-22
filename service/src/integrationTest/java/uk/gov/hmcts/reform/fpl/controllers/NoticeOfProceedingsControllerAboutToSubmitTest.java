@@ -23,13 +23,10 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
-
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
@@ -71,7 +68,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
 
         CaseData caseData = mapper.convertValue(caseDetails.getCaseDetails().getData(), CaseData.class);
 
-        Map<String, String> templateData = createTemplatePlaceholders();
+        Map<String, Object> templateData = createTemplatePlaceholders();
 
         given(caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData))
             .willReturn(templateData);
@@ -108,7 +105,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
             .andReturn();
     }
 
-    private Map<String, String> createTemplatePlaceholders() {
+    private Map<String, Object> createTemplatePlaceholders() {
         return Map.of(
             "courtName", "Swansea Family Court",
             "familyManCaseNumber", "SW123123",
