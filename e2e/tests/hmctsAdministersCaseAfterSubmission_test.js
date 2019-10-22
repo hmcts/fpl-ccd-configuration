@@ -76,6 +76,23 @@ Scenario('HMCTS admin uploads standard directions with other documents', async (
   I.seeAnswerInTab('2', 'Other documents 2', 'Upload a file', 'mockFile.txt');
 });
 
+// Disabled until the c2 upload feature is to be released
+xScenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
+  uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
+  await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
+  uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Jessica Pearson C2');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeAnswerInTab('1', 'C2 1', 'Upload a file', 'mockFile.txt');
+  I.seeAnswerInTab('4', 'C2 1', 'Description', 'Rachel Zane C2');
+  I.seeAnswerInTab('1', 'C2 2', 'Upload a file', 'mockFile.txt');
+  I.seeAnswerInTab('4', 'C2 2', 'Description', 'Jessica Pearson C2');
+});
+
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);

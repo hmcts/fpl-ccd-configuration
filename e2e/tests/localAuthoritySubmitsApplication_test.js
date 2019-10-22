@@ -24,14 +24,14 @@ Before(async (I) => {
   }
 });
 
-Scenario('local authority changes case name', async (I, caseViewPage, changeCaseNameEventPage) => {
+Scenario('local authority changes case name @create-case-with-mandatory-sections-only', async (I, caseViewPage, changeCaseNameEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.changeCaseName);
   changeCaseNameEventPage.changeCaseName();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.changeCaseName);
 });
 
-Scenario('local authority enters orders and directions', async (I, caseViewPage, enterOrdersAndDirectionsNeededEventPage) => {
+Scenario('local authority enters orders and directions @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterOrdersAndDirectionsNeededEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
   enterOrdersAndDirectionsNeededEventPage.checkCareOrder();
   enterOrdersAndDirectionsNeededEventPage.checkInterimCareOrder();
@@ -67,7 +67,7 @@ Scenario('local authority enters orders and directions', async (I, caseViewPage,
   I.seeAnswerInTab(8, 'Orders and directions needed', 'Give details', 'Test');
 });
 
-Scenario('local authority enters hearing', async (I, caseViewPage, enterHearingNeededEventPage) => {
+Scenario('local authority enters hearing @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterHearingNeededEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterHearingNeeded);
   enterHearingNeededEventPage.enterTimeFrame();
   enterHearingNeededEventPage.enterHearingType();
@@ -85,7 +85,7 @@ Scenario('local authority enters hearing', async (I, caseViewPage, enterHearingN
   I.seeAnswerInTab(6, 'Hearing needed', 'Are respondents aware of proceedings?', 'Yes');
 });
 
-Scenario('local authority enters children', async (I, caseViewPage, enterChildrenEventPage) => {
+Scenario('local authority enters children @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterChildrenEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
   await enterChildrenEventPage.enterChildDetails('Bran', 'Stark', '01', '08', '2015');
   await enterChildrenEventPage.defineChildSituation('01', '11', '2017');
@@ -213,7 +213,7 @@ Scenario('local authority enters respondents', async (I, caseViewPage, enterResp
   I.seeAnswerInTab(13, 'Party', 'Do you believe this person will have problems with litigation capacity (understanding what\'s happening in the case)?', 'No');
 });
 
-Scenario('local authority enters applicant', async (I, caseViewPage, enterApplicantEventPage) => {
+Scenario('local authority enters applicant @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterApplicantEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
   enterApplicantEventPage.enterApplicantDetails(applicant);
   enterApplicantEventPage.enterSolicitorDetails(solicitor);
@@ -289,7 +289,7 @@ Scenario('local authority enters others to be given notice', async (I, caseViewP
   I.seeAnswerInTab(11, 'Other person 1', 'Give details, including assessment outcomes and referrals to health services', 'mock reason');
 });
 
-Scenario('local authority enters grounds for non EPO application', async (I, caseViewPage, enterGroundsForApplicationEventPage) => {
+Scenario('local authority enters grounds for non EPO application @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterGroundsForApplicationEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
   enterGroundsForApplicationEventPage.enterThresholdCriteriaDetails();
   await I.completeEvent('Save and continue');
@@ -298,7 +298,7 @@ Scenario('local authority enters grounds for non EPO application', async (I, cas
   I.seeAnswerInTab(1, 'How does this case meet the threshold criteria?', '', 'Not receiving care that would be reasonably expected from a parent');
 });
 
-Scenario('local authority enters grounds for EPO application', async (I, caseViewPage, enterGroundsForApplicationEventPage, enterOrdersAndDirectionsNeededEventPage) => {
+Scenario('local authority enters grounds for EPO application @create-case-with-mandatory-sections-only', async (I, caseViewPage, enterGroundsForApplicationEventPage, enterOrdersAndDirectionsNeededEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterOrdersAndDirectionsNeeded);
   enterOrdersAndDirectionsNeededEventPage.checkEmergencyProtectionOrder();
   await I.completeEvent('Save and continue');
@@ -424,7 +424,7 @@ Scenario('local authority enters attending hearing',async (I, caseViewPage, ente
   I.seeAnswerInTab(10, 'Attending the hearing', 'Give details', 'I need this for this person');
 });
 
-Scenario('local authority uploads documents', caseDocs.uploadDocuments());
+Scenario('local authority uploads documents @create-case-with-mandatory-sections-only', caseDocs.uploadDocuments());
 
 Scenario('local authority tries to submit without giving consent', async (I, caseViewPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
@@ -433,7 +433,7 @@ Scenario('local authority tries to submit without giving consent', async (I, cas
   I.seeInCurrentUrl('/submitApplication');
 });
 
-Scenario('local authority submits after giving consent', async (I, caseViewPage, submitApplicationEventPage) => {
+Scenario('local authority submits after giving consent @create-case-with-mandatory-sections-only', async (I, caseViewPage, submitApplicationEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.submitCase);
   submitApplicationEventPage.giveConsent();
   await I.completeEvent('Submit');
