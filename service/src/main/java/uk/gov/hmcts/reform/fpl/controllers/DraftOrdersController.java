@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Order;
@@ -32,6 +33,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Api
 @RestController
@@ -69,6 +71,9 @@ public class DraftOrdersController {
                 caseData.getStandardDirectionOrder().getDirections());
 
             directions.forEach((key, value) -> caseDetails.getData().put(key, value));
+
+            caseDetails.getData().put("judgeAndLegalAdvisor",
+                defaultIfNull(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor(), null));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -115,6 +120,8 @@ public class DraftOrdersController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -122,7 +129,11 @@ public class DraftOrdersController {
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
                 .directions(directionHelperService.combineAllDirections(caseData))
-                .orderDoc(caseData.getStandardDirectionOrder().getOrderDoc())
+                .orderDoc(caseData.getStandardDirectionOrder().getOrderDoc().toBuilder()
+                    .filename(documentFilename(caseData.getStandardDirectionOrder().getOrderStatus()))
+                    .build())
+                .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
+                .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
                 .build())
             .build();
 
@@ -130,6 +141,7 @@ public class DraftOrdersController {
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
         caseDetails.getData().put("standardDirectionOrder", updated.getStandardDirectionOrder());
+        caseDetails.getData().remove("judgeAndLegalAdvisor");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -150,5 +162,13 @@ public class DraftOrdersController {
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
             "draft-standard-directions-order.pdf");
+    }
+
+    // this method will eventually build a new final document I imagine...
+    private String documentFilename(OrderStatus status) {
+        if (status == OrderStatus.SEALED) {
+            return "standard-directions-order.pdf";
+        }
+        return "draft-standard-directions-order.pdf";
     }
 }

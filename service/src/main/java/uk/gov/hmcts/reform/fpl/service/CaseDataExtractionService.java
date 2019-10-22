@@ -5,9 +5,13 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -24,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,6 +49,9 @@ public class CaseDataExtractionService {
     private final DirectionHelperService directionHelperService;
 
     private static final String EMPTY_STATE_PLACEHOLDER = "BLANK - please complete";
+
+    @Value("classpath:assets/images/draft-watermark.png")
+    private Resource resourceFile;
 
     @Autowired
     public CaseDataExtractionService(DateFormatterService dateFormatterService,
@@ -78,12 +86,13 @@ public class CaseDataExtractionService {
 
     // TODO
     // No need to pass in CaseData to each method. Refactor to only use required model
+    @SuppressWarnings("unchecked")
     public Map<String, Object> getStandardOrderDirectionData(CaseData caseData) throws IOException {
         Map<String, Object> extractedHearingBookingData = getHearingBookingData(caseData);
 
         List<Map<String, String>> respondentsNameAndRelationship = getRespondentsNameAndRelationship(caseData);
 
-        return ImmutableMap.<String, Object>builder()
+        ImmutableMap.Builder data = ImmutableMap.<String, Object>builder()
             .put("courtName", caseData.getCaseLocalAuthority() != null
                 ? hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName()
                 : EMPTY_STATE_PLACEHOLDER)
@@ -97,8 +106,21 @@ public class CaseDataExtractionService {
             .put("respondentsProvided", !respondentsNameAndRelationship.isEmpty())
             .put("applicantName", getFirstApplicantName(caseData))
             .putAll(getGroupedDirections(caseData))
-            .putAll(extractedHearingBookingData)
-            .build();
+            .putAll(extractedHearingBookingData);
+
+        if (OrderStatus.SEALED != caseData.getStandardDirectionOrder().getOrderStatus()) {
+            byte[] fileContent;
+            try {
+                fileContent = FileUtils.readFileToByteArray(resourceFile.getFile());
+                String encodedString = Base64.getEncoder().encodeToString(fileContent);
+
+                data.put("draftBackground", String.format("image:base64:%1$s", encodedString));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return data.build();
     }
 
     private Map<String, Object> getHearingBookingData(CaseData caseData) {
