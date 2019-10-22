@@ -68,6 +68,7 @@ module.exports = {
     createNoticeOfProceedings: 'Create notice of proceedings',
     addStatementOfService: 'Add statement of service (c9)',
     uploadC2Documents: 'Upload a C2',
+    draftStandardDirections: 'Draft standard directions',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',
