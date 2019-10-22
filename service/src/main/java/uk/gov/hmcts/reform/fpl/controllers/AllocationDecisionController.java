@@ -3,15 +3,17 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
-import uk.gov.hmcts.reform.fpl.service.MapperService;
 
 import java.util.Map;
 
@@ -21,15 +23,11 @@ import java.util.Map;
 public class AllocationDecisionController {
     private final ObjectMapper mapper;
     private final CourtLevelAllocationService service;
-    private final ApplicationEventPublisher applicationEventPublisher;
-    private final MapperService mapperService;
 
     @Autowired
-    public AllocationDecisionController(ObjectMapper mapper, CourtLevelAllocationService service, ApplicationEventPublisher applicationEventPublisher, MapperService mapperService) {
+    public AllocationDecisionController(ObjectMapper mapper, CourtLevelAllocationService service) {
         this.mapper = mapper;
         this.service = service;
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.mapperService = mapperService;
     }
 
     @PostMapping("/about-to-start")

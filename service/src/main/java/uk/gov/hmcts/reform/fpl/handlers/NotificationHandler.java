@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import com.microsoft.applicationinsights.boot.dependencies.google.common.collect.ImmutableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,10 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_SUBMISSION_TEMPLATE;
 
 @Component
 public class NotificationHandler {
@@ -46,7 +48,8 @@ public class NotificationHandler {
                                NotificationClient notificationClient,
                                HmctsEmailContentProvider hmctsEmailContentProvider,
                                CafcassEmailContentProvider cafcassEmailContentProvider,
-                               GatekeeperEmailContentProvider gatekeeperEmailContentProvider, LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider) {
+                               GatekeeperEmailContentProvider gatekeeperEmailContentProvider,
+                               LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider) {
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.cafcassLookupConfiguration = cafcassLookupConfiguration;
         this.localAuthorityEmailLookupConfiguration = localAuthorityEmailLookupConfiguration;
@@ -101,7 +104,7 @@ public class NotificationHandler {
             .buildCafcassSDOSubmissionNotification(caseDetails, localAuthorityCode);
         String reference = String.valueOf(caseDetails.getId());
         String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
-        sendNotification(SDO_TEMPLATE, email, parameters, reference);
+        sendNotification(SDO_SUBMISSION_TEMPLATE, email, parameters, reference);
     }
 
     @EventListener
@@ -112,7 +115,7 @@ public class NotificationHandler {
             .buildLocalAuthoritySDOSubmissionNotification(caseDetails, localAuthorityCode);
         String reference = Long.toString(caseDetails.getId());
         String email = localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode).getEmail();
-        sendNotification(SDO_TEMPLATE, email, parameters, reference);
+        sendNotification(SDO_SUBMISSION_TEMPLATE, email, parameters, reference);
     }
 
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {

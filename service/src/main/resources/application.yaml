@@ -110,4 +110,4 @@ fpl:
   local_authority_code_to_cafcass:
     mapping: 'SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com'
   local_authority_code_to_local_authority:
-    mapping: 'SA=>Swansea Local Authority:FamilyPublicLaw+sa@gmail.com;HN=>Hillingdon Local Authority:FamilyPublicLaw+hn-sdo-submitted@gmail.com'
+    mapping: 'SA=>Swansea Local Authority:FamilyPublicLaw+sa@gmail.com;HN=>Hillingdon Local Authority:FamilyPublicLaw+hn@gmail.com'

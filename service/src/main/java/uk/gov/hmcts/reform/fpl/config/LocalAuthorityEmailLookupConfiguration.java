@@ -14,7 +14,8 @@ public class LocalAuthorityEmailLookupConfiguration {
 
     private final Map<String, LocalAuthority> mapping;
 
-    public LocalAuthorityEmailLookupConfiguration(@Value("${fpl.local_authority_code_to_local_authority.mapping}") String config) {
+    public LocalAuthorityEmailLookupConfiguration(@Value("${fpl.local_authority_code_to_local_authority.mapping}")
+                                                      String config) {
         this.mapping = LookupConfigParser.parse(config, value -> {
             String[] entrySplit = value.split(":", 2);
             return new LocalAuthority(
