@@ -355,10 +355,10 @@ code-point-at@^1.0.0:
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
   integrity sha1-DQcLTQQ6W+ozovGkDi7bPZpMz3c=
 
-codeceptjs@^2.3.2:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.3.2.tgz#b08f36c0a7fed41b6e37550da6634314a46dd521"
-  integrity sha512-wSd4x4lx22v0FHE7z3TamPw/OYVRwGAr5N3otb/fkiq7wtIlpI0IayxBC7IG4gJT0cUmq4Pc1pNAw49faFUYIA==
+codeceptjs@^2.3.3:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/codeceptjs/-/codeceptjs-2.3.3.tgz#f77561233f76b59a51b5cd765ecca8c67a31c723"
+  integrity sha512-rf07OH6nNphp0m8qWGVqzQ7jAg2urq/DEoq9nm5t01gP6OgXJVKX6qFEsoZWxunLTvogCpiVZKzUCmh23FhxHw==
   dependencies:
     allure-js-commons "^1.3.2"
     axios "^0.19.0"
@@ -935,7 +935,7 @@ glob-parent@^5.0.0:
   dependencies:
     is-glob "^4.0.1"
 
-glob@7.1.3, glob@^7.1.3:
+glob@7.1.3:
   version "7.1.3"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.3.tgz#3960832d3f1574108342dafd3a67b332c0969df1"
   integrity sha512-vcfuiIxogLV4DlGBHIUOwI0IbrJ8HWPc4MU7HzviGeNho/UJDfi6B5p3sHeWIQ0KGIU0Jpxi5ZHxemQfLkkAwQ==
@@ -958,7 +958,7 @@ glob@^6.0.1:
     once "^1.3.0"
     path-is-absolute "^1.0.0"
 
-glob@^7.1.4:
+glob@^7.1.3, glob@^7.1.4:
   version "7.1.4"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.4.tgz#aa608a2f6c577ad357e1ae5a5c26d9a8d1969255"
   integrity sha512-hkLPepehmnKk41pUGm3sYxoFs/umurYfYJCerbXEyFIWcAzvpipAgVkBqqT9RBKMGjnq6kMuyYwha6csxbiM1A==
