@@ -62,6 +62,8 @@ fpl:
     mapping: 'example=>Family Court:admin@family-court.com'
   local_authority_code_to_cafcass:
     mapping: 'example=>cafcass:cafcass@cafcass.com'
+  local_authority_code_to_local_authority:
+    mapping: 'example=>Example Local Authority:local-authority@local-authority.com'
   local_authority_user:
     mapping: 'example=>1,2,3'
 
