@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SDOSubmittedEvent;
@@ -17,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -29,9 +31,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @SuppressWarnings("LineLength")
@@ -46,6 +46,7 @@ class NotificationHandlerTest {
     private static final String CAFCASS_EMAIL_ADDRESS = "FamilyPublicLaw+cafcass@gmail.com";
     private static final String CAFCASS_NAME = "cafcass";
     private static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
+    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
 
     @Mock
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -55,6 +56,9 @@ class NotificationHandlerTest {
 
     @Mock
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+
+    @Mock
+    private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
 
     @Mock
     private NotificationClient notificationClient;
@@ -67,6 +71,9 @@ class NotificationHandlerTest {
 
     @Mock
     private GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
+
+    @Mock
+    private LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
 
     @InjectMocks
     private NotificationHandler notificationHandler;
@@ -170,21 +177,11 @@ class NotificationHandlerTest {
     @Test
     void shouldSendSDOEmailToCafcass() throws IOException, NotificationClientException {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("cafcass", CAFCASS_NAME)
-            .put("localAuthority", "Example Local Authority")
-            .put("dataPresent", "Yes")
-            .put("fullStop", "No")
-            .put("orders0", "^Emergency protection order")
-            .put("orders1", "")
-            .put("orders2", "")
-            .put("orders3", "")
-            .put("orders4", "")
-            .put("directionsAndInterim", "^Information on the whereabouts of the child")
+            .put("familyManCaseNumber", "6789")
+            .put("leadRespondentsName", "Moley")
+            .put("hearingDate","21 October 2020")
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "Same day")
-            .put("ordersAndDirections","orders")
             .build();
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
@@ -193,12 +190,37 @@ class NotificationHandlerTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        given(cafcassEmailContentProvider.buildCafcassSubmissionNotification(callbackRequest().getCaseDetails(),
+        given(cafcassEmailContentProvider.buildCafcassSDOSubmissionNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
         notificationHandler.sendSDOToCafcass(new SDOSubmittedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(CAFCASS_SUBMISSION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
+            eq(SDO_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
+    }
+
+    @Test
+    void shouldSendSDOEmailToLocalAuthority() throws IOException, NotificationClientException {
+        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
+            .put("familyManCaseNumber", "6789")
+            .put("leadRespondentsName", "Moley")
+            .put("hearingDate","21 October 2020")
+            .put("reference", "12345")
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
+
+        given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
+            .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(CAFCASS_NAME, LOCAL_AUTHORITY_EMAIL_ADDRESS));
+
+        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+            .willReturn("Example Local Authority");
+
+        given(localAuthorityEmailContentProvider.buildLocalAuthoritySDOSubmissionNotification(callbackRequest().getCaseDetails(),
+            LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
+
+        notificationHandler.sendSDOToLocalAuthority(new SDOSubmittedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+
+        verify(notificationClient, times(1)).sendEmail(
+            eq(SDO_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
     }
 }
