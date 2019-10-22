@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.SDOSubmittedEvent;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
@@ -51,8 +50,7 @@ public class AllocationDecisionController {
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest,
-                                                                    @RequestHeader(value = "user-id") String userId, @RequestHeader(value = "authorization") String authorization) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -60,8 +58,6 @@ public class AllocationDecisionController {
 
         Map<String, Object> data = caseDetails.getData();
         data.put("allocationDecision", allocationDecision);
-
-        applicationEventPublisher.publishEvent(new SDOSubmittedEvent(callbackRequest, authorization, userId));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
