@@ -258,7 +258,7 @@
             "party": {
               "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
               "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
-              "partyType": "Individual",
+              "partyType": "INDIVIDUAL",
               "title": "Mr",
               "firstName": "Paul",
               "lastName": "Smith",
@@ -285,7 +285,7 @@
             "party": {
               "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
               "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
-              "partyType": "Individual",
+              "partyType": "INDIVIDUAL",
               "title": "Mr",
               "firstName": "James",
               "lastName": "Smith",
@@ -320,7 +320,7 @@
             "party": {
               "partyId": "f683a361-f1a4-4f44-b49f-154a54a27900",
               "idamID": "f683a361-f1a4-4f44-b49f-154a54a27800",
-              "partyType": "Individual",
+              "partyType": "INDIVIDUAL",
               "title": "Mr",
               "firstName": "An",
               "lastName": "Other",

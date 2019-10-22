@@ -109,8 +109,15 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(9, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
 });
 
+Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+  sendCaseToGatekeeperEventPage.enterEmail();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
+});
+
 // Disabled as permissions to create / view notice of proceeding documents has been temporarily disabled. Enable once updates to c6 and c6a have been made
-xScenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
+Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
   await createNoticeOfProceedingsEventPage.checkC6();
   await createNoticeOfProceedingsEventPage.checkC6A();
@@ -122,11 +129,4 @@ xScenario('HMCTS admin creates notice of proceedings documents', async (I, caseV
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeAnswerInTab('1', 'Notice of proceedings 1', 'File name', 'Notice_of_proceedings_c6.pdf');
   I.seeAnswerInTab('1', 'Notice of proceedings 2', 'File name', 'Notice_of_proceedings_c6a.pdf');
-});
-
-Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
-  await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
-  sendCaseToGatekeeperEventPage.enterEmail();
-  await I.completeEvent('Save and continue');
-  I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 });

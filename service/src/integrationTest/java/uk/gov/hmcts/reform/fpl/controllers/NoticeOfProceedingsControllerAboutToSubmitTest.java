@@ -16,20 +16,17 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
-
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
@@ -43,7 +40,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
     private static final String C6_DOCUMENT_TITLE = C6.getDocumentTitle();
 
     @MockBean
-    private CaseDataExtractionService caseDataExtractionService;
+    private NoticeOfProceedingService noticeOfProceedingService;
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
@@ -71,9 +68,9 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
 
         CaseData caseData = mapper.convertValue(caseDetails.getCaseDetails().getData(), CaseData.class);
 
-        Map<String, String> templateData = createTemplatePlaceholders();
+        Map<String, Object> templateData = createTemplatePlaceholders();
 
-        given(caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData))
+        given(noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData))
             .willReturn(templateData);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
             .willReturn(docmosisDocument);
@@ -108,7 +105,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
             .andReturn();
     }
 
-    private Map<String, String> createTemplatePlaceholders() {
+    private Map<String, Object> createTemplatePlaceholders() {
         return Map.of(
             "courtName", "Swansea Family Court",
             "familyManCaseNumber", "SW123123",
