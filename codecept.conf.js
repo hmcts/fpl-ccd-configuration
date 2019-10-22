@@ -64,6 +64,7 @@ exports.config = {
     createNoticeOfProceedingsEventPage: './e2e/pages/events/createNoticeOfProceedingsEvent.page.js',
     addHearingBookingDetailsEventPage: './e2e/pages/events/addHearingBookingDetailsEvent.page.js',
     addStatementOfServiceEventPage: './e2e/pages/events/addStatementOfServiceEvent.page.js',
+    uploadC2DocumentsEventPage: './e2e/pages/events/uploadC2DocumentsEvent.page.js',
     draftStandardDirectionsEventPage: './e2e/pages/events/draftStandardDirectionsEvent.page.js',
   },
   plugins: {
