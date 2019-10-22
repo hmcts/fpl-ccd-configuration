@@ -517,36 +517,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadStandardDirectionsAfterGatekeeping",
-    "Name": "Documents",
-    "Description": "Upload standard directions",
-    "DisplayOrder": 2,
-    "PreConditionState(s)": "Gatekeeping",
-    "PostConditionState": "Gatekeeping",
-    "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "uploadC2Gatekeeping",
-    "Name": "Upload a C2",
-    "Description": "Upload a c2 to the case",
-    "DisplayOrder": 3,
-    "PreConditionState(s)": "Gatekeeping",
-    "PostConditionState": "Gatekeeping",
-    "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-c2/about-to-submit",
-    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-c2/submitted"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingBookingDetailsGatekeeping",
     "Name": "Add hearing details",
     "Description": "Add hearing booking details to a case",
@@ -700,6 +670,7 @@
     "ShowSummary": "N",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-c2/about-to-submit"
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-c2/about-to-submit",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/upload-c2/submitted"
   }
 ]
