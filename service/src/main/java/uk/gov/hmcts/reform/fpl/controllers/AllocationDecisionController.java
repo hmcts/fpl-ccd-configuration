@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -24,15 +23,12 @@ import java.util.Map;
 public class AllocationDecisionController {
     private final ObjectMapper mapper;
     private final CourtLevelAllocationService service;
-    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
     public AllocationDecisionController(ObjectMapper mapper,
-                                        CourtLevelAllocationService service,
-                                        ApplicationEventPublisher applicationEventPublisher) {
+                                        CourtLevelAllocationService service) {
         this.mapper = mapper;
         this.service = service;
-        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @PostMapping("/about-to-start")
@@ -53,8 +49,7 @@ public class AllocationDecisionController {
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest
-                                                                            callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
