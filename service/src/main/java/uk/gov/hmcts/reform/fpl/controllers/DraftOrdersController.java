@@ -109,7 +109,7 @@ public class DraftOrdersController {
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
-                .filename("draft-standard-directions-order.pdf")
+                .filename(document.originalDocumentName)
                 .build())
             .build();
 
@@ -174,8 +174,7 @@ public class DraftOrdersController {
                                  Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
 
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-            "draft-standard-directions-order.pdf");
+        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), document.getDocumentTitle());
     }
 
     private String documentFilename(OrderStatus status) {

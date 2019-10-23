@@ -5,13 +5,13 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -41,8 +41,10 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 
 @Service
+@Slf4j
 // TODO
 // No longer a very readable service. Consider splitting into NoticeOfProceedingsService and SDOService
 public class CaseDataExtractionService {
@@ -120,17 +122,16 @@ public class CaseDataExtractionService {
         data.putAll(getGroupedDirections(caseData));
         data.putAll(getHearingBookingData(caseData));
 
-        if (isNotEmpty(caseData.getStandardDirectionOrder())) {
-            if (OrderStatus.SEALED != caseData.getStandardDirectionOrder().getOrderStatus()) {
-                byte[] fileContent;
-                try {
-                    fileContent = FileUtils.readFileToByteArray(resourceFile.getFile());
-                    String encodedString = Base64.getEncoder().encodeToString(fileContent);
+        if (isNotEmpty(caseData.getStandardDirectionOrder())
+            && caseData.getStandardDirectionOrder().getOrderStatus() != SEALED) {
+            byte[] fileContent;
+            try {
+                fileContent = FileUtils.readFileToByteArray(resourceFile.getFile());
+                String encodedString = Base64.getEncoder().encodeToString(fileContent);
 
-                    data.put("draftBackground", String.format("image:base64:%1$s", encodedString));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                data.put("draftBackground", String.format("image:base64:%1$s", encodedString));
+            } catch (IOException e) {
+                log.warn(e.getMessage());
             }
         }
 
@@ -148,11 +149,13 @@ public class CaseDataExtractionService {
             );
         }
 
+        String judgeTitle = EMPTY_PLACEHOLDER;
+
         if (isNotEmpty(judgeAndLegalAdvisor.getJudgeTitle())) {
-            map.put("judgeTitle", defaultIfBlank(judgeAndLegalAdvisor.getJudgeTitle().getLabel(), EMPTY_PLACEHOLDER));
-        } else {
-            map.put("judgeTitle", EMPTY_PLACEHOLDER);
+            judgeTitle = defaultIfBlank(judgeAndLegalAdvisor.getJudgeTitle().getLabel(), EMPTY_PLACEHOLDER);
         }
+
+        map.put("judgeTitle", judgeTitle);
 
         map.put("legalAdvisorName", defaultIfBlank(judgeAndLegalAdvisor.getLegalAdvisorName(), EMPTY_PLACEHOLDER));
 

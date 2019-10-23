@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.enums;
 public enum DocmosisTemplates {
     C6("FL-PLW-HNO-ENG-00092.docx", "Notice_of_proceedings_(c6)"),
     C6A("FL-PLW-HNO-ENG-00093.docx", "Notice_of_proceedings_(c6a)"),
-    SDO("FL-PLW-STD-ENG-00099.docx", "Standard_directions_order");
+    SDO("FL-PLW-STD-ENG-00099.docx", "draft_standard_directions_order.pdf");
 
     private final String template;
     private final String documentTitle;
