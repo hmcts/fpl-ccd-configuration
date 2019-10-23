@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
@@ -51,6 +52,7 @@ public class NoticeOfProceedingsController {
     private final CaseDataExtractionService caseDataExtractionService;
     private final HearingBookingService hearingBookingService;
     private final DateFormatterService dateFormatterService;
+    private final NoticeOfProceedingsService noticeOfProceedingsService;
 
     @Autowired
     private NoticeOfProceedingsController(ObjectMapper mapper,
@@ -59,7 +61,8 @@ public class NoticeOfProceedingsController {
                                           UploadDocumentService uploadDocumentService,
                                           CaseDataExtractionService caseDataExtractionService,
                                           HearingBookingService hearingBookingService,
-                                          DateFormatterService dateFormatterService) {
+                                          DateFormatterService dateFormatterService,
+                                          NoticeOfProceedingsService noticeOfProceedingsService) {
         this.mapper = mapper;
         this.eventValidationService = eventValidationService;
         this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
@@ -67,6 +70,7 @@ public class NoticeOfProceedingsController {
         this.caseDataExtractionService = caseDataExtractionService;
         this.hearingBookingService = hearingBookingService;
         this.dateFormatterService = dateFormatterService;
+        this.noticeOfProceedingsService = noticeOfProceedingsService;
     }
 
     @PostMapping("/about-to-start")
@@ -115,7 +119,8 @@ public class NoticeOfProceedingsController {
             CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(),
                 CaseData.class);
 
-            noticeOfProceedingCaseData.addAll(getRemovedDocumentBundles(caseDataBefore, templateTypes));
+            noticeOfProceedingCaseData.addAll(noticeOfProceedingsService
+                .getRemovedDocumentBundles(caseDataBefore, templateTypes));
         }
 
         caseDetails.getData().put("noticeOfProceedingsBundle", noticeOfProceedingCaseData);
@@ -123,24 +128,6 @@ public class NoticeOfProceedingsController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
-    }
-
-    private List<Element> getRemovedDocumentBundles(CaseData caseData, List<DocmosisTemplates> templateTypes) {
-        List<String> templateTypeTitles = templateTypes.stream().map(DocmosisTemplates::getDocumentTitle)
-            .collect(Collectors.toList());
-
-        ImmutableList.Builder<Element> removedDocumentBundles = ImmutableList.builder();
-
-        caseData.getNoticeOfProceedingsBundle().forEach(element -> {
-            String filename = element.getValue().getDocument().getFilename();
-            filename = filename.substring(0, filename.lastIndexOf("."));
-
-            if (templateTypeTitles.stream().parallel().noneMatch(filename::equals)) {
-                removedDocumentBundles.add(element);
-            }
-        });
-
-        return removedDocumentBundles.build();
     }
 
     private List<Element> createNoticeOfProceedingsCaseData(List<Document> uploadedDocuments) {

@@ -91,6 +91,7 @@ public class CaseData {
         return applicants != null ? applicants : new ArrayList<>();
     }
 
+
     public List<Element<Child>> getAllChildren() {
         return children1 != null ? children1 : new ArrayList<>();
     }
