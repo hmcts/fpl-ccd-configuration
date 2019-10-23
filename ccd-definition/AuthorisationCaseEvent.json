@@ -331,8 +331,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+<<<<<<< HEAD
     "CaseEventID": "createNoticeOfProceedings",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
+=======
+    "CaseEventID": "populateSDO",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "C"
+>>>>>>> 8f818ef9a4f45f0fc367da3bcc9e639f21910b41
   }
 ]

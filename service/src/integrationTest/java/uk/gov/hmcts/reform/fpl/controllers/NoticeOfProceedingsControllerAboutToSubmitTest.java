@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -75,7 +74,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
 
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        Map<String, String> templateData = createTemplatePlaceholders();
+        Map<String, Object> templateData = createTemplatePlaceholders();
 
         given(caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData))
             .willReturn(templateData);
@@ -124,7 +123,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
             .andReturn();
     }
 
-    private Map<String, String> createTemplatePlaceholders() {
+    private Map<String, Object> createTemplatePlaceholders() {
         return Map.of(
             "courtName", "Swansea Family Court",
             "familyManCaseNumber", "SW123123",

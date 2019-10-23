@@ -30,7 +30,7 @@ public class DocmosisDocumentGeneratorService {
         this.docmosisDocumentGenerationConfiguration = docmosisDocumentGenerationConfiguration;
     }
 
-    public DocmosisDocument generateDocmosisDocument(Map<String, String> templateData,
+    public DocmosisDocument generateDocmosisDocument(Map<String, Object> templateData,
                                                      DocmosisTemplates docmosisTemplate) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

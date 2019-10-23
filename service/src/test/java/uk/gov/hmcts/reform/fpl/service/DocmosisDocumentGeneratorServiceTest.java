@@ -37,7 +37,7 @@ class DocmosisDocumentGeneratorServiceTest {
 
     @Test
     void shouldInvokesTornado() {
-        Map<String, String> placeholders = getTemplatePlaceholders();
+        Map<String, Object> placeholders = getTemplatePlaceholders();
 
         when(restTemplate.exchange(eq(docmosisDocumentGenerationConfiguration.getUrl() + "/rs/render"),
             eq(HttpMethod.POST), argumentCaptor.capture(), eq(byte[].class))).thenReturn(tornadoResponse);
@@ -52,7 +52,7 @@ class DocmosisDocumentGeneratorServiceTest {
         assertThat(argumentCaptor.getValue().getBody().getOutputFormat()).isEqualTo("pdf");
     }
 
-    private Map<String, String> getTemplatePlaceholders() {
+    private Map<String, Object> getTemplatePlaceholders() {
         return Map.of(
             "jurisdiction", "PUBLICLAW",
             "familyManCaseNumber", "123",

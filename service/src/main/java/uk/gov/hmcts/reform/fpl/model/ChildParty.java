@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.validation.constraints.NotBlank;
 
@@ -60,7 +59,7 @@ public final class ChildParty extends Party {
                       String firstName,
                       String lastName,
                       String organisationName,
-                      Date dateOfBirth,
+                      LocalDate dateOfBirth,
                       Address address,
                       EmailAddress email,
                       Telephone telephoneNumber,

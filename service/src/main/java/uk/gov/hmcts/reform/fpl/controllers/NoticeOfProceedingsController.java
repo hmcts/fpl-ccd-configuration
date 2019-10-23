@@ -31,10 +31,8 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
 import java.time.format.FormatStyle;
-
 import java.util.List;
 import java.util.Map;
-
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -97,15 +95,14 @@ public class NoticeOfProceedingsController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
-            @RequestHeader(value = "authorization") String authorization,
-            @RequestHeader(value = "user-id") String userId,
-            @RequestBody @NotNull CallbackRequest callbackRequest) {
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestHeader(value = "user-id") String userId,
+        @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Map<String, String> templateData = caseDataExtractionService
-            .getNoticeOfProceedingTemplateData(caseData);
+        Map<String, Object> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
 
         List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData);
 
@@ -148,7 +145,7 @@ public class NoticeOfProceedingsController {
 
     private List<Document> generateAndUploadDocuments(String userId,
                                                       String authorization,
-                                                      Map<String, String> templatePlaceholders,
+                                                      Map<String, Object> templatePlaceholders,
                                                       List<DocmosisTemplates> templates) {
         List<DocmosisDocument> docmosisDocuments = templates.stream()
             .map(template -> docmosisDocumentGeneratorService.generateDocmosisDocument(templatePlaceholders, template))
