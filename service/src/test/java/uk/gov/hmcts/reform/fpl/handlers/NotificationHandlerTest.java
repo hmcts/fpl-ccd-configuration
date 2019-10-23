@@ -213,7 +213,7 @@ class NotificationHandlerTest {
             .build();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(CAFCASS_NAME, LOCAL_AUTHORITY_EMAIL_ADDRESS));
+            .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");

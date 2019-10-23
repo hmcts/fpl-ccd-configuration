@@ -16,13 +16,9 @@ public class LocalAuthorityEmailLookupConfiguration {
 
     public LocalAuthorityEmailLookupConfiguration(@Value("${fpl.local_authority_code_to_local_authority.mapping}")
                                                       String config) {
-        this.mapping = LookupConfigParser.parse(config, value -> {
-            String[] entrySplit = value.split(":", 2);
-            return new LocalAuthority(
-                checkNotNull(emptyToNull(entrySplit[0]), "Local Authority name cannot be empty"),
-                checkNotNull(emptyToNull(entrySplit[1]), "Local Authority email cannot be empty")
-            );
-        });
+        this.mapping = LookupConfigParser.parse(config, value -> new LocalAuthority(
+            checkNotNull(emptyToNull(value), "Local Authority name cannot be empty")
+        ));
     }
 
     public LocalAuthority getLocalAuthority(String localAuthorityCode) {
@@ -32,16 +28,10 @@ public class LocalAuthorityEmailLookupConfiguration {
     }
 
     public static class LocalAuthority {
-        private final String name;
         private final String email;
 
-        public LocalAuthority(String name, String email) {
-            this.name = name;
+        public LocalAuthority(String email) {
             this.email = email;
-        }
-
-        public String getName() {
-            return name;
         }
 
         public String getEmail() {

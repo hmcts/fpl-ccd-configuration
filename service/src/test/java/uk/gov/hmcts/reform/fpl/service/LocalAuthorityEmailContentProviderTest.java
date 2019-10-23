@@ -64,7 +64,7 @@ class LocalAuthorityEmailContentProviderTest {
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(new LocalAuthorityEmailLookupConfiguration
-                .LocalAuthority(LOCAL_AUTHORITY_NAME, LOCAL_AUTHORITY_EMAIL_ADDRESS));
+                .LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Test local authority");

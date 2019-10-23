@@ -63,7 +63,7 @@ fpl:
   local_authority_code_to_cafcass:
     mapping: 'example=>cafcass:cafcass@cafcass.com'
   local_authority_code_to_local_authority:
-    mapping: 'example=>Example Local Authority:local-authority@local-authority.com'
+    mapping: 'example=>local-authority@local-authority.com'
   local_authority_user:
     mapping: 'example=>1,2,3'
   system_update:
@@ -119,7 +119,7 @@ fpl:
   local_authority_code_to_cafcass:
     mapping: 'SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com'
   local_authority_code_to_local_authority:
-    mapping: 'SA=>Swansea Local Authority:FamilyPublicLaw+sa@gmail.com;HN=>Hillingdon Local Authority:FamilyPublicLaw+hn@gmail.com'
+    mapping: 'SA=>FamilyPublicLaw+sa@gmail.com;HN=>:FamilyPublicLaw+hn@gmail.com'
   system_update:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
