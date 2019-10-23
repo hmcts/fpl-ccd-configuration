@@ -16,8 +16,8 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.util.Map;
@@ -40,7 +40,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
     private static final String C6_DOCUMENT_TITLE = C6.getDocumentTitle();
 
     @MockBean
-    private CaseDataExtractionService caseDataExtractionService;
+    private NoticeOfProceedingService noticeOfProceedingService;
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
@@ -70,7 +70,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
 
         Map<String, Object> templateData = createTemplatePlaceholders();
 
-        given(caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData))
+        given(noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData))
             .willReturn(templateData);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
             .willReturn(docmosisDocument);

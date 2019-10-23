@@ -82,6 +82,15 @@ public class CaseDataGeneratorHelper {
                         .lastName("Stark")
                         .build())
                     .build())
+                .build(),
+            Element.<Child>builder()
+                .id(UUID.randomUUID())
+                .value(Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName("Jon")
+                        .lastName("Snow")
+                        .build())
+                    .build())
                 .build());
     }
 
