@@ -355,7 +355,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
-    "TabDisplayOrder": 6,
+    "TabDisplayOrder": 7,
     "CaseFieldID": "c2DocumentBundle",
     "TabFieldDisplayOrder": 15
   }
