@@ -22,10 +22,10 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
@@ -46,7 +46,7 @@ public class NoticeOfProceedingsController {
     private final ValidateGroupService eventValidationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
-    private final CaseDataExtractionService caseDataExtractionService;
+    private final NoticeOfProceedingService noticeOfProceedingService;
     private final HearingBookingService hearingBookingService;
     private final DateFormatterService dateFormatterService;
 
@@ -55,14 +55,14 @@ public class NoticeOfProceedingsController {
                                           ValidateGroupService eventValidationService,
                                           DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
                                           UploadDocumentService uploadDocumentService,
-                                          CaseDataExtractionService caseDataExtractionService,
+                                          NoticeOfProceedingService noticeOfProceedingService,
                                           HearingBookingService hearingBookingService,
                                           DateFormatterService dateFormatterService) {
         this.mapper = mapper;
         this.eventValidationService = eventValidationService;
         this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
-        this.caseDataExtractionService = caseDataExtractionService;
+        this.noticeOfProceedingService = noticeOfProceedingService;
         this.hearingBookingService = hearingBookingService;
         this.dateFormatterService = dateFormatterService;
     }
@@ -73,7 +73,8 @@ public class NoticeOfProceedingsController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class).isEmpty()) {
-            HearingBooking hearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
+            HearingBooking hearingBooking = hearingBookingService
+                .getMostUrgentHearingBooking(caseData.getHearingDetails());
 
             caseDetails.getData().put("proceedingLabel", String.format("The case management hearing will be on the %s.",
                 dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG)));
@@ -98,7 +99,7 @@ public class NoticeOfProceedingsController {
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Map<String, Object> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
+        Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
 
         List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData);
 
