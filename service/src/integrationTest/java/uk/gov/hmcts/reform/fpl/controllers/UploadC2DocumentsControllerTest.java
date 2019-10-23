@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -36,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 class UploadC2DocumentsControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-    private static final ZonedDateTime ZONE_DATE_TIME = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
     @MockBean
     private UserDetailsService userDetailsService;
@@ -49,6 +49,13 @@ class UploadC2DocumentsControllerTest {
 
     @Autowired
     private DateFormatterService dateFormatterService;
+
+    private ZonedDateTime zonedDateTime;
+
+    @BeforeEach
+    void setup() {
+        zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
+    }
 
     @Test
     void shouldCreateC2DocumentBundle() throws Exception {
@@ -72,7 +79,7 @@ class UploadC2DocumentsControllerTest {
         assertC2BundleDocument(uploadedC2DocumentBundle, "Test description");
         assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo("Emma Taylor");
         assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(dateFormatterService
-            .formatLocalDateTimeBaseUsingFormat(ZONE_DATE_TIME.toLocalDateTime(), "h:mma, d MMMM yyyy"));
+            .formatLocalDateTimeBaseUsingFormat(zonedDateTime.toLocalDateTime(), "h:mma, d MMMM yyyy"));
     }
 
     @Test
@@ -102,7 +109,7 @@ class UploadC2DocumentsControllerTest {
 
         assertThat(appendedC2Document.getAuthor()).isEqualTo("Emma Taylor");
         assertThat(appendedC2Document.getUploadedDateTime()).isEqualTo(dateFormatterService
-            .formatLocalDateTimeBaseUsingFormat(ZONE_DATE_TIME.toLocalDateTime(), "h:mma, d MMMM yyyy"));
+            .formatLocalDateTimeBaseUsingFormat(zonedDateTime.toLocalDateTime(), "h:mma, d MMMM yyyy"));
     }
 
     private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) throws Exception {
