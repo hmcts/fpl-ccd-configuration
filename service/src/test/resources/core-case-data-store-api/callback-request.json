@@ -473,6 +473,21 @@
       ]
     }
   },
-  "case_details_before": {},
+  "case_details_before": {
+    "case_data": {
+      "noticeOfProceedingsBundle": [
+        {
+          "id": "",
+          "value": {
+            "document": {
+              "document_url": "http://dm-store:8080/documents/91434306-7283-46a1-9901-a64d30d1fb8e",
+              "document_filename": "Notice_of_proceedings_c6a.pdf",
+              "document_binary_url": "http://dm-store:8080/documents/91434306-7283-46a1-9901-a64d30d1fb8e/binary"
+            }
+          }
+        }
+      ]
+    }
+  },
   "eventId": {}
 }

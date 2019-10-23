@@ -34,7 +34,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
-
 @ActiveProfiles("integration-test")
 @WebMvcTest(NoticeOfProceedingsController.class)
 @OverrideAutoConfiguration(enabled = true)
@@ -98,6 +97,45 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
         assertThat(noticeOfProceedingBundle.getUrl()).isEqualTo(document.links.self.href);
         assertThat(noticeOfProceedingBundle.getFilename()).isEqualTo(document.originalDocumentName);
         assertThat(noticeOfProceedingBundle.getBinaryUrl()).isEqualTo(document.links.binary.href);
+    }
+
+    @Test
+    void shouldNotRemoveExistingC6DocumentWhenTheC6DocumentIsNotToBeRegenerated() throws Exception {
+        Document document = document();
+        DocmosisDocument docmosisDocument = DocmosisDocument.builder()
+            .bytes(PDF)
+            .documentTitle(C6_DOCUMENT_TITLE)
+            .build();
+
+        CallbackRequest callbackRequest = CallbackRequest.builder()
+            .caseDetails(callbackRequest().getCaseDetails())
+            .caseDetailsBefore(callbackRequest().getCaseDetailsBefore())
+            .build();
+
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+
+        Map<String, Object> templateData = createTemplatePlaceholders();
+
+        given(caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData))
+            .willReturn(templateData);
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
+            .willReturn(docmosisDocument);
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, PDF, C6_DOCUMENT_TITLE + ".pdf"))
+            .willReturn(document);
+
+        MvcResult response = makeRequest(callbackRequest);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(responseCaseData.getNoticeOfProceedingsBundle()).hasSize(2);
+
+        DocumentReference existingDocument = responseCaseData.getNoticeOfProceedingsBundle().get(1)
+            .getValue().getDocument();
+
+        assertThat(existingDocument.getFilename()).isEqualTo("Notice_of_proceedings_c6a.pdf");
     }
 
     private CaseDetails createCaseDetailsWithC6Document() {
