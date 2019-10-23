@@ -103,7 +103,7 @@ public class CaseDataExtractionService {
         data.putAll(getGroupedDirections(caseData));
         data.putAll(getHearingBookingData(caseData));
 
-        if (isNotEmpty(caseData.getStandardD    irectionOrder())
+        if (isNotEmpty(caseData.getStandardDirectionOrder())
             && caseData.getStandardDirectionOrder().getOrderStatus() != SEALED) {
             byte[] fileContent;
             try {
