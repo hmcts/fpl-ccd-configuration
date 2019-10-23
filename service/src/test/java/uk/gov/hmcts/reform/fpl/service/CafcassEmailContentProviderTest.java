@@ -2,21 +2,24 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import io.swagger.models.auth.In;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.model.*;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -98,10 +101,9 @@ class CafcassEmailContentProviderTest {
     void shouldReturnExpectedMapWithValidSDODetails() throws IOException {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
             .put("cafcass", CAFCASS_NAME)
-            .put("localAuthority", "Example Local Authority")
             .put("familyManCaseNumber", "12345")
             .put("leadRespondentsName", "Moley")
-            .put("hearingDate", "27 Oct 2020")
+            .put("hearingDate", "27 October 2020")
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
@@ -113,7 +115,19 @@ class CafcassEmailContentProviderTest {
             .willReturn("Example Local Authority");
 
         given(mapperService.mapObject(Mockito.any(), Mockito.any()))
-            .willReturn(CaseData.builder().build());
+            .willReturn(CaseData.builder().familyManCaseNumber("12345").respondents1(ImmutableList.of(
+                Element.<Respondent>builder()
+                    .value(Respondent.builder()
+                        .party(RespondentParty.builder()
+                            .lastName("Moley")
+                            .build())
+                        .build())
+                    .build()))
+                .hearingDetails(ImmutableList.of(
+            Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(HearingBooking.builder().date(LocalDate.of(2020,10, 27)).build())
+                .build())).build());
 
         assertThat(cafcassEmailContentProvider.buildCafcassSDOSubmissionNotification(populatedCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
