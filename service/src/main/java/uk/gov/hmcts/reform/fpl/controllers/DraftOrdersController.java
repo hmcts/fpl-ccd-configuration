@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Api
 @RestController
@@ -72,8 +71,8 @@ public class DraftOrdersController {
 
             directions.forEach((key, value) -> caseDetails.getData().put(key, value));
 
-            caseDetails.getData().put("judgeAndLegalAdvisor",
-                defaultIfNull(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor(), null));
+            caseDetails.getData()
+                .put("judgeAndLegalAdvisor", caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor());
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

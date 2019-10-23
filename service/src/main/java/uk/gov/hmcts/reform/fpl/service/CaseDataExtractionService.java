@@ -123,7 +123,7 @@ public class CaseDataExtractionService {
     private Map<String, Object> prepareJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         ImmutableMap.Builder map = ImmutableMap.<String, Object>builder();
 
-        if (judgeAndLegalAdvisor == null || isEmpty(judgeAndLegalAdvisor)) {
+        if (isEmpty(judgeAndLegalAdvisor)) {
             return ImmutableMap.of(
                 "judgeTitle", EMPTY_PLACEHOLDER,
                 "legalAdvisorName", EMPTY_PLACEHOLDER

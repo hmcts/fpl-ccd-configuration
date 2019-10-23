@@ -145,7 +145,7 @@ class DraftOrdersControllerTest {
             assertThat(sdo).containsEntry(
                 "orderDoc", ImmutableMap.builder()
                     .put("document_binary_url", document().links.binary.href)
-                    .put("document_filename", "draft-standard-directions-order.pdf")
+                    .put("document_filename", document().originalDocumentName)
                     .put("document_url", document().links.self.href)
                     .build());
         }
