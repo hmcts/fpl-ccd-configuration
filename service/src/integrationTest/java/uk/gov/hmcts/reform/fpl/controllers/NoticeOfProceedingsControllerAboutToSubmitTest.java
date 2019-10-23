@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -14,17 +12,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -45,7 +41,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
     private static final byte[] PDF = {1, 2, 3, 4, 5};
 
     @MockBean
-    private CaseDataExtractionService caseDataExtractionService;
+    private NoticeOfProceedingsService noticeOfProceedingsService;
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
@@ -69,13 +65,14 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
 
         CallbackRequest callbackRequest = CallbackRequest.builder()
             .caseDetails(callbackRequest().getCaseDetails())
+            .caseDetailsBefore(callbackRequest().getCaseDetailsBefore())
             .build();
 
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
         Map<String, Object> templateData = createTemplatePlaceholders();
 
-        given(caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData))
+        given(noticeOfProceedingsService.getNoticeOfProceedingTemplateData(caseData))
             .willReturn(templateData);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
             .willReturn(docmosisDocument);
@@ -97,57 +94,6 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
         assertThat(noticeOfProceedingBundle.getUrl()).isEqualTo(document.links.self.href);
         assertThat(noticeOfProceedingBundle.getFilename()).isEqualTo(document.originalDocumentName);
         assertThat(noticeOfProceedingBundle.getBinaryUrl()).isEqualTo(document.links.binary.href);
-    }
-
-    @Test
-    void shouldNotRemoveExistingC6DocumentWhenTheC6DocumentIsNotToBeRegenerated() throws Exception {
-        Document document = document();
-        DocmosisDocument docmosisDocument = DocmosisDocument.builder()
-            .bytes(PDF)
-            .documentTitle(C6_DOCUMENT_TITLE)
-            .build();
-
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(callbackRequest().getCaseDetails())
-            .caseDetailsBefore(callbackRequest().getCaseDetailsBefore())
-            .build();
-
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-
-        Map<String, Object> templateData = createTemplatePlaceholders();
-
-        given(caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData))
-            .willReturn(templateData);
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
-            .willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, PDF, C6_DOCUMENT_TITLE + ".pdf"))
-            .willReturn(document);
-
-        MvcResult response = makeRequest(callbackRequest);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-        assertThat(responseCaseData.getNoticeOfProceedingsBundle()).hasSize(2);
-
-        DocumentReference existingDocument = responseCaseData.getNoticeOfProceedingsBundle().get(1)
-            .getValue().getDocument();
-
-        assertThat(existingDocument.getFilename()).isEqualTo("Notice_of_proceedings_c6a.pdf");
-    }
-
-    private CaseDetails createCaseDetailsWithC6Document() {
-        return CaseDetails.builder()
-            .data(ImmutableMap.of(
-                "noticeOfProceedingsBundle", ImmutableList.of(
-                    ImmutableMap.of(
-                        "id", UUID.randomUUID(),
-                        "value", ImmutableMap.of(
-                            "document", ImmutableMap.of(
-                                "document_filename", "Notice_of_proceedings_c6.pdf"
-                            )))))).build();
     }
 
     private MvcResult makeRequest(CallbackRequest request) throws Exception {

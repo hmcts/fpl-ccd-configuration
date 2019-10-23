@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
@@ -47,17 +46,15 @@ public class NoticeOfProceedingsController {
     private final ValidateGroupService eventValidationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
-    private final CaseDataExtractionService caseDataExtractionService;
+    private final NoticeOfProceedingsService noticeOfProceedingsService;
     private final HearingBookingService hearingBookingService;
     private final DateFormatterService dateFormatterService;
-    private final NoticeOfProceedingsService noticeOfProceedingsService;
 
     @Autowired
     private NoticeOfProceedingsController(ObjectMapper mapper,
                                           ValidateGroupService eventValidationService,
                                           DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
                                           UploadDocumentService uploadDocumentService,
-                                          CaseDataExtractionService caseDataExtractionService,
                                           HearingBookingService hearingBookingService,
                                           DateFormatterService dateFormatterService,
                                           NoticeOfProceedingsService noticeOfProceedingsService) {
@@ -65,7 +62,6 @@ public class NoticeOfProceedingsController {
         this.eventValidationService = eventValidationService;
         this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
-        this.caseDataExtractionService = caseDataExtractionService;
         this.hearingBookingService = hearingBookingService;
         this.dateFormatterService = dateFormatterService;
         this.noticeOfProceedingsService = noticeOfProceedingsService;
@@ -77,7 +73,8 @@ public class NoticeOfProceedingsController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class).isEmpty()) {
-            HearingBooking hearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
+            HearingBooking hearingBooking = hearingBookingService
+                .getMostUrgentHearingBooking(caseData.getHearingDetails());
 
             caseDetails.getData().put("proceedingLabel", String.format("The case management hearing will be on the %s.",
                 dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG)));
@@ -102,7 +99,7 @@ public class NoticeOfProceedingsController {
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Map<String, Object> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
+        Map<String, Object> templateData = noticeOfProceedingsService.getNoticeOfProceedingTemplateData(caseData);
 
         List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData);
 
@@ -111,8 +108,7 @@ public class NoticeOfProceedingsController {
 
         List<Element> noticeOfProceedingCaseData = createNoticeOfProceedingsCaseData(uploadedDocuments);
 
-        if (callbackRequest.getCaseDetailsBefore() != null
-            && callbackRequest.getCaseDetailsBefore().getData().get("noticeOfProceedingsBundle") != null) {
+        if (callbackRequest.getCaseDetailsBefore().getData().get("noticeOfProceedingsBundle") != null) {
             CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(),
                 CaseData.class);
 
