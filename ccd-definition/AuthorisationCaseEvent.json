@@ -334,5 +334,47 @@
     "CaseEventID": "populateSDO",
     "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "C"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadC2",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadC2",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadC2",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadC2Gatekeeping",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadC2Gatekeeping",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "uploadC2Gatekeeping",
+    "UserRole": "caseworker-publiclaw-cafcass",
+    "CRUD": "CRU"
   }
 ]
