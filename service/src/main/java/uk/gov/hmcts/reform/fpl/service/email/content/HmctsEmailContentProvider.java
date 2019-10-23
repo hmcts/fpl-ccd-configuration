@@ -5,6 +5,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -74,10 +75,11 @@ public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
     }
 
     private LocalDate getHearingBookingDate(final CaseData caseData) {
-        Optional<Element<HearingBooking>> optionalHearingBookingElement = caseData.getHearingDetails()
-            .stream()
-            .filter(Objects::nonNull)
-            .findFirst();
+        Optional<Element<HearingBooking>> optionalHearingBookingElement =
+            (CollectionUtils.isEmpty(caseData.getHearingDetails()) ? Optional.empty() : caseData.getHearingDetails()
+                .stream()
+                .filter(Objects::nonNull)
+                .findFirst());
 
         if (optionalHearingBookingElement.isPresent()) {
             return optionalHearingBookingElement.get().getValue().getDate();
@@ -87,10 +89,11 @@ public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
     }
 
     private String getRespondent1Lastname(final List<Respondent> respondents) {
-        Optional<Respondent> optionalRespondent = respondents
+        Optional<Respondent> optionalRespondent =
+            (CollectionUtils.isEmpty(respondents) ? Optional.empty() : respondents
                 .stream()
                 .filter(Objects::nonNull)
-                .findFirst();
+                .findFirst());
 
         if (optionalRespondent.isPresent()) {
             return optionalRespondent.get().getParty().getLastName();
