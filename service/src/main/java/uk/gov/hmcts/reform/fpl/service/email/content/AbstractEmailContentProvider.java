@@ -7,9 +7,9 @@ import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsTy
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,9 +22,11 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 public abstract class AbstractEmailContentProvider {
 
     private final String uiBaseUrl;
+    private final DateFormatterService dateFormatterService;
 
-    protected AbstractEmailContentProvider(String uiBaseUrl) {
+    protected AbstractEmailContentProvider(String uiBaseUrl, DateFormatterService dateFormatterService) {
         this.uiBaseUrl = uiBaseUrl;
+        this.dateFormatterService = dateFormatterService;
     }
 
     @SuppressWarnings("unchecked")
@@ -48,19 +50,13 @@ public abstract class AbstractEmailContentProvider {
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", Objects.isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber())
             .put("leadRespondentsName", Objects.isNull(caseData.getRespondents1()) ? "" : capitalizeString(caseData.getRespondents1().get(0).getValue().getParty().getLastName()))
-            .put("hearingDate",Objects.isNull(caseData.getHearingDetails()) ? "" : formatDate(caseData.getHearingDetails().get(0).getValue().getDate()))
+            .put("hearingDate",Objects.isNull(caseData.getHearingDetails()) ? "" : dateFormatterService.formatLocalDateToString(caseData.getHearingDetails().get(0).getValue().getDate(),FormatStyle.LONG))
             .put("reference", String.valueOf(caseDetails.getId()))
             .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
     }
 
     private String capitalizeString(String unformattedString) {
         return unformattedString.substring(0, 1).toUpperCase() + unformattedString.substring(1).toLowerCase();
-    }
-
-    private String formatDate(LocalDate unformattedDate) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd LLLL yyyy");
-        String formattedHearingDate = unformattedDate.format(formatter);
-        return formattedHearingDate;
     }
 
     private List<String> buildOrdersAndDirections(Map<String, Object> optionalOrders) {

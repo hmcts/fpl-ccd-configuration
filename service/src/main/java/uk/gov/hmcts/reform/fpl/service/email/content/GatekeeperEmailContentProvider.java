@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
 import java.util.Map;
 
@@ -15,8 +16,9 @@ public class GatekeeperEmailContentProvider extends AbstractEmailContentProvider
 
     @Autowired
     public GatekeeperEmailContentProvider(LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
-                                          @Value("${ccd.ui.base.url}") String uiBaseUrl) {
-        super(uiBaseUrl);
+                                          @Value("${ccd.ui.base.url}") String uiBaseUrl,
+                                          DateFormatterService dateFormatterService) {
+        super(uiBaseUrl, dateFormatterService);
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
     }
 

@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentP
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.format.FormatStyle;
 import java.util.Map;
 import java.util.UUID;
 
@@ -44,6 +45,9 @@ class LocalAuthorityEmailContentProviderTest {
     @Mock
     MapperService mapperService;
 
+    @Mock
+    DateFormatterService dateFormatterService;
+
     @InjectMocks
     private LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
 
@@ -64,6 +68,9 @@ class LocalAuthorityEmailContentProviderTest {
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Test local authority");
+
+        given(dateFormatterService.formatLocalDateToString(LocalDate.of(2020,10,27), FormatStyle.LONG))
+            .willReturn("27 October 2020");
 
         given(mapperService.mapObject(Mockito.any(), Mockito.any()))
             .willReturn(CaseData.builder().familyManCaseNumber("12345").respondents1(ImmutableList.of(

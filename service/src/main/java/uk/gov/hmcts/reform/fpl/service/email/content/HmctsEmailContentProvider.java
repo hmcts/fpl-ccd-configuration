@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
 import java.util.Map;
 
@@ -18,8 +19,9 @@ public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
     @Autowired
     public HmctsEmailContentProvider(LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                     @Value("${ccd.ui.base.url}") String uiBaseUrl) {
-        super(uiBaseUrl);
+                                     @Value("${ccd.ui.base.url}") String uiBaseUrl,
+                                     DateFormatterService dateFormatterService) {
+        super(uiBaseUrl,dateFormatterService);
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }
