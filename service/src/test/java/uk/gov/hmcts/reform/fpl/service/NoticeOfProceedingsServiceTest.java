@@ -48,11 +48,11 @@ class NoticeOfProceedingsServiceTest {
     private CaseData generateNoticeOfProceedingBundle(List<DocmosisTemplates> templateTypes) {
         return CaseData.builder()
             .noticeOfProceedingsBundle(templateTypes.stream()
-                .map(DocmosisDocument -> Element.<DocumentBundle>builder()
+                .map(docmosisDocument -> Element.<DocumentBundle>builder()
                     .id(UUID.randomUUID())
                     .value(DocumentBundle.builder()
                         .document(DocumentReference.builder()
-                            .filename(C6A.getDocumentTitle() + ".pdf")
+                            .filename(docmosisDocument.getDocumentTitle() + ".pdf")
                             .build())
                         .build())
                     .build()).collect(Collectors.toList())).build();
