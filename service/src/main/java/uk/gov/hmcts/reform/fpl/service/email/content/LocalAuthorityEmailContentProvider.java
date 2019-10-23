@@ -35,7 +35,7 @@ public class LocalAuthorityEmailContentProvider extends AbstractEmailContentProv
         CaseData caseData = service.mapObject(caseDetails.getData(), CaseData.class);
 
         return super.getSDOPersonalisationBuilder(caseDetails, caseData)
-            .put("cafcass", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
+            .put("title", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .build();
     }
 }

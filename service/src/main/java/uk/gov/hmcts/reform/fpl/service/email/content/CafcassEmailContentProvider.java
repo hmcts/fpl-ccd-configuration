@@ -43,7 +43,7 @@ public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
         CaseData caseData = service.mapObject(caseDetails.getData(), CaseData.class);
 
         return super.getSDOPersonalisationBuilder(caseDetails, caseData)
-            .put("cafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
+            .put("title", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
             .build();
     }
 }

@@ -54,7 +54,7 @@ class LocalAuthorityEmailContentProviderTest {
     @Test
     void shouldReturnExpectedMapWithValidSDODetails() throws IOException {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("cafcass", LOCAL_AUTHORITY_NAME)
+            .put("title", LOCAL_AUTHORITY_NAME)
             .put("familyManCaseNumber", "12345")
             .put("leadRespondentsName", "Moley")
             .put("hearingDate", "27 October 2020")
