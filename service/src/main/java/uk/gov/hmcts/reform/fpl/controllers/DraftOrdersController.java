@@ -105,14 +105,15 @@ public class DraftOrdersController {
             caseDataExtractionService.getStandardOrderDirectionData(updated)
         );
 
-        Order.OrderBuilder orderBuilder = updated.getStandardDirectionOrder().toBuilder()
+        Order order = updated.getStandardDirectionOrder().toBuilder()
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
                 .filename("draft-standard-directions-order.pdf")
-                .build());
+                .build())
+            .build();
 
-        caseDetails.getData().put("standardDirectionOrder", orderBuilder.build());
+        caseDetails.getData().put("standardDirectionOrder", order);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -144,14 +145,15 @@ public class DraftOrdersController {
             caseDataExtractionService.getStandardOrderDirectionData(updated)
         );
 
-        Order.OrderBuilder orderBuilder = updated.getStandardDirectionOrder().toBuilder()
+        Order order = updated.getStandardDirectionOrder().toBuilder()
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
                 .filename(documentFilename(caseData.getStandardDirectionOrder().getOrderStatus()))
-                .build());
+                .build())
+            .build();
 
-        caseDetails.getData().put("standardDirectionOrder", orderBuilder.build());
+        caseDetails.getData().put("standardDirectionOrder", order);
         caseDetails.getData().remove("judgeAndLegalAdvisor");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -160,6 +162,7 @@ public class DraftOrdersController {
     }
 
     private List<Element<Direction>> getConfigDirectionsWithHiddenValues() throws IOException {
+        // constructDirectionForCCD requires LocalDateTime, but this value is not used in what is returned
         return ordersLookupService.getStandardDirectionOrder().getDirections()
             .stream()
             .map(direction -> directionHelperService.constructDirectionForCCD(direction, LocalDateTime.now()))

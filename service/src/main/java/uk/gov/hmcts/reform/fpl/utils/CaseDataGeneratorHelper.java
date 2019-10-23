@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.collect.ImmutableList;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,6 +20,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 
 public class CaseDataGeneratorHelper {
 
@@ -82,7 +85,7 @@ public class CaseDataGeneratorHelper {
                 .build());
     }
 
-    public static Order createStandardDirectionOrders(LocalDateTime today) {
+    public static Order createStandardDirectionOrders(LocalDateTime today, OrderStatus status) {
         return Order.builder()
             .directions(ImmutableList.of(
                 Element.<Direction>builder()
@@ -103,7 +106,14 @@ public class CaseDataGeneratorHelper {
                         .assignee(ALL_PARTIES)
                         .build())
                     .build()
-            )).build();
+            ))
+            .orderStatus(status)
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HER_HONOUR_JUDGE)
+                .judgeLastName("Smith")
+                .legalAdvisorName("Bob Ross")
+                .build())
+            .build();
     }
 
     public static List<Element<Respondent>> createRespondents() {

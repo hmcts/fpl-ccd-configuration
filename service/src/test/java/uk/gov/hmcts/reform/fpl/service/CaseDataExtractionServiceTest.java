@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,6 +10,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -25,6 +27,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -45,7 +48,7 @@ class CaseDataExtractionServiceTest {
     private static final String CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL);
     private static final LocalDate TODAYS_DATE = LocalDate.now();
     private static final LocalDateTime TODAYS_DATE_TIME = LocalDateTime.now();
-    private static final String EMPTY_STATE_PLACEHOLDER = "BLANK - please complete";
+    private static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
@@ -127,21 +130,23 @@ class CaseDataExtractionServiceTest {
 
     @Test
     void shouldMapEmptyCaseDataForDraftSDO() throws IOException {
-        CaseData caseData = CaseData.builder().build();
-
         Map<String, Object> templateData = caseDataExtractionService
-            .getStandardOrderDirectionData(caseData);
+            .getStandardOrderDirectionData(CaseData.builder().build());
 
-        assertThat(templateData.get("courtName")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
-        assertThat(templateData.get("familyManCaseNumber")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
+        assertThat(templateData.get("judgeAndLegalAdvisor")).isEqualToComparingFieldByField(ImmutableMap.of(
+            "judgeTitle", EMPTY_PLACEHOLDER,
+            "legalAdvisorName", EMPTY_PLACEHOLDER
+        ));
+        assertThat(templateData.get("courtName")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("familyManCaseNumber")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("generationDate")).isEqualTo(dateFormatterService
             .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
-        assertThat(templateData.get("complianceDeadline")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
+        assertThat(templateData.get("complianceDeadline")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("children")).isEqualTo(ImmutableList.of());
-        assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
-        assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
-        assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
+        assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
         assertThat(templateData.get("allParties")).isNull();
         assertThat(templateData.get("localAuthorityDirections")).isNull();
@@ -160,12 +165,17 @@ class CaseDataExtractionServiceTest {
             .hearingDetails(ImmutableList.of())
             .dateSubmitted(LocalDate.now())
             .respondents1(ImmutableList.of())
-            .standardDirectionOrder(createStandardDirectionOrders(TODAYS_DATE_TIME))
+            .standardDirectionOrder(createStandardDirectionOrders(TODAYS_DATE_TIME, OrderStatus.SEALED))
             .build();
 
         Map<String, Object> templateData = caseDataExtractionService
             .getStandardOrderDirectionData(caseData);
 
+        assertThat(templateData.get("judgeAndLegalAdvisor")).isEqualTo(ImmutableMap.of(
+            "judgeTitle", HER_HONOUR_JUDGE.getLabel(),
+            "judgeLastName", "Smith",
+            "legalAdvisorName", "Bob Ross"
+        ));
         assertThat(templateData.get("courtName")).isEqualTo("Example Court");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
         assertThat(templateData.get("generationDate")).isEqualTo(dateFormatterService
@@ -173,12 +183,13 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("complianceDeadline")).isEqualTo(dateFormatterService
             .formatLocalDateToString(TODAYS_DATE.plusWeeks(26), FormatStyle.LONG));
         assertThat(templateData.get("children")).isEqualTo(getExpectedChildren());
-        assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
-        assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
-        assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_STATE_PLACEHOLDER);
+        assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
         assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirections());
+        assertThat(templateData.get("draftBackground")).isNull();
     }
 
     @Test
@@ -190,12 +201,19 @@ class CaseDataExtractionServiceTest {
             .hearingDetails(createHearingBookings())
             .dateSubmitted(LocalDate.now())
             .respondents1(createRespondents())
-            .standardDirectionOrder(createStandardDirectionOrders(TODAYS_DATE_TIME))
+            .standardDirectionOrder(createStandardDirectionOrders(TODAYS_DATE_TIME, OrderStatus.SEALED))
             .build();
 
         Map<String, Object> templateData = caseDataExtractionService
             .getStandardOrderDirectionData(caseData);
 
+        System.out.println("templateData = " + templateData);
+
+        assertThat(templateData.get("judgeAndLegalAdvisor")).isEqualTo(ImmutableMap.of(
+            "judgeTitle", HER_HONOUR_JUDGE.getLabel(),
+            "judgeLastName", "Smith",
+            "legalAdvisorName", "Bob Ross"
+        ));
         assertThat(templateData.get("courtName")).isEqualTo("Example Court");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
         assertThat(templateData.get("generationDate")).isEqualTo(dateFormatterService
@@ -211,6 +229,7 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
         assertThat(templateData.get("respondents")).isEqualTo(getExpectedRespondents());
         assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirections());
+        assertThat(templateData.get("draftBackground")).isNull();
     }
 
     private List<Map<String, String>> getExpectedChildren() {
@@ -221,8 +240,8 @@ class CaseDataExtractionServiceTest {
                 "dateOfBirth", dateFormatterService.formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG)),
             Map.of(
                 "name", "Sansa Stark",
-                "gender", EMPTY_STATE_PLACEHOLDER,
-                "dateOfBirth", EMPTY_STATE_PLACEHOLDER)
+                "gender", EMPTY_PLACEHOLDER,
+                "dateOfBirth", EMPTY_PLACEHOLDER)
         );
     }
 
