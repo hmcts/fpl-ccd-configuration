@@ -103,7 +103,7 @@ public class CaseDataExtractionService {
         data.putAll(getGroupedDirections(caseData));
         data.putAll(getHearingBookingData(caseData));
 
-        if (isNotEmpty(caseData.getStandardDirectionOrder())
+        if (isNotEmpty(caseData.getStandardD    irectionOrder())
             && caseData.getStandardDirectionOrder().getOrderStatus() != SEALED) {
             byte[] fileContent;
             try {
@@ -111,6 +111,8 @@ public class CaseDataExtractionService {
                 String encodedString = Base64.getEncoder().encodeToString(fileContent);
 
                 data.put("draftBackground", String.format("image:base64:%1$s", encodedString));
+                data.put("draftBackground2", String.format("image:base64:%1$s", encodedString));
+                data.put("draftBackground3", String.format("image:base64:%1$s", encodedString));
             } catch (IOException e) {
                 log.warn(e.getMessage());
             }
