@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -138,7 +137,7 @@ class CafcassEmailContentProviderTest {
                     .value(HearingBooking.builder().date(LocalDate.of(2020, 10, 27)).build())
                     .build())).build();
 
-       given(hearingBookingService.getMostUrgentHearingBooking(Mockito.any())).willReturn(HearingBooking.builder()
+        given(hearingBookingService.getMostUrgentHearingBooking(Mockito.any())).willReturn(HearingBooking.builder()
             .date(LocalDate.of(2020,10,27)).build());
 
         given(dateFormatterService.formatLocalDateToString(Mockito.any(),Mockito.any()))

@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentP
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.FormatStyle;
 import java.util.Map;
 import java.util.UUID;
 

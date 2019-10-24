@@ -5,7 +5,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 

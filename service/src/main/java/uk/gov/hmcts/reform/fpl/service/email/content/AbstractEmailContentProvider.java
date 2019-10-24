@@ -7,11 +7,9 @@ import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsTy
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
-import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +54,7 @@ public abstract class AbstractEmailContentProvider {
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", Objects.isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber())
             .put("leadRespondentsName", Objects.isNull(caseData.getRespondents1()) ? "" : capitalizeString(caseData.getRespondents1().get(0).getValue().getParty().getLastName()))
-            .put("hearingDate",Objects.isNull(hearingBookingService.getMostUrgentHearingBooking(caseData).getDate()) ? "" : dateFormatterService.formatLocalDateToString(hearingBookingService.getMostUrgentHearingBooking(caseData).getDate(),FormatStyle.LONG))
+            .put("hearingDate",Objects.isNull(hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails())) ? "" : dateFormatterService.formatLocalDateToString(hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()).getDate(),FormatStyle.LONG))
             .put("reference", String.valueOf(caseDetails.getId()))
             .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
     }
