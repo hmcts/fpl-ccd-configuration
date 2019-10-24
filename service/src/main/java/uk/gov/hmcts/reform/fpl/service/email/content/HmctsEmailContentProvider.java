@@ -45,6 +45,27 @@ public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
         this.dateFormatterService = dateFormatterService;
     }
 
+    public Map<String, Object> buildC21OrderNotification(final CaseDetails caseDetails,
+                                                         final String localAuthorityCode) {
+        // Validation within our frontend ensures that the following data is present
+        CaseData caseData = mapper.getObjectMapper().convertValue(caseDetails.getData(), CaseData.class);
+
+        List<Map<String, Object>> respondents1 = mapper.getObjectMapper().convertValue(
+            caseDetails.getData().get("respondents1"), new TypeReference<>() {});
+
+        List<Respondent> respondents = respondents1.stream()
+            .map(respondent -> mapper.getObjectMapper().convertValue(respondent.get("value"), Respondent.class))
+            .collect(toList());
+
+        return super.getCasePersonalisationBuilder(caseDetails)
+            .put("court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
+            .put("lastNameOfRespondent", getRespondent1Lastname(respondents))
+            .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
+            .put("hearingDate", dateFormatterService.formatLocalDateToString(
+                getHearingBookingDate(caseData), FormatStyle.MEDIUM))
+            .build();
+    }
+
     public Map<String, Object> buildHmctsSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
         return super.getCasePersonalisationBuilder(caseDetails)
             .put("court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
