@@ -1,4 +1,4 @@
 dependencies:
-  - name: java
-    version: 2.11.2
+  - name: idam-api
+    version: 0.2.1
     repository: '@hmctspublic'
