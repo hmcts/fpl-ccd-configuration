@@ -26,12 +26,12 @@ public class HearingBookingService {
         }
     }
 
-    public HearingBooking getMostUrgentHearingBooking(CaseData caseData) {
-        if (caseData.getHearingDetails() == null) {
+    public HearingBooking getMostUrgentHearingBooking(List<Element<HearingBooking>> hearingBookings) {
+        if (hearingBookings == null) {
             throw new IllegalStateException("Hearing booking was not present");
         }
 
-        return caseData.getHearingDetails().stream()
+        return hearingBookings.stream()
             .map(Element::getValue)
             .min(comparing(HearingBooking::getDate))
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
