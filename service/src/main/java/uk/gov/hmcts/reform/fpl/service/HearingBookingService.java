@@ -37,10 +37,4 @@ public class HearingBookingService {
             .min(comparing(HearingBooking::getDate))
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
     }
-
-    public LocalDate getMostUrgentHearingBookingDate(CaseData caseData) {
-        HearingBooking booking = getMostUrgentHearingBooking(caseData);
-        System.out.println(booking);
-        return booking.getDate();
-    }
 }

@@ -27,8 +27,7 @@ public class AllocationDecisionController {
 
     @Autowired
     public AllocationDecisionController(ObjectMapper mapper,
-                                        CourtLevelAllocationService service,
-                                        ApplicationEventPublisher applicationEventPublisher) {
+                                        CourtLevelAllocationService service) {
         this.mapper = mapper;
         this.service = service;
     }
