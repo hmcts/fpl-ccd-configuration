@@ -1,7 +1,7 @@
 dependencies:
   - name: idam-api
-    version: 0.2.1
+    version: 0.2.2
     repository: '@hmctspublic'
   - name: idam-web-public
-    version: 0.2.1
+    version: 0.2.2
     repository: '@hmctspublic'
