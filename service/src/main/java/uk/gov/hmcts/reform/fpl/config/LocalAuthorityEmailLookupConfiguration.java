@@ -14,7 +14,7 @@ public class LocalAuthorityEmailLookupConfiguration {
 
     private final Map<String, LocalAuthority> mapping;
 
-    public LocalAuthorityEmailLookupConfiguration(@Value("${fpl.local_authority_code_to_local_authority.mapping}")
+    public LocalAuthorityEmailLookupConfiguration(@Value("${fpl.local_authority_code_to_shared_inbox.mapping}")
                                                       String config) {
         this.mapping = LookupConfigParser.parse(config, value -> new LocalAuthority(
             checkNotNull(emptyToNull(value), "Local Authority name cannot be empty")
