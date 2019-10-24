@@ -1,6 +1,5 @@
 global:
   devMode: true
-  team: fpl
 
 idam-api:
   java:
@@ -31,10 +30,11 @@ idam-api:
       CACHING_ENABLED: false
     readinessPath: /health
     livenessPath: /health
+    replicas: 1
     ingressHost: false
     registerAdditionalDns:
       enabled: true
-      primaryIngressHost: idam-{{ .Values.global.team }}.service.core-compute-preview.internal
+      primaryIngressHost: '{{ .Release.Name }}.service.core-compute-preview.internal'
       prefix: api
 
 idam-web-public:
@@ -47,8 +47,9 @@ idam-web-public:
       MANAGEMENT_SECURITY_ENABLED: false
     readinessPath: /health
     livenessPath: /health
+    replicas: 1
     ingressHost: false
     registerAdditionalDns:
       enabled: true
-      primaryIngressHost: idam-{{ .Values.global.team }}.service.core-compute-preview.internal
+      primaryIngressHost: '{{ .Release.Name }}.service.core-compute-preview.internal'
       prefix: web
