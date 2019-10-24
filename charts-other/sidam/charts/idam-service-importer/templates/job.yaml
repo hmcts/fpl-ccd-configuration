@@ -1,0 +1,49 @@
+{{- if .Values.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: idam-service-importer
+  labels:
+    app.kubernetes.io/name: idam-service-importer
+    app.kubernetes.io/instance: {{ .Release.Name }}-idam-service-importer
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "5"
+    helm.sh/hook-delete-policy: before-hook-creation
+spec:
+  template:
+    metadata:
+      name: idam-service-importer
+      labels:
+        app.kubernetes.io/name: idam-service-importer
+    spec:
+      containers:
+        - name: idam-service-importer
+          image: hmctspublic.azurecr.io/hmcts/idam/utils:latest
+          command: [ /scripts/create-service.sh ]
+          args:
+            - {{ (index .Values.services 0).label | quote }}
+            - {{ (index .Values.services 0).selfRegistrationAllowed | default false | quote }}
+            - {{ (index .Values.services 0).clientID | quote }}
+            - {{ (index .Values.services 0).clientSecret | quote }}
+            - {{ printf "[%s]" ((index .Values.services 0).redirectURL | quote) | quote }}
+            - {{ printf "[%s]" ((index .Values.services 0).allowedRole | default "" | quote) | quote }}
+          env:
+            - name: IDAM_API_URL
+              value: http://idam-api
+            - name: IDAM_ADMIN_USER
+              value: {{ .Values.global.adminUser }}
+            - name: IDAM_ADMIN_PASSWORD
+              value: {{ .Values.global.adminPassword }}
+          resources:
+            requests:
+              cpu: 250m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Never
+{{- end }}

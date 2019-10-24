@@ -1,0 +1,7 @@
+idam-service-importer:
+  enabled: true
+  services:
+    - label: CCD
+      clientID: ccd_gateway
+      clientSecret: ccd_gateway_secret
+      redirectURL: http://localhost:3451/oauth2redirect
