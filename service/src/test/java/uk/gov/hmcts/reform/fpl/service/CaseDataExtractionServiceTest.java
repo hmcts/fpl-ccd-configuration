@@ -99,7 +99,7 @@ class CaseDataExtractionServiceTest {
             .hearingDetails(ImmutableList.of())
             .dateSubmitted(LocalDate.now())
             .respondents1(ImmutableList.of())
-            .standardDirectionOrder(createStandardDirectionOrders(TODAYS_DATE_TIME, OrderStatus.SEALED))
+            .standardDirectionOrder(createStandardDirectionOrders(TODAYS_DATE_TIME, OrderStatus.DRAFT))
             .build();
 
         Map<String, Object> templateData = caseDataExtractionService
@@ -123,7 +123,9 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
         assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirections());
-        assertThat(templateData.get("draftBackground")).isNull();
+        assertThat(templateData.get("draftBackground")).isNotNull();
+        assertThat(templateData.get("draftBackground2")).isNotNull();
+        assertThat(templateData.get("draftBackground3")).isNotNull();
     }
 
     @Test
@@ -164,6 +166,8 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("respondents")).isEqualTo(getExpectedRespondents());
         assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirections());
         assertThat(templateData.get("draftBackground")).isNull();
+        assertThat(templateData.get("draftBackground2")).isNull();
+        assertThat(templateData.get("draftBackground3")).isNull();
     }
 
     private List<Map<String, String>> getExpectedChildren() {

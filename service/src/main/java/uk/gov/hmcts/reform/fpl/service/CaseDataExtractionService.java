@@ -6,10 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
@@ -27,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.Base64;
@@ -55,9 +53,6 @@ public class CaseDataExtractionService {
     private final DirectionHelperService directionHelperService;
 
     private static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
-
-    @Value("classpath:assets/images/draft-watermark.png")
-    private Resource resourceFile;
 
     @Autowired
     public CaseDataExtractionService(DateFormatterService dateFormatterService,
@@ -107,7 +102,8 @@ public class CaseDataExtractionService {
             && caseData.getStandardDirectionOrder().getOrderStatus() != SEALED) {
             byte[] fileContent;
             try {
-                fileContent = FileUtils.readFileToByteArray(resourceFile.getFile());
+                InputStream is = getClass().getResourceAsStream("/assets/images/draft-watermark.png");
+                fileContent = is.readAllBytes();
                 String encodedString = Base64.getEncoder().encodeToString(fileContent);
 
                 data.put("draftBackground", String.format("image:base64:%1$s", encodedString));
