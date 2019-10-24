@@ -73,7 +73,7 @@ public class NotificationHandler {
         UserDetails userDetails = caseEvent.getUserDetails();
         List<String> roles = userDetails.getRoles();
 
-        if (!UserRole.HMCTS_ADMIN.getRoles().containsAll(roles)) {
+        if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoles())) {
             CaseDetails caseDetailsFromEvent = caseEvent.getCallbackRequest().getCaseDetails();
             String localAuthorityCode = (String) caseDetailsFromEvent.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
 
