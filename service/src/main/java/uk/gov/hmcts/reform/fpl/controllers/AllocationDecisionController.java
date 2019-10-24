@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.CourtLevelAllocationService;
-//import uk.gov.hmcts.reform.fpl.events.SDOSubmittedEvent;
 
 import java.util.Map;
 
@@ -25,7 +24,6 @@ import java.util.Map;
 public class AllocationDecisionController {
     private final ObjectMapper mapper;
     private final CourtLevelAllocationService service;
-    //private final ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
     public AllocationDecisionController(ObjectMapper mapper,
@@ -33,7 +31,6 @@ public class AllocationDecisionController {
                                         ApplicationEventPublisher applicationEventPublisher) {
         this.mapper = mapper;
         this.service = service;
-        //this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @PostMapping("/about-to-start")
@@ -54,11 +51,7 @@ public class AllocationDecisionController {
     }
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest
-                                                                    /*@RequestHeader(value = "user-id")
-                                                                    String userId,
-                                                                    @RequestHeader(value = "authorization")
-                                                                    String authorization*/) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -66,8 +59,6 @@ public class AllocationDecisionController {
 
         Map<String, Object> data = caseDetails.getData();
         data.put("allocationDecision", allocationDecision);
-
-        //applicationEventPublisher.publishEvent(new SDOSubmittedEvent(callbackRequest, authorization, userId));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

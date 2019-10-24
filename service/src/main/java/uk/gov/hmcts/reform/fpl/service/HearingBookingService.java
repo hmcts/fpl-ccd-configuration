@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,5 +36,11 @@ public class HearingBookingService {
             .map(Element::getValue)
             .min(comparing(HearingBooking::getDate))
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
+    }
+
+    public LocalDate getMostUrgentHearingBookingDate(CaseData caseData) {
+        HearingBooking booking = getMostUrgentHearingBooking(caseData);
+        System.out.println(booking);
+        return booking.getDate();
     }
 }

@@ -46,6 +46,9 @@ class LocalAuthorityEmailContentProviderTest {
     MapperService mapperService;
 
     @Mock
+    HearingBookingService hearingBookingService;
+
+    @Mock
     DateFormatterService dateFormatterService;
 
     @InjectMocks
@@ -69,9 +72,6 @@ class LocalAuthorityEmailContentProviderTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Test local authority");
 
-        given(dateFormatterService.formatLocalDateToString(LocalDate.of(2020,10,27), FormatStyle.LONG))
-            .willReturn("27 October 2020");
-
         given(mapperService.mapObject(Mockito.any(), Mockito.any()))
             .willReturn(CaseData.builder().familyManCaseNumber("12345").respondents1(ImmutableList.of(
                 Element.<Respondent>builder()
@@ -86,6 +86,14 @@ class LocalAuthorityEmailContentProviderTest {
                 .id(UUID.randomUUID())
                 .value(HearingBooking.builder().date(LocalDate.of(2020,10, 27)).build())
                 .build())).build());
+
+        given(hearingBookingService.getMostUrgentHearingBooking(Mockito.any())).willReturn(HearingBooking.builder()
+            .date(LocalDate.of(2020,10,27)).build());
+
+        given(hearingBookingService.getMostUrgentHearingBookingDate(Mockito.any())).willReturn(LocalDate.of(2002,10,27));
+
+        given(dateFormatterService.formatLocalDateToString(Mockito.any(),Mockito.any()))
+            .willReturn("27 October 2020");
 
         assertThat(localAuthorityEmailContentProvider
             .buildLocalAuthoritySDOSubmissionNotification(populatedCaseDetails(),

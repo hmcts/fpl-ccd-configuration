@@ -51,6 +51,9 @@ class CafcassEmailContentProviderTest {
     @Mock
     DateFormatterService dateFormatterService;
 
+    @Mock
+    HearingBookingService hearingBookingService;
+
     @InjectMocks
     private CafcassEmailContentProvider cafcassEmailContentProvider;
 
@@ -121,7 +124,26 @@ class CafcassEmailContentProviderTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        given(dateFormatterService.formatLocalDateToString(LocalDate.of(2020,10,27), FormatStyle.LONG))
+        CaseData data = CaseData.builder().familyManCaseNumber("12345").respondents1(ImmutableList.of(
+            Element.<Respondent>builder()
+                .value(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .lastName("Moley")
+                        .build())
+                    .build())
+                .build()))
+            .hearingDetails(ImmutableList.of(
+                Element.<HearingBooking>builder()
+                    .id(UUID.randomUUID())
+                    .value(HearingBooking.builder().date(LocalDate.of(2020, 10, 27)).build())
+                    .build())).build();
+
+        given(hearingBookingService.getMostUrgentHearingBooking(Mockito.any())).willReturn(HearingBooking.builder()
+            .date(LocalDate.of(2020,10,27)).build());
+
+        given(hearingBookingService.getMostUrgentHearingBookingDate(Mockito.any())).willReturn(LocalDate.of(2002,10,27));
+
+        given(dateFormatterService.formatLocalDateToString(Mockito.any(),Mockito.any()))
             .willReturn("27 October 2020");
 
         given(mapperService.mapObject(Mockito.any(), Mockito.any()))
@@ -134,10 +156,10 @@ class CafcassEmailContentProviderTest {
                         .build())
                     .build()))
                 .hearingDetails(ImmutableList.of(
-            Element.<HearingBooking>builder()
-                .id(UUID.randomUUID())
-                .value(HearingBooking.builder().date(LocalDate.of(2020,10, 27)).build())
-                .build())).build());
+                    Element.<HearingBooking>builder()
+                        .id(UUID.randomUUID())
+                        .value(HearingBooking.builder().date(LocalDate.of(2020, 10, 27)).build())
+                        .build())).build());
 
         assertThat(cafcassEmailContentProvider.buildCafcassSDOSubmissionNotification(populatedCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
