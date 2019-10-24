@@ -90,8 +90,6 @@ class LocalAuthorityEmailContentProviderTest {
         given(hearingBookingService.getMostUrgentHearingBooking(Mockito.any())).willReturn(HearingBooking.builder()
             .date(LocalDate.of(2020,10,27)).build());
 
-        given(hearingBookingService.getMostUrgentHearingBookingDate(Mockito.any())).willReturn(LocalDate.of(2002,10,27));
-
         given(dateFormatterService.formatLocalDateToString(Mockito.any(),Mockito.any()))
             .willReturn("27 October 2020");
 

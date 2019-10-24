@@ -56,7 +56,7 @@ public abstract class AbstractEmailContentProvider {
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", Objects.isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber())
             .put("leadRespondentsName", Objects.isNull(caseData.getRespondents1()) ? "" : capitalizeString(caseData.getRespondents1().get(0).getValue().getParty().getLastName()))
-            .put("hearingDate",Objects.isNull(hearingBookingService.getMostUrgentHearingBookingDate(caseData)) ? "" : dateFormatterService.formatLocalDateToString(hearingBookingService.getMostUrgentHearingBookingDate(caseData),FormatStyle.LONG))
+            .put("hearingDate",Objects.isNull(hearingBookingService.getMostUrgentHearingBooking(caseData).getDate()) ? "" : dateFormatterService.formatLocalDateToString(hearingBookingService.getMostUrgentHearingBooking(caseData).getDate(),FormatStyle.LONG))
             .put("reference", String.valueOf(caseDetails.getId()))
             .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
     }
