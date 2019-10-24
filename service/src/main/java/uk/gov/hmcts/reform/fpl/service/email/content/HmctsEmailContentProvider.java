@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.MapperService;
 
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -58,17 +60,20 @@ public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
         // Validation within our frontend ensures that the following data is present
         CaseData caseData = mapper.getObjectMapper().convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Map<String, Object>> respondents1 = mapper.getObjectMapper().convertValue(
-            caseDetails.getData().get("respondents1"), new TypeReference<>() {});
+        List<Map<String, Object>> respondents1 =
+            (ObjectUtils.isEmpty(caseDetails.getData().get("respondents1"))
+                ? Collections.emptyList() : mapper.getObjectMapper().convertValue(
+                    caseDetails.getData().get("respondents1"), new TypeReference<>() {}));
 
-        List<Respondent> respondents = respondents1.stream()
-            .map(respondent -> mapper.getObjectMapper().convertValue(respondent.get("value"), Respondent.class))
-            .collect(toList());
+        List<Respondent> respondents = (CollectionUtils.isEmpty(respondents1)
+            ? Collections.emptyList() : respondents1.stream().map(
+                respondent -> mapper.getObjectMapper().convertValue(
+                    respondent.get("value"), Respondent.class)).collect(toList()));
 
         return super.getCasePersonalisationBuilder(caseDetails)
             .put("court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
             .put("lastNameOfRespondent", getRespondent1Lastname(respondents))
-            .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
+            .put("familyManCaseNumber", StringUtils.defaultIfBlank(caseData.getFamilyManCaseNumber(), ""))
             .put("hearingDate", dateFormatterService.formatLocalDateToString(
                 getHearingBookingDate(caseData), FormatStyle.MEDIUM))
             .build();
