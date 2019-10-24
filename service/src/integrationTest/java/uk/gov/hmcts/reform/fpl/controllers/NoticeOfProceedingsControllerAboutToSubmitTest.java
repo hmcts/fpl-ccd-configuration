@@ -63,12 +63,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
             .documentTitle(C6_DOCUMENT_TITLE)
             .build();
 
-        CallbackRequest callbackRequest = CallbackRequest.builder()
-            .caseDetails(callbackRequest().getCaseDetails())
-            .caseDetailsBefore(callbackRequest().getCaseDetailsBefore())
-            .build();
-
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class);
 
         Map<String, Object> templateData = createTemplatePlaceholders();
 
@@ -79,7 +74,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
         given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, PDF, C6_DOCUMENT_TITLE + ".pdf"))
             .willReturn(document);
 
-        MvcResult response = makeRequest(callbackRequest);
+        MvcResult response = makeRequest(callbackRequest());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);

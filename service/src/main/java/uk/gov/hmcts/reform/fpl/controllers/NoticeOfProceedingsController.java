@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.interfaces.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
@@ -36,6 +36,8 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
+
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @RequestMapping("/callback/notice-of-proceedings")
 @Api
@@ -106,9 +108,9 @@ public class NoticeOfProceedingsController {
         List<Document> uploadedDocuments = generateAndUploadDocuments(userId, authorization, templateData,
             templateTypes);
 
-        List<Element> noticeOfProceedingCaseData = createNoticeOfProceedingsCaseData(uploadedDocuments);
+        List<Element<DocumentBundle>> noticeOfProceedingCaseData = createNoticeOfProceedingsCaseData(uploadedDocuments);
 
-        if (callbackRequest.getCaseDetailsBefore().getData().get("noticeOfProceedingsBundle") != null) {
+        if (isNotEmpty(callbackRequest.getCaseDetailsBefore().getData().get("noticeOfProceedingsBundle"))) {
             CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(),
                 CaseData.class);
 
@@ -123,20 +125,19 @@ public class NoticeOfProceedingsController {
             .build();
     }
 
-    private List<Element> createNoticeOfProceedingsCaseData(List<Document> uploadedDocuments) {
+    private List<Element<DocumentBundle>> createNoticeOfProceedingsCaseData(List<Document> uploadedDocuments) {
         return uploadedDocuments.stream()
-            .map(document -> {
-                return Element.builder()
-                    .id(UUID.randomUUID())
-                    .value(ImmutableMap.builder()
-                        .put("document", DocumentReference.builder()
-                            .filename(document.originalDocumentName)
-                            .url(document.links.self.href)
-                            .binaryUrl(document.links.binary.href)
-                            .build())
+            .map(document -> Element.<DocumentBundle>builder()
+                .id(UUID.randomUUID())
+                .value(DocumentBundle.builder()
+                    .document(DocumentReference.builder()
+                        .filename(document.originalDocumentName)
+                        .url(document.links.self.href)
+                        .binaryUrl(document.links.binary.href)
                         .build())
-                    .build();
-            }).collect(Collectors.toList());
+                    .build())
+                .build())
+            .collect(Collectors.toList());
     }
 
     private List<Document> generateAndUploadDocuments(String userId,

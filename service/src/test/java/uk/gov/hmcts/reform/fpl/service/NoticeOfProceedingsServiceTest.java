@@ -37,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopula
 
 @ExtendWith(SpringExtension.class)
 class NoticeOfProceedingsServiceTest {
-    @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_NAME = "Example Court";
@@ -73,7 +72,7 @@ class NoticeOfProceedingsServiceTest {
         List<Element<DocumentBundle>> removedDocuments = noticeOfProceedingService
             .getRemovedDocumentBundles(caseData, templatesList);
 
-        assertThat(removedDocuments).hasSize(0);
+        assertThat(removedDocuments).isEmpty();
     }
 
     @Test
