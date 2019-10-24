@@ -26,8 +26,6 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.FormatStyle;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -88,11 +86,10 @@ class NotificationHandlerTest {
 
     @Test
     void shouldNotNotifyHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
+        final String SUBJ_LINE = "Lastname, SACCCCCCCC5676576567";
         final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
-            .put("court", COURT_NAME)
-            .put("lastNameOfRespondent", "Test Lastname")
-            .put("familyManCaseNumber", "SACCCCCCCC5676576567")
-            .put("hearingDate", dateFormatterService.formatLocalDateToString(LocalDate.now().plusMonths(4), FormatStyle.MEDIUM))
+            .put("subjectLine", SUBJ_LINE)
+            .put("hearingDetailsCallout", SUBJ_LINE)
             .build();
 
         given(userDetailsService.getUserDetails(AUTH_TOKEN))
@@ -107,15 +104,15 @@ class NotificationHandlerTest {
 
         verify(notificationClient, times(0)).sendEmail(
             isNull(), isNull(), isNull(), isNull());
+
     }
 
     @Test
     void shouldNotifyNonHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
+        final String SUBJ_LINE = "Lastname, SACCCCCCCC5676576567";
         final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
-            .put("court", COURT_NAME)
-            .put("lastNameOfRespondent", "Test Lastname")
-            .put("familyManCaseNumber", "SACCCCCCCC5676576567")
-            .put("hearingDate", dateFormatterService.formatLocalDateToString(LocalDate.now().plusMonths(4), FormatStyle.MEDIUM))
+            .put("subjectLine", SUBJ_LINE)
+            .put("hearingDetailsCallout", SUBJ_LINE)
             .build();
 
         given(userDetailsService.getUserDetails(AUTH_TOKEN))
