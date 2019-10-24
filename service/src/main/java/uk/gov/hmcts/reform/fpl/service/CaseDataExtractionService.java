@@ -32,9 +32,8 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
+// Supports SDO case data. Tech debt ticket needed to refactor caseDataExtractionService and NoticeOfProceedingsService
 @Service
-// TODO
-// No longer a very readable service. Consider splitting into NoticeOfProceedingsService and SDOService
 public class CaseDataExtractionService {
 
     private final DateFormatterService dateFormatterService;
@@ -56,24 +55,6 @@ public class CaseDataExtractionService {
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.ordersLookupService = ordersLookupService;
         this.directionHelperService = directionHelperService;
-    }
-
-    public Map<String, Object> getNoticeOfProceedingTemplateData(CaseData caseData) {
-        HearingBooking hearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
-
-        // Validation within our frontend ensures that the following data is present
-        return Map.of(
-            "courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName(),
-            "familyManCaseNumber", caseData.getFamilyManCaseNumber(),
-            "todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG),
-            "applicantName", getFirstApplicantName(caseData),
-            "orderTypes", getOrderTypes(caseData),
-            "childrenNames", getAllChildrenNames(caseData),
-            "hearingDate", dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG),
-            "hearingVenue", hearingBooking.getVenue(),
-            "preHearingAttendance", hearingBooking.getPreHearingAttendance(),
-            "hearingTime", hearingBooking.getTime()
-        );
     }
 
     // TODO
@@ -112,7 +93,8 @@ public class CaseDataExtractionService {
             );
         }
 
-        HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
+        HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData
+            .getHearingDetails());
 
         return ImmutableMap.of(
             "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),

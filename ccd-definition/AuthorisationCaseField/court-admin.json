@@ -317,6 +317,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "proceedingTypes",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
@@ -341,5 +348,19 @@
     "CaseFieldID": "standardDirectionOrder",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "c2DocumentBundle",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "temporaryC2Document",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "CRU"
   }
 ]
