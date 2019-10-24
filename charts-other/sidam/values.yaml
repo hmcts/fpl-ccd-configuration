@@ -36,3 +36,19 @@ idam-api:
       enabled: true
       primaryIngressHost: idam-{{ .Values.global.team }}.service.core-compute-preview.internal
       prefix: api
+
+idam-web-public:
+  java:
+    image: hmctspublic.azurecr.io/idam/web-public:stable
+    applicationPort: 8080
+    environment:
+      JAVA_OPTS: -Xms256m -Xms768m
+      STRATEGIC_SERVICE_URL: http://idam-api
+      MANAGEMENT_SECURITY_ENABLED: false
+    readinessPath: /health
+    livenessPath: /health
+    ingressHost: false
+    registerAdditionalDns:
+      enabled: true
+      primaryIngressHost: idam-{{ .Values.global.team }}.service.core-compute-preview.internal
+      prefix: web
