@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C2UploadNotifyEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
@@ -81,8 +80,6 @@ class NotificationHandlerTest {
 
     @InjectMocks
     private NotificationHandler notificationHandler;
-
-    private final DateFormatterService dateFormatterService = new DateFormatterService();
 
     @Test
     void shouldNotNotifyHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
