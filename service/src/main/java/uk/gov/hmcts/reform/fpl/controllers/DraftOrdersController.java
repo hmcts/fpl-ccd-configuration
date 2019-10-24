@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
-import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Order;
@@ -148,7 +147,7 @@ public class DraftOrdersController {
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
-                .filename(documentFilename(caseData.getStandardDirectionOrder().getOrderStatus()))
+                .filename(caseData.getStandardDirectionOrder().getOrderStatus().getDocumentTitle())
                 .build())
             .build();
 
@@ -174,12 +173,5 @@ public class DraftOrdersController {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), document.getDocumentTitle());
-    }
-
-    private String documentFilename(OrderStatus status) {
-        if (status == OrderStatus.SEALED) {
-            return OrderStatus.SEALED.getDocumentTitle();
-        }
-        return OrderStatus.DRAFT.getDocumentTitle();
     }
 }
