@@ -122,7 +122,8 @@ public class PopulateStandardDirectionsHandler {
         LocalDateTime completeBy = null;
 
         if (direction.getDisplay().getDelta() != null && caseData.getHearingDetails() != null) {
-            HearingBooking mostUrgentBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
+            HearingBooking mostUrgentBooking = hearingBookingService.getMostUrgentHearingBooking(caseData
+                .getHearingDetails());
 
             completeBy = buildDateTime(mostUrgentBooking.getDate(),
                 Integer.parseInt(direction.getDisplay().getDelta()));

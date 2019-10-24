@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
 
 import java.time.LocalDate;
@@ -117,6 +118,7 @@ public class CaseData {
 
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;
+    private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
 }
