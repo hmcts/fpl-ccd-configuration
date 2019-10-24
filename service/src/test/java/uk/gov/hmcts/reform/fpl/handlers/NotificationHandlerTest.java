@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
+import uk.gov.hmcts.reform.fpl.events.C21OrderNotifyEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadNotifyEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
@@ -38,10 +39,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @SuppressWarnings("LineLength")
@@ -136,6 +134,37 @@ class NotificationHandlerTest {
 
         verify(notificationClient, times(1)).sendEmail(
             eq(C2_UPLOAD_SUBMISSION_TEMPLATE), notNull(), eq(parameters), eq("12345"));
+    }
+
+    @Test
+    void shouldNotifyPartiesOnC21OrderSubmission() throws IOException, NotificationClientException {
+        final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
+            .put("court", COURT_NAME)
+            .put("lastNameOfRespondent", "Test Lastname")
+            .put("familyManCaseNumber", "SACCCCCCCC5676576567")
+            .put("hearingDate", dateFormatterService.formatLocalDateToString(LocalDate.now().plusMonths(4), FormatStyle.MEDIUM))
+            .build();
+
+        given(userDetailsService.getUserDetails(AUTH_TOKEN))
+            .willReturn(new UserDetails("1", "hmcts-non-admin@test.com",
+                "Hmcts", "Test", UserRole.LOCAL_AUTHORITY.getRoles()));
+
+        given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
+            .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS));
+
+        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+            .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
+
+        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+            .willReturn("Example Local Authority");
+
+        given(hmctsEmailContentProvider.buildC21OrderNotification(callbackRequest().getCaseDetails(),
+            LOCAL_AUTHORITY_CODE)).willReturn(parameters);
+
+        notificationHandler.sendNotificationForC21Order(new C21OrderNotifyEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+
+        verify(notificationClient, times(1)).sendEmail(
+            eq(C21_ORDER_SUBMISSION_TEMPLATE), notNull(), eq(parameters), eq("12345"));
     }
 
     @Test
