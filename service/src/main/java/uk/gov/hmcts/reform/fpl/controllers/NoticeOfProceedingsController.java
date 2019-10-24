@@ -150,7 +150,7 @@ public class NoticeOfProceedingsController {
 
         return docmosisDocuments.stream()
             .map(document -> uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-                document.getDocumentTitle() + ".pdf"))
+                document.getDocumentTitle()))
             .collect(Collectors.toList());
     }
 

@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -50,7 +49,7 @@ public class NoticeOfProceedingsService {
         ImmutableList.Builder<Element<DocumentBundle>> removedDocumentBundles = ImmutableList.builder();
 
         caseData.getNoticeOfProceedingsBundle().forEach(element -> {
-            String filename = FilenameUtils.getBaseName(element.getValue().getDocument().getFilename());
+            String filename = element.getValue().getDocument().getFilename();
 
             if (!templateTypeTitles.contains(filename)) {
                 removedDocumentBundles.add(element);

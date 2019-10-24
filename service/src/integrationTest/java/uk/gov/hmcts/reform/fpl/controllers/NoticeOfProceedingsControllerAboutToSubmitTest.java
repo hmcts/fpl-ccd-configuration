@@ -71,7 +71,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
             .willReturn(templateData);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C6))
             .willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, PDF, C6_DOCUMENT_TITLE + ".pdf"))
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, PDF, C6_DOCUMENT_TITLE))
             .willReturn(document);
 
         MvcResult response = makeRequest(callbackRequest());

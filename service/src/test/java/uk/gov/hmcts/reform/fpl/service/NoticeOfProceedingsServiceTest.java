@@ -62,7 +62,7 @@ class NoticeOfProceedingsServiceTest {
 
         DocumentReference documentReference = removedDocuments.get(0).getValue().getDocument();
 
-        assertThat(documentReference.getFilename()).isEqualTo(C6A.getDocumentTitle() + ".pdf");
+        assertThat(documentReference.getFilename()).isEqualTo(C6A.getDocumentTitle());
     }
 
     @Test
@@ -214,7 +214,7 @@ class NoticeOfProceedingsServiceTest {
                     .id(UUID.randomUUID())
                     .value(DocumentBundle.builder()
                         .document(DocumentReference.builder()
-                            .filename(docmosisDocument.getDocumentTitle() + ".pdf")
+                            .filename(docmosisDocument.getDocumentTitle())
                             .build())
                         .build())
                     .build()).collect(Collectors.toList())).build();
