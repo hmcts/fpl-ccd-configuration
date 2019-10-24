@@ -248,17 +248,6 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    private String getAllChildrenNames(CaseData caseData) {
-        return caseData.getAllChildren().stream()
-            .map(Element::getValue)
-            .filter(Objects::nonNull)
-            .map(Child::getParty)
-            .filter(Objects::nonNull)
-            .map(childParty -> (childParty.getFirstName()) + " " + (childParty.getLastName()))
-            .collect(Collectors.joining(", "));
-
-    }
-
     private String formatTitle(Direction direction, List<DirectionConfiguration> directions) {
         @AllArgsConstructor
         @NoArgsConstructor

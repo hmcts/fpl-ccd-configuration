@@ -204,6 +204,7 @@ class DraftOrdersControllerTest {
             assertThat(localAuthorityDirections).isEqualTo(fullyPopulatedDirection);
             assertThat(caseData.getStandardDirectionOrder().getOrderDoc()).isNotNull();
             assertThat(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()).isNotNull();
+            assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
         }
     }
 

@@ -178,8 +178,8 @@ public class DraftOrdersController {
 
     private String documentFilename(OrderStatus status) {
         if (status == OrderStatus.SEALED) {
-            return "standard-directions-order.pdf";
+            return OrderStatus.SEALED.getDocumentTitle();
         }
-        return "draft-standard-directions-order.pdf";
+        return OrderStatus.DRAFT.getDocumentTitle();
     }
 }

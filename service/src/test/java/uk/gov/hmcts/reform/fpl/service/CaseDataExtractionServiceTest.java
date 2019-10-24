@@ -143,8 +143,6 @@ class CaseDataExtractionServiceTest {
         Map<String, Object> templateData = caseDataExtractionService
             .getStandardOrderDirectionData(caseData);
 
-        System.out.println("templateData = " + templateData);
-
         assertThat(templateData.get("judgeAndLegalAdvisor")).isEqualTo(ImmutableMap.of(
             "judgeTitle", HER_HONOUR_JUDGE.getLabel(),
             "judgeLastName", "Smith",
