@@ -73,7 +73,7 @@ public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
         return super.getCasePersonalisationBuilder(caseDetails)
             .put("court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
             .put("lastNameOfRespondent", getRespondent1Lastname(respondents))
-            .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
+            .put("familyManCaseNumber", StringUtils.defaultIfBlank(caseData.getFamilyManCaseNumber(), ""))
             .put("hearingDate", dateFormatterService.formatLocalDateToString(
                 getHearingBookingDate(caseData), FormatStyle.MEDIUM))
             .build();
