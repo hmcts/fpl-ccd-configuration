@@ -14,7 +14,7 @@ class LocalAuthorityEmailLookupConfigurationTest {
     private LocalAuthorityEmailLookupConfiguration configuration = new LocalAuthorityEmailLookupConfiguration(CONFIG);
 
     @Test
-    void shouldReturnCafcassDetailsWhenLocalAuthorityCodeExists() {
+    void shouldReturnLocalAuthorityDetailsWhenLocalAuthorityCodeExists() {
         LocalAuthorityEmailLookupConfiguration.LocalAuthority localauthority =
             configuration.getLocalAuthority(LOCAL_AUTHORITY_CODE);
 
