@@ -52,8 +52,8 @@ public abstract class AbstractEmailContentProvider {
 
     protected ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(CaseDetails caseDetails, CaseData caseData) {
         return ImmutableMap.<String, Object>builder()
-            .put("familyManCaseNumber", Objects.isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber())
-            .put("leadRespondentsName", Objects.isNull(caseData.getRespondents1()) ? "" : capitalizeString(caseData.getRespondents1().get(0).getValue().getParty().getLastName()))
+            .put("familyManCaseNumber", Objects.isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber() + ",")
+            .put("leadRespondentsName", Objects.isNull(caseData.getRespondents1()) ? "" : capitalizeString(caseData.getRespondents1().get(0).getValue().getParty().getLastName()) + ",")
             .put("hearingDate",Objects.isNull(hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails())) ? "" : dateFormatterService.formatLocalDateToString(hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()).getDate(),FormatStyle.LONG))
             .put("reference", String.valueOf(caseDetails.getId()))
             .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());

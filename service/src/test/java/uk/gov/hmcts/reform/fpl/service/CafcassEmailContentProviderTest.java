@@ -110,8 +110,8 @@ class CafcassEmailContentProviderTest {
     void shouldReturnExpectedMapWithValidSDODetails() throws IOException {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
             .put("title", CAFCASS_NAME)
-            .put("familyManCaseNumber", "12345")
-            .put("leadRespondentsName", "Moley")
+            .put("familyManCaseNumber", "12345,")
+            .put("leadRespondentsName", "Moley,")
             .put("hearingDate", "27 October 2020")
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
