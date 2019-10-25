@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Api
 @RestController
@@ -147,7 +148,7 @@ public class DraftOrdersController {
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
-                .filename(caseData.getStandardDirectionOrder().getOrderStatus().getDocumentTitle())
+                .filename(updated.getStandardDirectionOrder().getOrderStatus().getDocumentTitle())
                 .build())
             .build();
 
@@ -172,6 +173,12 @@ public class DraftOrdersController {
                                  Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
 
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), document.getDocumentTitle());
+        String docTitle = document.getDocumentTitle();
+
+        if (isNotEmpty(templateData.get("draftbackground"))) {
+            docTitle = "draft-" + document.getDocumentTitle();
+        }
+
+        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), docTitle);
     }
 }

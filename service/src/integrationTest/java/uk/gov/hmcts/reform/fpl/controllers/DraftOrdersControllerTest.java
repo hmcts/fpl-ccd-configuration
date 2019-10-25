@@ -106,20 +106,25 @@ class DraftOrdersControllerTest {
 
     @Nested
     class DocumentTests {
+        byte[] pdf = {1, 2, 3, 4, 5};
+        Document document = document();
+
+        DocumentTests() throws IOException {
+            //NO - OP
+        }
+
         @BeforeEach
-        void setup() throws IOException {
-            byte[] pdf = {1, 2, 3, 4, 5};
-            DocmosisDocument docmosisDocument = new DocmosisDocument("draft-standard-directions-order.pdf", pdf);
-            Document document = document();
+        void setup() {
+            DocmosisDocument docmosisDocument = new DocmosisDocument("standard-directions-order.pdf", pdf);
 
             given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-
-            given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-standard-directions-order.pdf"))
-                .willReturn(document);
         }
 
         @Test
         void midEventShouldGenerateDraftStandardDirectionDocument() throws Exception {
+            given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-standard-directions-order.pdf"))
+                .willReturn(document);
+
             List<Element<Direction>> directions = buildDirections(
                 ImmutableList.of(Direction.builder()
                     .directionText("example")
@@ -152,6 +157,9 @@ class DraftOrdersControllerTest {
 
         @Test
         void aboutToSubmitShouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() throws Exception {
+            given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "standard-directions-order.pdf"))
+                .willReturn(document);
+
             UUID uuid = UUID.randomUUID();
 
             List<Element<Direction>> fullyPopulatedDirection = ImmutableList.of(Element.<Direction>builder()
@@ -177,7 +185,7 @@ class DraftOrdersControllerTest {
                 .build());
 
             Order order = Order.builder()
-                .orderStatus(OrderStatus.DRAFT)
+                .orderStatus(OrderStatus.SEALED)
                 .build();
 
             CallbackRequest request = CallbackRequest.builder()
