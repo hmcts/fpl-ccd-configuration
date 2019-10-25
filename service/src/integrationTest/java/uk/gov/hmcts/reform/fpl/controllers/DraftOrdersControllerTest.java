@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -16,15 +18,17 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -100,106 +104,116 @@ class DraftOrdersControllerTest {
         assertThat(extractDirections(caseData.getCourtDirections())).containsOnly(directions.get(5));
     }
 
-    @Test
-    void midEventShouldGenerateDraftStandardDirectionDocument() throws Exception {
+    @Nested
+    class DocumentTests {
         byte[] pdf = {1, 2, 3, 4, 5};
-        DocmosisDocument docmosisDocument = new DocmosisDocument("draft-standard-directions-order.pdf", pdf);
         Document document = document();
 
-        given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        DocumentTests() throws IOException {
+            //NO - OP
+        }
 
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-standard-directions-order.pdf"))
-            .willReturn(document);
+        @BeforeEach
+        void setup() {
+            DocmosisDocument docmosisDocument = new DocmosisDocument("standard-directions-order.pdf", pdf);
 
-        List<Element<Direction>> directions = buildDirections(
-            ImmutableList.of(Direction.builder()
-                .directionText("example")
-                .assignee(LOCAL_AUTHORITY)
-                .readOnly("No")
-                .build()));
+            given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        }
 
-        Order order = Order.builder()
-            .directions(directions)
-            .build();
+        @Test
+        void midEventShouldGenerateDraftStandardDirectionDocument() throws Exception {
+            given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-standard-directions-order.pdf"))
+                .willReturn(document);
 
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .data(createCaseDataMap(directions).put("standardDirectionOrder", order).build())
-                .build())
-            .build();
+            List<Element<Direction>> directions = buildDirections(
+                ImmutableList.of(Direction.builder()
+                    .directionText("example")
+                    .assignee(LOCAL_AUTHORITY)
+                    .readOnly("No")
+                    .build()));
 
-        MvcResult response = makeRequest(request, "mid-event");
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        Map<String, Object> sdo = (Map<String, Object>) callbackResponse.getData().get("standardDirectionOrder");
-
-        assertThat(sdo).containsEntry(
-            "orderDoc", ImmutableMap.builder()
-                .put("document_binary_url", document.links.binary.href)
-                .put("document_filename", "draft-standard-directions-order.pdf")
-                .put("document_url", document.links.self.href)
-                .build());
-    }
-
-    @Test
-    void aboutToSubmitShouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() throws Exception {
-        UUID uuid = UUID.randomUUID();
-
-        List<Element<Direction>> fullyPopulatedDirection = ImmutableList.of(Element.<Direction>builder()
-            .id(uuid)
-            .value(Direction.builder()
-                .directionType("Identify alternative carers")
-                .directionText("Contact the parents to make sure there is a complete family tree showing family"
-                    + " members who could be alternative carers.")
-                .assignee(LOCAL_AUTHORITY)
-                .directionRemovable("Yes")
-                .readOnly("Yes")
-                .directionRemovable("No")
-                .build())
-            .build());
-
-        List<Element<Direction>> directionWithShowHideValuesRemoved = ImmutableList.of(Element.<Direction>builder()
-            .id(uuid)
-            .value(Direction.builder()
-                .directionType("Identify alternative carers")
-                .assignee(LOCAL_AUTHORITY)
-                .readOnly("Yes")
-                .build())
-            .build());
-
-        Order order = Order.builder()
-            .directions(fullyPopulatedDirection)
-            .orderDoc(DocumentReference.builder()
-                .binaryUrl("url")
-                .filename("file name")
-                .url("")
-                .build())
-            .build();
-
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .data(createCaseDataMap(directionWithShowHideValuesRemoved)
-                    .put("standardDirectionOrder", order)
+            CallbackRequest request = CallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                    .data(createCaseDataMap(directions)
+                        .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
+                        .build())
                     .build())
-                .build())
-            .build();
+                .build();
 
-        MvcResult response = makeRequest(request, "about-to-submit");
+            MvcResult response = makeRequest(request, "mid-event");
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+            AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
+                .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+            Map<String, Object> sdo = (Map<String, Object>) callbackResponse.getData().get("standardDirectionOrder");
 
-        List<Element<Direction>> localAuthorityDirections =
-            caseData.getStandardDirectionOrder().getDirections().stream()
-                .filter(direction -> direction.getValue().getAssignee() == LOCAL_AUTHORITY)
-                .collect(toList());
+            assertThat(sdo).containsEntry(
+                "orderDoc", ImmutableMap.builder()
+                    .put("document_binary_url", document().links.binary.href)
+                    .put("document_filename", document().originalDocumentName)
+                    .put("document_url", document().links.self.href)
+                    .build());
+        }
 
-        assertThat(localAuthorityDirections).isEqualTo(fullyPopulatedDirection);
-        assertThat(caseData.getStandardDirectionOrder().getOrderDoc()).isNotNull();
+        @Test
+        void aboutToSubmitShouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() throws Exception {
+            given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "standard-directions-order.pdf"))
+                .willReturn(document);
+
+            UUID uuid = UUID.randomUUID();
+
+            List<Element<Direction>> fullyPopulatedDirection = ImmutableList.of(Element.<Direction>builder()
+                .id(uuid)
+                .value(Direction.builder()
+                    .directionType("Identify alternative carers")
+                    .directionText("Contact the parents to make sure there is a complete family tree showing family"
+                        + " members who could be alternative carers.")
+                    .assignee(LOCAL_AUTHORITY)
+                    .directionRemovable("Yes")
+                    .readOnly("Yes")
+                    .directionRemovable("No")
+                    .build())
+                .build());
+
+            List<Element<Direction>> directionWithShowHideValuesRemoved = ImmutableList.of(Element.<Direction>builder()
+                .id(uuid)
+                .value(Direction.builder()
+                    .directionType("Identify alternative carers")
+                    .assignee(LOCAL_AUTHORITY)
+                    .readOnly("Yes")
+                    .build())
+                .build());
+
+            Order order = Order.builder()
+                .orderStatus(OrderStatus.SEALED)
+                .build();
+
+            CallbackRequest request = CallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                    .data(createCaseDataMap(directionWithShowHideValuesRemoved)
+                        .put("standardDirectionOrder", order)
+                        .put("judgeAndLegalAdvisor", JudgeAndLegalAdvisor.builder().build())
+                        .build())
+                    .build())
+                .build();
+
+            MvcResult response = makeRequest(request, "about-to-submit");
+
+            AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
+                .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+            List<Element<Direction>> localAuthorityDirections =
+                caseData.getStandardDirectionOrder().getDirections().stream()
+                    .filter(direction -> direction.getValue().getAssignee() == LOCAL_AUTHORITY)
+                    .collect(toList());
+
+            assertThat(localAuthorityDirections).isEqualTo(fullyPopulatedDirection);
+            assertThat(caseData.getStandardDirectionOrder().getOrderDoc()).isNotNull();
+            assertThat(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()).isNotNull();
+            assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
+        }
     }
 
     private MvcResult makeRequest(CallbackRequest request, String endpoint) throws Exception {

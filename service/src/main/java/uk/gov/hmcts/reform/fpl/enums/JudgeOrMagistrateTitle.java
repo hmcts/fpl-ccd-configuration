@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum JudgeOrMagistrateTitle {
     HER_HONOUR_JUDGE("Her Honour Judge"),
     HIS_HONOUR_JUDGE("His Honour Judge"),
@@ -10,9 +13,5 @@ public enum JudgeOrMagistrateTitle {
 
     JudgeOrMagistrateTitle(String label) {
         this.label = label;
-    }
-
-    public String getLabel() {
-        return label;
     }
 }
