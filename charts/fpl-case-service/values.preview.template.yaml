@@ -6,7 +6,7 @@ java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
   environment:
-    IDAM_API_URL: http://api-fpl-sidam-preview.service.core-compute-preview.internal
+    IDAM_API_URL: http://api-idam-fpl.service.core-compute-preview.internal
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
     LOCAL_AUTHORITY_USER_MAPPING: SA=>03131803-1732-43ca-a2b2-ff5d230cd53e,92551c3f-d3db-4dc0-ba21-c26c22dde03a,16e20279-a9c6-4906-9ffa-d68bc0e8f626;HN=>fc814447-030d-4677-bfc6-50f4b91f06fa,3cfa218f-4f7e-4a32-b7e4-152eba66e6b6
     IDAM_CLIENT_ID: fpl_case_service
@@ -31,12 +31,12 @@ ccd:
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
-  idamApiUrl: http://api-fpl-sidam-preview.service.core-compute-preview.internal
-  idamWebUrl: http://web-fpl-sidam-preview.service.core-compute-preview.internal
+  idamApiUrl: http://api-idam-fpl.service.core-compute-preview.internal
+  idamWebUrl: http://web-idam-fpl.service.core-compute-preview.internal
   idam-pr:
     releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
     api:
-      url: http://api-fpl-sidam-preview.service.core-compute-preview.internal
+      url: http://api-idam-fpl.service.core-compute-preview.internal
     redirect_uris:
       CCD:
         - https://case-management-web-${SERVICE_FQDN}/oauth2redirect

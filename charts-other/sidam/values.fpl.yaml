@@ -20,6 +20,10 @@ configurer:
   - id: caseworker-publiclaw-judiciary
   - id: caseworker-publiclaw-systemupdate
   users:
+  - email: ccd.docker.default@hmcts.net
+    group: caseworker
+    roles:
+    - ccd-import
   - email: damian@swansea.gov.uk
     surname: (local-authority)
     group: caseworker
