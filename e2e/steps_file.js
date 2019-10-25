@@ -14,8 +14,10 @@ const enterApplicantEventPage  = require('./pages/events/enterApplicantEvent.pag
 const enterGroundsEventPage = require('./pages/events/enterGroundsForApplicationEvent.page');
 const uploadDocumentsEventPage = require('./pages/events/uploadDocumentsEvent.page');
 const enterAllocationProposalEventPage = require('./pages/events/enterAllocationProposalEvent.page');
+const enterRespondentsEventPage = require('./pages/events/enterRespondentsEvent.page');
 
 const applicant = require('./fixtures/applicant');
+const respondent = require('./fixtures/respondents');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
 
@@ -135,6 +137,9 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
       await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
+      await this.completeEvent('Save and continue');
+      await caseViewPage.goToNewActions(config.applicationActions.enterRespondents)
+      await enterRespondentsEventPage.enterRespondent(respondent[0]);
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
       enterGroundsEventPage.enterThresholdCriteriaDetails();
