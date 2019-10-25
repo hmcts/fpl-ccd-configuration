@@ -2,11 +2,14 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.aspectj.lang.annotation.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.test.context.event.annotation.BeforeTestMethod;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -53,24 +56,8 @@ class LocalAuthorityEmailContentProviderTest {
     @InjectMocks
     private LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
 
-    @Test
-    void shouldReturnExpectedMapWithValidSDODetails() throws IOException {
-        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("title", LOCAL_AUTHORITY_NAME)
-            .put("familyManCaseNumber", "12345,")
-            .put("leadRespondentsName", "Moley,")
-            .put("hearingDate", "27 October 2020")
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
-
-        given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(new LocalAuthorityEmailLookupConfiguration
-                .LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS));
-
-        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
-            .willReturn("Test local authority");
-
+    @BeforeEach
+    void setup(){
         given(mapperService.mapObject(Mockito.any(), Mockito.any()))
             .willReturn(CaseData.builder().familyManCaseNumber("12345").respondents1(ImmutableList.of(
                 Element.<Respondent>builder()
@@ -81,19 +68,44 @@ class LocalAuthorityEmailContentProviderTest {
                         .build())
                     .build()))
                 .hearingDetails(ImmutableList.of(
-            Element.<HearingBooking>builder()
-                .id(UUID.randomUUID())
-                .value(HearingBooking.builder().date(LocalDate.of(2020,10, 27)).build())
-                .build())).build());
+                    Element.<HearingBooking>builder()
+                        .id(UUID.randomUUID())
+                        .value(HearingBooking.builder().date(LocalDate.of(2020,10, 27)).build())
+                        .build())).build());
 
         given(hearingBookingService.getMostUrgentHearingBooking(Mockito.any())).willReturn(HearingBooking.builder()
             .date(LocalDate.of(2020,10,27)).build());
 
         given(dateFormatterService.formatLocalDateToString(Mockito.any(),Mockito.any()))
             .willReturn("27 October 2020");
+    }
+
+    @Test
+    void shouldReturnExpectedMapWithValidSDODetails() throws IOException {
+        Map<String, Object> expectedMap = getStandardDirectionTemplateParameters();
+
+        given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
+            .willReturn(new LocalAuthorityEmailLookupConfiguration
+                .LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+
+        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+            .willReturn("Test local authority");
 
         assertThat(localAuthorityEmailContentProvider
             .buildLocalAuthorityStandardDirectionOrderIssuedNotification(populatedCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
+    }
+
+    private Map<String, Object> getStandardDirectionTemplateParameters() {
+        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
+        .put("title", LOCAL_AUTHORITY_NAME)
+        .put("familyManCaseNumber", "12345,")
+        .put("leadRespondentsName", "Moley,")
+        .put("hearingDate", "27 October 2020")
+        .put("reference", "12345")
+        .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+        .build();
+
+        return expectedMap;
     }
 }

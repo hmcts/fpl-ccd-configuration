@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -56,6 +57,30 @@ class CafcassEmailContentProviderTest {
     @InjectMocks
     private CafcassEmailContentProvider cafcassEmailContentProvider;
 
+    @BeforeEach
+    void setup(){
+        given(mapperService.mapObject(Mockito.any(), Mockito.any()))
+            .willReturn(CaseData.builder().familyManCaseNumber("12345").respondents1(ImmutableList.of(
+                Element.<Respondent>builder()
+                    .value(Respondent.builder()
+                        .party(RespondentParty.builder()
+                            .lastName("Moley")
+                            .build())
+                        .build())
+                    .build()))
+                .hearingDetails(ImmutableList.of(
+                    Element.<HearingBooking>builder()
+                        .id(UUID.randomUUID())
+                        .value(HearingBooking.builder().date(LocalDate.of(2020,10, 27)).build())
+                        .build())).build());
+
+        given(hearingBookingService.getMostUrgentHearingBooking(Mockito.any())).willReturn(HearingBooking.builder()
+            .date(LocalDate.of(2020,10,27)).build());
+
+        given(dateFormatterService.formatLocalDateToString(Mockito.any(),Mockito.any()))
+            .willReturn("27 October 2020");
+    }
+
     @Test
     void shouldReturnExpectedMapWithValidCaseDetails() throws IOException {
         List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
@@ -108,14 +133,7 @@ class CafcassEmailContentProviderTest {
 
     @Test
     void shouldReturnExpectedMapWithValidSDODetails() throws IOException {
-        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-            .put("title", CAFCASS_NAME)
-            .put("familyManCaseNumber", "12345,")
-            .put("leadRespondentsName", "Moley,")
-            .put("hearingDate", "27 October 2020")
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
+        Map<String, Object> expectedMap = getStandardDirectionTemplateParameters();
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
             .willReturn(new Cafcass(CAFCASS_NAME, COURT_EMAIL_ADDRESS));
@@ -123,43 +141,21 @@ class CafcassEmailContentProviderTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        CaseData data = CaseData.builder().familyManCaseNumber("12345").respondents1(ImmutableList.of(
-            Element.<Respondent>builder()
-                .value(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .lastName("Moley")
-                        .build())
-                    .build())
-                .build()))
-            .hearingDetails(ImmutableList.of(
-                Element.<HearingBooking>builder()
-                    .id(UUID.randomUUID())
-                    .value(HearingBooking.builder().date(LocalDate.of(2020, 10, 27)).build())
-                    .build())).build();
-
-        given(hearingBookingService.getMostUrgentHearingBooking(Mockito.any())).willReturn(HearingBooking.builder()
-            .date(LocalDate.of(2020,10,27)).build());
-
-        given(dateFormatterService.formatLocalDateToString(Mockito.any(),Mockito.any()))
-            .willReturn("27 October 2020");
-
-        given(mapperService.mapObject(Mockito.any(), Mockito.any()))
-            .willReturn(CaseData.builder().familyManCaseNumber("12345").respondents1(ImmutableList.of(
-                Element.<Respondent>builder()
-                    .value(Respondent.builder()
-                        .party(RespondentParty.builder()
-                            .lastName("Moley")
-                            .build())
-                        .build())
-                    .build()))
-                .hearingDetails(ImmutableList.of(
-                    Element.<HearingBooking>builder()
-                        .id(UUID.randomUUID())
-                        .value(HearingBooking.builder().date(LocalDate.of(2020, 10, 27)).build())
-                        .build())).build());
-
         assertThat(cafcassEmailContentProvider
             .buildCafcassStandardDirectionOrderIssuedNotification(populatedCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
+    }
+
+    private Map<String, Object> getStandardDirectionTemplateParameters() {
+        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
+        .put("title", CAFCASS_NAME)
+        .put("familyManCaseNumber", "12345,")
+        .put("leadRespondentsName", "Moley,")
+        .put("hearingDate", "27 October 2020")
+        .put("reference", "12345")
+        .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+        .build();
+
+        return expectedMap;
     }
 }
