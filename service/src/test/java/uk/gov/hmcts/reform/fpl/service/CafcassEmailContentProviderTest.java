@@ -158,7 +158,7 @@ class CafcassEmailContentProviderTest {
                         .value(HearingBooking.builder().date(LocalDate.of(2020, 10, 27)).build())
                         .build())).build());
 
-        assertThat(cafcassEmailContentProvider.buildCafcassSDOSubmissionNotification(populatedCaseDetails(),
+        assertThat(cafcassEmailContentProvider.buildCafcassStandardDirectionOrderIssuedNotification(populatedCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
     }
 }

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
@@ -13,9 +14,9 @@ import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
@@ -52,15 +53,15 @@ public abstract class AbstractEmailContentProvider {
 
     protected ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(CaseDetails caseDetails, CaseData caseData) {
         return ImmutableMap.<String, Object>builder()
-            .put("familyManCaseNumber", Objects.isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber() + ",")
-            .put("leadRespondentsName", Objects.isNull(caseData.getRespondents1()) ? "" : capitalizeString(caseData.getRespondents1().get(0).getValue().getParty().getLastName()) + ",")
-            .put("hearingDate",Objects.isNull(hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails())) ? "" : dateFormatterService.formatLocalDateToString(hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()).getDate(),FormatStyle.LONG))
+            .put("familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber() + ",")
+            .put("leadRespondentsName", isNull(caseData.getRespondents1()) ? "" : StringUtils.capitalize(caseData.getRespondents1()
+                .get(0)
+                .getValue()
+                .getParty()
+                .getLastName()) + ",")
+            .put("hearingDate", isNull(hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails())) ? "" : dateFormatterService.formatLocalDateToString(hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()).getDate(),FormatStyle.LONG))
             .put("reference", String.valueOf(caseDetails.getId()))
             .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
-    }
-
-    private String capitalizeString(String unformattedString) {
-        return unformattedString.substring(0, 1).toUpperCase() + unformattedString.substring(1).toLowerCase();
     }
 
     private List<String> buildOrdersAndDirections(Map<String, Object> optionalOrders) {

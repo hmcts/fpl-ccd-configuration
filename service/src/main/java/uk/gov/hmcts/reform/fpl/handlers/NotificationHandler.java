@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
-import uk.gov.hmcts.reform.fpl.events.SDOSubmittedEvent;
+import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
@@ -24,7 +24,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 
 @Component
 public class NotificationHandler {
@@ -97,25 +97,25 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void sendSDOToCafcass(SDOSubmittedEvent event) {
+    public void notifyCafcassOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
         Map<String, Object> parameters = cafcassEmailContentProvider
-            .buildCafcassSDOSubmissionNotification(caseDetails, localAuthorityCode);
+            .buildCafcassStandardDirectionOrderIssuedNotification(caseDetails, localAuthorityCode);
         String reference = String.valueOf(caseDetails.getId());
         String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
-        sendNotification(SDO_SUBMISSION_TEMPLATE, email, parameters, reference);
+        sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, reference);
     }
 
     @EventListener
-    public void sendSDOToLocalAuthority(SDOSubmittedEvent event) {
+    public void notifyLocalAuthorityOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
         Map<String, Object> parameters = localAuthorityEmailContentProvider
-            .buildLocalAuthoritySDOSubmissionNotification(caseDetails, localAuthorityCode);
+            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseDetails, localAuthorityCode);
         String reference = Long.toString(caseDetails.getId());
         String email = localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode).getEmail();
-        sendNotification(SDO_SUBMISSION_TEMPLATE, email, parameters, reference);
+        sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, reference);
     }
 
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {

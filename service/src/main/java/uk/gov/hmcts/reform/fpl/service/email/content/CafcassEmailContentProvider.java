@@ -32,16 +32,14 @@ public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
         this.service = service;
     }
 
-    public Map<String, Object> buildCafcassSubmissionNotification(CaseDetails caseDetails,
-                                                                  String localAuthorityCode) {
+    public Map<String, Object> buildCafcassSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
         return super.getCasePersonalisationBuilder(caseDetails)
             .put("cafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
             .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .build();
     }
 
-    public Map<String, Object> buildCafcassSDOSubmissionNotification(CaseDetails caseDetails,
-                                                                     String localAuthorityCode) {
+    public Map<String, Object> buildCafcassStandardDirectionOrderIssuedNotification(CaseDetails caseDetails, String localAuthorityCode) {
         CaseData caseData = service.mapObject(caseDetails.getData(), CaseData.class);
 
         return super.getSDOPersonalisationBuilder(caseDetails, caseData)

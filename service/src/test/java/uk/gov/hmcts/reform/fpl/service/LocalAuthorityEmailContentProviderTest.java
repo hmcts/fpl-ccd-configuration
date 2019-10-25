@@ -93,7 +93,7 @@ class LocalAuthorityEmailContentProviderTest {
             .willReturn("27 October 2020");
 
         assertThat(localAuthorityEmailContentProvider
-            .buildLocalAuthoritySDOSubmissionNotification(populatedCaseDetails(),
+            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(populatedCaseDetails(),
             LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
     }
 }

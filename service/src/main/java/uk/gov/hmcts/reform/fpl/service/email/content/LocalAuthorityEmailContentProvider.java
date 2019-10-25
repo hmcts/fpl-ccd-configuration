@@ -32,8 +32,8 @@ public class LocalAuthorityEmailContentProvider extends AbstractEmailContentProv
         this.service = service;
     }
 
-    public Map<String, Object> buildLocalAuthoritySDOSubmissionNotification(CaseDetails caseDetails,
-                                                                            String localAuthorityCode) {
+    public Map<String, Object> buildLocalAuthorityStandardDirectionOrderIssuedNotification(CaseDetails caseDetails,
+                                                                                           String localAuthorityCode) {
         CaseData caseData = service.mapObject(caseDetails.getData(), CaseData.class);
 
         return super.getSDOPersonalisationBuilder(caseDetails, caseData)

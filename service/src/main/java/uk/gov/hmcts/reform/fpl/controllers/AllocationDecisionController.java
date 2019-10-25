@@ -25,8 +25,7 @@ public class AllocationDecisionController {
     private final CourtLevelAllocationService service;
 
     @Autowired
-    public AllocationDecisionController(ObjectMapper mapper,
-                                        CourtLevelAllocationService service) {
+    public AllocationDecisionController(ObjectMapper mapper, CourtLevelAllocationService service) {
         this.mapper = mapper;
         this.service = service;
     }

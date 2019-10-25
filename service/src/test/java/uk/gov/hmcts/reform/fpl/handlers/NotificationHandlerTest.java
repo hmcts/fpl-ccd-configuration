@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
-import uk.gov.hmcts.reform.fpl.events.SDOSubmittedEvent;
+import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
@@ -34,7 +34,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.SDO_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @SuppressWarnings("LineLength")
@@ -178,7 +178,7 @@ class NotificationHandlerTest {
     }
 
     @Test
-    void shouldSendSDOEmailToCafcass() throws IOException, NotificationClientException {
+    void shouldNotifyCafcassOfIssuedStandardDirectionsOrder() throws IOException, NotificationClientException {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", "6789")
             .put("leadRespondentsName", "Moley")
@@ -193,17 +193,17 @@ class NotificationHandlerTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        given(cafcassEmailContentProvider.buildCafcassSDOSubmissionNotification(callbackRequest().getCaseDetails(),
+        given(cafcassEmailContentProvider.buildCafcassStandardDirectionOrderIssuedNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
-        notificationHandler.sendSDOToCafcass(new SDOSubmittedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+        notificationHandler.notifyCafcassOfIssuedStandardDirectionsOrder(new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(SDO_SUBMISSION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
+            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
     }
 
     @Test
-    void shouldSendSDOEmailToLocalAuthority() throws IOException, NotificationClientException {
+    void shouldNotifyLocalAuthorityOfIssuedStandardDirectionsOrder() throws IOException, NotificationClientException {
         final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", "6789")
             .put("leadRespondentsName", "Moley")
@@ -218,12 +218,12 @@ class NotificationHandlerTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        given(localAuthorityEmailContentProvider.buildLocalAuthoritySDOSubmissionNotification(callbackRequest().getCaseDetails(),
+        given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
-        notificationHandler.sendSDOToLocalAuthority(new SDOSubmittedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+        notificationHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(SDO_SUBMISSION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
+            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
     }
 }
