@@ -9,3 +9,16 @@ idam-service-importer:
       clientID: fpl
       clientSecret: OOOOOOOOOOOOOOOO
       redirectURL: https://localhost:9000/oauth2/callback
+
+idam-role-importer:
+  enabled: true
+  roles:
+    - id: ccd-import
+    - id: caseworker
+    - id: caseworker-publiclaw
+    - id: caseworker-publiclaw-solicitor
+    - id: caseworker-publiclaw-courtadmin
+    - id: caseworker-publiclaw-cafcass
+    - id: caseworker-publiclaw-gatekeeper
+    - id: caseworker-publiclaw-judiciary
+    - id: caseworker-publiclaw-systemupdate
