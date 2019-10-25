@@ -20,30 +20,33 @@ spec:
         app.kubernetes.io/name: idam-service-importer
     spec:
       containers:
-        - name: idam-service-importer
+        {{- $self := . -}}
+        {{- range $index, $item := .Values.services }}
+        - name: idam-service-importer-{{ $index }}
           image: hmctspublic.azurecr.io/hmcts/idam/utils:latest
           command: [ /scripts/create-service.sh ]
           args:
-            - {{ (index .Values.services 0).label | quote }}
-            - {{ (index .Values.services 0).selfRegistrationAllowed | default false | quote }}
-            - {{ (index .Values.services 0).clientID | quote }}
-            - {{ (index .Values.services 0).clientSecret | quote }}
-            - {{ printf "[%s]" ((index .Values.services 0).redirectURL | quote) | quote }}
-            - {{ printf "[%s]" ((index .Values.services 0).allowedRole | default "" | quote) | quote }}
+            - {{ .label | quote }}
+            - {{ .selfRegistrationAllowed | default false | quote }}
+            - {{ .clientID | quote }}
+            - {{ .clientSecret | quote }}
+            - {{ printf "[%s]" (.redirectURL | quote) | quote }}
+            - {{ printf "[%s]" (.allowedRole | default "" | quote) | quote }}
           env:
             - name: IDAM_API_URL
               value: http://idam-api
             - name: IDAM_ADMIN_USER
-              value: {{ .Values.global.adminUser }}
+              value: {{ $self.Values.global.adminUser }}
             - name: IDAM_ADMIN_PASSWORD
-              value: {{ .Values.global.adminPassword }}
+              value: {{ $self.Values.global.adminPassword }}
           resources:
             requests:
-              cpu: 250m
-              memory: 128Mi
+              cpu: 125m
+              memory: 16Mi
             limits:
-              cpu: 500m
-              memory: 256Mi
+              cpu: 250m
+              memory: 32Mi
           imagePullPolicy: IfNotPresent
+        {{- end }}
       restartPolicy: Never
 {{- end }}
