@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.model.Grounds;
 import uk.gov.hmcts.reform.fpl.model.GroundsForEPO;
 import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
@@ -29,6 +31,8 @@ import java.util.UUID;
 import javax.validation.Validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 
 @ExtendWith(SpringExtension.class)
 class CaseValidatorServiceTest {
@@ -53,6 +57,8 @@ class CaseValidatorServiceTest {
             "• You need to add details to orders and directions needed",
             "In the children section:",
             "• You need to add details to children",
+            "In the respondents section:",
+            "• You need to add details to respondents",
             "In the applicant section:",
             "• You need to add details to applicant",
             "In the hearing needed section:",
@@ -72,6 +78,12 @@ class CaseValidatorServiceTest {
                 .id(UUID.randomUUID())
                 .value(Child.builder()
                     .party(ChildParty.builder().build())
+                    .build())
+                .build()))
+            .respondents1(List.of(Element.<Respondent>builder()
+                .id(UUID.randomUUID())
+                .value(Respondent.builder()
+                    .party(RespondentParty.builder().build())
                     .build())
                 .build()))
             .hearing(Hearing.builder().build())
@@ -98,6 +110,8 @@ class CaseValidatorServiceTest {
             "• Enter an email address for the contact",
             "In the children section:",
             "• Tell us the names of all children in the case",
+            "In the respondents section:",
+            "• Enter the respondents full name",
             "In the documents section:",
             "• Tell us the status of all documents including those that you haven't uploaded",
             "In the hearing needed section:",
@@ -112,7 +126,7 @@ class CaseValidatorServiceTest {
             .hearing(Hearing.builder()
                 .timeFrame("Within 18 days")
                 .build())
-            .children1(initChildren())
+            .children1(createPopulatedChildren())
             .applicants(List.of(Element.<Applicant>builder()
                 .id(UUID.randomUUID())
                 .value(Applicant.builder()
@@ -157,7 +171,8 @@ class CaseValidatorServiceTest {
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EDUCATION_SUPERVISION_ORDER))
                 .build())
-            .children1(initChildren())
+            .children1(createPopulatedChildren())
+            .respondents1(initRespondents())
             .applicants(initApplicants())
             .hearing(Hearing.builder()
                 .timeFrame("Within 18 days")
@@ -182,7 +197,8 @@ class CaseValidatorServiceTest {
             .orders(Orders.builder()
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
                 .build())
-            .children1(initChildren())
+            .children1(createPopulatedChildren())
+            .respondents1(initRespondents())
             .applicants(initApplicants())
             .hearing(Hearing.builder()
                 .timeFrame("Within 18 days")
@@ -299,17 +315,15 @@ class CaseValidatorServiceTest {
         );
     }
 
-    private List<Element<Child>> initChildren() {
-        return ImmutableList.of(
-            Element.<Child>builder()
-                .id(UUID.randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("James")
-                        .lastName("Nelson")
-                        .build())
+    private List<Element<Respondent>> initRespondents() {
+        return List.of(Element.<Respondent>builder()
+            .id(UUID.randomUUID())
+            .value(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("Sarah")
+                    .lastName("Simpson")
                     .build())
-                .build()
-        );
+                .build())
+            .build());
     }
 }
