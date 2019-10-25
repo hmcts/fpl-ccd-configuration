@@ -20,7 +20,7 @@
     "ID": "C21Order",
     "ListElementCode": "c21OrderDocument",
     "FieldType": "Document",
-    "ElementLabel": "Order details",
+    "ElementLabel": "Attached PDF",
     "SecurityClassification": "Public"
   },
   {

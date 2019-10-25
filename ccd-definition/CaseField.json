@@ -621,7 +621,6 @@
     "ID": "temporaryC21Order",
     "Label": "Create an order",
     "FieldType": "C21Order",
-    "SecurityClassification": "Public",
-    "ShowSummaryChangeOption": "Y"
+    "SecurityClassification": "Public"
   }
 ]

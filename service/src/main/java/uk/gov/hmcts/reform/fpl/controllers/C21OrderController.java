@@ -9,6 +9,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import org.apache.commons.lang3.ObjectUtils;
 import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -126,16 +127,18 @@ public class C21OrderController {
             Lists.newArrayList());
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
+        C21Order tempC21 = caseData.getTemporaryC21Order();
 
         c21OrderBundle.add(Element.<C21OrderBundle>builder()
             .id(UUID.randomUUID())
             .value(C21OrderBundle.builder()
-                .orderTitle(caseData.getTemporaryC21Order().getOrderTitle())
-                .c21OrderDocument(caseData.getTemporaryC21Order().getC21OrderDocument())
+                .orderTitle(tempC21.getOrderTitle())
+                .c21OrderDocument(tempC21.getC21OrderDocument())
                 .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
                     .toLocalDateTime(), "h:mma, d MMMM yyyy"))
-                .judgeTitle(caseData.getTemporaryC21Order().getJudgeAndLegalAdvisor().getJudgeTitle().getLabel())
-                .judgeName(caseData.getTemporaryC21Order().getJudgeAndLegalAdvisor().getJudgeFullName())
+                .judgeTitle(tempC21.getJudgeAndLegalAdvisor().getJudgeTitle().getLabel())
+                .judgeName(ObjectUtils.defaultIfNull(tempC21.getJudgeAndLegalAdvisor().getJudgeLastName(),
+                    tempC21.getJudgeAndLegalAdvisor().getJudgeFullName()))
                 .build())
             .build());
 
