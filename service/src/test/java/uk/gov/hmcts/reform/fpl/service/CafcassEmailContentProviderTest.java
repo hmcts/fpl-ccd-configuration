@@ -58,7 +58,7 @@ class CafcassEmailContentProviderTest {
     private CafcassEmailContentProvider cafcassEmailContentProvider;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         given(mapperService.mapObject(Mockito.any(), Mockito.any()))
             .willReturn(CaseData.builder().familyManCaseNumber("12345").respondents1(ImmutableList.of(
                 Element.<Respondent>builder()
@@ -148,13 +148,13 @@ class CafcassEmailContentProviderTest {
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {
         Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
-        .put("title", CAFCASS_NAME)
-        .put("familyManCaseNumber", "12345,")
-        .put("leadRespondentsName", "Moley,")
-        .put("hearingDate", "27 October 2020")
-        .put("reference", "12345")
-        .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-        .build();
+            .put("title", CAFCASS_NAME)
+            .put("familyManCaseNumber", "12345,")
+            .put("leadRespondentsName", "Moley,")
+            .put("hearingDate", "27 October 2020")
+            .put("reference", "12345")
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
 
         return expectedMap;
     }
