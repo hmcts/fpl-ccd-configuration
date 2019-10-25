@@ -77,8 +77,7 @@ public class NotificationHandler {
             CaseDetails caseDetailsFromEvent = caseEvent.getCallbackRequest().getCaseDetails();
             String localAuthorityCode = (String) caseDetailsFromEvent.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
 
-            Map<String, Object> parameters = hmctsEmailContentProvider.buildC2UploadNotification(
-                caseDetailsFromEvent, localAuthorityCode);
+            Map<String, Object> parameters = hmctsEmailContentProvider.buildC2UploadNotification(caseDetailsFromEvent);
             String reference = Long.toString(caseDetailsFromEvent.getId());
 
             String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();

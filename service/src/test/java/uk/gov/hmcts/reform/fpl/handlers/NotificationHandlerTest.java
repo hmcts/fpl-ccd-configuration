@@ -93,8 +93,8 @@ class NotificationHandlerTest {
             .willReturn(new UserDetails("1", "hmcts-admin@test.com",
                 "Hmcts", "Test", UserRole.HMCTS_ADMIN.getRoles()));
 
-        given(hmctsEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails(),
-            LOCAL_AUTHORITY_CODE)).willReturn(parameters);
+        given(hmctsEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
+            .willReturn(parameters);
 
         notificationHandler.sendNotificationForC2Upload(new C2UploadNotifyEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
             userDetailsService.getUserDetails(AUTH_TOKEN)));
@@ -122,8 +122,8 @@ class NotificationHandlerTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        given(hmctsEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails(),
-            LOCAL_AUTHORITY_CODE)).willReturn(parameters);
+        given(hmctsEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
+            .willReturn(parameters);
 
         notificationHandler.sendNotificationForC2Upload(new C2UploadNotifyEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
             userDetailsService.getUserDetails(AUTH_TOKEN)));
