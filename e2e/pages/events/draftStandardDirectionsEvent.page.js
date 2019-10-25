@@ -1,4 +1,5 @@
 const {I} = inject();
+const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
 
 module.exports = {
   fields: function (party, index) {
@@ -15,7 +16,19 @@ module.exports = {
           second: `#${party}_${index}_dateToBeCompletedBy-second`,
         },
       },
+      statusRadioGroup: {
+        groupName: '#standardDirectionOrder_orderStatus',
+        sealed: 'Yes, it can be sealed and sent to parties',
+        draft: 'No, I need to make changes',
+      },
     };
+  },
+
+  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName) {
+    judgeAndLegalAdvisor.selectJudgeTitle();
+    judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
+    judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
+    await I.retryUntilExists(() => I.click('Continue'), '#allParties');
   },
 
   async enterDate(party, direction, index = 0) {
@@ -39,5 +52,12 @@ module.exports = {
     await this.enterDate('otherPartiesDirections', direction);
     await I.retryUntilExists(() => I.click('Continue'), '#courtDirections');
     await this.enterDate('courtDirections', direction);
+    await I.retryUntilExists(() => I.click('Continue'), '#standardDirectionOrder_orderStatus');
+  },
+
+  async enterStatus(party = '', index = 0) {
+    within(this.fields(party, index).statusRadioGroup.groupName, () => {
+      I.click(locate('label').withText(this.fields(party, index).statusRadioGroup.draft));
+    });
   },
 };

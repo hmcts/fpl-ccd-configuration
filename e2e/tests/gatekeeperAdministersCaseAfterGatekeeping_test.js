@@ -85,7 +85,9 @@ Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage
 // Disabled until SDO goes live
 xScenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+  await draftStandardDirectionsEventPage.enterJudgeAndLegalAdvisor('Smith', 'Bob Ross');
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
+  await draftStandardDirectionsEventPage.enterStatus();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
