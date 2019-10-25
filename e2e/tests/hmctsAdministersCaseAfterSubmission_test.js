@@ -76,6 +76,23 @@ Scenario('HMCTS admin uploads standard directions with other documents', async (
   I.seeAnswerInTab('2', 'Other documents 2', 'Upload a file', 'mockFile.txt');
 });
 
+// Disabled until the c2 upload feature is to be released
+xScenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
+  uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
+  await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
+  uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Jessica Pearson C2');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC2Documents);
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.seeAnswerInTab('1', 'C2 1', 'Upload a file', 'mockFile.txt');
+  I.seeAnswerInTab('4', 'C2 1', 'Description', 'Rachel Zane C2');
+  I.seeAnswerInTab('1', 'C2 2', 'Upload a file', 'mockFile.txt');
+  I.seeAnswerInTab('4', 'C2 2', 'Description', 'Jessica Pearson C2');
+});
+
 Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
@@ -109,7 +126,6 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(9, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
 });
 
-
 Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
   sendCaseToGatekeeperEventPage.enterEmail();
@@ -120,8 +136,11 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
 // Disabled as permissions to create / view notice of proceeding documents has been temporarily disabled. Enable once updates to c6 and c6a have been made
 xScenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
-  createNoticeOfProceedingsEventPage.checkC6();
-  createNoticeOfProceedingsEventPage.checkC6A();
+  await createNoticeOfProceedingsEventPage.checkC6();
+  await createNoticeOfProceedingsEventPage.checkC6A();
+  await createNoticeOfProceedingsEventPage.selectJudgeTitle();
+  await createNoticeOfProceedingsEventPage.enterJudgeLastName('Sarah Simpson');
+  await createNoticeOfProceedingsEventPage.enterLegalAdvisorName('Ian Watson');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.createNoticeOfProceedings);
   caseViewPage.selectTab(caseViewPage.tabs.documents);
