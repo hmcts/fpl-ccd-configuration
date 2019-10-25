@@ -1,11 +1,11 @@
-{{- if .Values.enabled }}
+{{- if and .Values.enabled .Values.roles }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: idam-service-importer
+  name: idam-role-importer
   labels:
-    app.kubernetes.io/name: idam-service-importer
-    app.kubernetes.io/instance: {{ .Release.Name }}-idam-service-importer
+    app.kubernetes.io/name: idam-role-importer
+    app.kubernetes.io/instance: {{ .Release.Name }}-idam-role-importer
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
   annotations:
@@ -15,23 +15,18 @@ metadata:
 spec:
   template:
     metadata:
-      name: idam-service-importer
+      name: idam-role-importer
       labels:
-        app.kubernetes.io/name: idam-service-importer
+        app.kubernetes.io/name: idam-role-importer
     spec:
       containers:
         {{- $self := . -}}
-        {{- range $index, $item := .Values.services }}
-        - name: idam-service-importer-{{ $index }}
+        {{- range $index, $item := .Values.roles }}
+        - name: idam-role-importer-{{ $index }}
           image: hmctspublic.azurecr.io/hmcts/idam/utils:latest
-          command: [ /scripts/create-service.sh ]
+          command: [ /scripts/create-role.sh ]
           args:
-            - {{ .label | quote }}
-            - {{ .selfRegistrationAllowed | default false | quote }}
-            - {{ .clientID | quote }}
-            - {{ .clientSecret | quote }}
-            - {{ printf "[%s]" (.redirectURL | quote) | quote }}
-            - {{ printf "[%s]" (.allowedRole | default "" | quote) | quote }}
+            - {{ .id | quote }}
           env:
             - name: IDAM_API_URL
               value: http://idam-api

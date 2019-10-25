@@ -1,4 +1,4 @@
-idam-service-importer:
+configurer:
   enabled: true
   services:
     - label: CCD
@@ -9,9 +9,6 @@ idam-service-importer:
       clientID: fpl
       clientSecret: OOOOOOOOOOOOOOOO
       redirectURL: https://localhost:9000/oauth2/callback
-
-idam-role-importer:
-  enabled: true
   roles:
     - id: ccd-import
     - id: caseworker
