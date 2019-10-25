@@ -38,8 +38,6 @@ public class CaseValidatorService {
     public List<String> validateCaseDetails(CaseData caseData, Class<?>...groups) {
         Set<ConstraintViolation<CaseData>> violations = validator.validate(caseData, groups);
 
-        System.out.println(violations);
-
         return Stream.of(APPLICANT, CHILDREN, RESPONDENTS, ORDERS, GROUNDS, HEARING, DOCUMENTS, CASENAME)
             .flatMap(section -> Stream.of(groupErrorsBySection(violations, section)))
             .flatMap(Collection::stream)

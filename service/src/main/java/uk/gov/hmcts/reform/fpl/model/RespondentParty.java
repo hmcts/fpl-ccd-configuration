@@ -11,12 +11,14 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
+
+import javax.validation.constraints.NotBlank;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonDeserialize(builder = RespondentParty.RespondentPartyBuilder.class)
 public final class RespondentParty extends Party {
     private final String gender;
     private final String genderIdentification;
@@ -37,7 +39,7 @@ public final class RespondentParty extends Party {
         return super.getLastName();
     }
 
-    @Builder(toBuilder = true)
+    @Builder(toBuilder = true, builderClassName = "RespondentPartyBuilder")
     public RespondentParty(String partyId,
                            PartyType partyType,
                            String firstName,

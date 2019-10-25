@@ -32,7 +32,9 @@ import javax.validation.Validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 
 @ExtendWith(SpringExtension.class)
 class CaseValidatorServiceTest {
@@ -46,7 +48,7 @@ class CaseValidatorServiceTest {
     }
 
     @Test
-    void shouldReturnErrorsIfMandatoryCaseSectionsHaveNotBeenCompleted() {
+    void shouldReturnErrorsWhenMandatoryCaseSectionsHaveNotBeenCompleted() {
         CaseData caseData = CaseData.builder().build();
         List<String> errors = caseValidatorService.validateCaseDetails(caseData);
 
@@ -71,7 +73,7 @@ class CaseValidatorServiceTest {
     }
 
     @Test
-    void shouldReturnErrorsIfMandatoryFieldsHaveNotBeenCompleted() {
+    void shouldReturnErrorsWhenMandatoryFieldsHaveNotBeenCompleted() {
         CaseData caseData = CaseData.builder()
             .caseName("Test case")
             .children1(List.of(Element.<Child>builder()
@@ -120,7 +122,7 @@ class CaseValidatorServiceTest {
     }
 
     @Test
-    void shouldReturnAnErrorIfApplicantIsPopulatedButAddressIsPartiallyCompleted() {
+    void shouldReturnAnErrorWhenApplicantIsPopulatedButAddressIsPartiallyCompleted() {
         CaseData caseData = initCaseDocuments()
             .caseName("Test case")
             .hearing(Hearing.builder()
@@ -161,23 +163,8 @@ class CaseValidatorServiceTest {
     }
 
     @Test
-    void shouldNotReturnErrorsIfMandatoryFieldsHaveBeenCompletedNotIncludingEPO() {
-        CaseData caseData = initCaseDocuments()
-            .caseName("Test case")
-            .grounds(Grounds.builder()
-                .thresholdReason(ImmutableList.of("reason"))
-                .thresholdDetails("details")
-                .build())
-            .orders(Orders.builder()
-                .orderType(ImmutableList.of(OrderType.EDUCATION_SUPERVISION_ORDER))
-                .build())
-            .children1(createPopulatedChildren())
-            .respondents1(initRespondents())
-            .applicants(initApplicants())
-            .hearing(Hearing.builder()
-                .timeFrame("Within 18 days")
-                .build())
-            .build();
+    void shouldNotReturnErrorsWhenMandatoryFieldsHaveBeenCompletedNotIncludingEPO() {
+        CaseData caseData = initCompletedMandatoryFields();
 
         List<String> errors = caseValidatorService.validateCaseDetails(caseData);
         assertThat(errors).isEmpty();
@@ -185,6 +172,14 @@ class CaseValidatorServiceTest {
 
     @Test
     void shouldNotReturnErrorsIfMandatoryFieldsHaveBeenCompleted() {
+        CaseData caseData = initCompletedMandatoryFields();
+
+        List<String> errors = caseValidatorService.validateCaseDetails(caseData);
+        assertThat(errors).isEmpty();
+    }
+
+    @Test
+    void shouldNotReturnAnErrorWhenFirstRespondentHasFullNameButNotSecondRespondent() {
         CaseData caseData = initCaseDocuments()
             .caseName("Test case")
             .groundsForEPO(GroundsForEPO.builder()
@@ -198,8 +193,25 @@ class CaseValidatorServiceTest {
                 .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
                 .build())
             .children1(createPopulatedChildren())
-            .respondents1(initRespondents())
-            .applicants(initApplicants())
+            .respondents1(ImmutableList.of(
+                Element.<Respondent>builder()
+                    .id(UUID.randomUUID())
+                    .value(Respondent.builder().party(
+                        RespondentParty.builder()
+                            .firstName("Timothy")
+                            .lastName("Jones")
+                            .build())
+                        .build())
+                    .build(),
+                Element.<Respondent>builder()
+                    .id(UUID.randomUUID())
+                    .value(Respondent.builder().party(
+                        RespondentParty.builder()
+                            .firstName("Sarah")
+                            .build())
+                        .build())
+                    .build()))
+            .applicants(createPopulatedApplicants())
             .hearing(Hearing.builder()
                 .timeFrame("Within 18 days")
                 .build())
@@ -261,6 +273,28 @@ class CaseValidatorServiceTest {
         assertThat(errors).isEmpty();
     }
 
+    private CaseData initCompletedMandatoryFields() {
+        return initCaseDocuments()
+            .caseName("Test case")
+            .groundsForEPO(GroundsForEPO.builder()
+                .reason(ImmutableList.of("reason"))
+                .build())
+            .grounds(Grounds.builder()
+                .thresholdReason(ImmutableList.of("reason"))
+                .thresholdDetails("Details")
+                .build())
+            .orders(Orders.builder()
+                .orderType(ImmutableList.of(OrderType.EMERGENCY_PROTECTION_ORDER))
+                .build())
+            .children1(createPopulatedChildren())
+            .respondents1(createRespondents())
+            .applicants(createPopulatedApplicants())
+            .hearing(Hearing.builder()
+                .timeFrame("Within 18 days")
+                .build())
+            .build();
+    }
+
     private CaseData.CaseDataBuilder initCaseDocuments() {
         return CaseData.builder()
             .socialWorkStatementDocument(Document.builder()
@@ -284,46 +318,5 @@ class CaseValidatorServiceTest {
             .thresholdDocument(Document.builder()
                 .documentStatus("reason")
                 .build());
-    }
-
-    private List<Element<Applicant>> initApplicants() {
-        return List.of(Element.<Applicant>builder()
-            .id(UUID.randomUUID())
-            .value(Applicant.builder()
-                .leadApplicantIndicator("Yes")
-                .party(ApplicantParty.builder()
-                    .organisationName("Harry Kane")
-                    .jobTitle("Judge")
-                    .address(Address.builder()
-                        .addressLine1("1 Some street")
-                        .addressLine2("Some road")
-                        .postTown("some town")
-                        .postcode("BT66 7RR")
-                        .county("Some county")
-                        .country("UK")
-                        .build())
-                    .email(EmailAddress.builder()
-                        .email("Harrykane@hMCTS.net")
-                        .build())
-                    .telephoneNumber(Telephone.builder()
-                        .telephoneNumber("02838882404")
-                        .contactDirection("Harry Kane")
-                        .build())
-                    .build())
-                .build())
-            .build()
-        );
-    }
-
-    private List<Element<Respondent>> initRespondents() {
-        return List.of(Element.<Respondent>builder()
-            .id(UUID.randomUUID())
-            .value(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName("Sarah")
-                    .lastName("Simpson")
-                    .build())
-                .build())
-            .build());
     }
 }
