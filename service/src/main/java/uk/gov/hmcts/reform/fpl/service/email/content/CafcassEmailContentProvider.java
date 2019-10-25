@@ -39,7 +39,8 @@ public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
             .build();
     }
 
-    public Map<String, Object> buildCafcassStandardDirectionOrderIssuedNotification(CaseDetails caseDetails, String localAuthorityCode) {
+    public Map<String, Object> buildCafcassStandardDirectionOrderIssuedNotification(CaseDetails caseDetails,
+                                                                                    String localAuthorityCode) {
         CaseData caseData = service.mapObject(caseDetails.getData(), CaseData.class);
 
         return super.getSDOPersonalisationBuilder(caseDetails, caseData)
