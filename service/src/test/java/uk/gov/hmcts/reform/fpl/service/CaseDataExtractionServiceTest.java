@@ -123,9 +123,7 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
         assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirections());
-        assertThat(templateData.get("draftBackground")).isNotNull();
-        assertThat(templateData.get("draftBackground2")).isNotNull();
-        assertThat(templateData.get("draftBackground3")).isNotNull();
+        assertThat(templateData.get("draftbackground")).isNotNull();
     }
 
     @Test
@@ -163,9 +161,7 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
         assertThat(templateData.get("respondents")).isEqualTo(getExpectedRespondents());
         assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirections());
-        assertThat(templateData.get("draftBackground")).isNull();
-        assertThat(templateData.get("draftBackground2")).isNull();
-        assertThat(templateData.get("draftBackground3")).isNull();
+        assertThat(templateData.get("draftbackground")).isNull();
     }
 
     private List<Map<String, String>> getExpectedChildren() {
