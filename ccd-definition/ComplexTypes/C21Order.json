@@ -1,0 +1,34 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C21Order",
+    "ListElementCode": "orderTitle",
+    "FieldType": "Text",
+    "ElementLabel": "Order title",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C21Order",
+    "ListElementCode": "orderDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Order details",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C21Order",
+    "ListElementCode": "c21OrderDocument",
+    "FieldType": "Document",
+    "ElementLabel": "Order details",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C21Order",
+    "ListElementCode": "judgeAndLegalAdvisor",
+    "FieldType": "JudgeAndLegalAdvisor",
+    "ElementLabel": "Judge and Legal Advisor",
+    "SecurityClassification": "Public"
+  }
+]
