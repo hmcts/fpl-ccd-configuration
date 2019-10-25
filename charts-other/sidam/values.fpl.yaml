@@ -1,21 +1,95 @@
 configurer:
   enabled: true
   services:
-    - label: CCD
-      clientID: ccd_gateway
-      clientSecret: ccd_gateway_secret
-      redirectURL: http://localhost:3451/oauth2redirect
-    - label: fpl
-      clientID: fpl
-      clientSecret: OOOOOOOOOOOOOOOO
-      redirectURL: https://localhost:9000/oauth2/callback
+  - label: CCD
+    clientID: ccd_gateway
+    clientSecret: ccd_gateway_secret
+    redirectURL: http://localhost:3451/oauth2redirect
+  - label: fpl
+    clientID: fpl
+    clientSecret: OOOOOOOOOOOOOOOO
+    redirectURL: https://localhost:9000/oauth2/callback
   roles:
-    - id: ccd-import
-    - id: caseworker
-    - id: caseworker-publiclaw
-    - id: caseworker-publiclaw-solicitor
-    - id: caseworker-publiclaw-courtadmin
-    - id: caseworker-publiclaw-cafcass
-    - id: caseworker-publiclaw-gatekeeper
-    - id: caseworker-publiclaw-judiciary
-    - id: caseworker-publiclaw-systemupdate
+  - id: ccd-import
+  - id: caseworker
+  - id: caseworker-publiclaw
+  - id: caseworker-publiclaw-solicitor
+  - id: caseworker-publiclaw-courtadmin
+  - id: caseworker-publiclaw-cafcass
+  - id: caseworker-publiclaw-gatekeeper
+  - id: caseworker-publiclaw-judiciary
+  - id: caseworker-publiclaw-systemupdate
+  users:
+  - email: damian@swansea.gov.uk
+    surname: (local-authority)
+    group: caseworker
+    roles:
+    - caseworker
+    - caseworker-publiclaw
+    - caseworker-publiclaw-solicitor
+  - email: kurt@swansea.gov.uk
+    surname: (local-authority)
+    group: caseworker
+    roles:
+    - caseworker
+    - caseworker-publiclaw
+    - caseworker-publiclaw-solicitor
+  - email: james@swansea.gov.uk
+    surname: (local-authority)
+    group: caseworker
+    roles:
+    - caseworker
+    - caseworker-publiclaw
+    - caseworker-publiclaw-solicitor
+  - email: sam@hillingdon.gov.uk
+    surname: (local-authority)
+    group: caseworker
+    roles:
+    - caseworker
+    - caseworker-publiclaw
+    - caseworker-publiclaw-solicitor
+  - email: siva@hillingdon.gov.uk
+    surname: (local-authority)
+    group: caseworker
+    roles:
+    - caseworker
+    - caseworker-publiclaw
+    - caseworker-publiclaw-solicitor
+  - email: hmcts-admin@example.com
+    surname: (hmcts-admin)
+    group: caseworker
+    roles:
+    - caseworker
+    - caseworker-publiclaw
+    - caseworker-publiclaw-courtadmin
+  - email: cafcass@example.com
+    surname: (cafcass)
+    group: caseworker
+    roles:
+    - caseworker
+    - caseworker-publiclaw
+    - caseworker-publiclaw-cafcass
+  - email: gatekeeper@mailnesia.com
+    surname: (gatekeeper)
+    group: caseworker
+    roles:
+    - caseworker
+    - caseworker-publiclaw
+    - caseworker-publiclaw-courtadmin
+    - caseworker-publiclaw-gatekeeper
+  - email: judiciary@mailnesia.com
+    surname: (hmcts-admin)
+    group: caseworker
+    roles:
+    - caseworker
+    - caseworker-publiclaw
+    - caseworker-publiclaw-courtadmin
+    - caseworker-publiclaw-gatekeeper
+    - caseworker-publiclaw-judiciary
+  - email: fpl-system-update@mailnesia.com
+    surname: (system-update)
+    group: caseworker
+    roles:
+    - caseworker
+    - caseworker-publiclaw
+    - caseworker-publiclaw-systemupdate
