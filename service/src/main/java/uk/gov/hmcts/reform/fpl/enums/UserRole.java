@@ -38,8 +38,7 @@ public enum UserRole {
     public abstract List<String> getRoles();
 
     private static List<String> addRoles(final String roleToAdd) {
-        List<String> userRoles = new ArrayList<>();
-        userRoles.addAll(Arrays.asList("caseworker", "caseworker-publiclaw"));
+        List<String> userRoles = new ArrayList<>(Arrays.asList("caseworker", "caseworker-publiclaw"));
         userRoles.add(roleToAdd);
         return userRoles;
     }

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -30,6 +31,8 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonDeserialize(builder = CaseData.CaseDataBuilder.class)
+//added JsonIgnore annotation given recent errors on Unrecognised field.
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CaseData {
     @NotBlank(message = "Enter a case name")
     private final String caseName;
@@ -128,6 +131,8 @@ public class CaseData {
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
 
     @JsonPOJOBuilder(withPrefix = "")
+    //added JsonIgnore annotation given recent errors on Unrecognised field.
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class CaseDataBuilder {
     }
 }

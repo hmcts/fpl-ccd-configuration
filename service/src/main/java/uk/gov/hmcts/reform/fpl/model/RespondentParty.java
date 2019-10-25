@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
@@ -17,6 +18,8 @@ import java.time.LocalDate;
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonDeserialize(builder = RespondentParty.RespondentPartyBuilder.class)
+//added JsonIgnore annotation given recent errors on Unrecognised field.
+@JsonIgnoreProperties(ignoreUnknown = true)
 public final class RespondentParty extends Party {
     private final String gender;
     private final String genderIdentification;
@@ -57,7 +60,10 @@ public final class RespondentParty extends Party {
         this.litigationIssuesDetails = litigationIssuesDetails;
     }
 
+
     @JsonPOJOBuilder(withPrefix = "")
+    //added JsonIgnore annotation given recent errors on Unrecognised field.
+    @JsonIgnoreProperties(ignoreUnknown = true)
     public static class RespondentPartyBuilder {
     }
 }
