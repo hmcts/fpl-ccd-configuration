@@ -37,9 +37,11 @@
           }
         }
       ],
-      "proceedingTypes": [
-        "NOTICE_OF_PROCEEDINGS_FOR_PARTIES"
-      ],
+      "noticeOfProceedings": {
+        "proceedingTypes": [
+          "NOTICE_OF_PROCEEDINGS_FOR_PARTIES"
+        ]
+      },
       "orders": {
         "orderType": [
           "CARE_ORDER"

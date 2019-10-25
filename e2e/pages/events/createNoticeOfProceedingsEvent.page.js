@@ -22,10 +22,10 @@ module.exports = {
   },
 
   enterJudgeLastName(judgeLastName) {
-    judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
+    judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName, 'noticeOfProceedings_');
   },
 
   enterLegalAdvisorName(legalAdvisorName) {
-    judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
+    judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName, 'noticeOfProceedings_');
   },
 };

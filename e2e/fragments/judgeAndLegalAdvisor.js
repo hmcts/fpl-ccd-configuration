@@ -19,11 +19,11 @@ module.exports = {
     });
   },
 
-  enterJudgeLastName(judgeLastName) {
-    I.fillField(this.fields.judgeLastName, judgeLastName);
+  enterJudgeLastName(judgeLastName, complexTypeAppender = '') {
+    I.fillField(complexTypeAppender + this.fields.judgeLastName, judgeLastName);
   },
 
-  enterLegalAdvisorName(legalAdvisorName) {
-    I.fillField(this.fields.legalAdvisorName, legalAdvisorName);
+  enterLegalAdvisorName(legalAdvisorName, complexTypeAppender = '') {
+    I.fillField(complexTypeAppender + this.fields.legalAdvisorName, legalAdvisorName);
   },
 };

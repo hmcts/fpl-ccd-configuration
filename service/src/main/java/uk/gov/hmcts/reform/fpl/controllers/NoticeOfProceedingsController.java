@@ -78,16 +78,12 @@ public class NoticeOfProceedingsController {
 
             caseDetails.getData().put("proceedingLabel", String.format("The case management hearing will be on the %s.",
                 dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG)));
-
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseDetails.getData())
-                .build();
-        } else {
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseDetails.getData())
-                .errors(eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class))
-                .build();
         }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .errors(eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class))
+            .build();
     }
 
     @PostMapping("/about-to-submit")
@@ -115,18 +111,17 @@ public class NoticeOfProceedingsController {
 
     private List<Element> createNoticeOfProceedingsCaseData(List<Document> uploadedDocuments) {
         return uploadedDocuments.stream()
-            .map(document -> {
-                return Element.builder()
-                    .id(UUID.randomUUID())
-                    .value(ImmutableMap.builder()
-                        .put("document", DocumentReference.builder()
-                            .filename(document.originalDocumentName)
-                            .url(document.links.self.href)
-                            .binaryUrl(document.links.binary.href)
-                            .build())
+            .map(document -> Element.builder()
+                .id(UUID.randomUUID())
+                .value(ImmutableMap.builder()
+                    .put("document", DocumentReference.builder()
+                        .filename(document.originalDocumentName)
+                        .url(document.links.self.href)
+                        .binaryUrl(document.links.binary.href)
                         .build())
-                    .build();
-            }).collect(Collectors.toList());
+                    .build())
+                .build())
+            .collect(Collectors.toList());
     }
 
     private List<Document> generateAndUploadDocuments(String userId,
@@ -146,11 +141,13 @@ public class NoticeOfProceedingsController {
     private List<DocmosisTemplates> getProceedingTemplateTypes(CaseData caseData) {
         ImmutableList.Builder<DocmosisTemplates> proceedingTypes = ImmutableList.builder();
 
-        if (caseData.getProceedingTypes().contains(ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES)) {
+        if (caseData.getNoticeOfProceedings().getProceedingTypes()
+            .contains(ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES)) {
             proceedingTypes.add(DocmosisTemplates.C6);
         }
 
-        if (caseData.getProceedingTypes().contains(ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES)) {
+        if (caseData.getNoticeOfProceedings().getProceedingTypes()
+            .contains(ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES)) {
             proceedingTypes.add(DocmosisTemplates.C6A);
         }
 
