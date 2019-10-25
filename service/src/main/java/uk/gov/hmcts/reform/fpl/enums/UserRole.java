@@ -15,7 +15,7 @@ public enum UserRole {
         public List<String> getRoles() {
             return addRoles(DEFAULT.getRoles(), "caseworker-publiclaw-solicitor");
         }
-    },
+         LOCAL_AUTHORITY("caseworker-publiclaw-solicitor")        
 
     HMCTS_ADMIN {
         public List<String> getRoles() {
