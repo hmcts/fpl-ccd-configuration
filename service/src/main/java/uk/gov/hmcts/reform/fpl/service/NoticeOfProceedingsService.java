@@ -1,15 +1,18 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
@@ -24,18 +27,36 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 
 @Service
-public class NoticeOfProceedingService {
+public class NoticeOfProceedingsService {
     private DateFormatterService dateFormatterService;
     private HearingBookingService hearingBookingService;
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     @Autowired
-    public NoticeOfProceedingService(DateFormatterService dateFormatterService,
+    public NoticeOfProceedingsService(DateFormatterService dateFormatterService,
                                      HearingBookingService hearingBookingService,
                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration) {
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
+    }
+
+    public List<Element<DocumentBundle>> getRemovedDocumentBundles(CaseData caseData,
+                                                                   List<DocmosisTemplates> templateTypes) {
+        List<String> templateTypeTitles = templateTypes.stream().map(DocmosisTemplates::getDocumentTitle)
+            .collect(Collectors.toList());
+
+        ImmutableList.Builder<Element<DocumentBundle>> removedDocumentBundles = ImmutableList.builder();
+
+        caseData.getNoticeOfProceedingsBundle().forEach(element -> {
+            String filename = element.getValue().getDocument().getFilename();
+
+            if (!templateTypeTitles.contains(filename)) {
+                removedDocumentBundles.add(element);
+            }
+        });
+
+        return removedDocumentBundles.build();
     }
 
     public Map<String, Object> getNoticeOfProceedingTemplateData(CaseData caseData) {
