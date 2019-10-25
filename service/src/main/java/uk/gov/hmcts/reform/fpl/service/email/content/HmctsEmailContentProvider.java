@@ -18,16 +18,18 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @Service
 public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     @Autowired
-    public HmctsEmailContentProvider(LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
+    public HmctsEmailContentProvider(ObjectMapper objectMapper,
+                                     LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
                                      @Value("${ccd.ui.base.url}") String uiBaseUrl) {
         super(uiBaseUrl);
+        this.objectMapper = objectMapper;
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }
