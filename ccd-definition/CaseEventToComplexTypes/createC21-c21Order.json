@@ -51,6 +51,16 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisorComplexType",
+    "CaseEventID": "createC21Order",
+    "CaseFieldID": "judgeAndLegalAdvisor",
+    "ListElementCode": "legalAdvisorName",
+    "EventElementLabel": "Legal advisor's full name",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "C21OrderComplexType",
     "CaseEventID": "createC21OrderGatekeeping",
     "CaseFieldID": "temporaryC21Order",
@@ -68,16 +78,6 @@
     "EventElementLabel": "Order details",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "JudgeAndLegalAdvisorComplexType",
-    "CaseEventID": "createC21Order",
-    "CaseFieldID": "judgeAndLegalAdvisor",
-    "ListElementCode": "legalAdvisorName",
-    "EventElementLabel": "Legal advisor's full name",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",

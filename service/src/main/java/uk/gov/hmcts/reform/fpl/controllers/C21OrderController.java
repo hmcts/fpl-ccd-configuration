@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.assertj.core.util.Lists;
@@ -71,7 +72,7 @@ public class C21OrderController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackRequest) {
+        @RequestBody CallbackRequest callbackRequest) throws JsonProcessingException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
@@ -96,12 +97,10 @@ public class C21OrderController {
                 .filename(c21Document.originalDocumentName)
                 .build());
 
-//        System.out.println(c21OrderBuilder);
-//        System.out.println(data);
         data.put("temporaryC21Order", c21OrderBuilder.build());
         data.remove("judgeAndLegalAdvisor");
-//        System.out.println(data);
-//        System.out.println(caseData.getTemporaryC21Order());
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data.get("temporaryC21Order")));
+        System.out.println();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data).build();
@@ -109,14 +108,15 @@ public class C21OrderController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) {
+        @RequestBody CallbackRequest callbackRequest) throws JsonProcessingException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-//        System.out.println(caseData.getTemporaryC21Order());
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data.get("temporaryC21Order")));
         data.put("c21OrderBundle", buildC21OrderBundle(caseData));
         data.remove("temporaryC21Order");
+        data.remove("judgeAndLegalAdvisor");
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
     }
