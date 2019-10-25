@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
-import uk.gov.hmcts.reform.fpl.events.C2UploadNotifyEvent;
+import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
@@ -69,7 +69,7 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void sendNotificationForC2Upload(final C2UploadNotifyEvent caseEvent) {
+    public void sendNotificationForC2Upload(final C2UploadedEvent caseEvent) {
         UserDetails userDetails = caseEvent.getUserDetails();
         List<String> roles = userDetails.getRoles();
 

@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
-import uk.gov.hmcts.reform.fpl.events.C2UploadNotifyEvent;
+import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
@@ -29,7 +29,6 @@ import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -96,7 +95,7 @@ class NotificationHandlerTest {
         given(hmctsEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
             .willReturn(parameters);
 
-        notificationHandler.sendNotificationForC2Upload(new C2UploadNotifyEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
+        notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
             userDetailsService.getUserDetails(AUTH_TOKEN)));
 
         verify(notificationClient, times(0)).sendEmail(
@@ -117,7 +116,7 @@ class NotificationHandlerTest {
                 "Hmcts", "Test", UserRole.LOCAL_AUTHORITY.getRoles()));
 
         given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-            .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS));
+            .willReturn(new Court(COURT_NAME, "hmcts-non-admin@test.com"));
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
@@ -125,11 +124,11 @@ class NotificationHandlerTest {
         given(hmctsEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
             .willReturn(parameters);
 
-        notificationHandler.sendNotificationForC2Upload(new C2UploadNotifyEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
+        notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
             userDetailsService.getUserDetails(AUTH_TOKEN)));
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(C2_UPLOAD_SUBMISSION_TEMPLATE), notNull(), eq(parameters), eq("12345"));
+            eq(C2_UPLOAD_SUBMISSION_TEMPLATE), eq("hmcts-non-admin@test.com"), eq(parameters), eq("12345"));
     }
 
     @Test
