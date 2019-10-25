@@ -50,7 +50,7 @@ ccd:
   apiGateway:
     s2sKey: ${CCD_API_GATEWAY_S2S_SECRET}
     idamClientSecret:
-      value: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET:-ccd_gateway_secret}
+      value: ccd_gateway_secret
     environment:
       PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
       ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
