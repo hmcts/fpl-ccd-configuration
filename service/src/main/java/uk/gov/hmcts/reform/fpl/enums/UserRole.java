@@ -5,46 +5,41 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum UserRole {
-    DEFAULT {
+    LOCAL_AUTHORITY {
         public List<String> getRoles() {
-            return Arrays.asList("caseworker", "caseworker-publiclaw");
+            return addRoles("caseworker-publiclaw-solicitor");
         }
     },
 
-    LOCAL_AUTHORITY {
-        public List<String> getRoles() {
-            return addRoles(DEFAULT.getRoles(), "caseworker-publiclaw-solicitor");
-        }
-         LOCAL_AUTHORITY("caseworker-publiclaw-solicitor")        
-
     HMCTS_ADMIN {
         public List<String> getRoles() {
-            return addRoles(DEFAULT.getRoles(),"caseworker-publiclaw-courtadmin");
+            return addRoles("caseworker-publiclaw-courtadmin");
         }
     },
 
     CAFCASS {
         public List<String> getRoles() {
-            return addRoles(DEFAULT.getRoles(),"caseworker-publiclaw-cafcass");
+            return addRoles("caseworker-publiclaw-cafcass");
         }
     },
 
     GATEKEEPER {
         public List<String> getRoles() {
-            return addRoles(DEFAULT.getRoles(), "caseworker-publiclaw-gatekeeper");
+            return addRoles("caseworker-publiclaw-gatekeeper");
         }
     },
 
     JUDICIARY {
         public List<String> getRoles() {
-            return addRoles(DEFAULT.getRoles(), "caseworker-publiclaw-judiciary");
+            return addRoles("caseworker-publiclaw-judiciary");
         }
     };
 
     public abstract List<String> getRoles();
 
-    private static List<String> addRoles(final List<String> existingRoles, final String roleToAdd) {
-        List<String> userRoles = new ArrayList<>(existingRoles);
+    private static List<String> addRoles(final String roleToAdd) {
+        List<String> userRoles = new ArrayList<>();
+        userRoles.addAll(Arrays.asList("caseworker", "caseworker-publiclaw"));
         userRoles.add(roleToAdd);
         return userRoles;
     }
