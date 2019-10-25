@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
@@ -16,7 +15,6 @@ import java.time.LocalDate;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonDeserialize(builder = RespondentParty.RespondentPartyBuilder.class)
 //added JsonIgnore annotation given recent errors on Unrecognised field.
 @JsonIgnoreProperties(ignoreUnknown = true)

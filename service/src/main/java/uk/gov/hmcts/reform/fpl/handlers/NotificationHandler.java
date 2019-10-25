@@ -18,11 +18,12 @@ import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
+import uk.gov.service.notify.SendEmailResponse;
 
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
@@ -81,7 +82,7 @@ public class NotificationHandler {
             String reference = Long.toString(caseDetailsFromEvent.getId());
 
             String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
-            sendNotification(C2_UPLOAD_SUBMISSION_TEMPLATE, email, parameters, reference);
+            sendNotification(C2_UPLOAD_NOTIFICATION_TEMPLATE, email, parameters, reference);
         }
     }
 
@@ -112,7 +113,8 @@ public class NotificationHandler {
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
         logger.debug("Sending submission notification (with template id: {}) to {}", templateId, email);
         try {
-            notificationClient.sendEmail(templateId, email, parameters, reference);
+            SendEmailResponse response = notificationClient.sendEmail(templateId, email, parameters, reference);
+            System.out.println(response);
         } catch (NotificationClientException e) {
             logger.error("Failed to send submission notification (with template id: {}) to {}", templateId, email, e);
         }
