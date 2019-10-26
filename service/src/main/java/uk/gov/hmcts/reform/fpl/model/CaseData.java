@@ -1,9 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,9 +25,6 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
-@JsonDeserialize(builder = CaseData.CaseDataBuilder.class)
-//added JsonIgnore annotation given recent errors on Unrecognised field.
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class CaseData {
     @NotBlank(message = "Enter a case name")
     private final String caseName;
@@ -126,10 +120,4 @@ public class CaseData {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
-
-    @JsonPOJOBuilder(withPrefix = "")
-    //added JsonIgnore annotation given recent errors on Unrecognised field.
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    public static class CaseDataBuilder {
-    }
 }
