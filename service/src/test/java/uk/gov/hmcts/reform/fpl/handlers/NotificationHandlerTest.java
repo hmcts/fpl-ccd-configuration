@@ -24,12 +24,13 @@ import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
+import uk.gov.service.notify.SendEmailResponse;
 
 import java.io.IOException;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -110,8 +111,11 @@ class NotificationHandlerTest {
 
         notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-        verify(notificationClient, times(0)).sendEmail(
-            isNull(), isNull(), isNull(), isNull());
+        SendEmailResponse response = verify(notificationClient, times(0))
+            .sendEmail(eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-admin@test.com"),
+                eq(parameters), eq("12345"));
+
+        assertThat(response).isNull();
     }
 
     @Test
