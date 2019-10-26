@@ -383,5 +383,8 @@
     "CaseEventID": "uploadC2Gatekeeping",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"
+    "CaseEventID": "createNoticeOfProceedings",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
   }
 ]
