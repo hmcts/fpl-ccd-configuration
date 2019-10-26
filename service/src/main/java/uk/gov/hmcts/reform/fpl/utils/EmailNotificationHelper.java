@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -10,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.Objects;
 
-@Service
 public class EmailNotificationHelper {
 
     private EmailNotificationHelper() {

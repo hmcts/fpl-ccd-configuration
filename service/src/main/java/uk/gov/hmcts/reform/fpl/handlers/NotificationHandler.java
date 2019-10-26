@@ -12,10 +12,11 @@ import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
@@ -38,7 +39,9 @@ public class NotificationHandler {
     private final HmctsEmailContentProvider hmctsEmailContentProvider;
     private final CafcassEmailContentProvider cafcassEmailContentProvider;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
+    private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
     private final NotificationClient notificationClient;
+    private final UserDetailsService userDetailsService;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -48,13 +51,17 @@ public class NotificationHandler {
                                NotificationClient notificationClient,
                                HmctsEmailContentProvider hmctsEmailContentProvider,
                                CafcassEmailContentProvider cafcassEmailContentProvider,
-                               GatekeeperEmailContentProvider gatekeeperEmailContentProvider) {
+                               GatekeeperEmailContentProvider gatekeeperEmailContentProvider,
+                               C2UploadedEmailContentProvider c2UploadedEmailContentProvider,
+                               UserDetailsService userDetailsService) {
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.cafcassLookupConfiguration = cafcassLookupConfiguration;
         this.notificationClient = notificationClient;
         this.hmctsEmailContentProvider = hmctsEmailContentProvider;
         this.cafcassEmailContentProvider = cafcassEmailContentProvider;
         this.gatekeeperEmailContentProvider = gatekeeperEmailContentProvider;
+        this.c2UploadedEmailContentProvider = c2UploadedEmailContentProvider;
+        this.userDetailsService = userDetailsService;
     }
 
     @EventListener
@@ -71,14 +78,14 @@ public class NotificationHandler {
 
     @EventListener
     public void sendNotificationForC2Upload(final C2UploadedEvent caseEvent) {
-        UserDetails userDetails = caseEvent.getUserDetails();
-        List<String> roles = userDetails.getRoles();
+        List<String> roles = userDetailsService.getUserDetails(caseEvent.getAuthorization()).getRoles();
 
         if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoles())) {
             CaseDetails caseDetailsFromEvent = caseEvent.getCallbackRequest().getCaseDetails();
             String localAuthorityCode = (String) caseDetailsFromEvent.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
 
-            Map<String, Object> parameters = hmctsEmailContentProvider.buildC2UploadNotification(caseDetailsFromEvent);
+            Map<String, Object> parameters = c2UploadedEmailContentProvider.buildC2UploadNotification(
+                caseDetailsFromEvent);
             String reference = Long.toString(caseDetailsFromEvent.getId());
 
             String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
@@ -17,9 +16,11 @@ import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
+import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -74,7 +75,13 @@ class NotificationHandlerTest {
     @Mock
     private GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
 
-    @MockBean
+    @Mock
+    private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
+
+    @Mock
+    private IdamApi idamApi;
+
+    @Mock
     private UserDetailsService userDetailsService;
 
     @InjectMocks
@@ -86,21 +93,25 @@ class NotificationHandlerTest {
         final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
             .put("subjectLine", SUBJ_LINE)
             .put("hearingDetailsCallout", SUBJ_LINE)
+            .put("reference", "12345")
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
+
+        given(idamApi.retrieveUserDetails(AUTH_TOKEN))
+            .willReturn(new UserDetails("1", "hmcts-admin@test.com",
+                "Hmcts", "Test", UserRole.HMCTS_ADMIN.getRoles()));
 
         given(userDetailsService.getUserDetails(AUTH_TOKEN))
             .willReturn(new UserDetails("1", "hmcts-admin@test.com",
                 "Hmcts", "Test", UserRole.HMCTS_ADMIN.getRoles()));
 
-        given(hmctsEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
+        given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
             .willReturn(parameters);
 
-        notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
-            userDetailsService.getUserDetails(AUTH_TOKEN)));
+        notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(0)).sendEmail(
             isNull(), isNull(), isNull(), isNull());
-
     }
 
     @Test
@@ -109,9 +120,15 @@ class NotificationHandlerTest {
         final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
             .put("subjectLine", SUBJ_LINE)
             .put("hearingDetailsCallout", SUBJ_LINE)
+            .put("reference", "12345")
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
         given(userDetailsService.getUserDetails(AUTH_TOKEN))
+            .willReturn(new UserDetails("1", "hmcts-non-admin@test.com",
+                "Hmcts", "Test", UserRole.LOCAL_AUTHORITY.getRoles()));
+
+        given(idamApi.retrieveUserDetails(AUTH_TOKEN))
             .willReturn(new UserDetails("1", "hmcts-non-admin@test.com",
                 "Hmcts", "Test", UserRole.LOCAL_AUTHORITY.getRoles()));
 
@@ -121,11 +138,10 @@ class NotificationHandlerTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        given(hmctsEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
+        given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
             .willReturn(parameters);
 
-        notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
-            userDetailsService.getUserDetails(AUTH_TOKEN)));
+        notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
             eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-non-admin@test.com"), eq(parameters), eq("12345"));
