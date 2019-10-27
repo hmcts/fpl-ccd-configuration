@@ -138,7 +138,7 @@ module.exports = function () {
       await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
       await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
       await this.completeEvent('Save and continue');
-      await caseViewPage.goToNewActions(config.applicationActions.enterRespondents)
+      await caseViewPage.goToNewActions(config.applicationActions.enterRespondents);
       await enterRespondentsEventPage.enterRespondent(respondent[0]);
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterGrounds);
