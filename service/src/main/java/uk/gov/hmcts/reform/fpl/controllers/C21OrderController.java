@@ -1,17 +1,11 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.ObjectUtils;
 import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -21,8 +15,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C21OrderBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -32,6 +27,12 @@ import uk.gov.hmcts.reform.fpl.service.CreateC21OrderService;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
@@ -46,18 +47,21 @@ public class C21OrderController {
     private final UploadDocumentService uploadDocumentService;
     private final CreateC21OrderService createC21OrderService;
     private final DateFormatterService dateFormatterService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
     public C21OrderController(ObjectMapper mapper,
                               DocmosisDocumentGeneratorService docmosisService,
                               UploadDocumentService uploadDocumentService,
                               CreateC21OrderService createC21OrderService,
-                              DateFormatterService dateFormatterService) {
+                              DateFormatterService dateFormatterService,
+                              ApplicationEventPublisher applicationEventPublisher) {
         this.mapper = mapper;
         this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
         this.createC21OrderService = createC21OrderService;
         this.dateFormatterService = dateFormatterService;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @PostMapping("/about-to-start")
@@ -73,7 +77,7 @@ public class C21OrderController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackRequest) throws JsonProcessingException {
+        @RequestBody CallbackRequest callbackRequest)  {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
@@ -100,8 +104,6 @@ public class C21OrderController {
 
         data.put("temporaryC21Order", c21OrderBuilder.build());
         data.remove("judgeAndLegalAdvisor");
-        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data.get("temporaryC21Order")));
-        System.out.println();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data).build();
@@ -109,17 +111,25 @@ public class C21OrderController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest) throws JsonProcessingException {
+        @RequestBody CallbackRequest callbackRequest)  {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data.get("temporaryC21Order")));
         data.put("c21OrderBundle", buildC21OrderBundle(caseData));
         data.remove("temporaryC21Order");
         data.remove("judgeAndLegalAdvisor");
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestHeader(value = "user-id") String userId,
+        @RequestBody CallbackRequest callbackRequest) {
+
+        applicationEventPublisher.publishEvent(new C21OrderEvent(callbackRequest, authorization, userId));
     }
 
     private List<Element<C21OrderBundle>> buildC21OrderBundle(CaseData caseData) {
