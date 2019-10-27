@@ -605,5 +605,22 @@
     "Label": "Upload C2",
     "FieldType": "C2DocumentBundle",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c21OrderBundle",
+    "Label": "C21 Order",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "C21OrderBundle",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "temporaryC21Order",
+    "Label": "Create an order",
+    "FieldType": "C21Order",
+    "SecurityClassification": "Public"
   }
 ]
