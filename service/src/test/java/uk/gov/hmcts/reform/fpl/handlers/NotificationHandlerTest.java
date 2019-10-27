@@ -12,11 +12,13 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
-import uk.gov.hmcts.reform.fpl.events.C21OrderNotifyEvent;
+import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
+import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
@@ -28,6 +30,8 @@ import uk.gov.service.notify.NotificationClientException;
 import uk.gov.service.notify.SendEmailResponse;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.FormatStyle;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,11 +41,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.C21_ORDER_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.C2_UPLOAD_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.CAFCASS_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.GATEKEEPER_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @SuppressWarnings("LineLength")
@@ -82,7 +86,13 @@ class NotificationHandlerTest {
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @Mock
+    private C21OrderEmailContentProvider c21OrderEmailContentProvider;
+
+    @Mock
     private IdamApi idamApi;
+
+    @Mock
+    private DateFormatterService dateFormatterService;
 
     @Mock
     private UserDetailsService userDetailsService;
@@ -114,7 +124,7 @@ class NotificationHandlerTest {
         notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         SendEmailResponse response = verify(notificationClient, times(0))
-            .sendEmail(eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-admin@test.com"),
+            .sendEmail(eq(C2_UPLOAD_NOTIFICATION_TEMPLATE.getTemplateId()), eq("hmcts-admin@test.com"),
                 eq(parameters), eq("12345"));
 
         assertThat(response).isNull();
@@ -150,7 +160,7 @@ class NotificationHandlerTest {
         notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-non-admin@test.com"), eq(parameters), eq("12345"));
+            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE.getTemplateId()), eq("hmcts-non-admin@test.com"), eq(parameters), eq("12345"));
     }
 
     @Test
@@ -159,7 +169,8 @@ class NotificationHandlerTest {
             .put("court", COURT_NAME)
             .put("lastNameOfRespondent", "Test Lastname")
             .put("familyManCaseNumber", "SACCCCCCCC5676576567")
-            .put("hearingDate", dateFormatterService.formatLocalDateToString(LocalDate.now().plusMonths(4), FormatStyle.MEDIUM))
+            .put("hearingDate", dateFormatterService.formatLocalDateToString(LocalDate.now().plusMonths(4),
+                FormatStyle.MEDIUM))
             .build();
 
         given(userDetailsService.getUserDetails(AUTH_TOKEN))
@@ -175,13 +186,14 @@ class NotificationHandlerTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        given(hmctsEmailContentProvider.buildC21OrderNotification(callbackRequest().getCaseDetails(),
+        given(c21OrderEmailContentProvider.buildC21OrderNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(parameters);
 
-        notificationHandler.sendNotificationForC21Order(new C21OrderNotifyEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+        notificationHandler.sendNotificationForC21Order(new C21OrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(C21_ORDER_SUBMISSION_TEMPLATE), notNull(), eq(parameters), eq("12345"));
+            eq(C21_ORDER_NOTIFICATION_TEMPLATE.getTemplateId()), eq("hmcts-non-admin@test.com"),
+            eq(parameters), eq("12345"));
     }
 
     @Test
@@ -215,7 +227,8 @@ class NotificationHandlerTest {
         notificationHandler.sendNotificationToHmctsAdmin(new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq(COURT_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE.getTemplateId()), eq(COURT_EMAIL_ADDRESS),
+            eq(expectedParameters), eq("12345"));
     }
 
     @Test
@@ -247,7 +260,8 @@ class NotificationHandlerTest {
         notificationHandler.sendNotificationToCafcass(new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(CAFCASS_SUBMISSION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
+            eq(CAFCASS_SUBMISSION_TEMPLATE.getTemplateId()), eq(CAFCASS_EMAIL_ADDRESS),
+            eq(expectedParameters), eq("12345"));
     }
 
     @Test
@@ -277,6 +291,7 @@ class NotificationHandlerTest {
         notificationHandler.sendNotificationToGatekeeper(new NotifyGatekeeperEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq(GATEKEEPER_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
+            eq(GATEKEEPER_SUBMISSION_TEMPLATE.getTemplateId()), eq(GATEKEEPER_EMAIL_ADDRESS),
+            eq(expectedParameters), eq("12345"));
     }
 }

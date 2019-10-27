@@ -25,8 +25,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.CAFCASS_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 @ActiveProfiles("integration-test")
@@ -100,11 +100,13 @@ class CaseSubmissionControllerSubmittedTest {
             .andExpect(status().isOk());
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("admin@family-court.com"), eq(expectedHmctsParameters), eq("12345")
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE.getTemplateId()), eq("admin@family-court.com"),
+            eq(expectedHmctsParameters), eq("12345")
         );
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(CAFCASS_SUBMISSION_TEMPLATE), eq("cafcass@cafcass.com"), eq(expectedCafcassParameters), eq("12345")
+            eq(CAFCASS_SUBMISSION_TEMPLATE.getTemplateId()), eq("cafcass@cafcass.com"),
+            eq(expectedCafcassParameters), eq("12345")
         );
     }
 
@@ -151,11 +153,13 @@ class CaseSubmissionControllerSubmittedTest {
             .andExpect(status().isOk());
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("admin@family-court.com"), eq(expectedHmctsParameters), eq("12345")
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE.getTemplateId()),
+            eq("admin@family-court.com"), eq(expectedHmctsParameters), eq("12345")
         );
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(CAFCASS_SUBMISSION_TEMPLATE), eq("cafcass@cafcass.com"), eq(expectedCafcassParameters), eq("12345")
+            eq(CAFCASS_SUBMISSION_TEMPLATE).getTemplateId(), eq("cafcass@cafcass.com"),
+            eq(expectedCafcassParameters), eq("12345")
         );
     }
 }

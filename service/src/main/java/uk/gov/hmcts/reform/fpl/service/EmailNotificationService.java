@@ -24,7 +24,10 @@ public class EmailNotificationService {
         this.notificationClient = notificationClient;
     }
 
-    public void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
+    public void sendNotification(final String templateId,
+                                 final String email,
+                                 final Map<String, Object> parameters,
+                                 final String reference) {
         logger.debug("Sending submission notification (with template id: {}) to {}", templateId, email);
         try {
             notificationClient.sendEmail(templateId, email, parameters, reference);
@@ -33,7 +36,10 @@ public class EmailNotificationService {
         }
     }
 
-    public void sendNotification(String templateId, List<String> emails, Map<String, Object> parameters, String reference) {
+    public void sendNotification(final String templateId,
+                                 final List<String> emails,
+                                 final Map<String, Object> parameters,
+                                 final String reference) {
         logger.debug("Sending submission notification (with template id: {}) to {}", templateId, emails);
 
         if (!CollectionUtils.isEmpty(emails)) {
@@ -42,4 +48,3 @@ public class EmailNotificationService {
         }
     }
 }
-
