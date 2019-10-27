@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
-import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -8,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.Objects;
 
+import static org.apache.commons.lang3.StringUtils.isNoneBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -24,7 +24,7 @@ public class EmailNotificationHelper {
             ? String.format("%1$s", caseData.getFamilyManCaseNumber()) : "");
 
         return String.format("%1$s%2$s%3$s", lastName,
-            (StringUtils.isNoneBlank(lastName, familyManCaseNumber) ? ", " : ""),
+            (isNoneBlank(lastName, familyManCaseNumber) ? ", " : ""),
             familyManCaseNumber);
     }
 
