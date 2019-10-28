@@ -47,12 +47,9 @@ public class HearingBookingDetailsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
 
-        List<HearingVenue> hearingVenues = lookupService.getHearingVenues();
-        DynamicList hearingVenuesDynamic = DynamicList.toDynamicList(hearingVenues);
-
         caseDetails.getData()
             .put("hearingDetails",
-                hearingBookingService.expandHearingBookingCollection(caseData, hearingVenuesDynamic));
+                hearingBookingService.expandHearingBookingCollection(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

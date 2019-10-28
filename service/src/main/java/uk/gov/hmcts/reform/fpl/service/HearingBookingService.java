@@ -14,34 +14,18 @@ import static java.util.Comparator.comparing;
 @Service
 public class HearingBookingService {
 
-    public List<Element<HearingBooking>> expandHearingBookingCollection(CaseData caseData, DynamicList venues) {
-        if (caseData.getHearingDetails() == null) {
-            List<Element<HearingBooking>> populatedHearing = new ArrayList<>();
+    public List<Element<HearingBooking>> expandHearingBookingCollection(CaseData caseData) {
+        public List<Element<HearingBooking>> expandHearingBookingCollection(CaseData caseData) {
+            if (caseData.getHearingDetails() == null) {
+                List<Element<HearingBooking>> populatedHearing = new ArrayList<>();
 
-            populatedHearing.add(Element.<HearingBooking>builder()
-                .value(HearingBooking.builder().venueList(venues).build())
-                .build());
-
-            return populatedHearing;
-        } else {
-            List<Element<HearingBooking>> hearings = new ArrayList<>();
-
-            for (Element<HearingBooking> hearingBookingElement : caseData.getHearingDetails()) {
-                HearingBooking booking = hearingBookingElement.getValue();
-                DynamicList venueList = booking.getVenueList();
-                // Update the old list with the current one
-                if (venueList == null) {
-                    venueList = venues;
-                } else {
-                    venueList = venueList.update(venues);
-                }
-                // Rebuild the element
-                hearings.add(Element.<HearingBooking>builder().id(hearingBookingElement.getId())
-                    .value(booking.toBuilder().venueList(venueList).build())
+                populatedHearing.add(Element.<HearingBooking>builder()
+                    .value(HearingBooking.builder().build())
                     .build());
+                return populatedHearing;
+            } else {
+                return caseData.getHearingDetails();
             }
-
-            return hearings;
         }
     }
 

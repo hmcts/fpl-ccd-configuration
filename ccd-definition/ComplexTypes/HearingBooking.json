@@ -21,8 +21,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
     "ListElementCode": "venue",
-    "FieldType": "Text",
-    "ElementLabel": "Venue",
+    "FieldType": "FixedList",
+    "ElementLabel": "HearingVenue",
     "SecurityClassification": "Public"
   },
   {
