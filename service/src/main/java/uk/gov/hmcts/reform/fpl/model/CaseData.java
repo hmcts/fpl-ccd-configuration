@@ -51,7 +51,7 @@ public class CaseData {
 
     @Valid
     private final Respondent getFirstRespondent() {
-        if (isEmpty(respondents1) || isEmpty(respondents1.get(0))) {
+        if (isEmpty(respondents1)) {
             return Respondent.builder().build();
         }
 

@@ -39,15 +39,16 @@ public class CaseValidatorService {
         Set<ConstraintViolation<CaseData>> violations = validator.validate(caseData, groups);
 
         return Stream.of(APPLICANT, CHILDREN, RESPONDENTS, ORDERS, GROUNDS, HEARING, DOCUMENTS, CASENAME)
-            .flatMap(section -> Stream.of(groupErrorsBySection(violations, section)))
+            .flatMap(section -> Stream.of(groupViolationsBySection(violations, section)))
             .flatMap(Collection::stream)
             .collect(toList());
     }
 
-    private List<String> groupErrorsBySection(Set<ConstraintViolation<CaseData>> caseData, Section section) {
+    private List<String> groupViolationsBySection(Set<ConstraintViolation<CaseData>> constraintViolations,
+                                                  Section section) {
         List<String> errorList;
 
-        errorList = caseData.stream()
+        errorList = constraintViolations.stream()
             .filter(error -> error.getPropertyPath().toString().toLowerCase().contains(section.getErrorKey()))
             .map(error -> String.format("• %s", error.getMessage()))
             .distinct()
