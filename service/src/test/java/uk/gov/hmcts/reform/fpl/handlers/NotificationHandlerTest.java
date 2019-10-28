@@ -170,17 +170,17 @@ class NotificationHandlerTest {
 
     @Test
     void shouldNotifyPartiesOnC21OrderSubmission() throws IOException, NotificationClientException {
-        final LocalDate HEARING_DATE = LocalDate.now().plusMonths(4);
+        final LocalDate hearingDate = LocalDate.now().plusMonths(4);
 
-        given(dateFormatterService.formatLocalDateToString(HEARING_DATE, FormatStyle.MEDIUM))
-            .willReturn(HEARING_DATE.format(
+        given(dateFormatterService.formatLocalDateToString(hearingDate, FormatStyle.MEDIUM))
+            .willReturn(hearingDate.format(
                 DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK)));
 
         final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
             .put("court", COURT_NAME)
             .put("lastNameOfRespondent", "Test Lastname")
             .put("familyManCaseNumber", "SACCCCCCCC5676576567")
-            .put("hearingDate", dateFormatterService.formatLocalDateToString(HEARING_DATE, FormatStyle.MEDIUM))
+            .put("hearingDate", dateFormatterService.formatLocalDateToString(hearingDate, FormatStyle.MEDIUM))
             .build();
 
         given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
