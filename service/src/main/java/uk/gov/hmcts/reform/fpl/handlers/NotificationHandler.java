@@ -1,8 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -29,6 +28,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLAT
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 
+@Slf4j
 @Component
 /* preferring this option given growing constructor args */
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -44,8 +44,6 @@ public class NotificationHandler {
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
     private final NotificationClient notificationClient;
     private final IdamApi idamApi;
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @EventListener
     public void sendNotificationToHmctsAdmin(SubmittedCaseEvent event) {
@@ -101,11 +99,11 @@ public class NotificationHandler {
     }
 
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
-        logger.debug("Sending submission notification (with template id: {}) to {}", templateId, email);
+        log.debug("Sending submission notification (with template id: {}) to {}", templateId, email);
         try {
             notificationClient.sendEmail(templateId, email, parameters, reference);
         } catch (NotificationClientException e) {
-            logger.error("Failed to send submission notification (with template id: {}) to {}", templateId, email, e);
+            log.error("Failed to send submission notification (with template id: {}) to {}", templateId, email, e);
         }
     }
 }
