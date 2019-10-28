@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.HearingVenueLookupService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
 import java.io.IOException;
@@ -27,14 +26,11 @@ import java.util.List;
 public class HearingBookingDetailsController {
     private final MapperService mapperService;
     private final HearingBookingService hearingBookingService;
-    private final HearingVenueLookupService lookupService;
 
     @Autowired
-    public HearingBookingDetailsController(MapperService mapperService, HearingBookingService hearingBookingService,
-                                           HearingVenueLookupService lookupService) {
+    public HearingBookingDetailsController(MapperService mapperService, HearingBookingService hearingBookingService) {
         this.mapperService = mapperService;
         this.hearingBookingService = hearingBookingService;
-        this.lookupService = lookupService;
     }
 
     @PostMapping("/about-to-start")
