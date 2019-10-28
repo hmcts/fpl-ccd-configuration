@@ -14,13 +14,24 @@ class EmailNotificationHelperTest {
     }
 
     @Test
-    void subjectLineShouldMatchWhenRespondentOrCaseNumberGiven() {
+    void subjectLineShouldMatchWhenRespondentAndCaseNumberGiven() {
         CaseData caseData = CaseData.builder()
             .familyManCaseNumber("FamilyManCaseNumber")
             .respondents1(CaseDataGeneratorHelper.createRespondents())
             .build();
 
         String expectedSubjectLine = "Jones, FamilyManCaseNumber";
+        String subjectLine = EmailNotificationHelper.buildSubjectLine(caseData);
+        assertThat(subjectLine).isEqualTo(expectedSubjectLine);
+    }
+
+    @Test
+    void subjectLineShouldNotBeEmptyWhenOnlyRespondentGiven() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(CaseDataGeneratorHelper.createRespondents())
+            .build();
+
+        String expectedSubjectLine = "Jones";
         String subjectLine = EmailNotificationHelper.buildSubjectLine(caseData);
         assertThat(subjectLine).isEqualTo(expectedSubjectLine);
     }
