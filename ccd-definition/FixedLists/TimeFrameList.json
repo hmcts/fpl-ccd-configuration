@@ -1,10 +1,11 @@
-[  {
-  "LiveFrom": "01/01/2017",
-  "ID": "TimeFrameList",
-  "ListElementCode": "Within 18 days",
-  "ListElement": "Within 18 days",
-  "DisplayOrder": 1
-},
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "TimeFrameList",
+    "ListElementCode": "Within 18 days",
+    "ListElement": "Within 18 days",
+    "DisplayOrder": 1
+  },
   {
     "LiveFrom": "01/01/2017",
     "ID": "TimeFrameList",

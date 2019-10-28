@@ -1,10 +1,11 @@
-[  {
-  "LiveFrom": "01/01/2017",
-  "ID": "HearingTypeFixedList",
-  "ListElementCode": "Standard case management hearing",
-  "ListElement": "Standard case management hearing",
-  "DisplayOrder": 1
-},
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingTypeFixedList",
+    "ListElementCode": "Standard case management hearing",
+    "ListElement": "Standard case management hearing",
+    "DisplayOrder": 1
+  },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingTypeFixedList",

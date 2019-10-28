@@ -1,9 +1,10 @@
-[  {
-  "LiveFrom": "01/01/2017",
-  "ID": "AuthorityFixedList",
-  "ListElementCode": "SA",
-  "ListElement": "Swansea City Council"
-},
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "SA",
+    "ListElement": "Swansea City Council"
+  },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",

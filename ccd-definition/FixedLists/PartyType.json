@@ -1,9 +1,10 @@
-[  {
-  "LiveFrom": "01/01/2017",
-  "ID": "PartyType",
-  "ListElementCode": "INDIVIDUAL",
-  "ListElement": "Individual"
-},
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "PartyType",
+    "ListElementCode": "INDIVIDUAL",
+    "ListElement": "Individual"
+  },
   {
     "LiveFrom": "01/01/2017",
     "ID": "PartyType",

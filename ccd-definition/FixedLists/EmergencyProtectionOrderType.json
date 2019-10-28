@@ -1,10 +1,11 @@
-[  {
-  "LiveFrom": "01/01/2017",
-  "ID": "EmergencyProtectionOrderType",
-  "ListElementCode": "CHILD_WHEREABOUTS",
-  "ListElement": "Information on the whereabouts of the child",
-  "DisplayOrder": 1
-},
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmergencyProtectionOrderType",
+    "ListElementCode": "CHILD_WHEREABOUTS",
+    "ListElement": "Information on the whereabouts of the child",
+    "DisplayOrder": 1
+  },
   {
     "LiveFrom": "01/01/2017",
     "ID": "EmergencyProtectionOrderType",

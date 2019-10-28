@@ -1,10 +1,11 @@
-[  {
-  "LiveFrom": "01/01/2017",
-  "ID": "EmergencyProtectionOrderDirectionType",
-  "ListElementCode": "CONTACT_WITH_NAMED_PERSON",
-  "ListElement": "Contact with any named person",
-  "DisplayOrder": 1
-},
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EmergencyProtectionOrderDirectionType",
+    "ListElementCode": "CONTACT_WITH_NAMED_PERSON",
+    "ListElement": "Contact with any named person",
+    "DisplayOrder": 1
+  },
   {
     "LiveFrom": "01/01/2017",
     "ID": "EmergencyProtectionOrderDirectionType",

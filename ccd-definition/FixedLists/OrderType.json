@@ -1,10 +1,11 @@
-[  {
-  "LiveFrom": "01/01/2017",
-  "ID": "OrderType",
-  "ListElementCode": "CARE_ORDER",
-  "ListElement": "Care order",
-  "DisplayOrder": 1
-},
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderType",
+    "ListElementCode": "CARE_ORDER",
+    "ListElement": "Care order",
+    "DisplayOrder": 1
+  },
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderType",
@@ -46,4 +47,5 @@
     "ListElementCode": "OTHER",
     "ListElement": "Other order under part 4 of the Children Act 1989",
     "DisplayOrder": 7
-  }]
+  }
+]

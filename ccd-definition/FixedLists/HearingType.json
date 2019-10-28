@@ -1,10 +1,11 @@
-[ {
-  "LiveFrom": "01/01/2017",
-  "ID": "HearingType",
-  "ListElementCode": "CASE_MANAGEMENT",
-  "ListElement": "Case management",
-  "DisplayOrder": 1
-},
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingType",
+    "ListElementCode": "CASE_MANAGEMENT",
+    "ListElement": "Case management",
+    "DisplayOrder": 1
+  },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingType",
