@@ -58,6 +58,14 @@ $ ./bin/configurer/import-ccd-definition.sh
 
 Note: Above script will export JSON content into XLSX file and upload it into instance of CCD definition store.
 
+Additional note:
+You can skip some of the files by using -e option on the import-ccd-definitions, i.e.
+```bash
+$ ./bin/configurer/import-ccd-definition.sh -e 'UserProfile.json,*-nonprod.json
+```
+
+The command above will skip UserProfile.json and all files with -nonprod suffix (from the folders).
+
 ## Getting Started:
 To ensure you have the correct dependencies run `yarn install` in the command line.
 
