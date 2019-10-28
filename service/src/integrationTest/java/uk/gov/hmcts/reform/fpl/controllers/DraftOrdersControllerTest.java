@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -33,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -80,7 +82,7 @@ class DraftOrdersControllerTest {
     private static final String USER_ID = "1";
 
     @Test
-    void submitted() throws Exception {
+    void submittedDraft() throws Exception {
 
         Order order = Order.builder()
             .orderStatus(OrderStatus.DRAFT)
@@ -90,6 +92,34 @@ class DraftOrdersControllerTest {
             .data(ImmutableMap.<String, Object>builder()
                 .put("standardDirectionOrder", order)
                 .build()).build())
+            .build();
+
+        makeRequest(request, "submitted");
+
+        verify(applicationEventPublisher, Mockito.times(0)).publishEvent(Mockito.any());
+    }
+
+    @Test
+    void submitted() throws Exception {
+
+        Order order = Order.builder()
+            .orderStatus(OrderStatus.SEALED)
+            .build();
+
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.<String, Object>builder()
+                    .put("hearingDetails",
+                        ImmutableList.of(
+                            Element.builder()
+                                .value(HearingBooking.builder()
+                                    .date(LocalDate.of(2020,10,20))
+                                    .build())
+                                .build()))
+                    .put("standardDirectionOrder", order)
+                    .build())
+                .build())
             .build();
 
         makeRequest(request, "submitted");
