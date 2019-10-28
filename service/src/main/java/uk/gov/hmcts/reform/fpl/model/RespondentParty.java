@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,11 +11,12 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonDeserialize(builder = RespondentParty.RespondentPartyBuilder.class)
 public final class RespondentParty extends Party {
     private final String gender;
     private final String genderIdentification;
@@ -24,13 +27,13 @@ public final class RespondentParty extends Party {
     private final String litigationIssues;
     private final String litigationIssuesDetails;
 
-    @Builder(toBuilder = true)
+    @Builder(toBuilder = true, builderClassName = "RespondentPartyBuilder")
     public RespondentParty(String partyId,
                            PartyType partyType,
                            String firstName,
                            String lastName,
                            String organisationName,
-                           Date dateOfBirth,
+                           LocalDate dateOfBirth,
                            Address address,
                            EmailAddress email,
                            Telephone telephoneNumber,
@@ -52,5 +55,9 @@ public final class RespondentParty extends Party {
         this.contactDetailsHiddenReason = contactDetailsHiddenReason;
         this.litigationIssues = litigationIssues;
         this.litigationIssuesDetails = litigationIssuesDetails;
+    }
+
+    @JsonPOJOBuilder(withPrefix = "")
+    public static class RespondentPartyBuilder {
     }
 }

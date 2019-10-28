@@ -108,7 +108,7 @@
     "ID": "RespondentParty",
     "ListElementCode": "contactDetailsHidden",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Do you need contact details hidden from anyone?",
+    "ElementLabel": "Do you need contact details hidden from other parties?",
     "SecurityClassification": "Public"
   },
   {

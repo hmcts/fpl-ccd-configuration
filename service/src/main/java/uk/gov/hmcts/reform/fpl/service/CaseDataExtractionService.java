@@ -1,58 +1,180 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
+import uk.gov.hmcts.reform.fpl.model.configuration.Display;
+import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
+import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+
+// Supports SDO case data. Tech debt ticket needed to refactor caseDataExtractionService and NoticeOfProceedingsService
+@Slf4j
 @Service
 public class CaseDataExtractionService {
 
-    private DateFormatterService dateFormatterService;
-    private HearingBookingService hearingBookingService;
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final DateFormatterService dateFormatterService;
+    private final HearingBookingService hearingBookingService;
+    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final OrdersLookupService ordersLookupService;
+    private final DirectionHelperService directionHelperService;
+
+    private static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
 
     @Autowired
     public CaseDataExtractionService(DateFormatterService dateFormatterService,
                                      HearingBookingService hearingBookingService,
-                                     HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration) {
+                                     HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
+                                     OrdersLookupService ordersLookupService,
+                                     DirectionHelperService directionHelperService) {
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
+        this.ordersLookupService = ordersLookupService;
+        this.directionHelperService = directionHelperService;
     }
 
-    public Map<String, String> getNoticeOfProceedingTemplateData(CaseData caseData) {
-        HearingBooking hearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData);
+    // TODO
+    // No need to pass in CaseData to each method. Refactor to only use required model
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> getStandardOrderDirectionData(CaseData caseData) throws IOException {
+        ImmutableMap.Builder data = ImmutableMap.<String, Object>builder();
 
-        // Validation within our frontend ensures that the following data is present
-        return Map.of(
-            "courtName", hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName(),
-            "familyManCaseNumber", caseData.getFamilyManCaseNumber(),
-            "todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG),
-            "applicantName", getFirstApplicantName(caseData),
-            "orderTypes", getOrderTypes(caseData),
-            "childrenNames", getAllChildrenNames(caseData),
-            "hearingDate", dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG),
-            "hearingVenue", hearingBooking.getVenue(),
-            "preHearingAttendance", hearingBooking.getPreHearingAttendance(),
-            "hearingTime", hearingBooking.getTime()
+        if (isNotEmpty(caseData.getStandardDirectionOrder())) {
+            data.put("judgeAndLegalAdvisor", prepareJudgeAndLegalAdvisor(
+                caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()));
+        } else {
+            data.put("judgeAndLegalAdvisor", prepareJudgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build()));
+        }
+
+        data.put("courtName", caseData.getCaseLocalAuthority() != null
+            ? hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName() : EMPTY_PLACEHOLDER);
+
+        data.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_PLACEHOLDER));
+        data.put("generationDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG));
+        data.put("complianceDeadline", caseData.getDateSubmitted() != null
+            ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26),
+            FormatStyle.LONG) : EMPTY_PLACEHOLDER);
+        data.put("children", getChildrenDetails(caseData));
+
+        List<Map<String, String>> respondentsNameAndRelationship = getRespondentsNameAndRelationship(caseData);
+        data.put("respondents", respondentsNameAndRelationship);
+        data.put("respondentsProvided", !respondentsNameAndRelationship.isEmpty());
+
+        data.put("applicantName", getFirstApplicantName(caseData));
+        data.putAll(getGroupedDirections(caseData));
+        data.putAll(getHearingBookingData(caseData));
+
+        if (isNotEmpty(caseData.getStandardDirectionOrder())
+            && caseData.getStandardDirectionOrder().getOrderStatus() != SEALED) {
+            byte[] fileContent;
+            try {
+                InputStream is = getClass().getResourceAsStream("/assets/images/draft-watermark.png");
+                fileContent = is.readAllBytes();
+                String encodedString = Base64.getEncoder().encodeToString(fileContent);
+
+                data.put("draftbackground", String.format("image:base64:%1$s", encodedString));
+            } catch (IOException e) {
+                log.warn(e.getMessage());
+            }
+        }
+
+        return data.build();
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> prepareJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        ImmutableMap.Builder map = ImmutableMap.<String, Object>builder();
+
+        if (isEmpty(judgeAndLegalAdvisor)) {
+            return ImmutableMap.of(
+                "judgeTitle", EMPTY_PLACEHOLDER,
+                "legalAdvisorName", EMPTY_PLACEHOLDER
+            );
+        }
+
+        String judgeTitle = EMPTY_PLACEHOLDER;
+
+        if (isNotEmpty(judgeAndLegalAdvisor.getJudgeTitle())) {
+            judgeTitle = defaultIfBlank(judgeAndLegalAdvisor.getJudgeTitle().getLabel(), EMPTY_PLACEHOLDER);
+        }
+
+        map.put("judgeTitle", judgeTitle);
+
+        map.put("legalAdvisorName", defaultIfBlank(judgeAndLegalAdvisor.getLegalAdvisorName(), EMPTY_PLACEHOLDER));
+
+        if (isNotBlank(judgeAndLegalAdvisor.getJudgeLastName())) {
+            map.put("judgeLastName", judgeAndLegalAdvisor.getJudgeLastName());
+        }
+
+        if (isNotBlank(judgeAndLegalAdvisor.getJudgeFullName())) {
+            map.put("judgeFullName", judgeAndLegalAdvisor.getJudgeFullName());
+        }
+
+        return map.build();
+    }
+
+    private Map<String, Object> getHearingBookingData(CaseData caseData) {
+        if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
+            return ImmutableMap.of(
+                "hearingDate", EMPTY_PLACEHOLDER,
+                "hearingVenue", EMPTY_PLACEHOLDER,
+                "preHearingAttendance", EMPTY_PLACEHOLDER,
+                "hearingTime", EMPTY_PLACEHOLDER,
+                "judgeName", EMPTY_PLACEHOLDER
+            );
+        }
+
+        HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData
+            .getHearingDetails());
+
+        return ImmutableMap.of(
+            "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),
+                FormatStyle.LONG),
+            "hearingVenue", prioritisedHearingBooking.getVenue(),
+            "preHearingAttendance", prioritisedHearingBooking.getPreHearingAttendance(),
+            "hearingTime", prioritisedHearingBooking.getTime(),
+            "judgeName", prioritisedHearingBooking.getJudgeTitle() + " "
+                + prioritisedHearingBooking.getJudgeName()
         );
     }
 
     private String getOrderTypes(CaseData caseData) {
         return caseData.getOrders().getOrderType().stream()
-            .map(orderType -> orderType.getLabel())
+            .map(OrderType::getLabel)
             .collect(Collectors.joining(", "));
     }
 
@@ -67,13 +189,84 @@ public class CaseDataExtractionService {
             .orElse("");
     }
 
-    private String getAllChildrenNames(CaseData caseData) {
+    private Map<String, List<Map<String, String>>> getGroupedDirections(CaseData caseData) throws IOException {
+        OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
+
+        if (caseData.getStandardDirectionOrder() == null) {
+            return ImmutableMap.of();
+        }
+
+        Map<String, List<Element<Direction>>> groupedDirections = directionHelperService.sortDirectionsByAssignee(
+            directionHelperService.numberDirections(caseData.getStandardDirectionOrder().getDirections()));
+
+        ImmutableMap.Builder<String, List<Map<String, String>>> formattedDirections = ImmutableMap.builder();
+
+        groupedDirections.forEach((key, value) -> {
+            List<Map<String, String>> directionsList = value.stream()
+                .map(Element::getValue)
+                .filter(direction -> !"No".equals(direction.getDirectionNeeded()))
+                .map(direction -> ImmutableMap.of(
+                    "title", formatTitle(direction, standardDirectionOrder.getDirections()),
+                    "body", defaultIfNull(direction.getDirectionText(), EMPTY_PLACEHOLDER)))
+                .collect(toList());
+
+            formattedDirections.put(key, directionsList);
+        });
+
+        return formattedDirections.build();
+    }
+
+    private List<Map<String, String>> getRespondentsNameAndRelationship(CaseData caseData) {
+
+        if (caseData.getRespondents1() == null || caseData.getRespondents1().isEmpty()) {
+            return ImmutableList.of();
+        }
+
+        return caseData.getRespondents1().stream()
+            .map(Element::getValue)
+            .map(Respondent::getParty)
+            .map(respondent -> ImmutableMap.of(
+                "name", respondent.getFirstName() == null && respondent.getLastName() == null
+                    ? EMPTY_PLACEHOLDER : defaultIfNull(respondent.getFirstName(), "") + " "
+                    + defaultIfNull(respondent.getLastName(), ""),
+                "relationshipToChild", defaultIfNull(respondent.getRelationshipToChild(), EMPTY_PLACEHOLDER)))
+            .collect(toList());
+    }
+
+    private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
+        // children is validated as not null
         return caseData.getAllChildren().stream()
             .map(Element::getValue)
-            .filter(Objects::nonNull)
             .map(Child::getParty)
-            .filter(Objects::nonNull)
-            .map(childParty -> (childParty.getFirstName()) + " " + (childParty.getLastName()))
-                .collect(Collectors.joining(", "));
+            .map(child -> ImmutableMap.of(
+                "name", child.getFirstName() + " " + child.getLastName(),
+                "gender", defaultIfNull(child.getGender(), EMPTY_PLACEHOLDER),
+                "dateOfBirth", child.getDateOfBirth() == null ? EMPTY_PLACEHOLDER :
+                    dateFormatterService.formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG)))
+            .collect(toList());
+    }
+
+    private String formatTitle(Direction direction, List<DirectionConfiguration> directions) {
+        @AllArgsConstructor
+        @NoArgsConstructor
+        @Data
+        class DateFormattingConfig {
+            private String pattern = "h:mma, d MMMM yyyy";
+            private Display.Due due = Display.Due.BY;
+        }
+
+        DateFormattingConfig dateFormattingConfig = directions.stream()
+            .filter(directionConfiguration ->
+                directionConfiguration.getTitle().equals(direction.getDirectionType().substring(3)))
+            .map(DirectionConfiguration::getDisplay)
+            .map(display -> new DateFormattingConfig(display.getTemplateDateFormat(), display.getDue()))
+            .findAny()
+            .orElseGet(DateFormattingConfig::new);
+
+        return String.format(
+            "%s %s %s", direction.getDirectionType(), dateFormattingConfig.due.toString().toLowerCase(),
+            (direction.getDateToBeCompletedBy() != null ? dateFormatterService
+                .formatLocalDateTimeBaseUsingFormat(direction.getDateToBeCompletedBy(),
+                    dateFormattingConfig.getPattern()) : "unknown"));
     }
 }

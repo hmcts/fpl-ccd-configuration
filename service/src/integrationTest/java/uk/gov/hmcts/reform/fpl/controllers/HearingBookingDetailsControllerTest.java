@@ -130,17 +130,19 @@ class HearingBookingDetailsControllerTest {
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(HearingBooking hearingDetail) throws Exception {
-        HashMap<String, Object> map = objectMapper.readValue(objectMapper.writeValueAsString(hearingDetail),
-            new TypeReference<Map<String, Object>>() {
+        Map<String, Object> map = objectMapper.readValue(objectMapper.writeValueAsString(hearingDetail),
+            new TypeReference<>() {
             });
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
                 .data(ImmutableMap.<String, Object>builder()
-                    .put("hearingDetails", ImmutableList.of(Element.builder()
-                        .value(map)
-                        .build()))
+                    .put("hearingDetails",
+                        ImmutableList.of(
+                            Element.builder()
+                                .value(map)
+                                .build()))
                     .build())
                 .build())
             .build();

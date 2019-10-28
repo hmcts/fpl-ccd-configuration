@@ -66,8 +66,7 @@ class HearingBookingServiceTest {
     void shouldGetMostUrgentHearingBookingFromACollectionOfHearingBookings() {
         List<Element<HearingBooking>> hearingBookings = createHearingBookings();
 
-        CaseData caseData = CaseData.builder().hearingDetails(hearingBookings).build();
-        HearingBooking sortedHearingBooking = service.getMostUrgentHearingBooking(caseData);
+        HearingBooking sortedHearingBooking = service.getMostUrgentHearingBooking(hearingBookings);
 
         assertThat(sortedHearingBooking.getDate()).isEqualTo(TODAYS_DATE);
     }

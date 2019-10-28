@@ -1,4 +1,5 @@
 const I = actor();
+const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
 
 module.exports = {
   fields: {
@@ -14,5 +15,17 @@ module.exports = {
 
   checkC6A() {
     I.checkOption(this.fields.proceedingType.c6a);
+  },
+
+  selectJudgeTitle() {
+    judgeAndLegalAdvisor.selectJudgeTitle();
+  },
+
+  enterJudgeLastName(judgeLastName) {
+    judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
+  },
+
+  enterLegalAdvisorName(legalAdvisorName) {
+    judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
 };

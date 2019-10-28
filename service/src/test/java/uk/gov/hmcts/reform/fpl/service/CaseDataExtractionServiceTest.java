@@ -1,31 +1,39 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedApplicants;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStandardDirectionOrders;
 
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, JsonOrdersLookupService.class})
 class CaseDataExtractionServiceTest {
     @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
 
@@ -34,72 +42,169 @@ class CaseDataExtractionServiceTest {
     private static final String COURT_EMAIL = "example@court.com";
     private static final String CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL);
     private static final LocalDate TODAYS_DATE = LocalDate.now();
+    private static final LocalDateTime TODAYS_DATE_TIME = LocalDateTime.now();
+    private static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
+    private DirectionHelperService directionHelperService = new DirectionHelperService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
 
-    private CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
-        hearingBookingService, hmctsCourtLookupConfiguration);
+    @Autowired
+    private OrdersLookupService ordersLookupService;
 
-    @Test
-    void shouldConcatenateAllChildrenNames() {
-        CaseData caseData = CaseData.builder()
-            .caseLocalAuthority("example")
-            .familyManCaseNumber("123")
-            .children1(createPopulatedChildren())
-            .applicants(createPopulatedApplicants())
-            .hearingDetails(createHearingBookings())
-            .orders(Orders.builder()
-                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
-            .build();
+    private CaseDataExtractionService caseDataExtractionService;
 
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
-        assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark");
+    @BeforeEach
+    void setup() {
+        // required for DI
+        this.caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
+            hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService);
     }
 
     @Test
-    void shouldReturnFirstApplicantName() {
-        CaseData caseData = CaseData.builder()
-            .caseLocalAuthority("example")
-            .familyManCaseNumber("123")
-            .children1(createPopulatedChildren())
-            .applicants(createPopulatedApplicants())
-            .hearingDetails(createHearingBookings())
-            .orders(Orders.builder()
-                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
-            .build();
+    void shouldMapEmptyCaseDataForDraftSDO() throws IOException {
+        Map<String, Object> templateData = caseDataExtractionService
+            .getStandardOrderDirectionData(CaseData.builder().build());
 
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
-        assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
+        assertThat(templateData.get("judgeAndLegalAdvisor")).isEqualToComparingFieldByField(ImmutableMap.of(
+            "judgeTitle", EMPTY_PLACEHOLDER,
+            "legalAdvisorName", EMPTY_PLACEHOLDER
+        ));
+        assertThat(templateData.get("courtName")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("familyManCaseNumber")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("generationDate")).isEqualTo(dateFormatterService
+            .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
+        assertThat(templateData.get("complianceDeadline")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("children")).isEqualTo(ImmutableList.of());
+        assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
+        assertThat(templateData.get("allParties")).isNull();
+        assertThat(templateData.get("localAuthorityDirections")).isNull();
+        assertThat(templateData.get("parentsAndRespondentsDirections")).isNull();
+        assertThat(templateData.get("cafcassDirections")).isNull();
+        assertThat(templateData.get("otherPartiesDirections")).isNull();
+        assertThat(templateData.get("courtDirections")).isNull();
     }
 
     @Test
-    void shouldMapCaseDataPropertiesToTemplatePlaceholderData() {
+    void shouldMapCaseDataWhenEmptyListValues() throws IOException {
         CaseData caseData = CaseData.builder()
             .caseLocalAuthority("example")
             .familyManCaseNumber("123")
             .children1(createPopulatedChildren())
-            .applicants(createPopulatedApplicants())
-            .hearingDetails(createHearingBookings())
-            .orders(Orders.builder()
-                .orderType(ImmutableList.<OrderType>of(
-                    CARE_ORDER,
-                    EDUCATION_SUPERVISION_ORDER
-                )).build())
+            .hearingDetails(ImmutableList.of())
+            .dateSubmitted(LocalDate.now())
+            .respondents1(ImmutableList.of())
+            .standardDirectionOrder(createStandardDirectionOrders(TODAYS_DATE_TIME, OrderStatus.DRAFT))
             .build();
 
-        Map<String, String> templateData = caseDataExtractionService.getNoticeOfProceedingTemplateData(caseData);
+        Map<String, Object> templateData = caseDataExtractionService
+            .getStandardOrderDirectionData(caseData);
+
+        assertThat(templateData.get("judgeAndLegalAdvisor")).isEqualTo(ImmutableMap.of(
+            "judgeTitle", HER_HONOUR_JUDGE.getLabel(),
+            "judgeLastName", "Smith",
+            "legalAdvisorName", "Bob Ross"
+        ));
         assertThat(templateData.get("courtName")).isEqualTo("Example Court");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
-        assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
-        assertThat(templateData.get("orderTypes")).isEqualTo("Care order, Education supervision order");
-        assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark");
+        assertThat(templateData.get("generationDate")).isEqualTo(dateFormatterService
+            .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
+        assertThat(templateData.get("complianceDeadline")).isEqualTo(dateFormatterService
+            .formatLocalDateToString(TODAYS_DATE.plusWeeks(26), FormatStyle.LONG));
+        assertThat(templateData.get("children")).isEqualTo(getExpectedChildren());
+        assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
+        assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirections());
+        assertThat(templateData.get("draftbackground")).isNotNull();
+    }
+
+    @Test
+    void shouldMapCompleteCaseDataForSDOTemplate() throws IOException {
+        CaseData caseData = CaseData.builder()
+            .caseLocalAuthority("example")
+            .familyManCaseNumber("123")
+            .children1(createPopulatedChildren())
+            .hearingDetails(createHearingBookings())
+            .dateSubmitted(LocalDate.now())
+            .respondents1(createRespondents())
+            .standardDirectionOrder(createStandardDirectionOrders(TODAYS_DATE_TIME, OrderStatus.SEALED))
+            .build();
+
+        Map<String, Object> templateData = caseDataExtractionService
+            .getStandardOrderDirectionData(caseData);
+
+        assertThat(templateData.get("judgeAndLegalAdvisor")).isEqualTo(ImmutableMap.of(
+            "judgeTitle", HER_HONOUR_JUDGE.getLabel(),
+            "judgeLastName", "Smith",
+            "legalAdvisorName", "Bob Ross"
+        ));
+        assertThat(templateData.get("courtName")).isEqualTo("Example Court");
+        assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
+        assertThat(templateData.get("generationDate")).isEqualTo(dateFormatterService
+            .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
+        assertThat(templateData.get("complianceDeadline")).isEqualTo(dateFormatterService
+            .formatLocalDateToString(TODAYS_DATE.plusWeeks(26), FormatStyle.LONG));
+        assertThat(templateData.get("children")).isEqualTo(getExpectedChildren());
         assertThat(templateData.get("hearingDate")).isEqualTo(dateFormatterService
             .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
         assertThat(templateData.get("hearingVenue")).isEqualTo("Venue");
+        assertThat(templateData.get("judgeName")).isEqualTo("HHJ Judith Law");
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("08.15am");
         assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
+        assertThat(templateData.get("respondents")).isEqualTo(getExpectedRespondents());
+        assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirections());
+        assertThat(templateData.get("draftbackground")).isNull();
+    }
+
+    private List<Map<String, String>> getExpectedChildren() {
+        return List.of(
+            Map.of(
+                "name", "Bran Stark",
+                "gender", "Male",
+                "dateOfBirth", dateFormatterService.formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG)),
+            Map.of(
+                "name", "Sansa Stark",
+                "gender", EMPTY_PLACEHOLDER,
+                "dateOfBirth", EMPTY_PLACEHOLDER),
+            Map.of(
+                "name", "Jon Snow",
+                "gender", EMPTY_PLACEHOLDER,
+                "dateOfBirth", EMPTY_PLACEHOLDER)
+        );
+    }
+
+    private List<Map<String, String>> getExpectedRespondents() {
+        return List.of(
+            Map.of(
+                "name", "Timothy Jones",
+                "relationshipToChild", "Father"
+            ),
+            Map.of(
+                "name", "Sarah Simpson",
+                "relationshipToChild", "Mother"
+            )
+        );
+    }
+
+    private List<Map<String, String>> getExpectedDirections() {
+        return List.of(
+            Map.of(
+                "title", String.format("2. Test SDO type 1 on %s",
+                    TODAYS_DATE_TIME.format(DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma", Locale.UK))),
+                "body", "Test body 1"),
+            Map.of(
+                "title", String.format("3. Test SDO type 2 by %s",
+                    TODAYS_DATE_TIME.format(DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy", Locale.UK))),
+                "body", "Test body 2")
+        );
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {
@@ -115,7 +220,6 @@ class CaseDataExtractionServiceTest {
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
                 .value(createHearingBooking(TODAYS_DATE))
-                .build()
-        );
+                .build());
     }
 }

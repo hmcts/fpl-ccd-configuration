@@ -10,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
+import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 
 @Api
 @RestController
 @RequestMapping("/callback/notify-gatekeeper")
 public class NotifyGatekeeperController {
-
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
@@ -29,6 +29,8 @@ public class NotifyGatekeeperController {
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
 
+        applicationEventPublisher.publishEvent(
+            new PopulateStandardDirectionsEvent(callbackRequest, authorization, userId));
         applicationEventPublisher.publishEvent(new NotifyGatekeeperEvent(callbackRequest, authorization, userId));
     }
 }

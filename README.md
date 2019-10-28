@@ -64,6 +64,15 @@ To ensure you have the correct dependencies run `yarn install` in the command li
 ## Code Style:
 To run code linting enter `yarn lint` in the command line.
 
+## Docmosis Tornado:
+
+Some of the functionality requires Docmosis Tornado to be started. 
+
+It requires `DOCMOSIS_KEY` to be exposed as environment variable on your machine.
+ 
+Docker-compose runs FPL Service as well, refer the  [service README](service/README.md) 
+for additional explanation what's required to get the FPL service started by Docker Compose.  
+
 ## Testing:
 E2E tests are configured to run in parallel in 3 headless browsers by default.
 
@@ -88,6 +97,16 @@ To enable retry upon test failure please set `TEST_RETRIES` environment variable
 ```$bash
 TEST_RETRIES=2 yarn test
 ```
+
+## Creating sample case via E2E tests
+
+E2E tests can be used to create sample case with mandatory sections only. To do so please run the following command:
+
+```$bash
+PARALLEL_CHUNKS=1 yarn test --grep '@create-case-with-mandatory-sections-only'
+```
+
+Note: Case number will be printed to the console while tests run e.g. `Application draft #1571-7550-7484-8512 has been created`.
 
 ## Service:
 See [fpl-service](service/README.md) for more information.
