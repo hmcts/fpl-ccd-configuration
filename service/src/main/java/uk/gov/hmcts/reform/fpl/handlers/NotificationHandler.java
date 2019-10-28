@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
@@ -36,6 +37,7 @@ public class NotificationHandler {
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
     private final HmctsEmailContentProvider hmctsEmailContentProvider;
     private final CafcassEmailContentProvider cafcassEmailContentProvider;
+    private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final NotificationClient notificationClient;
@@ -48,6 +50,7 @@ public class NotificationHandler {
                                NotificationClient notificationClient,
                                HmctsEmailContentProvider hmctsEmailContentProvider,
                                CafcassEmailContentProvider cafcassEmailContentProvider,
+                               CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued,
                                GatekeeperEmailContentProvider gatekeeperEmailContentProvider,
                                LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider) {
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
@@ -56,6 +59,7 @@ public class NotificationHandler {
         this.notificationClient = notificationClient;
         this.hmctsEmailContentProvider = hmctsEmailContentProvider;
         this.cafcassEmailContentProvider = cafcassEmailContentProvider;
+        this.cafcassEmailContentProviderSDOIssued = cafcassEmailContentProviderSDOIssued;
         this.gatekeeperEmailContentProvider = gatekeeperEmailContentProvider;
         this.localAuthorityEmailContentProvider = localAuthorityEmailContentProvider;
     }
@@ -100,7 +104,7 @@ public class NotificationHandler {
     public void notifyCafcassOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
-        Map<String, Object> parameters = cafcassEmailContentProvider
+        Map<String, Object> parameters = cafcassEmailContentProviderSDOIssued
             .buildCafcassStandardDirectionOrderIssuedNotification(caseDetails, localAuthorityCode);
         String reference = String.valueOf(caseDetails.getId());
         String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();

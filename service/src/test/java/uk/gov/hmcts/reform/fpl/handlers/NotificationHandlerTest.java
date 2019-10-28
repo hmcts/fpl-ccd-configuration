@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
@@ -71,6 +72,9 @@ class NotificationHandlerTest {
 
     @Mock
     private CafcassEmailContentProvider cafcassEmailContentProvider;
+
+    @Mock
+    private CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
 
     @Mock
     private GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
@@ -193,7 +197,7 @@ class NotificationHandlerTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        given(cafcassEmailContentProvider.buildCafcassStandardDirectionOrderIssuedNotification(callbackRequest().getCaseDetails(),
+        given(cafcassEmailContentProviderSDOIssued.buildCafcassStandardDirectionOrderIssuedNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
         notificationHandler.notifyCafcassOfIssuedStandardDirectionsOrder(new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
