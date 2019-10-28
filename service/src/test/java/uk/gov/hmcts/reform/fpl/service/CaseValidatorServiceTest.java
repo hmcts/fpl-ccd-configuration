@@ -113,7 +113,7 @@ class CaseValidatorServiceTest {
             "In the children section:",
             "• Tell us the names of all children in the case",
             "In the respondents section:",
-            "• Enter the respondents full name",
+            "• Enter the respondent's full name",
             "In the documents section:",
             "• Tell us the status of all documents including those that you haven't uploaded",
             "In the hearing needed section:",

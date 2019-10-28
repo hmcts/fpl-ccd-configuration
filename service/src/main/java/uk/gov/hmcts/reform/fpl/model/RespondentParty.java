@@ -29,12 +29,12 @@ public final class RespondentParty extends Party {
     private final String litigationIssues;
     private final String litigationIssuesDetails;
 
-    @NotBlank(message = "Enter the respondents full name")
+    @NotBlank(message = "Enter the respondent's full name")
     public String getFirstName() {
         return super.getFirstName();
     }
 
-    @NotBlank(message = "Enter the respondents full name")
+    @NotBlank(message = "Enter the respondent's full name")
     public String getLastName() {
         return super.getLastName();
     }
