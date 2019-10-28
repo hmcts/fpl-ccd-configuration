@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -25,9 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
 
 import java.util.List;
-
 import java.util.UUID;
-
 import javax.validation.Validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,10 +34,10 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 
 @ExtendWith(SpringExtension.class)
 class CaseValidatorServiceTest {
-    private CaseValidatorService caseValidatorService;
+    private static CaseValidatorService caseValidatorService;
 
-    @BeforeEach()
-    private void setup() {
+    @BeforeAll()
+    static void setup() {
         caseValidatorService = new CaseValidatorService(Validation
             .buildDefaultValidatorFactory()
             .getValidator());
