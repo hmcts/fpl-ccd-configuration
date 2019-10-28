@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
-import org.assertj.core.util.Lists;
+import com.google.common.collect.ImmutableList;
 
 import java.util.List;
 
@@ -18,6 +18,6 @@ public enum UserRole {
     }
 
     public List<String> getRoles() {
-        return Lists.newArrayList("caseworker", "caseworker-publiclaw", this.role);
+        return ImmutableList.of("caseworker", "caseworker-publiclaw", this.role);
     }
 }
