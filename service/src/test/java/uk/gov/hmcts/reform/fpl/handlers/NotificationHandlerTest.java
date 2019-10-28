@@ -12,11 +12,9 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
@@ -41,6 +39,8 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEM
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @SuppressWarnings("LineLength")
@@ -83,32 +83,24 @@ class NotificationHandlerTest {
     @Mock
     private IdamApi idamApi;
 
-    @Mock
-    private UserDetailsService userDetailsService;
-
     @InjectMocks
     private NotificationHandler notificationHandler;
 
     @Nested
     class C2UploadedNotificationChecks {
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
+        final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
+            .put("subjectLine", subjectLine)
+            .put("hearingDetailsCallout", subjectLine)
+            .put("reference", "12345")
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
 
         @Test
         void shouldNotNotifyHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
-            final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
-                .put("subjectLine", subjectLine)
-                .put("hearingDetailsCallout", subjectLine)
-                .put("reference", "12345")
-                .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-                .build();
-
             given(idamApi.retrieveUserDetails(AUTH_TOKEN))
                 .willReturn(new UserDetails("1", "hmcts-admin@test.com",
-                    "Hmcts", "Test", UserRole.HMCTS_ADMIN.getRoles()));
-
-            given(userDetailsService.getUserDetails(AUTH_TOKEN))
-                .willReturn(new UserDetails("1", "hmcts-admin@test.com",
-                    "Hmcts", "Test", UserRole.HMCTS_ADMIN.getRoles()));
+                    "Hmcts", "Test", HMCTS_ADMIN.getRoles()));
 
             given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
                 .willReturn(parameters);
@@ -124,20 +116,9 @@ class NotificationHandlerTest {
 
         @Test
         void shouldNotifyNonHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
-            final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
-                .put("subjectLine", subjectLine)
-                .put("hearingDetailsCallout", subjectLine)
-                .put("reference", "12345")
-                .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-                .build();
-
-            given(userDetailsService.getUserDetails(AUTH_TOKEN))
-                .willReturn(new UserDetails("1", "hmcts-non-admin@test.com",
-                    "Hmcts", "Test", UserRole.LOCAL_AUTHORITY.getRoles()));
-
             given(idamApi.retrieveUserDetails(AUTH_TOKEN))
                 .willReturn(new UserDetails("1", "hmcts-non-admin@test.com",
-                    "Hmcts", "Test", UserRole.LOCAL_AUTHORITY.getRoles()));
+                    "Hmcts", "Test", LOCAL_AUTHORITY.getRoles()));
 
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Court(COURT_NAME, "hmcts-non-admin@test.com"));
