@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -11,18 +14,20 @@ import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
-import uk.gov.hmcts.reform.fpl.service.EmailNotificationService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
+import uk.gov.service.notify.NotificationClient;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.C21_ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.CAFCASS_SUBMISSION_TEMPLATE;
@@ -32,6 +37,8 @@ import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.HMCTS_COURT
 @Component
 public class NotificationHandler {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private static final String CASE_LOCAL_AUTHORITY_PROPERTY_NAME = "caseLocalAuthority";
 
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -40,9 +47,9 @@ public class NotificationHandler {
     private final CafcassEmailContentProvider cafcassEmailContentProvider;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
-    private final EmailNotificationService emailNotificationService;
     private final UserDetailsService userDetailsService;
     private final C21OrderEmailContentProvider c21OrderEmailContentProvider;
+    private final NotificationClient notificationClient;
 
     @Autowired
     public NotificationHandler(HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
@@ -52,17 +59,17 @@ public class NotificationHandler {
                                GatekeeperEmailContentProvider gatekeeperEmailContentProvider,
                                C2UploadedEmailContentProvider c2UploadedEmailContentProvider,
                                UserDetailsService userDetailsService,
-                               EmailNotificationService emailNotificationService,
-                               C21OrderEmailContentProvider c21OrderEmailContentProvider) {
+                               C21OrderEmailContentProvider c21OrderEmailContentProvider,
+                               NotificationClient notificationClient) {
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.cafcassLookupConfiguration = cafcassLookupConfiguration;
         this.hmctsEmailContentProvider = hmctsEmailContentProvider;
         this.cafcassEmailContentProvider = cafcassEmailContentProvider;
         this.gatekeeperEmailContentProvider = gatekeeperEmailContentProvider;
-        this.emailNotificationService = emailNotificationService;
         this.c2UploadedEmailContentProvider = c2UploadedEmailContentProvider;
         this.userDetailsService = userDetailsService;
         this.c21OrderEmailContentProvider = c21OrderEmailContentProvider;
+        this.notificationClient = notificationClient;
     }
 
     @EventListener
@@ -74,7 +81,7 @@ public class NotificationHandler {
         String reference = Long.toString(caseDetails.getId());
         String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
 
-        emailNotificationService.sendNotification(HMCTS_COURT_SUBMISSION_TEMPLATE.getTemplateId(),
+        sendNotification(HMCTS_COURT_SUBMISSION_TEMPLATE.getTemplateId(),
             email, parameters, reference);
     }
 
@@ -91,7 +98,7 @@ public class NotificationHandler {
             String reference = Long.toString(caseDetailsFromEvent.getId());
 
             String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
-            emailNotificationService.sendNotification(C2_UPLOAD_NOTIFICATION_TEMPLATE.getTemplateId(),
+            sendNotification(C2_UPLOAD_NOTIFICATION_TEMPLATE.getTemplateId(),
                 email, parameters, reference);
         }
     }
@@ -108,7 +115,7 @@ public class NotificationHandler {
         String localAuthorityEmail = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
         String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
 
-        emailNotificationService.sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE.getTemplateId(),
+        sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE.getTemplateId(),
             Arrays.asList(localAuthorityEmail, cafcassEmail), parameters, reference);
     }
 
@@ -121,7 +128,7 @@ public class NotificationHandler {
         String reference = String.valueOf(caseDetails.getId());
         String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
 
-        emailNotificationService.sendNotification(CAFCASS_SUBMISSION_TEMPLATE.getTemplateId(),
+        sendNotification(CAFCASS_SUBMISSION_TEMPLATE.getTemplateId(),
             email, parameters, reference);
     }
 
@@ -134,7 +141,31 @@ public class NotificationHandler {
             localAuthorityCode);
         String reference = String.valueOf(caseDetails.getId());
 
-        emailNotificationService.sendNotification(GATEKEEPER_SUBMISSION_TEMPLATE.getTemplateId(),
+        sendNotification(GATEKEEPER_SUBMISSION_TEMPLATE.getTemplateId(),
             email, parameters, reference);
+    }
+
+    private void sendNotification(final String templateId,
+                                 final String email,
+                                 final Map<String, Object> parameters,
+                                 final String reference) {
+        logger.debug("Sending submission notification (with template id: {}) to {}", templateId, email);
+        try {
+            notificationClient.sendEmail(templateId, email, parameters, reference);
+        } catch (NotificationClientException e) {
+            logger.error("Failed to send submission notification (with template id: {}) to {}", templateId, email, e);
+        }
+    }
+
+    private void sendNotification(final String templateId,
+                                 final List<String> emails,
+                                 final Map<String, Object> parameters,
+                                 final String reference) {
+        logger.debug("Sending submission notification (with template id: {}) to {}", templateId, emails);
+
+        if (!isEmpty(emails)) {
+            emails.stream().filter(StringUtils::isNotBlank).forEach(email ->
+                sendNotification(templateId, email, parameters, reference));
+        }
     }
 }
