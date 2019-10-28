@@ -347,6 +347,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "createNoticeOfProceedings",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "R"
+    "CRUD": "CRU"
   }
 ]
