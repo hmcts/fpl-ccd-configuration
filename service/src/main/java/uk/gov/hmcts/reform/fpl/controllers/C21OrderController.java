@@ -46,6 +46,7 @@ public class C21OrderController {
     private final UploadDocumentService uploadDocumentService;
     private final CreateC21OrderService createC21OrderService;
     private final DateFormatterService dateFormatterService;
+    private CallbackRequest firstPageCallBack;
 
     @Autowired
     public C21OrderController(ObjectMapper mapper,
@@ -61,22 +62,34 @@ public class C21OrderController {
     }
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
-
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
     }
 
-    @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
+    //Just using this so I have a mid event for the first page - wanting to test why the document link doesnt show in
+    //the check-your-answers page! (It only shows if you re-submit the Order Title/Order Details page (page 1)
+    @PostMapping("/mid-event1")
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent1(@RequestBody CallbackRequest callbackRequest) {
+        firstPageCallBack = callbackRequest;
+        System.out.println(callbackRequest.getCaseDetails());
+        Map<String, Object> data = firstPageCallBack.getCaseDetails().getData();
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data)
+            .build();
+    }
+
+    @PostMapping("/mid-event2")
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent2(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) throws JsonProcessingException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
+        System.out.println(callbackRequest.getCaseDetails());
 
         // Append doc to check your answers
         Document c21Document = getDocument(
@@ -97,23 +110,47 @@ public class C21OrderController {
                 .filename(c21Document.originalDocumentName)
                 .build());
 
+
         data.put("temporaryC21Order", c21OrderBuilder.build());
-        data.remove("judgeAndLegalAdvisor");
-        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data.get("temporaryC21Order")));
+        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data));
         System.out.println();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data).build();
+            .data(data)
+            .build();
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) throws JsonProcessingException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
+        Document c21Document = getDocument(
+            authorization,
+            userId,
+            createC21OrderService.getC21OrderTemplateData(caseData));
+
+        C21Order.C21OrderBuilder c21OrderBuilder = caseData.getTemporaryC21Order().toBuilder()
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(caseData.getJudgeAndLegalAdvisor().getJudgeTitle())
+                .judgeLastName(caseData.getJudgeAndLegalAdvisor().getJudgeLastName())
+                .judgeFullName(caseData.getJudgeAndLegalAdvisor().getJudgeFullName())
+                .legalAdvisorName(caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName())
+                .build())
+            .c21OrderDocument(DocumentReference.builder()
+                .url(c21Document.links.self.href)
+                .binaryUrl(c21Document.links.binary.href)
+                .filename(c21Document.originalDocumentName)
+                .build());
+
+        data.put("temporaryC21Order", c21OrderBuilder.build());
+        caseData = mapper.convertValue(data, CaseData.class);
         System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data.get("temporaryC21Order")));
+
         data.put("c21OrderBundle", buildC21OrderBundle(caseData));
         data.remove("temporaryC21Order");
         data.remove("judgeAndLegalAdvisor");
