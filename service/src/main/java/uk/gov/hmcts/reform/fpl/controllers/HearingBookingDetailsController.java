@@ -13,9 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.configuration.HearingVenue;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.HearingVenueLookupService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
@@ -80,15 +77,9 @@ public class HearingBookingDetailsController {
         for (Element<HearingBooking> hearingBookingElement : caseData.getHearingDetails()) {
             HearingBooking booking = hearingBookingElement.getValue();
             LocalDate hearingDate = booking.getDate();
-            DynamicList venueList = booking.getVenueList();
 
             if (hearingDate != null && !hearingDate.isAfter(LocalDate.now())) {
                 errors.add("Enter a future date");
-            }
-
-            // Shouldn't happen but just to make sure
-            if (venueList != null && venueList.getValue().getCode().equals(DynamicListElement.DEFAULT_CODE)) {
-                errors.add("Select a hearing venue");
             }
         }
 

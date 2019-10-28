@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,9 +21,4 @@ public class HearingBooking {
     private final String hearingNeedsDetails;
     private final String judgeTitle;
     private final String judgeName;
-    private final DynamicList venueList;
-
-    // TODO: 15/10/2019 When actual integration occurs and we remove venue for the dynamic list
-    //   we should create a getVenue method that returns the label of the selected value in the dynamic list
-    //   Not implemented yet as this would mess with current design
 }

@@ -22,16 +22,8 @@
     "ID": "HearingBooking",
     "ListElementCode": "venue",
     "FieldType": "FixedList",
-    "ElementLabel": "HearingVenue",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingBooking",
-    "ListElementCode": "venueList",
-    "FieldType": "DynamicList",
-    "FieldTypeParameter": "VenueListDynamic",
-    "ElementLabel": "Venue drop down",
+    "FieldTypeParameter": "HearingVenue",
+    "ElementLabel": "Venue",
     "SecurityClassification": "Public"
   },
   {
