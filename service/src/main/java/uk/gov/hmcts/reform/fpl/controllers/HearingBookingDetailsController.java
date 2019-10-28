@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.service.MapperService;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Api
 @RestController
@@ -53,12 +54,6 @@ public class HearingBookingDetailsController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
-        // !! IF NEEDED !!
-        // Maybe add the storage preparation here or in the submit-event
-        // CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
-        // caseData.getHearingDetails().forEach(element -> element.getValue().getVenueList().prepareForStorage());
-        // !! IF NEEDED !!
-
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .errors(validate(caseDetails))
@@ -66,19 +61,18 @@ public class HearingBookingDetailsController {
     }
 
     private List<String> validate(CaseDetails caseDetails) {
-        ImmutableSet.Builder<String> errors = ImmutableSet.builder();
+        ImmutableList.Builder<String> errors = ImmutableList.builder();
 
         CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
 
-        for (Element<HearingBooking> hearingBookingElement : caseData.getHearingDetails()) {
-            HearingBooking booking = hearingBookingElement.getValue();
-            LocalDate hearingDate = booking.getDate();
+        caseData.getHearingDetails().stream()
+            .map(Element::getValue)
+            .map(HearingBooking::getDate)
+            .filter(Objects::nonNull)
+            .filter(hearingDate -> !hearingDate.isAfter(LocalDate.now()))
+            .findAny()
+            .ifPresent(error -> errors.add("Enter a future date"));
 
-            if (hearingDate != null && !hearingDate.isAfter(LocalDate.now())) {
-                errors.add("Enter a future date");
-            }
-        }
-
-        return errors.build().asList();
+        return errors.build();
     }
 }

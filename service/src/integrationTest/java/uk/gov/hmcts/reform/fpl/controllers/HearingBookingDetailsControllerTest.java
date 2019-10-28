@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -33,7 +32,7 @@ class HearingBookingDetailsControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-    private static final String DATE_ERROR_MESSAGE = "Enter a future date";
+    private static final String ERROR_MESSAGE = "Enter a future date";
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,7 +46,7 @@ class HearingBookingDetailsControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(yesterday));
 
-        assertThat(callbackResponse.getErrors()).contains(DATE_ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
@@ -56,7 +55,7 @@ class HearingBookingDetailsControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(tomorrow));
 
-        assertThat(callbackResponse.getErrors()).doesNotContain(DATE_ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
     @Test
@@ -65,7 +64,7 @@ class HearingBookingDetailsControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(today));
 
-        assertThat(callbackResponse.getErrors()).contains(DATE_ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
@@ -74,7 +73,7 @@ class HearingBookingDetailsControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(distantPast));
 
-        assertThat(callbackResponse.getErrors()).contains(DATE_ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
@@ -83,7 +82,7 @@ class HearingBookingDetailsControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(createHearing(distantFuture));
 
-        assertThat(callbackResponse.getErrors()).doesNotContain(DATE_ERROR_MESSAGE);
+        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
     private HearingBooking createHearing(LocalDate hearingDate) {

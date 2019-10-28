@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -18,11 +16,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class HearingBookingServiceTest {
 
-    private static final LocalDate TODAYS_DATE = LocalDate.now();
     private final HearingBookingService service = new HearingBookingService();
+    private static final LocalDate TODAYS_DATE = LocalDate.now();
 
     @Test
     void shouldReturnAnEmptyHearingBookingIfHearingDetailsIsNull() {
