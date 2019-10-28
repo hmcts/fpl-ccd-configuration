@@ -73,6 +73,15 @@ To ensure you have the correct dependencies run `yarn install` in the command li
 ## Code Style:
 To run code linting enter `yarn lint` in the command line.
 
+## Docmosis Tornado:
+
+Some of the functionality requires Docmosis Tornado to be started. 
+
+It requires `DOCMOSIS_KEY` to be exposed as environment variable on your machine.
+ 
+Docker-compose runs FPL Service as well, refer the  [service README](service/README.md) 
+for additional explanation what's required to get the FPL service started by Docker Compose.  
+
 ## Testing:
 E2E tests are configured to run in parallel in 3 headless browsers by default.
 
