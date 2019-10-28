@@ -1,5 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.google.common.collect.ImmutableMap;
+import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -9,14 +17,6 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 
-import com.google.common.collect.ImmutableMap;
-import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-
 @Service
 public class CreateC21OrderService {
 
@@ -24,7 +24,7 @@ public class CreateC21OrderService {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     public CreateC21OrderService(DateFormatterService dateFormatterService,
-                                 HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration) { ;
+                                 HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration) {
         this.dateFormatterService = dateFormatterService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }
@@ -73,6 +73,7 @@ public class CreateC21OrderService {
     private String getCourtName(String courtName) {
         return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
     }
+
     private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
         // children is validated as not null
         return caseData.getAllChildren().stream()
@@ -81,7 +82,8 @@ public class CreateC21OrderService {
             .map(child -> ImmutableMap.of(
                 "name", child.getFirstName() + " " + child.getLastName(),
                 "gender", child.getGender(),
-                "dateOfBirth", dateFormatterService.formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG)))
+                "dateOfBirth", dateFormatterService.formatLocalDateToString(
+                    child.getDateOfBirth(), FormatStyle.LONG)))
             .collect(toList());
     }
 }
