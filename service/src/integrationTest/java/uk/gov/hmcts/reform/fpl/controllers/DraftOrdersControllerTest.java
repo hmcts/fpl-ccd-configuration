@@ -6,10 +6,13 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.io.IOException;
@@ -37,6 +41,7 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
@@ -59,6 +64,12 @@ class DraftOrdersControllerTest {
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
+    @Mock
+    HearingBookingService hearingBookingService;
+
+    @Mock
+    ApplicationEventPublisher applicationEventPublisher;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -67,6 +78,24 @@ class DraftOrdersControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
+
+    @Test
+    void submitted() throws Exception {
+
+        Order order = Order.builder()
+            .orderStatus(OrderStatus.DRAFT)
+            .build();
+
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .data(ImmutableMap.<String, Object>builder()
+                .put("standardDirectionOrder", order)
+                .build()).build())
+            .build();
+
+        makeRequest(request, "submitted");
+
+        verify(applicationEventPublisher, Mockito.times(0)).publishEvent(Mockito.any());
+    }
 
     @Test
     void aboutToStartCallbackShouldSplitDirectionsIntoSeparateCollections() throws Exception {
