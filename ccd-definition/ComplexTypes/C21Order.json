@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "C21Order",
     "ListElementCode": "orderTitle",
-    "FieldType": "Text",
+    "FieldType": "TextArea",
     "ElementLabel": "Order title",
     "SecurityClassification": "Public"
   },
@@ -20,7 +20,7 @@
     "ID": "C21Order",
     "ListElementCode": "c21OrderDocument",
     "FieldType": "Document",
-    "ElementLabel": "Attached PDF",
+    "ElementLabel": "Order PDF",
     "SecurityClassification": "Public"
   },
   {
@@ -29,6 +29,7 @@
     "ListElementCode": "judgeAndLegalAdvisor",
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and Legal Advisor",
+    "FieldShowCondition": "c21OrderDocument=\"DO_NOT_SHOW\"",
     "SecurityClassification": "Public"
   }
 ]

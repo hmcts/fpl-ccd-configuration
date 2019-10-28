@@ -24,13 +24,13 @@ public class CreateC21OrderService {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     public CreateC21OrderService(DateFormatterService dateFormatterService,
-                                 HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration) { ;
+                                 HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration) {
+        ;
         this.dateFormatterService = dateFormatterService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }
 
     public Map<String, Object> getC21OrderTemplateData(CaseData caseData) {
-
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("orderTitle", getOrderTitle(caseData))
@@ -73,6 +73,7 @@ public class CreateC21OrderService {
     private String getCourtName(String courtName) {
         return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
     }
+
     private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
         // children is validated as not null
         return caseData.getAllChildren().stream()
@@ -80,8 +81,9 @@ public class CreateC21OrderService {
             .map(Child::getParty)
             .map(child -> ImmutableMap.of(
                 "name", child.getFirstName() + " " + child.getLastName(),
-                "gender", child.getGender(),
-                "dateOfBirth", dateFormatterService.formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG)))
+                "gender", defaultIfNull(child.getGender(), ""),
+                "dateOfBirth", defaultIfNull(dateFormatterService.formatLocalDateToString(
+                    child.getDateOfBirth(), FormatStyle.LONG), "")))
             .collect(toList());
     }
 }
