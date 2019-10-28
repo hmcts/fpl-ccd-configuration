@@ -38,24 +38,24 @@ class CoreCaseDataServiceTest {
     @Test
     void shouldMakeAppropriateApiCalls() {
         String userId = "u1-xyz";
-        String userAuthenticationToken = "Bearer user-xyz";
-        String serviceAuthenticationToken = "Bearer service-xyz";
+        String userAuthToken = "Bearer user-xyz";
+        String serviceAuthToken = "Bearer service-xyz";
         long caseId = 1L;
         String eventId = "sample-event";
         String eventToken = "t-xyz";
 
-        when(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).thenReturn(userAuthenticationToken);
-        when(idamClient.getUserDetails(userAuthenticationToken)).thenReturn(UserDetails.builder().id(userId).build());
-        when(authTokenGenerator.generate()).thenReturn(serviceAuthenticationToken);
-        when(coreCaseDataApi.startEventForCaseWorker(userAuthenticationToken, serviceAuthenticationToken, userId,
-            JURISDICTION, CASE_TYPE, Long.toString(caseId), eventId)).thenReturn(buildStartEventResponse(eventId, eventToken));
+        when(idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).thenReturn(userAuthToken);
+        when(idamClient.getUserDetails(userAuthToken)).thenReturn(UserDetails.builder().id(userId).build());
+        when(authTokenGenerator.generate()).thenReturn(serviceAuthToken);
+        when(coreCaseDataApi.startEventForCaseWorker(userAuthToken, serviceAuthToken, userId, JURISDICTION,
+            CASE_TYPE, Long.toString(caseId), eventId)).thenReturn(buildStartEventResponse(eventId, eventToken));
 
         service.triggerEvent(JURISDICTION, CASE_TYPE, caseId, eventId);
 
-        verify(coreCaseDataApi).startEventForCaseWorker(userAuthenticationToken, serviceAuthenticationToken, userId,
+        verify(coreCaseDataApi).startEventForCaseWorker(userAuthToken, serviceAuthToken, userId,
             JURISDICTION, CASE_TYPE, Long.toString(caseId), eventId);
-        verify(coreCaseDataApi).submitEventForCaseWorker(userAuthenticationToken, serviceAuthenticationToken, userId,
-            JURISDICTION, CASE_TYPE, Long.toString(caseId), true, buildCaseDataContent(eventId, eventToken));
+        verify(coreCaseDataApi).submitEventForCaseWorker(userAuthToken, serviceAuthToken, userId, JURISDICTION,
+            CASE_TYPE, Long.toString(caseId), true, buildCaseDataContent(eventId, eventToken));
     }
 
     private StartEventResponse buildStartEventResponse(String eventId, String eventToken) {
