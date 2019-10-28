@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
@@ -35,15 +34,12 @@ public class HearingBookingDetailsController {
     }
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(
-        @RequestBody CallbackRequest callbackrequest) throws IOException {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
 
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData()
-            .put("hearingDetails",
-                hearingBookingService.expandHearingBookingCollection(caseData));
+        caseDetails.getData().put("hearingDetails", hearingBookingService.expandHearingBookingCollection(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-@Builder(toBuilder = true)
+@Builder
 @AllArgsConstructor
 public class HearingBooking {
     private final String type;
