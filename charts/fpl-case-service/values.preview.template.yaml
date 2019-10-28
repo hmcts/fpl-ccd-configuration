@@ -5,6 +5,7 @@ tags:
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  readinessDelay: 60
   environment:
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
     IDAM_CLIENT_ID: fpl_case_service
