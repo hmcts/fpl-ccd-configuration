@@ -28,6 +28,7 @@ module.exports = {
   uploadCourtBundle() {
     return async (I, uploadDocumentsEventPage, submitApplicationEventPage, caseViewPage) => {
       await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
+      I.seeElement(uploadDocumentsEventPage.documents.courtBundle);
       uploadDocumentsEventPage.uploadCourtBundle(config.testFile);
       await I.completeEvent('Save and continue');
       I.seeEventSubmissionConfirmation(config.applicationActions.uploadDocuments);
