@@ -1,0 +1,16 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingStatus",
+    "ListElementCode": "Ongoing",
+    "ListElement": "Ongoing",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ProceedingStatus",
+    "ListElementCode": "Previous",
+    "ListElement": "Previous",
+    "DisplayOrder": 2
+  }
+]
