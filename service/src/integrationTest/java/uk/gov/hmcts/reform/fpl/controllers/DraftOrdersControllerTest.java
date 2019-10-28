@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +22,25 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
+import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
+import uk.gov.service.notify.NotificationClient;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -42,10 +51,14 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -66,11 +79,29 @@ class DraftOrdersControllerTest {
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
+    @MockBean
+    private NotificationClient notificationClient;
+
     @Mock
     HearingBookingService hearingBookingService;
 
     @Mock
     ApplicationEventPublisher applicationEventPublisher;
+
+    @Mock
+    private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+
+    @Mock
+    private CafcassLookupConfiguration cafcassLookupConfiguration;
+
+    @Mock
+    DateFormatterService dateFormatterService;
+
+    @Mock
+    MapperService mapperService;
+
+    @InjectMocks
+    private CafcassEmailContentProvider cafcassEmailContentProvider;
 
     @Autowired
     private MockMvc mockMvc;
@@ -80,52 +111,9 @@ class DraftOrdersControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-
-    @Test
-    void submittedDraft() throws Exception {
-
-        Order order = Order.builder()
-            .orderStatus(OrderStatus.DRAFT)
-            .build();
-
-        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
-            .data(ImmutableMap.<String, Object>builder()
-                .put("standardDirectionOrder", order)
-                .build()).build())
-            .build();
-
-        makeRequest(request, "submitted");
-
-        verify(applicationEventPublisher, Mockito.times(0)).publishEvent(Mockito.any());
-    }
-
-    @Test
-    void submitted() throws Exception {
-
-        Order order = Order.builder()
-            .orderStatus(OrderStatus.SEALED)
-            .build();
-
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.<String, Object>builder()
-                    .put("hearingDetails",
-                        ImmutableList.of(
-                            Element.builder()
-                                .value(HearingBooking.builder()
-                                    .date(LocalDate.of(2020,10,20))
-                                    .build())
-                                .build()))
-                    .put("standardDirectionOrder", order)
-                    .build())
-                .build())
-            .build();
-
-        makeRequest(request, "submitted");
-
-        verify(applicationEventPublisher, Mockito.times(0)).publishEvent(Mockito.any());
-    }
+    private static final String CAFCASS_NAME = "Test cafcass";
+    private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
+    private static final String LOCAL_AUTHORITY_CODE = "example";
 
     @Test
     void aboutToStartCallbackShouldSplitDirectionsIntoSeparateCollections() throws Exception {
@@ -273,6 +261,92 @@ class DraftOrdersControllerTest {
             assertThat(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()).isNotNull();
             assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
         }
+    }
+
+    @BeforeEach
+    void setup() {
+        given(mapperService.mapObject(Mockito.any(), Mockito.any()))
+            .willReturn(CaseData.builder().familyManCaseNumber("12345").respondents1(ImmutableList.of(
+                Element.<Respondent>builder()
+                    .value(Respondent.builder()
+                        .party(RespondentParty.builder()
+                            .lastName("Moley")
+                            .build())
+                        .build())
+                    .build()))
+                .hearingDetails(ImmutableList.of(
+                    Element.<HearingBooking>builder()
+                        .id(UUID.randomUUID())
+                        .value(HearingBooking.builder().date(LocalDate.of(2020,10, 27)).build())
+                        .build())).build());
+
+        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(Mockito.any()))
+            .willReturn("Example Local Authority");
+
+        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+            .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, COURT_EMAIL_ADDRESS));
+
+        given(hearingBookingService.getMostUrgentHearingBooking(Mockito.any())).willReturn(HearingBooking.builder()
+            .date(LocalDate.of(2020,10,27)).build());
+
+        given(dateFormatterService.formatLocalDateToString(Mockito.any(),Mockito.any()))
+            .willReturn("27 October 2020");
+    }
+
+    @Test
+    void shouldNotTriggerSDOEventWhenDraft() throws Exception {
+        Order order = Order.builder()
+            .orderStatus(OrderStatus.DRAFT)
+            .build();
+
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .data(ImmutableMap.<String, Object>builder()
+                .put("standardDirectionOrder", order)
+                .build()).build())
+            .build();
+
+        makeRequest(request, "submitted");
+
+        verify(applicationEventPublisher, Mockito.times(0)).publishEvent(Mockito.any());
+    }
+
+    @Test
+    void shouldTriggerSDOEventWhenSubmitted() throws Exception {
+        Order order = Order.builder()
+            .orderStatus(OrderStatus.SEALED)
+            .build();
+
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.<String, Object>builder()
+                    .put("hearingDetails",
+                        ImmutableList.of(
+                            Element.builder()
+                                .value(HearingBooking.builder()
+                                    .date(LocalDate.of(2020,10,20))
+                                    .build())
+                                .build()))
+                    .put("standardDirectionOrder", order)
+                    .put("caseLocalAuthority","example")
+                    .build())
+                .build())
+            .build();
+
+        final Map<String, Object> expectedCafcassParameters = ImmutableMap.<String, Object>builder()
+            .put("title","cafcass")
+            .put("familyManCaseNumber", "")
+            .put("leadRespondentsName", "")
+            .put("hearingDate","20 October 2020")
+            .put("reference", "12345")
+            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
+
+        makeRequest(request, "submitted");
+
+        verify(notificationClient, Mockito.times(1)).sendEmail(
+            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq("cafcass@cafcass.com"), eq(expectedCafcassParameters), eq("12345")
+        );
     }
 
     private MvcResult makeRequest(CallbackRequest request, String endpoint) throws Exception {
