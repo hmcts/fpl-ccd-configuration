@@ -447,6 +447,9 @@
           "document_binary_url": "http://dm-store:8080/documents/32ee64c0-6270-4ec5-a5e2-9980dd17af4e/binary"
         }
       },
+      "proceedingTypes": [
+        "NOTICE_OF_PROCEEDINGS_FOR_PARTIES"
+      ],
       "temporaryC2Document": {
         "document": {
           "document_url": "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
@@ -470,6 +473,8 @@
       ]
     }
   },
-  "case_details_before": {},
+  "case_details_before": {
+    "case_data": {}
+  },
   "eventId": {}
 }
