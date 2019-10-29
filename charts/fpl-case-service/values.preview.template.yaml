@@ -5,6 +5,7 @@ tags:
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  livenessDelay: 50
   environment:
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
     IDAM_CLIENT_ID: fpl_case_service
@@ -30,6 +31,7 @@ ccd:
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
+  cpuRequests: 250m
   idam-pr:
     releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
     redirect_uris:

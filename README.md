@@ -58,11 +58,30 @@ $ ./bin/configurer/import-ccd-definition.sh
 
 Note: Above script will export JSON content into XLSX file and upload it into instance of CCD definition store.
 
+Additional note:
+
+You can skip some of the files by using -e option on the import-ccd-definitions, i.e.
+
+```bash
+$ ./bin/configurer/import-ccd-definition.sh -e 'UserProfile.json,*-nonprod.json
+```
+
+The command above will skip UserProfile.json and all files with -nonprod suffix (from the folders).
+
 ## Getting Started:
 To ensure you have the correct dependencies run `yarn install` in the command line.
 
 ## Code Style:
 To run code linting enter `yarn lint` in the command line.
+
+## Docmosis Tornado:
+
+Some of the functionality requires Docmosis Tornado to be started. 
+
+It requires `DOCMOSIS_KEY` to be exposed as environment variable on your machine.
+ 
+Docker-compose runs FPL Service as well, refer the  [service README](service/README.md) 
+for additional explanation what's required to get the FPL service started by Docker Compose.  
 
 ## Testing:
 E2E tests are configured to run in parallel in 3 headless browsers by default.
