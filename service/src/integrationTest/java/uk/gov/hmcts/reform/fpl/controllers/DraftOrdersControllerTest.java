@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -43,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.mockito.Mockito.times;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -254,7 +256,7 @@ class DraftOrdersControllerTest {
 
     @BeforeEach
     void setup() {
-        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(Mockito.any()))
+        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
@@ -281,7 +283,7 @@ class DraftOrdersControllerTest {
 
         makeRequest(request, "submitted");
 
-        verify(applicationEventPublisher, Mockito.times(0)).publishEvent(Mockito.any());
+        verify(applicationEventPublisher, times(0)).publishEvent(StandardDirectionsOrderIssuedEvent.class);
     }
 
     @Test
@@ -318,7 +320,7 @@ class DraftOrdersControllerTest {
 
         makeRequest(request, "submitted");
 
-        verify(notificationClient, Mockito.times(1)).sendEmail(
+        verify(notificationClient, times(1)).sendEmail(
             eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq("cafcass@cafcass.com"), eq(expectedCafcassParameters), eq("12345")
         );
     }
