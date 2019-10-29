@@ -33,6 +33,6 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('local authority uploads documents', uploadDocs.uploadDocuments);
+Scenario('local authority uploads documents', uploadDocs.uploadDocuments());
 
-Scenario('local authority uploads court bundle', uploadDocs.uploadCourtBundle);
+Scenario('local authority uploads court bundle', uploadDocs.uploadCourtBundle());
