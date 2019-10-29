@@ -1,14 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
@@ -24,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
+import uk.gov.hmcts.reform.fpl.interfaces.C21CaseOrderGroup;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C21OrderBundle;
@@ -35,6 +27,16 @@ import uk.gov.hmcts.reform.fpl.service.CreateC21OrderService;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
 
 @Api
 @RequestMapping("/callback/create-order")
@@ -46,26 +48,31 @@ public class C21OrderController {
     private final UploadDocumentService uploadDocumentService;
     private final CreateC21OrderService createC21OrderService;
     private final DateFormatterService dateFormatterService;
-    private CallbackRequest firstPageCallBack;
+    private final ValidateGroupService validateGroupService;
 
     @Autowired
     public C21OrderController(ObjectMapper mapper,
                               DocmosisDocumentGeneratorService docmosisService,
                               UploadDocumentService uploadDocumentService,
                               CreateC21OrderService createC21OrderService,
-                              DateFormatterService dateFormatterService) {
+                              DateFormatterService dateFormatterService,
+                              ValidateGroupService validateGroupService) {
         this.mapper = mapper;
         this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
         this.createC21OrderService = createC21OrderService;
         this.dateFormatterService = dateFormatterService;
+        this.validateGroupService = validateGroupService;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
+            .errors(validateGroupService.validateGroup(caseData, C21CaseOrderGroup.class))
             .build();
     }
 
