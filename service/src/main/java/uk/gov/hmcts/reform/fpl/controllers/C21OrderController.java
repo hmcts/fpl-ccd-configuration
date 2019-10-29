@@ -12,7 +12,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
-import org.apache.commons.lang3.ObjectUtils;
 import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +23,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C21OrderBundle;
@@ -66,52 +66,6 @@ public class C21OrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .build();
-    }
-
-    //Just using this so I have a mid event for the first page - wanting to test why the document link doesnt show in
-    //the check-your-answers page! (It only shows if you re-submit the Order Title/Order Details page (page 1)
-    @PostMapping("/mid-event1")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent1(@RequestBody CallbackRequest callbackRequest) {
-        firstPageCallBack = callbackRequest;
-        Map<String, Object> data = firstPageCallBack.getCaseDetails().getData();
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
-    }
-
-    @PostMapping("/mid-event2")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent2(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackRequest) throws JsonProcessingException {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
-
-        // Append doc to check your answers
-        Document c21Document = getDocument(
-            authorization,
-            userId,
-            createC21OrderService.getC21OrderTemplateData(caseData));
-
-        C21Order.C21OrderBuilder c21OrderBuilder = caseData.getTemporaryC21Order().toBuilder()
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(caseData.getJudgeAndLegalAdvisor().getJudgeTitle())
-                .judgeLastName(caseData.getJudgeAndLegalAdvisor().getJudgeLastName())
-                .judgeFullName(caseData.getJudgeAndLegalAdvisor().getJudgeFullName())
-                .legalAdvisorName(caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName())
-                .build())
-            .c21OrderDocument(DocumentReference.builder()
-                .url(c21Document.links.self.href)
-                .binaryUrl(c21Document.links.binary.href)
-                .filename(c21Document.originalDocumentName)
-                .build());
-
-        data.put("temporaryC21Order", c21OrderBuilder.build());
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
             .build();
     }
 
@@ -158,6 +112,13 @@ public class C21OrderController {
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
         C21Order tempC21 = caseData.getTemporaryC21Order();
+        JudgeOrMagistrateTitle judgeTitle = tempC21.getJudgeAndLegalAdvisor().getJudgeTitle();
+        String judgeLabel;
+        if (judgeTitle != null) {
+            judgeLabel = tempC21.getJudgeAndLegalAdvisor().getJudgeTitle().getLabel();
+        } else {
+            judgeLabel = "";
+        }
 
         c21OrderBundle.add(Element.<C21OrderBundle>builder()
             .id(UUID.randomUUID())
@@ -166,8 +127,8 @@ public class C21OrderController {
                 .c21OrderDocument(tempC21.getC21OrderDocument())
                 .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
                     .toLocalDateTime(), "h:mma, d MMMM yyyy"))
-                .judgeTitle(tempC21.getJudgeAndLegalAdvisor().getJudgeTitle().getLabel())
-                .judgeName(ObjectUtils.defaultIfNull(tempC21.getJudgeAndLegalAdvisor().getJudgeLastName(),
+                .judgeTitle(judgeLabel)
+                .judgeName(defaultIfNull(tempC21.getJudgeAndLegalAdvisor().getJudgeLastName(),
                     tempC21.getJudgeAndLegalAdvisor().getJudgeFullName()))
                 .build())
             .build());

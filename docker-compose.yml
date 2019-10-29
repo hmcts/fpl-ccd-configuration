@@ -1,40 +1,40 @@
 version: '2.1'
 services:
-  fpl-service:
-    build:
-      context: .
-      args:
-        - http_proxy
-        - https_proxy
-        - no_proxy
-    image: hmctspublic.azurecr.io/fpl/case-service
-    container_name: fpl-service
-    environment:
-      - IDAM_API_URL=http://idam-api:5000
-      - DOCMOSIS_TORNADO_URL=http://docmosis-tornado:8080
-      - DOCMOSIS_TORNADO_KEY
-      - DOCUMENT_MANAGEMENT_URL=http://dm-store:8080
-      - CORE_CASE_DATA_API_URL=http://ccd-data-store-api:4452
-      - IDAM_S2S_AUTH_URL=http://service-auth-provider-api:8080
-      - CCD_UI_BASE_URL=http://localhost:3451
-      - SPRING_PROFILES_ACTIVE=local,user-mappings
-      - NOTIFY_API_KEY
-      # these environment variables are used by java-logging library
-    ports:
-      - $SERVER_PORT:$SERVER_PORT
-    networks:
-      - default
-      - ccd-network
+#  fpl-service:
+#    build:
+#      context: .
+#      args:
+#        - http_proxy
+#        - https_proxy
+#        - no_proxy
+#    image: hmctspublic.azurecr.io/fpl/case-service
+#    container_name: fpl-service
+#    environment:
+#      - IDAM_API_URL=http://idam-api:5000
+#      - DOCMOSIS_TORNADO_URL=http://docmosis-tornado:8080
+#      - DOCMOSIS_TORNADO_KEY
+#      - DOCUMENT_MANAGEMENT_URL=http://dm-store:8080
+#      - CORE_CASE_DATA_API_URL=http://ccd-data-store-api:4452
+#      - IDAM_S2S_AUTH_URL=http://service-auth-provider-api:8080
+#      - CCD_UI_BASE_URL=http://localhost:3451
+#      - SPRING_PROFILES_ACTIVE=local,user-mappings
+#      - NOTIFY_API_KEY
+#      # these environment variables are used by java-logging library
+#    ports:
+#      - $SERVER_PORT:$SERVER_PORT
+#    networks:
+#      - default
+#      - ccd-network
   docmosis-tornado:
     image: skeneventures/docmosis-tornado
     environment:
       # not supported in current version of Tornado
-      DOCMOSIS_KEY: "XXX"
+      DOCMOSIS_KEY: "0NAD-KMTK-JALO-MKIA-DBBH-1ELH-YBKQ-NS91-23ED-8-8085"
       DOCMOSIS_SITE: "Free Trial License"
     volumes:
       - ./docker/docmosis/templates:/home/docmosis/templates:rw
     ports:
       - 5433:8080
-networks:
-  ccd-network:
-      external: true
+#networks:
+#  ccd-network:
+#      external: true

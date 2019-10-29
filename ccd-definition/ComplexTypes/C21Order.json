@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "C21Order",
     "ListElementCode": "orderTitle",
-    "FieldType": "TextArea",
+    "FieldType": "Text",
     "ElementLabel": "Order title",
     "SecurityClassification": "Public"
   },
