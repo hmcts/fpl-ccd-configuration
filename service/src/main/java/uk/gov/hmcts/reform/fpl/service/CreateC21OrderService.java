@@ -25,7 +25,7 @@ public class CreateC21OrderService {
 
     public CreateC21OrderService(DateFormatterService dateFormatterService,
                                  HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration) {
-        ;
+
         this.dateFormatterService = dateFormatterService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }

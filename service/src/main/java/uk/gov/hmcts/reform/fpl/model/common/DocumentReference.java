@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
-@AllArgsConstructor
+@Builder(toBuilder = true)
 public class DocumentReference {
     @JsonProperty("document_url")
     private final String url;

@@ -25,8 +25,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.CAFCASS_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 @ActiveProfiles("integration-test")
@@ -36,7 +36,23 @@ class CaseSubmissionControllerSubmittedTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
+    private static final String ORDERS_AND_DIRECTIONS = "ordersAndDirections";
+    private static final String CAFCASS = "cafcass";
+    private static final String SUBMITTED_CALLBACK_URL = "/callback/case-submission/submitted";
+    private static final String AUTHORIZATION = "authorization";
+    private static final String USER_ID_STR = "user-id";
+
     private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    private static final Map<String, Object> expectedSimilarParameters = ImmutableMap.<String, Object>builder()
+        .put("localAuthority", "Example Local Authority")
+        .put("dataPresent", "Yes")
+        .put("fullStop", "No")
+        .put("timeFramePresent", "Yes")
+        .put("timeFrameValue", "Same day")
+        .put("reference", "12345")
+        .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+        .build();
 
     @MockBean
     private NotificationClient notificationClient;
@@ -46,18 +62,18 @@ class CaseSubmissionControllerSubmittedTest {
     @Test
     void shouldReturnUnsuccessfulResponseWithNoData() throws Exception {
         mockMvc
-            .perform(post("/callback/case-submission/submitted")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID))
+            .perform(post(SUBMITTED_CALLBACK_URL)
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .header(USER_ID_STR, USER_ID))
             .andExpect(status().is4xxClientError());
     }
 
     @Test
     void shouldReturnUnsuccessfulResponseWithMalformedData() throws Exception {
         mockMvc
-            .perform(post("/callback/case-submission/submitted")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
+            .perform(post(SUBMITTED_CALLBACK_URL)
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .header(USER_ID_STR, USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("Mock"))
             .andExpect(status().is4xxClientError());
@@ -68,23 +84,17 @@ class CaseSubmissionControllerSubmittedTest {
         List<String> ordersAndDirections = ImmutableList.of("Emergency protection order",
             "Contact with any named person");
         Map<String, Object> expectedHmctsParameters = ImmutableMap.<String, Object>builder()
+            .putAll(expectedSimilarParameters)
             .put("court", "Family Court")
-            .put("localAuthority", "Example Local Authority")
-            .put("dataPresent", "Yes")
-            .put("fullStop", "No")
-            .put("ordersAndDirections", ordersAndDirections)
-            .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "Same day")
-            .put("reference", "12345")
-            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .put(ORDERS_AND_DIRECTIONS, ordersAndDirections)
             .build();
 
         Map<String, Object> expectedCafcassParameters = ImmutableMap.<String, Object>builder()
-            .put("cafcass", "cafcass")
+            .put(CAFCASS, CAFCASS)
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "Yes")
             .put("fullStop", "No")
-            .put("ordersAndDirections", ordersAndDirections)
+            .put(ORDERS_AND_DIRECTIONS, ordersAndDirections)
             .put("timeFramePresent", "Yes")
             .put("timeFrameValue", "Same day")
             .put("reference", "12345")
@@ -92,19 +102,21 @@ class CaseSubmissionControllerSubmittedTest {
             .build();
 
         mockMvc
-            .perform(post("/callback/case-submission/submitted")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
+            .perform(post(SUBMITTED_CALLBACK_URL)
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .header(USER_ID_STR, USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(readBytes("core-case-data-store-api/callback-request.json")))
             .andExpect(status().isOk());
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("admin@family-court.com"), eq(expectedHmctsParameters), eq("12345")
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE.getTemplateId()), eq("admin@family-court.com"),
+            eq(expectedHmctsParameters), eq("12345")
         );
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(CAFCASS_SUBMISSION_TEMPLATE), eq("cafcass@cafcass.com"), eq(expectedCafcassParameters), eq("12345")
+            eq(CAFCASS_SUBMISSION_TEMPLATE.getTemplateId()), eq("cafcass@cafcass.com"),
+            eq(expectedCafcassParameters), eq("12345")
         );
     }
 
@@ -123,7 +135,7 @@ class CaseSubmissionControllerSubmittedTest {
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "No")
             .put("fullStop", "Yes")
-            .put("ordersAndDirections", "")
+            .put(ORDERS_AND_DIRECTIONS, "")
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
             .put("reference", "12345")
@@ -131,11 +143,11 @@ class CaseSubmissionControllerSubmittedTest {
             .build();
 
         Map<String, Object> expectedCafcassParameters = ImmutableMap.<String, Object>builder()
-            .put("cafcass", "cafcass")
+            .put(CAFCASS, CAFCASS)
             .put("localAuthority", "Example Local Authority")
             .put("dataPresent", "No")
             .put("fullStop", "Yes")
-            .put("ordersAndDirections", "")
+            .put(ORDERS_AND_DIRECTIONS, "")
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
             .put("reference", "12345")
@@ -143,19 +155,21 @@ class CaseSubmissionControllerSubmittedTest {
             .build();
 
         mockMvc
-            .perform(post("/callback/case-submission/submitted")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
+            .perform(post(SUBMITTED_CALLBACK_URL)
+                .header(AUTHORIZATION, AUTH_TOKEN)
+                .header(USER_ID_STR, USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(MAPPER.writeValueAsString(request)))
             .andExpect(status().isOk());
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq("admin@family-court.com"), eq(expectedHmctsParameters), eq("12345")
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE.getTemplateId()),
+            eq("admin@family-court.com"), eq(expectedHmctsParameters), eq("12345")
         );
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(CAFCASS_SUBMISSION_TEMPLATE), eq("cafcass@cafcass.com"), eq(expectedCafcassParameters), eq("12345")
+            eq(CAFCASS_SUBMISSION_TEMPLATE.getTemplateId()), eq("cafcass@cafcass.com"),
+            eq(expectedCafcassParameters), eq("12345")
         );
     }
 }
