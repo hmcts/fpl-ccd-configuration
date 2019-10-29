@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,17 +28,13 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.service.notify.NotificationClient;
 
 import java.io.IOException;
@@ -96,12 +91,6 @@ class DraftOrdersControllerTest {
 
     @Mock
     DateFormatterService dateFormatterService;
-
-    @Mock
-    MapperService mapperService;
-
-    @InjectMocks
-    private CafcassEmailContentProvider cafcassEmailContentProvider;
 
     @Autowired
     private MockMvc mockMvc;
@@ -265,21 +254,6 @@ class DraftOrdersControllerTest {
 
     @BeforeEach
     void setup() {
-        given(mapperService.mapObject(Mockito.any(), Mockito.any()))
-            .willReturn(CaseData.builder().familyManCaseNumber("12345").respondents1(ImmutableList.of(
-                Element.<Respondent>builder()
-                    .value(Respondent.builder()
-                        .party(RespondentParty.builder()
-                            .lastName("Moley")
-                            .build())
-                        .build())
-                    .build()))
-                .hearingDetails(ImmutableList.of(
-                    Element.<HearingBooking>builder()
-                        .id(UUID.randomUUID())
-                        .value(HearingBooking.builder().date(LocalDate.of(2020,10, 27)).build())
-                        .build())).build());
-
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(Mockito.any()))
             .willReturn("Example Local Authority");
 
