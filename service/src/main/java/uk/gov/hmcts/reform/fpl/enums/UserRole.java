@@ -1,45 +1,23 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import com.google.common.collect.ImmutableList;
+
 import java.util.List;
 
 public enum UserRole {
-    LOCAL_AUTHORITY {
-        public List<String> getRoles() {
-            return addRoles("caseworker-publiclaw-solicitor");
-        }
-    },
+    LOCAL_AUTHORITY("caseworker-publiclaw-solicitor"),
+    HMCTS_ADMIN("caseworker-publiclaw-courtadmin"),
+    CAFCASS("caseworker-publiclaw-cafcass"),
+    GATEKEEPER("caseworker-publiclaw-gatekeeper"),
+    JUDICIARY("caseworker-publiclaw-judiciary");
 
-    HMCTS_ADMIN {
-        public List<String> getRoles() {
-            return addRoles("caseworker-publiclaw-courtadmin");
-        }
-    },
+    private final String role;
 
-    CAFCASS {
-        public List<String> getRoles() {
-            return addRoles("caseworker-publiclaw-cafcass");
-        }
-    },
+    UserRole(String role) {
+        this.role = role;
+    }
 
-    GATEKEEPER {
-        public List<String> getRoles() {
-            return addRoles("caseworker-publiclaw-gatekeeper");
-        }
-    },
-
-    JUDICIARY {
-        public List<String> getRoles() {
-            return addRoles("caseworker-publiclaw-judiciary");
-        }
-    };
-
-    public abstract List<String> getRoles();
-
-    private static List<String> addRoles(final String roleToAdd) {
-        List<String> userRoles = new ArrayList<>(Arrays.asList("caseworker", "caseworker-publiclaw"));
-        userRoles.add(roleToAdd);
-        return userRoles;
+    public List<String> getRoles() {
+        return ImmutableList.of("caseworker", "caseworker-publiclaw", this.role);
     }
 }

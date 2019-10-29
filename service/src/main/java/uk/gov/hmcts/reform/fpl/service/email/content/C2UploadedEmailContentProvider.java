@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @Service
 public class C2UploadedEmailContentProvider extends AbstractEmailContentProvider {
 
-    final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     protected C2UploadedEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,

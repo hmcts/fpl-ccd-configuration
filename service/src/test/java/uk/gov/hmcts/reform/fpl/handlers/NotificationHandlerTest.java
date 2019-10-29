@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,15 +13,8 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.UserRole;
-import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
-import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
-import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
-import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
@@ -39,15 +34,19 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.C21_ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
+import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @SuppressWarnings("LineLength")
@@ -88,6 +87,12 @@ class NotificationHandlerTest {
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @Mock
+    private IdamApi idamApi;
+
+    @Mock
+    private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
+
+    @Mock
     private C21OrderEmailContentProvider c21OrderEmailContentProvider;
 
     @Mock
@@ -102,108 +107,52 @@ class NotificationHandlerTest {
     @InjectMocks
     private NotificationHandler notificationHandler;
 
-    @Test
-    void shouldNotNotifyHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
-        final String SUBJ_LINE = "Lastname, SACCCCCCCC5676576567";
+    @Nested
+    class C2UploadedNotificationChecks {
+        final String subjectLine = "Lastname, SACCCCCCCC5676576567";
         final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
-            .put("subjectLine", SUBJ_LINE)
-            .put("hearingDetailsCallout", SUBJ_LINE)
+            .put("subjectLine", subjectLine)
+            .put("hearingDetailsCallout", subjectLine)
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
-        given(idamApi.retrieveUserDetails(AUTH_TOKEN))
-            .willReturn(new UserDetails("1", "hmcts-admin@test.com",
-                "Hmcts", "Test", UserRole.HMCTS_ADMIN.getRoles()));
+        @BeforeEach
+        void before() throws IOException {
+            given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+                .willReturn("Example Local Authority");
 
-        given(userDetailsService.getUserDetails(AUTH_TOKEN))
-            .willReturn(new UserDetails("1", "hmcts-admin@test.com",
-                "Hmcts", "Test", UserRole.HMCTS_ADMIN.getRoles()));
+            given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
+                .willReturn(parameters);
+        }
 
-        given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
-            .willReturn(parameters);
+        @Test
+        void shouldNotNotifyHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
+            given(idamApi.retrieveUserDetails(AUTH_TOKEN))
+                .willReturn(new UserDetails("1", "hmcts-admin@test.com",
+                    "Hmcts", "Test", HMCTS_ADMIN.getRoles()));
 
-        notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+            notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-        SendEmailResponse response = verify(notificationClient, times(0))
-            .sendEmail(eq(C2_UPLOAD_NOTIFICATION_TEMPLATE.getTemplateId()), eq("hmcts-admin@test.com"),
-                eq(parameters), eq("12345"));
+            verify(notificationClient, never())
+                .sendEmail(eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-admin@test.com"),
+                    eq(parameters), eq("12345"));
+        }
 
-        assertThat(response).isNull();
-    }
+        @Test
+        void shouldNotifyNonHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
+            given(idamApi.retrieveUserDetails(AUTH_TOKEN))
+                .willReturn(new UserDetails("1", "hmcts-non-admin@test.com",
+                    "Hmcts", "Test", LOCAL_AUTHORITY.getRoles()));
 
-    @Test
-    void shouldNotifyNonHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
-        final String SUBJ_LINE = "Lastname, SACCCCCCCC5676576567";
-        final String nonAdminEmailAddress = "hmcts-non-admin@test.com";
+            given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
+                .willReturn(new Court(COURT_NAME, "hmcts-non-admin@test.com"));
 
-        final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
-            .put("subjectLine", SUBJ_LINE)
-            .put("hearingDetailsCallout", SUBJ_LINE)
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
+            notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
-        given(userDetailsService.getUserDetails(AUTH_TOKEN))
-            .willReturn(new UserDetails("1", nonAdminEmailAddress,
-                "Hmcts", "Test", UserRole.LOCAL_AUTHORITY.getRoles()));
-
-        given(idamApi.retrieveUserDetails(AUTH_TOKEN))
-            .willReturn(new UserDetails("1", nonAdminEmailAddress,
-                "Hmcts", "Test", UserRole.LOCAL_AUTHORITY.getRoles()));
-
-        given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-            .willReturn(new Court(COURT_NAME, nonAdminEmailAddress));
-
-        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
-            .willReturn("Example Local Authority");
-
-        given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
-            .willReturn(parameters);
-
-        notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
-
-        verify(notificationClient, times(1)).sendEmail(
-            eq(C2_UPLOAD_NOTIFICATION_TEMPLATE.getTemplateId()), eq(nonAdminEmailAddress),
-            eq(parameters), eq("12345"));
-    }
-
-    @Test
-    void shouldNotifyPartiesOnC21OrderSubmission() throws IOException, NotificationClientException {
-        final LocalDate hearingDate = LocalDate.now().plusMonths(4);
-
-        given(dateFormatterService.formatLocalDateToString(hearingDate, FormatStyle.MEDIUM))
-            .willReturn(hearingDate.format(
-                DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK)));
-
-        final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
-            .put("court", COURT_NAME)
-            .put("lastNameOfRespondent", "Test Lastname")
-            .put("familyManCaseNumber", "SACCCCCCCC5676576567")
-            .put("hearingDate", dateFormatterService.formatLocalDateToString(hearingDate, FormatStyle.MEDIUM))
-            .build();
-
-        given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-            .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS));
-
-        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
-            .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
-
-        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
-            .willReturn("Example Local Authority");
-
-        given(c21OrderEmailContentProvider.buildC21OrderNotification(callbackRequest().getCaseDetails(),
-            LOCAL_AUTHORITY_CODE)).willReturn(parameters);
-
-        notificationHandler.sendNotificationForC21Order(new C21OrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
-
-        verify(notificationClient, times(1)).sendEmail(
-            eq(C21_ORDER_NOTIFICATION_TEMPLATE.getTemplateId()), eq(COURT_EMAIL_ADDRESS),
-            eq(parameters), eq("12345"));
-
-        verify(notificationClient, times(1)).sendEmail(
-            eq(C21_ORDER_NOTIFICATION_TEMPLATE.getTemplateId()), eq(CAFCASS_EMAIL_ADDRESS),
-            eq(parameters), eq("12345"));
+            verify(notificationClient, times(1)).sendEmail(
+                eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-non-admin@test.com"), eq(parameters), eq("12345"));
+        }
     }
 
     @Test
