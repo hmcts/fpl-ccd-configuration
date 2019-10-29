@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -96,14 +97,20 @@ class NotificationHandlerTest {
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
+        @BeforeEach
+        void before() throws IOException {
+            given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+                .willReturn("Example Local Authority");
+
+            given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
+                .willReturn(parameters);
+        }
+
         @Test
         void shouldNotNotifyHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
             given(idamApi.retrieveUserDetails(AUTH_TOKEN))
                 .willReturn(new UserDetails("1", "hmcts-admin@test.com",
                     "Hmcts", "Test", HMCTS_ADMIN.getRoles()));
-
-            given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
-                .willReturn(parameters);
 
             notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
@@ -122,12 +129,6 @@ class NotificationHandlerTest {
 
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Court(COURT_NAME, "hmcts-non-admin@test.com"));
-
-            given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
-                .willReturn("Example Local Authority");
-
-            given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
-                .willReturn(parameters);
 
             notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
