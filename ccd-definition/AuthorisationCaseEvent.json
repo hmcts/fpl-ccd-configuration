@@ -347,7 +347,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "uploadC2",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": ""
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
