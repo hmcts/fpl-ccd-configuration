@@ -17,14 +17,14 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @SuppressWarnings({"LineLength", "VariableDeclarationUsageDistance"})
 public abstract class AbstractEmailContentProvider {
 
-    private final String uiBaseUrl;
+    final String uiBaseUrl;
 
     protected AbstractEmailContentProvider(String uiBaseUrl) {
         this.uiBaseUrl = uiBaseUrl;
     }
 
     @SuppressWarnings("unchecked")
-    protected ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(CaseDetails caseDetails) {
+    ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(CaseDetails caseDetails) {
         List<String> ordersAndDirections = buildOrdersAndDirections((Map<String, Object>) caseDetails.getData().get("orders"));
 
         Optional<String> timeFrame = Optional.ofNullable((Map<String, Object>) caseDetails.getData().get("hearing"))
