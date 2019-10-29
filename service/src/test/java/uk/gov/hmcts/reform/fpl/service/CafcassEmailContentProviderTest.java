@@ -36,15 +36,6 @@ class CafcassEmailContentProviderTest {
     @Mock
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
-    @Mock
-    MapperService mapperService;
-
-    @Mock
-    DateFormatterService dateFormatterService;
-
-    @Mock
-    HearingBookingService hearingBookingService;
-
     @InjectMocks
     private CafcassEmailContentProvider cafcassEmailContentProvider;
 
