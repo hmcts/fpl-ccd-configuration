@@ -183,13 +183,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldNotifyCafcassOfIssuedStandardDirectionsOrder() throws IOException, NotificationClientException {
-        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("familyManCaseNumber", "6789")
-            .put("leadRespondentsName", "Moley")
-            .put("hearingDate","21 October 2020")
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
+        final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
             .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
@@ -208,13 +202,7 @@ class NotificationHandlerTest {
 
     @Test
     void shouldNotifyLocalAuthorityOfIssuedStandardDirectionsOrder() throws IOException, NotificationClientException {
-        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
-            .put("familyManCaseNumber", "6789")
-            .put("leadRespondentsName", "Moley")
-            .put("hearingDate","21 October 2020")
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
+        final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS));
@@ -229,5 +217,17 @@ class NotificationHandlerTest {
 
         verify(notificationClient, times(1)).sendEmail(
             eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
+    }
+
+    private Map<String, Object> getStandardDirectionTemplateParameters() {
+        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
+            .put("familyManCaseNumber", "6789")
+            .put("leadRespondentsName", "Moley")
+            .put("hearingDate","21 October 2020")
+            .put("reference", "12345")
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
+
+        return expectedParameters;
     }
 }

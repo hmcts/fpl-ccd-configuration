@@ -295,19 +295,14 @@ class DraftOrdersControllerTest {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
-                .data(ImmutableMap.<String, Object>builder()
-                    .put("hearingDetails",
-                        ImmutableList.of(
+                .data(ImmutableMap.of("hearingDetails", ImmutableList.of(
                             Element.builder()
                                 .value(HearingBooking.builder()
                                     .date(LocalDate.of(2020,10,20))
                                     .build())
-                                .build()))
-                    .put("standardDirectionOrder", order)
-                    .put("caseLocalAuthority","example")
-                    .build())
-                .build())
-            .build();
+                                .build()),
+                    "standardDirectionOrder", order,
+                    "caseLocalAuthority","example")).build()).build();
 
         final Map<String, Object> expectedCafcassParameters = ImmutableMap.<String, Object>builder()
             .put("title","cafcass")
