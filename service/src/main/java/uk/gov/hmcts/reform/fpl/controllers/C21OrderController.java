@@ -74,7 +74,6 @@ public class C21OrderController {
     @PostMapping("/mid-event1")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent1(@RequestBody CallbackRequest callbackRequest) {
         firstPageCallBack = callbackRequest;
-        System.out.println(callbackRequest.getCaseDetails());
         Map<String, Object> data = firstPageCallBack.getCaseDetails().getData();
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -89,7 +88,6 @@ public class C21OrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-        System.out.println(callbackRequest.getCaseDetails());
 
         // Append doc to check your answers
         Document c21Document = getDocument(
@@ -110,10 +108,7 @@ public class C21OrderController {
                 .filename(c21Document.originalDocumentName)
                 .build());
 
-
         data.put("temporaryC21Order", c21OrderBuilder.build());
-        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data));
-        System.out.println();
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -149,7 +144,6 @@ public class C21OrderController {
 
         data.put("temporaryC21Order", c21OrderBuilder.build());
         caseData = mapper.convertValue(data, CaseData.class);
-        System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data.get("temporaryC21Order")));
 
         data.put("c21OrderBundle", buildC21OrderBundle(caseData));
         data.remove("temporaryC21Order");
