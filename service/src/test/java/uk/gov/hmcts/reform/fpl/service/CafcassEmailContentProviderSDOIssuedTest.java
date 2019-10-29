@@ -25,7 +25,8 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, CafcassEmailContentProviderSDOIssued.class, DateFormatterService.class, HearingBookingService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, CafcassEmailContentProviderSDOIssued.class,
+    DateFormatterService.class, HearingBookingService.class})
 class CafcassEmailContentProviderSDOIssuedTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String CAFCASS_NAME = "Test cafcass";

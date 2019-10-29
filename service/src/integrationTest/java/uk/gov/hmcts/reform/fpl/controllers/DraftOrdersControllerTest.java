@@ -44,12 +44,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.mockito.Mockito.times;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -316,7 +316,8 @@ class DraftOrdersControllerTest {
         makeRequest(request, "submitted");
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq("cafcass@cafcass.com"), eq(expectedCafcassParameters), eq("12345")
+            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq("cafcass@cafcass.com"),
+            eq(expectedCafcassParameters), eq("12345")
         );
     }
 

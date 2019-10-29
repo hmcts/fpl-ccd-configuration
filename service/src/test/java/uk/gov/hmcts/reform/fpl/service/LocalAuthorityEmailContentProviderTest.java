@@ -25,7 +25,8 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, LocalAuthorityEmailContentProvider.class, DateFormatterService.class, HearingBookingService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class,
+    LocalAuthorityEmailContentProvider.class, DateFormatterService.class, HearingBookingService.class})
 class LocalAuthorityEmailContentProviderTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -52,7 +53,7 @@ class LocalAuthorityEmailContentProviderTest {
 
     @BeforeEach
     void setup() {
-        this.localAuthorityEmailContentProvider= new LocalAuthorityEmailContentProvider(
+        this.localAuthorityEmailContentProvider = new LocalAuthorityEmailContentProvider(
             localAuthorityNameLookupConfiguration, hmctsCourtLookupConfiguration,"",mapper,dateFormatterService,
             hearingBookingService);
     }

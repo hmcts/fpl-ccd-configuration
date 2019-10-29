@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import com.microsoft.applicationinsights.boot.dependencies.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 

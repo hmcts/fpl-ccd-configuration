@@ -175,8 +175,11 @@ public class DraftOrdersController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if(caseData.getStandardDirectionOrder().getOrderStatus() == SEALED)
-            applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest, authorization, userId));
+        if (caseData.getStandardDirectionOrder().getOrderStatus() == SEALED) {
+            applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest,
+                authorization,
+                userId));
+        }
     }
 
     private List<Element<Direction>> getConfigDirectionsWithHiddenValues() throws IOException {
