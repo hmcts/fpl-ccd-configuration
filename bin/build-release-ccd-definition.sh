@@ -19,6 +19,9 @@ root_dir=$(realpath $(dirname ${0})/..)
 config_dir=${root_dir}/ccd-definition
 build_dir=${root_dir}/build/ccd-release-config
 release_definition_output_file=${build_dir}/ccd-fpl-${environment}.xlsx
+release_config_dir=${build_dir}/definitions
+
+mkdir -p ${release_config_dir}
 
 # build the ccd definition file
 export CCD_DEF_CASE_SERVICE_BASE_URL=http://fpl-case-service-${environment}.service.core-compute-${environment}.internal
