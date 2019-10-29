@@ -507,112 +507,105 @@
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "73",
-    "ListElement": "SWANSEA SWANSEA CROWN COURT",
+    "ListElement": "SWANSEA CROWN COURT",
     "DisplayOrder": 73
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "74",
-    "ListElement": "SWANSEA SWANSEA CROWN COURT",
+    "ListElement": "SWANSEA FAMILY PROCEEDINGS COURT",
     "DisplayOrder": 74
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "75",
-    "ListElement": "SWANSEA SWANSEA FAMILY PROCEEDINGS COURT",
+    "ListElement": "SWANSEA THE GUILDHALL CARMARTHEN",
     "DisplayOrder": 75
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "76",
-    "ListElement": "SWANSEA THE GUILDHALL CARMARTHEN",
+    "ListElement": "SWINDON CHIPPENHAM LAW COURTS",
     "DisplayOrder": 76
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "77",
-    "ListElement": "SWINDON CHIPPENHAM LAW COURTS",
+    "ListElement": "SWINDON SALISBURY LAW COURTS",
     "DisplayOrder": 77
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "78",
-    "ListElement": "SWINDON SALISBURY LAW COURTS",
+    "ListElement": "SWINDON SWINDON MAGISTRATES COURT",
     "DisplayOrder": 78
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "79",
-    "ListElement": "SWINDON SWINDON MAGISTRATES COURT",
+    "ListElement": "WEST LONDON BRENTFORD COUNTY COURT",
     "DisplayOrder": 79
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "80",
-    "ListElement": "WEST LONDON BRENTFORD COUNTY COURT",
+    "ListElement": "WEST LONDON FAMILY COURT UXBRIDGE",
     "DisplayOrder": 80
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "81",
-    "ListElement": "WEST LONDON FAMILY COURT UXBRIDGE",
+    "ListElement": "WEST LONDON THE FAMILY COURT BARNET",
     "DisplayOrder": 81
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "82",
-    "ListElement": "WEST LONDON THE FAMILY COURT BARNET",
+    "ListElement": "WORCESTER HEREFORD JUSTICE CENTRE",
     "DisplayOrder": 82
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "83",
-    "ListElement": "WORCESTER HEREFORD JUSTICE CENTRE",
+    "ListElement": "WORCESTER KIDDERMINSTER FPC",
     "DisplayOrder": 83
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "84",
-    "ListElement": "WORCESTER KIDDERMINSTER FPC",
+    "ListElement": "WORCESTER KIDDERMINSTER MAGISTRATES COURT",
     "DisplayOrder": 84
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "85",
-    "ListElement": "WORCESTER KIDDERMINSTER MAGISTRATES COURT",
+    "ListElement": "WORCESTER MAGISTRATES COURT REDDITCH",
     "DisplayOrder": 85
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "86",
-    "ListElement": "WORCESTER MAGISTRATES COURT REDDITCH",
+    "ListElement": "WORCESTER REDDITCH FPC",
     "DisplayOrder": 86
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "87",
-    "ListElement": "WORCESTER REDDITCH FPC",
-    "DisplayOrder": 87
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingVenue",
-    "ListElementCode": "88",
     "ListElement": "WORCESTER WORCESTER JUSTICE CENTRE",
-    "DisplayOrder": 88
+    "DisplayOrder": 87
   }
 ]

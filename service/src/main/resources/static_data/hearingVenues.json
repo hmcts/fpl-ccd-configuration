@@ -289,66 +289,62 @@
   },
   {
     "hearingVenueId": "73",
-    "title": "SWANSEA SWANSEA CROWN COURT"
+    "title": "SWANSEA CROWN COURT"
   },
   {
     "hearingVenueId": "74",
-    "title": "SWANSEA SWANSEA CROWN COURT"
+    "title": "SWANSEA FAMILY PROCEEDINGS COURT"
   },
   {
     "hearingVenueId": "75",
-    "title": "SWANSEA SWANSEA FAMILY PROCEEDINGS COURT"
-  },
-  {
-    "hearingVenueId": "76",
     "title": "SWANSEA THE GUILDHALL CARMARTHEN"
   },
   {
-    "hearingVenueId": "77",
+    "hearingVenueId": "76",
     "title": "SWINDON CHIPPENHAM LAW COURTS"
   },
   {
-    "hearingVenueId": "78",
+    "hearingVenueId": "77",
     "title": "SWINDON SALISBURY LAW COURTS"
   },
   {
-    "hearingVenueId": "79",
+    "hearingVenueId": "78",
     "title": "SWINDON SWINDON MAGISTRATES COURT"
   },
   {
-    "hearingVenueId": "80",
+    "hearingVenueId": "79",
     "title": "WEST LONDON BRENTFORD COUNTY COURT"
   },
   {
-    "hearingVenueId": "81",
+    "hearingVenueId": "80",
     "title": "WEST LONDON FAMILY COURT UXBRIDGE"
   },
   {
-    "hearingVenueId": "82",
+    "hearingVenueId": "81",
     "title": "WEST LONDON THE FAMILY COURT BARNET"
   },
   {
-    "hearingVenueId": "83",
+    "hearingVenueId": "82",
     "title": "WORCESTER HEREFORD JUSTICE CENTRE"
   },
   {
-    "hearingVenueId": "84",
+    "hearingVenueId": "83",
     "title": "WORCESTER KIDDERMINSTER FPC"
   },
   {
-    "hearingVenueId": "85",
+    "hearingVenueId": "84",
     "title": "WORCESTER KIDDERMINSTER MAGISTRATES COURT"
   },
   {
-    "hearingVenueId": "86",
+    "hearingVenueId": "85",
     "title": "WORCESTER MAGISTRATES COURT REDDITCH"
   },
   {
-    "hearingVenueId": "87",
+    "hearingVenueId": "86",
     "title": "WORCESTER REDDITCH FPC"
   },
   {
-    "hearingVenueId": "88",
+    "hearingVenueId": "87",
     "title": "WORCESTER WORCESTER JUSTICE CENTRE"
   }
 ]
