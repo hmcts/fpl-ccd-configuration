@@ -1,0 +1,102 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "complySDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "directionType",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "complySDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "directionText",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "complySDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "compliance.complied",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "complySDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "compliance.details",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "complySDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "compliance.file",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "complySDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "compliance.documentDetails",
+    "FieldDisplayOrder": 11,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "complySDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "compliance.cannotComply_title",
+    "FieldDisplayOrder": 12,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "complySDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "compliance.cannotComply_reason",
+    "FieldDisplayOrder": 13,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "complySDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "compliance.c2Uploaded",
+    "FieldDisplayOrder": 14,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "complySDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "compliance.supportingFile",
+    "FieldDisplayOrder": 16,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "complySDO",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "compliance.supportingDocumentDetails",
+    "FieldDisplayOrder": 17,
+    "DisplayContext": "OPTIONAL"
+  }
+]
