@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -25,10 +26,9 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class,
-    LocalAuthorityEmailContentProvider.class, DateFormatterService.class, HearingBookingService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, LocalAuthorityEmailContentProvider.class,
+    DateFormatterService.class, HearingBookingService.class})
 class LocalAuthorityEmailContentProviderTest {
-
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_NAME = "Test local authority";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+la@gmail.com";
@@ -38,7 +38,6 @@ class LocalAuthorityEmailContentProviderTest {
 
     @MockBean
     private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
-
 
     @MockBean
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -54,13 +53,13 @@ class LocalAuthorityEmailContentProviderTest {
     @BeforeEach
     void setup() {
         this.localAuthorityEmailContentProvider = new LocalAuthorityEmailContentProvider(
-            localAuthorityNameLookupConfiguration, hmctsCourtLookupConfiguration,"",mapper,dateFormatterService,
+            localAuthorityNameLookupConfiguration, "", mapper, dateFormatterService,
             hearingBookingService);
     }
 
     @Test
     void shouldReturnExpectedMapWithValidSDODetails() throws IOException {
-        Map<String, Object> expectedMap = getStandardDirectionTemplateParameters();
+        Map<String, Object> expectedMap = standardDirectionTemplateParameters();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(new LocalAuthorityEmailLookupConfiguration
@@ -71,11 +70,26 @@ class LocalAuthorityEmailContentProviderTest {
 
         assertThat(localAuthorityEmailContentProvider
             .buildLocalAuthorityStandardDirectionOrderIssuedNotification(populatedCaseDetails(),
-            LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
+                LOCAL_AUTHORITY_CODE)).isEqualTo(expectedMap);
     }
 
-    private Map<String, Object> getStandardDirectionTemplateParameters() {
-        Map<String, Object> expectedMap = ImmutableMap.<String, Object>builder()
+    @Test
+    void shouldReturnExpectedMapWithNullSDODetails() {
+        given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
+            .willReturn(new LocalAuthorityEmailLookupConfiguration
+                .LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+
+        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+            .willReturn("Test local authority");
+
+        assertThat(localAuthorityEmailContentProvider
+            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(
+                CaseDetails.builder().data(ImmutableMap.of()).build(), LOCAL_AUTHORITY_CODE))
+            .isEqualTo(emptyTemplateParameters());
+    }
+
+    private Map<String, Object> standardDirectionTemplateParameters() {
+        return ImmutableMap.<String, Object>builder()
             .put("title", LOCAL_AUTHORITY_NAME)
             .put("familyManCaseNumber", "12345,")
             .put("leadRespondentsName", "Smith,")
@@ -83,7 +97,16 @@ class LocalAuthorityEmailContentProviderTest {
             .put("reference", "12345")
             .put("caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
+    }
 
-        return expectedMap;
+    private Map<String, Object> emptyTemplateParameters() {
+        return ImmutableMap.<String, Object>builder()
+            .put("title", LOCAL_AUTHORITY_NAME)
+            .put("familyManCaseNumber", "")
+            .put("leadRespondentsName", "")
+            .put("hearingDate", "")
+            .put("reference", "null")
+            .put("caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/null")
+            .build();
     }
 }

@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.MapperService;
 
 import java.util.Map;
 
@@ -17,19 +16,16 @@ public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
 
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
-    private final MapperService service;
 
     @Autowired
     public CafcassEmailContentProvider(LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                                        CafcassLookupConfiguration cafcassLookupConfiguration,
                                        @Value("${ccd.ui.base.url}") String uiBaseUrl,
-                                       MapperService service,
                                        DateFormatterService dateFormatterService,
                                        HearingBookingService hearingBookingService) {
         super(uiBaseUrl, dateFormatterService, hearingBookingService);
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.cafcassLookupConfiguration = cafcassLookupConfiguration;
-        this.service = service;
     }
 
     public Map<String, Object> buildCafcassSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {

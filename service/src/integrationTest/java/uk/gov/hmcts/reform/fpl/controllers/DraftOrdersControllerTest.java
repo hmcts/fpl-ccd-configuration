@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,8 +20,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -32,9 +29,7 @@ import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.service.notify.NotificationClient;
 
@@ -62,6 +57,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.DRAFT;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -80,19 +77,7 @@ class DraftOrdersControllerTest {
     private NotificationClient notificationClient;
 
     @Mock
-    HearingBookingService hearingBookingService;
-
-    @Mock
     ApplicationEventPublisher applicationEventPublisher;
-
-    @Mock
-    private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
-
-    @Mock
-    private CafcassLookupConfiguration cafcassLookupConfiguration;
-
-    @Mock
-    DateFormatterService dateFormatterService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -102,9 +87,6 @@ class DraftOrdersControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-    private static final String CAFCASS_NAME = "Test cafcass";
-    private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
-    private static final String LOCAL_AUTHORITY_CODE = "example";
 
     @Test
     void aboutToStartCallbackShouldSplitDirectionsIntoSeparateCollections() throws Exception {
@@ -254,71 +236,32 @@ class DraftOrdersControllerTest {
         }
     }
 
-    @BeforeEach
-    void setup() {
-        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
-            .willReturn("Example Local Authority");
-
-        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
-            .willReturn(new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, COURT_EMAIL_ADDRESS));
-
-        given(hearingBookingService.getMostUrgentHearingBooking(Mockito.any())).willReturn(HearingBooking.builder()
-            .date(LocalDate.of(2020,10,27)).build());
-
-        given(dateFormatterService.formatLocalDateToString(Mockito.any(),Mockito.any()))
-            .willReturn("27 October 2020");
-    }
-
     @Test
     void shouldNotTriggerSDOEventWhenDraft() throws Exception {
-        Order order = Order.builder()
-            .orderStatus(OrderStatus.DRAFT)
-            .build();
-
-        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
-            .data(ImmutableMap.<String, Object>builder()
-                .put("standardDirectionOrder", order)
-                .build()).build())
-            .build();
-
-        makeRequest(request, "submitted");
+        makeRequest(buildCallbackRequest(DRAFT), "submitted");
 
         verify(applicationEventPublisher, times(0)).publishEvent(StandardDirectionsOrderIssuedEvent.class);
     }
 
     @Test
     void shouldTriggerSDOEventWhenSubmitted() throws Exception {
-        Order order = Order.builder()
-            .orderStatus(OrderStatus.SEALED)
-            .build();
-
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of("hearingDetails", ImmutableList.of(
-                            Element.builder()
-                                .value(HearingBooking.builder()
-                                    .date(LocalDate.of(2020,10,20))
-                                    .build())
-                                .build()),
-                    "standardDirectionOrder", order,
-                    "caseLocalAuthority","example")).build()).build();
-
-        final Map<String, Object> expectedCafcassParameters = ImmutableMap.<String, Object>builder()
-            .put("title","cafcass")
-            .put("familyManCaseNumber", "")
-            .put("leadRespondentsName", "")
-            .put("hearingDate","20 October 2020")
-            .put("reference", "12345")
-            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
-
-        makeRequest(request, "submitted");
+        makeRequest(buildCallbackRequest(SEALED), "submitted");
 
         verify(notificationClient, times(1)).sendEmail(
             eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq("cafcass@cafcass.com"),
-            eq(expectedCafcassParameters), eq("12345")
+            eq(cafcassParameters()), eq("12345")
         );
+    }
+
+    private Map<String, Object> cafcassParameters() {
+        return ImmutableMap.<String, Object>builder()
+            .put("title", "cafcass")
+            .put("familyManCaseNumber", "")
+            .put("leadRespondentsName", "")
+            .put("hearingDate", "20 October 2020")
+            .put("reference", "12345")
+            .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
     }
 
     private MvcResult makeRequest(CallbackRequest request, String endpoint) throws Exception {
@@ -362,5 +305,26 @@ class DraftOrdersControllerTest {
 
     private List<Direction> extractDirections(List<Element<Direction>> directions) {
         return directions.stream().map(Element::getValue).collect(toList());
+    }
+
+    private CallbackRequest buildCallbackRequest(OrderStatus status) {
+        Order order = Order.builder()
+            .orderStatus(status)
+            .build();
+
+        return CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of(
+                    "hearingDetails", ImmutableList.of(
+                        Element.builder()
+                            .value(HearingBooking.builder()
+                                .date(LocalDate.of(2020, 10, 20))
+                                .build())
+                            .build()),
+                    "standardDirectionOrder", order,
+                    "caseLocalAuthority", "example"))
+                .build())
+            .build();
     }
 }

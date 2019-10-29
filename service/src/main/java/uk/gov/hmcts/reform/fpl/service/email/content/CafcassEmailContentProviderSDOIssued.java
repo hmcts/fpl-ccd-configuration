@@ -14,7 +14,6 @@ import java.util.Map;
 
 @Service
 public class CafcassEmailContentProviderSDOIssued extends AbstractEmailContentProvider {
-
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final ObjectMapper mapper;
 

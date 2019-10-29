@@ -59,9 +59,17 @@ public abstract class AbstractEmailContentProvider {
                 .getValue()
                 .getParty()
                 .getLastName()) + ",")
-            .put("hearingDate", isNull(hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails())) ? "" : dateFormatterService.formatLocalDateToString(hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()).getDate(),FormatStyle.LONG))
+            .put("hearingDate", getHearingBooking(caseData))
             .put("reference", String.valueOf(caseDetails.getId()))
             .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
+    }
+
+    private String getHearingBooking(CaseData data) {
+        if (!isNull(data.getHearingDetails())) {
+            return dateFormatterService.formatLocalDateToString(
+                hearingBookingService.getMostUrgentHearingBooking(data.getHearingDetails()).getDate(),FormatStyle.LONG);
+        }
+        return "";
     }
 
     private List<String> buildOrdersAndDirections(Map<String, Object> optionalOrders) {
