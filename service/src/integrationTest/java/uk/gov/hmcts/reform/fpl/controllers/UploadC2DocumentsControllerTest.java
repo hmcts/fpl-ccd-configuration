@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -20,8 +21,13 @@ import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -36,7 +42,10 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 class UploadC2DocumentsControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
+    private static final String USER_NAME = "Emma Taylor";
+
     private static final ZonedDateTime ZONE_DATE_TIME = ZonedDateTime.now(ZoneId.of("Europe/London"));
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy", Locale.UK);
 
     @MockBean
     private UserDetailsService userDetailsService;
@@ -50,11 +59,14 @@ class UploadC2DocumentsControllerTest {
     @Autowired
     private DateFormatterService dateFormatterService;
 
+    @BeforeEach
+    void before() {
+        given(userDetailsService.getUserName(AUTH_TOKEN))
+            .willReturn(USER_NAME);
+    }
+
     @Test
     void shouldCreateC2DocumentBundle() throws Exception {
-        given(userDetailsService.getUserName(AUTH_TOKEN))
-            .willReturn("Emma Taylor");
-
         CallbackRequest request = createCallbackRequestWithTempC2Bundle();
 
         MvcResult response = performResponseCallBack(request);
@@ -70,16 +82,17 @@ class UploadC2DocumentsControllerTest {
         C2DocumentBundle uploadedC2DocumentBundle = caseData.getC2DocumentBundle().get(0).getValue();
 
         assertC2BundleDocument(uploadedC2DocumentBundle, "Test description");
-        assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo("Emma Taylor");
-        assertThat(uploadedC2DocumentBundle.getUploadedDateTime()).isEqualTo(dateFormatterService
-            .formatLocalDateTimeBaseUsingFormat(ZONE_DATE_TIME.toLocalDateTime(), "h:mma, d MMMM yyyy"));
+        assertThat(uploadedC2DocumentBundle.getAuthor()).isEqualTo(USER_NAME);
+
+        // updated to use LocalDate to avoid 1-minute issue
+        LocalDateTime uploadedDateTime = LocalDateTime.parse(uploadedC2DocumentBundle.getUploadedDateTime(), FORMATTER);
+
+        assertThat(dateFormatterService.formatLocalDateToString(uploadedDateTime.toLocalDate(), FormatStyle.MEDIUM))
+            .isEqualTo(dateFormatterService.formatLocalDateToString(ZONE_DATE_TIME.toLocalDate(), FormatStyle.MEDIUM));
     }
 
     @Test
     void shouldAppendAnAdditionalC2DocumentBundleWhenAC2DocumentBundleIsPresent() throws Exception {
-        given(userDetailsService.getUserName(AUTH_TOKEN))
-            .willReturn("Emma Taylor");
-
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(callbackRequest().getCaseDetails())
             .build();
@@ -100,12 +113,16 @@ class UploadC2DocumentsControllerTest {
         assertC2BundleDocument(existingC2Document, "C2 document one");
         assertC2BundleDocument(appendedC2Document, "C2 document two");
 
-        assertThat(appendedC2Document.getAuthor()).isEqualTo("Emma Taylor");
-        assertThat(appendedC2Document.getUploadedDateTime()).isEqualTo(dateFormatterService
-            .formatLocalDateTimeBaseUsingFormat(ZONE_DATE_TIME.toLocalDateTime(), "h:mma, d MMMM yyyy"));
+        assertThat(appendedC2Document.getAuthor()).isEqualTo(USER_NAME);
+
+        // updated to use LocalDate to avoid 1-minute issue
+        LocalDateTime uploadedDateTime = LocalDateTime.parse(appendedC2Document.getUploadedDateTime(), FORMATTER);
+
+        assertThat(dateFormatterService.formatLocalDateToString(uploadedDateTime.toLocalDate(), FormatStyle.MEDIUM))
+            .isEqualTo(dateFormatterService.formatLocalDateToString(ZONE_DATE_TIME.toLocalDate(), FormatStyle.MEDIUM));
     }
 
-    private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) throws Exception {
+    private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) throws IOException {
         Document document = document();
 
         assertThat(documentBundle.getDocument().getUrl()).isEqualTo(document.links.self.href);
