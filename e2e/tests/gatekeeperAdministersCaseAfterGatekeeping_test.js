@@ -83,11 +83,11 @@ Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage
 });
 
 // Disabled until SDO goes live
-xScenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
+Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.enterJudgeAndLegalAdvisor('Smith', 'Bob Ross');
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
-  await draftStandardDirectionsEventPage.enterStatus();
+  await draftStandardDirectionsEventPage.markAsDraft();
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
@@ -96,4 +96,28 @@ xScenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draft
   I.seeAnswerInTab(4, 'Directions 1', 'Description', 'Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.');
   I.seeAnswerInTab(5, 'Directions 1', 'For', 'All parties');
   I.seeAnswerInTab(6, 'Directions 1', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+});
+
+Scenario('Gatekeeper submits final version of standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+  await draftStandardDirectionsEventPage.enterJudgeAndLegalAdvisor('Smith', 'Bob Ross');
+  await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
+  await draftStandardDirectionsEventPage.markAsFinal();
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
+
+  caseViewPage.checkActionsAreAvailable([
+    config.administrationActions.addHearingBookingDetails,
+    config.administrationActions.amendChildren,
+    config.administrationActions.amendRespondents,
+    config.administrationActions.amendOther,
+    config.administrationActions.amendInternationalElement,
+    config.administrationActions.amendOtherProceedings,
+    config.administrationActions.amendAttendingHearing,
+    config.applicationActions.uploadDocuments,
+  ]);
+  caseViewPage.checkActionsAreNotAvailable([
+    config.applicationActions.enterAllocationDecision,
+    config.administrationActions.draftStandardDirections,
+  ]);
 });
