@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
@@ -23,10 +22,11 @@ public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
     @Autowired
     public CafcassEmailContentProvider(LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                                        CafcassLookupConfiguration cafcassLookupConfiguration,
-                                       @Value("${ccd.ui.base.url}") String uiBaseUrl, MapperService service,
+                                       @Value("${ccd.ui.base.url}") String uiBaseUrl,
+                                       MapperService service,
                                        DateFormatterService dateFormatterService,
                                        HearingBookingService hearingBookingService) {
-        super(uiBaseUrl,dateFormatterService, hearingBookingService);
+        super(uiBaseUrl, dateFormatterService, hearingBookingService);
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.cafcassLookupConfiguration = cafcassLookupConfiguration;
         this.service = service;
@@ -36,15 +36,6 @@ public class CafcassEmailContentProvider extends AbstractEmailContentProvider {
         return super.getCasePersonalisationBuilder(caseDetails)
             .put("cafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
             .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
-            .build();
-    }
-
-    public Map<String, Object> buildCafcassStandardDirectionOrderIssuedNotification(CaseDetails caseDetails,
-                                                                                    String localAuthorityCode) {
-        CaseData caseData = service.mapObject(caseDetails.getData(), CaseData.class);
-
-        return super.getSDOPersonalisationBuilder(caseDetails, caseData)
-            .put("title", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
             .build();
     }
 }
