@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.assertj.core.util.Lists;
@@ -15,11 +14,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
-import uk.gov.hmcts.reform.fpl.model.C21Order;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
-import uk.gov.hmcts.reform.fpl.interfaces.C21CaseOrderGroup;
+import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C21OrderBundle;
@@ -31,13 +27,6 @@ import uk.gov.hmcts.reform.fpl.service.CreateC21OrderService;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
-import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
-
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -58,7 +47,6 @@ public class C21OrderController {
     private final UploadDocumentService uploadDocumentService;
     private final CreateC21OrderService createC21OrderService;
     private final DateFormatterService dateFormatterService;
-    private final ValidateGroupService validateGroupService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
@@ -67,8 +55,6 @@ public class C21OrderController {
                               UploadDocumentService uploadDocumentService,
                               CreateC21OrderService createC21OrderService,
                               DateFormatterService dateFormatterService,
-                              ValidateGroupService validateGroupService) {
-                              DateFormatterService dateFormatterService,
                               ApplicationEventPublisher applicationEventPublisher) {
         this.mapper = mapper;
         this.docmosisService = docmosisService;
@@ -76,17 +62,13 @@ public class C21OrderController {
         this.createC21OrderService = createC21OrderService;
         this.dateFormatterService = dateFormatterService;
         this.applicationEventPublisher = applicationEventPublisher;
-        this.validateGroupService = validateGroupService;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(validateGroupService.validateGroup(caseData, C21CaseOrderGroup.class))
             .build();
     }
 
@@ -94,7 +76,8 @@ public class C21OrderController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackRequest)  {
+        @RequestBody CallbackRequest callbackRequest) {
+
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
@@ -120,13 +103,6 @@ public class C21OrderController {
         data.put("temporaryC21Order", c21OrderBuilder.build());
         caseData = mapper.convertValue(data, CaseData.class);
 
-    @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestBody CallbackRequest callbackRequest)  {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
-
         data.put("c21OrderBundle", buildC21OrderBundle(caseData));
         data.remove("temporaryC21Order");
         data.remove("judgeAndLegalAdvisor");
@@ -135,17 +111,16 @@ public class C21OrderController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackRequest) {
+    public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
+                                      @RequestHeader(value = "user-id") String userId,
+                                      @RequestBody CallbackRequest callbackRequest) {
 
         applicationEventPublisher.publishEvent(new C21OrderEvent(callbackRequest, authorization, userId));
     }
 
     private List<Element<C21OrderBundle>> buildC21OrderBundle(CaseData caseData) {
-        List<Element<C21OrderBundle>> c21OrderBundle = defaultIfNull(caseData.getC21OrderBundle(),
-            Lists.newArrayList());
+        List<Element<C21OrderBundle>> c21OrderBundle =
+            defaultIfNull(caseData.getC21OrderBundle(), Lists.newArrayList());
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
         C21Order tempC21 = caseData.getTemporaryC21Order();
