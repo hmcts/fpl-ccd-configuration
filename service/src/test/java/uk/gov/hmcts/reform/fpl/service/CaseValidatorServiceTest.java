@@ -255,22 +255,17 @@ class CaseValidatorServiceTest {
                 .build());
     }
 
-    private List<Element<Applicant>> initApplicants(Boolean hasCompletedAddress) {
-        Address address;
+    private List<Element<Applicant>> initApplicants(boolean hasCompletedAddress) {
+        Address.AddressBuilder addressBuilder = Address.builder();
+
+        addressBuilder.addressLine2("Some road");
 
         if (hasCompletedAddress) {
-            address = Address.builder()
-                .addressLine1("1 Some street")
-                .addressLine2("Some road")
+            addressBuilder.addressLine1("1 Some street")
                 .postTown("some town")
                 .postcode("BT66 7RR")
                 .county("Some county")
-                .country("UK")
-                .build();
-        } else {
-            address = Address.builder()
-                .addressLine2("Some road")
-                .build();
+                .country("UK");
         }
 
         return List.of(Element.<Applicant>builder()
@@ -280,7 +275,7 @@ class CaseValidatorServiceTest {
                 .party(ApplicantParty.builder()
                     .organisationName("Harry Kane")
                     .jobTitle("Judge")
-                    .address(address)
+                    .address(addressBuilder.build())
                     .email(EmailAddress.builder()
                         .email("Harrykane@hMCTS.net")
                         .build())
