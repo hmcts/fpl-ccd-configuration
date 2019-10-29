@@ -30,7 +30,7 @@ public class C21OrderEmailContentProvider extends C2UploadedEmailContentProvider
     public Map<String, Object> buildC21OrderNotification(final CaseDetails caseDetails,
                                                          final String localAuthorityCode) {
         // Validation within our frontend ensures that the following data is present
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = super.objectMapper.convertValue(caseDetails.getData(), CaseData.class);
 
         Map<String, Object> c21NotificationParams = new HashMap<>(super.buildC2UploadNotification(caseDetails));
         c21NotificationParams.put("localAuthorityOrCafcass",
