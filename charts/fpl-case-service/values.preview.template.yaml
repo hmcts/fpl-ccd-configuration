@@ -30,6 +30,7 @@ ccd:
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
+  cpuRequests: 250m
   idam-pr:
     releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
     redirect_uris:
