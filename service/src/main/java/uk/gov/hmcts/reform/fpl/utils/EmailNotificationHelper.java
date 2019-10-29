@@ -19,7 +19,7 @@ public class EmailNotificationHelper {
     }
 
     public static String buildSubjectLine(final CaseData caseData) {
-        final String lastName = getRespondents1Lastname(caseData);
+        final String lastName = getRespondentsLastName(caseData);
         final String familyManCaseNumber = defaultIfNull(caseData.getFamilyManCaseNumber(), "");
 
         return Stream.of(lastName, familyManCaseNumber)
@@ -27,7 +27,7 @@ public class EmailNotificationHelper {
             .collect(joining(", "));
     }
 
-    private static String getRespondents1Lastname(final CaseData caseData) {
+    private static String getRespondentsLastName(final CaseData caseData) {
         return isEmpty(caseData.getRespondents1()) ? "" : caseData.getRespondents1()
             .stream()
             .filter(Objects::nonNull)
