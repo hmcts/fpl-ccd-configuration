@@ -1,11 +1,11 @@
-{{- if and .Values.enabled .Values.users }}
+{{- if and .Values.enabled (or .Values.users .Values.roles) }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: idam-user-importer
+  name: idam-identities-importer
   labels:
-    app.kubernetes.io/name: idam-user-importer
-    app.kubernetes.io/instance: {{ .Release.Name }}-idam-user-importer
+    app.kubernetes.io/name: idam-identities-importer
+    app.kubernetes.io/instance: {{ .Release.Name }}-idam-identities-importer
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
   annotations:
@@ -15,12 +15,38 @@ metadata:
 spec:
   template:
     metadata:
-      name: idam-user-importer
+      name: idam-identities-importer
       labels:
-        app.kubernetes.io/name: idam-user-importer
+        app.kubernetes.io/name: idam-identities-importer
     spec:
+      {{- $global := .Values.global -}}
+      {{- if .Values.roles }}
+      initContainers:
+        {{- range $index, $item := .Values.roles }}
+        - name: idam-role-importer-{{ $index }}
+          image: hmctspublic.azurecr.io/hmcts/idam/utils:latest
+          command: [ /scripts/create-role.sh ]
+          args:
+            - '{{ .id }}'
+          env:
+            - name: IDAM_API_URL
+              value: http://idam-api
+            - name: IDAM_ADMIN_USER
+              value: {{ $global.adminUser }}
+            - name: IDAM_ADMIN_PASSWORD
+              value: {{ $global.adminPassword }}
+          resources:
+            requests:
+              cpu: 125m
+              memory: 8Mi
+            limits:
+              cpu: 250m
+              memory: 16Mi
+          imagePullPolicy: IfNotPresent
+        {{- end }}
+      {{- end }}
+      {{- if .Values.users }}
       containers:
-        {{- $global := .Values.global -}}
         {{- range $index, $item := .Values.users }}
         - name: idam-user-importer-{{ $index }}
           image: hmctspublic.azurecr.io/hmcts/idam/utils:latest
@@ -48,5 +74,6 @@ spec:
               memory: 16Mi
           imagePullPolicy: IfNotPresent
         {{- end }}
+      {{- end }}
       restartPolicy: OnFailure
 {{- end }}
