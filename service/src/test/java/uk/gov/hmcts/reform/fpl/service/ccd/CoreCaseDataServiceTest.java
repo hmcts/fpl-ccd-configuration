@@ -2,10 +2,9 @@ package uk.gov.hmcts.reform.fpl.service.ccd;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDataContent;
@@ -20,19 +19,18 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {CoreCaseDataService.class})
+@ExtendWith(MockitoExtension.class)
 class CoreCaseDataServiceTest {
-    @MockBean
+    @Mock
     private SystemUpdateUserConfiguration userConfig;
-    @MockBean
+    @Mock
     private AuthTokenGenerator authTokenGenerator;
-    @MockBean
+    @Mock
     private IdamClient idamClient;
-    @MockBean
+    @Mock
     private CoreCaseDataApi coreCaseDataApi;
 
-    @Autowired
+    @InjectMocks
     private CoreCaseDataService service;
 
     @Test
