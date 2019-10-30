@@ -21,6 +21,16 @@
   },
   {
     "LiveFrom": "01/01/2017",
+    "ID": "C21OrderCheckAnswer",
+    "CaseEventID": "createC21Order",
+    "CaseFieldID": "temporaryC21Order",
+    "ListElementCode": "c21OrderDocument",
+    "EventElementLabel": "Order document",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisorComplexType",
     "CaseEventID": "createC21Order",
     "CaseFieldID": "judgeAndLegalAdvisor",
@@ -118,5 +128,55 @@
     "EventElementLabel": "Legal advisor's full name",
     "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C21OrderCheckAnswer",
+    "CaseEventID": "createC21Order",
+    "CaseFieldID": "c21OrderAnswers",
+    "ListElementCode": "orderTitle",
+    "EventElementLabel": "Order title",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C21OrderCheckAnswer",
+    "CaseEventID": "createC21Order",
+    "CaseFieldID": "c21OrderAnswers",
+    "ListElementCode": "orderDetails",
+    "EventElementLabel": "Order details",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C21OrderCheckAnswer",
+    "CaseEventID": "createC21Order",
+    "CaseFieldID": "c21OrderAnswers",
+    "ListElementCode": "c21OrderDocument",
+    "EventElementLabel": "Order document",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C21OrderCheckAnswer",
+    "CaseEventID": "createC21Order",
+    "CaseFieldID": "c21OrderAnswers",
+    "ListElementCode": "judgeTitleAndName",
+    "EventElementLabel": "Judge title and name",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C21OrderCheckAnswer",
+    "CaseEventID": "createC21Order",
+    "CaseFieldID": "c21OrderAnswers",
+    "ListElementCode": "legalAdvisor",
+    "EventElementLabel": "Legal advisor name",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "READONLY"
   }
 ]

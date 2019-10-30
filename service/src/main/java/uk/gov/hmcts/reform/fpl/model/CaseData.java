@@ -125,5 +125,6 @@ public class CaseData {
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final C21Order temporaryC21Order;
+    private final C21OrderAnswers c21OrderAnswers;
     private final List<Element<C21OrderBundle>> c21OrderBundle;
 }

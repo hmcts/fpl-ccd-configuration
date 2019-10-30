@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.interfaces.C21CaseOrderGroup;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
+import uk.gov.hmcts.reform.fpl.model.C21OrderAnswers;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -25,6 +26,8 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
 import java.util.Map;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
 
 @Api
@@ -62,6 +65,29 @@ public class C21OrderController {
             .build();
     }
 
+    @PostMapping("/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestHeader(value = "user-id") String userId,
+        @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        Map<String, Object> data = caseDetails.getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+        // Append doc to check your answers
+
+        Document c21Document = getDocument(
+            authorization,
+            userId,
+            createC21OrderService.getC21OrderTemplateData(caseData));
+
+        data.put("temporaryC21Order", buildTemporaryC21Order(caseData, c21Document));
+        data.put("c21OrderAnswers", buildC21OrderAnswers(caseData, c21Document));
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data).build();
+    }
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestHeader(value = "authorization") String authorization,
@@ -81,7 +107,7 @@ public class C21OrderController {
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
     }
 
-    private C21Order buildTemporaryC21Order(CaseData caseData, Document documentBundle) {
+    private C21Order buildTemporaryC21Order(CaseData caseData, Document document) {
         return caseData.getTemporaryC21Order().toBuilder()
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(caseData.getJudgeAndLegalAdvisor().getJudgeTitle())
@@ -90,10 +116,24 @@ public class C21OrderController {
                 .legalAdvisorName(caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName())
                 .build())
             .c21OrderDocument(DocumentReference.builder()
-                .url(documentBundle.links.self.href)
-                .binaryUrl(documentBundle.links.binary.href)
-                .filename(documentBundle.originalDocumentName)
+                .url(document.links.self.href)
+                .binaryUrl(document.links.binary.href)
+                .filename(document.originalDocumentName)
                 .build())
+            .build();
+    }
+
+    private C21OrderAnswers buildC21OrderAnswers(CaseData caseData, Document document) {
+        return C21OrderAnswers.builder()
+            .orderTitle(caseData.getTemporaryC21Order().getOrderTitle())
+            .orderDetails(caseData.getTemporaryC21Order().getOrderDetails())
+            .c21OrderDocument(DocumentReference.builder()
+                .url(document.links.self.href)
+                .binaryUrl(document.links.binary.href)
+                .filename(document.originalDocumentName)
+                .build())
+            .judgeTitleAndName(getJudgeTitleAndName(caseData.getJudgeAndLegalAdvisor()))
+            .legalAdvisor(caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName())
             .build();
     }
 
@@ -102,5 +142,19 @@ public class C21OrderController {
                                  Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, C21);
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), C21.getDocumentTitle());
+    }
+
+    private String getJudgeTitleAndName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        String judgeOrMagistrate = defaultIfEmpty(
+            judgeAndLegalAdvisor.getJudgeLastName(),
+            judgeAndLegalAdvisor.getJudgeFullName());
+
+        String judgeTitle = "";
+
+        if (judgeAndLegalAdvisor.getJudgeTitle() != null) {
+            judgeTitle = judgeAndLegalAdvisor.getJudgeTitle().getLabel();
+        }
+
+        return defaultIfBlank(judgeTitle + " " + judgeOrMagistrate, "");
     }
 }
