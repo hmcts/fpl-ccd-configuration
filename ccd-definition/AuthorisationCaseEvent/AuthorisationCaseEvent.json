@@ -11,7 +11,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "draftSDO",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -396,7 +396,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "createNoticeOfProceedings",
     "UserRole": "caseworker-publiclaw-courtadmin",
-    "CRUD": "CRU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
