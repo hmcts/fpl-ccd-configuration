@@ -76,7 +76,6 @@ Scenario('HMCTS admin uploads standard directions with other documents', async (
   I.seeAnswerInTab('2', 'Other documents 2', 'Upload a file', 'mockFile.txt');
 });
 
-// Disabled until the c2 upload feature is to be released
 Scenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage, uploadC2DocumentsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadC2Documents);
   uploadC2DocumentsEventPage.uploadC2Document(config.testFile, 'Rachel Zane C2');
@@ -133,8 +132,7 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 });
 
-// Disabled as permissions to create / view notice of proceeding documents has been temporarily disabled. Enable once updates to c6 and c6a have been made
-xScenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
+Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
   await createNoticeOfProceedingsEventPage.checkC6();
   await createNoticeOfProceedingsEventPage.checkC6A();
