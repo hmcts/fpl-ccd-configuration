@@ -2,6 +2,32 @@
 
 set -eu
 
+state_where_clause=""
+role_where_clause=""
+
+while getopts ":s:r:h" option; do
+  case ${option} in
+    s)
+      state_where_clause="AND s.reference='${OPTARG}'"
+      ;;
+    r)
+      role_where_clause="AND r.reference='${OPTARG}'"
+      ;;
+    h)
+      echo "
+        Usage: ${0} [-s state] [-r role]
+
+        Options:
+          -s: allows to narrow down the list to specific case state (optional)
+          -r: allows to narrow down the list to specific user role (optional)
+      "
+      exit 1
+      ;;
+    *)
+      ;;
+  esac
+done
+
 query="
   SELECT COALESCE(s.reference, '*') as state,
     r.reference as user_role,
@@ -14,6 +40,8 @@ query="
     JOIN role r ON ea.role_id = r.id
   WHERE e.case_type_id = (SELECT MAX(id) FROM case_type)
     AND \"create\" IS TRUE
+    ${state_where_clause}
+    ${role_where_clause}
   ORDER BY s.display_order,
     user_role,
     event_id;
