@@ -41,10 +41,10 @@ spec:
               value: {{ $global.adminPassword }}
           resources:
             requests:
-              cpu: 125m
+              cpu: 25m
               memory: 8Mi
             limits:
-              cpu: 250m
+              cpu: 50m
               memory: 16Mi
           imagePullPolicy: IfNotPresent
         {{- end }}
