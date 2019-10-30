@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,13 +66,11 @@ public class C21OrderController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
-        @RequestBody CallbackRequest callbackRequest) throws JsonProcessingException {
+        @RequestBody CallbackRequest callbackRequest) {
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        Document c21Document = getDocument(
-            authorization,
-            userId,
+        Document c21Document = getDocument(authorization, userId,
             createC21OrderService.getC21OrderTemplateData(caseData));
 
         data.put("temporaryC21Order", buildTemporaryC21Order(caseData, c21Document));
@@ -104,8 +101,6 @@ public class C21OrderController {
                                  @RequestHeader("user-id") String userId,
                                  Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, C21);
-
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-            C21.getDocumentTitle() + ".pdf");
+        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), C21.getDocumentTitle());
     }
 }

@@ -39,13 +39,13 @@ public class CreateC21OrderService {
     public Map<String, Object> getC21OrderTemplateData(CaseData caseData) {
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
+            .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
             .put("orderTitle", getOrderTitle(caseData))
+            .put("orderDetails", caseData.getTemporaryC21Order().getOrderDetails())
             .put("todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
             .put("judgeTitleAndName", formatJudgeTitleAndName(caseData.getJudgeAndLegalAdvisor()))
             .put("legalAdvisorName", getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
-            .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
             .put("children", getChildrenDetails(caseData))
-            .put("orderDetails", caseData.getTemporaryC21Order().getOrderDetails())
             .build();
     }
 
@@ -55,10 +55,15 @@ public class CreateC21OrderService {
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
         C21Order tempC21 = caseData.getTemporaryC21Order();
-        String judgeLabel = "";
+
+        String judgeTitle = "";
+        String judgeName = "";
 
         if (tempC21.getJudgeAndLegalAdvisor() != null && tempC21.getJudgeAndLegalAdvisor().getJudgeTitle() != null) {
-            judgeLabel = tempC21.getJudgeAndLegalAdvisor().getJudgeTitle().getLabel();
+            judgeTitle = tempC21.getJudgeAndLegalAdvisor().getJudgeTitle().getLabel();
+
+            judgeName = defaultIfNull(tempC21.getJudgeAndLegalAdvisor().getJudgeLastName(),
+                tempC21.getJudgeAndLegalAdvisor().getJudgeFullName());
         }
 
         c21OrderBundle.add(Element.<C21OrderBundle>builder()
@@ -68,9 +73,8 @@ public class CreateC21OrderService {
                 .c21OrderDocument(tempC21.getC21OrderDocument())
                 .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
                     .toLocalDateTime(), "h:mma, d MMMM yyyy"))
-                .judgeTitle(judgeLabel)
-                .judgeName(defaultIfNull(tempC21.getJudgeAndLegalAdvisor().getJudgeLastName(),
-                    tempC21.getJudgeAndLegalAdvisor().getJudgeFullName()))
+                .judgeTitle(judgeTitle)
+                .judgeName(judgeName)
                 .build())
             .build());
 
@@ -78,7 +82,7 @@ public class CreateC21OrderService {
     }
 
     private String getOrderTitle(CaseData caseData) {
-        if (caseData.getTemporaryC21Order().getOrderTitle() == null) {
+        if (caseData.getTemporaryC21Order() == null || caseData.getTemporaryC21Order().getOrderTitle() == null) {
             return "Order";
         }
 
