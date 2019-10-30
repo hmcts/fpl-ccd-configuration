@@ -13,9 +13,12 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
+import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
@@ -26,6 +29,10 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -35,6 +42,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.C21_ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.GATEKEEPER_SUBMISSION_TEMPLATE;
@@ -79,6 +87,12 @@ class NotificationHandlerTest {
 
     @Mock
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
+
+    @Mock
+    private C21OrderEmailContentProvider c21OrderEmailContentProvider;
+
+    @Mock
+    private DateFormatterService dateFormatterService;
 
     @Mock
     private IdamApi idamApi;
@@ -131,6 +145,37 @@ class NotificationHandlerTest {
 
             verify(notificationClient, times(1)).sendEmail(
                 eq(C2_UPLOAD_NOTIFICATION_TEMPLATE.getTemplateId()), eq("hmcts-non-admin@test.com"), eq(parameters), eq("12345"));
+        }
+
+        @Test
+        void shouldNotifyPartiesOnC21OrderSubmission() throws IOException, NotificationClientException {
+            final LocalDate hearingDate = LocalDate.now().plusMonths(4);
+
+            given(dateFormatterService.formatLocalDateToString(hearingDate, FormatStyle.MEDIUM))
+                .willReturn(hearingDate.format(
+                    DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).localizedBy(Locale.UK)));
+
+            given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
+                .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS));
+
+            given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+                .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
+
+            given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+                .willReturn("Example Local Authority");
+
+            given(c21OrderEmailContentProvider.buildC21OrderNotification(callbackRequest().getCaseDetails(),
+                LOCAL_AUTHORITY_CODE)).willReturn(parameters);
+
+            notificationHandler.sendNotificationForC21Order(new C21OrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+
+            verify(notificationClient, times(1)).sendEmail(
+                eq(C21_ORDER_NOTIFICATION_TEMPLATE.getTemplateId()), eq(COURT_EMAIL_ADDRESS),
+                eq(parameters), eq("12345"));
+
+            verify(notificationClient, times(1)).sendEmail(
+                eq(C21_ORDER_NOTIFICATION_TEMPLATE.getTemplateId()), eq(CAFCASS_EMAIL_ADDRESS),
+                eq(parameters), eq("12345"));
         }
     }
 
