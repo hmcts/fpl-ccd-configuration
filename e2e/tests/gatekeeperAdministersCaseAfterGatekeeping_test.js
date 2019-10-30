@@ -97,7 +97,7 @@ Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftS
   I.seeAnswerInTab(6, 'Directions 1', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
 });
 
-xScenario('Gatekeeper submits final version of standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
+Scenario('Gatekeeper submits final version of standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
   await draftStandardDirectionsEventPage.enterJudgeAndLegalAdvisor('Smith', 'Bob Ross');
   await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
