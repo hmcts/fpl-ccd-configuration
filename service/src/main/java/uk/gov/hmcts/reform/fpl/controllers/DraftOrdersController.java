@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Order;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -32,6 +34,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Api
 @RestController
@@ -43,6 +46,7 @@ public class DraftOrdersController {
     private final CaseDataExtractionService caseDataExtractionService;
     private final DirectionHelperService directionHelperService;
     private final OrdersLookupService ordersLookupService;
+    private final CoreCaseDataService coreCaseDataService;
 
     @Autowired
     public DraftOrdersController(ObjectMapper mapper,
@@ -50,13 +54,15 @@ public class DraftOrdersController {
                                  UploadDocumentService uploadDocumentService,
                                  CaseDataExtractionService caseDataExtractionService,
                                  DirectionHelperService directionHelperService,
-                                 OrdersLookupService ordersLookupService) {
+                                 OrdersLookupService ordersLookupService,
+                                 CoreCaseDataService coreCaseDataService) {
         this.mapper = mapper;
         this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
         this.caseDataExtractionService = caseDataExtractionService;
         this.directionHelperService = directionHelperService;
         this.ordersLookupService = ordersLookupService;
+        this.coreCaseDataService = coreCaseDataService;
     }
 
     @PostMapping("/about-to-start")
@@ -69,6 +75,9 @@ public class DraftOrdersController {
                 caseData.getStandardDirectionOrder().getDirections());
 
             directions.forEach((key, value) -> caseDetails.getData().put(key, value));
+
+            caseDetails.getData()
+                .put("judgeAndLegalAdvisor", caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor());
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -87,6 +96,7 @@ public class DraftOrdersController {
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
                 .directions(directionHelperService.combineAllDirections(caseData))
+                .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
                 .build())
             .build();
 
@@ -99,14 +109,15 @@ public class DraftOrdersController {
             caseDataExtractionService.getStandardOrderDirectionData(updated)
         );
 
-        Order.OrderBuilder orderBuilder = updated.getStandardDirectionOrder().toBuilder()
+        Order order = updated.getStandardDirectionOrder().toBuilder()
             .orderDoc(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
-                .filename("draft-standard-directions-order.pdf")
-                .build());
+                .filename(document.originalDocumentName)
+                .build())
+            .build();
 
-        caseDetails.getData().put("standardDirectionOrder", orderBuilder.build());
+        caseDetails.getData().put("standardDirectionOrder", order);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -115,6 +126,8 @@ public class DraftOrdersController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
@@ -122,21 +135,54 @@ public class DraftOrdersController {
         CaseData updated = caseData.toBuilder()
             .standardDirectionOrder(Order.builder()
                 .directions(directionHelperService.combineAllDirections(caseData))
-                .orderDoc(caseData.getStandardDirectionOrder().getOrderDoc())
+                .orderStatus(caseData.getStandardDirectionOrder().getOrderStatus())
+                .judgeAndLegalAdvisor(caseData.getJudgeAndLegalAdvisor())
                 .build())
             .build();
 
         directionHelperService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
-        caseDetails.getData().put("standardDirectionOrder", updated.getStandardDirectionOrder());
+        Document document = getDocument(
+            authorization,
+            userId,
+            caseDataExtractionService.getStandardOrderDirectionData(updated)
+        );
+
+        Order order = updated.getStandardDirectionOrder().toBuilder()
+            .orderDoc(DocumentReference.builder()
+                .url(document.links.self.href)
+                .binaryUrl(document.links.binary.href)
+                .filename(updated.getStandardDirectionOrder().getOrderStatus().getDocumentTitle())
+                .build())
+            .build();
+
+        caseDetails.getData().put("standardDirectionOrder", order);
+        caseDetails.getData().remove("judgeAndLegalAdvisor");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
     }
 
+    @PostMapping("/submitted")
+    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+
+        if (caseData.getStandardDirectionOrder().getOrderStatus() != OrderStatus.SEALED) {
+            return;
+        }
+
+        coreCaseDataService.triggerEvent(
+            callbackRequest.getCaseDetails().getJurisdiction(),
+            callbackRequest.getCaseDetails().getCaseTypeId(),
+            callbackRequest.getCaseDetails().getId(),
+            "internal-changeState:Gatekeeping->SDO_READY_TO_SEND"
+        );
+    }
+
     private List<Element<Direction>> getConfigDirectionsWithHiddenValues() throws IOException {
+        // constructDirectionForCCD requires LocalDateTime, but this value is not used in what is returned
         return ordersLookupService.getStandardDirectionOrder().getDirections()
             .stream()
             .map(direction -> directionHelperService.constructDirectionForCCD(direction, LocalDateTime.now()))
@@ -148,7 +194,12 @@ public class DraftOrdersController {
                                  Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
 
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-            "draft-standard-directions-order.pdf");
+        String docTitle = document.getDocumentTitle();
+
+        if (isNotEmpty(templateData.get("draftbackground"))) {
+            docTitle = "draft-" + document.getDocumentTitle();
+        }
+
+        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), docTitle);
     }
 }

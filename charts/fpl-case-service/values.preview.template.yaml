@@ -5,6 +5,7 @@ tags:
 java:
   image: ${IMAGE_NAME}
   ingressHost: ${SERVICE_FQDN}
+  livenessDelay: 50
   environment:
     IDAM_API_URL: http://api-idam-fpl.service.core-compute-preview.internal
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
@@ -31,6 +32,7 @@ ccd:
   ingressHost: ${SERVICE_FQDN}
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
+  cpuRequests: 250m
   idamApiUrl: http://api-idam-fpl.service.core-compute-preview.internal
   idamWebUrl: http://web-idam-fpl.service.core-compute-preview.internal
   idam-pr:
