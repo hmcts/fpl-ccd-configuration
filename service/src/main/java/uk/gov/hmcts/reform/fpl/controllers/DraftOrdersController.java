@@ -197,7 +197,7 @@ public class DraftOrdersController {
         String docTitle = document.getDocumentTitle();
 
         if (isNotEmpty(templateData.get("draftbackground"))) {
-            docTitle = "draft_" + document.getDocumentTitle();
+            docTitle = "draft-" + document.getDocumentTitle();
         }
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), docTitle);
