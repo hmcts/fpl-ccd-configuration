@@ -43,17 +43,19 @@ class CreateC21OrderServiceTest {
         CaseData caseData = CaseData.builder()
             .c21OrderBundle(getC21OrderBundleList())
             .temporaryC21Order(C21Order.builder()
+                .orderDetails("Some order details")
                 .c21OrderDocument(DocumentReference.builder()
                     .filename("C21_2.pdf")
                     .build())
                 .build())
             .build();
 
-        List<Element<C21OrderBundle>> updatedC2OrderBundle = createC21OrderService.appendToC21OrderBundle(caseData);
-        assertThat(updatedC2OrderBundle).size().isEqualTo(2);
+        List<Element<C21OrderBundle>> updatedC21OrderBundle = createC21OrderService.appendToC21OrderBundle(
+            caseData.getTemporaryC21Order(),caseData.getC21OrderBundle());
+        assertThat(updatedC21OrderBundle).size().isEqualTo(2);
 
-        C21OrderBundle previousC21 = updatedC2OrderBundle.get(0).getValue();
-        C21OrderBundle appendedC21 = updatedC2OrderBundle.get(1).getValue();
+        C21OrderBundle previousC21 = updatedC21OrderBundle.get(0).getValue();
+        C21OrderBundle appendedC21 = updatedC21OrderBundle.get(1).getValue();
 
         assertThat(previousC21.getC21OrderDocument().getFilename()).isEqualTo("C21_1.pdf");
         assertThat(appendedC21.getC21OrderDocument().getFilename()).isEqualTo("C21_2.pdf");

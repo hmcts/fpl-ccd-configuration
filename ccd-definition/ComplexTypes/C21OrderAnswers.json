@@ -29,7 +29,8 @@
     "ListElementCode": "judgeTitleAndName",
     "FieldType": "Text",
     "ElementLabel": "Judge Title and Name",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "judgeTitleAndName=\"*\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -37,6 +38,8 @@
     "ListElementCode": "legalAdvisor",
     "FieldType": "Text",
     "ElementLabel": "Legal Advisor",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "legalAdvisor=\"*\""
+
   }
 ]

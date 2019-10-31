@@ -31,7 +31,6 @@ public class CreateC21OrderService {
 
     public CreateC21OrderService(DateFormatterService dateFormatterService,
                                  HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration) {
-        ;
         this.dateFormatterService = dateFormatterService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
     }
@@ -49,12 +48,11 @@ public class CreateC21OrderService {
             .build();
     }
 
-    public List<Element<C21OrderBundle>> appendToC21OrderBundle(CaseData caseData) {
-        List<Element<C21OrderBundle>> c21OrderBundle = defaultIfNull(caseData.getC21OrderBundle(),
-            Lists.newArrayList());
+    public List<Element<C21OrderBundle>> appendToC21OrderBundle(C21Order tempC21,
+                                                                List<Element<C21OrderBundle>> c21OrderBundle) {
+        c21OrderBundle = defaultIfNull(c21OrderBundle, Lists.newArrayList());
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
-        C21Order tempC21 = caseData.getTemporaryC21Order();
 
         String judgeTitle = "";
         String judgeName = "";

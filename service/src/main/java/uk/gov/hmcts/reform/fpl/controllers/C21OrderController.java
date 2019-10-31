@@ -83,6 +83,7 @@ public class C21OrderController {
 
         data.put("temporaryC21Order", buildTemporaryC21Order(caseData, c21Document));
         data.put("c21OrderAnswers", buildC21OrderAnswers(caseData, c21Document));
+        data.remove("temporaryC21Order");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data).build();
@@ -99,16 +100,18 @@ public class C21OrderController {
         Document c21Document = getDocument(authorization, userId,
             createC21OrderService.getC21OrderTemplateData(caseData));
 
-        data.put("temporaryC21Order", buildTemporaryC21Order(caseData, c21Document));
-        data.put("c21OrderBundle", createC21OrderService.appendToC21OrderBundle(caseData));
+        data.put("c21OrderBundle", createC21OrderService.appendToC21OrderBundle(
+            buildTemporaryC21Order(caseData, c21Document), caseData.getC21OrderBundle()));
         data.remove("temporaryC21Order");
         data.remove("judgeAndLegalAdvisor");
+
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
     }
 
     private C21Order buildTemporaryC21Order(CaseData caseData, Document document) {
         return caseData.getTemporaryC21Order().toBuilder()
+            .orderTitle(defaultIfBlank(caseData.getTemporaryC21Order().getOrderTitle(), "Order"))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(caseData.getJudgeAndLegalAdvisor().getJudgeTitle())
                 .judgeLastName(caseData.getJudgeAndLegalAdvisor().getJudgeLastName())
@@ -125,7 +128,7 @@ public class C21OrderController {
 
     private C21OrderAnswers buildC21OrderAnswers(CaseData caseData, Document document) {
         return C21OrderAnswers.builder()
-            .orderTitle(caseData.getTemporaryC21Order().getOrderTitle())
+            .orderTitle(defaultIfBlank(caseData.getTemporaryC21Order().getOrderTitle(), "Order"))
             .orderDetails(caseData.getTemporaryC21Order().getOrderDetails())
             .c21OrderDocument(DocumentReference.builder()
                 .url(document.links.self.href)
@@ -133,7 +136,7 @@ public class C21OrderController {
                 .filename(document.originalDocumentName)
                 .build())
             .judgeTitleAndName(getJudgeTitleAndName(caseData.getJudgeAndLegalAdvisor()))
-            .legalAdvisor(caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName())
+            .legalAdvisor(defaultIfBlank(caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName(), null))
             .build();
     }
 
@@ -147,7 +150,7 @@ public class C21OrderController {
     private String getJudgeTitleAndName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         String judgeOrMagistrate = defaultIfEmpty(
             judgeAndLegalAdvisor.getJudgeLastName(),
-            judgeAndLegalAdvisor.getJudgeFullName());
+            defaultIfEmpty(judgeAndLegalAdvisor.getJudgeFullName(), ""));
 
         String judgeTitle = "";
 

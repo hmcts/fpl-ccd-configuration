@@ -27,7 +27,8 @@
     "ListElementCode": "c21OrderDocument",
     "EventElementLabel": "Order document",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "READONLY"
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "c21OrderDocument=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",
