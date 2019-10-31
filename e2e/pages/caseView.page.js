@@ -20,6 +20,24 @@ module.exports = {
     await I.retryUntilExists(() => I.click(this.goButton), 'ccd-case-event-trigger');
   },
 
+  checkActionsAreAvailable(actions) {
+    I.waitForElement(this.actionsDropdown);
+    within(this.actionsDropdown, () => {
+      for (let action of actions) {
+        I.seeElementInDOM(`//option[text()="${action}"]`);
+      }
+    });
+  },
+
+  checkActionsAreNotAvailable(actions) {
+    I.waitForElement(this.actionsDropdown);
+    within(this.actionsDropdown, () => {
+      for (let action of actions) {
+        I.dontSeeElementInDOM(`//option[text()="${action}"]`);
+      }
+    });
+  },
+
   selectTab(tab) {
     I.click(tab, '.tabs .tabs-list');
   },
