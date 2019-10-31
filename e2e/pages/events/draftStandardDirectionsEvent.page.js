@@ -16,12 +16,15 @@ module.exports = {
           second: `#${party}_${index}_dateToBeCompletedBy-second`,
         },
       },
-      statusRadioGroup: {
-        groupName: '#standardDirectionOrder_orderStatus',
-        sealed: 'Yes, it can be sealed and sent to parties',
-        draft: 'No, I need to make changes',
-      },
     };
+  },
+
+  staticFields: {
+    statusRadioGroup: {
+      groupName: '#standardDirectionOrder_orderStatus',
+      sealed: 'Yes, it can be sealed and sent to parties',
+      draft: 'No, I need to make changes',
+    },
   },
 
   async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName) {
@@ -55,9 +58,15 @@ module.exports = {
     await I.retryUntilExists(() => I.click('Continue'), '#standardDirectionOrder_orderStatus');
   },
 
-  async enterStatus(party = '', index = 0) {
-    within(this.fields(party, index).statusRadioGroup.groupName, () => {
-      I.click(locate('label').withText(this.fields(party, index).statusRadioGroup.draft));
+  markAsDraft() {
+    within(this.staticFields.statusRadioGroup.groupName, () => {
+      I.click(locate('label').withText(this.staticFields.statusRadioGroup.draft));
+    });
+  },
+
+  markAsFinal() {
+    within(this.staticFields.statusRadioGroup.groupName, () => {
+      I.click(locate('label').withText(this.staticFields.statusRadioGroup.sealed));
     });
   },
 };

@@ -1,0 +1,350 @@
+[
+  {
+    "hearingVenueId": "1",
+    "title": "CARDIFF ABERDARE HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "2",
+    "title": "CARDIFF BLACKWOOD HEARING CENTRE NP2 2XB"
+  },
+  {
+    "hearingVenueId": "3",
+    "title": "CARDIFF BRIDGEND HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "4",
+    "title": "CARDIFF NEWPORT HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "5",
+    "title": "CARDIFF PONTYPOOL HEARING CENTRE NP4 6NZ"
+  },
+  {
+    "hearingVenueId": "6",
+    "title": "CARDIFF PONTYPRIDD HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "7",
+    "title": "CARDIFF SWANSEA CIVIL JUSTICE CENTRE"
+  },
+  {
+    "hearingVenueId": "8",
+    "title": "GREAT GRIMSBY DONCASTER HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "9",
+    "title": "GREAT GRIMSBY GRIMSBY MAGISTRATES COURT"
+  },
+  {
+    "hearingVenueId": "10",
+    "title": "GREAT GRIMSBY HULL COMBINED COURT CENTRE"
+  },
+  {
+    "hearingVenueId": "11",
+    "title": "GREAT GRIMSBY SCUNTHORPE COURT"
+  },
+  {
+    "hearingVenueId": "12",
+    "title": "GREAT GRIMSBY SHEFFIELD COMBINED COURT"
+  },
+  {
+    "hearingVenueId": "13",
+    "title": "KINGSTON-UPON-HULL BARNSLEY HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "14",
+    "title": "KINGSTON-UPON-HULL BEVERLEY MAGISTRATES COURT"
+  },
+  {
+    "hearingVenueId": "15",
+    "title": "KINGSTON-UPON-HULL BRADFORD COMBINED COURT CENTRE"
+  },
+  {
+    "hearingVenueId": "16",
+    "title": "KINGSTON-UPON-HULL BRIDLINGTON FPC"
+  },
+  {
+    "hearingVenueId": "17",
+    "title": "KINGSTON-UPON-HULL DONCASTER HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "18",
+    "title": "KINGSTON-UPON-HULL GOOLE FAMILY PROCEEDINGS COURT"
+  },
+  {
+    "hearingVenueId": "19",
+    "title": "KINGSTON-UPON-HULL GRIMSBY COMBINED COURT CENTRE"
+  },
+  {
+    "hearingVenueId": "20",
+    "title": "KINGSTON-UPON-HULL HULL & HOLDERNESS FPC"
+  },
+  {
+    "hearingVenueId": "21",
+    "title": "KINGSTON-UPON-HULL LEEDS COMBINED COURT CENTRE"
+  },
+  {
+    "hearingVenueId": "22",
+    "title": "KINGSTON-UPON-HULL LINCOLN COMBINED COURT CENTRE"
+  },
+  {
+    "hearingVenueId": "23",
+    "title": "KINGSTON-UPON-HULL ROTHERHAM HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "24",
+    "title": "KINGSTON-UPON-HULL SCUNTHORPE HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "25",
+    "title": "KINGSTON-UPON-HULL SHEFFIELD COMBINED COURT"
+  },
+  {
+    "hearingVenueId": "26",
+    "title": "KINGSTON-UPON-HULL YORK HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "27",
+    "title": "LIVERPOOL 35 VERNON STREET LIVERPOOL"
+  },
+  {
+    "hearingVenueId": "28",
+    "title": "LIVERPOOL BIRKENHEAD HEARING CENTRE CH41 5EN"
+  },
+  {
+    "hearingVenueId": "29",
+    "title": "LIVERPOOL THE FAMILY COURT AT BIRKENHEAD"
+  },
+  {
+    "hearingVenueId": "30",
+    "title": "LIVERPOOL THE FAMILY COURT AT CHESTER"
+  },
+  {
+    "hearingVenueId": "31",
+    "title": "LIVERPOOL THE FAMILY COURT AT CREWE"
+  },
+  {
+    "hearingVenueId": "32",
+    "title": "LIVERPOOL THE FAMILY COURT AT LIVERPOOL"
+  },
+  {
+    "hearingVenueId": "33",
+    "title": "LIVERPOOL THE FAMILY COURT AT MACCLESFIELD"
+  },
+  {
+    "hearingVenueId": "34",
+    "title": "LIVERPOOL THE FAMILY COURT AT ST HELENS"
+  },
+  {
+    "hearingVenueId": "35",
+    "title": "LIVERPOOL THE FAMILY COURT AT WARRINGTON"
+  },
+  {
+    "hearingVenueId": "36",
+    "title": "PORTSMOUTH ALDERSHOT HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "37",
+    "title": "PORTSMOUTH ALDERSHOT MAGISTRATES COURT"
+  },
+  {
+    "hearingVenueId": "38",
+    "title": "PORTSMOUTH ALTON MAGISTRATES COURT"
+  },
+  {
+    "hearingVenueId": "39",
+    "title": "PORTSMOUTH BASINGSTOKE MAGISTRATES COURT"
+  },
+  {
+    "hearingVenueId": "40",
+    "title": "PORTSMOUTH FAREHAM MAGISTRATES COURT"
+  },
+  {
+    "hearingVenueId": "41",
+    "title": "PORTSMOUTH ISLE OF WIGHT COMBINED COURT"
+  },
+  {
+    "hearingVenueId": "42",
+    "title": "PORTSMOUTH SOUTHAMPTON COMBINED COURT CENTRE"
+  },
+  {
+    "hearingVenueId": "43",
+    "title": "PORTSMOUTH WEST HAMPSHIRE MAGISTRATES COURT"
+  },
+  {
+    "hearingVenueId": "44",
+    "title": "PORTSMOUTH WINCHESTER COMBINED COURT CENTRE"
+  },
+  {
+    "hearingVenueId": "45",
+    "title": "PORTSMOUTH WINSTON CHURCHILL AVENUE PORTSMOUTH"
+  },
+  {
+    "hearingVenueId": "46",
+    "title": "READING EPSOM HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "47",
+    "title": "READING GUILDFORD HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "48",
+    "title": "READING HIGH WYCOMBE HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "49",
+    "title": "READING KINGSTON UPON THAMES CTY COURT"
+  },
+  {
+    "hearingVenueId": "50",
+    "title": "READING OXFORD HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "51",
+    "title": "READING READING MAGISTRATES COURT"
+  },
+  {
+    "hearingVenueId": "52",
+    "title": "READING REIGATE HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "53",
+    "title": "READING SLOUGH HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "54",
+    "title": "READING STAINES HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "55",
+    "title": "READING THE COURT HOUSE NEWBURY"
+  },
+  {
+    "hearingVenueId": "56",
+    "title": "READING UXBRIDGE HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "57",
+    "title": "STOKE ON TRENT BIRMINGHAM HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "58",
+    "title": "STOKE ON TRENT DERBY COMBINED COURT CENTRE"
+  },
+  {
+    "hearingVenueId": "59",
+    "title": "STOKE ON TRENT FAMILY COURT CENTRE HANLEY"
+  },
+  {
+    "hearingVenueId": "60",
+    "title": "STOKE ON TRENT NORTH STAFFS FAMILY COURT"
+  },
+  {
+    "hearingVenueId": "61",
+    "title": "STOKE ON TRENT STAFFORD COMBINED COURT"
+  },
+  {
+    "hearingVenueId": "62",
+    "title": "STOKE ON TRENT WEST MIDLANDS DIVORCE UNIT"
+  },
+  {
+    "hearingVenueId": "63",
+    "title": "STOKE ON TRENT WOLVERHAMPTON COMBINED COURT"
+  },
+  {
+    "hearingVenueId": "64",
+    "title": "SWANSEA ABERYSTWYTH HEARING CENTRE Y LANFA"
+  },
+  {
+    "hearingVenueId": "65",
+    "title": "SWANSEA CARDIFF CIVIL JUSTICE CENTRE CF1 1ET"
+  },
+  {
+    "hearingVenueId": "66",
+    "title": "SWANSEA CARMARTHEN HEARING CENTRE SA31 3BS"
+  },
+  {
+    "hearingVenueId": "67",
+    "title": "SWANSEA CIVIL AND FAMILY COURT CLARANCE PLACE"
+  },
+  {
+    "hearingVenueId": "68",
+    "title": "SWANSEA HAVERFORDWEST HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "69",
+    "title": "SWANSEA MERTHYR TYDFIL COMBINED COURT"
+  },
+  {
+    "hearingVenueId": "70",
+    "title": "SWANSEA NEATH & PORT TALBOT CTY COURT"
+  },
+  {
+    "hearingVenueId": "71",
+    "title": "SWANSEA PONTYPRIDD HEARING CENTRE"
+  },
+  {
+    "hearingVenueId": "72",
+    "title": "SWANSEA PORT TALBOT JUSTICE CENTRE"
+  },
+  {
+    "hearingVenueId": "73",
+    "title": "SWANSEA CROWN COURT"
+  },
+  {
+    "hearingVenueId": "74",
+    "title": "SWANSEA FAMILY PROCEEDINGS COURT"
+  },
+  {
+    "hearingVenueId": "75",
+    "title": "SWANSEA THE GUILDHALL CARMARTHEN"
+  },
+  {
+    "hearingVenueId": "76",
+    "title": "SWINDON CHIPPENHAM LAW COURTS"
+  },
+  {
+    "hearingVenueId": "77",
+    "title": "SWINDON SALISBURY LAW COURTS"
+  },
+  {
+    "hearingVenueId": "78",
+    "title": "SWINDON SWINDON MAGISTRATES COURT"
+  },
+  {
+    "hearingVenueId": "79",
+    "title": "WEST LONDON BRENTFORD COUNTY COURT"
+  },
+  {
+    "hearingVenueId": "80",
+    "title": "WEST LONDON FAMILY COURT UXBRIDGE"
+  },
+  {
+    "hearingVenueId": "81",
+    "title": "WEST LONDON THE FAMILY COURT BARNET"
+  },
+  {
+    "hearingVenueId": "82",
+    "title": "WORCESTER HEREFORD JUSTICE CENTRE"
+  },
+  {
+    "hearingVenueId": "83",
+    "title": "WORCESTER KIDDERMINSTER FPC"
+  },
+  {
+    "hearingVenueId": "84",
+    "title": "WORCESTER KIDDERMINSTER MAGISTRATES COURT"
+  },
+  {
+    "hearingVenueId": "85",
+    "title": "WORCESTER MAGISTRATES COURT REDDITCH"
+  },
+  {
+    "hearingVenueId": "86",
+    "title": "WORCESTER REDDITCH FPC"
+  },
+  {
+    "hearingVenueId": "87",
+    "title": "WORCESTER WORCESTER JUSTICE CENTRE"
+  }
+]
