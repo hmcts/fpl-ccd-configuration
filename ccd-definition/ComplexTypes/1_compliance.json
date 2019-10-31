@@ -1,0 +1,77 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Compliance",
+    "ListElementCode": "complied",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "YesOrNo",
+    "ElementLabel": "Have you complied with this direction?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Compliance",
+    "ListElementCode": "file",
+    "FieldType": "Document",
+    "ElementLabel": "Upload file",
+    "HintText": "You can upload JPG, BMP, PNG, TIF or PDF files up to 10MB in size.",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "complied=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Compliance",
+    "ListElementCode": "documentDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "complied=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Compliance",
+    "ListElementCode": "cannotComply_title",
+    "FieldType": "Label",
+    "ElementLabel": "Parties need to comply with directions to keep proceedings on track.\n\n If you can’t comply, you need to explain:\n\n• reasons why\n\n• impact on timetable and next hearing\n\n• proposed next actions",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "complied=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Compliance",
+    "ListElementCode": "cannotComply_reason",
+    "FieldType": "TextArea",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "complied=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Compliance",
+    "ListElementCode": "c2Uploaded",
+    "FieldType": "MultiSelectList",
+    "FieldTypeParameter": "C2Uploaded",
+    "ElementLabel": "C2 applications",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "complied=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Compliance",
+    "ListElementCode": "supportingFile",
+    "FieldType": "Document",
+    "ElementLabel": "Upload a supporting file",
+    "HintText": "You can upload JPG, BMP, PNG, TIF or PDF files up to 10MB in size.",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "complied=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Compliance",
+    "ListElementCode": "supportingDocumentDetails",
+    "FieldType": "TextArea",
+    "ElementLabel": "Give details",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "complied=\"No\""
+  }
+]
