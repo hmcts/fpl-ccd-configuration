@@ -4,8 +4,8 @@ const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
 module.exports = {
   fields: {
     proceedingType: {
-      c6: locate('input').withAttr({id: 'noticeOfProceedings-proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_PARTIES'}),
-      c6a: locate('input').withAttr({id: 'noticeOfProceedings-proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES'}),
+      c6: locate('input').withAttr({id: 'noticeOfProceedings_proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_PARTIES'}),
+      c6a: locate('input').withAttr({id: 'noticeOfProceedings_proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES'}),
     },
   },
 
