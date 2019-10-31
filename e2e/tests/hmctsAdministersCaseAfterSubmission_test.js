@@ -132,7 +132,6 @@ Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async 
   I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
 });
 
-// Disabled as permissions to create / view notice of proceeding documents has been temporarily disabled. Enable once updates to c6 and c6a have been made
 Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createNoticeOfProceedings);
   await createNoticeOfProceedingsEventPage.checkC6();
