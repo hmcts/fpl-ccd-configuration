@@ -37,5 +37,3 @@ charts/*/charts/*.tgz
 
 # user mappings file
 application-user-mappings.yaml
-
-**/charts/java
