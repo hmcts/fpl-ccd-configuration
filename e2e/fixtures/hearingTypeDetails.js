@@ -1,7 +1,7 @@
 module.exports = [
   {
     caseManagement: 'Case management',
-    venue: 'Venue',
+    venue: 'CARDIFF ABERDARE HEARING CENTRE',
     date: {
       day: '01',
       month: '01',
@@ -20,7 +20,7 @@ module.exports = [
   },
   {
     caseManagement: 'Case management',
-    venue: 'Venue',
+    venue: 'CARDIFF BLACKWOOD HEARING CENTRE NP2 2XB',
     date: {
       day: '02',
       month: '02',
