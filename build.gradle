@@ -34,7 +34,7 @@ repositories {
 }
 
 dependencies {
-  performanceTestCompile group: 'org.scala-lang', name: 'scala-library', version: '2.12.9'
+  performanceTestCompile group: 'org.scala-lang', name: 'scala-library', version: '2.13.1'
   performanceTestCompile group: 'io.gatling', name: 'gatling-core', version: '3.1.1'
   performanceTestCompile group: 'io.gatling', name: 'gatling-http', version: '3.1.1'
 }
