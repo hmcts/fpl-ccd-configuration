@@ -109,7 +109,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "hearingDate",
     "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "RU"
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
