@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
@@ -48,8 +50,14 @@ class NoticeOfProceedingsServiceTest {
     private HearingBookingService hearingBookingService = new HearingBookingService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
 
+    private ObjectMapper objectMapper = new ObjectMapper();
+    private DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
+
+    private HearingVenueLookUpService hearingVenueLookUpService = new HearingVenueLookUpService(
+        objectMapper, resourceLoader);
+
     private NoticeOfProceedingsService noticeOfProceedingService = new NoticeOfProceedingsService(dateFormatterService,
-        hearingBookingService, hmctsCourtLookupConfiguration);
+        hearingBookingService, hmctsCourtLookupConfiguration, hearingVenueLookUpService);
 
     @Test
     void shouldRetrieveExistingC6AWhenC6ANotIncludedInTemplateList() {

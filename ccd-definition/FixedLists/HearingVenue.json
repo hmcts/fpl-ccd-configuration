@@ -3,609 +3,616 @@
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "1",
-    "ListElement": "CARDIFF ABERDARE HEARING CENTRE",
+    "ListElement": "Cardiff, Aberdare Hearing Centre",
     "DisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "2",
-    "ListElement": "CARDIFF BLACKWOOD HEARING CENTRE NP2 2XB",
+    "ListElement": "Cardiff, Blackwood Hearing Centre, Np2 2Xb",
     "DisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "3",
-    "ListElement": "CARDIFF BRIDGEND HEARING CENTRE",
+    "ListElement": "Cardiff, Bridgend Hearing Centre",
     "DisplayOrder": 3
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "4",
-    "ListElement": "CARDIFF NEWPORT HEARING CENTRE",
+    "ListElement": "Cardiff, Newport Hearing Centre",
     "DisplayOrder": 4
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "5",
-    "ListElement": "CARDIFF PONTYPOOL HEARING CENTRE NP4 6NZ",
+    "ListElement": "Cardiff, Pontypool Hearing Centre, Np4 6Nz",
     "DisplayOrder": 5
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "6",
-    "ListElement": "CARDIFF PONTYPRIDD HEARING CENTRE",
+    "ListElement": "Cardiff, Pontypridd Hearing Centre",
     "DisplayOrder": 6
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "7",
-    "ListElement": "CARDIFF SWANSEA CIVIL JUSTICE CENTRE",
+    "ListElement": "Cardiff, Swansea Civil Justice Centre",
     "DisplayOrder": 7
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "8",
-    "ListElement": "GREAT GRIMSBY DONCASTER HEARING CENTRE",
+    "ListElement": "Great Grimsby, Doncaster Hearing Centre",
     "DisplayOrder": 8
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "9",
-    "ListElement": "GREAT GRIMSBY GRIMSBY MAGISTRATES COURT",
+    "ListElement": "Great Grimsby, Grimsby Magistrates Court",
     "DisplayOrder": 9
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "10",
-    "ListElement": "GREAT GRIMSBY HULL COMBINED COURT CENTRE",
+    "ListElement": "Great Grimsby, Hull Combined Court Centre",
     "DisplayOrder": 10
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "11",
-    "ListElement": "GREAT GRIMSBY SCUNTHORPE COURT",
+    "ListElement": "Great Grimsby, Scunthorpe Court",
     "DisplayOrder": 11
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "12",
-    "ListElement": "GREAT GRIMSBY SHEFFIELD COMBINED COURT",
+    "ListElement": "Great Grimsby, Sheffield Combined Court",
     "DisplayOrder": 12
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "13",
-    "ListElement": "KINGSTON-UPON-HULL BARNSLEY HEARING CENTRE",
+    "ListElement": "Kingston-Upon-Hull, Barnsley Hearing Centre",
     "DisplayOrder": 13
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "14",
-    "ListElement": "KINGSTON-UPON-HULL BEVERLEY MAGISTRATES COURT",
+    "ListElement": "Kingston-Upon-Hull, Beverley Magistrates Court",
     "DisplayOrder": 14
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "15",
-    "ListElement": "KINGSTON-UPON-HULL BRADFORD COMBINED COURT CENTRE",
+    "ListElement": "Kingston-Upon-Hull, Bradford Combined Court Centre",
     "DisplayOrder": 15
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "16",
-    "ListElement": "KINGSTON-UPON-HULL BRIDLINGTON FPC",
+    "ListElement": "Kingston-Upon-Hull, Bridlington Fpc",
     "DisplayOrder": 16
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "17",
-    "ListElement": "KINGSTON-UPON-HULL DONCASTER HEARING CENTRE",
+    "ListElement": "Kingston-Upon-Hull, Doncaster Hearing Centre",
     "DisplayOrder": 17
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "18",
-    "ListElement": "KINGSTON-UPON-HULL GOOLE FAMILY PROCEEDINGS COURT",
+    "ListElement": "Kingston-Upon-Hull, Goole Family Proceedings Court",
     "DisplayOrder": 18
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "19",
-    "ListElement": "KINGSTON-UPON-HULL GRIMSBY COMBINED COURT CENTRE",
+    "ListElement": "Kingston-Upon-Hull, Grimsby Combined Court Centre",
     "DisplayOrder": 19
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "20",
-    "ListElement": "KINGSTON-UPON-HULL HULL & HOLDERNESS FPC",
+    "ListElement": "Kingston-Upon-Hull, Hull & Holderness Fpc",
     "DisplayOrder": 20
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "21",
-    "ListElement": "KINGSTON-UPON-HULL LEEDS COMBINED COURT CENTRE",
+    "ListElement": "Kingston-Upon-Hull, Leeds Combined Court Centre",
     "DisplayOrder": 21
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "22",
-    "ListElement": "KINGSTON-UPON-HULL LINCOLN COMBINED COURT CENTRE",
+    "ListElement": "Kingston-Upon-Hull, Lincoln Combined Court Centre",
     "DisplayOrder": 22
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "23",
-    "ListElement": "KINGSTON-UPON-HULL ROTHERHAM HEARING CENTRE",
+    "ListElement": "Kingston-Upon-Hull, Rotherham Hearing Centre",
     "DisplayOrder": 23
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "24",
-    "ListElement": "KINGSTON-UPON-HULL SCUNTHORPE HEARING CENTRE",
+    "ListElement": "Kingston-Upon-Hull, Scunthorpe Hearing Centre",
     "DisplayOrder": 24
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "25",
-    "ListElement": "KINGSTON-UPON-HULL SHEFFIELD COMBINED COURT",
+    "ListElement": "Kingston-Upon-Hull, Sheffield Combined Court",
     "DisplayOrder": 25
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "26",
-    "ListElement": "KINGSTON-UPON-HULL YORK HEARING CENTRE",
+    "ListElement": "Kingston-Upon-Hull, York Hearing Centre",
     "DisplayOrder": 26
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "27",
-    "ListElement": "LIVERPOOL 35 VERNON STREET LIVERPOOL",
+    "ListElement": "Liverpool, 35 Vernon Street, Liverpool",
     "DisplayOrder": 27
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "28",
-    "ListElement": "LIVERPOOL BIRKENHEAD HEARING CENTRE CH41 5EN",
+    "ListElement": "Liverpool, Birkenhead Hearing Centre, Ch41 5En",
     "DisplayOrder": 28
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "29",
-    "ListElement": "LIVERPOOL THE FAMILY COURT AT BIRKENHEAD",
+    "ListElement": "Liverpool, The Family Court At Birkenhead",
     "DisplayOrder": 29
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "30",
-    "ListElement": "LIVERPOOL THE FAMILY COURT AT CHESTER",
+    "ListElement": "Liverpool, The Family Court At Chester",
     "DisplayOrder": 30
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "31",
-    "ListElement": "LIVERPOOL THE FAMILY COURT AT CREWE",
+    "ListElement": "Liverpool, The Family Court At Crewe",
     "DisplayOrder": 31
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "32",
-    "ListElement": "LIVERPOOL THE FAMILY COURT AT LIVERPOOL",
+    "ListElement": "Liverpool, The Family Court At Liverpool",
     "DisplayOrder": 32
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "33",
-    "ListElement": "LIVERPOOL THE FAMILY COURT AT MACCLESFIELD",
+    "ListElement": "Liverpool, The Family Court At Macclesfield",
     "DisplayOrder": 33
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "34",
-    "ListElement": "LIVERPOOL THE FAMILY COURT AT ST HELENS",
+    "ListElement": "Liverpool, The Family Court At St Helens",
     "DisplayOrder": 34
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "35",
-    "ListElement": "LIVERPOOL THE FAMILY COURT AT WARRINGTON",
+    "ListElement": "Liverpool, The Family Court At Warrington",
     "DisplayOrder": 35
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "36",
-    "ListElement": "PORTSMOUTH ALDERSHOT HEARING CENTRE",
+    "ListElement": "Portsmouth, Aldershot Hearing Centre",
     "DisplayOrder": 36
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "37",
-    "ListElement": "PORTSMOUTH ALDERSHOT MAGISTRATES COURT",
+    "ListElement": "Portsmouth, Aldershot Magistrates Court",
     "DisplayOrder": 37
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "38",
-    "ListElement": "PORTSMOUTH ALTON MAGISTRATES COURT",
+    "ListElement": "Portsmouth, Alton Magistrates Court",
     "DisplayOrder": 38
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "39",
-    "ListElement": "PORTSMOUTH BASINGSTOKE MAGISTRATES COURT",
+    "ListElement": "Portsmouth, Basingstoke Magistrates Court",
     "DisplayOrder": 39
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "40",
-    "ListElement": "PORTSMOUTH FAREHAM MAGISTRATES COURT",
+    "ListElement": "Portsmouth, Fareham Magistrates Court",
     "DisplayOrder": 40
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "41",
-    "ListElement": "PORTSMOUTH ISLE OF WIGHT COMBINED COURT",
+    "ListElement": "Portsmouth, Isle Of Wight Combined Court",
     "DisplayOrder": 41
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "42",
-    "ListElement": "PORTSMOUTH SOUTHAMPTON COMBINED COURT CENTRE",
+    "ListElement": "Portsmouth, Southampton Combined Court Centre",
     "DisplayOrder": 42
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "43",
-    "ListElement": "PORTSMOUTH WEST HAMPSHIRE MAGISTRATES COURT",
+    "ListElement": "Portsmouth, West Hampshire Magistrates Court",
     "DisplayOrder": 43
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "44",
-    "ListElement": "PORTSMOUTH WINCHESTER COMBINED COURT CENTRE",
+    "ListElement": "Portsmouth, Winchester Combined Court Centre",
     "DisplayOrder": 44
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "45",
-    "ListElement": "PORTSMOUTH WINSTON CHURCHILL AVENUE PORTSMOUTH",
+    "ListElement": "Portsmouth, Winston Churchill Avenue, Portsmouth",
     "DisplayOrder": 45
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "46",
-    "ListElement": "READING EPSOM HEARING CENTRE",
+    "ListElement": "Reading, Epsom Hearing Centre",
     "DisplayOrder": 46
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "47",
-    "ListElement": "READING GUILDFORD HEARING CENTRE",
+    "ListElement": "Reading, Guildford Hearing Centre",
     "DisplayOrder": 47
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "48",
-    "ListElement": "READING HIGH WYCOMBE HEARING CENTRE",
+    "ListElement": "Reading, High Wycombe Hearing Centre",
     "DisplayOrder": 48
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "49",
-    "ListElement": "READING KINGSTON UPON THAMES CTY COURT",
+    "ListElement": "Reading, Kingston Upon Thames Cty Court",
     "DisplayOrder": 49
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "50",
-    "ListElement": "READING OXFORD HEARING CENTRE",
+    "ListElement": "Reading, Oxford Hearing Centre",
     "DisplayOrder": 50
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "51",
-    "ListElement": "READING READING MAGISTRATES COURT",
+    "ListElement": "Reading, Reading Magistrates Court",
     "DisplayOrder": 51
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "52",
-    "ListElement": "READING REIGATE HEARING CENTRE",
+    "ListElement": "Reading, Reigate Hearing Centre",
     "DisplayOrder": 52
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "53",
-    "ListElement": "READING SLOUGH HEARING CENTRE",
+    "ListElement": "Reading, Slough Hearing Centre",
     "DisplayOrder": 53
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "54",
-    "ListElement": "READING STAINES HEARING CENTRE",
+    "ListElement": "Reading, Staines Hearing Centre",
     "DisplayOrder": 54
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "55",
-    "ListElement": "READING THE COURT HOUSE NEWBURY",
+    "ListElement": "Reading, The Court House, Newbury",
     "DisplayOrder": 55
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "56",
-    "ListElement": "READING UXBRIDGE HEARING CENTRE",
+    "ListElement": "Reading, Uxbridge Hearing Centre",
     "DisplayOrder": 56
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "57",
-    "ListElement": "STOKE ON TRENT BIRMINGHAM HEARING CENTRE",
+    "ListElement": "Stoke On Trent, Birmingham Hearing Centre",
     "DisplayOrder": 57
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "58",
-    "ListElement": "STOKE ON TRENT DERBY COMBINED COURT CENTRE",
+    "ListElement": "Stoke On Trent, Derby Combined Court Centre",
     "DisplayOrder": 58
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "59",
-    "ListElement": "STOKE ON TRENT FAMILY COURT CENTRE HANLEY",
+    "ListElement": "Stoke On Trent, Family Court Centre, Hanley",
     "DisplayOrder": 59
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "60",
-    "ListElement": "STOKE ON TRENT NORTH STAFFS FAMILY COURT",
+    "ListElement": "Stoke On Trent, North Staffs Family Court",
     "DisplayOrder": 60
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "61",
-    "ListElement": "STOKE ON TRENT STAFFORD COMBINED COURT",
+    "ListElement": "Stoke On Trent, Stafford Combined Court",
     "DisplayOrder": 61
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "62",
-    "ListElement": "STOKE ON TRENT WEST MIDLANDS DIVORCE UNIT",
+    "ListElement": "Stoke On Trent, West Midlands Divorce Unit",
     "DisplayOrder": 62
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "63",
-    "ListElement": "STOKE ON TRENT WOLVERHAMPTON COMBINED COURT",
+    "ListElement": "Stoke On Trent, Wolverhampton Combined Court",
     "DisplayOrder": 63
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "64",
-    "ListElement": "SWANSEA ABERYSTWYTH HEARING CENTRE Y LANFA",
+    "ListElement": "Swansea, Aberystwyth Hearing Centre, Y Lanfa",
     "DisplayOrder": 64
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "65",
-    "ListElement": "SWANSEA CARDIFF CIVIL JUSTICE CENTRE CF1 1ET",
+    "ListElement": "Swansea, Cardiff Civil Justice Centre, Cf1 1Et",
     "DisplayOrder": 65
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "66",
-    "ListElement": "SWANSEA CARMARTHEN HEARING CENTRE SA31 3BS",
+    "ListElement": "Swansea, Carmarthen Hearing Centre, Sa31 3Bs",
     "DisplayOrder": 66
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "67",
-    "ListElement": "SWANSEA CIVIL AND FAMILY COURT CLARANCE PLACE",
+    "ListElement": "Swansea, Civil And Family Court, Clarance Place",
     "DisplayOrder": 67
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "68",
-    "ListElement": "SWANSEA HAVERFORDWEST HEARING CENTRE",
+    "ListElement": "Swansea, Haverfordwest Hearing Centre",
     "DisplayOrder": 68
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "69",
-    "ListElement": "SWANSEA MERTHYR TYDFIL COMBINED COURT",
+    "ListElement": "Swansea, Merthyr Tydfil Combined Court",
     "DisplayOrder": 69
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "70",
-    "ListElement": "SWANSEA NEATH & PORT TALBOT CTY COURT",
+    "ListElement": "Swansea, Neath & Port Talbot Cty Court",
     "DisplayOrder": 70
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "71",
-    "ListElement": "SWANSEA PONTYPRIDD HEARING CENTRE",
+    "ListElement": "Swansea, Pontypridd Hearing Centre",
     "DisplayOrder": 71
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "72",
-    "ListElement": "SWANSEA PORT TALBOT JUSTICE CENTRE",
+    "ListElement": "Swansea, Port Talbot Justice Centre",
     "DisplayOrder": 72
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "73",
-    "ListElement": "SWANSEA CROWN COURT",
+    "ListElement": "Swansea, Swansea Crown Court",
     "DisplayOrder": 73
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "74",
-    "ListElement": "SWANSEA FAMILY PROCEEDINGS COURT",
+    "ListElement": "Swansea, Swansea Crown Court",
     "DisplayOrder": 74
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "75",
-    "ListElement": "SWANSEA THE GUILDHALL CARMARTHEN",
+    "ListElement": "Swansea, Swansea Family Proceedings Court",
     "DisplayOrder": 75
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "76",
-    "ListElement": "SWINDON CHIPPENHAM LAW COURTS",
+    "ListElement": "Swansea, The Guildhall, Carmarthen",
     "DisplayOrder": 76
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "77",
-    "ListElement": "SWINDON SALISBURY LAW COURTS",
+    "ListElement": "Swindon, Chippenham Law Courts",
     "DisplayOrder": 77
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "78",
-    "ListElement": "SWINDON SWINDON MAGISTRATES COURT",
+    "ListElement": "Swindon, Salisbury Law Courts",
     "DisplayOrder": 78
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "79",
-    "ListElement": "WEST LONDON BRENTFORD COUNTY COURT",
+    "ListElement": "Swindon, Swindon Magistrates Court",
     "DisplayOrder": 79
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "80",
-    "ListElement": "WEST LONDON FAMILY COURT UXBRIDGE",
+    "ListElement": "West London, Brentford County Court",
     "DisplayOrder": 80
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "81",
-    "ListElement": "WEST LONDON THE FAMILY COURT BARNET",
+    "ListElement": "West London, Family Court, Uxbridge",
     "DisplayOrder": 81
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "82",
-    "ListElement": "WORCESTER HEREFORD JUSTICE CENTRE",
+    "ListElement": "West London, The Family Court, Barnet",
     "DisplayOrder": 82
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "83",
-    "ListElement": "WORCESTER KIDDERMINSTER FPC",
+    "ListElement": "Worcester, Hereford Justice Centre",
     "DisplayOrder": 83
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "84",
-    "ListElement": "WORCESTER KIDDERMINSTER MAGISTRATES COURT",
+    "ListElement": "Worcester, Kidderminster Fpc",
     "DisplayOrder": 84
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "85",
-    "ListElement": "WORCESTER MAGISTRATES COURT REDDITCH",
+    "ListElement": "Worcester, Kidderminster Magistrates Court",
     "DisplayOrder": 85
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "86",
-    "ListElement": "WORCESTER REDDITCH FPC",
+    "ListElement": "Worcester, Magistrates Court, Redditch",
     "DisplayOrder": 86
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "87",
-    "ListElement": "WORCESTER WORCESTER JUSTICE CENTRE",
+    "ListElement": "Worcester, Redditch Fpc",
     "DisplayOrder": 87
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "HearingVenue",
+    "ListElementCode": "88",
+    "ListElement": "Worcester, Worcester Justice Centre",
+    "DisplayOrder": 88
   }
 ]

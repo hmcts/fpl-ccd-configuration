@@ -33,7 +33,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStandardDirectionOrders;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, JsonOrdersLookupService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, JsonOrdersLookupService.class,
+    HearingVenueLookUpService.class})
 class CaseDataExtractionServiceTest {
     @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
 
@@ -53,13 +54,17 @@ class CaseDataExtractionServiceTest {
     @Autowired
     private OrdersLookupService ordersLookupService;
 
+    @Autowired
+    private HearingVenueLookUpService hearingVenueLookUpService;
+
     private CaseDataExtractionService caseDataExtractionService;
 
     @BeforeEach
     void setup() {
         // required for DI
         this.caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
-            hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService);
+            hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService,
+            hearingVenueLookUpService);
     }
 
     @Test
