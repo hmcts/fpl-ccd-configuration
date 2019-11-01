@@ -691,6 +691,7 @@
     "PreConditionState(s)": "SDO_READY_TO_SEND",
     "PostConditionState": "SDO_READY_TO_SEND",
     "SecurityClassification": "Public",
-    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-cmo/about-to-start"
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-cmo/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/draft-cmo/about-to-submit"
   }
 ]
