@@ -1,7 +1,7 @@
 [
   {
     "hearingVenueId": "Venue",
-    "title": "Venue",
+    "venue": "Venue",
     "address": {
       "AddressLine1": "Crown Building",
       "AddressLine2": "Aberdare Hearing Centre",
