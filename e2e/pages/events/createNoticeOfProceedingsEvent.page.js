@@ -18,7 +18,7 @@ module.exports = {
   },
 
   selectJudgeTitle() {
-    judgeAndLegalAdvisor.selectJudgeTitle();
+    judgeAndLegalAdvisor.selectJudgeTitle('noticeOfProceedings_');
   },
 
   enterJudgeLastName(judgeLastName) {
