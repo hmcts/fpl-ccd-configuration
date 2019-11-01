@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Compliance;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
@@ -11,7 +12,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
@@ -19,6 +22,7 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -94,6 +98,33 @@ public class DirectionHelperService {
                 }));
     }
 
+    // one direction can have many responses from many directions
+    public void addResponsesToDirections(List<Element<Direction>> directionsWithValues,
+                                         List<Element<Direction>> directionToAddValues) {
+        directionToAddValues.forEach(directionToAddValue -> directionsWithValues.stream()
+            .filter(element -> element.getId().equals(directionToAddValue.getId()))
+            .forEach(direction -> {
+
+                // if responses are empty -> add response
+                // if response = compliance from UI -> do not add
+
+                // the last if needs to improved with an assignee so I can match updated responses...
+
+                // naming etc is probably confusing at the minute... compliance = 1 response...
+
+                if (isEmpty(directionToAddValue.getValue().getResponses())
+                    || directionToAddValue.getValue().getResponses().stream()
+                    .anyMatch(x -> !x.getValue().equals(direction.getValue().getCompliance()))) {
+
+                    directionToAddValue.getValue().getResponses()
+                        .add(Element.<Compliance>builder()
+                            .id(UUID.randomUUID())
+                            .value(direction.getValue().getCompliance())
+                            .build());
+                }
+            }));
+    }
+
     /**
      * Splits a list of directions into a map where the key is the role of the direction assignee and the value is the
      * list of directions belonging to the role.
@@ -103,8 +134,33 @@ public class DirectionHelperService {
      */
     public Map<String, List<Element<Direction>>> sortDirectionsByAssignee(List<Element<Direction>> directions) {
         return directions.stream()
-            .filter(x -> x.getValue().getCustom() == null)
             .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee().getValue()));
+    }
+
+    /**
+     * Removes directions where custom is set to Yes.
+     *
+     * @param directions any list of directions.
+     * @return a list of directions that are not custom.
+     */
+    public List<Element<Direction>> removeCustomDirections(List<Element<Direction>> directions) {
+        return directions.stream()
+            .filter(element -> !"Yes".equals(element.getValue().getCustom()))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Filters a list of directions to return only the directions belonging to specific assignee.
+     *
+     * @param directions a list of directions.
+     * @param assignee   the assignee of the directions to be returned.
+     * @return a list of directions belonging to the assignee.
+     */
+    public List<Element<Direction>> getDirectionsForAssignee(List<Element<Direction>> directions,
+                                                             DirectionAssignee assignee) {
+        return directions.stream()
+            .filter(element -> element.getValue().getAssignee().equals(assignee))
+            .collect(Collectors.toList());
     }
 
     /**

@@ -11,13 +11,13 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
+import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
-import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
-import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
-import static java.util.Objects.isNull;
+import java.util.List;
+
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 
 @Api
 @RestController
@@ -27,8 +27,7 @@ public class ComplyWithDirectionsController {
     private final DirectionHelperService directionHelperService;
 
     @Autowired
-    public ComplyWithDirectionsController(ObjectMapper mapper,
-                                          DirectionHelperService directionHelperService) {
+    public ComplyWithDirectionsController(ObjectMapper mapper, DirectionHelperService directionHelperService) {
         this.mapper = mapper;
         this.directionHelperService = directionHelperService;
     }
@@ -38,10 +37,24 @@ public class ComplyWithDirectionsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (!isNull(caseData.getStandardDirectionOrder())) {
-            directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections())
-                .forEach((key, value) -> caseDetails.getData().put(key, value));
-        }
+        // need to fetch existing responses and place in UI placeholders
+
+        List<Element<Direction>> allPartyDirections = directionHelperService
+            .getDirectionsForAssignee(caseData.getStandardDirectionOrder().getDirections(), ALL_PARTIES);
+
+        directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections())
+            .forEach((key, value) -> caseDetails.getData().put(key, allPartyDirections));
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .build();
+    }
+
+    @PostMapping("about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+
+        //get direction responses and add them to collection of responses.
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

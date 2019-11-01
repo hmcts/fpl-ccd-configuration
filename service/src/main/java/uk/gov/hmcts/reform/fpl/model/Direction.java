@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -22,4 +24,6 @@ public class Direction {
     private String directionNeeded;
     private String custom;
     private LocalDateTime dateToBeCompletedBy;
+    private Compliance compliance;
+    private List<Element<Compliance>> responses;
 }

@@ -71,8 +71,11 @@ public class DraftOrdersController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (!isNull(caseData.getStandardDirectionOrder())) {
-            Map<String, List<Element<Direction>>> directions = directionHelperService.sortDirectionsByAssignee(
-                caseData.getStandardDirectionOrder().getDirections());
+            List<Element<Direction>> nonCustomDirections = directionHelperService
+                .removeCustomDirections(caseData.getStandardDirectionOrder().getDirections());
+
+            Map<String, List<Element<Direction>>> directions = directionHelperService
+                .sortDirectionsByAssignee(nonCustomDirections);
 
             directions.forEach((key, value) -> caseDetails.getData().put(key, value));
 
