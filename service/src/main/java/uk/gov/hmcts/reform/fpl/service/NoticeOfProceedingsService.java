@@ -115,7 +115,7 @@ public class NoticeOfProceedingsService {
             "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),
                 FormatStyle.LONG),
             "hearingVenue", prioritisedHearingBooking.getVenue(),
-            "hearingVenueAddress", hearingVenue,
+            "hearingVenueAddress", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
             "preHearingAttendance", prioritisedHearingBooking.getPreHearingAttendance(),
             "hearingTime", prioritisedHearingBooking.getTime()
         );

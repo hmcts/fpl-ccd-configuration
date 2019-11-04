@@ -37,4 +37,10 @@ public class HearingVenueLookUpService {
             .findFirst()
             .orElse(HearingVenue.builder().build());
     }
+
+    String buildHearingVenue(final HearingVenue hearingVenue) {
+        return String.join(", ", hearingVenue.getAddress().getAddressLine1(),
+            hearingVenue.getAddress().getAddressLine2(), hearingVenue.getAddress().getPostTown(),
+            hearingVenue.getAddress().getPostcode());
+    }
 }
