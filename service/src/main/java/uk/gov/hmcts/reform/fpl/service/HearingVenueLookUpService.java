@@ -11,6 +11,8 @@ import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 import java.io.IOException;
 import java.util.List;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 @Slf4j
 @Service
 public class HearingVenueLookUpService {
@@ -39,8 +41,14 @@ public class HearingVenueLookUpService {
     }
 
     String buildHearingVenue(final HearingVenue hearingVenue) {
-        return String.join(", ", hearingVenue.getAddress().getAddressLine1(),
-            hearingVenue.getAddress().getAddressLine2(), hearingVenue.getAddress().getPostTown(),
-            hearingVenue.getAddress().getPostcode());
+        if (hearingVenue == null || hearingVenue.getAddress() == null) {
+            return "";
+        } else {
+            return String.join(", ",
+                defaultIfNull(hearingVenue.getAddress().getAddressLine1(), ""),
+                defaultIfNull(hearingVenue.getAddress().getAddressLine2(), ""),
+                defaultIfNull(hearingVenue.getAddress().getPostTown(), ""),
+                defaultIfNull(hearingVenue.getAddress().getPostcode(), ""));
+        }
     }
 }
