@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
@@ -38,6 +41,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopula
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, HearingVenueLookUpService.class})
 class NoticeOfProceedingsServiceTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -50,12 +54,16 @@ class NoticeOfProceedingsServiceTest {
     private HearingBookingService hearingBookingService = new HearingBookingService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private HearingVenueLookUpService hearingVenueLookUpService;
 
-    private HearingVenueLookUpService hearingVenueLookUpService = new HearingVenueLookUpService(objectMapper);
+    private NoticeOfProceedingsService noticeOfProceedingService;
 
-    private NoticeOfProceedingsService noticeOfProceedingService = new NoticeOfProceedingsService(dateFormatterService,
-        hearingBookingService, hmctsCourtLookupConfiguration, hearingVenueLookUpService);
+    @BeforeEach
+    void setup() {
+        noticeOfProceedingService = new NoticeOfProceedingsService(dateFormatterService,
+            hearingBookingService, hmctsCourtLookupConfiguration, hearingVenueLookUpService);
+    }
 
     @Test
     void shouldRetrieveExistingC6AWhenC6ANotIncludedInTemplateList() {
