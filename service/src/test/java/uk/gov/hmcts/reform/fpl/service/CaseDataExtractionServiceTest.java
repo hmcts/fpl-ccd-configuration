@@ -160,7 +160,8 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("children")).isEqualTo(getExpectedChildren());
         assertThat(templateData.get("hearingDate")).isEqualTo(dateFormatterService
             .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
-        assertThat(templateData.get("hearingVenue")).isEqualTo("Venue");
+        assertThat(templateData.get("hearingVenue"))
+            .isEqualTo("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");
         assertThat(templateData.get("judgeName")).isEqualTo("HHJ Judith Law");
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("08.15am");
         assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");

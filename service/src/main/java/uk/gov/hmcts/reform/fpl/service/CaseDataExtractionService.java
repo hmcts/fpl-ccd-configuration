@@ -171,8 +171,7 @@ public class CaseDataExtractionService {
         return Map.of(
             "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),
                 FormatStyle.LONG),
-            "hearingVenue", hearingVenue.getVenue(),
-            "hearingVenueAddress", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
+            "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
             "preHearingAttendance", prioritisedHearingBooking.getPreHearingAttendance(),
             "hearingTime", prioritisedHearingBooking.getTime(),
             "judgeName", prioritisedHearingBooking.getJudgeTitle() + " "

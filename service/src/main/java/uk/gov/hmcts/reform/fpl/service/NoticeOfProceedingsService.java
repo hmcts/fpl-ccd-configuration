@@ -115,8 +115,7 @@ public class NoticeOfProceedingsService {
         return ImmutableMap.of(
             "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),
                 FormatStyle.LONG),
-            "hearingVenue", prioritisedHearingBooking.getVenue(),
-            "hearingVenueAddress", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
+            "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
             "preHearingAttendance", prioritisedHearingBooking.getPreHearingAttendance(),
             "hearingTime", prioritisedHearingBooking.getTime()
         );
