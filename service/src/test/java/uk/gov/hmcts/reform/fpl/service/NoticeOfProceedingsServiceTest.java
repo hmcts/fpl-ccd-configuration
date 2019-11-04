@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -29,6 +30,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
@@ -94,7 +96,11 @@ class NoticeOfProceedingsServiceTest {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .orders(Orders.builder()
-                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
+                .orderType(ImmutableList.of(CARE_ORDER)).build())
+            .noticeOfProceedings(NoticeOfProceedings.builder()
+                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
+                .proceedingTypes(emptyList())
+                .build())
             .build();
 
         Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
@@ -115,7 +121,11 @@ class NoticeOfProceedingsServiceTest {
                         .build())
                     .build()))
             .orders(Orders.builder()
-                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
+                .orderType(ImmutableList.of(CARE_ORDER)).build())
+            .noticeOfProceedings(NoticeOfProceedings.builder()
+                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
+                .proceedingTypes(emptyList())
+                .build())
             .build();
 
         Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
@@ -126,9 +136,12 @@ class NoticeOfProceedingsServiceTest {
     void shouldFormatMagistrateFullNameWhenJudgeTitleIsSetToMagistrate() throws IOException {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(MAGISTRATES)
-                .judgeFullName("James Nelson")
+            .noticeOfProceedings(NoticeOfProceedings.builder()
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(MAGISTRATES)
+                    .judgeFullName("James Nelson")
+                    .build())
+                .proceedingTypes(emptyList())
                 .build())
             .orders(Orders.builder()
                 .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
@@ -143,7 +156,11 @@ class NoticeOfProceedingsServiceTest {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .orders(Orders.builder()
-                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
+                .orderType(ImmutableList.of(CARE_ORDER)).build())
+            .noticeOfProceedings(NoticeOfProceedings.builder()
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
+                .proceedingTypes(emptyList())
+                .build())
             .build();
         Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("");
@@ -154,7 +171,11 @@ class NoticeOfProceedingsServiceTest {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .orders(Orders.builder()
-                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
+                .orderType(ImmutableList.of(CARE_ORDER)).build())
+            .noticeOfProceedings(NoticeOfProceedings.builder()
+                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
+                .proceedingTypes(emptyList())
+                .build())
             .build();
 
         Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
@@ -165,9 +186,12 @@ class NoticeOfProceedingsServiceTest {
     void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated() throws IOException {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
-            .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
+            .noticeOfProceedings(NoticeOfProceedings.builder()
+                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
+                .proceedingTypes(emptyList())
+                .build())
             .orders(Orders.builder()
-                .orderType(ImmutableList.<OrderType>of(
+                .orderType(ImmutableList.of(
                     CARE_ORDER,
                     EDUCATION_SUPERVISION_ORDER
                 )).build())

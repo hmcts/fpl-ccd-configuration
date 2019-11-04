@@ -76,8 +76,9 @@ public class NoticeOfProceedingsService {
             .put("applicantName", getFirstApplicantName(caseData.getApplicants()))
             .put("orderTypes", getOrderTypes(caseData.getOrders()))
             .put("childrenNames", getAllChildrenNames(caseData.getAllChildren()))
-            .put("judgeTitleAndName", formatJudgeTitleAndName(caseData.getJudgeAndLegalAdvisor()))
-            .put("legalAdvisorName", getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
+            .put("judgeTitleAndName",
+                formatJudgeTitleAndName(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
+            .put("legalAdvisorName", getLegalAdvisorName(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
             .putAll(hearingBookingData)
             .build();
     }
