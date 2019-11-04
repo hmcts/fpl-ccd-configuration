@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
@@ -19,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -51,10 +51,8 @@ class NoticeOfProceedingsServiceTest {
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
 
     private ObjectMapper objectMapper = new ObjectMapper();
-    private DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
 
-    private HearingVenueLookUpService hearingVenueLookUpService = new HearingVenueLookUpService(
-        objectMapper, resourceLoader);
+    private HearingVenueLookUpService hearingVenueLookUpService = new HearingVenueLookUpService(objectMapper);
 
     private NoticeOfProceedingsService noticeOfProceedingService = new NoticeOfProceedingsService(dateFormatterService,
         hearingBookingService, hmctsCourtLookupConfiguration, hearingVenueLookUpService);
@@ -84,7 +82,7 @@ class NoticeOfProceedingsServiceTest {
     }
 
     @Test
-    void shouldApplySentenceFormattingWhenMultipleChildrenExistOnCase() {
+    void shouldApplySentenceFormattingWhenMultipleChildrenExistOnCase() throws IOException {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .orders(Orders.builder()
@@ -96,7 +94,7 @@ class NoticeOfProceedingsServiceTest {
     }
 
     @Test
-    void shouldNotApplySentenceFormattingWhenOnlyOneChildExistsOnCase() {
+    void shouldNotApplySentenceFormattingWhenOnlyOneChildExistsOnCase() throws IOException {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(ImmutableList.of(
                 Element.<Child>builder()
@@ -117,7 +115,7 @@ class NoticeOfProceedingsServiceTest {
     }
 
     @Test
-    void shouldFormatMagistrateFullNameWhenJudgeTitleIsSetToMagistrate() {
+    void shouldFormatMagistrateFullNameWhenJudgeTitleIsSetToMagistrate() throws IOException {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
@@ -133,7 +131,7 @@ class NoticeOfProceedingsServiceTest {
     }
 
     @Test
-    void shouldSetJudgeTitleAndNameToEmptyStringWhenJudgeTitleAndNameIsEmpty() {
+    void shouldSetJudgeTitleAndNameToEmptyStringWhenJudgeTitleAndNameIsEmpty() throws IOException {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .orders(Orders.builder()
@@ -144,7 +142,7 @@ class NoticeOfProceedingsServiceTest {
     }
 
     @Test
-    void shouldReturnFirstApplicantNameWhenMultipleApplicantsArePresent() {
+    void shouldReturnFirstApplicantNameWhenMultipleApplicantsArePresent() throws IOException {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .orders(Orders.builder()
@@ -156,7 +154,7 @@ class NoticeOfProceedingsServiceTest {
     }
 
     @Test
-    void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated() {
+    void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated() throws IOException {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())

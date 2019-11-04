@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -64,7 +65,7 @@ public class NoticeOfProceedingsService {
         return removedDocumentBundles.build();
     }
 
-    public Map<String, Object> getNoticeOfProceedingTemplateData(CaseData caseData) {
+    public Map<String, Object> getNoticeOfProceedingTemplateData(CaseData caseData) throws IOException {
         Map<String, Object> hearingBookingData = getHearingBookingData(caseData.getHearingDetails());
 
         // Validation within our frontend ensures that the following data is present
@@ -105,7 +106,8 @@ public class NoticeOfProceedingsService {
         }
     }
 
-    private Map<String, Object>  getHearingBookingData(List<Element<HearingBooking>> hearingBookings) {
+    private Map<String, Object>  getHearingBookingData(List<Element<HearingBooking>> hearingBookings)
+        throws IOException {
         HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(hearingBookings);
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
 

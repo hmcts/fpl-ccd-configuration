@@ -151,7 +151,7 @@ public class CaseDataExtractionService {
         return map.build();
     }
 
-    private Map<String, Object> getHearingBookingData(CaseData caseData) {
+    private Map<String, Object> getHearingBookingData(CaseData caseData) throws IOException {
         if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
             return Map.of(
                 "hearingDate", EMPTY_PLACEHOLDER,
