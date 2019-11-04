@@ -11,9 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.*;
-import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
-
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -22,29 +19,11 @@ import java.util.Map;
 @RequestMapping("/callback/draft-cmo")
 public class DraftCMOController {
     private final ObjectMapper mapper;
-    private final DocmosisDocumentGeneratorService docmosisService;
-    private final UploadDocumentService uploadDocumentService;
-    private final CaseDataExtractionService caseDataExtractionService;
-    private final DirectionHelperService directionHelperService;
-    private final OrdersLookupService ordersLookupService;
-    private final CoreCaseDataService coreCaseDataService;
     private final DraftCMOService draftCMOService;
 
     @Autowired
-    public DraftCMOController(ObjectMapper mapper,
-                              DocmosisDocumentGeneratorService docmosisService,
-                              UploadDocumentService uploadDocumentService,
-                              CaseDataExtractionService caseDataExtractionService,
-                              DirectionHelperService directionHelperService,
-                              OrdersLookupService ordersLookupService,
-                              CoreCaseDataService coreCaseDataService, DraftCMOService draftCMOService) {
+    public DraftCMOController(ObjectMapper mapper, DraftCMOService draftCMOService) {
         this.mapper = mapper;
-        this.docmosisService = docmosisService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.caseDataExtractionService = caseDataExtractionService;
-        this.directionHelperService = directionHelperService;
-        this.ordersLookupService = ordersLookupService;
-        this.coreCaseDataService = coreCaseDataService;
         this.draftCMOService = draftCMOService;
     }
 
@@ -64,8 +43,6 @@ public class DraftCMOController {
             hearingDatesDynamic = oldList.merge(hearingDatesDynamic);
         }
         caseDataMap.put("cmoHearingDateList", hearingDatesDynamic);
-
-        System.out.println("Hearing dates are" + caseData);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDataMap)

@@ -687,7 +687,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftCMO",
-    "Name": "Draft case management order",
+    "Name": "Draft CMO",
     "PreConditionState(s)": "SDO_READY_TO_SEND",
     "PostConditionState": "SDO_READY_TO_SEND",
     "SecurityClassification": "Public",
