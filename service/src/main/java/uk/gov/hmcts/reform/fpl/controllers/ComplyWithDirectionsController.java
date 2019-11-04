@@ -16,8 +16,11 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 
 @Api
 @RestController
@@ -37,13 +40,12 @@ public class ComplyWithDirectionsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        // need to fetch existing responses and place in UI placeholders
-
         List<Element<Direction>> allPartyDirections = directionHelperService
             .getDirectionsForAssignee(caseData.getStandardDirectionOrder().getDirections(), ALL_PARTIES);
 
         directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections())
-            .forEach((key, value) -> caseDetails.getData().put(key, allPartyDirections));
+            .forEach((key, value) ->
+                caseDetails.getData().put(key, directionHelperService.extractPartyResponse(key, allPartyDirections)));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -53,11 +55,34 @@ public class ComplyWithDirectionsController {
     @PostMapping("about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        //get direction responses and add them to collection of responses.
+        // TODO: only local authority directions
+        List<Element<Direction>> localAuthorityDirections = addHiddenVariablesToResponse(caseData);
+
+        directionHelperService.addResponsesToDirections(
+            localAuthorityDirections, caseData.getStandardDirectionOrder().getDirections());
+
+        caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    // TODO: extract to service... how can this work dynamically for different roles
+    private List<Element<Direction>> addHiddenVariablesToResponse(CaseData caseData) {
+        return caseData.getLocalAuthorityDirections().stream()
+            .filter(element -> isNotEmpty(element.getValue().getResponse().getComplied()))
+            .map(x -> Element.<Direction>builder()
+                .id(x.getId())
+                .value(x.getValue().toBuilder()
+                    .response(x.getValue().getResponse().toBuilder()
+                        .assignee(LOCAL_AUTHORITY)
+                        .directionId(x.getId())
+                        .build())
+                    .build())
+                .build())
+            .collect(Collectors.toList());
     }
 }

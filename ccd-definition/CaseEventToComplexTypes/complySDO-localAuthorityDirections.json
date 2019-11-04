@@ -23,7 +23,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "complySDO",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "compliance.complied",
+    "ListElementCode": "response.complied",
     "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL"
   },
@@ -32,7 +32,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "complySDO",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "compliance.file",
+    "ListElementCode": "response.file",
     "FieldDisplayOrder": 10,
     "DisplayContext": "OPTIONAL"
   },
@@ -41,7 +41,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "complySDO",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "compliance.documentDetails",
+    "ListElementCode": "response.documentDetails",
     "FieldDisplayOrder": 11,
     "DisplayContext": "OPTIONAL"
   },
@@ -50,7 +50,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "complySDO",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "compliance.cannotComply_title",
+    "ListElementCode": "response.cannotComply_title",
     "FieldDisplayOrder": 12,
     "DisplayContext": "OPTIONAL"
   },
@@ -59,7 +59,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "complySDO",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "compliance.cannotComply_reason",
+    "ListElementCode": "response.cannotComply_reason",
     "FieldDisplayOrder": 13,
     "DisplayContext": "OPTIONAL"
   },
@@ -68,7 +68,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "complySDO",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "compliance.c2Uploaded",
+    "ListElementCode": "response.c2Uploaded",
     "FieldDisplayOrder": 14,
     "DisplayContext": "OPTIONAL"
   },
@@ -77,7 +77,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "complySDO",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "compliance.supportingFile",
+    "ListElementCode": "response.supportingFile",
     "FieldDisplayOrder": 16,
     "DisplayContext": "OPTIONAL"
   },
@@ -86,7 +86,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "complySDO",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "compliance.supportingDocumentDetails",
+    "ListElementCode": "response.supportingDocumentDetails",
     "FieldDisplayOrder": 17,
     "DisplayContext": "OPTIONAL"
   }

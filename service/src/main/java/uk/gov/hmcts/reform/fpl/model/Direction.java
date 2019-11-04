@@ -7,8 +7,11 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static java.util.Objects.isNull;
 
 @Data
 @Builder(toBuilder = true)
@@ -24,6 +27,14 @@ public class Direction {
     private String directionNeeded;
     private String custom;
     private LocalDateTime dateToBeCompletedBy;
-    private Compliance compliance;
-    private List<Element<Compliance>> responses;
+    private DirectionResponse response;
+    private List<Element<DirectionResponse>> responses;
+
+    public List<Element<DirectionResponse>> getResponses() {
+        if (isNull(responses)) {
+            return new ArrayList<>();
+        }
+
+        return responses;
+    }
 }

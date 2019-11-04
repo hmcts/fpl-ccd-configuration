@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Compliance;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 
@@ -22,7 +22,6 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -98,31 +97,68 @@ public class DirectionHelperService {
                 }));
     }
 
-    // one direction can have many responses from many directions
+    /**
+     * Takes a response for a specific direction and adds this response to a list of responses.
+     *
+     * @param directionsWithValues  a List of directions with single response.
+     * @param directionsToAddValues a List of directions with combined responses.
+     */
     public void addResponsesToDirections(List<Element<Direction>> directionsWithValues,
-                                         List<Element<Direction>> directionToAddValues) {
-        directionToAddValues.forEach(directionToAddValue -> directionsWithValues.stream()
+                                         List<Element<Direction>> directionsToAddValues) {
+        directionsToAddValues.forEach(directionToAddValue -> directionsWithValues.stream()
             .filter(element -> element.getId().equals(directionToAddValue.getId()))
             .forEach(direction -> {
-
-                // if responses are empty -> add response
-                // if response = compliance from UI -> do not add
-
-                // the last if needs to improved with an assignee so I can match updated responses...
-
-                // naming etc is probably confusing at the minute... compliance = 1 response...
-
-                if (isEmpty(directionToAddValue.getValue().getResponses())
-                    || directionToAddValue.getValue().getResponses().stream()
-                    .anyMatch(x -> !x.getValue().equals(direction.getValue().getCompliance()))) {
-
+                if (responseNeedsUpdating(directionToAddValue, direction)) {
                     directionToAddValue.getValue().getResponses()
-                        .add(Element.<Compliance>builder()
+                        .replaceAll(elementWithResponse -> Element.<DirectionResponse>builder()
+                            .id(elementWithResponse.getId())
+                            .value(direction.getValue().getResponse())
+                            .build());
+                } else {
+                    directionToAddValue.getValue().getResponses()
+                        .add(Element.<DirectionResponse>builder()
                             .id(UUID.randomUUID())
-                            .value(direction.getValue().getCompliance())
+                            .value(direction.getValue().getResponse())
                             .build());
                 }
             }));
+    }
+
+    private boolean responseNeedsUpdating(Element<Direction> direction, Element<Direction> directionWithValue) {
+        return direction.getValue().getResponses().stream()
+            .anyMatch(response -> responseExists(directionWithValue, response));
+    }
+
+    private boolean responseExists(Element<Direction> direction, Element<DirectionResponse> response) {
+        return response.getValue().getDirectionId().equals(direction.getId())
+            && response.getValue().getAssignee().equals(direction.getValue().getResponse().getAssignee());
+    }
+
+    /**
+     * Extracts a specific response to a direction by a party.
+     *
+     * @param assignee   the role that responded to the direction.
+     * @param directions a list of directions.
+     * @return a list of directions with the correct response associated.
+     */
+    public List<Element<Direction>> extractPartyResponse(String assignee, List<Element<Direction>> directions) {
+
+        // party will comply to specific all party directions only once...
+        // if id and assignee match -> add response, else set response = null
+
+        return directions.stream()
+            .map(element -> Element.<Direction>builder()
+                .id(element.getId())
+                .value(element.getValue().toBuilder()
+                    .response(element.getValue().getResponses().stream()
+                        .filter(response -> response.getValue().getDirectionId().equals(element.getId()))
+                        .filter(response -> response.getValue().getAssignee().getValue().equals(assignee))
+                        .map(Element::getValue)
+                        .findFirst()
+                        .orElse(null))
+                    .build())
+                .build())
+            .collect(toList());
     }
 
     /**
@@ -210,7 +246,6 @@ public class DirectionHelperService {
     private String booleanToYesOrNo(boolean value) {
         return value ? "Yes" : "No";
     }
-
 
     private List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
                                                             DirectionAssignee assignee) {

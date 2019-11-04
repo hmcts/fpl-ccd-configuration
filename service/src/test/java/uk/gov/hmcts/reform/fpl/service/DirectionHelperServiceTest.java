@@ -11,8 +11,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Compliance;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
@@ -163,20 +163,16 @@ class DirectionHelperServiceTest {
         }
     }
 
-    @Nested
-    class SortDirectionsByAssignee {
+    @Test
+    void shouldSortDirectionsIntoSeparateEntriesInMapWhenManyAssignees() {
+        List<Element<Direction>> directions = ImmutableList.<Element<Direction>>builder()
+            .addAll(buildDirections(LOCAL_AUTHORITY))
+            .addAll(buildDirections(COURT))
+            .build();
 
-        @Test
-        void shouldSortDirectionsIntoSeparateEntriesInMapWhenManyAssignees() {
-            List<Element<Direction>> directions = ImmutableList.<Element<Direction>>builder()
-                .addAll(buildDirections(LOCAL_AUTHORITY))
-                .addAll(buildDirections(COURT))
-                .build();
+        Map<String, List<Element<Direction>>> sortedDirections = service.sortDirectionsByAssignee(directions);
 
-            Map<String, List<Element<Direction>>> sortedDirections = service.sortDirectionsByAssignee(directions);
-
-            assertThat(sortedDirections).containsOnlyKeys(LOCAL_AUTHORITY.getValue(), COURT.getValue());
-        }
+        assertThat(sortedDirections).containsOnlyKeys(LOCAL_AUTHORITY.getValue(), COURT.getValue());
     }
 
     @Nested
@@ -281,10 +277,10 @@ class DirectionHelperServiceTest {
         private final UUID uuid = UUID.randomUUID();
 
         @Test
-        void shouldAddResponsesToDirectionWhenResponsesForDirectionDoNotAlreadyExist() {
-            List<Element<Compliance>> responses = new ArrayList<>();
+        void shouldAddNewResponsesWhenNonePreviouslyExisted() {
+            List<Element<DirectionResponse>> responses = new ArrayList<>();
 
-            List<Element<Direction>> directionWithNoCompliance = ImmutableList.of(
+            List<Element<Direction>> directionWithNoResponse = ImmutableList.of(
                 Element.<Direction>builder()
                     .id(uuid)
                     .value(Direction.builder()
@@ -292,33 +288,36 @@ class DirectionHelperServiceTest {
                         .build())
                     .build());
 
-            List<Element<Direction>> directionWithCompliance = ImmutableList.of(
+            List<Element<Direction>> directionWithResponse = ImmutableList.of(
                 Element.<Direction>builder()
                     .id(uuid)
                     .value(Direction.builder()
-                        .compliance(Compliance.builder()
+                        .response(DirectionResponse.builder()
                             .complied("Yes")
+                            .directionId(uuid)
                             .build())
                         .build())
                     .build());
 
-            service.addResponsesToDirections(directionWithCompliance, directionWithNoCompliance);
+            service.addResponsesToDirections(directionWithResponse, directionWithNoResponse);
 
-            assertThat(directionWithNoCompliance.get(0).getValue().getResponses()).isNotEmpty();
+            assertThat(getResponses(directionWithNoResponse)).isNotEmpty();
         }
 
         @Test
-        void shouldNotAddResponsesToDirectionWhenResponsesForDirectionAlreadyExist() {
-            Compliance compliance = Compliance.builder()
+        void shouldNotAddResponseToDirectionWhenMatchingResponseAlreadyExist() {
+            DirectionResponse directionResponse = DirectionResponse.builder()
                 .complied("Yes")
+                .assignee(LOCAL_AUTHORITY)
+                .directionId(uuid)
                 .build();
 
-            List<Element<Compliance>> responses = new ArrayList<>();
-            responses.add(Element.<Compliance>builder()
-                .value(compliance)
+            List<Element<DirectionResponse>> responses = new ArrayList<>();
+            responses.add(Element.<DirectionResponse>builder()
+                .value(directionResponse)
                 .build());
 
-            List<Element<Direction>> directionWithNoCompliance = ImmutableList.of(
+            List<Element<Direction>> directionWithNoResponse = ImmutableList.of(
                 Element.<Direction>builder()
                     .id(uuid)
                     .value(Direction.builder()
@@ -328,24 +327,249 @@ class DirectionHelperServiceTest {
                         .build())
                     .build());
 
-            List<Element<Direction>> directionWithCompliance = ImmutableList.of(
+            List<Element<Direction>> directionWithResponse = ImmutableList.of(
                 Element.<Direction>builder()
                     .id(uuid)
                     .value(Direction.builder()
                         .directionType("Direction")
                         .assignee(LOCAL_AUTHORITY)
-                        .compliance(compliance)
+                        .response(directionResponse)
                         .build())
                     .build());
 
-            service.addResponsesToDirections(directionWithCompliance, directionWithNoCompliance);
+            service.addResponsesToDirections(directionWithResponse, directionWithNoResponse);
 
-            assertThat(directionWithNoCompliance.get(0).getValue().getResponses()).hasSize(1);
+            assertThat(getResponses(directionWithNoResponse)).hasSize(1);
         }
 
         @Test
-        void shouldBeAbleToStoreReponsesToTheSameDirectionWhenDifferentPartiesAreComplying() {
+        void shouldBeAbleToUpdateAnExistingResponseWhenAPartyChangesTheirResponse() {
+            List<Element<DirectionResponse>> responses = new ArrayList<>();
+            responses.add(Element.<DirectionResponse>builder()
+                .value(DirectionResponse.builder()
+                    .assignee(LOCAL_AUTHORITY)
+                    .complied("No")
+                    .directionId(uuid)
+                    .build())
+                .build());
 
+            List<Element<Direction>> directionWithOldResponse = ImmutableList.of(
+                Element.<Direction>builder()
+                    .id(uuid)
+                    .value(Direction.builder()
+                        .directionType("Direction")
+                        .assignee(LOCAL_AUTHORITY)
+                        .responses(responses)
+                        .build())
+                    .build());
+
+            List<Element<Direction>> directionWithNewResponse = ImmutableList.of(
+                Element.<Direction>builder()
+                    .id(uuid)
+                    .value(Direction.builder()
+                        .directionType("Direction")
+                        .assignee(LOCAL_AUTHORITY)
+                        .response(DirectionResponse.builder()
+                            .assignee(LOCAL_AUTHORITY)
+                            .complied("Yes")
+                            .directionId(uuid)
+                            .build())
+                        .build())
+                    .build());
+
+            service.addResponsesToDirections(directionWithNewResponse, directionWithOldResponse);
+
+            assertThat(getResponses(directionWithOldResponse)).hasSize(1);
+            assertThat(getResponses(directionWithOldResponse).get(0).getValue().getComplied().equals("Yes"));
+        }
+
+        @Test
+        void shouldAddMultipleResponsesForTheSameDirectionWhenDifferentPartiesComply() {
+            List<Element<DirectionResponse>> responses = new ArrayList<>();
+
+            List<Element<Direction>> directionsWithNoResponse = ImmutableList.of(
+                Element.<Direction>builder()
+                    .id(uuid)
+                    .value(Direction.builder()
+                        .assignee(ALL_PARTIES)
+                        .responses(responses)
+                        .build())
+                    .build());
+
+            List<Element<Direction>> directionsWithResponse = ImmutableList.of(
+                Element.<Direction>builder()
+                    .id(uuid)
+                    .value(Direction.builder()
+                        .assignee(ALL_PARTIES)
+                        .response(DirectionResponse.builder()
+                            .assignee(LOCAL_AUTHORITY)
+                            .complied("Yes")
+                            .directionId(uuid)
+                            .build())
+                        .build())
+                    .build(),
+                Element.<Direction>builder()
+                    .id(uuid)
+                    .value(Direction.builder()
+                        .assignee(ALL_PARTIES)
+                        .response(DirectionResponse.builder()
+                            .assignee(CAFCASS)
+                            .complied("Yes")
+                            .directionId(uuid)
+                            .build())
+                        .build())
+                    .build());
+
+            service.addResponsesToDirections(directionsWithResponse, directionsWithNoResponse);
+
+            assertThat(getResponses(directionsWithNoResponse)).hasSize(2);
+        }
+
+        private List<Element<DirectionResponse>> getResponses(List<Element<Direction>> directionWithNoResponse) {
+            return directionWithNoResponse.get(0).getValue().getResponses();
+        }
+    }
+
+    @Nested
+    class ExtractPartyResponse {
+
+        private final UUID uuid = UUID.randomUUID();
+
+        @Test
+        void shouldExtractListResponsesWhenDirectionIdMatches() {
+            List<Element<Direction>> directions = ImmutableList.of(Element.<Direction>builder()
+                .id(uuid)
+                .value(Direction.builder()
+                    .responses(ImmutableList.of(Element.<DirectionResponse>builder()
+                        .value(DirectionResponse.builder()
+                            .assignee(LOCAL_AUTHORITY)
+                            .directionId(uuid)
+                            .build())
+                        .build()))
+                    .build())
+                .build());
+
+            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY.getValue(), directions);
+
+            assertThat(expected.get(0).getValue().getResponse()).isNotNull();
+        }
+
+        @Test
+        void shouldSetResponseToNullWhenDirectionIdDoesNotMatch() {
+            List<Element<Direction>> directions = ImmutableList.of(Element.<Direction>builder()
+                .id(uuid)
+                .value(Direction.builder()
+                    .responses(ImmutableList.of(Element.<DirectionResponse>builder()
+                        .value(DirectionResponse.builder()
+                            .assignee(LOCAL_AUTHORITY)
+                            .directionId(UUID.randomUUID())
+                            .build())
+                        .build()))
+                    .build())
+                .build());
+
+            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY.getValue(), directions);
+
+            assertThat(expected.get(0).getValue().getResponse()).isNull();
+        }
+
+        @Test
+        void shouldSetResponseToNullWhenRoleDoesNotMatch() {
+            List<Element<Direction>> directions = ImmutableList.of(Element.<Direction>builder()
+                .id(uuid)
+                .value(Direction.builder()
+                    .responses(ImmutableList.of(Element.<DirectionResponse>builder()
+                        .value(DirectionResponse.builder()
+                            .assignee(CAFCASS)
+                            .directionId(uuid)
+                            .build())
+                        .build()))
+                    .build())
+                .build());
+
+            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY.getValue(), directions);
+
+            assertThat(expected.get(0).getValue().getResponse()).isNull();
+        }
+
+        @Test
+        void shouldSetResponseToNullWhenDirectionIdAndRoleDoesNotMatch() {
+            List<Element<Direction>> directions = ImmutableList.of(Element.<Direction>builder()
+                .id(uuid)
+                .value(Direction.builder()
+                    .responses(ImmutableList.of(Element.<DirectionResponse>builder()
+                        .value(DirectionResponse.builder()
+                            .assignee(CAFCASS)
+                            .directionId(UUID.randomUUID())
+                            .build())
+                        .build()))
+                    .build())
+                .build());
+
+            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY.getValue(), directions);
+
+            assertThat(expected.get(0).getValue().getResponse()).isNull();
+        }
+
+        @Test
+        void shouldOnlyExtractPartyResponsesForGivenPartyWhenManyResponses() {
+            List<Element<Direction>> directions = ImmutableList.of(Element.<Direction>builder()
+                .id(uuid)
+                .value(Direction.builder()
+                    .responses(ImmutableList.of(Element.<DirectionResponse>builder()
+                            .value(DirectionResponse.builder()
+                                .assignee(CAFCASS)
+                                .directionId(uuid)
+                                .build())
+                            .build(),
+                        Element.<DirectionResponse>builder()
+                            .value(DirectionResponse.builder()
+                                .assignee(LOCAL_AUTHORITY)
+                                .directionId(uuid)
+                                .build())
+                            .build()
+                    ))
+                    .build())
+                .build());
+
+            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY.getValue(), directions);
+
+            assertThat(expected.get(0).getValue().getResponse().getAssignee()).isEqualTo(LOCAL_AUTHORITY);
+        }
+
+        @Test
+        void shouldPlaceResponsesWhenMultipleDirections() {
+            UUID otherUuid = UUID.randomUUID();
+
+            List<Element<Direction>> directions = ImmutableList.of(
+                Element.<Direction>builder()
+                    .id(uuid)
+                    .value(Direction.builder()
+                        .responses(ImmutableList.of(Element.<DirectionResponse>builder()
+                            .value(DirectionResponse.builder()
+                                .assignee(LOCAL_AUTHORITY)
+                                .directionId(uuid)
+                                .build())
+                            .build()))
+                        .build())
+                    .build(),
+                Element.<Direction>builder()
+                    .id(otherUuid)
+                    .value(Direction.builder()
+                        .responses(ImmutableList.of(Element.<DirectionResponse>builder()
+                            .value(DirectionResponse.builder()
+                                .assignee(LOCAL_AUTHORITY)
+                                .directionId(otherUuid)
+                                .build())
+                            .build()))
+                        .build())
+                    .build());
+
+            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY.getValue(), directions);
+
+            assertThat(expected.get(0).getValue().getResponse()).isNotNull();
+            assertThat(expected.get(1).getValue().getResponse()).isNotNull();
+            assertThat(expected).hasSize(2);
         }
     }
 
