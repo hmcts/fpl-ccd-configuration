@@ -2,10 +2,10 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadC2-SDO_READY_TO_SEND",
-    "CaseFieldID": "temporaryC2Document",
+    "CaseEventID": "amendOthers-PREPARE_FOR_HEARING",
+    "CaseFieldID": "others",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "COMPLEX",
+    "DisplayContext": "OPTIONAL",
     "PageID": 1,
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1
