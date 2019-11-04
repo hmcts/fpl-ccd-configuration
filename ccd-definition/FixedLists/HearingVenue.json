@@ -10,7 +10,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "2",
-    "ListElement": "Cardiff, Blackwood Hearing Centre, Np2 2Xb",
+    "ListElement": "Cardiff, Blackwood Hearing Centre, NP2 2XB",
     "DisplayOrder": 2
   },
   {
@@ -31,7 +31,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "5",
-    "ListElement": "Cardiff, Pontypool Hearing Centre, Np4 6Nz",
+    "ListElement": "Cardiff, Pontypool Hearing Centre, NP4 6NZ",
     "DisplayOrder": 5
   },
   {
@@ -192,7 +192,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "28",
-    "ListElement": "Liverpool, Birkenhead Hearing Centre, Ch41 5En",
+    "ListElement": "Liverpool, Birkenhead Hearing Centre, CH41 5EN",
     "DisplayOrder": 28
   },
   {
@@ -451,14 +451,14 @@
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "65",
-    "ListElement": "Swansea, Cardiff Civil Justice Centre, Cf1 1Et",
+    "ListElement": "Swansea, Cardiff Civil Justice Centre, CF1 1ET",
     "DisplayOrder": 65
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingVenue",
     "ListElementCode": "66",
-    "ListElement": "Swansea, Carmarthen Hearing Centre, Sa31 3Bs",
+    "ListElement": "Swansea, Carmarthen Hearing Centre, SA31 3BS",
     "DisplayOrder": 66
   },
   {

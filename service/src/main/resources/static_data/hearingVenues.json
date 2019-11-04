@@ -11,7 +11,7 @@
   },
   {
     "hearingVenueId": 2,
-    "venue": "Cardiff, Blackwood Hearing Centre, Np2 2Xb",
+    "venue": "Cardiff, Blackwood Hearing Centre, NP2 2XB",
     "address": {
       "AddressLine1": "Family Court Cardiff, Blackwood Road",
       "AddressLine2": "Blackwood Hearing Centre",
@@ -41,7 +41,7 @@
   },
   {
     "hearingVenueId": 5,
-    "venue": "Cardiff, Pontypool Hearing Centre, Np4 6Nz",
+    "venue": "Cardiff, Pontypool Hearing Centre, NP4 6NZ",
     "address": {
       "AddressLine1": "Family Court Cardiff, Park Road",
       "AddressLine2": "Pontypool Hearing Centre",
@@ -271,7 +271,7 @@
   },
   {
     "hearingVenueId": 28,
-    "venue": "Liverpool, Birkenhead Hearing Centre, Ch41 5En",
+    "venue": "Liverpool, Birkenhead Hearing Centre, CH41 5EN",
     "address": {
       "AddressLine1": "Family Court Liverpool, 76 Hamilton Street",
       "AddressLine2": "Birkenhead Hearing Centre",
@@ -641,7 +641,7 @@
   },
   {
     "hearingVenueId": 65,
-    "venue": "Swansea, Cardiff Civil Justice Centre, Cf1 1Et",
+    "venue": "Swansea, Cardiff Civil Justice Centre, CF1 1ET",
     "address": {
       "AddressLine1": "Family Court Swansea, 2 Park Street",
       "AddressLine2": "Cardiff Civil Justice Centre",
@@ -651,7 +651,7 @@
   },
   {
     "hearingVenueId": 66,
-    "venue": "Swansea, Carmarthen Hearing Centre, Sa31 3Bs",
+    "venue": "Swansea, Carmarthen Hearing Centre, SA31 3BS",
     "address": {
       "AddressLine1": "Family Court Swansea, Hill House",
       "AddressLine2": "Carmarthen Hearing Centre",
