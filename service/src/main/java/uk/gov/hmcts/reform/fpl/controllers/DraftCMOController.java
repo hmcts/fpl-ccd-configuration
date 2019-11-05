@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -52,14 +51,15 @@ public class DraftCMOController {
             Order cmo = mapper.convertValue(cmoObject, Order.class);
             String hearingDate = cmo.getHearingDate();
             if (!isEmpty(hearingDate)) {
-                DynamicList oldList = DynamicList.builder().value(
-                    DynamicListElement.builder()
-                        .label(hearingDate)
-                        .code(hearingDate)
-                        .build())
-                    .listItems(new ArrayList<>())
+                DynamicListElement element = DynamicListElement.builder()
+                    .label(hearingDate)
+                    .code(hearingDate)
                     .build();
-                hearingDatesDynamic = oldList.merge(hearingDatesDynamic);
+
+                hearingDatesDynamic.setValue(element);
+                if (!hearingDatesDynamic.getListItems().contains(element)) {
+                    hearingDatesDynamic.getListItems().add(element);
+                }
             }
         }
 
