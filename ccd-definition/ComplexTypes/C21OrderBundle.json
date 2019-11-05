@@ -2,6 +2,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C21OrderBundle",
+    "ListElementCode": "c21OrderDocument",
+    "FieldType": "Document",
+    "ElementLabel": "File name",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C21OrderBundle",
     "ListElementCode": "orderTitle",
     "FieldType": "Text",
     "ElementLabel": "Order title",
@@ -13,14 +21,6 @@
     "ListElementCode": "orderDate",
     "FieldType": "Text",
     "ElementLabel": "Date and time of upload",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C21OrderBundle",
-    "ListElementCode": "c21OrderDocument",
-    "FieldType": "Document",
-    "ElementLabel": "File name",
     "SecurityClassification": "Public"
   },
   {

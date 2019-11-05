@@ -157,9 +157,9 @@ class C21OrderControllerTest {
 
         C21OrderBundle c21BundleEntry = c21OrderBundle.get(0).getValue();
 
+        assertThat(c21BundleEntry.getC21OrderDocument()).isEqualTo(c21Order.getC21OrderDocument());
         assertThat(c21BundleEntry.getOrderTitle()).isEqualTo(c21Order.getOrderTitle());
         assertThat(c21BundleEntry.getOrderDate()).isEqualTo("1st November 2019");
-        assertThat(c21BundleEntry.getC21OrderDocument()).isEqualTo(c21Order.getC21OrderDocument());
         assertThat(c21BundleEntry.getJudgeTitleAndName()).isEqualTo(formatJudgeTitleAndName(
             caseData.getJudgeAndLegalAdvisor()));
     }
@@ -203,9 +203,9 @@ class C21OrderControllerTest {
         c21OrderBundle.add(Element.<C21OrderBundle>builder()
             .id(UUID.randomUUID())
             .value(C21OrderBundle.builder()
+                .c21OrderDocument(c21Order.getC21OrderDocument())
                 .orderTitle(c21Order.getOrderTitle())
                 .orderDate("1st November 2019")
-                .c21OrderDocument(c21Order.getC21OrderDocument())
                 .judgeTitleAndName(formatJudgeTitleAndName(judgeAndLegalAdvisor))
                 .build())
             .build());

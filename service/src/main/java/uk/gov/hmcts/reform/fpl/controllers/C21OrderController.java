@@ -103,12 +103,12 @@ public class C21OrderController {
 
     private C21Order addDocumentToC21Order(CaseData caseData, Document document) {
         return caseData.getTemporaryC21Order().toBuilder()
-            .orderTitle(defaultIfBlank(caseData.getTemporaryC21Order().getOrderTitle(), "Order"))
             .c21OrderDocument(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
                 .filename(document.originalDocumentName)
                 .build())
+            .orderTitle(defaultIfBlank(caseData.getTemporaryC21Order().getOrderTitle(), "Order"))
             .build();
     }
 

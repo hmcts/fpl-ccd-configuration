@@ -31,11 +31,10 @@ Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage
 });
 
 Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage, enterOtherProceedingsEventPage) => {
-  async function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {
-  }) {
+  async function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {}) {
     await caseViewPage.goToNewActions(event);
     I_doActionsOnEditPage();
-    await I.completeEvent('Save and continue', {summary: summary, description: description});
+    await I.completeEvent('Save and continue', { summary: summary, description: description });
     I.seeEventSubmissionConfirmation(event);
     I.see(summary);
     I.see(description);
@@ -126,7 +125,7 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(9, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
 });
 
-Scenario('HMCTS admin uploads C21 order to the case', async (I, caseViewPage, uploadC21OrderEventPage) => {
+Scenario('HMCTS admin creates C21 order for the case', async (I, caseViewPage, uploadC21OrderEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.uploadC21Order);
   await uploadC21OrderEventPage.enterOrder();
   await I.click('Continue');
@@ -137,8 +136,8 @@ Scenario('HMCTS admin uploads C21 order to the case', async (I, caseViewPage, up
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.uploadC21Order);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeAnswerInTab(1, 'C21 Order 1', 'Order title', 'Example Title');
-  I.seeAnswerInTab(3, 'C21 Order 1', 'File name', 'C21_Order_1.pdf');
+  I.seeAnswerInTab(1, 'C21 Order 1', 'File name', 'C21_Order_1.pdf');
+  I.seeAnswerInTab(2, 'C21 Order 1', 'Order title', 'Example Title');
   I.seeAnswerInTab(4, 'C21 Order 1', 'Judge or Magistrate', 'Her Honour Judge Sotomayer');
 });
 

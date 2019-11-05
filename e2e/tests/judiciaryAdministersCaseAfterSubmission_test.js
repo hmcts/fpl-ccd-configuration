@@ -5,7 +5,7 @@ let caseId;
 
 Feature('Judiciary case administration after submission');
 
-Before(async (I, caseViewPage, submitApplicationEventPage) => {
+Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
@@ -18,6 +18,14 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
     console.log(`Case ${caseId} has been submitted`);
 
     I.signOut();
+    await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
+    await I.navigateToCaseDetails(caseId);
+    await caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+    enterFamilyManCaseNumberEventPage.enterCaseID();
+    await I.completeEvent('Save and continue');
+    I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
+    I.signOut();
+
     await I.signIn(config.judiciaryEmail, config.judiciaryPassword);
   }
   await I.navigateToCaseDetails(caseId);
@@ -54,4 +62,20 @@ Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage,
   I.seeAnswerInTab(7, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
   I.seeAnswerInTab(8, 'Hearing 2', 'Judge or magistrate\'s title', hearingDetails[1].judgeTitle);
   I.seeAnswerInTab(9, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
+});
+
+Scenario('Judiciary creates C21 order for the case', async (I, caseViewPage, uploadC21OrderEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.uploadC21Order);
+  await uploadC21OrderEventPage.enterOrder();
+  await I.click('Continue');
+  await uploadC21OrderEventPage.selectJudgeTitle();
+  await uploadC21OrderEventPage.enterJudgeLastName('Sotomayer');
+  await uploadC21OrderEventPage.enterLegalAdvisorName('Peter Parker');
+  await I.click('Continue');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC21Order);
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  I.seeAnswerInTab(1, 'C21 Order 1', 'File name', 'C21_Order_1.pdf');
+  I.seeAnswerInTab(2, 'C21 Order 1', 'Order title', 'Example Title');
+  I.seeAnswerInTab(4, 'C21 Order 1', 'Judge or Magistrate', 'Her Honour Judge Sotomayer');
 });
