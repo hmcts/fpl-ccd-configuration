@@ -38,7 +38,7 @@ public class HearingVenueLookUpService {
                 .readValue(jsonContent);
 
         } catch (JsonProcessingException e) {
-            log.error("Unable to parse hearingVenues.json file");
+            log.error("Unable to parse hearingVenues.json file", e);
         }
 
         return Collections.emptyList();
