@@ -69,6 +69,7 @@ module.exports = {
     addStatementOfService: 'Add statement of service (c9)',
     uploadC2Documents: 'Upload a C2',
     draftStandardDirections: 'Draft standard directions',
+    uploadC21Order: 'Create an order',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',

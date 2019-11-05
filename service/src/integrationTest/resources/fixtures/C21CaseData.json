@@ -1,0 +1,47 @@
+{
+  "case_details": {
+    "id": "2313",
+    "jurisdiction": "PUBLICLAW",
+    "case_data": {
+      "caseLocalAuthority": "SA",
+      "familyManCaseNumber": "SW123123",
+      "applicants": [
+        {
+          "id": "34c97e1a-eed9-499b-9693-e92496a1f54d",
+          "value": {
+            "party": {
+              "organisationName": "James Nelson"
+            }
+          }
+        }
+      ],
+      "judgeAndLegalAdvisor": {
+        "judgeTitle": "HER_HONOUR_JUDGE",
+        "judgeLastName": "Judy",
+        "legalAdvisorName": "Peter Parker"
+      },
+      "temporaryC21Order": {
+          "orderDetails": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+          "orderTitle": "Order"
+        },
+      "children1": [
+        {
+          "id": "34c97e1a-eed9-499b-9693-e92496a1f54d",
+          "value": {
+            "party": {
+              "gender": "Boy",
+              "lastName": "Jones",
+              "firstName": "Timothy",
+              "dateOfBirth": "2015-08-01"
+            }
+          }
+        }
+      ],
+      "orders": {
+        "orderType": [
+          "CARE_ORDER"
+        ]
+      }
+    }
+  }
+}

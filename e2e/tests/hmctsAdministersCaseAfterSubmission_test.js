@@ -97,7 +97,7 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await I.addAnotherElementToCollection();
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
-  await I.completeEvent('Save and continue', { summary: 'summary', description: 'description' });
+  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
   I.seeAnswerInTab(1, 'Hearing 1', 'Type of hearing', hearingDetails[0].caseManagement);
@@ -123,6 +123,22 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(7, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
   I.seeAnswerInTab(8, 'Hearing 2', 'Judge or magistrate\'s title', hearingDetails[1].judgeTitle);
   I.seeAnswerInTab(9, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
+});
+
+Scenario('HMCTS admin creates C21 order for the case', async (I, caseViewPage, uploadC21OrderEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.uploadC21Order);
+  await uploadC21OrderEventPage.enterOrder();
+  await I.click('Continue');
+  await uploadC21OrderEventPage.selectJudgeTitle();
+  await uploadC21OrderEventPage.enterJudgeLastName('Sotomayer');
+  await uploadC21OrderEventPage.enterLegalAdvisorName('Peter Parker');
+  await I.click('Continue');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC21Order);
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  I.seeAnswerInTab(1, 'C21 Order 1', 'File name', 'C21_Order_1.pdf');
+  I.seeAnswerInTab(2, 'C21 Order 1', 'Order title', 'Example Title');
+  I.seeAnswerInTab(4, 'C21 Order 1', 'Judge or Magistrate', 'Her Honour Judge Sotomayer');
 });
 
 Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {

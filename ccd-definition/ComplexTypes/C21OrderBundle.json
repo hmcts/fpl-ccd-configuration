@@ -10,6 +10,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C21OrderBundle",
+    "ListElementCode": "orderTitle",
+    "FieldType": "Text",
+    "ElementLabel": "Order title",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C21OrderBundle",
     "ListElementCode": "orderDate",
     "FieldType": "Text",
     "ElementLabel": "Date and time of upload",
@@ -18,25 +26,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C21OrderBundle",
-    "ListElementCode": "orderTitle",
+    "ListElementCode": "judgeTitleAndName",
     "FieldType": "Text",
-    "ElementLabel": "Order Title",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C21OrderBundle",
-    "ListElementCode": "judgeTitle",
-    "FieldType": "Text",
-    "ElementLabel": "Judge Title",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C21OrderBundle",
-    "ListElementCode": "judgeName",
-    "FieldType": "Text",
-    "ElementLabel": "Judge Name",
+    "ElementLabel": "Judge or Magistrate",
     "SecurityClassification": "Public"
   }
 ]

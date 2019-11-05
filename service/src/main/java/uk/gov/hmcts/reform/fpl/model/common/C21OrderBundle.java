@@ -7,8 +7,7 @@ import lombok.Data;
 @Builder
 public class C21OrderBundle {
     private final DocumentReference c21OrderDocument;
-    private final String orderDate;
     private final String orderTitle;
-    private final String judgeTitle;
-    private final String judgeName;
+    private final String orderDate;
+    private final String judgeTitleAndName;
 }

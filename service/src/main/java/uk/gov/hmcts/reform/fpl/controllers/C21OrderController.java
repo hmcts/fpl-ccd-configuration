@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
-import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,27 +13,18 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.C21OrderBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.CreateC21OrderService;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
 
 @Api
@@ -46,7 +36,6 @@ public class C21OrderController {
     private final DocmosisDocumentGeneratorService docmosisService;
     private final UploadDocumentService uploadDocumentService;
     private final CreateC21OrderService createC21OrderService;
-    private final DateFormatterService dateFormatterService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
@@ -55,12 +44,12 @@ public class C21OrderController {
                               UploadDocumentService uploadDocumentService,
                               CreateC21OrderService createC21OrderService,
                               DateFormatterService dateFormatterService,
+                              ValidateGroupService validateGroupService,
                               ApplicationEventPublisher applicationEventPublisher) {
         this.mapper = mapper;
         this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
         this.createC21OrderService = createC21OrderService;
-        this.dateFormatterService = dateFormatterService;
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
@@ -72,38 +61,39 @@ public class C21OrderController {
             .build();
     }
 
-    @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
+    @PostMapping("/mid-event")
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
-
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
+        String index = (caseData.getC21OrderBundle() != null)
+            ? Integer.toString(caseData.getC21OrderBundle().size() + 1) : "1";
+
+
         Document c21Document = getDocument(
             authorization,
             userId,
+            index,
             createC21OrderService.getC21OrderTemplateData(caseData));
 
-        C21Order.C21OrderBuilder c21OrderBuilder = caseData.getTemporaryC21Order().toBuilder()
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(caseData.getJudgeAndLegalAdvisor().getJudgeTitle())
-                .judgeLastName(caseData.getJudgeAndLegalAdvisor().getJudgeLastName())
-                .judgeFullName(caseData.getJudgeAndLegalAdvisor().getJudgeFullName())
-                .legalAdvisorName(caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName())
-                .build())
-            .c21OrderDocument(DocumentReference.builder()
-                .url(c21Document.links.self.href)
-                .binaryUrl(c21Document.links.binary.href)
-                .filename(c21Document.originalDocumentName)
-                .build());
+        data.put("temporaryC21Order", addDocumentToC21Order(caseData, c21Document));
 
-        data.put("temporaryC21Order", c21OrderBuilder.build());
-        caseData = mapper.convertValue(data, CaseData.class);
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(data).build();
+    }
 
-        data.put("c21OrderBundle", buildC21OrderBundle(caseData));
+    @PostMapping("/about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
+        @RequestBody CallbackRequest callbackRequest) {
+        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+        data.put("c21OrderBundle", createC21OrderService.appendToC21OrderBundle(
+            caseData.getTemporaryC21Order(), caseData.getC21OrderBundle(), caseData.getJudgeAndLegalAdvisor()));
         data.remove("temporaryC21Order");
         data.remove("judgeAndLegalAdvisor");
 
@@ -118,42 +108,23 @@ public class C21OrderController {
         applicationEventPublisher.publishEvent(new C21OrderEvent(callbackRequest, authorization, userId));
     }
 
-    private List<Element<C21OrderBundle>> buildC21OrderBundle(CaseData caseData) {
-        List<Element<C21OrderBundle>> c21OrderBundle =
-            defaultIfNull(caseData.getC21OrderBundle(), Lists.newArrayList());
-
-        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
-        C21Order tempC21 = caseData.getTemporaryC21Order();
-        JudgeOrMagistrateTitle judgeTitle = tempC21.getJudgeAndLegalAdvisor().getJudgeTitle();
-        String judgeLabel;
-        if (judgeTitle != null) {
-            judgeLabel = tempC21.getJudgeAndLegalAdvisor().getJudgeTitle().getLabel();
-        } else {
-            judgeLabel = "";
-        }
-
-        c21OrderBundle.add(Element.<C21OrderBundle>builder()
-            .id(UUID.randomUUID())
-            .value(C21OrderBundle.builder()
-                .orderTitle(tempC21.getOrderTitle())
-                .c21OrderDocument(tempC21.getC21OrderDocument())
-                .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
-                    .toLocalDateTime(), "h:mma, d MMMM yyyy"))
-                .judgeTitle(judgeLabel)
-                .judgeName(defaultIfNull(tempC21.getJudgeAndLegalAdvisor().getJudgeLastName(),
-                    tempC21.getJudgeAndLegalAdvisor().getJudgeFullName()))
+    private C21Order addDocumentToC21Order(CaseData caseData, Document document) {
+        return caseData.getTemporaryC21Order().toBuilder()
+            .c21OrderDocument(DocumentReference.builder()
+                .url(document.links.self.href)
+                .binaryUrl(document.links.binary.href)
+                .filename(document.originalDocumentName)
                 .build())
-            .build());
-
-        return c21OrderBundle;
+            .orderTitle(defaultIfBlank(caseData.getTemporaryC21Order().getOrderTitle(), "Order"))
+            .build();
     }
 
     private Document getDocument(@RequestHeader("authorization") String authorization,
                                  @RequestHeader("user-id") String userId,
+                                 String index,
                                  Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, C21);
-
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-            C21.getDocumentTitle() + ".pdf");
+            C21.getDocumentTitle() + "_" + index + ".pdf");
     }
 }
