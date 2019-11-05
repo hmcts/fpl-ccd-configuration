@@ -44,16 +44,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
-    "TabID": "DraftOrdersCmoTab",
-    "TabLabel": "Draft orders",
-    "TabDisplayOrder": 3,
-    "CaseFieldID": "caseManagementOrder",
-    "TabFieldDisplayOrder": 1
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
     "TabDisplayOrder": 4,
@@ -385,10 +375,20 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
-    "TabID": "Draft Orders",
-    "TabLabel": "Draft Orders",
+    "TabID": "DraftOrdersCmoTab",
+    "TabLabel": "Draft orders",
+    "TabDisplayOrder": 8,
+    "CaseFieldID": "caseManagementOrder",
+    "TabFieldDisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DraftOrdersCmoTab",
+    "TabLabel": "Draft orders",
     "TabDisplayOrder": 8,
     "CaseFieldID": "recitals",
-    "TabFieldDisplayOrder": 1
+    "TabFieldDisplayOrder": 2
   }
 ]
