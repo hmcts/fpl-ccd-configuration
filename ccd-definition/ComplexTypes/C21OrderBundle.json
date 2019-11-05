@@ -26,17 +26,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "C21OrderBundle",
-    "ListElementCode": "judgeTitle",
+    "ListElementCode": "judgeTitleAndName",
     "FieldType": "Text",
-    "ElementLabel": "Judge Title",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "C21OrderBundle",
-    "ListElementCode": "judgeName",
-    "FieldType": "Text",
-    "ElementLabel": "Judge Name",
+    "ElementLabel": "Judge or Magistrate",
     "SecurityClassification": "Public"
   }
 ]

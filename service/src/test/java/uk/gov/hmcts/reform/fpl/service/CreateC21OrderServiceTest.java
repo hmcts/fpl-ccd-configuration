@@ -18,9 +18,9 @@ import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 
@@ -39,23 +39,31 @@ class CreateC21OrderServiceTest {
         hmctsCourtLookupConfiguration);
 
     @Test
-    void shouldAppendNewC21OrderDocumentToExistingC21OrderBundle() {
-        CaseData caseData = CaseData.builder()
-            .c21OrderBundle(getC21OrderBundleList())
-            .temporaryC21Order(C21Order.builder()
-                .orderDetails("Some order details")
-                .c21OrderDocument(DocumentReference.builder()
-                    .filename("C21_2.pdf")
-                    .build())
-                .build())
-            .build();
+    void shouldAppendNewC21OrderToEmptyC21OrderBundle() {
+        List<Element<C21OrderBundle>> emptyC21OrderBundle = new ArrayList<>();
+        CaseData caseData = addC21OrderAndBundleToCaseData(emptyC21OrderBundle, "C21_1.pdf");
 
-        List<Element<C21OrderBundle>> updatedC21OrderBundle = createC21OrderService.appendToC21OrderBundle(
-            caseData.getTemporaryC21Order(),caseData.getC21OrderBundle());
-        assertThat(updatedC21OrderBundle).size().isEqualTo(2);
+        List<Element<C21OrderBundle>> c21OrderBundleWithOrder = createC21OrderService.appendToC21OrderBundle(
+            caseData.getTemporaryC21Order(), caseData.getC21OrderBundle(), caseData.getJudgeAndLegalAdvisor());
+        assertThat(c21OrderBundleWithOrder).size().isEqualTo(1);
 
-        C21OrderBundle previousC21 = updatedC21OrderBundle.get(0).getValue();
-        C21OrderBundle appendedC21 = updatedC21OrderBundle.get(1).getValue();
+        C21OrderBundle c21OrderBundle = c21OrderBundleWithOrder.get(0).getValue();
+
+        assertThat(c21OrderBundle.getC21OrderDocument().getFilename()).isEqualTo("C21_1.pdf");
+        assertThat(c21OrderBundle.getOrderTitle()).isEqualTo("Example order title");
+        assertThat(c21OrderBundle.getJudgeTitleAndName()).isEqualTo("Her Honour Judge Judy");
+    }
+
+    @Test
+    void shouldAppendNewC21OrderToExistingC21OrderBundle() {
+        CaseData caseData = addC21OrderAndBundleToCaseData(getExistingC21OrderBundle(), "C21_2.pdf");
+
+        List<Element<C21OrderBundle>> c21OrderBundleWithTwoOrders = createC21OrderService.appendToC21OrderBundle(
+            caseData.getTemporaryC21Order(), caseData.getC21OrderBundle(), caseData.getJudgeAndLegalAdvisor());
+        assertThat(c21OrderBundleWithTwoOrders).size().isEqualTo(2);
+
+        C21OrderBundle previousC21 = c21OrderBundleWithTwoOrders.get(0).getValue();
+        C21OrderBundle appendedC21 = c21OrderBundleWithTwoOrders.get(1).getValue();
 
         assertThat(previousC21.getC21OrderDocument().getFilename()).isEqualTo("C21_1.pdf");
         assertThat(appendedC21.getC21OrderDocument().getFilename()).isEqualTo("C21_2.pdf");
@@ -130,18 +138,30 @@ class CreateC21OrderServiceTest {
                 "dateOfBirth", ""));
     }
 
-    private List<Element<C21OrderBundle>> getC21OrderBundleList() {
-        List<Element<C21OrderBundle>> c21OrderBundleList = new ArrayList<>();
 
-        c21OrderBundleList.add(Element.<C21OrderBundle>builder()
-            .id(UUID.randomUUID())
-            .value(C21OrderBundle.builder()
+    private CaseData addC21OrderAndBundleToCaseData(List<Element<C21OrderBundle>> c21OrderBundle, String fileName) {
+        return CaseData.builder()
+            .c21OrderBundle(c21OrderBundle)
+            .temporaryC21Order(C21Order.builder()
+                .orderTitle("Example order title")
+                .orderDetails("Some order details")
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(HER_HONOUR_JUDGE)
+                    .judgeLastName("Judy")
+                    .build())
                 .c21OrderDocument(DocumentReference.builder()
-                    .filename("C21_1.pdf")
+                    .filename(fileName)
                     .build())
                 .build())
-            .build());
-
-        return c21OrderBundleList;
+            .build();
     }
+
+    private List<Element<C21OrderBundle>> getExistingC21OrderBundle() {
+        List<Element<C21OrderBundle>> c21EmptyOrderBundle = new ArrayList<>();
+        CaseData caseData = addC21OrderAndBundleToCaseData(c21EmptyOrderBundle, "C21_1.pdf");
+        return createC21OrderService.appendToC21OrderBundle(
+            caseData.getTemporaryC21Order(), caseData.getC21OrderBundle(), caseData.getJudgeAndLegalAdvisor());
+
+    }
+
 }

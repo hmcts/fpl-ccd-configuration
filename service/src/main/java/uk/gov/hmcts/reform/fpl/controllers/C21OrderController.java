@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.interfaces.C21CaseOrderGroup;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
-import uk.gov.hmcts.reform.fpl.model.C21OrderAnswers;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -27,7 +26,6 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import java.util.Map;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
 
 @Api
@@ -82,8 +80,6 @@ public class C21OrderController {
             createC21OrderService.getC21OrderTemplateData(caseData));
 
         data.put("temporaryC21Order", buildTemporaryC21Order(caseData, c21Document));
-        data.put("c21OrderAnswers", buildC21OrderAnswers(caseData, c21Document));
-        data.remove("temporaryC21Order");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data).build();
@@ -101,7 +97,7 @@ public class C21OrderController {
             createC21OrderService.getC21OrderTemplateData(caseData));
 
         data.put("c21OrderBundle", createC21OrderService.appendToC21OrderBundle(
-            buildTemporaryC21Order(caseData, c21Document), caseData.getC21OrderBundle()));
+            buildTemporaryC21Order(caseData, c21Document), caseData.getC21OrderBundle(), caseData.getJudgeAndLegalAdvisor()));
         data.remove("temporaryC21Order");
         data.remove("judgeAndLegalAdvisor");
 
@@ -126,38 +122,10 @@ public class C21OrderController {
             .build();
     }
 
-    private C21OrderAnswers buildC21OrderAnswers(CaseData caseData, Document document) {
-        return C21OrderAnswers.builder()
-            .orderTitle(defaultIfBlank(caseData.getTemporaryC21Order().getOrderTitle(), "Order"))
-            .orderDetails(caseData.getTemporaryC21Order().getOrderDetails())
-            .c21OrderDocument(DocumentReference.builder()
-                .url(document.links.self.href)
-                .binaryUrl(document.links.binary.href)
-                .filename(document.originalDocumentName)
-                .build())
-            .judgeTitleAndName(getJudgeTitleAndName(caseData.getJudgeAndLegalAdvisor()))
-            .legalAdvisor(defaultIfBlank(caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName(), null))
-            .build();
-    }
-
     private Document getDocument(@RequestHeader("authorization") String authorization,
                                  @RequestHeader("user-id") String userId,
                                  Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, C21);
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), C21.getDocumentTitle());
-    }
-
-    private String getJudgeTitleAndName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        String judgeOrMagistrate = defaultIfEmpty(
-            judgeAndLegalAdvisor.getJudgeLastName(),
-            defaultIfEmpty(judgeAndLegalAdvisor.getJudgeFullName(), ""));
-
-        String judgeTitle = "";
-
-        if (judgeAndLegalAdvisor.getJudgeTitle() != null) {
-            judgeTitle = judgeAndLegalAdvisor.getJudgeTitle().getLabel();
-        }
-
-        return defaultIfBlank(judgeTitle + " " + judgeOrMagistrate, "");
+        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), C21.getDocumentTitle() + ".pdf");
     }
 }

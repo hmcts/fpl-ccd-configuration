@@ -49,20 +49,11 @@ public class CreateC21OrderService {
     }
 
     public List<Element<C21OrderBundle>> appendToC21OrderBundle(C21Order tempC21,
-                                                                List<Element<C21OrderBundle>> c21OrderBundle) {
+                                                                List<Element<C21OrderBundle>> c21OrderBundle,
+                                                                JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         c21OrderBundle = defaultIfNull(c21OrderBundle, Lists.newArrayList());
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
-
-        String judgeTitle = "";
-        String judgeName = "";
-
-        if (tempC21.getJudgeAndLegalAdvisor() != null && tempC21.getJudgeAndLegalAdvisor().getJudgeTitle() != null) {
-            judgeTitle = tempC21.getJudgeAndLegalAdvisor().getJudgeTitle().getLabel();
-
-            judgeName = defaultIfNull(tempC21.getJudgeAndLegalAdvisor().getJudgeLastName(),
-                tempC21.getJudgeAndLegalAdvisor().getJudgeFullName());
-        }
 
         c21OrderBundle.add(Element.<C21OrderBundle>builder()
             .id(UUID.randomUUID())
@@ -71,8 +62,7 @@ public class CreateC21OrderService {
                 .c21OrderDocument(tempC21.getC21OrderDocument())
                 .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
                     .toLocalDateTime(), "h:mma, d MMMM yyyy"))
-                .judgeTitle(judgeTitle)
-                .judgeName(judgeName)
+                .judgeTitleAndName(formatJudgeTitleAndName(judgeAndLegalAdvisor))
                 .build())
             .build());
 
