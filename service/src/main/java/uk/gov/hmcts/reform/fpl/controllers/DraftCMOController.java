@@ -15,10 +15,14 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Api
 @RestController
@@ -42,12 +46,23 @@ public class DraftCMOController {
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
 
         DynamicList hearingDatesDynamic = draftCMOService.makeHearingDateList(hearingDetails);
-        Object list = caseDataMap.get("cmoHearingDateList");
-        if (list != null) {
-            // Old list will have the previous selected value
-            DynamicList oldList = mapper.convertValue(list, DynamicList.class);
-            hearingDatesDynamic = oldList.merge(hearingDatesDynamic);
+        Object cmoObject = caseDataMap.get("caseManagementOrder");
+
+        if (cmoObject != null) {
+            Order cmo = mapper.convertValue(cmoObject, Order.class);
+            String hearingDate = cmo.getHearingDate();
+            if (!isEmpty(hearingDate)) {
+                DynamicList oldList = DynamicList.builder().value(
+                    DynamicListElement.builder()
+                        .label(hearingDate)
+                        .code(hearingDate)
+                        .build())
+                    .listItems(new ArrayList<>())
+                    .build();
+                hearingDatesDynamic = oldList.merge(hearingDatesDynamic);
+            }
         }
+
         caseDataMap.put("cmoHearingDateList", hearingDatesDynamic);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -61,7 +76,6 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         DynamicList list = mapper.convertValue(caseDetails.getData().get("cmoHearingDateList"), DynamicList.class);
-        list.prepareForStorage();
 
         CaseData updated = caseData.toBuilder()
             .caseManagementOrder(Order.builder().build())
@@ -71,7 +85,7 @@ public class DraftCMOController {
             .toBuilder().hearingDate(list.getValue().getCode())
             .build();
 
-        caseDetails.getData().put("cmoHearingDateList", list);
+        caseDetails.getData().remove("cmoHearingDateList");
         caseDetails.getData().put("caseManagementOrder", order);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
