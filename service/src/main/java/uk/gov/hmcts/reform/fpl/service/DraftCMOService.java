@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -8,11 +9,19 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.time.LocalDate;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class DraftCMOService {
+
+    private final DateFormatterService dateFormatterService;
+
+    @Autowired
+    public DraftCMOService(DateFormatterService dateFormatterService) {
+        this.dateFormatterService = dateFormatterService;
+    }
 
     public DynamicList makeHearingDateList(List<Element<HearingBooking>> hearingDetails) {
         List<HearingDate> hearingDates = hearingDetails
@@ -35,7 +44,8 @@ public class DraftCMOService {
 
         @Override
         public DynamicListElement toDynamicElement() {
-            return DynamicListElement.builder().code(date.toString()).label(date.toString()).build();
+            final String dateString = dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
+            return DynamicListElement.builder().code(dateString).label(dateString).build();
         }
     }
 }
