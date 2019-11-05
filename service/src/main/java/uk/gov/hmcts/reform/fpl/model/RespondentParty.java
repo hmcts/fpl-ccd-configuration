@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.time.LocalDate;
 
+import javax.validation.constraints.NotBlank;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -26,6 +28,16 @@ public final class RespondentParty extends Party {
     private final String contactDetailsHiddenReason;
     private final String litigationIssues;
     private final String litigationIssuesDetails;
+
+    @NotBlank(message = "Enter the respondent's full name")
+    public String getFirstName() {
+        return super.getFirstName();
+    }
+
+    @NotBlank(message = "Enter the respondent's full name")
+    public String getLastName() {
+        return super.getLastName();
+    }
 
     @Builder(toBuilder = true, builderClassName = "RespondentPartyBuilder")
     public RespondentParty(String partyId,

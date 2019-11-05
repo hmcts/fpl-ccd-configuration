@@ -26,9 +26,17 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "PREPARE_FOR_HEARING",
+    "Name": "Prepare for hearing",
+    "Description": "State indicating that SDO is ready to send - triggered when SDO is issued",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "Deleted",
     "Name": "Deleted",
     "Description": "Deleted case state - all data is removed",
-    "DisplayOrder": 4
+    "DisplayOrder": 5
   }
 ]
