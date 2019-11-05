@@ -24,6 +24,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -46,7 +48,18 @@ public class CaseData {
     @Valid
     private final List<@NotNull(message = "You need to add details to applicant")
         Element<Applicant>> applicants;
-    private final List<Element<Respondent>> respondents1;
+    @NotNull(message = "You need to add details to respondents")
+    private final List<@NotNull(message = "You need to add details to respondents")Element<Respondent>> respondents1;
+
+    @Valid
+    private final Respondent getFirstRespondent() {
+        if (isEmpty(respondents1)) {
+            return Respondent.builder().build();
+        }
+
+        return respondents1.get(0).getValue();
+    }
+
     private final Proceeding proceeding;
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;
@@ -104,7 +117,7 @@ public class CaseData {
     @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,
         C21CaseOrderGroup.class})
     private final String familyManCaseNumber;
-    private List<ProceedingType> proceedingTypes;
+    private final NoticeOfProceedings noticeOfProceedings;
 
     public List<Element<Applicant>> getAllApplicants() {
         return applicants != null ? applicants : new ArrayList<>();

@@ -54,6 +54,8 @@ class CaseSubmissionControllerMidEventTest {
             "• You need to add details to orders and directions needed",
             "In the children section:",
             "• You need to add details to children",
+            "In the respondents section:",
+            "• You need to add details to respondents",
             "In the applicant section:",
             "• You need to add details to applicant",
             "In the hearing needed section:",

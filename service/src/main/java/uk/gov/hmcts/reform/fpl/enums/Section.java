@@ -4,15 +4,16 @@ public enum Section {
     APPLICANT("applicant", "applicant"),
     CHILDREN("children", "children"),
     ORDERS("orders", "orders and directions needed"),
+    RESPONDENTS("respondent", "respondents"),
     GROUNDS("grounds", "grounds for the application"),
     HEARING("hearing", "hearing needed"),
-    DOCUMENTS("Document", "documents"),
-    CASENAME("caseName", "case name");
+    DOCUMENTS("document", "documents"),
+    CASENAME("casename", "case name");
 
     private final String errorKey;
     private final String sectionHeaderName;
 
-    private Section(String errorKey, String sectionHeaderName) {
+    Section(String errorKey, String sectionHeaderName) {
         this.errorKey = errorKey;
         this.sectionHeaderName = sectionHeaderName;
     }
