@@ -5,12 +5,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.NoticeOfProceedings;
 import uk.gov.hmcts.reform.fpl.model.Orders;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
@@ -19,9 +23,12 @@ import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C6A;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
@@ -31,9 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopula
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 
 @ExtendWith(SpringExtension.class)
-
-public class NoticeOfProceedingServiceTest {
-    @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
+class NoticeOfProceedingsServiceTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_NAME = "Example Court";
@@ -45,15 +50,43 @@ public class NoticeOfProceedingServiceTest {
     private HearingBookingService hearingBookingService = new HearingBookingService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
 
-    private NoticeOfProceedingService noticeOfProceedingService = new NoticeOfProceedingService(dateFormatterService,
+    private NoticeOfProceedingsService noticeOfProceedingService = new NoticeOfProceedingsService(dateFormatterService,
         hearingBookingService, hmctsCourtLookupConfiguration);
+
+    @Test
+    void shouldRetrieveExistingC6AWhenC6ANotIncludedInTemplateList() {
+        CaseData caseData = generateNoticeOfProceedingBundle(ImmutableList.of(C6A));
+        List<DocmosisTemplates> templatesList = ImmutableList.of(C6);
+        List<Element<DocumentBundle>> removedDocuments = noticeOfProceedingService
+            .getRemovedDocumentBundles(caseData, templatesList);
+
+        assertThat(removedDocuments).hasSize(1);
+
+        DocumentReference documentReference = removedDocuments.get(0).getValue().getDocument();
+
+        assertThat(documentReference.getFilename()).isEqualTo(C6A.getDocumentTitle());
+    }
+
+    @Test
+    void shouldNotRetrieveExistingDocumentsAWhenTemplateListIncludeBothC6AndC6A() {
+        List<DocmosisTemplates> templatesList = ImmutableList.of(C6, C6A);
+        CaseData caseData = generateNoticeOfProceedingBundle(templatesList);
+        List<Element<DocumentBundle>> removedDocuments = noticeOfProceedingService
+            .getRemovedDocumentBundles(caseData, templatesList);
+
+        assertThat(removedDocuments).isEmpty();
+    }
 
     @Test
     void shouldApplySentenceFormattingWhenMultipleChildrenExistOnCase() {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .orders(Orders.builder()
-                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
+                .orderType(ImmutableList.of(CARE_ORDER)).build())
+            .noticeOfProceedings(NoticeOfProceedings.builder()
+                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
+                .proceedingTypes(emptyList())
+                .build())
             .build();
 
         Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
@@ -74,7 +107,11 @@ public class NoticeOfProceedingServiceTest {
                         .build())
                     .build()))
             .orders(Orders.builder()
-                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
+                .orderType(ImmutableList.of(CARE_ORDER)).build())
+            .noticeOfProceedings(NoticeOfProceedings.builder()
+                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
+                .proceedingTypes(emptyList())
+                .build())
             .build();
 
         Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
@@ -85,9 +122,12 @@ public class NoticeOfProceedingServiceTest {
     void shouldFormatMagistrateFullNameWhenJudgeTitleIsSetToMagistrate() {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(MAGISTRATES)
-                .judgeFullName("James Nelson")
+            .noticeOfProceedings(NoticeOfProceedings.builder()
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(MAGISTRATES)
+                    .judgeFullName("James Nelson")
+                    .build())
+                .proceedingTypes(emptyList())
                 .build())
             .orders(Orders.builder()
                 .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
@@ -102,7 +142,11 @@ public class NoticeOfProceedingServiceTest {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .orders(Orders.builder()
-                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
+                .orderType(ImmutableList.of(CARE_ORDER)).build())
+            .noticeOfProceedings(NoticeOfProceedings.builder()
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build())
+                .proceedingTypes(emptyList())
+                .build())
             .build();
         Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("");
@@ -113,7 +157,11 @@ public class NoticeOfProceedingServiceTest {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .orders(Orders.builder()
-                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
+                .orderType(ImmutableList.of(CARE_ORDER)).build())
+            .noticeOfProceedings(NoticeOfProceedings.builder()
+                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
+                .proceedingTypes(emptyList())
+                .build())
             .build();
 
         Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
@@ -124,9 +172,12 @@ public class NoticeOfProceedingServiceTest {
     void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated() {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
-            .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
+            .noticeOfProceedings(NoticeOfProceedings.builder()
+                .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor())
+                .proceedingTypes(emptyList())
+                .build())
             .orders(Orders.builder()
-                .orderType(ImmutableList.<OrderType>of(
+                .orderType(ImmutableList.of(
                     CARE_ORDER,
                     EDUCATION_SUPERVISION_ORDER
                 )).build())
@@ -178,5 +229,18 @@ public class NoticeOfProceedingServiceTest {
             .familyManCaseNumber("123")
             .applicants(createPopulatedApplicants())
             .hearingDetails(createHearingBookings());
+    }
+
+    private CaseData generateNoticeOfProceedingBundle(List<DocmosisTemplates> templateTypes) {
+        return CaseData.builder()
+            .noticeOfProceedingsBundle(templateTypes.stream()
+                .map(docmosisDocument -> Element.<DocumentBundle>builder()
+                    .id(UUID.randomUUID())
+                    .value(DocumentBundle.builder()
+                        .document(DocumentReference.builder()
+                            .filename(docmosisDocument.getDocumentTitle())
+                            .build())
+                        .build())
+                    .build()).collect(Collectors.toList())).build();
     }
 }

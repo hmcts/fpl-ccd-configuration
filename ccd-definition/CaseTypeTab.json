@@ -37,7 +37,19 @@
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
     "CaseFieldID": "standardDirectionOrder",
-    "TabFieldDisplayOrder": 1
+    "TabFieldDisplayOrder": 1,
+    "TabShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OrdersTab",
+    "TabLabel": "Orders",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "standardDirectionOrder",
+    "TabFieldDisplayOrder": 1,
+    "FieldShowCondition": "standardDirectionOrder.orderStatus=\"SEALED\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -47,7 +59,7 @@
     "TabLabel": "Orders",
     "TabDisplayOrder": 4,
     "CaseFieldID": "orders",
-    "TabFieldDisplayOrder": 1
+    "TabFieldDisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",

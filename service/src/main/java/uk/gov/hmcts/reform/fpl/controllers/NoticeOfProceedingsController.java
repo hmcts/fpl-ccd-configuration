@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,12 +19,13 @@ import uk.gov.hmcts.reform.fpl.interfaces.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingService;
+import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
@@ -37,6 +37,8 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 @RequestMapping("/callback/notice-of-proceedings")
 @Api
 @RestController
@@ -46,7 +48,7 @@ public class NoticeOfProceedingsController {
     private final ValidateGroupService eventValidationService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
-    private final NoticeOfProceedingService noticeOfProceedingService;
+    private final NoticeOfProceedingsService noticeOfProceedingsService;
     private final HearingBookingService hearingBookingService;
     private final DateFormatterService dateFormatterService;
 
@@ -55,16 +57,16 @@ public class NoticeOfProceedingsController {
                                           ValidateGroupService eventValidationService,
                                           DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
                                           UploadDocumentService uploadDocumentService,
-                                          NoticeOfProceedingService noticeOfProceedingService,
                                           HearingBookingService hearingBookingService,
-                                          DateFormatterService dateFormatterService) {
+                                          DateFormatterService dateFormatterService,
+                                          NoticeOfProceedingsService noticeOfProceedingsService) {
         this.mapper = mapper;
         this.eventValidationService = eventValidationService;
         this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
-        this.noticeOfProceedingService = noticeOfProceedingService;
         this.hearingBookingService = hearingBookingService;
         this.dateFormatterService = dateFormatterService;
+        this.noticeOfProceedingsService = noticeOfProceedingsService;
     }
 
     @PostMapping("/about-to-start")
@@ -78,16 +80,12 @@ public class NoticeOfProceedingsController {
 
             caseDetails.getData().put("proceedingLabel", String.format("The case management hearing will be on the %s.",
                 dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG)));
-
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseDetails.getData())
-                .build();
-        } else {
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseDetails.getData())
-                .errors(eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class))
-                .build();
         }
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
+            .errors(eventValidationService.validateGroup(caseData, NoticeOfProceedingsGroup.class))
+            .build();
     }
 
     @PostMapping("/about-to-submit")
@@ -99,34 +97,43 @@ public class NoticeOfProceedingsController {
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
+        Map<String, Object> templateData = noticeOfProceedingsService.getNoticeOfProceedingTemplateData(caseData);
 
         List<DocmosisTemplates> templateTypes = getProceedingTemplateTypes(caseData);
 
         List<Document> uploadedDocuments = generateAndUploadDocuments(userId, authorization, templateData,
             templateTypes);
 
-        caseDetails.getData().put("noticeOfProceedingsBundle", createNoticeOfProceedingsCaseData(uploadedDocuments));
+        List<Element<DocumentBundle>> noticeOfProceedingCaseData = createNoticeOfProceedingsCaseData(uploadedDocuments);
+
+        if (isNotEmpty(callbackRequest.getCaseDetailsBefore().getData().get("noticeOfProceedingsBundle"))) {
+            CaseData caseDataBefore = mapper.convertValue(callbackRequest.getCaseDetailsBefore().getData(),
+                CaseData.class);
+
+            noticeOfProceedingCaseData.addAll(noticeOfProceedingsService
+                .getRemovedDocumentBundles(caseDataBefore, templateTypes));
+        }
+
+        caseDetails.getData().put("noticeOfProceedingsBundle", noticeOfProceedingCaseData);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
     }
 
-    private List<Element> createNoticeOfProceedingsCaseData(List<Document> uploadedDocuments) {
+    private List<Element<DocumentBundle>> createNoticeOfProceedingsCaseData(List<Document> uploadedDocuments) {
         return uploadedDocuments.stream()
-            .map(document -> {
-                return Element.builder()
-                    .id(UUID.randomUUID())
-                    .value(ImmutableMap.builder()
-                        .put("document", DocumentReference.builder()
-                            .filename(document.originalDocumentName)
-                            .url(document.links.self.href)
-                            .binaryUrl(document.links.binary.href)
-                            .build())
+            .map(document -> Element.<DocumentBundle>builder()
+                .id(UUID.randomUUID())
+                .value(DocumentBundle.builder()
+                    .document(DocumentReference.builder()
+                        .filename(document.originalDocumentName)
+                        .url(document.links.self.href)
+                        .binaryUrl(document.links.binary.href)
                         .build())
-                    .build();
-            }).collect(Collectors.toList());
+                    .build())
+                .build())
+            .collect(Collectors.toList());
     }
 
     private List<Document> generateAndUploadDocuments(String userId,
@@ -139,18 +146,20 @@ public class NoticeOfProceedingsController {
 
         return docmosisDocuments.stream()
             .map(document -> uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-                document.getDocumentTitle() + ".pdf"))
+                document.getDocumentTitle()))
             .collect(Collectors.toList());
     }
 
     private List<DocmosisTemplates> getProceedingTemplateTypes(CaseData caseData) {
         ImmutableList.Builder<DocmosisTemplates> proceedingTypes = ImmutableList.builder();
 
-        if (caseData.getProceedingTypes().contains(ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES)) {
+        if (caseData.getNoticeOfProceedings().getProceedingTypes()
+            .contains(ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_PARTIES)) {
             proceedingTypes.add(DocmosisTemplates.C6);
         }
 
-        if (caseData.getProceedingTypes().contains(ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES)) {
+        if (caseData.getNoticeOfProceedings().getProceedingTypes()
+            .contains(ProceedingType.NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES)) {
             proceedingTypes.add(DocmosisTemplates.C6A);
         }
 

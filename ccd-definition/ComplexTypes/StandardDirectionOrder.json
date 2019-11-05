@@ -27,10 +27,18 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "StandardDirectionOrder",
-    "ListElementCode": "finished",
-    "FieldType": "Text",
-    "ElementLabel": "Has the order been completed?",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "directions CONTAINS \"DO NOT SHOW\""
+    "ListElementCode": "orderStatus",
+    "FieldType": "FixedRadioList",
+    "ElementLabel": "Is this the final version?",
+    "FieldTypeParameter": "OrderStatus",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "StandardDirectionOrder",
+    "ListElementCode": "judgeAndLegalAdvisor",
+    "FieldType": "JudgeAndLegalAdvisor",
+    "ElementLabel": "Judge and legal advisor",
+    "SecurityClassification": "Public"
   }
 ]

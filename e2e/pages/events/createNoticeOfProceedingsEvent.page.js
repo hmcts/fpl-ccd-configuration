@@ -1,20 +1,12 @@
 const I = actor();
+const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
 
 module.exports = {
   fields: {
     proceedingType: {
-      c6: locate('input').withAttr({id: 'proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_PARTIES'}),
-      c6a: locate('input').withAttr({id: 'proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES'}),
+      c6: locate('input').withAttr({id: 'noticeOfProceedings_proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_PARTIES'}),
+      c6a: locate('input').withAttr({id: 'noticeOfProceedings_proceedingTypes-NOTICE_OF_PROCEEDINGS_FOR_NON_PARTIES'}),
     },
-    judgeTitleRadioGroup: {
-      groupName: '#judgeAndLegalAdvisor_judgeTitle',
-      herHonourJudge: 'Her Honour Judge',
-      hisHonourJudge: 'His Honour Judge',
-      deputyDistrictJudge: 'Deputy District Judge',
-      magistrates: 'Magistrates (JP)',
-    },
-    judgeLastName: '#judgeAndLegalAdvisor_judgeLastName',
-    legalAdvisorName: '#judgeAndLegalAdvisor_legalAdvisorName',
   },
 
   checkC6() {
@@ -26,16 +18,14 @@ module.exports = {
   },
 
   selectJudgeTitle() {
-    within(this.fields.judgeTitleRadioGroup.groupName, () => {
-      I.click(locate('label').withText(this.fields.judgeTitleRadioGroup.herHonourJudge));
-    });
+    judgeAndLegalAdvisor.selectJudgeTitle('noticeOfProceedings_');
   },
 
   enterJudgeLastName(judgeLastName) {
-    I.fillField(this.fields.judgeLastName, judgeLastName);
+    judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName, 'noticeOfProceedings_');
   },
 
   enterLegalAdvisorName(legalAdvisorName) {
-    I.fillField(this.fields.legalAdvisorName, legalAdvisorName);
+    judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName, 'noticeOfProceedings_');
   },
 };
