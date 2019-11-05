@@ -391,7 +391,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "proceedingLabel",
-    "ListElementCode": "proceedingLabel",
     "FieldType": "Text",
     "Label": " ",
     "SecurityClassification": "Public"
@@ -399,10 +398,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "proceedingTypes",
-    "Label": "What would you like to create?",
-    "FieldType": "MultiSelectList",
-    "FieldTypeParameter": "ProceedingType",
+    "ID": "noticeOfProceedings",
+    "Label": " ",
+    "FieldType": "NoticeOfProceedings",
     "SecurityClassification": "Public"
   },
   {
