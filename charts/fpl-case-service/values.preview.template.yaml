@@ -43,6 +43,10 @@ ccd:
     redirect_uris:
       CCD:
         - https://case-management-web-${SERVICE_FQDN}/oauth2redirect
+    cpuRequests: 25m
+    memoryRequests: 8Mi
+    cpuLimits: 50m
+    memoryLimits: 16Mi
   caseManagementWeb:
     enabled: true
     environment:
