@@ -23,6 +23,7 @@ def otherSecrets = [
     secret('microservicekey-ccd-definition', 'CCD_DEFINITION_STORE_S2S_SECRET')
   ],
   'ccd-${env}': [
+    secret('ccd-api-gateway-oauth2-client-secret', 'CCD_API_GATEWAY_IDAM_CLIENT_SECRET'),
     secret('postcode-info-address-lookup-token', 'ADDRESS_LOOKUP_TOKEN')
   ],
   'fpl-${env}': [
@@ -117,6 +118,7 @@ withPipeline(type, product, component) {
   before('smoketest:preview') {
     sh """
       eval \$(./bin/variables/load-preview-environment-variables.sh ${CHANGE_ID})
+      unset CCD_API_GATEWAY_IDAM_CLIENT_SECRET
       unset CCD_CONFIGURER_IMPORTER_USERNAME
       unset CCD_CONFIGURER_IMPORTER_PASSWORD
       

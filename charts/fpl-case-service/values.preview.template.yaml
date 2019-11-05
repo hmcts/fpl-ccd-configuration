@@ -18,10 +18,10 @@ java:
         - notify-api-key
         - docmosis-api-key
         - fpl-case-service-s2s-secret
-        - fpl-case-service-idam-client-secret-preview
+        - fpl-case-service-idam-client-secret
         - local-authority-email-to-code-mapping
         - local-authority-code-to-name-mapping
-        - local-authority-user-mapping-preview
+        - local-authority-user-mapping
         - local-authority-code-to-hmcts-court-mapping
         - local-authority-code-to-cafcass-mapping
         - system-update-user-username
