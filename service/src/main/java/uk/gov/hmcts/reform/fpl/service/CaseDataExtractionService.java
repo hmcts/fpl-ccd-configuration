@@ -151,12 +151,11 @@ public class CaseDataExtractionService {
         return map.build();
     }
 
-    private Map<String, Object> getHearingBookingData(CaseData caseData) throws IOException {
+    private Map<String, Object> getHearingBookingData(CaseData caseData) {
         if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
-            return Map.of(
+            return ImmutableMap.of(
                 "hearingDate", EMPTY_PLACEHOLDER,
                 "hearingVenue", EMPTY_PLACEHOLDER,
-                "hearingVenueAddress", EMPTY_PLACEHOLDER,
                 "preHearingAttendance", EMPTY_PLACEHOLDER,
                 "hearingTime", EMPTY_PLACEHOLDER,
                 "judgeName", EMPTY_PLACEHOLDER
@@ -168,7 +167,7 @@ public class CaseDataExtractionService {
 
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
 
-        return Map.of(
+        return ImmutableMap.of(
             "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),
                 FormatStyle.LONG),
             "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),

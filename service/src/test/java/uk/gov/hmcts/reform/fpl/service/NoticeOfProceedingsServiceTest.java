@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -92,7 +91,7 @@ class NoticeOfProceedingsServiceTest {
     }
 
     @Test
-    void shouldApplySentenceFormattingWhenMultipleChildrenExistOnCase() throws IOException {
+    void shouldApplySentenceFormattingWhenMultipleChildrenExistOnCase() {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .orders(Orders.builder()
@@ -108,7 +107,7 @@ class NoticeOfProceedingsServiceTest {
     }
 
     @Test
-    void shouldNotApplySentenceFormattingWhenOnlyOneChildExistsOnCase() throws IOException {
+    void shouldNotApplySentenceFormattingWhenOnlyOneChildExistsOnCase() {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(ImmutableList.of(
                 Element.<Child>builder()
@@ -133,7 +132,7 @@ class NoticeOfProceedingsServiceTest {
     }
 
     @Test
-    void shouldFormatMagistrateFullNameWhenJudgeTitleIsSetToMagistrate() throws IOException {
+    void shouldFormatMagistrateFullNameWhenJudgeTitleIsSetToMagistrate() {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .noticeOfProceedings(NoticeOfProceedings.builder()
@@ -152,7 +151,7 @@ class NoticeOfProceedingsServiceTest {
     }
 
     @Test
-    void shouldSetJudgeTitleAndNameToEmptyStringWhenJudgeTitleAndNameIsEmpty() throws IOException {
+    void shouldSetJudgeTitleAndNameToEmptyStringWhenJudgeTitleAndNameIsEmpty() {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .orders(Orders.builder()
@@ -167,7 +166,7 @@ class NoticeOfProceedingsServiceTest {
     }
 
     @Test
-    void shouldReturnFirstApplicantNameWhenMultipleApplicantsArePresent() throws IOException {
+    void shouldReturnFirstApplicantNameWhenMultipleApplicantsArePresent() {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .orders(Orders.builder()
@@ -183,7 +182,7 @@ class NoticeOfProceedingsServiceTest {
     }
 
     @Test
-    void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated() throws IOException {
+    void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated()  {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .noticeOfProceedings(NoticeOfProceedings.builder()
