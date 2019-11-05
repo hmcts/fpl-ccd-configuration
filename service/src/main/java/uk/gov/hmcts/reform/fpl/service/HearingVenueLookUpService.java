@@ -10,8 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -28,29 +26,25 @@ public class HearingVenueLookUpService {
     @Autowired
     public HearingVenueLookUpService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
+        populateHearingVenueMappings();
     }
 
-    private List<HearingVenue> getHearingVenueMappings() {
-        try {
-            final String jsonContent = ResourceReader.readString("static_data/hearingVenues.json");
-            return objectMapper.reader()
-                .forType(new TypeReference<List<HearingVenue>>() {})
-                .readValue(jsonContent);
+    private void populateHearingVenueMappings() {
+        if (isEmpty(hearingVenues)) {
+            try {
+                final String jsonContent = ResourceReader.readString("static_data/hearingVenues.json");
+                hearingVenues = objectMapper.reader()
+                    .forType(new TypeReference<List<HearingVenue>>() {})
+                    .readValue(jsonContent);
 
-        } catch (IOException e) {
-            log.error("Unable to parse hearingVenues.json file", e);
+            } catch (IOException e) {
+                log.error("Unable to parse hearingVenues.json file.", e);
+            }
         }
-
-        return Collections.emptyList();
     }
 
     HearingVenue getHearingVenue(final String venueId) {
-        if (isEmpty(this.hearingVenues)) {
-            hearingVenues = new ArrayList<>();
-            hearingVenues.addAll(getHearingVenueMappings());
-        }
-
-        return hearingVenues.stream()
+        return this.hearingVenues.stream()
             .filter(hearingVenue -> venueId.equalsIgnoreCase(hearingVenue.getHearingVenueId()))
             .findFirst()
             .orElse(HearingVenue.builder().build());
