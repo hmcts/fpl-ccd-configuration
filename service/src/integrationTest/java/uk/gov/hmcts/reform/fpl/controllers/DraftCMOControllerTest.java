@@ -85,7 +85,7 @@ class DraftCMOControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldPopulateHiddenCCDFieldsInStandardDirectionOrderToPersistData() throws Exception {
+    void aboutToSubmitShouldPopulateHiddenHearingDateField() throws Exception {
         List<Element<HearingBooking>> hearingDetails = createHearingBookings();
 
         DynamicList hearingDatesDynamic = draftCMOService.makeHearingDateList(hearingDetails);
