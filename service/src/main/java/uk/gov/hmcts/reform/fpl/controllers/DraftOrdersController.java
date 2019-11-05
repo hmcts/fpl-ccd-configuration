@@ -177,7 +177,7 @@ public class DraftOrdersController {
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
             callbackRequest.getCaseDetails().getId(),
-            "internal-changeState:Gatekeeping->SDO_READY_TO_SEND"
+            "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING"
         );
     }
 
