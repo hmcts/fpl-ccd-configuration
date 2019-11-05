@@ -32,9 +32,14 @@ public class DraftCMOServiceTest {
     void shouldReturnHearingDateDynamicListIfHearingDatesNotNull() {
         DynamicList hearingList = service.makeHearingDateList(createHearingBookings());
 
-        assertThat(hearingList.getListItems().get(0).getCode()).isEqualTo(convertdateTopLocalFormat(LocalDate.now().plusDays(5)));
-        assertThat(hearingList.getListItems().get(1).getCode()).isEqualTo(convertdateTopLocalFormat(LocalDate.now().plusDays(2)));
-        assertThat(hearingList.getListItems().get(2).getCode()).isEqualTo(convertdateTopLocalFormat(LocalDate.now()));
+        assertThat(hearingList.getListItems().get(0).getCode())
+            .isEqualTo(convertDateTopLocalFormat(LocalDate.now().plusDays(5)));
+
+        assertThat(hearingList.getListItems().get(1).getCode())
+            .isEqualTo(convertDateTopLocalFormat(LocalDate.now().plusDays(2)));
+
+        assertThat(hearingList.getListItems().get(2).getCode())
+            .isEqualTo(convertDateTopLocalFormat(LocalDate.now()));
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {
@@ -54,8 +59,7 @@ public class DraftCMOServiceTest {
         );
     }
 
-    private String convertdateTopLocalFormat(LocalDate date)
-    {
+    private String convertDateTopLocalFormat(LocalDate date) {
         return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
     }
 }
