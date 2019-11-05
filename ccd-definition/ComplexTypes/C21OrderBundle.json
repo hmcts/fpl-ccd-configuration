@@ -20,7 +20,7 @@
     "ID": "C21OrderBundle",
     "ListElementCode": "orderTitle",
     "FieldType": "Text",
-    "ElementLabel": "Order Title",
+    "ElementLabel": "Order title",
     "SecurityClassification": "Public"
   },
   {

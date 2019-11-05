@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -71,15 +72,16 @@ public class C21OrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-
+        String index = Integer.toString(ObjectUtils.defaultIfNull(caseData.getC21OrderBundle().size(), 0) + 1);
         // Append doc to check your answers
 
         Document c21Document = getDocument(
             authorization,
             userId,
+            index,
             createC21OrderService.getC21OrderTemplateData(caseData));
 
-        data.put("temporaryC21Order", buildTemporaryC21Order(caseData, c21Document));
+        data.put("temporaryC21Order", addDocumentToC21Order(caseData, c21Document));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data).build();
@@ -87,33 +89,21 @@ public class C21OrderController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        Document c21Document = getDocument(authorization, userId,
-            createC21OrderService.getC21OrderTemplateData(caseData));
-
         data.put("c21OrderBundle", createC21OrderService.appendToC21OrderBundle(
-            buildTemporaryC21Order(caseData, c21Document), caseData.getC21OrderBundle(), caseData.getJudgeAndLegalAdvisor()));
+            caseData.getTemporaryC21Order(), caseData.getC21OrderBundle(), caseData.getJudgeAndLegalAdvisor()));
         data.remove("temporaryC21Order");
         data.remove("judgeAndLegalAdvisor");
-
 
         return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
     }
 
-    private C21Order buildTemporaryC21Order(CaseData caseData, Document document) {
+    private C21Order addDocumentToC21Order(CaseData caseData, Document document) {
         return caseData.getTemporaryC21Order().toBuilder()
             .orderTitle(defaultIfBlank(caseData.getTemporaryC21Order().getOrderTitle(), "Order"))
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(caseData.getJudgeAndLegalAdvisor().getJudgeTitle())
-                .judgeLastName(caseData.getJudgeAndLegalAdvisor().getJudgeLastName())
-                .judgeFullName(caseData.getJudgeAndLegalAdvisor().getJudgeFullName())
-                .legalAdvisorName(caseData.getJudgeAndLegalAdvisor().getLegalAdvisorName())
-                .build())
             .c21OrderDocument(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
@@ -124,8 +114,10 @@ public class C21OrderController {
 
     private Document getDocument(@RequestHeader("authorization") String authorization,
                                  @RequestHeader("user-id") String userId,
+                                 String index,
                                  Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, C21);
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), C21.getDocumentTitle() + ".pdf");
+        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
+            C21.getDocumentTitle() + "_" + index + ".pdf");
     }
 }
