@@ -38,6 +38,8 @@ ccd:
     releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
     api:
       url: http://api-idam-fpl.service.core-compute-preview.internal
+    web_public:
+      url: http://web-idam-fpl.service.core-compute-preview.internal
     redirect_uris:
       CCD:
         - https://case-management-web-${SERVICE_FQDN}/oauth2redirect
