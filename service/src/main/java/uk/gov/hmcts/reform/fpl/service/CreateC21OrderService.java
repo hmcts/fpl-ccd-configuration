@@ -59,9 +59,9 @@ public class CreateC21OrderService {
             .id(UUID.randomUUID())
             .value(C21OrderBundle.builder()
                 .orderTitle(tempC21.getOrderTitle())
-                .c21OrderDocument(tempC21.getC21OrderDocument())
                 .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
                     .toLocalDateTime(), "h:mma, d MMMM yyyy"))
+                .c21OrderDocument(tempC21.getC21OrderDocument())
                 .judgeTitleAndName(formatJudgeTitleAndName(judgeAndLegalAdvisor))
                 .build())
             .build());

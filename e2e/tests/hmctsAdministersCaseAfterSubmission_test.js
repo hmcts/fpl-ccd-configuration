@@ -30,11 +30,12 @@ Scenario('HMCTS admin enters FamilyMan reference number', async (I, caseViewPage
   I.seeEventSubmissionConfirmation(config.administrationActions.addFamilyManCaseNumber);
 });
 
-Scenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage, enterOtherProceedingsEventPage) => {
-  async function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {}) {
+xScenario('HMCTS admin amends children, respondents, others, international element, other proceedings and attending hearing', async (I, caseViewPage, loginPage, enterFamilyManCaseNumberEventPage, enterOtherProceedingsEventPage) => {
+  async function I_doEventAndCheckIfAppropriateSummaryAndDescriptionIsVisible(event, summary, description, I_doActionsOnEditPage = () => {
+  }) {
     await caseViewPage.goToNewActions(event);
     I_doActionsOnEditPage();
-    await I.completeEvent('Save and continue', { summary: summary, description: description });
+    await I.completeEvent('Save and continue', {summary: summary, description: description});
     I.seeEventSubmissionConfirmation(event);
     I.see(summary);
     I.see(description);
@@ -62,7 +63,7 @@ Scenario('HMCTS admin amends children, respondents, others, international elemen
     summaryText, descriptionText);
 });
 
-Scenario('HMCTS admin uploads standard directions with other documents', async (I, caseViewPage, uploadStandardDirectionsDocumentEventPage) => {
+xScenario('HMCTS admin uploads standard directions with other documents', async (I, caseViewPage, uploadStandardDirectionsDocumentEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
   uploadStandardDirectionsDocumentEventPage.uploadStandardDirections(config.testFile);
   uploadStandardDirectionsDocumentEventPage.uploadAdditionalDocuments(config.testFile);
@@ -93,12 +94,12 @@ xScenario('HMCTS admin uploads C2 documents to the case', async (I, caseViewPage
   I.seeAnswerInTab('4', 'C2 2', 'Description', 'Jessica Pearson C2');
 });
 
-Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
+xScenario('HMCTS admin enters hearing details and submits', async (I, caseViewPage, loginPage, addHearingBookingDetailsEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
   await I.addAnotherElementToCollection();
   await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
-  await I.completeEvent('Save and continue', { summary: 'summary', description: 'description' });
+  await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
   I.seeAnswerInTab(1, 'Hearing 1', 'Type of hearing', hearingDetails[0].caseManagement);
@@ -126,7 +127,23 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(9, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
 });
 
-Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
+Scenario('HMCTS admin uploads C21 order to the case', async (I, caseViewPage, uploadC21OrderEventPage) => {
+  await caseViewPage.goToNewActions(config.administrationActions.uploadC21Order);
+  await uploadC21OrderEventPage.enterOrder();
+  await I.click('Continue');
+  await uploadC21OrderEventPage.selectJudgeTitle();
+  await uploadC21OrderEventPage.enterJudgeLastName('Sotomayer');
+  await uploadC21OrderEventPage.enterLegalAdvisorName('Peter Parker');
+  await I.click('Continue');
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.uploadC21Order);
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  I.seeAnswerInTab(1, 'C21 Order 1', 'Order title', 'Example Title');
+  I.seeAnswerInTab(3, 'C21 Order 1', 'File name', 'C21_Order_1.pdf');
+  I.seeAnswerInTab(4, 'C21 Order 1', 'Judge or Magistrate', 'Her Honour Judge Sotomayer');
+});
+
+xScenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
   sendCaseToGatekeeperEventPage.enterEmail();
   await I.completeEvent('Save and continue');

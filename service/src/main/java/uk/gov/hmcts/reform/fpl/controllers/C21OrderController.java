@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.CreateC21OrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -72,8 +70,10 @@ public class C21OrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-        String index = Integer.toString(ObjectUtils.defaultIfNull(caseData.getC21OrderBundle().size(), 0) + 1);
-        // Append doc to check your answers
+
+        String index = (caseData.getC21OrderBundle() != null)
+            ? Integer.toString(caseData.getC21OrderBundle().size() + 1) : "1";
+
 
         Document c21Document = getDocument(
             authorization,

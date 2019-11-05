@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.CreateC21OrderService;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
@@ -101,7 +100,7 @@ class C21OrderControllerTest {
             .willReturn(templateData);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C21))
             .willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, C21_DOCUMENT_TITLE + ".pdf"))
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, C21_DOCUMENT_TITLE + "_1.pdf"))
             .willReturn(document);
 
         MvcResult response = makeRequest(caseDetails, "mid-event");
@@ -119,7 +118,7 @@ class C21OrderControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldPopulateC21Bundle() throws Exception {
+    void aboutToSubmitShouldPopulateC21BundleAndRemoveTemporariesFromCaseData() throws Exception {
         byte[] pdf = {1, 2, 3, 4, 5};
         DocmosisDocument docmosisDocument = new DocmosisDocument(C21_DOCUMENT_TITLE, pdf);
         Document document = document();
@@ -135,7 +134,7 @@ class C21OrderControllerTest {
             .willReturn(templateData);
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(templateData, C21))
             .willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, C21_DOCUMENT_TITLE + ".pdf"))
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, C21_DOCUMENT_TITLE + "_1.pdf"))
             .willReturn(document);
 
         MvcResult response = makeRequest(caseDetails, "about-to-submit");
@@ -159,9 +158,10 @@ class C21OrderControllerTest {
         C21OrderBundle c21BundleEntry = c21OrderBundle.get(0).getValue();
 
         assertThat(c21BundleEntry.getOrderTitle()).isEqualTo(c21Order.getOrderTitle());
+        assertThat(c21BundleEntry.getOrderDate()).isEqualTo("1st November 2019");
+        assertThat(c21BundleEntry.getC21OrderDocument()).isEqualTo(c21Order.getC21OrderDocument());
         assertThat(c21BundleEntry.getJudgeTitleAndName()).isEqualTo(formatJudgeTitleAndName(
             caseData.getJudgeAndLegalAdvisor()));
-        assertThat(c21BundleEntry.getC21OrderDocument()).isEqualTo(c21Order.getC21OrderDocument());
     }
 
     private MvcResult makeRequest(CallbackRequest request, String endpoint) throws Exception {
@@ -181,7 +181,7 @@ class C21OrderControllerTest {
             .put("courtName", "Family Court sitting at Swansea")
             .put("orderTitle", "Order")
             .put("orderDetails", "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-            .put("todaysDate", "4th November 2019")
+            .put("todaysDate", "1st November 2019")
             .put("judgeTitleAndName", "Her Honour Judge Judy")
             .put("legalAdvisorName", "Peter Parker")
             .put("children", getChildrenDetails())
@@ -204,6 +204,7 @@ class C21OrderControllerTest {
             .id(UUID.randomUUID())
             .value(C21OrderBundle.builder()
                 .orderTitle(c21Order.getOrderTitle())
+                .orderDate("1st November 2019")
                 .c21OrderDocument(c21Order.getC21OrderDocument())
                 .judgeTitleAndName(formatJudgeTitleAndName(judgeAndLegalAdvisor))
                 .build())

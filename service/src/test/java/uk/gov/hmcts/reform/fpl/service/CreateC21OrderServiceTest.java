@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 
@@ -51,7 +50,7 @@ class CreateC21OrderServiceTest {
 
         assertThat(c21OrderBundle.getC21OrderDocument().getFilename()).isEqualTo("C21_1.pdf");
         assertThat(c21OrderBundle.getOrderTitle()).isEqualTo("Example order title");
-        assertThat(c21OrderBundle.getJudgeTitleAndName()).isEqualTo("Her Honour Judge Judy");
+        assertThat(c21OrderBundle.getJudgeTitleAndName()).isEqualTo("His Honour Judge Johnson");
     }
 
     @Test
@@ -75,7 +74,7 @@ class CreateC21OrderServiceTest {
             .caseLocalAuthority("example")
             .familyManCaseNumber("123")
             .temporaryC21Order(C21Order.builder()
-                .orderDetails("Mock description")
+                .orderDetails("Example order details")
                 .build())
             .build();
 
@@ -84,7 +83,7 @@ class CreateC21OrderServiceTest {
         assertThat(templateData.get("courtName")).isEqualTo("Example Court");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
         assertThat(templateData.get("orderTitle")).isEqualTo("Order");
-        assertThat(templateData.get("orderDetails")).isEqualTo("Mock description");
+        assertThat(templateData.get("orderDetails")).isEqualTo("Example order details");
         assertThat(templateData.get("todaysDate")).isEqualTo(dateFormatterService.formatLocalDateToString(TODAYS_DATE,
             FormatStyle.LONG));
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("");
@@ -98,8 +97,8 @@ class CreateC21OrderServiceTest {
             .caseLocalAuthority("example")
             .familyManCaseNumber("123")
             .temporaryC21Order(C21Order.builder()
-                .orderTitle("Mock title")
-                .orderDetails("Mock description")
+                .orderTitle("Example order title")
+                .orderDetails("Example order details")
                 .build())
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HIS_HONOUR_JUDGE)
@@ -113,8 +112,8 @@ class CreateC21OrderServiceTest {
 
         assertThat(templateData.get("courtName")).isEqualTo("Example Court");
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
-        assertThat(templateData.get("orderTitle")).isEqualTo("Mock title");
-        assertThat(templateData.get("orderDetails")).isEqualTo("Mock description");
+        assertThat(templateData.get("orderTitle")).isEqualTo("Example order title");
+        assertThat(templateData.get("orderDetails")).isEqualTo("Example order details");
         assertThat(templateData.get("todaysDate")).isEqualTo(dateFormatterService.formatLocalDateToString(TODAYS_DATE,
             FormatStyle.LONG));
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("His Honour Judge Johnson");
@@ -144,14 +143,15 @@ class CreateC21OrderServiceTest {
             .c21OrderBundle(c21OrderBundle)
             .temporaryC21Order(C21Order.builder()
                 .orderTitle("Example order title")
-                .orderDetails("Some order details")
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                    .judgeTitle(HER_HONOUR_JUDGE)
-                    .judgeLastName("Judy")
-                    .build())
+                .orderDetails("Example order details")
                 .c21OrderDocument(DocumentReference.builder()
                     .filename(fileName)
                     .build())
+                .build())
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HIS_HONOUR_JUDGE)
+                .judgeLastName("Johnson")
+                .legalAdvisorName("John Clarke")
                 .build())
             .build();
     }
