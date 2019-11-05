@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCaseManagementOrder;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
 @ActiveProfiles("integration-test")
@@ -52,10 +53,12 @@ class DraftCMOControllerTest {
     @Autowired
     private ObjectMapper mapper;
 
+    private final LocalDate date = LocalDate.now();
+
     @Test
     void aboutToStartCallbackShouldFillTheHearingDatesList() throws Exception {
 
-        List<Element<HearingBooking>> hearingBooking = createHearingBookings();
+        List<Element<HearingBooking>> hearingBooking = createHearingBookings(date);
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -64,37 +67,96 @@ class DraftCMOControllerTest {
             .build();
 
         List<String> expected = Arrays.asList(
-            convertdateTopLocalFormat(LocalDate.now().plusDays(5)),
-            convertdateTopLocalFormat(LocalDate.now().plusDays(2)),
-            convertdateTopLocalFormat(LocalDate.now()));
+            convertdateTopLocalFormat(date.plusDays(5)),
+            convertdateTopLocalFormat(date.plusDays(2)),
+            convertdateTopLocalFormat(date));
 
         MvcResult response = makeRequest(request, "about-to-start");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        Map<String, Object> cmoHearingResponse = mapper.convertValue(
-            callbackResponse.getData().get("cmoHearingDateList"), Map.class);
+        List<String> returnedDates = getReturnedDatesFromResponse(callbackResponse);
+        assertThat(returnedDates).isEqualTo(expected);
+    }
 
-        List<Map<String, Object>> listItemMap = mapper.convertValue(cmoHearingResponse.get("list_items"), List.class);
+    @Test
+    void aboutToStartCallbackShouldFillTheHearingDatesListWhenCmoNotNUll() throws Exception {
 
-        List<String> returnedDates = listItemMap.stream()
-            .map(element -> mapper.convertValue(element, DynamicListElement.class))
-            .map(DynamicListElement::getCode).collect(Collectors.toList());
+        List<Element<HearingBooking>> hearingBooking = createHearingBookings(date);
+
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of("hearingDetails", hearingBooking,
+                    "caseManagementOrder", createCaseManagementOrder(
+                        convertdateTopLocalFormat(date.plusDays(5)))
+                    ))
+                .build())
+            .build();
+
+        List<String> expected = Arrays.asList(
+            convertdateTopLocalFormat(date.plusDays(5)),
+            convertdateTopLocalFormat(date.plusDays(2)),
+            convertdateTopLocalFormat(date));
+
+        MvcResult response = makeRequest(request, "about-to-start");
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        List<String> returnedDates = getReturnedDatesFromResponse(callbackResponse);
+
+        assertThat(returnedDates).isEqualTo(expected);
+    }
+
+    @Test
+    void aboutToStartCallbackHearingDatesListDontHaveExistingCmoHearingDate() throws Exception {
+
+        List<Element<HearingBooking>> hearingBooking = ImmutableList.of(
+            Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(createHearingBooking(date.plusDays(2)))
+                .build(),
+            Element.<HearingBooking>builder()
+                .id(UUID.randomUUID())
+                .value(createHearingBooking(date))
+                .build());
+
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of("hearingDetails", hearingBooking,
+                    "caseManagementOrder", createCaseManagementOrder(
+                        convertdateTopLocalFormat(date.plusDays(5)))
+                ))
+                .build())
+            .build();
+
+        List<String> expected = Arrays.asList(
+            convertdateTopLocalFormat(date.plusDays(2)),
+            convertdateTopLocalFormat(date),
+            convertdateTopLocalFormat(date.plusDays(5)));
+
+        MvcResult response = makeRequest(request, "about-to-start");
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        List<String> returnedDates = getReturnedDatesFromResponse(callbackResponse);
+
         assertThat(returnedDates).isEqualTo(expected);
     }
 
     @Test
     void aboutToSubmitShouldPopulateHiddenHearingDateField() throws Exception {
-        List<Element<HearingBooking>> hearingDetails = createHearingBookings();
+        List<Element<HearingBooking>> hearingDetails = createHearingBookings(date);
 
         DynamicList hearingDatesDynamic = draftCMOService.makeHearingDateList(hearingDetails);
 
         hearingDatesDynamic
             .setValue(
                 DynamicListElement.builder()
-                    .code(LocalDate.now().plusDays(5).toString())
-                    .label(LocalDate.now().plusDays(5).toString())
+                    .code(date.plusDays(5).toString())
+                    .label(date.plusDays(5).toString())
                     .build());
 
         CallbackRequest request = CallbackRequest.builder()
@@ -111,7 +173,18 @@ class DraftCMOControllerTest {
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(caseData.getCaseManagementOrder().getHearingDate())
-            .isEqualTo(LocalDate.now().plusDays(5).toString());
+            .isEqualTo(date.plusDays(5).toString());
+    }
+
+    private List<String> getReturnedDatesFromResponse(AboutToStartOrSubmitCallbackResponse callbackResponse) {
+        Map<String, Object> cmoHearingResponse = mapper.convertValue(
+            callbackResponse.getData().get("cmoHearingDateList"), Map.class);
+
+        List<Map<String, Object>> listItemMap = mapper.convertValue(cmoHearingResponse.get("list_items"), List.class);
+
+        return listItemMap.stream()
+            .map(element -> mapper.convertValue(element, DynamicListElement.class))
+            .map(DynamicListElement::getCode).collect(Collectors.toList());
     }
 
     private MvcResult makeRequest(CallbackRequest request, String endpoint) throws Exception {
@@ -129,19 +202,19 @@ class DraftCMOControllerTest {
         return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
     }
 
-    private List<Element<HearingBooking>> createHearingBookings() {
+    private List<Element<HearingBooking>> createHearingBookings(LocalDate date) {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(LocalDate.now().plusDays(5)))
+                .value(createHearingBooking(date.plusDays(5)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(LocalDate.now().plusDays(2)))
+                .value(createHearingBooking(date.plusDays(2)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(LocalDate.now()))
+                .value(createHearingBooking(date))
                 .build()
         );
     }

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,7 +50,7 @@ public class DraftCMOController {
 
         if (cmoObject != null) {
             Order cmo = mapper.convertValue(cmoObject, Order.class);
-            String hearingDate = cmo.getHearingDate();
+            String hearingDate = ObjectUtils.isEmpty(cmo) ? "" : cmo.getHearingDate();
             if (!isEmpty(hearingDate)) {
                 DynamicListElement element = DynamicListElement.builder()
                     .label(hearingDate)
