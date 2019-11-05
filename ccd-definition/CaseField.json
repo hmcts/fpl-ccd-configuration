@@ -617,9 +617,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "labelTest",
-    "Label": "Label Test",
-    "HintText": "Include the Local Authority name and respondent’s last name. For example, Endley Council v Smith/Tate/Jones",
+    "ID": "orderBasis",
+    "Label": "Basis of order",
     "FieldType": "Text",
     "SecurityClassification": "Public"
   }
