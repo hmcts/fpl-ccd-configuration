@@ -54,15 +54,14 @@ class DraftCMOControllerTest {
     private ObjectMapper mapper;
 
     private final LocalDate date = LocalDate.now();
+    private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(date);
 
     @Test
     void aboutToStartCallbackShouldFillTheHearingDatesList() throws Exception {
 
-        List<Element<HearingBooking>> hearingBooking = createHearingBookings(date);
-
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of("hearingDetails", hearingBooking))
+                .data(ImmutableMap.of("hearingDetails", hearingDetails))
                 .build())
             .build();
 
@@ -71,23 +70,15 @@ class DraftCMOControllerTest {
             convertdateTopLocalFormat(date.plusDays(2)),
             convertdateTopLocalFormat(date));
 
-        MvcResult response = makeRequest(request, "about-to-start");
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        List<String> returnedDates = getReturnedDatesFromResponse(callbackResponse);
-        assertThat(returnedDates).isEqualTo(expected);
+        actAndAssert(request, expected);
     }
 
     @Test
     void aboutToStartCallbackShouldFillTheHearingDatesListWhenCmoNotNUll() throws Exception {
 
-        List<Element<HearingBooking>> hearingBooking = createHearingBookings(date);
-
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of("hearingDetails", hearingBooking,
+                .data(ImmutableMap.of("hearingDetails", hearingDetails,
                     "caseManagementOrder", createCaseManagementOrder(
                         convertdateTopLocalFormat(date.plusDays(5)))
                     ))
@@ -99,14 +90,7 @@ class DraftCMOControllerTest {
             convertdateTopLocalFormat(date.plusDays(2)),
             convertdateTopLocalFormat(date));
 
-        MvcResult response = makeRequest(request, "about-to-start");
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        List<String> returnedDates = getReturnedDatesFromResponse(callbackResponse);
-
-        assertThat(returnedDates).isEqualTo(expected);
+        actAndAssert(request, expected);
     }
 
     @Test
@@ -136,14 +120,16 @@ class DraftCMOControllerTest {
             convertdateTopLocalFormat(date),
             convertdateTopLocalFormat(date.plusDays(5)));
 
+        actAndAssert(request, expected);
+    }
+
+    private void actAndAssert(CallbackRequest request, List<String> expected) throws Exception {
         MvcResult response = makeRequest(request, "about-to-start");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        List<String> returnedDates = getReturnedDatesFromResponse(callbackResponse);
-
-        assertThat(returnedDates).isEqualTo(expected);
+        assertThat(getReturnedDatesFromResponse(callbackResponse)).isEqualTo(expected);
     }
 
     @Test
