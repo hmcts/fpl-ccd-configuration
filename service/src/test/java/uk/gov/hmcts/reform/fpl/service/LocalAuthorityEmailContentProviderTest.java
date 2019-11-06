@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +15,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 
 import java.io.IOException;
@@ -84,7 +87,14 @@ class LocalAuthorityEmailContentProviderTest {
 
         assertThat(localAuthorityEmailContentProvider
             .buildLocalAuthorityStandardDirectionOrderIssuedNotification(
-                CaseDetails.builder().data(ImmutableMap.of()).build(), LOCAL_AUTHORITY_CODE))
+                CaseDetails.builder().data(ImmutableMap.of(
+                    "respondents1", ImmutableList.of(
+                        ImmutableMap.of(
+                            "value", Respondent.builder()
+                                .party(RespondentParty.builder()
+                                    .lastName("Moley")
+                                    .build())
+                                .build())))).build(), LOCAL_AUTHORITY_CODE))
             .isEqualTo(emptyTemplateParameters());
     }
 
@@ -104,6 +114,7 @@ class LocalAuthorityEmailContentProviderTest {
             .put("title", LOCAL_AUTHORITY_NAME)
             .put("familyManCaseNumber", "")
             .put("hearingDate", "")
+            .put("leadRespondentsName", "Moley,")
             .put("reference", "null")
             .put("caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/null")
             .build();
