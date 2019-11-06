@@ -78,6 +78,10 @@ recreate_user() {
 
 set -eu
 
+if [ "${ENVIRONMENT:-local}" != "local" ]; then
+  exit 0;
+fi
+
 email=${1}
 rolesStr=${2}
 surname=${3:-"Tester"}
