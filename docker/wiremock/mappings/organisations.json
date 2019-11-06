@@ -1,0 +1,19 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/refdata/external/v1/organisations/users",
+    "queryParameters": {
+      "status": {
+        "equalTo": "ACTIVE"
+      }
+    }
+
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "bodyFileName": "swanseaOrg.json"
+  }
+}
