@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
+import uk.gov.hmcts.reform.fpl.interfaces.C21CaseOrderGroup;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CreateC21OrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
 import java.util.Map;
 
@@ -36,6 +38,7 @@ public class C21OrderController {
     private final DocmosisDocumentGeneratorService docmosisService;
     private final UploadDocumentService uploadDocumentService;
     private final CreateC21OrderService createC21OrderService;
+    private final ValidateGroupService validateGroupService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
@@ -43,21 +46,24 @@ public class C21OrderController {
                               DocmosisDocumentGeneratorService docmosisService,
                               UploadDocumentService uploadDocumentService,
                               CreateC21OrderService createC21OrderService,
-                              DateFormatterService dateFormatterService,
                               ValidateGroupService validateGroupService,
                               ApplicationEventPublisher applicationEventPublisher) {
         this.mapper = mapper;
         this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
         this.createC21OrderService = createC21OrderService;
+        this.validateGroupService = validateGroupService;
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
+            .errors(validateGroupService.validateGroup(caseData, C21CaseOrderGroup.class))
             .build();
     }
 
