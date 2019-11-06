@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.time.LocalDate;
-import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,24 +22,22 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 public class DraftCMOServiceTest {
 
     @Autowired
-    private DateFormatterService dateFormatterService;
-
-    @Autowired
-    private DraftCMOService service;
+    private DraftCMOService draftCMOService;
 
     @Test
     void shouldReturnHearingDateDynamicListIfHearingDatesNotNull() {
         LocalDate now = LocalDate.now();
-        DynamicList hearingList = service.buildDynamicListFromHearingDetails(createHearingBookings(now));
+        DynamicList hearingList = draftCMOService.buildDynamicListFromHearingDetails(
+            createHearingBookings(now));
 
         assertThat(hearingList.getListItems().get(0).getCode())
-            .isEqualTo(convertDateTopLocalFormat(now.plusDays(5)));
+            .isEqualTo(draftCMOService.convertDate(now.plusDays(5)));
 
         assertThat(hearingList.getListItems().get(1).getCode())
-            .isEqualTo(convertDateTopLocalFormat(now.plusDays(2)));
+            .isEqualTo(draftCMOService.convertDate(now.plusDays(2)));
 
         assertThat(hearingList.getListItems().get(2).getCode())
-            .isEqualTo(convertDateTopLocalFormat(now));
+            .isEqualTo(draftCMOService.convertDate(now));
     }
 
     private List<Element<HearingBooking>> createHearingBookings(LocalDate now) {
@@ -58,9 +55,5 @@ public class DraftCMOServiceTest {
                 .value(createHearingBooking(now))
                 .build()
         );
-    }
-
-    private String convertDateTopLocalFormat(LocalDate date) {
-        return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
     }
 }

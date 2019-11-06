@@ -34,6 +34,10 @@ public class DraftCMOService {
         return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);
     }
 
+    public String convertDate(LocalDate date) {
+        return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
+    }
+
     class HearingDateDynamicElement implements DynamicElementParser {
 
         HearingDateDynamicElement(LocalDate date) {
@@ -44,7 +48,7 @@ public class DraftCMOService {
 
         @Override
         public DynamicListElement toDynamicElement() {
-            final String dateString = dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
+            final String dateString = convertDate(date);
             return DynamicListElement.builder().code(dateString).label(dateString).build();
         }
     }

@@ -19,11 +19,9 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 
 import java.time.LocalDate;
-import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -47,8 +45,6 @@ class DraftCMOControllerTest {
     @Autowired
     private DraftCMOService draftCMOService;
     @Autowired
-    private DateFormatterService dateFormatterService;
-    @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper mapper;
@@ -66,9 +62,9 @@ class DraftCMOControllerTest {
             .build();
 
         List<String> expected = Arrays.asList(
-            convertdateTopLocalFormat(date.plusDays(5)),
-            convertdateTopLocalFormat(date.plusDays(2)),
-            convertdateTopLocalFormat(date));
+            draftCMOService.convertDate(date.plusDays(5)),
+            draftCMOService.convertDate(date.plusDays(2)),
+            draftCMOService.convertDate(date));
 
         actAndAssert(request, expected);
     }
@@ -80,15 +76,15 @@ class DraftCMOControllerTest {
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of("hearingDetails", hearingDetails,
                     "caseManagementOrder", createCaseManagementOrder(
-                        convertdateTopLocalFormat(date.plusDays(5)))
+                        draftCMOService.convertDate(date.plusDays(5)))
                     ))
                 .build())
             .build();
 
         List<String> expected = Arrays.asList(
-            convertdateTopLocalFormat(date.plusDays(5)),
-            convertdateTopLocalFormat(date.plusDays(2)),
-            convertdateTopLocalFormat(date));
+            draftCMOService.convertDate(date.plusDays(5)),
+            draftCMOService.convertDate(date.plusDays(2)),
+            draftCMOService.convertDate(date));
 
         actAndAssert(request, expected);
     }
@@ -110,15 +106,15 @@ class DraftCMOControllerTest {
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of("hearingDetails", hearingBooking,
                     "caseManagementOrder", createCaseManagementOrder(
-                        convertdateTopLocalFormat(date.plusDays(5)))
+                        draftCMOService.convertDate(date.plusDays(5)))
                 ))
                 .build())
             .build();
 
         List<String> expected = Arrays.asList(
-            convertdateTopLocalFormat(date.plusDays(2)),
-            convertdateTopLocalFormat(date),
-            convertdateTopLocalFormat(date.plusDays(5)));
+            draftCMOService.convertDate(date.plusDays(2)),
+            draftCMOService.convertDate(date),
+            draftCMOService.convertDate(date.plusDays(5)));
 
         actAndAssert(request, expected);
     }
@@ -182,10 +178,6 @@ class DraftCMOControllerTest {
                 .content(mapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andReturn();
-    }
-
-    private String convertdateTopLocalFormat(LocalDate date) {
-        return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
     }
 
     private List<Element<HearingBooking>> createHearingBookings(LocalDate date) {
