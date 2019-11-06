@@ -95,7 +95,7 @@ public class NotificationHandler {
         String localAuthorityEmail = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
         String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
 
-        sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE.getTemplateId(),
+        sendNotifications(C21_ORDER_NOTIFICATION_TEMPLATE.getTemplateId(),
             Arrays.asList(localAuthorityEmail, cafcassEmail), parameters, reference);
     }
 
@@ -137,7 +137,7 @@ public class NotificationHandler {
         }
     }
 
-    private void sendNotification(final String templateId,
+    private void sendNotifications(final String templateId,
                                  final List<String> emails,
                                  final Map<String, Object> parameters,
                                  final String reference) {
