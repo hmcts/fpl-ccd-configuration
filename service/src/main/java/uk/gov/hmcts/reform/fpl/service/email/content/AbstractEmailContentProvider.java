@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.apache.commons.lang.StringUtils;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrderDirectionsType;
 import uk.gov.hmcts.reform.fpl.config.utils.EmergencyProtectionOrdersType;
@@ -17,6 +16,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
+import static org.apache.commons.lang.StringUtils.capitalize;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
@@ -54,7 +54,7 @@ public abstract class AbstractEmailContentProvider {
     protected ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(CaseDetails caseDetails, CaseData caseData) {
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber() + ",")
-            .put("leadRespondentsName", isNull(caseData.getRespondents1()) ? "" : StringUtils.capitalize(caseData.getRespondents1()
+            .put("leadRespondentsName", capitalize(caseData.getRespondents1()
                 .get(0)
                 .getValue()
                 .getParty()

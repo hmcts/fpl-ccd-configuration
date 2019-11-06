@@ -26,6 +26,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -157,7 +159,16 @@ class DraftOrdersControllerTest {
                     .jurisdiction(JURISDICTION)
                     .caseTypeId(CASE_TYPE)
                     .data(ImmutableMap.of("standardDirectionOrder", order,
-                        "caseLocalAuthority", "example"))
+                        "caseLocalAuthority", "example",
+                        "respondents1", ImmutableList.of(
+                            ImmutableMap.of(
+                                "id", "",
+                                "value", Respondent.builder()
+                                    .party(RespondentParty.builder()
+                                        .dateOfBirth(LocalDate.now().plusDays(1))
+                                        .lastName("Moley")
+                                        .build())
+                                    .build()))))
                     .build())
                 .build();
             String callbackType = "submitted";
@@ -298,7 +309,7 @@ class DraftOrdersControllerTest {
         return ImmutableMap.<String, Object>builder()
             .put("title", "cafcass")
             .put("familyManCaseNumber", "")
-            .put("leadRespondentsName", "")
+            .put("leadRespondentsName", "Moley,")
             .put("hearingDate", "20 October 2020")
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
@@ -363,6 +374,17 @@ class DraftOrdersControllerTest {
                                 .date(LocalDate.of(2020, 10, 20))
                                 .build())
                             .build()),
+                    "respondents1", ImmutableList.of(
+                        ImmutableMap.of(
+                            "id", "",
+                            "value", Respondent.builder()
+                                .party(RespondentParty.builder()
+                                    .dateOfBirth(LocalDate.now().plusDays(1))
+                                    .lastName("Moley")
+                                    .build())
+                                .build()
+                        )
+                    ),
                     "standardDirectionOrder", order,
                     "caseLocalAuthority", "example"))
                 .build())

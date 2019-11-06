@@ -103,7 +103,6 @@ class LocalAuthorityEmailContentProviderTest {
         return ImmutableMap.<String, Object>builder()
             .put("title", LOCAL_AUTHORITY_NAME)
             .put("familyManCaseNumber", "")
-            .put("leadRespondentsName", "")
             .put("hearingDate", "")
             .put("reference", "null")
             .put("caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/null")
