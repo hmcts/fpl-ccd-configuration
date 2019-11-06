@@ -48,9 +48,9 @@ public class CreateC21OrderService {
             .build();
     }
 
-    public List<Element<C21OrderBundle>> appendToC21OrderBundle(C21Order tempC21,
-                                                                List<Element<C21OrderBundle>> c21OrderBundle,
-                                                                JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+    public List<Element<C21OrderBundle>> addToC21OrderBundle(C21Order tempC21,
+                                                             JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                                             List<Element<C21OrderBundle>> c21OrderBundle) {
         c21OrderBundle = defaultIfNull(c21OrderBundle, Lists.newArrayList());
 
         ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));

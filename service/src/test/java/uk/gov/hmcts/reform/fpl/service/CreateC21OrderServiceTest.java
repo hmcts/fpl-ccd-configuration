@@ -42,8 +42,8 @@ class CreateC21OrderServiceTest {
         List<Element<C21OrderBundle>> emptyC21OrderBundle = new ArrayList<>();
         CaseData caseData = addC21OrderAndBundleToCaseData(emptyC21OrderBundle, "C21_1.pdf");
 
-        List<Element<C21OrderBundle>> c21OrderBundleWithOrder = createC21OrderService.appendToC21OrderBundle(
-            caseData.getTemporaryC21Order(), caseData.getC21OrderBundle(), caseData.getJudgeAndLegalAdvisor());
+        List<Element<C21OrderBundle>> c21OrderBundleWithOrder = createC21OrderService.addToC21OrderBundle(
+            caseData.getTemporaryC21Order(), caseData.getJudgeAndLegalAdvisor(), caseData.getC21OrderBundle());
         assertThat(c21OrderBundleWithOrder).size().isEqualTo(1);
 
         C21OrderBundle c21OrderBundle = c21OrderBundleWithOrder.get(0).getValue();
@@ -57,8 +57,8 @@ class CreateC21OrderServiceTest {
     void shouldAppendNewC21OrderToExistingC21OrderBundle() {
         CaseData caseData = addC21OrderAndBundleToCaseData(getExistingC21OrderBundle(), "C21_2.pdf");
 
-        List<Element<C21OrderBundle>> c21OrderBundleWithTwoOrders = createC21OrderService.appendToC21OrderBundle(
-            caseData.getTemporaryC21Order(), caseData.getC21OrderBundle(), caseData.getJudgeAndLegalAdvisor());
+        List<Element<C21OrderBundle>> c21OrderBundleWithTwoOrders = createC21OrderService.addToC21OrderBundle(
+            caseData.getTemporaryC21Order(), caseData.getJudgeAndLegalAdvisor(), caseData.getC21OrderBundle());
         assertThat(c21OrderBundleWithTwoOrders).size().isEqualTo(2);
 
         C21OrderBundle previousC21 = c21OrderBundleWithTwoOrders.get(0).getValue();
@@ -159,8 +159,8 @@ class CreateC21OrderServiceTest {
     private List<Element<C21OrderBundle>> getExistingC21OrderBundle() {
         List<Element<C21OrderBundle>> c21EmptyOrderBundle = new ArrayList<>();
         CaseData caseData = addC21OrderAndBundleToCaseData(c21EmptyOrderBundle, "C21_1.pdf");
-        return createC21OrderService.appendToC21OrderBundle(
-            caseData.getTemporaryC21Order(), caseData.getC21OrderBundle(), caseData.getJudgeAndLegalAdvisor());
+        return createC21OrderService.addToC21OrderBundle(
+            caseData.getTemporaryC21Order(), caseData.getJudgeAndLegalAdvisor(), caseData.getC21OrderBundle());
 
     }
 

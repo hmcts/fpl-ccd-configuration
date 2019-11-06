@@ -150,8 +150,8 @@ class C21OrderControllerTest {
         C21Order c21Order = caseData.getTemporaryC21Order();
         List<Element<C21OrderBundle>> c21OrderBundle = responseCaseData.getC21OrderBundle();
 
-        given(createC21OrderService.appendToC21OrderBundle(c21Order, c21OrderBundle, caseData.getJudgeAndLegalAdvisor()))
-            .willReturn(createOrderBundle(c21Order, c21OrderBundle, caseData.getJudgeAndLegalAdvisor()));
+        given(createC21OrderService.addToC21OrderBundle(c21Order, caseData.getJudgeAndLegalAdvisor(), c21OrderBundle))
+            .willReturn(createOrderBundle(c21Order, caseData.getJudgeAndLegalAdvisor(), c21OrderBundle));
 
         assertThat(c21OrderBundle).hasSize(1);
 
@@ -199,7 +199,7 @@ class C21OrderControllerTest {
 
 
     private List<Element<C21OrderBundle>> createOrderBundle(
-        C21Order c21Order, List<Element<C21OrderBundle>> c21OrderBundle, JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        C21Order c21Order, JudgeAndLegalAdvisor judgeAndLegalAdvisor, List<Element<C21OrderBundle>> c21OrderBundle) {
         c21OrderBundle.add(Element.<C21OrderBundle>builder()
             .id(UUID.randomUUID())
             .value(C21OrderBundle.builder()
