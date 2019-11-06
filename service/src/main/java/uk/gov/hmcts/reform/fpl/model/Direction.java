@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import static java.util.Objects.isNull;
 
@@ -17,7 +16,6 @@ import static java.util.Objects.isNull;
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Direction {
-    private final UUID id;
     private final String directionType;
     private String directionText;
     private final String status;

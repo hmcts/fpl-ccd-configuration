@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,8 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
+import static java.util.Collections.EMPTY_LIST;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -163,150 +167,28 @@ class DirectionHelperServiceTest {
         }
     }
 
-    @Test
-    void shouldSortDirectionsIntoSeparateEntriesInMapWhenManyAssignees() {
-        List<Element<Direction>> directions = ImmutableList.<Element<Direction>>builder()
-            .addAll(buildDirections(LOCAL_AUTHORITY))
-            .addAll(buildDirections(COURT))
-            .build();
-
-        Map<String, List<Element<Direction>>> sortedDirections = service.sortDirectionsByAssignee(directions);
-
-        assertThat(sortedDirections).containsOnlyKeys(LOCAL_AUTHORITY.getValue(), COURT.getValue());
-    }
-
-    @Nested
-    class RemoveCustomDirections {
-
-        @Test
-        void shouldRemoveCustomDirectionFromListWhenCustomFlagIsYes() {
-            List<Element<Direction>> filteredDirections = service.removeCustomDirections(buildCustomDirections());
-
-            assertThat(filteredDirections).isEmpty();
-        }
-
-        @ParameterizedTest
-        @NullAndEmptySource
-        @ValueSource(strings = {"No"})
-        void shouldNotRemoveDirectionFromListWhenCustomFlagIsNo(String custom) {
-            List<Element<Direction>> filteredDirections = service.removeCustomDirections(ImmutableList.of(
-                Element.<Direction>builder()
-                    .value(Direction.builder()
-                        .custom(custom)
-                        .build())
-                    .build()));
-
-            assertThat(filteredDirections).hasSize(1);
-        }
-    }
-
-    @Test
-    void numberDirections_shouldNumberDirectionsStartingAtTwo() {
-        CaseData caseData = populateCaseDataWithFixedDirections().build();
-
-        List<Element<Direction>> directions = service.combineAllDirections(caseData);
-
-        List<String> numberedDirectionTypes = service.numberDirections(directions).stream()
-            .map(direction -> direction.getValue().getDirectionType())
-            .collect(toList());
-
-        List<String> expectedDirectionsTypes = IntStream.range(0, numberedDirectionTypes.size())
-            .mapToObj(x -> (x + 2) + ". direction")
-            .collect(toList());
-
-        assertThat(numberedDirectionTypes).isEqualTo(expectedDirectionsTypes);
-    }
-
-    @Test
-    void constructDirectionForCCD_shouldConstructDirectionFromConfigurationAsExpectedWhenCompleteByDateIsRealDate() {
-        LocalDateTime today = LocalDateTime.now();
-
-        DirectionConfiguration directionConfig = DirectionConfiguration.builder()
-            .assignee(LOCAL_AUTHORITY)
-            .title("direction title")
-            .text("direction text")
-            .display(Display.builder()
-                .due(Display.Due.BY)
-                .templateDateFormat("h:mma, d MMMM yyyy")
-                .directionRemovable(false)
-                .showDateOnly(false)
-                .build())
-            .build();
-
-        Element<Direction> actualDirection = service.constructDirectionForCCD(directionConfig, today);
-
-        assertThat(actualDirection.getValue()).isEqualTo(Direction.builder()
-            .directionType("direction title")
-            .directionText("direction text")
-            .readOnly("No")
-            .directionRemovable("No")
-            .dateToBeCompletedBy(today)
-            .assignee(LOCAL_AUTHORITY)
-            .build());
-    }
-
-    @Test
-    void constructDirectionForCCD_shouldConstructDirectionFromConfigurationAsExpectedWhenCompleteByDateIsNull() {
-        DirectionConfiguration directionConfig = DirectionConfiguration.builder()
-            .assignee(LOCAL_AUTHORITY)
-            .title("direction title")
-            .text("direction text")
-            .display(Display.builder()
-                .due(Display.Due.BY)
-                .templateDateFormat("h:mma, d MMMM yyyy")
-                .directionRemovable(false)
-                .showDateOnly(false)
-                .build())
-            .build();
-
-        Element<Direction> actualDirection =
-            service.constructDirectionForCCD(directionConfig, null);
-
-        assertThat(actualDirection.getValue()).isEqualTo(Direction.builder()
-            .directionType("direction title")
-            .directionText("direction text")
-            .readOnly("No")
-            .directionRemovable("No")
-            .dateToBeCompletedBy(null)
-            .assignee(LOCAL_AUTHORITY)
-            .build());
-    }
-
     @Nested
     class AddResponsesToDirections {
         private final UUID uuid = UUID.randomUUID();
 
         @Test
         void shouldAddNewResponsesWhenNonePreviouslyExisted() {
-            List<Element<DirectionResponse>> responses = new ArrayList<>();
+            DirectionResponse response = DirectionResponse.builder()
+                .complied("Yes")
+                .assignee(LOCAL_AUTHORITY)
+                .directionId(uuid)
+                .build();
 
-            List<Element<Direction>> directionWithNoResponse = ImmutableList.of(
-                Element.<Direction>builder()
-                    .id(uuid)
-                    .value(Direction.builder()
-                        .responses(responses)
-                        .build())
-                    .build());
+            List<Element<Direction>> directionWithNoResponse = getDirectionsWithResponses(new ArrayList<>());
 
-            List<Element<Direction>> directionWithResponse = ImmutableList.of(
-                Element.<Direction>builder()
-                    .id(uuid)
-                    .value(Direction.builder()
-                        .response(DirectionResponse.builder()
-                            .complied("Yes")
-                            .directionId(uuid)
-                            .build())
-                        .build())
-                    .build());
-
-            service.addResponsesToDirections(directionWithResponse, directionWithNoResponse);
+            service.addResponsesToDirections(ImmutableList.of(response), directionWithNoResponse);
 
             assertThat(getResponses(directionWithNoResponse)).isNotEmpty();
         }
 
         @Test
         void shouldNotAddResponseToDirectionWhenMatchingResponseAlreadyExist() {
-            DirectionResponse directionResponse = DirectionResponse.builder()
+            DirectionResponse response = DirectionResponse.builder()
                 .complied("Yes")
                 .assignee(LOCAL_AUTHORITY)
                 .directionId(uuid)
@@ -314,30 +196,12 @@ class DirectionHelperServiceTest {
 
             List<Element<DirectionResponse>> responses = new ArrayList<>();
             responses.add(Element.<DirectionResponse>builder()
-                .value(directionResponse)
+                .value(response)
                 .build());
 
-            List<Element<Direction>> directionWithNoResponse = ImmutableList.of(
-                Element.<Direction>builder()
-                    .id(uuid)
-                    .value(Direction.builder()
-                        .directionType("Direction")
-                        .assignee(LOCAL_AUTHORITY)
-                        .responses(responses)
-                        .build())
-                    .build());
+            List<Element<Direction>> directionWithNoResponse = getDirectionsWithResponses(responses);
 
-            List<Element<Direction>> directionWithResponse = ImmutableList.of(
-                Element.<Direction>builder()
-                    .id(uuid)
-                    .value(Direction.builder()
-                        .directionType("Direction")
-                        .assignee(LOCAL_AUTHORITY)
-                        .response(directionResponse)
-                        .build())
-                    .build());
-
-            service.addResponsesToDirections(directionWithResponse, directionWithNoResponse);
+            service.addResponsesToDirections(ImmutableList.of(response), directionWithNoResponse);
 
             assertThat(getResponses(directionWithNoResponse)).hasSize(1);
         }
@@ -353,76 +217,122 @@ class DirectionHelperServiceTest {
                     .build())
                 .build());
 
-            List<Element<Direction>> directionWithOldResponse = ImmutableList.of(
-                Element.<Direction>builder()
-                    .id(uuid)
-                    .value(Direction.builder()
-                        .directionType("Direction")
-                        .assignee(LOCAL_AUTHORITY)
-                        .responses(responses)
-                        .build())
-                    .build());
+            List<Element<Direction>> directionWithOldResponse = getDirectionsWithResponses(responses);
 
-            List<Element<Direction>> directionWithNewResponse = ImmutableList.of(
-                Element.<Direction>builder()
-                    .id(uuid)
-                    .value(Direction.builder()
-                        .directionType("Direction")
-                        .assignee(LOCAL_AUTHORITY)
-                        .response(DirectionResponse.builder()
-                            .assignee(LOCAL_AUTHORITY)
-                            .complied("Yes")
-                            .directionId(uuid)
-                            .build())
-                        .build())
-                    .build());
+            DirectionResponse newResponse = DirectionResponse.builder()
+                .assignee(LOCAL_AUTHORITY)
+                .complied("Yes")
+                .directionId(uuid)
+                .build();
 
-            service.addResponsesToDirections(directionWithNewResponse, directionWithOldResponse);
+            service.addResponsesToDirections(ImmutableList.of(newResponse), directionWithOldResponse);
 
             assertThat(getResponses(directionWithOldResponse)).hasSize(1);
-            assertThat(getResponses(directionWithOldResponse).get(0).getValue().getComplied().equals("Yes"));
+            assertThat(getResponses(directionWithOldResponse).get(0).getValue().getComplied()).isEqualTo("Yes");
         }
 
         @Test
         void shouldAddMultipleResponsesForTheSameDirectionWhenDifferentPartiesComply() {
-            List<Element<DirectionResponse>> responses = new ArrayList<>();
+            List<Element<Direction>> directionsWithNoResponse = getDirectionsWithResponses(new ArrayList<>());
 
-            List<Element<Direction>> directionsWithNoResponse = ImmutableList.of(
+            List<DirectionResponse> newResponses = ImmutableList.of(DirectionResponse.builder()
+                    .assignee(LOCAL_AUTHORITY)
+                    .complied("Yes")
+                    .directionId(uuid)
+                    .build(),
+                DirectionResponse.builder()
+                    .assignee(CAFCASS)
+                    .complied("Yes")
+                    .directionId(uuid)
+                    .build()
+            );
+
+            service.addResponsesToDirections(newResponses, directionsWithNoResponse);
+
+            assertThat(getResponses(directionsWithNoResponse)).hasSize(2);
+        }
+
+        @Test
+        void shouldBeAbleToUpdateAnExistingResponseWhenMultipleResponsesExist() {
+            List<Element<DirectionResponse>> responses = new ArrayList<>();
+            responses.add(Element.<DirectionResponse>builder()
+                .value(DirectionResponse.builder()
+                    .assignee(LOCAL_AUTHORITY)
+                    .complied("No")
+                    .directionId(uuid)
+                    .build())
+                .build());
+
+            responses.add(Element.<DirectionResponse>builder()
+                .value(DirectionResponse.builder()
+                    .assignee(CAFCASS)
+                    .complied("No")
+                    .directionId(uuid)
+                    .build())
+                .build());
+
+            List<Element<Direction>> directionWithOldResponse = getDirectionsWithResponses(responses);
+
+            DirectionResponse newResponse = DirectionResponse.builder()
+                .assignee(LOCAL_AUTHORITY)
+                .complied("Yes")
+                .supportingDocumentDetails("example details")
+                .directionId(uuid)
+                .build();
+
+            service.addResponsesToDirections(ImmutableList.of(newResponse), directionWithOldResponse);
+
+            assertThat(getResponses(directionWithOldResponse)).hasSize(2);
+            assertThat(getResponses(directionWithOldResponse)).extracting("value").contains(newResponse);
+        }
+
+        @Test
+        void shouldUpdateCorrectResponseWhenMultipleResponses() {
+            List<Element<DirectionResponse>> responses = new ArrayList<>();
+            responses.add(Element.<DirectionResponse>builder()
+                .value(DirectionResponse.builder()
+                    .assignee(LOCAL_AUTHORITY)
+                    .complied("No")
+                    .directionId(uuid)
+                    .build())
+                .build());
+
+            responses.add(Element.<DirectionResponse>builder()
+                .value(DirectionResponse.builder()
+                    .assignee(CAFCASS)
+                    .complied("No")
+                    .directionId(uuid)
+                    .build())
+                .build());
+
+            List<Element<Direction>> directions = getDirectionsWithResponses(responses);
+
+            List<DirectionResponse> newResponses = ImmutableList.of(DirectionResponse.builder()
+                    .assignee(LOCAL_AUTHORITY)
+                    .complied("Yes")
+                    .directionId(uuid)
+                    .build(),
+                DirectionResponse.builder()
+                    .assignee(CAFCASS)
+                    .complied("No")
+                    .directionId(uuid)
+                    .build()
+            );
+
+            service.addResponsesToDirections(newResponses, directions);
+
+            assertThat(getResponses(directions)).hasSize(2);
+            assertThat(directions.get(0).getValue().getResponses().get(0).getValue().getComplied()).isEqualTo("Yes");
+        }
+
+        private List<Element<Direction>> getDirectionsWithResponses(List<Element<DirectionResponse>> responses) {
+            return ImmutableList.of(
                 Element.<Direction>builder()
                     .id(uuid)
                     .value(Direction.builder()
-                        .assignee(ALL_PARTIES)
                         .responses(responses)
                         .build())
                     .build());
-
-            List<Element<Direction>> directionsWithResponse = ImmutableList.of(
-                Element.<Direction>builder()
-                    .id(uuid)
-                    .value(Direction.builder()
-                        .assignee(ALL_PARTIES)
-                        .response(DirectionResponse.builder()
-                            .assignee(LOCAL_AUTHORITY)
-                            .complied("Yes")
-                            .directionId(uuid)
-                            .build())
-                        .build())
-                    .build(),
-                Element.<Direction>builder()
-                    .id(uuid)
-                    .value(Direction.builder()
-                        .assignee(ALL_PARTIES)
-                        .response(DirectionResponse.builder()
-                            .assignee(CAFCASS)
-                            .complied("Yes")
-                            .directionId(uuid)
-                            .build())
-                        .build())
-                    .build());
-
-            service.addResponsesToDirections(directionsWithResponse, directionsWithNoResponse);
-
-            assertThat(getResponses(directionsWithNoResponse)).hasSize(2);
         }
 
         private List<Element<DirectionResponse>> getResponses(List<Element<Direction>> directionWithNoResponse) {
@@ -432,7 +342,6 @@ class DirectionHelperServiceTest {
 
     @Nested
     class ExtractPartyResponse {
-
         private final UUID uuid = UUID.randomUUID();
 
         @Test
@@ -571,6 +480,279 @@ class DirectionHelperServiceTest {
             assertThat(expected.get(1).getValue().getResponse()).isNotNull();
             assertThat(expected).hasSize(2);
         }
+    }
+
+    @Nested
+    class CollectDirectionsToMap {
+
+        @Test
+        void shouldReturnMapWithEmptyListWhenNoDirectionsForAssignee() {
+            Map<String, List<Element<Direction>>> map = service.collectDirectionsToMap(CaseData.builder().build());
+
+            assertThat(new ArrayList<>(map.values()))
+                .isEqualTo(ImmutableList.of(EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST));
+        }
+
+        @Test
+        void shouldReturnMapWithDirectionListWhenDirectionsForAssignees() {
+            Map<String, List<Element<Direction>>> map =
+                service.collectDirectionsToMap(populateCaseDataWithFixedDirections().build());
+
+            Map<String, List<Element<Direction>>> expectedMap = Stream.of(DirectionAssignee.values()).collect(
+                toMap(DirectionAssignee::getValue, DirectionHelperServiceTest.this::buildDirections));
+
+            assertThat(map).isEqualTo(expectedMap);
+        }
+    }
+
+    @Nested
+    class AddHiddenVariablesToResponseForManyAssignees {
+        final UUID uuid = UUID.randomUUID();
+
+        @Test
+        void shouldAddCorrectAssigneeAndDirectionWhenDirectionHasValidResponse() {
+            String complied = "Yes";
+
+            List<Element<Direction>> directions = service.addHiddenVariablesToResponseForManyAssignees(
+                ImmutableMap.of(LOCAL_AUTHORITY.getValue(), buildDirection(LOCAL_AUTHORITY, uuid, complied)));
+
+            assertThat(directions.get(0).getValue().getResponse().getAssignee()).isEqualTo(LOCAL_AUTHORITY);
+            assertThat(directions.get(0).getValue().getResponse().getDirectionId()).isEqualTo(uuid);
+        }
+
+        @Test
+        void shouldNotReturnDirectionWhenCompliedHasNotBeenAnswered() {
+            String complied = null;
+
+            List<Element<Direction>> directions = service.addHiddenVariablesToResponseForManyAssignees(
+                ImmutableMap.of(LOCAL_AUTHORITY.getValue(), buildDirection(LOCAL_AUTHORITY, uuid, complied)));
+
+            assertThat(directions).isEmpty();
+        }
+
+        @Test
+        void shouldNotReturnDirectionWhenNoResponse() {
+            List<Element<Direction>> directions = service.addHiddenVariablesToResponseForManyAssignees(
+                ImmutableMap.of(LOCAL_AUTHORITY.getValue(), ImmutableList.of(Element.<Direction>builder()
+                        .value(Direction.builder()
+                            .directionText("Direction")
+                            .build())
+                        .build())));
+
+            assertThat(directions).isEmpty();
+        }
+
+        @Test
+        void shouldAddCorrectAssigneeAndDirectionWhenMultipleDifferentDirectionsWithValidResponses() {
+            String complied = "Yes";
+            UUID otherUuid = UUID.randomUUID();
+
+            List<Element<Direction>> directions = service.addHiddenVariablesToResponseForManyAssignees(
+                ImmutableMap.of(
+                    LOCAL_AUTHORITY.getValue(), buildDirection(LOCAL_AUTHORITY, uuid, complied),
+                    CAFCASS.getValue(), buildDirection(CAFCASS, otherUuid, complied)
+                ));
+
+            assertThat(directions.get(0).getValue().getResponse().getAssignee()).isEqualTo(LOCAL_AUTHORITY);
+            assertThat(directions.get(0).getValue().getResponse().getDirectionId()).isEqualTo(uuid);
+            assertThat(directions.get(1).getValue().getResponse().getAssignee()).isEqualTo(CAFCASS);
+            assertThat(directions.get(1).getValue().getResponse().getDirectionId()).isEqualTo(otherUuid);
+        }
+
+        @Test
+        void shouldAddCorrectAssigneeAndDirectionWhenSameDirectionWithValidResponses() {
+            String complied = "Yes";
+            UUID otherUuid = UUID.randomUUID();
+
+            List<Element<Direction>> directions = service.addHiddenVariablesToResponseForManyAssignees(
+                ImmutableMap.of(
+                    LOCAL_AUTHORITY.getValue(), buildDirection(LOCAL_AUTHORITY, uuid, complied),
+                    CAFCASS.getValue(), buildDirection(CAFCASS, uuid, complied)
+                ));
+
+            assertThat(directions.get(0).getValue().getResponse().getAssignee()).isEqualTo(LOCAL_AUTHORITY);
+            assertThat(directions.get(0).getValue().getResponse().getDirectionId()).isEqualTo(uuid);
+            assertThat(directions.get(1).getValue().getResponse().getAssignee()).isEqualTo(CAFCASS);
+            assertThat(directions.get(1).getValue().getResponse().getDirectionId()).isEqualTo(uuid);
+        }
+
+        private List<Element<Direction>> buildDirection(DirectionAssignee assignee, UUID id, String complied) {
+            return Lists.newArrayList(Element.<Direction>builder()
+                .id(id)
+                .value(Direction.builder()
+                    .directionType("direction")
+                    .directionText("example direction text")
+                    .assignee(assignee)
+                    .response(DirectionResponse.builder()
+                        .complied(complied)
+                        .build())
+                    .build())
+                .build());
+        }
+    }
+
+    @Nested
+    class SortDirectionsByAssignee {
+
+        @Test
+        void shouldSortDirectionsIntoSeparateEntriesInMapWhenSingleAssignee() {
+            List<Element<Direction>> directions = ImmutableList.<Element<Direction>>builder()
+                .addAll(buildDirections(LOCAL_AUTHORITY))
+                .build();
+
+            Map<String, List<Element<Direction>>> sortedDirections = service.sortDirectionsByAssignee(directions);
+
+            assertThat(sortedDirections).containsOnlyKeys(LOCAL_AUTHORITY.getValue());
+        }
+
+        @Test
+        void shouldSortDirectionsIntoSeparateEntriesInMapWhenManyAssignees() {
+            List<Element<Direction>> directions = ImmutableList.<Element<Direction>>builder()
+                .addAll(buildDirections(LOCAL_AUTHORITY))
+                .addAll(buildDirections(COURT))
+                .build();
+
+            Map<String, List<Element<Direction>>> sortedDirections = service.sortDirectionsByAssignee(directions);
+
+            assertThat(sortedDirections).containsOnlyKeys(LOCAL_AUTHORITY.getValue(), COURT.getValue());
+        }
+    }
+
+    @Nested
+    class RemoveCustomDirections {
+
+        @Test
+        void shouldRemoveCustomDirectionFromListWhenCustomFlagIsYes() {
+            List<Element<Direction>> filteredDirections = service.removeCustomDirections(buildCustomDirections());
+
+            assertThat(filteredDirections).isEmpty();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {"No"})
+        void shouldNotRemoveDirectionFromListWhenCustomFlagIsNo(String custom) {
+            List<Element<Direction>> filteredDirections = service.removeCustomDirections(ImmutableList.of(
+                Element.<Direction>builder()
+                    .value(Direction.builder()
+                        .custom(custom)
+                        .build())
+                    .build()));
+
+            assertThat(filteredDirections).hasSize(1);
+        }
+    }
+
+    @Nested
+    class GetDirectionsForAssignee {
+
+        @Test
+        void shouldFilterAListOfDirectionsWhenDirectionsForSingleAssignee() {
+            List<Element<Direction>> directions = new ArrayList<>(buildDirections(LOCAL_AUTHORITY));
+
+            List<Element<Direction>> returnedDirections = service.getDirectionsForAssignee(directions, LOCAL_AUTHORITY);
+
+            assertThat(returnedDirections).hasSize(1);
+            assertThat(returnedDirections).isEqualTo(buildDirections(LOCAL_AUTHORITY));
+        }
+
+        @Test
+        void shouldFilterAListOfDirectionsWhenDirectionsForManyAssignees() {
+            List<Element<Direction>> directions = new ArrayList<>();
+            directions.addAll(buildDirections(LOCAL_AUTHORITY));
+            directions.addAll(buildDirections(CAFCASS));
+            directions.addAll(buildDirections(COURT));
+
+            List<Element<Direction>> returnedDirections = service.getDirectionsForAssignee(directions, LOCAL_AUTHORITY);
+
+            assertThat(returnedDirections).hasSize(1);
+            assertThat(returnedDirections).isEqualTo(buildDirections(LOCAL_AUTHORITY));
+        }
+
+        @Test
+        void shouldReturnEmptyListOfDirectionsWhenNoneExistForAssignee() {
+            List<Element<Direction>> directions = new ArrayList<>();
+
+            List<Element<Direction>> returnedDirections = service.getDirectionsForAssignee(directions, LOCAL_AUTHORITY);
+
+            assertThat(returnedDirections).isEmpty();
+        }
+    }
+
+    @Nested
+    class ConstructDirectionForCCD {
+
+        @Test
+        void shouldConstructDirectionFromConfigurationAsExpectedWhenCompleteByDateIsRealDate() {
+            LocalDateTime today = LocalDateTime.now();
+
+            DirectionConfiguration directionConfig = DirectionConfiguration.builder()
+                .assignee(LOCAL_AUTHORITY)
+                .title("direction title")
+                .text("direction text")
+                .display(Display.builder()
+                    .due(Display.Due.BY)
+                    .templateDateFormat("h:mma, d MMMM yyyy")
+                    .directionRemovable(false)
+                    .showDateOnly(false)
+                    .build())
+                .build();
+
+            Element<Direction> actualDirection = service.constructDirectionForCCD(directionConfig, today);
+
+            assertThat(actualDirection.getValue()).isEqualTo(Direction.builder()
+                .directionType("direction title")
+                .directionText("direction text")
+                .readOnly("No")
+                .directionRemovable("No")
+                .dateToBeCompletedBy(today)
+                .assignee(LOCAL_AUTHORITY)
+                .build());
+        }
+
+        @Test
+        void shouldConstructDirectionFromConfigurationAsExpectedWhenCompleteByDateIsNull() {
+            DirectionConfiguration directionConfig = DirectionConfiguration.builder()
+                .assignee(LOCAL_AUTHORITY)
+                .title("direction title")
+                .text("direction text")
+                .display(Display.builder()
+                    .due(Display.Due.BY)
+                    .templateDateFormat("h:mma, d MMMM yyyy")
+                    .directionRemovable(false)
+                    .showDateOnly(false)
+                    .build())
+                .build();
+
+            Element<Direction> actualDirection =
+                service.constructDirectionForCCD(directionConfig, null);
+
+            assertThat(actualDirection.getValue()).isEqualTo(Direction.builder()
+                .directionType("direction title")
+                .directionText("direction text")
+                .readOnly("No")
+                .directionRemovable("No")
+                .dateToBeCompletedBy(null)
+                .assignee(LOCAL_AUTHORITY)
+                .build());
+        }
+    }
+
+    @Test
+    void numberDirections_shouldNumberDirectionsStartingAtTwo() {
+        CaseData caseData = populateCaseDataWithFixedDirections().build();
+
+        List<Element<Direction>> directions = service.combineAllDirections(caseData);
+
+        List<String> numberedDirectionTypes = service.numberDirections(directions).stream()
+            .map(direction -> direction.getValue().getDirectionType())
+            .collect(toList());
+
+        List<String> expectedDirectionsTypes = IntStream.range(0, numberedDirectionTypes.size())
+            .mapToObj(x -> (x + 2) + ". direction")
+            .collect(toList());
+
+        assertThat(numberedDirectionTypes).isEqualTo(expectedDirectionsTypes);
     }
 
     private CaseData.CaseDataBuilder populateCaseDataWithFixedDirections() {
