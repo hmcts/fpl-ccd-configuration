@@ -33,7 +33,7 @@ public class UploadDocumentsControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void shouldReturnErrorsWhenDocumentsAreNotValid() throws Exception {
+    void shouldNotReturnErrorsWhenUploadedDocumentsAreValid() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(callbackRequest().getCaseDetails())
             .build();
@@ -43,24 +43,23 @@ public class UploadDocumentsControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        assertThat(callbackResponse.getErrors())
-            .containsOnlyOnce("Check document 1. Remove the document or change the status from 'To follow'.",
-                "Check document 2. Remove the document or change the status from 'To follow'.",
-                "Check document 3. Remove the document or change the status from 'To follow'.",
-                "Check document 4. Remove the document or change the status from 'To follow'.",
-                "Check document 6. Remove the document or change the status from 'To follow'.",
-                "Check document 7. Remove the document or change the status from 'To follow'.");
+        assertThat(callbackResponse.getErrors().size()).isEqualTo(0);
     }
 
     @Test
-    void shouldNotReturnErrorsWhenDocumentsAreValid() throws Exception {
+    void shouldReturnErrorsWhenUploadedDocumentsAreNotValid() throws Exception {
         CallbackRequest request = createCallbackRequest();
         MvcResult response = performResponseCallBack(request);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = MAPPER.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
 
-        assertThat(callbackResponse.getErrors().size()).isEqualTo(0);
+        assertThat(callbackResponse.getErrors().size()).isEqualTo(4);
+        assertThat(callbackResponse.getErrors())
+            .containsOnlyOnce("Check document 1. Attach the document or change the status from 'Attached'.",
+                "Check document 3. Attach the SWET or change the status from 'Included in SWET'.",
+                "Check document 5. Attach the document or change the status from 'Attached'.",
+                "You must give additional document 1 a name.");
     }
 
     private CallbackRequest createCallbackRequest() {
@@ -68,28 +67,19 @@ public class UploadDocumentsControllerTest {
             CaseDetails.builder()
                 .data(ImmutableMap.of(
                     "documents_socialWorkChronology_document", ImmutableMap.of(
-                        "documentStatus", "Attached",
-                        "typeOfDocument", ImmutableMap.of(
-                            "document_filename", "mock title"
-                        )
-                    ),
-                    "documents_socialWorkStatement_document", ImmutableMap.of(
-                        "documentStatus", "To follow"
+                        "documentStatus", "Attached"
                     ),
                     "documents_socialWorkAssessment_document", ImmutableMap.of(
                         "documentStatus", "Included in social work evidence template (SWET)"
                     ),
                     "documents_socialWorkEvidenceTemplate_document", ImmutableMap.of(
-                        "documentStatus", "Attached",
-                        "typeOfDocument", ImmutableMap.of(
-                            "document_filename", "mock title"
-                        )
+                        "documentStatus", "Attached"
                     ),
                     "documents_socialWorkOther", ImmutableList.of(
                         ImmutableMap.of(
                             "id", UUID.randomUUID(),
                             "value", ImmutableMap.of(
-                                "documentTitle", "Mock title")))
+                                "documentTitle", "")))
                 )).build()).build();
     }
 

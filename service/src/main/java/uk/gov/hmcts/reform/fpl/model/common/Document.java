@@ -4,13 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.interfaces.UploadDocumentsGroup;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.HasDocumentStatus;
+import uk.gov.hmcts.reform.fpl.validators.interfaces.HasAttachedDocument;
 
 import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
-@HasDocumentStatus(groups = UploadDocumentsGroup.class)
+@HasAttachedDocument(groups = UploadDocumentsGroup.class)
 @AllArgsConstructor
 public class Document {
     private final String statusReason;

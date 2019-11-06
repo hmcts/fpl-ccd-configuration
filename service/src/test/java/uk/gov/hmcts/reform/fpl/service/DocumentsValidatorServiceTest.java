@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DocumentsValidatorServiceTest {
     private DocumentsValidatorService documentsValidatorService;
     private static final String STATUS_ATTACHED = "Attached";
-    private static final String STATUS_TO_FOLLOW = "To follow";
     private static final String STATUS_SWET = "Included in social work evidence template (SWET)";
     private static final DocumentReference POPULATED_DOCUMENT = DocumentReference.builder()
         .filename("Mock filename")
@@ -63,35 +62,6 @@ class DocumentsValidatorServiceTest {
                 "Check document 5. Attach the document or change the status from 'Attached'.",
                 "Check document 6. Attach the document or change the status from 'Attached'.",
                 "Check document 7. Attach the document or change the status from 'Attached'.");
-    }
-
-    @Test
-    void shouldGenerateErrorsWhenDocumentStatusesIsToFollowButDocumentsWereAttached() {
-        CaseData caseData = generateMandatoryDocuments(STATUS_TO_FOLLOW, POPULATED_DOCUMENT);
-        List<String> validationErrors = documentsValidatorService.validateDocuments(caseData);
-
-        assertThat(validationErrors)
-            .containsOnlyOnce("Check document 1. Remove the document or change the status from 'To follow'.",
-                "Check document 2. Remove the document or change the status from 'To follow'.",
-                "Check document 3. Remove the document or change the status from 'To follow'.",
-                "Check document 4. Remove the document or change the status from 'To follow'.",
-                "Check document 5. Remove the document or change the status from 'To follow'.",
-                "Check document 6. Remove the document or change the status from 'To follow'.",
-                "Check document 7. Remove the document or change the status from 'To follow'.");
-    }
-
-    @Test
-    void shouldGenerateErrorsWhenDocumentStatusIsIncludedInSwetButWasAttached() {
-        CaseData caseData = generateMandatoryDocuments(STATUS_SWET, POPULATED_DOCUMENT);
-        List<String> validationErrors = documentsValidatorService.validateDocuments(caseData);
-
-        assertThat(validationErrors)
-            .containsOnlyOnce("Check document 1. Remove the document or change the status from 'Included in SWET'.",
-                "Check document 2. Remove the document or change the status from 'Included in SWET'.",
-                "Check document 3. Remove the document or change the status from 'Included in SWET'.",
-                "Check document 4. Remove the document or change the status from 'Included in SWET'.",
-                "Check document 6. Remove the document or change the status from 'Included in SWET'.",
-                "Check document 7. Remove the document or change the status from 'Included in SWET'.");
     }
 
     @Test
