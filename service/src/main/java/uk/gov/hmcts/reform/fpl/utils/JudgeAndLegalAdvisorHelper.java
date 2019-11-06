@@ -6,6 +6,10 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 
 public class JudgeAndLegalAdvisorHelper {
+
+    private JudgeAndLegalAdvisorHelper() {
+    }
+
     public static String getLegalAdvisorName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         if (judgeAndLegalAdvisor == null) {
             return "";
