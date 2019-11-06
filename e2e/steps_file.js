@@ -146,7 +146,7 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
       uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
-      uploadDocumentsEventPage.uploadSocialWorkStatement(config.testFile);
+      uploadDocumentsEventPage.uploadSocialWorkStatement();
       uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
       uploadDocumentsEventPage.uploadCarePlan(config.testFile);
       uploadDocumentsEventPage.uploadSWET(config.testFile);
