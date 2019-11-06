@@ -45,7 +45,7 @@ public class DraftCMOController {
 
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
 
-        DynamicList hearingDatesDynamic = draftCMOService.makeHearingDateList(hearingDetails);
+        DynamicList hearingDatesDynamic = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
         Object cmoObject = caseDataMap.get("caseManagementOrder");
 
         if (cmoObject != null) {

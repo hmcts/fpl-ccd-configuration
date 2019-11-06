@@ -136,9 +136,9 @@ class DraftCMOControllerTest {
     void aboutToSubmitShouldPopulateHiddenHearingDateField() throws Exception {
         List<Element<HearingBooking>> hearingDetails = createHearingBookings(date);
 
-        DynamicList hearingDatesDynamic = draftCMOService.makeHearingDateList(hearingDetails);
+        DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
 
-        hearingDatesDynamic
+        dynamicHearingDates
             .setValue(
                 DynamicListElement.builder()
                     .code(date.plusDays(5).toString())
@@ -147,7 +147,7 @@ class DraftCMOControllerTest {
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of("cmoHearingDateList", hearingDatesDynamic))
+                .data(ImmutableMap.of("cmoHearingDateList", dynamicHearingDates))
                 .build())
             .build();
 

@@ -23,20 +23,20 @@ public class DraftCMOService {
         this.dateFormatterService = dateFormatterService;
     }
 
-    public DynamicList makeHearingDateList(List<Element<HearingBooking>> hearingDetails) {
-        List<HearingDate> hearingDates = hearingDetails
+    public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
+        List<HearingDateDynamicElement> hearingDates = hearingDetails
             .stream()
             .map(Element::getValue)
             .map(HearingBooking::getDate)
-            .map(HearingDate::new)
+            .map(HearingDateDynamicElement::new)
             .collect(Collectors.toList());
 
         return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);
     }
 
-    class HearingDate implements DynamicElementParser {
+    class HearingDateDynamicElement implements DynamicElementParser {
 
-        HearingDate(LocalDate date) {
+        HearingDateDynamicElement(LocalDate date) {
             this.date = date;
         }
 

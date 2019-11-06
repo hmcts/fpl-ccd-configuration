@@ -31,7 +31,7 @@ public class DraftCMOServiceTest {
     @Test
     void shouldReturnHearingDateDynamicListIfHearingDatesNotNull() {
         LocalDate now = LocalDate.now();
-        DynamicList hearingList = service.makeHearingDateList(createHearingBookings(now));
+        DynamicList hearingList = service.buildDynamicListFromHearingDetails(createHearingBookings(now));
 
         assertThat(hearingList.getListItems().get(0).getCode())
             .isEqualTo(convertDateTopLocalFormat(now.plusDays(5)));
