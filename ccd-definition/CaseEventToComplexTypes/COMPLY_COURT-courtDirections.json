@@ -1,0 +1,93 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_COURT",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "directionType",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_COURT",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "directionText",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_COURT",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "response.complied",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_COURT",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "response.file",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_COURT",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "response.documentDetails",
+    "FieldDisplayOrder": 11,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_COURT",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "response.cannotComply_title",
+    "FieldDisplayOrder": 12,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_COURT",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "response.cannotComply_reason",
+    "FieldDisplayOrder": 13,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_COURT",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "response.c2Uploaded",
+    "FieldDisplayOrder": 14,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_COURT",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "response.supportingFile",
+    "FieldDisplayOrder": 16,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_COURT",
+    "CaseFieldID": "courtDirections",
+    "ListElementCode": "response.supportingDocumentDetails",
+    "FieldDisplayOrder": 17,
+    "DisplayContext": "OPTIONAL"
+  }
+]
