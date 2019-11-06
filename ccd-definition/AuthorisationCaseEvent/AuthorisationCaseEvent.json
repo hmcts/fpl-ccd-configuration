@@ -9,13 +9,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "draftSDO",
-    "UserRole": "caseworker-publiclaw-gatekeeper",
-    "CRUD": "CRU"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "deleteApplication",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRU"
@@ -340,7 +333,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "populateSDO",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRU"
+    "CRUD": "C"
   },
   {
     "LiveFrom": "01/01/2017",
