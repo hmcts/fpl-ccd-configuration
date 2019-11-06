@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.C21OrderBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -21,7 +22,6 @@ import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 
 @Service
 public class CreateC21OrderService {
@@ -42,8 +42,10 @@ public class CreateC21OrderService {
             .put("orderTitle", getOrderTitle(caseData))
             .put("orderDetails", caseData.getTemporaryC21Order().getOrderDetails())
             .put("todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
-            .put("judgeTitleAndName", formatJudgeTitleAndName(caseData.getJudgeAndLegalAdvisor()))
-            .put("legalAdvisorName", getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
+            .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
+                caseData.getJudgeAndLegalAdvisor()))
+            .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
+                caseData.getJudgeAndLegalAdvisor()))
             .put("children", getChildrenDetails(caseData))
             .build();
     }
@@ -62,7 +64,7 @@ public class CreateC21OrderService {
                 .orderTitle(tempC21.getOrderTitle())
                 .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
                     .toLocalDateTime(), "h:mma, d MMMM yyyy"))
-                .judgeTitleAndName(formatJudgeTitleAndName(judgeAndLegalAdvisor))
+                .judgeTitleAndName(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor))
                 .build())
             .build());
 
@@ -75,26 +77,6 @@ public class CreateC21OrderService {
         }
 
         return caseData.getTemporaryC21Order().getOrderTitle();
-    }
-
-    private String getLegalAdvisorName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        if (judgeAndLegalAdvisor == null) {
-            return "";
-        }
-
-        return defaultIfNull(judgeAndLegalAdvisor.getLegalAdvisorName(), "");
-    }
-
-    private String formatJudgeTitleAndName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        if (judgeAndLegalAdvisor == null || judgeAndLegalAdvisor.getJudgeTitle() == null) {
-            return "";
-        }
-
-        if (judgeAndLegalAdvisor.getJudgeTitle() == MAGISTRATES) {
-            return judgeAndLegalAdvisor.getJudgeFullName() + " (JP)";
-        } else {
-            return judgeAndLegalAdvisor.getJudgeTitle().getLabel() + " " + judgeAndLegalAdvisor.getJudgeLastName();
-        }
     }
 
     private String getCourtName(String courtName) {
