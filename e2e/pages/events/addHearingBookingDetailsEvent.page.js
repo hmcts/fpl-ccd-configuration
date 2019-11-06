@@ -31,7 +31,7 @@ module.exports = {
     const elementIndex = await this.getActiveElementIndex();
 
     I.click(this.fields(elementIndex).hearingBooking.type);
-    I.fillField(this.fields(elementIndex).hearingBooking.venue, hearingDetails.venue);
+    I.selectOption(this.fields(elementIndex).hearingBooking.venue, hearingDetails.venue);
     I.fillField(this.fields(elementIndex).hearingBooking.date.day, hearingDetails.date.day);
     I.fillField(this.fields(elementIndex).hearingBooking.date.month, hearingDetails.date.month);
     I.fillField(this.fields(elementIndex).hearingBooking.date.year, hearingDetails.date.year);

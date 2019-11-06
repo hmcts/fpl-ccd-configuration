@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -9,25 +9,34 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.UserRole;
+import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
+import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 
+@Slf4j
 @Component
+/* preferring this option given growing constructor args */
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class NotificationHandler {
 
     private static final String CASE_LOCAL_AUTHORITY_PROPERTY_NAME = "caseLocalAuthority";
@@ -39,30 +48,10 @@ public class NotificationHandler {
     private final CafcassEmailContentProvider cafcassEmailContentProvider;
     private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
+    private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final NotificationClient notificationClient;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Autowired
-    public NotificationHandler(HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                               CafcassLookupConfiguration cafcassLookupConfiguration,
-                               LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration,
-                               NotificationClient notificationClient,
-                               HmctsEmailContentProvider hmctsEmailContentProvider,
-                               CafcassEmailContentProvider cafcassEmailContentProvider,
-                               CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued,
-                               GatekeeperEmailContentProvider gatekeeperEmailContentProvider,
-                               LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider) {
-        this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
-        this.cafcassLookupConfiguration = cafcassLookupConfiguration;
-        this.localAuthorityEmailLookupConfiguration = localAuthorityEmailLookupConfiguration;
-        this.notificationClient = notificationClient;
-        this.hmctsEmailContentProvider = hmctsEmailContentProvider;
-        this.cafcassEmailContentProvider = cafcassEmailContentProvider;
-        this.cafcassEmailContentProviderSDOIssued = cafcassEmailContentProviderSDOIssued;
-        this.gatekeeperEmailContentProvider = gatekeeperEmailContentProvider;
-        this.localAuthorityEmailContentProvider = localAuthorityEmailContentProvider;
-    }
+    private final IdamApi idamApi;
 
     @EventListener
     public void sendNotificationToHmctsAdmin(SubmittedCaseEvent event) {
@@ -74,6 +63,23 @@ public class NotificationHandler {
         String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
 
         sendNotification(HMCTS_COURT_SUBMISSION_TEMPLATE, email, parameters, reference);
+    }
+
+    @EventListener
+    public void sendNotificationForC2Upload(final C2UploadedEvent caseEvent) {
+        List<String> roles = idamApi.retrieveUserDetails(caseEvent.getAuthorization()).getRoles();
+
+        if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoles())) {
+            CaseDetails caseDetailsFromEvent = caseEvent.getCallbackRequest().getCaseDetails();
+            String localAuthorityCode = (String) caseDetailsFromEvent.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+
+            Map<String, Object> parameters = c2UploadedEmailContentProvider.buildC2UploadNotification(
+                caseDetailsFromEvent);
+            String reference = Long.toString(caseDetailsFromEvent.getId());
+
+            String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
+            sendNotification(C2_UPLOAD_NOTIFICATION_TEMPLATE, email, parameters, reference);
+        }
     }
 
     @EventListener
@@ -123,11 +129,11 @@ public class NotificationHandler {
     }
 
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
-        logger.debug("Sending submission notification (with template id: {}) to {}", templateId, email);
+        log.debug("Sending submission notification (with template id: {}) to {}", templateId, email);
         try {
             notificationClient.sendEmail(templateId, email, parameters, reference);
         } catch (NotificationClientException e) {
-            logger.error("Failed to send submission notification (with template id: {}) to {}", templateId, email, e);
+            log.error("Failed to send submission notification (with template id: {}) to {}", templateId, email, e);
         }
     }
 }

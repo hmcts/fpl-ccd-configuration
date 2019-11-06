@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -47,6 +49,7 @@ public class DraftOrdersController {
     private final CaseDataExtractionService caseDataExtractionService;
     private final DirectionHelperService directionHelperService;
     private final OrdersLookupService ordersLookupService;
+    private final CoreCaseDataService coreCaseDataService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
@@ -56,6 +59,7 @@ public class DraftOrdersController {
                                  CaseDataExtractionService caseDataExtractionService,
                                  DirectionHelperService directionHelperService,
                                  OrdersLookupService ordersLookupService,
+                                 CoreCaseDataService coreCaseDataService,
                                  ApplicationEventPublisher applicationEventPublisher) {
         this.mapper = mapper;
         this.docmosisService = docmosisService;
@@ -63,6 +67,7 @@ public class DraftOrdersController {
         this.caseDataExtractionService = caseDataExtractionService;
         this.directionHelperService = directionHelperService;
         this.ordersLookupService = ordersLookupService;
+        this.coreCaseDataService = coreCaseDataService;
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
@@ -171,9 +176,18 @@ public class DraftOrdersController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        if (caseData.getStandardDirectionOrder().getOrderStatus() != OrderStatus.SEALED) {
+            return;
+        }
+
+        coreCaseDataService.triggerEvent(
+            callbackRequest.getCaseDetails().getJurisdiction(),
+            callbackRequest.getCaseDetails().getCaseTypeId(),
+            callbackRequest.getCaseDetails().getId(),
+            "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING"
+        );
 
         if (caseData.getStandardDirectionOrder().getOrderStatus() == SEALED) {
             applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest,

@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import uk.gov.service.notify.NotificationClient;
 
 import java.io.IOException;
@@ -44,6 +45,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -78,6 +80,9 @@ class DraftOrdersControllerTest {
 
     @Mock
     ApplicationEventPublisher applicationEventPublisher;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -122,6 +127,42 @@ class DraftOrdersControllerTest {
         assertThat(extractDirections(caseData.getCafcassDirections())).containsOnly(directions.get(3));
         assertThat(extractDirections(caseData.getOtherPartiesDirections())).containsOnly(directions.get(4));
         assertThat(extractDirections(caseData.getCourtDirections())).containsOnly(directions.get(5));
+    }
+
+    @Nested
+    class StateChangeTests {
+        private final String event = "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING";
+        private final Long caseId = 1L;
+
+        @Test
+        void submittedCallbackShouldTriggerStateChangeWhenOrderIsMarkedAsFinal() throws Exception {
+            makeRequestWithOrderStatus(OrderStatus.SEALED);
+
+            verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, caseId, event);
+        }
+
+        @Test
+        void submittedCallbackShouldNotTriggerStateChangeWhenOrderIsStillInDraftState() throws Exception {
+            makeRequestWithOrderStatus(OrderStatus.DRAFT);
+
+            verify(coreCaseDataService, never()).triggerEvent(JURISDICTION, CASE_TYPE, caseId, event);
+        }
+
+        private void makeRequestWithOrderStatus(OrderStatus status) throws Exception {
+            Order order = Order.builder().orderStatus(status).build();
+
+            CallbackRequest request = CallbackRequest.builder()
+                .caseDetails(CaseDetails.builder()
+                    .id(caseId)
+                    .jurisdiction(JURISDICTION)
+                    .caseTypeId(CASE_TYPE)
+                    .data(ImmutableMap.of("standardDirectionOrder", order,
+                        "caseLocalAuthority", "example"))
+                    .build())
+                .build();
+            String callbackType = "submitted";
+            makeRequest(request, callbackType);
+        }
     }
 
     @Nested

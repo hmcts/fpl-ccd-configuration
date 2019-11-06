@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 @SuppressWarnings({"LineLength", "VariableDeclarationUsageDistance"})
 public abstract class AbstractEmailContentProvider {
 
-    private final String uiBaseUrl;
+    final String uiBaseUrl;
     private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
 
@@ -35,7 +35,7 @@ public abstract class AbstractEmailContentProvider {
     }
 
     @SuppressWarnings("unchecked")
-    protected ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(CaseDetails caseDetails) {
+    ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(CaseDetails caseDetails) {
         List<String> ordersAndDirections = buildOrdersAndDirections((Map<String, Object>) caseDetails.getData().get("orders"));
 
         Optional<String> timeFrame = Optional.ofNullable((Map<String, Object>) caseDetails.getData().get("hearing"))
