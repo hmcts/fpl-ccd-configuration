@@ -14,3 +14,8 @@ echo "export CCD_DEFINITION_STORE_API_BASE_URL=http://definition-store-api-fpl-c
 
 # definition placeholders
 echo "export CCD_DEF_CASE_SERVICE_BASE_URL=http://fpl-case-service-pr-${pr}.service.core-compute-preview.internal"
+
+# secrets - unset to fallback to defaults
+unset CCD_API_GATEWAY_IDAM_CLIENT_SECRET
+unset CCD_CONFIGURER_IMPORTER_USERNAME
+unset CCD_CONFIGURER_IMPORTER_PASSWORD
