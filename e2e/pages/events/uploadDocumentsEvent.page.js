@@ -36,7 +36,6 @@ module.exports = {
   },
 
   uploadSocialWorkStatement(file) {
-    I.attachFile(this.documents.socialWorkStatementAndGenogram, file);
     within(this.fields.socialWorkStatementAndGenogramStatus, () => {
       I.click(locate('label').withText('Included in social work evidence template (SWET)'));
     });
