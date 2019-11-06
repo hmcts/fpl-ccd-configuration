@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
 import uk.gov.hmcts.reform.fpl.interfaces.C21CaseOrderGroup;
 import uk.gov.hmcts.reform.fpl.interfaces.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.model.common.C21OrderBundle;
@@ -19,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -49,7 +47,7 @@ public class CaseData {
     private final List<@NotNull(message = "You need to add details to applicant")
         Element<Applicant>> applicants;
     @NotNull(message = "You need to add details to respondents")
-    private final List<@NotNull(message = "You need to add details to respondents")Element<Respondent>> respondents1;
+    private final List<@NotNull(message = "You need to add details to respondents") Element<Respondent>> respondents1;
 
     @Valid
     private final Respondent getFirstRespondent() {

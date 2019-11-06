@@ -92,8 +92,8 @@ public class C21OrderController {
         Map<String, Object> data = callbackRequest.getCaseDetails().getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        data.put("c21OrderBundle", createC21OrderService.appendToC21OrderBundle(
-            caseData.getTemporaryC21Order(), caseData.getC21OrderBundle(), caseData.getJudgeAndLegalAdvisor()));
+        data.put("c21OrderBundle", createC21OrderService.addToC21OrderBundle(
+            caseData.getTemporaryC21Order(), caseData.getJudgeAndLegalAdvisor(), caseData.getC21OrderBundle()));
         data.remove("temporaryC21Order");
         data.remove("judgeAndLegalAdvisor");
 
