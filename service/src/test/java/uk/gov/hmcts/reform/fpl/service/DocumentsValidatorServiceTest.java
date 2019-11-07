@@ -16,12 +16,12 @@ import java.util.UUID;
 import javax.validation.Validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
+import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.INCLUDED_IN_SWET;
 
 @ExtendWith(SpringExtension.class)
 class DocumentsValidatorServiceTest {
     private DocumentsValidatorService documentsValidatorService;
-    private static final String STATUS_ATTACHED = "Attached";
-    private static final String STATUS_SWET = "Included in social work evidence template (SWET)";
     private static final DocumentReference POPULATED_DOCUMENT = DocumentReference.builder()
         .filename("Mock filename")
         .build();
@@ -51,7 +51,7 @@ class DocumentsValidatorServiceTest {
 
     @Test
     void shouldGenerateErrorsWhenDocumentStatusesIsAttachedButDocumentsWereNotAttached() {
-        CaseData caseData = generateMandatoryDocuments(STATUS_ATTACHED, null);
+        CaseData caseData = generateMandatoryDocuments(ATTACHED.getLabel(), null);
         List<String> validationErrors = documentsValidatorService.validateDocuments(caseData);
 
         assertThat(validationErrors)
@@ -66,7 +66,7 @@ class DocumentsValidatorServiceTest {
 
     @Test
     void shouldGenerateErrorsWhenDocumentStatusIsIncludedInSwetButSwetWasNotAttached() {
-        CaseData caseData = generateMandatoryDocuments(STATUS_SWET, null);
+        CaseData caseData = generateMandatoryDocuments(INCLUDED_IN_SWET.getLabel(), null);
         List<String> validationErrors = documentsValidatorService.validateDocuments(caseData);
 
         assertThat(validationErrors)
@@ -80,7 +80,7 @@ class DocumentsValidatorServiceTest {
 
     @Test
     void shouldNotGenerateErrorsWhenDocumentStatusesAreValid() {
-        CaseData caseData = generateMandatoryDocuments(STATUS_ATTACHED, POPULATED_DOCUMENT);
+        CaseData caseData = generateMandatoryDocuments(ATTACHED.getLabel(), POPULATED_DOCUMENT);
         List<String> validationErrors = documentsValidatorService.validateDocuments(caseData);
 
         assertThat(validationErrors.size()).isEqualTo(0);

@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Document;
 
 @Data
 @Builder
-public class SwetDocuments {
+public class ValidationDocumentMap {
     String key;
     Document document;
 }

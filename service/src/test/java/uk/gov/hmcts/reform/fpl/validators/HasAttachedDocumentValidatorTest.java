@@ -13,6 +13,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDocumentWithAttachedFile;
 
 @ExtendWith(SpringExtension.class)
@@ -30,7 +31,7 @@ public class HasAttachedDocumentValidatorTest {
 
     @Test
     void shouldReturnAnErrorWhenStatusIsAttachedButDocumentIsNotAttached() {
-        Document document = Document.builder().documentStatus("Attached").build();
+        Document document = Document.builder().documentStatus(ATTACHED.getLabel()).build();
         List<String> errorMessages = validateGroupService.validateGroup(document, UploadDocumentsGroup.class);
         assertThat(errorMessages).contains(ERROR_MESSAGE);
     }

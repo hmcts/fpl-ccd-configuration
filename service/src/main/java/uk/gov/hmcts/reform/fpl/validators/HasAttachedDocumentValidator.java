@@ -6,13 +6,18 @@ import uk.gov.hmcts.reform.fpl.validators.interfaces.HasAttachedDocument;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentStatusOf;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentStatusSet;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentUploaded;
+
 public class HasAttachedDocumentValidator implements ConstraintValidator<HasAttachedDocument, Document> {
     @Override
     public boolean isValid(Document document, ConstraintValidatorContext constraintValidatorContext) {
-        if (document == null || document.getDocumentStatus() == null) {
+        if (!hasDocumentStatusSet(document)) {
             return true;
-        } else if (document.getDocumentStatus().equals("Attached")) {
-            return document.getTypeOfDocument() != null;
+        } else if (hasDocumentStatusOf(document, ATTACHED)) {
+            return hasDocumentUploaded(document);
         }
 
         return true;

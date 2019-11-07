@@ -20,6 +20,8 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
+import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.INCLUDED_IN_SWET;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ActiveProfiles("integration-test")
@@ -67,13 +69,13 @@ public class UploadDocumentsControllerTest {
             CaseDetails.builder()
                 .data(ImmutableMap.of(
                     "documents_socialWorkChronology_document", ImmutableMap.of(
-                        "documentStatus", "Attached"
+                        "documentStatus", ATTACHED.getLabel()
                     ),
                     "documents_socialWorkAssessment_document", ImmutableMap.of(
-                        "documentStatus", "Included in social work evidence template (SWET)"
+                        "documentStatus", INCLUDED_IN_SWET.getLabel()
                     ),
                     "documents_socialWorkEvidenceTemplate_document", ImmutableMap.of(
-                        "documentStatus", "Attached"
+                        "documentStatus", ATTACHED.getLabel()
                     ),
                     "documents_socialWorkOther", ImmutableList.of(
                         ImmutableMap.of(

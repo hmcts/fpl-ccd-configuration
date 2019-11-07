@@ -3,81 +3,65 @@ package uk.gov.hmcts.reform.fpl.validators;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.validators.interfaces.HasDocumentsIncludedInSwet;
-import uk.gov.hmcts.reform.fpl.validators.models.SwetDocuments;
+import uk.gov.hmcts.reform.fpl.validators.models.ValidationDocumentMap;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class HasDocumentsIncludedInSwetValidator implements ConstraintValidator<HasDocumentsIncludedInSwet, CaseData> {
-    private boolean valid = true;
+import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
+import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.INCLUDED_IN_SWET;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentStatusOf;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentUploaded;
 
+public class HasDocumentsIncludedInSwetValidator implements ConstraintValidator<HasDocumentsIncludedInSwet, CaseData> {
     @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext constraintValidatorContext) {
-        getFormattedSwetDocuments(caseData).forEach(documentMap -> {
-            Document document = documentMap.getDocument();
-            if (document.getDocumentStatus().equals("Included in social work evidence template (SWET)")
-                && (!hasAttachedSwet(caseData.getSocialWorkEvidenceTemplateDocument()))) {
-                constraintValidatorContext.buildConstraintViolationWithTemplate(constraintValidatorContext
-                    .getDefaultConstraintMessageTemplate())
-                    .addPropertyNode(documentMap.getKey()).addConstraintViolation();
-                constraintValidatorContext.disableDefaultConstraintViolation();
+        List<ValidationDocumentMap> validationDocumentBundle = getAllDocumentValidationBundle(caseData);
+        boolean isValid = true;
 
-                valid = false;
+        for (ValidationDocumentMap validationDocumentMap : validationDocumentBundle) {
+            if (hasDocumentStatusOf(validationDocumentMap.getDocument(), INCLUDED_IN_SWET)
+                && !hasAttachedSwet(caseData.getSocialWorkEvidenceTemplateDocument())) {
+                setViolationMessage(constraintValidatorContext, validationDocumentMap);
+                isValid = false;
             }
-        });
+        }
 
-        return valid;
+        return isValid;
+    }
+
+    private void setViolationMessage(ConstraintValidatorContext constraintValidatorContext,
+                                     ValidationDocumentMap mappedDocument) {
+        constraintValidatorContext.buildConstraintViolationWithTemplate(constraintValidatorContext
+            .getDefaultConstraintMessageTemplate())
+            .addPropertyNode(mappedDocument.getKey()).addConstraintViolation();
+        constraintValidatorContext.disableDefaultConstraintViolation();
     }
 
     private boolean hasAttachedSwet(Document socialWorkEvidence) {
-        if (socialWorkEvidence == null) {
-            return false;
-        }
-
-        return (socialWorkEvidence.getDocumentStatus() != null
-            && socialWorkEvidence.getDocumentStatus().equals("Attached")
-            && socialWorkEvidence.getTypeOfDocument() != null);
+        return hasDocumentStatusOf(socialWorkEvidence, ATTACHED) && hasDocumentUploaded(socialWorkEvidence);
     }
 
-    private List<SwetDocuments> getFormattedSwetDocuments(CaseData caseData) {
-        List<SwetDocuments> mandatoryDocuments = new ArrayList<>();
+    private List<ValidationDocumentMap> getAllDocumentValidationBundle(CaseData caseData) {
+        List<ValidationDocumentMap> documents = new ArrayList<>();
 
-        mandatoryDocuments.add(SwetDocuments.builder()
-            .key("socialWorkCarePlanDocument")
-            .document(caseData.getSocialWorkCarePlanDocument())
-            .build());
+        documents.add(createValidationDocumentMap("socialWorkCarePlanDocument",
+            caseData.getSocialWorkCarePlanDocument()));
+        documents.add(createValidationDocumentMap("socialWorkStatementDocument",
+            caseData.getSocialWorkStatementDocument()));
+        documents.add(createValidationDocumentMap("socialWorkAssessmentDocument",
+            caseData.getSocialWorkAssessmentDocument()));
+        documents.add(createValidationDocumentMap("socialWorkChronologyDocument",
+            caseData.getSocialWorkChronologyDocument()));
+        documents.add(createValidationDocumentMap("checklistDocument", caseData.getChecklistDocument()));
+        documents.add(createValidationDocumentMap("thresholdDocument", caseData.getThresholdDocument()));
 
-        mandatoryDocuments.add(SwetDocuments.builder()
-            .key("socialWorkStatementDocument")
-            .document(caseData.getSocialWorkStatementDocument())
-            .build());
+        return documents;
+    }
 
-        mandatoryDocuments.add(SwetDocuments.builder()
-            .key("socialWorkAssessmentDocument")
-            .document(caseData.getSocialWorkAssessmentDocument())
-            .build());
-
-        mandatoryDocuments.add(SwetDocuments.builder()
-            .key("socialWorkChronologyDocument")
-            .document(caseData.getSocialWorkChronologyDocument())
-            .build());
-
-        mandatoryDocuments.add(SwetDocuments.builder()
-            .key("checklistDocument")
-            .document(caseData.getChecklistDocument())
-            .build());
-
-        mandatoryDocuments.add(SwetDocuments.builder()
-            .key("thresholdDocument")
-            .document(caseData.getThresholdDocument())
-            .build());
-
-        return mandatoryDocuments.stream()
-            .filter(documentsValidationMap -> documentsValidationMap.getDocument() != null
-                && documentsValidationMap.getDocument().getDocumentStatus() != null)
-            .collect(Collectors.toList());
+    private ValidationDocumentMap createValidationDocumentMap(String key, Document document) {
+        return ValidationDocumentMap.builder().key(key).document(document).build();
     }
 }

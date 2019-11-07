@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,16 +17,8 @@ import java.util.stream.Stream;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.MandatoryDocuments.CHECKLIST;
-import static uk.gov.hmcts.reform.fpl.enums.MandatoryDocuments.SOCIAL_WORK_ASSESSMENT;
-import static uk.gov.hmcts.reform.fpl.enums.MandatoryDocuments.SOCIAL_WORK_CARE_PLAN;
-import static uk.gov.hmcts.reform.fpl.enums.MandatoryDocuments.SOCIAL_WORK_CHRONOLOGY;
-import static uk.gov.hmcts.reform.fpl.enums.MandatoryDocuments.SOCIAL_WORK_EVIDENCE_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.MandatoryDocuments.SOCIAL_WORK_STATEMENT;
-import static uk.gov.hmcts.reform.fpl.enums.MandatoryDocuments.THRESHOLD;
 
 @Service
 public class DocumentsValidatorService {
@@ -61,28 +52,18 @@ public class DocumentsValidatorService {
     public List<String> validateDocuments(CaseData caseData) {
         Set<ConstraintViolation<CaseData>> violations = validator.validate(caseData, UploadDocumentsGroup.class);
 
-        List<String> validationErrors = Stream.of(SOCIAL_WORK_CHRONOLOGY, SOCIAL_WORK_STATEMENT, SOCIAL_WORK_ASSESSMENT,
-            SOCIAL_WORK_CARE_PLAN, SOCIAL_WORK_EVIDENCE_TEMPLATE, THRESHOLD, CHECKLIST)
-            .flatMap(section -> Stream.of(formatDocumentViolations(violations, section)))
-            .flatMap(Collection::stream)
-            .collect(toList());
-
-        validationErrors.addAll(validateSocialWorkOtherDocuments(caseData.getOtherSocialWorkDocuments()));
-
-        return validationErrors;
+        return Stream.of(MandatoryDocuments.values())
+            .flatMap(section -> formatDocumentViolations(violations, section))
+            .collect(Collectors.toCollection(() ->
+                validateSocialWorkOtherDocuments(caseData.getOtherSocialWorkDocuments())));
     }
 
-    private List<String> formatDocumentViolations(Set<ConstraintViolation<CaseData>> constraintViolations,
+    private Stream<String> formatDocumentViolations(Set<ConstraintViolation<CaseData>> constraintViolations,
                                          MandatoryDocuments document) {
-        List<String> errorList;
-
-        errorList = constraintViolations.stream()
+        return constraintViolations.stream()
             .filter(error -> error.getPropertyPath().toString().contains(document.getPropertyKey()))
-            .map(error -> String.format("Check document %s. %s", document.getInterfaceDisplayOrder(),
+            .map(error -> String.format("Check document %d. %s", document.getInterfaceDisplayOrder(),
                 error.getMessage()))
-            .distinct()
-            .collect(Collectors.toList());
-
-        return errorList;
+            .distinct();
     }
 }
