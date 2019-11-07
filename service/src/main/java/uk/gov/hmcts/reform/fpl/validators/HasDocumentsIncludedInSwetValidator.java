@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.fpl.validators;
 
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.IsIncludedInSwet;
+import uk.gov.hmcts.reform.fpl.validators.interfaces.HasDocumentsIncludedInSwet;
 import uk.gov.hmcts.reform.fpl.validators.models.SwetDocuments;
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class IsIncludedInSwetValidator implements ConstraintValidator<IsIncludedInSwet, CaseData> {
+public class HasDocumentsIncludedInSwetValidator implements ConstraintValidator<HasDocumentsIncludedInSwet, CaseData> {
     private boolean valid = true;
 
     @Override

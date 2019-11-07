@@ -145,8 +145,8 @@ module.exports = function () {
       enterGroundsEventPage.enterThresholdCriteriaDetails();
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-      uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
-      uploadDocumentsEventPage.uploadSocialWorkStatement();
+      uploadDocumentsEventPage.selectSocialWorkChronologyToFollow();
+      uploadDocumentsEventPage.selectSocialWorkStatementIncludedInSWET();
       uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
       uploadDocumentsEventPage.uploadCarePlan(config.testFile);
       uploadDocumentsEventPage.uploadSWET(config.testFile);

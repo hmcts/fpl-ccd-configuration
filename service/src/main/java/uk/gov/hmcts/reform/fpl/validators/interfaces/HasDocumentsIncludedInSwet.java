@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.validators.interfaces;
 
-import uk.gov.hmcts.reform.fpl.validators.IsIncludedInSwetValidator;
+import uk.gov.hmcts.reform.fpl.validators.HasDocumentsIncludedInSwetValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,8 +11,8 @@ import javax.validation.Payload;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = { IsIncludedInSwetValidator.class })
-public @interface IsIncludedInSwet {
+@Constraint(validatedBy = { HasDocumentsIncludedInSwetValidator.class })
+public @interface HasDocumentsIncludedInSwet {
     String message() default "Attach the SWET or change the status from 'Included in SWET'.";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

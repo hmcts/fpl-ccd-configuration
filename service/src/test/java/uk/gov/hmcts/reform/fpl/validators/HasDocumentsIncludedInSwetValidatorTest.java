@@ -17,7 +17,7 @@ import javax.validation.Validator;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-public class IsIncludedInSwetValidatorTest {
+public class HasDocumentsIncludedInSwetValidatorTest {
     private Validator validator;
     private ValidateGroupService validateGroupService;
 

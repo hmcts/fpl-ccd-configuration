@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.IsIncludedInSwet;
+import uk.gov.hmcts.reform.fpl.validators.interfaces.HasDocumentsIncludedInSwet;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
-@IsIncludedInSwet(groups = UploadDocumentsGroup.class)
+@HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
 public class CaseData {
     @NotBlank(message = "Enter a case name")
     private final String caseName;
