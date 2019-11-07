@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Order;
@@ -35,6 +37,7 @@ import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 
 @Api
 @RestController
@@ -47,6 +50,7 @@ public class DraftOrdersController {
     private final DirectionHelperService directionHelperService;
     private final OrdersLookupService ordersLookupService;
     private final CoreCaseDataService coreCaseDataService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
     public DraftOrdersController(ObjectMapper mapper,
@@ -55,7 +59,8 @@ public class DraftOrdersController {
                                  CaseDataExtractionService caseDataExtractionService,
                                  DirectionHelperService directionHelperService,
                                  OrdersLookupService ordersLookupService,
-                                 CoreCaseDataService coreCaseDataService) {
+                                 CoreCaseDataService coreCaseDataService,
+                                 ApplicationEventPublisher applicationEventPublisher) {
         this.mapper = mapper;
         this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
@@ -63,6 +68,7 @@ public class DraftOrdersController {
         this.directionHelperService = directionHelperService;
         this.ordersLookupService = ordersLookupService;
         this.coreCaseDataService = coreCaseDataService;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @PostMapping("/about-to-start")
@@ -166,7 +172,10 @@ public class DraftOrdersController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+    public void handleSubmittedEvent(
+        @RequestHeader(value = "authorization") String authorization,
+        @RequestHeader(value = "user-id") String userId,
+        @RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
         if (caseData.getStandardDirectionOrder().getOrderStatus() != OrderStatus.SEALED) {
@@ -179,6 +188,12 @@ public class DraftOrdersController {
             callbackRequest.getCaseDetails().getId(),
             "internal-changeState:Gatekeeping->PREPARE_FOR_HEARING"
         );
+
+        if (caseData.getStandardDirectionOrder().getOrderStatus() == SEALED) {
+            applicationEventPublisher.publishEvent(new StandardDirectionsOrderIssuedEvent(callbackRequest,
+                authorization,
+                userId));
+        }
     }
 
     private List<Element<Direction>> getConfigDirectionsWithHiddenValues() throws IOException {

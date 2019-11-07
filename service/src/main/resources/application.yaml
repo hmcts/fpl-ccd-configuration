@@ -62,6 +62,8 @@ fpl:
     mapping: 'example=>Family Court:admin@family-court.com'
   local_authority_code_to_cafcass:
     mapping: 'example=>cafcass:cafcass@cafcass.com'
+  local_authority_code_to_shared_inbox:
+    mapping: 'example=>local-authority@local-authority.com'
   local_authority_user:
     mapping: 'example=>1,2,3'
   system_update:
@@ -106,7 +108,7 @@ ccd:
 
 appinsights:
   instrumentationkey: fake-key
- 
+
 fpl:
   local_authority_email_to_code:
     mapping: 'fpla.local=>FPLA;swansea.gov.uk=>SA;hillingdon.gov.uk=>HN'
@@ -116,6 +118,8 @@ fpl:
     mapping: 'SA=>Family Court sitting at Swansea:FamilyPublicLaw+sa@gmail.com;HN=>Family Court sitting at West London:FamilyPublicLaw+hn@gmail.com'
   local_authority_code_to_cafcass:
     mapping: 'SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com'
+  local_authority_code_to_shared_inbox:
+    mapping: 'SA=>FamilyPublicLaw+sa@gmail.com;HN=>FamilyPublicLaw+hn@gmail.com'
   system_update:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
