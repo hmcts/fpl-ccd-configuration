@@ -1,0 +1,57 @@
+const config = require('../config.js');
+const response = require('../fixtures/response');
+const directions = require('../fixtures/directions');
+
+let caseId;
+
+Feature('Comply with directions');
+
+Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperEventPage, draftStandardDirectionsEventPage) => {
+  if (!caseId) {
+    await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+    await I.enterMandatoryFields();
+    await caseViewPage.goToNewActions(config.applicationActions.submitCase);
+    submitApplicationEventPage.giveConsent();
+    await I.completeEvent('Submit');
+
+    // eslint-disable-next-line require-atomic-updates
+    caseId = await I.grabTextFrom('.heading-h1');
+    console.log(`Case ${caseId} has been submitted`);
+
+    I.signOut();
+
+    //hmcts login and send to gatekeeper
+    await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
+    await I.navigateToCaseDetails(caseId);
+    caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
+    sendCaseToGatekeeperEventPage.enterEmail();
+    await I.completeEvent('Save and continue');
+    I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
+    I.signOut();
+
+    // need to draft sdo and select issued...
+    await I.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
+    await I.navigateToCaseDetails(caseId);
+    await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
+    await draftStandardDirectionsEventPage.enterJudgeAndLegalAdvisor('Smith', 'Bob Ross');
+    await draftStandardDirectionsEventPage.enterDatesForDirections(directions[0]);
+    draftStandardDirectionsEventPage.markAsFinal();
+    await I.completeEvent('Save and continue');
+    I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
+    I.signOut();
+  }
+});
+
+Scenario('local authority complies with directions', async (I, caseViewPage, complyWithDirectionsEventPage) => {
+  await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+  await I.navigateToCaseDetails(caseId);
+  caseViewPage.goToNewActions(config.applicationActions.complyWithDirections);
+  await complyWithDirectionsEventPage.canComplyWithDirection('localAuthorityDirections', 0, response, config.testFile);
+  await I.completeEvent('Save and continue');
+  await I.seeEventSubmissionConfirmation(config.applicationActions.complyWithDirections);
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  I.seeAnswerInTab(1, 'Responses 1', 'Who has complied with this direction?', 'Local Authority');
+  I.seeAnswerInTab(3, 'Responses 1', 'Have you complied with this direction?', 'Yes');
+  I.seeAnswerInTab(4, 'Responses 1', 'Upload file', 'mockFile.txt');
+  I.seeAnswerInTab(5, 'Responses 1', 'Give details', response.complied.yes.documentDetails);
+});
