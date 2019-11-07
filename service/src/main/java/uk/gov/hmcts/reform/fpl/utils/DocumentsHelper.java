@@ -22,6 +22,6 @@ public class DocumentsHelper {
     }
 
     public static boolean hasDocumentUploaded(Document document) {
-        return document.getTypeOfDocument() != null;
+        return hasDocumentPresent(document) && document.getTypeOfDocument() != null;
     }
 }
