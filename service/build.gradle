@@ -220,7 +220,6 @@ dependencies {
   testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot) {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.mockito', module: 'mockito-core'
-    exclude group: "com.vaadin.external.google", module:"android-json"
   }
   testCompile group: 'org.junit.jupiter', name :'junit-jupiter', version: '5.5.2'
   testCompile group: 'org.mockito', name :'mockito-core', version: '3.0.0'
