@@ -23,20 +23,24 @@ public class DraftCMOService {
         this.dateFormatterService = dateFormatterService;
     }
 
-    public DynamicList makeHearingDateList(List<Element<HearingBooking>> hearingDetails) {
-        List<HearingDate> hearingDates = hearingDetails
+    public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
+        List<HearingDateDynamicElement> hearingDates = hearingDetails
             .stream()
             .map(Element::getValue)
             .map(HearingBooking::getDate)
-            .map(HearingDate::new)
+            .map(HearingDateDynamicElement::new)
             .collect(Collectors.toList());
 
         return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);
     }
 
-    class HearingDate implements DynamicElementParser {
+    public String convertDate(LocalDate date) {
+        return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
+    }
 
-        HearingDate(LocalDate date) {
+    class HearingDateDynamicElement implements DynamicElementParser {
+
+        HearingDateDynamicElement(LocalDate date) {
             this.date = date;
         }
 
@@ -44,7 +48,7 @@ public class DraftCMOService {
 
         @Override
         public DynamicListElement toDynamicElement() {
-            final String dateString = dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
+            final String dateString = convertDate(date);
             return DynamicListElement.builder().code(dateString).label(dateString).build();
         }
     }

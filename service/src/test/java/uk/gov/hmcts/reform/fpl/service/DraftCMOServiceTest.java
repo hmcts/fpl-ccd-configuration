@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.time.LocalDate;
-import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,43 +22,38 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 public class DraftCMOServiceTest {
 
     @Autowired
-    private DateFormatterService dateFormatterService;
-
-    @Autowired
-    private DraftCMOService service;
+    private DraftCMOService draftCMOService;
 
     @Test
     void shouldReturnHearingDateDynamicListIfHearingDatesNotNull() {
-        DynamicList hearingList = service.makeHearingDateList(createHearingBookings());
+        LocalDate now = LocalDate.now();
+        DynamicList hearingList = draftCMOService.buildDynamicListFromHearingDetails(
+            createHearingBookings(now));
 
         assertThat(hearingList.getListItems().get(0).getCode())
-            .isEqualTo(convertDateTopLocalFormat(LocalDate.now().plusDays(5)));
+            .isEqualTo(draftCMOService.convertDate(now.plusDays(5)));
 
         assertThat(hearingList.getListItems().get(1).getCode())
-            .isEqualTo(convertDateTopLocalFormat(LocalDate.now().plusDays(2)));
+            .isEqualTo(draftCMOService.convertDate(now.plusDays(2)));
 
         assertThat(hearingList.getListItems().get(2).getCode())
-            .isEqualTo(convertDateTopLocalFormat(LocalDate.now()));
+            .isEqualTo(draftCMOService.convertDate(now));
     }
 
-    private List<Element<HearingBooking>> createHearingBookings() {
+    private List<Element<HearingBooking>> createHearingBookings(LocalDate now) {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(LocalDate.now().plusDays(5)))
+                .value(createHearingBooking(now.plusDays(5)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(LocalDate.now().plusDays(2)))
+                .value(createHearingBooking(now.plusDays(2)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(LocalDate.now()))
+                .value(createHearingBooking(now))
                 .build()
         );
-    }
-
-    private String convertDateTopLocalFormat(LocalDate date) {
-        return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
     }
 }
