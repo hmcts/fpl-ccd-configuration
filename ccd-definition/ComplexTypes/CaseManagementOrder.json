@@ -4,7 +4,7 @@
     "ID": "CaseManagementOrder",
     "ListElementCode": "hearingDate",
     "FieldType": "Text",
-    "ElementLabel": "The date of the hearing",
+    "ElementLabel": "XXX",
     "SecurityClassification": "Public"
   }
 ]
