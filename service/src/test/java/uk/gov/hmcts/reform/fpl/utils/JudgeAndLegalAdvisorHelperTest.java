@@ -8,48 +8,48 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class JudgeAndLegalAdvisorHelperTest {
     @Test
-    public void givenEmptyJudgeAndLegalAdvisorGetLegalAdvisorNameShouldReturnEmptyString() {
+    public void legalAdvisorNameShouldBeEmptyWhenJudgeAndLegalAdvisorNull() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = null;
 
-        String result = JudgeAndLegalAdvisorHelper.getLegalAdvisorName(judgeAndLegalAdvisor);
+        String legalAdvisorName = JudgeAndLegalAdvisorHelper.getLegalAdvisorName(judgeAndLegalAdvisor);
 
-        assertThat(result).isEqualTo("");
+        assertThat(legalAdvisorName).isEqualTo("");
     }
 
     @Test
-    public void givenEmptyJudgeAndLegalAdvisorFormatJudgeTitleAndNameShouldReturnEmptyString() {
+    public void judgeNameShouldBeEmptyWhenJudgeAndLegalAdvisorNull() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = null;
 
-        String result = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor);
+        String judgeTitleAndName = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor);
 
-        assertThat(result).isEqualTo("");
+        assertThat(judgeTitleAndName).isEqualTo("");
     }
 
     @Test
-    public void givenNoJudgeTitleFormatJudgeTitleAndNameShouldReturnEmptyString() {
+    public void judgeNameShouldBeEmptyWhenJudgeTitleAndNameNotProvided() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .legalAdvisorName("Freddie")
             .build();
 
-        String result = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor);
+        String judgeTitleAndName = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor);
 
-        assertThat(result).isEqualTo("");
+        assertThat(judgeTitleAndName).isEqualTo("");
     }
 
     @Test
-    public void givenJudgeTitleAndNameFormatJudgeTitleAndNameShouldReturnProperlyFormattedTitleAndName() {
+    public void judgeNameShouldBeProperlyFormattedWhenTitleAndNameProvided() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
             .judgeLastName("Dredd")
             .build();
 
-        String result = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor);
+        String judgeTitleAndName = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor);
 
-        assertThat(result).isEqualTo("His Honour Judge Dredd");
+        assertThat(judgeTitleAndName).isEqualTo("His Honour Judge Dredd");
     }
 
     @Test
-    public void givenMagistrateTitleAndNameFormatJudgeTitleAndNameShouldReturnProperlyFormattedTitleAndName() {
+    public void magistrateNameShouldBeProperlyFormattedWhenWhenMagistrateSelected() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(JudgeOrMagistrateTitle.MAGISTRATES)
             .judgeFullName("Steve Stevenson")

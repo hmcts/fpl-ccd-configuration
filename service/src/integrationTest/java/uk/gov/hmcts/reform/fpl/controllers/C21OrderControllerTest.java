@@ -197,7 +197,6 @@ class C21OrderControllerTest {
                 "dateOfBirth", "2015-08-01"));
     }
 
-
     private List<Element<C21OrderBundle>> createOrderBundle(
         C21Order c21Order, JudgeAndLegalAdvisor judgeAndLegalAdvisor, List<Element<C21OrderBundle>> c21OrderBundle) {
         c21OrderBundle.add(Element.<C21OrderBundle>builder()

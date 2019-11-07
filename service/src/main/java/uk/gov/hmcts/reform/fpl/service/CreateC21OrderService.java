@@ -90,8 +90,8 @@ public class CreateC21OrderService {
             .map(child -> ImmutableMap.of(
                 "name", child.getFirstName() + " " + child.getLastName(),
                 "gender", defaultIfNull(child.getGender(), ""),
-                "dateOfBirth", defaultIfNull(dateFormatterService.formatLocalDateToString(
-                    child.getDateOfBirth(), FormatStyle.LONG), "")))
+                "dateOfBirth", child.getDateOfBirth() != null ? dateFormatterService
+                    .formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG) : ""))
             .collect(toList());
     }
 }
