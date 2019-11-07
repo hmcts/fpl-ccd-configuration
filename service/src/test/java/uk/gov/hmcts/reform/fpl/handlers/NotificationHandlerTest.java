@@ -12,14 +12,18 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
+import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import uk.gov.service.notify.NotificationClient;
@@ -39,6 +43,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEM
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
@@ -55,6 +60,7 @@ class NotificationHandlerTest {
     private static final String CAFCASS_EMAIL_ADDRESS = "FamilyPublicLaw+cafcass@gmail.com";
     private static final String CAFCASS_NAME = "cafcass";
     private static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
+    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
 
     @Mock
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -66,6 +72,9 @@ class NotificationHandlerTest {
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     @Mock
+    private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
+
+    @Mock
     private NotificationClient notificationClient;
 
     @Mock
@@ -75,6 +84,9 @@ class NotificationHandlerTest {
     private CafcassEmailContentProvider cafcassEmailContentProvider;
 
     @Mock
+    private CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
+
+    @Mock
     private GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
 
     @Mock
@@ -82,6 +94,9 @@ class NotificationHandlerTest {
 
     @Mock
     private IdamApi idamApi;
+
+    @Mock
+    private LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
 
     @InjectMocks
     private NotificationHandler notificationHandler;
@@ -228,5 +243,55 @@ class NotificationHandlerTest {
 
         verify(notificationClient, times(1)).sendEmail(
             eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq(GATEKEEPER_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
+    }
+
+    @Test
+    void shouldNotifyCafcassOfIssuedStandardDirectionsOrder() throws IOException, NotificationClientException {
+        final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
+
+        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+            .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
+
+        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+            .willReturn("Example Local Authority");
+
+        given(cafcassEmailContentProviderSDOIssued.buildCafcassStandardDirectionOrderIssuedNotification(callbackRequest().getCaseDetails(),
+            LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
+
+        notificationHandler.notifyCafcassOfIssuedStandardDirectionsOrder(new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+
+        verify(notificationClient, times(1)).sendEmail(
+            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
+    }
+
+    @Test
+    void shouldNotifyLocalAuthorityOfIssuedStandardDirectionsOrder() throws IOException, NotificationClientException {
+        final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
+
+        given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
+            .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+
+        given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+            .willReturn("Example Local Authority");
+
+        given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(callbackRequest().getCaseDetails(),
+            LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
+
+        notificationHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+
+        verify(notificationClient, times(1)).sendEmail(
+            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
+    }
+
+    private Map<String, Object> getStandardDirectionTemplateParameters() {
+        final Map<String, Object> expectedParameters = ImmutableMap.<String, Object>builder()
+            .put("familyManCaseNumber", "6789")
+            .put("leadRespondentsName", "Moley")
+            .put("hearingDate","21 October 2020")
+            .put("reference", "12345")
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
+
+        return expectedParameters;
     }
 }
