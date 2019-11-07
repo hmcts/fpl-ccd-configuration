@@ -130,7 +130,6 @@ Scenario('HMCTS admin creates C21 order for the case', async (I, caseViewPage, c
   await createC21OrderEventPage.enterOrder();
   await I.click('Continue');
   await createC21OrderEventPage.enterJudgeAndLegalAdvisor('Sotomayer', 'Peter Parker');
-  await I.click('Continue');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.createC21Order);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
