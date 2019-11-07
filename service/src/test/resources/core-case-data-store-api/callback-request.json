@@ -472,7 +472,16 @@
             "description": "C2 document one"
           }
         }
-      ]
+      ],
+      "judgeAndLegalAdvisor": {
+        "judgeTitle": "HER_HONOUR_JUDGE",
+        "judgeLastName": "Judy",
+        "legalAdvisorName": "Peter Parker"
+      },
+      "temporaryC21Order": {
+        "orderDetails": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+        "orderTitle": "Order"
+      }
     }
   },
   "case_details_before": {
