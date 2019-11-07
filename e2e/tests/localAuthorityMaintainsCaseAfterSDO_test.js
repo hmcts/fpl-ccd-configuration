@@ -4,7 +4,7 @@ const directions = require('../fixtures/directions.js');
 
 let caseId;
 
-Feature('Case maintenance after sdo');
+Feature('draft CMO after sdo');
 
 Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage, draftStandardDirectionsEventPage) => {
   if (!caseId) {
@@ -56,6 +56,6 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
 
 Scenario('local authority draft CMO', async (I, caseViewPage, draftCMOEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.draftCMO);
-  await draftCMOEventPage.draftCMO('1 Jan 2050');
-  await I.completeEvent('Continue');
+  await draftCMOEventPage.draftCMO();
+  I.completeEvent('Submit');
 });
