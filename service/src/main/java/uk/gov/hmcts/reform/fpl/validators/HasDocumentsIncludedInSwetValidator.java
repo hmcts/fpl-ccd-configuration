@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentsHelper.hasDocumentUploaded;
 public class HasDocumentsIncludedInSwetValidator implements ConstraintValidator<HasDocumentsIncludedInSwet, CaseData> {
     @Override
     public boolean isValid(CaseData caseData, ConstraintValidatorContext constraintValidatorContext) {
-        List<ValidationDocumentMap> validationDocumentBundle = getAllDocumentValidationBundle(caseData);
+        List<ValidationDocumentMap> validationDocumentBundle = getDocumentValidationBundle(caseData);
         boolean isValid = true;
 
         for (ValidationDocumentMap validationDocumentMap : validationDocumentBundle) {
@@ -44,7 +44,7 @@ public class HasDocumentsIncludedInSwetValidator implements ConstraintValidator<
         return hasDocumentStatusOf(socialWorkEvidence, ATTACHED) && hasDocumentUploaded(socialWorkEvidence);
     }
 
-    private List<ValidationDocumentMap> getAllDocumentValidationBundle(CaseData caseData) {
+    private List<ValidationDocumentMap> getDocumentValidationBundle(CaseData caseData) {
         List<ValidationDocumentMap> documents = new ArrayList<>();
 
         documents.add(createValidationDocumentMap("socialWorkCarePlanDocument",
