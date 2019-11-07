@@ -19,6 +19,7 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class CaseValidatorService {
 
+    public static final String VALIDATION_SEPARATOR = "\n";
     private final Validator validator;
 
     @Autowired
@@ -37,11 +38,11 @@ public class CaseValidatorService {
 
     private List<String> groupViolationsBySection(Set<ConstraintViolation<CaseData>> constraintViolations,
                                                   Section section) {
-        List<String> errorList;
 
-        errorList = constraintViolations.stream()
+        List<String> errorList = constraintViolations.stream()
             .filter(error -> isAssignableError(error.getPropertyPath().toString(), section))
-            .map(error -> String.format("• %s", error.getMessage()))
+            .flatMap(error -> Arrays.stream(error.getMessage().split(VALIDATION_SEPARATOR, -1)))
+            .map(message -> String.format("• %s", message))
             .distinct()
             .collect(Collectors.toList());
 
