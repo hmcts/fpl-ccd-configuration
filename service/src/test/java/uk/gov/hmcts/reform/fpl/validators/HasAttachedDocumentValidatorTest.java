@@ -6,50 +6,39 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.interfaces.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDocumentWithAttachedFile;
 
 @ExtendWith(SpringExtension.class)
 public class HasAttachedDocumentValidatorTest {
     private Validator validator;
+    private ValidateGroupService validateGroupService;
 
     private static final String ERROR_MESSAGE = "Attach the document or change the status from 'Attached'.";
 
     @BeforeEach
     private void setup() {
         validator = Validation.buildDefaultValidatorFactory().getValidator();
+        validateGroupService = new ValidateGroupService(validator);
     }
 
     @Test
     void shouldReturnAnErrorWhenStatusIsAttachedButDocumentIsNotAttached() {
         Document document = Document.builder().documentStatus("Attached").build();
-
-        List<String> errorMessages = validator.validate(document, UploadDocumentsGroup.class).stream()
-            .map(error -> error.getMessage())
-            .collect(Collectors.toList());
-
+        List<String> errorMessages = validateGroupService.validateGroup(document, UploadDocumentsGroup.class);
         assertThat(errorMessages).contains(ERROR_MESSAGE);
     }
 
     @Test
     void shouldNotReturnAnErrorWhenStatusIsAttachedAndDocumentIsAttached() {
-        Document document = Document.builder()
-            .documentStatus("Attached")
-            .typeOfDocument(DocumentReference.builder()
-                .filename("Mock file")
-                .build())
-            .build();
-
-        List<String> errorMessages = validator.validate(document, UploadDocumentsGroup.class).stream()
-            .map(error -> error.getMessage())
-            .collect(Collectors.toList());
-
+        Document document = createDocumentWithAttachedFile();
+        List<String> errorMessages = validateGroupService.validateGroup(document, UploadDocumentsGroup.class);
         assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
     }
 }

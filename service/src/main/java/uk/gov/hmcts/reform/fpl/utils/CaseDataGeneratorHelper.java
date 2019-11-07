@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.Document;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -183,5 +185,14 @@ public class CaseDataGeneratorHelper {
                     .build())
                 .build()
         );
+    }
+
+    public static Document createDocumentWithAttachedFile() {
+        return Document.builder()
+            .documentStatus("Attached")
+            .typeOfDocument(DocumentReference.builder()
+                .filename("Mock file")
+                .build())
+            .build();
     }
 }
