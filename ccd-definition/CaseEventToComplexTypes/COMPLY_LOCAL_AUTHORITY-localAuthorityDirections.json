@@ -50,7 +50,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "response.cannotComply_title",
+    "ListElementCode": "response.cannotComplyTitle",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
   },
@@ -59,7 +59,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "response.cannotComply_reason",
+    "ListElementCode": "response.cannotComplyReason",
     "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL"
   },
@@ -77,7 +77,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "response.supportingFile",
+    "ListElementCode": "response.cannotComplyFile",
     "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
   },
@@ -86,7 +86,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "response.supportingDocumentDetails",
+    "ListElementCode": "response.cannotComplyDocumentDetails",
     "FieldDisplayOrder": 10,
     "DisplayContext": "OPTIONAL"
   }

@@ -48,7 +48,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionResponse",
-    "ListElementCode": "cannotComply_title",
+    "ListElementCode": "cannotComplyTitle",
     "FieldType": "Label",
     "ElementLabel": "### Parties need to comply with directions to keep proceedings on track. ###\n\n If you can’t comply, you need to explain:\n\n• reasons why\n\n• impact on timetable and next hearing\n\n• proposed next actions",
     "SecurityClassification": "Public",
@@ -57,7 +57,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionResponse",
-    "ListElementCode": "cannotComply_reason",
+    "ListElementCode": "cannotComplyReason",
     "FieldType": "TextArea",
     "ElementLabel": " ",
     "SecurityClassification": "Public",
@@ -76,7 +76,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionResponse",
-    "ListElementCode": "supportingFile",
+    "ListElementCode": "cannotComplyFile",
     "FieldType": "Document",
     "ElementLabel": "Upload a supporting file",
     "HintText": "You can upload JPG, BMP, PNG, TIF or PDF files up to 10MB in size.",
@@ -86,7 +86,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionResponse",
-    "ListElementCode": "supportingDocumentDetails",
+    "ListElementCode": "cannotComplyDocumentDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Give details",
     "SecurityClassification": "Public",

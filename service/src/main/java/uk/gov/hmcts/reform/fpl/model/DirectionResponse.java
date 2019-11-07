@@ -12,16 +12,14 @@ import java.util.UUID;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-// to be removed
-@SuppressWarnings("MemberName")
 public class DirectionResponse {
+    private final UUID directionId;
     private final DirectionAssignee assignee;
     private final String complied;
     private final DocumentReference file;
     private final String documentDetails;
-    private final String cannotComply_reason;
+    private final String cannotComplyReason;
     private final List<String> c2Uploaded;
-    private final DocumentReference supportingFile;
-    private final String supportingDocumentDetails;
-    private final UUID directionId;
+    private final DocumentReference cannotComplyFile;
+    private final String cannotComplyDocumentDetails;
 }

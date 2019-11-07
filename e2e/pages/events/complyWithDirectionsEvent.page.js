@@ -10,10 +10,10 @@ module.exports = {
         },
         file: `#${party}_${index}_response_file`,
         documentDetails: `#${party}_${index}_response_documentDetails`,
-        cannotComplyReason: `#${party}_${index}_response_cannotComply_reason`,
+        cannotComplyReason: `#${party}_${index}_response_cannotComplyReason`,
         c2Upload: `#${party}_${index}_response_c2Uploaded-UPLOADED`,
-        supportingFile: `#${party}_${index}_response_supportingFile`,
-        supportingDocumentDetails: `#${party}_${index}_response_supportingDocumentDetails`,
+        supportingFile: `#${party}_${index}_response_cannotComplyFile`,
+        supportingDocumentDetails: `#${party}_${index}_response_cannotComplyDocumentDetails`,
       },
     };
   },
@@ -29,6 +29,6 @@ module.exports = {
     I.fillField(this.fields(party, index).direction.cannotComplyReason, response.complied.no.cannotComplyReason);
     I.checkOption(this.fields(party, index).direction.c2Upload);
     I.attachFile(this.fields(party, index).direction.supportingFile, file);
-    I.fillField(this.fields(party, index).direction.supportingDocumentDetails, response.complied.no.supportingDocumentDetails);
+    I.fillField(this.fields(party, index).direction.supportingDocumentDetails, response.complied.no.cannotComplyDocumentDetails);
   },
 };
