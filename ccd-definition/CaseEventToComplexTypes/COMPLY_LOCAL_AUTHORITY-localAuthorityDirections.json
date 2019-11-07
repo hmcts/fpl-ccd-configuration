@@ -6,7 +6,7 @@
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "directionType",
     "EventElementLabel": " ",
-    "FieldDisplayOrder": 3,
+    "FieldDisplayOrder": 1,
     "DisplayContext": "READONLY"
   },
   {
@@ -15,7 +15,7 @@
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "directionText",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 2,
     "DisplayContext": "READONLY"
   },
   {
@@ -24,7 +24,7 @@
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "response.complied",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -33,7 +33,7 @@
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "response.file",
-    "FieldDisplayOrder": 10,
+    "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -42,7 +42,7 @@
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "response.documentDetails",
-    "FieldDisplayOrder": 11,
+    "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -51,7 +51,7 @@
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "response.cannotComply_title",
-    "FieldDisplayOrder": 12,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -60,7 +60,7 @@
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "response.cannotComply_reason",
-    "FieldDisplayOrder": 13,
+    "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -69,7 +69,7 @@
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "response.c2Uploaded",
-    "FieldDisplayOrder": 14,
+    "FieldDisplayOrder": 8,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -78,7 +78,7 @@
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "response.supportingFile",
-    "FieldDisplayOrder": 16,
+    "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -87,7 +87,7 @@
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "response.supportingDocumentDetails",
-    "FieldDisplayOrder": 17,
+    "FieldDisplayOrder": 10,
     "DisplayContext": "OPTIONAL"
   }
 ]
