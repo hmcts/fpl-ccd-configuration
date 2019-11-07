@@ -11,10 +11,7 @@ import java.util.Locale;
 @Service
 public class DateFormatterService {
     public String formatLocalDateToString(LocalDate date, FormatStyle style) {
-        if (date != null) {
-            return date.format(DateTimeFormatter.ofLocalizedDate(style).localizedBy(Locale.UK));
-        }
-        return null;
+        return date.format(DateTimeFormatter.ofLocalizedDate(style).localizedBy(Locale.UK));
     }
 
     public String formatLocalDateTimeBaseUsingFormat(LocalDateTime dateTime, String format) {

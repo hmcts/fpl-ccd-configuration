@@ -74,7 +74,6 @@ public class C21OrderController {
         String index = (caseData.getC21OrderBundle() != null)
             ? Integer.toString(caseData.getC21OrderBundle().size() + 1) : "1";
 
-
         Document c21Document = getDocument(
             authorization,
             userId,

@@ -31,7 +31,6 @@ class CreateC21OrderServiceTest {
     private static final String CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL);
     private static final LocalDate TODAYS_DATE = LocalDate.now();
 
-
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
     private CreateC21OrderService createC21OrderService = new CreateC21OrderService(dateFormatterService,
@@ -70,13 +69,7 @@ class CreateC21OrderServiceTest {
 
     @Test
     void shouldFormatC21TemplateDataCorrectlyWhenOnlyC21MandatoryDataIsIncluded() {
-        CaseData caseData = CaseData.builder()
-            .caseLocalAuthority("example")
-            .familyManCaseNumber("123")
-            .temporaryC21Order(C21Order.builder()
-                .orderDetails("Example order details")
-                .build())
-            .build();
+        CaseData caseData = buildCaseData(false);
 
         Map<String, Object> templateData = createC21OrderService.getC21OrderTemplateData(caseData);
 
@@ -93,20 +86,7 @@ class CreateC21OrderServiceTest {
 
     @Test
     void shouldFormatC21TemplateDataCorrectlyWhenC21TemplateDataIsPopulated() {
-        CaseData caseData = CaseData.builder()
-            .caseLocalAuthority("example")
-            .familyManCaseNumber("123")
-            .temporaryC21Order(C21Order.builder()
-                .orderTitle("Example order title")
-                .orderDetails("Example order details")
-                .build())
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(HIS_HONOUR_JUDGE)
-                .judgeLastName("Johnson")
-                .legalAdvisorName("John Clarke")
-                .build())
-            .children1(createPopulatedChildren())
-            .build();
+        CaseData caseData = buildCaseData(true);
 
         Map<String, Object> templateData = createC21OrderService.getC21OrderTemplateData(caseData);
 
@@ -119,6 +99,31 @@ class CreateC21OrderServiceTest {
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("His Honour Judge Johnson");
         assertThat(templateData.get("legalAdvisorName")).isEqualTo("John Clarke");
         assertThat(templateData.get("children")).isEqualTo(getExpectedChildren());
+    }
+
+    private CaseData buildCaseData(boolean mandatory) {
+        C21Order.C21OrderBuilder c21OrderBuilder = C21Order.builder()
+            .orderDetails("Example order details");
+
+        CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder()
+            .caseLocalAuthority("example")
+            .familyManCaseNumber("123")
+            .temporaryC21Order(c21OrderBuilder.build());
+
+        if (mandatory) {
+            caseDataBuilder
+                .temporaryC21Order(c21OrderBuilder
+                    .orderTitle("Example order title")
+                    .build())
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(HIS_HONOUR_JUDGE)
+                    .judgeLastName("Johnson")
+                    .legalAdvisorName("John Clarke")
+                    .build())
+                .children1(createPopulatedChildren())
+                .build();
+        }
+        return caseDataBuilder.build();
     }
 
     private List<Map<String, String>> getExpectedChildren() {
@@ -136,7 +141,6 @@ class CreateC21OrderServiceTest {
                 "gender", "",
                 "dateOfBirth", ""));
     }
-
 
     private CaseData addC21OrderAndBundleToCaseData(List<Element<C21OrderBundle>> c21OrderBundle, String fileName) {
         return CaseData.builder()
@@ -161,7 +165,5 @@ class CreateC21OrderServiceTest {
         CaseData caseData = addC21OrderAndBundleToCaseData(c21EmptyOrderBundle, "C21_1.pdf");
         return createC21OrderService.addToC21OrderBundle(
             caseData.getTemporaryC21Order(), caseData.getJudgeAndLegalAdvisor(), caseData.getC21OrderBundle());
-
     }
-
 }
