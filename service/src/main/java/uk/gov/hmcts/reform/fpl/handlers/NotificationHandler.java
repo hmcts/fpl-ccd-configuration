@@ -27,17 +27,16 @@ import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
-import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C21_ORDER_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.C21_ORDER_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.C2_UPLOAD_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.CAFCASS_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.GATEKEEPER_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.HMCTS_COURT_SUBMISSION_TEMPLATE;
 
 @Slf4j
 @Component
@@ -69,7 +68,7 @@ public class NotificationHandler {
         String reference = Long.toString(caseDetails.getId());
         String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
 
-        sendNotification(HMCTS_COURT_SUBMISSION_TEMPLATE.getTemplateId(),
+        sendNotification(HMCTS_COURT_SUBMISSION_TEMPLATE,
             email, parameters, reference);
     }
 
@@ -86,7 +85,7 @@ public class NotificationHandler {
             String reference = Long.toString(caseDetailsFromEvent.getId());
 
             String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
-            sendNotification(C2_UPLOAD_NOTIFICATION_TEMPLATE.getTemplateId(),
+            sendNotification(C2_UPLOAD_NOTIFICATION_TEMPLATE,
                 email, parameters, reference);
         }
     }
@@ -103,8 +102,9 @@ public class NotificationHandler {
         String localAuthorityEmail = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
         String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
 
-        sendNotifications(C21_ORDER_NOTIFICATION_TEMPLATE.getTemplateId(),
-            Arrays.asList(localAuthorityEmail, cafcassEmail), parameters, reference);
+        Stream.of(localAuthorityEmail, cafcassEmail)
+            .filter(StringUtils::isNotBlank)
+            .forEach(email -> sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, email, parameters, reference));
     }
 
     @EventListener
@@ -116,8 +116,7 @@ public class NotificationHandler {
         String reference = String.valueOf(caseDetails.getId());
         String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
 
-        sendNotification(CAFCASS_SUBMISSION_TEMPLATE.getTemplateId(),
-            email, parameters, reference);
+        sendNotification(CAFCASS_SUBMISSION_TEMPLATE, email, parameters, reference);
     }
 
     @EventListener
@@ -129,8 +128,7 @@ public class NotificationHandler {
             localAuthorityCode);
         String reference = String.valueOf(caseDetails.getId());
 
-        sendNotification(GATEKEEPER_SUBMISSION_TEMPLATE.getTemplateId(),
-            email, parameters, reference);
+        sendNotification(GATEKEEPER_SUBMISSION_TEMPLATE, email, parameters, reference);
     }
 
     @EventListener
@@ -164,18 +162,6 @@ public class NotificationHandler {
             notificationClient.sendEmail(templateId, email, parameters, reference);
         } catch (NotificationClientException e) {
             log.error("Failed to send submission notification (with template id: {}) to {}", templateId, email, e);
-        }
-    }
-
-    private void sendNotifications(final String templateId,
-                                 final List<String> emails,
-                                 final Map<String, Object> parameters,
-                                 final String reference) {
-        log.debug("Sending submission notification (with template id: {}) to {}", templateId, emails);
-
-        if (!isEmpty(emails)) {
-            emails.stream().filter(StringUtils::isNotBlank).forEach(email ->
-                sendNotification(templateId, email, parameters, reference));
         }
     }
 }

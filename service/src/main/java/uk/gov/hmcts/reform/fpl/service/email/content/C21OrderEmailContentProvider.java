@@ -42,9 +42,7 @@ public class C21OrderEmailContentProvider extends AbstractEmailContentProvider {
                                                          final String localAuthorityCode) {
         // Validation within our frontend ensures that the following data is present
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-
         final String subjectLine = buildSubjectLine(caseData);
-
         return ImmutableMap.of(
             "subjectLine", subjectLine,
             "localAuthorityOrCafcass", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode),
@@ -62,7 +60,6 @@ public class C21OrderEmailContentProvider extends AbstractEmailContentProvider {
                 hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()).getDate(),
                 FormatStyle.MEDIUM);
         }
-
         return Stream.of(subjectLine, hearingDate)
             .filter(StringUtils::isNotBlank)
             .collect(joining(", "));

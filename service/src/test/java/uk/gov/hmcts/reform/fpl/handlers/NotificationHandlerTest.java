@@ -46,12 +46,12 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C21_ORDER_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.C21_ORDER_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.C2_UPLOAD_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.CAFCASS_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.GATEKEEPER_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.NotificationTemplateType.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
@@ -130,40 +130,6 @@ class NotificationHandlerTest {
             given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
                 .willReturn("Example Local Authority");
 
-            given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
-                .willReturn(parameters);
-        }
-
-        @Test
-        void shouldNotNotifyHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
-            given(idamApi.retrieveUserDetails(AUTH_TOKEN))
-                .willReturn(new UserDetails("1", "hmcts-admin@test.com",
-                    "Hmcts", "Test", HMCTS_ADMIN.getRoles()));
-
-            notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
-
-            verify(notificationClient, never())
-                .sendEmail(eq(C2_UPLOAD_NOTIFICATION_TEMPLATE.getTemplateId()), eq("hmcts-admin@test.com"),
-                    eq(parameters), eq("12345"));
-        }
-
-        @Test
-        void shouldNotifyNonHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
-            given(idamApi.retrieveUserDetails(AUTH_TOKEN))
-                .willReturn(new UserDetails("1", "hmcts-non-admin@test.com",
-                    "Hmcts", "Test", LOCAL_AUTHORITY.getRoles()));
-
-            given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
-                .willReturn(new Court(COURT_NAME, "hmcts-non-admin@test.com"));
-
-            notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
-
-            verify(notificationClient, times(1)).sendEmail(
-                eq(C2_UPLOAD_NOTIFICATION_TEMPLATE.getTemplateId()), eq("hmcts-non-admin@test.com"), eq(parameters), eq("12345"));
-        }
-
-        @Test
-        void shouldNotifyPartiesOnC21OrderSubmission() throws IOException, NotificationClientException {
             final LocalDate hearingDate = LocalDate.now().plusMonths(4);
 
             given(dateFormatterService.formatLocalDateToString(hearingDate, FormatStyle.MEDIUM))
@@ -179,17 +145,51 @@ class NotificationHandlerTest {
             given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
                 .willReturn("Example Local Authority");
 
+            given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
+                .willReturn(parameters);
+        }
+
+        @Test
+        void shouldNotNotifyHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
+            given(idamApi.retrieveUserDetails(AUTH_TOKEN))
+                .willReturn(new UserDetails("1", "hmcts-admin@test.com",
+                    "Hmcts", "Test", HMCTS_ADMIN.getRoles()));
+
+            notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+
+            verify(notificationClient, never())
+                .sendEmail(eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-admin@test.com"),
+                    eq(parameters), eq("12345"));
+        }
+
+        @Test
+        void shouldNotifyNonHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
+            given(idamApi.retrieveUserDetails(AUTH_TOKEN))
+                .willReturn(new UserDetails("1", "hmcts-non-admin@test.com",
+                    "Hmcts", "Test", LOCAL_AUTHORITY.getRoles()));
+
+            given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
+                .willReturn(new Court(COURT_NAME, "hmcts-non-admin@test.com"));
+
+            notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+
+            verify(notificationClient, times(1)).sendEmail(
+                eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-non-admin@test.com"), eq(parameters), eq("12345"));
+        }
+
+        @Test
+        void shouldNotifyPartiesOnC21OrderSubmission() throws IOException, NotificationClientException {
             given(c21OrderEmailContentProvider.buildC21OrderNotification(callbackRequest().getCaseDetails(),
                 LOCAL_AUTHORITY_CODE)).willReturn(parameters);
 
             notificationHandler.sendNotificationForC21Order(new C21OrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
             verify(notificationClient, times(1)).sendEmail(
-                eq(C21_ORDER_NOTIFICATION_TEMPLATE.getTemplateId()), eq(COURT_EMAIL_ADDRESS),
+                eq(C21_ORDER_NOTIFICATION_TEMPLATE), eq(COURT_EMAIL_ADDRESS),
                 eq(parameters), eq("12345"));
 
             verify(notificationClient, times(1)).sendEmail(
-                eq(C21_ORDER_NOTIFICATION_TEMPLATE.getTemplateId()), eq(CAFCASS_EMAIL_ADDRESS),
+                eq(C21_ORDER_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
                 eq(parameters), eq("12345"));
         }
     }
@@ -225,7 +225,7 @@ class NotificationHandlerTest {
         notificationHandler.sendNotificationToHmctsAdmin(new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(HMCTS_COURT_SUBMISSION_TEMPLATE.getTemplateId()), eq(COURT_EMAIL_ADDRESS),
+            eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq(COURT_EMAIL_ADDRESS),
             eq(expectedParameters), eq("12345"));
     }
 
@@ -258,7 +258,7 @@ class NotificationHandlerTest {
         notificationHandler.sendNotificationToCafcass(new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(CAFCASS_SUBMISSION_TEMPLATE.getTemplateId()), eq(CAFCASS_EMAIL_ADDRESS),
+            eq(CAFCASS_SUBMISSION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
             eq(expectedParameters), eq("12345"));
     }
 
@@ -289,7 +289,7 @@ class NotificationHandlerTest {
         notificationHandler.sendNotificationToGatekeeper(new NotifyGatekeeperEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(GATEKEEPER_SUBMISSION_TEMPLATE.getTemplateId()), eq(GATEKEEPER_EMAIL_ADDRESS),
+            eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq(GATEKEEPER_EMAIL_ADDRESS),
             eq(expectedParameters), eq("12345"));
     }
 
