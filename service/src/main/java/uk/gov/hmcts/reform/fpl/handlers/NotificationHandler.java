@@ -68,8 +68,7 @@ public class NotificationHandler {
         String reference = Long.toString(caseDetails.getId());
         String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
 
-        sendNotification(HMCTS_COURT_SUBMISSION_TEMPLATE,
-            email, parameters, reference);
+        sendNotification(HMCTS_COURT_SUBMISSION_TEMPLATE, email, parameters, reference);
     }
 
     @EventListener
@@ -85,8 +84,7 @@ public class NotificationHandler {
             String reference = Long.toString(caseDetailsFromEvent.getId());
 
             String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
-            sendNotification(C2_UPLOAD_NOTIFICATION_TEMPLATE,
-                email, parameters, reference);
+            sendNotification(C2_UPLOAD_NOTIFICATION_TEMPLATE, email, parameters, reference);
         }
     }
 
