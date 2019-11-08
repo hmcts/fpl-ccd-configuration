@@ -17,6 +17,7 @@ const enterAllocationProposalEventPage = require('./pages/events/enterAllocation
 const enterRespondentsEventPage = require('./pages/events/enterRespondentsEvent.page');
 
 const applicant = require('./fixtures/applicant');
+const solicitor = require('./fixtures/solicitor');
 const respondent = require('./fixtures/respondents');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
@@ -134,6 +135,7 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
       enterApplicantEventPage.enterApplicantDetails(applicant);
+      enterApplicantEventPage.enterSolicitorDetails(solicitor);
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
       await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
