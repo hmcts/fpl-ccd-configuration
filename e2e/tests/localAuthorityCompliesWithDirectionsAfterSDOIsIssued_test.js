@@ -29,7 +29,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
     I.seeEventSubmissionConfirmation(config.administrationActions.sendToGatekeeper);
     I.signOut();
 
-    // need to draft sdo and select issued...
+    //gatekeeper login, draft sdo and select issued
     await I.signIn(config.gateKeeperEmail, config.gateKeeperPassword);
     await I.navigateToCaseDetails(caseId);
     await caseViewPage.goToNewActions(config.administrationActions.draftStandardDirections);
