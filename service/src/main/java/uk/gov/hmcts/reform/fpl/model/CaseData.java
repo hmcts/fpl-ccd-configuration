@@ -21,7 +21,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.service.CaseValidatorService.VALIDATION_SEPARATOR;
 
 @Data
 @Builder(toBuilder = true)
@@ -59,7 +58,7 @@ public class CaseData {
 
     private final Proceeding proceeding;
 
-    @NotNull(message = "Enter the solicitor's full name" + VALIDATION_SEPARATOR + "Enter the solicitor's email")
+    @NotNull(message = "You need to add details to solicitor")
     @Valid
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;
