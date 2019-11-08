@@ -108,17 +108,6 @@ public class C21OrderController {
         applicationEventPublisher.publishEvent(new C21OrderEvent(callbackRequest, authorization, userId));
     }
 
-    private C21Order addDocumentToC21Order(CaseData caseData, Document document) {
-        return caseData.getTemporaryC21Order().toBuilder()
-            .c21OrderDocument(DocumentReference.builder()
-                .url(document.links.self.href)
-                .binaryUrl(document.links.binary.href)
-                .filename(document.originalDocumentName)
-                .build())
-            .orderTitle(defaultIfBlank(caseData.getTemporaryC21Order().getOrderTitle(), "Order"))
-            .build();
-    }
-
     private Document getDocument(@RequestHeader("authorization") String authorization,
                                  @RequestHeader("user-id") String userId,
                                  String index,
