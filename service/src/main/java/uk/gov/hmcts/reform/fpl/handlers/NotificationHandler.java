@@ -151,9 +151,7 @@ public class NotificationHandler {
         sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, reference);
     }
 
-    private void sendNotification(final String templateId,
-                                 final String email,
-                                 final Map<String, Object> parameters,
+    private void sendNotification(final String templateId, final String email, final Map<String, Object> parameters,
                                  final String reference) {
         log.debug("Sending submission notification (with template id: {}) to {}", templateId, email);
         try {
