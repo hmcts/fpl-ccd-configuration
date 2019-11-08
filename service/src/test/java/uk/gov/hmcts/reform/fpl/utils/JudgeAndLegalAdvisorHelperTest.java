@@ -59,5 +59,4 @@ public class JudgeAndLegalAdvisorHelperTest {
 
         assertThat(result).isEqualTo("Steve Stevenson (JP)");
     }
-
 }
