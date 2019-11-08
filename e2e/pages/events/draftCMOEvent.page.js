@@ -1,14 +1,12 @@
 const { I } = inject();
 
 module.exports = {
-  fields: function (index) {
-    return {
-      recitals: {
-        title: `#recitals_${index}_title`,
-        description: `#recitals_${index}_description`,
-      },
-      cmoHearingDateList: '#cmoHearingDateList',
-    };
+  fields: {
+    recitals: {
+      title: '#recitals_0_title',
+      description: '#recitals_0_description',
+    },
+    cmoHearingDateList: '#cmoHearingDateList',
   },
 
   draftCMO(date= '1 Jan 2050') {
@@ -19,11 +17,7 @@ module.exports = {
 
   enterRecital(recitals) {
     I.click('Add new');
-    I.fillField('#recitals_0_title', recitals.title);
-    I.fillField('#recitals_0_description', recitals.description);
-  },
-
-  getActiveElementIndex() {
-    return I.grabNumberOfVisibleElements('//button[text()="Add New"]') - 1;
+    I.fillField(this.fields.recitals.title, recitals.title);
+    I.fillField(this.fields.recitals.description, recitals.description);
   },
 };
