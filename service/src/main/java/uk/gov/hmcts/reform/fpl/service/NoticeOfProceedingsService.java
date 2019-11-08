@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -28,14 +30,17 @@ public class NoticeOfProceedingsService {
     private DateFormatterService dateFormatterService;
     private HearingBookingService hearingBookingService;
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private HearingVenueLookUpService hearingVenueLookUpService;
 
     @Autowired
     public NoticeOfProceedingsService(DateFormatterService dateFormatterService,
                                       HearingBookingService hearingBookingService,
-                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration) {
+                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
+                                      HearingVenueLookUpService hearingVenueLookUpService) {
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
+        this.hearingVenueLookUpService = hearingVenueLookUpService;
     }
 
     public List<Element<DocumentBundle>> getRemovedDocumentBundles(CaseData caseData,
@@ -57,7 +62,7 @@ public class NoticeOfProceedingsService {
     }
 
     public Map<String, Object> getNoticeOfProceedingTemplateData(CaseData caseData) {
-        Map<String, String> hearingBookingData = getHearingBookingData(caseData.getHearingDetails());
+        Map<String, Object> hearingBookingData = getHearingBookingData(caseData.getHearingDetails());
 
         // Validation within our frontend ensures that the following data is present
         return ImmutableMap.<String, Object>builder()
@@ -79,13 +84,14 @@ public class NoticeOfProceedingsService {
         return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
     }
 
-    private Map<String, String> getHearingBookingData(List<Element<HearingBooking>> hearingBookings) {
+    private Map<String, Object>  getHearingBookingData(List<Element<HearingBooking>> hearingBookings) {
         HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(hearingBookings);
+        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
 
         return ImmutableMap.of(
             "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),
                 FormatStyle.LONG),
-            "hearingVenue", prioritisedHearingBooking.getVenue(),
+            "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
             "preHearingAttendance", prioritisedHearingBooking.getPreHearingAttendance(),
             "hearingTime", prioritisedHearingBooking.getTime()
         );
@@ -93,7 +99,7 @@ public class NoticeOfProceedingsService {
 
     private String getOrderTypes(Orders orders) {
         return orders.getOrderType().stream()
-            .map(orderType -> orderType.getLabel())
+            .map(OrderType::getLabel)
             .collect(Collectors.joining(", "));
     }
 

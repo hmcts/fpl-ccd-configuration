@@ -58,6 +58,7 @@ class CaseSubmissionControllerMidEventTest {
             "• You need to add details to respondents",
             "In the applicant section:",
             "• You need to add details to applicant",
+            "• You need to add details to solicitor",
             "In the hearing needed section:",
             "• You need to add details to hearing needed",
             "In the documents section:",

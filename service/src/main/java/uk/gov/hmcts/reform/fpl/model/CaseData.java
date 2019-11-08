@@ -59,6 +59,9 @@ public class CaseData {
     }
 
     private final Proceeding proceeding;
+
+    @NotNull(message = "You need to add details to solicitor")
+    @Valid
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;
     private final Allocation allocationProposal;
