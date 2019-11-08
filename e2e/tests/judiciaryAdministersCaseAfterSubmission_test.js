@@ -1,5 +1,6 @@
 const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
+const dateFormat = require('dateformat');
 
 let caseId;
 
@@ -70,9 +71,12 @@ Scenario('Judiciary creates C21 order for the case', async (I, caseViewPage, cre
   await I.click('Continue');
   await createC21OrderEventPage.enterJudgeAndLegalAdvisor('Sotomayer', 'Peter Parker');
   await I.completeEvent('Save and continue');
+  const now = new Date();
+
   I.seeEventSubmissionConfirmation(config.administrationActions.createC21Order);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeAnswerInTab(1, 'C21 Order 1', 'File name', 'C21_Order_1.pdf');
   I.seeAnswerInTab(2, 'C21 Order 1', 'Order title', 'Example Title');
+  I.seeAnswerInTab(3, 'C21 Order 1', 'Date and time of upload', dateFormat(now, 'd mmmm yyyy'));
   I.seeAnswerInTab(4, 'C21 Order 1', 'Judge or Magistrate', 'Her Honour Judge Sotomayer');
 });

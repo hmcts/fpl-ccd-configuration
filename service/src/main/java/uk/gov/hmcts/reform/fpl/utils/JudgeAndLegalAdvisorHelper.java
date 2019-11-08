@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
+import java.util.Optional;
+
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 
@@ -11,18 +13,19 @@ public class JudgeAndLegalAdvisorHelper {
     }
 
     public static String getLegalAdvisorName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        if (judgeAndLegalAdvisor == null) {
-            return "";
-        }
-
-        return defaultIfNull(judgeAndLegalAdvisor.getLegalAdvisorName(), "");
+        return  Optional.ofNullable(judgeAndLegalAdvisor)
+            .map(JudgeAndLegalAdvisor::getLegalAdvisorName)
+            .orElse("");
     }
 
     public static String formatJudgeTitleAndName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        if (judgeAndLegalAdvisor == null || judgeAndLegalAdvisor.getJudgeTitle() == null) {
-            return "";
-        }
+        return Optional.ofNullable(judgeAndLegalAdvisor)
+            .filter(judge -> judge.getJudgeTitle() != null)
+            .map(JudgeAndLegalAdvisorHelper::mapJudgeOrAdvisor)
+            .orElse("");
+    }
 
+    private static String mapJudgeOrAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         if (judgeAndLegalAdvisor.getJudgeTitle() == MAGISTRATES) {
             return judgeAndLegalAdvisor.getJudgeFullName() + " (JP)";
         } else {

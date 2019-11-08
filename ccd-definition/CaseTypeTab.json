@@ -69,7 +69,7 @@
     "TabLabel": "Orders",
     "TabDisplayOrder": 4,
     "CaseFieldID": "c21OrderBundle",
-    "TabFieldDisplayOrder": 2
+    "TabFieldDisplayOrder": 3
   },
   {
     "LiveFrom": "01/01/2017",

@@ -21,7 +21,6 @@
     "ListElementCode": "c21OrderDocument",
     "FieldType": "Document",
     "ElementLabel": "Order PDF",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "c21OrderDocument=\"*\""
+    "SecurityClassification": "Public"
   }
 ]

@@ -3,36 +3,41 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.google.common.collect.ImmutableMap;
 import org.assertj.core.util.Lists;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.C21OrderBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 @Service
 public class CreateC21OrderService {
 
     private final DateFormatterService dateFormatterService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final Time time;
 
     public CreateC21OrderService(DateFormatterService dateFormatterService,
-                                 HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration) {
+                                 HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration, Time time) {
         this.dateFormatterService = dateFormatterService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
+        this.time = time;
+        System.out.println(time.getClass().getCanonicalName());
     }
 
     public Map<String, Object> getC21OrderTemplateData(CaseData caseData) {
@@ -41,7 +46,7 @@ public class CreateC21OrderService {
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
             .put("orderTitle", getOrderTitle(caseData))
             .put("orderDetails", caseData.getTemporaryC21Order().getOrderDetails())
-            .put("todaysDate", dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG))
+            .put("todaysDate", dateFormatterService.formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG))
             .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
                 caseData.getJudgeAndLegalAdvisor()))
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
@@ -50,20 +55,29 @@ public class CreateC21OrderService {
             .build();
     }
 
+    public C21Order addDocumentToC21Order(CaseData caseData, Document document) {
+        return caseData.getTemporaryC21Order().toBuilder()
+            .c21OrderDocument(DocumentReference.builder()
+                .url(document.links.self.href)
+                .binaryUrl(document.links.binary.href)
+                .filename(document.originalDocumentName)
+                .build())
+            .orderTitle(defaultIfBlank(caseData.getTemporaryC21Order().getOrderTitle(), "Order"))
+            .build();
+    }
+
     public List<Element<C21OrderBundle>> addToC21OrderBundle(C21Order tempC21,
                                                              JudgeAndLegalAdvisor judgeAndLegalAdvisor,
                                                              List<Element<C21OrderBundle>> c21OrderBundle) {
         c21OrderBundle = defaultIfNull(c21OrderBundle, Lists.newArrayList());
-
-        ZonedDateTime zonedDateTime = ZonedDateTime.now(ZoneId.of("Europe/London"));
 
         c21OrderBundle.add(Element.<C21OrderBundle>builder()
             .id(UUID.randomUUID())
             .value(C21OrderBundle.builder()
                 .c21OrderDocument(tempC21.getC21OrderDocument())
                 .orderTitle(tempC21.getOrderTitle())
-                .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(zonedDateTime
-                    .toLocalDateTime(), "h:mma, d MMMM yyyy"))
+                .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
+                    "h:mma, d MMMM yyyy"))
                 .judgeTitleAndName(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor))
                 .build())
             .build());
@@ -71,12 +85,15 @@ public class CreateC21OrderService {
         return c21OrderBundle;
     }
 
-    private String getOrderTitle(CaseData caseData) {
-        if (caseData.getTemporaryC21Order() == null || caseData.getTemporaryC21Order().getOrderTitle() == null) {
-            return "Order";
-        }
+    public String generateIndexForFileName(List<Element<C21OrderBundle>> c21OrderBundle) {
+        return (c21OrderBundle != null) ? Integer.toString(c21OrderBundle.size() + 1) : "1";
+    }
 
-        return caseData.getTemporaryC21Order().getOrderTitle();
+    private String getOrderTitle(CaseData caseData) {
+        return Optional.ofNullable(caseData.getTemporaryC21Order())
+            .filter(order -> order.getOrderTitle() != null)
+            .map(C21Order::getOrderTitle)
+            .orElse("Order");
     }
 
     private String getCourtName(String courtName) {

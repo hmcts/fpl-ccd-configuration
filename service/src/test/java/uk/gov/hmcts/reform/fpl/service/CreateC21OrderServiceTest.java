@@ -12,8 +12,9 @@ import uk.gov.hmcts.reform.fpl.model.common.C21OrderBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +30,14 @@ class CreateC21OrderServiceTest {
     private static final String COURT_NAME = "Example Court";
     private static final String COURT_EMAIL = "example@court.com";
     private static final String CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL);
-    private static final LocalDate TODAYS_DATE = LocalDate.now();
+    private static final LocalDateTime NOW = LocalDateTime.now();
+
+    private final Time time = () -> NOW;
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
     private CreateC21OrderService createC21OrderService = new CreateC21OrderService(dateFormatterService,
-        hmctsCourtLookupConfiguration);
+        hmctsCourtLookupConfiguration, time);
 
     @Test
     void shouldAppendNewC21OrderToEmptyC21OrderBundle() {
@@ -43,11 +46,13 @@ class CreateC21OrderServiceTest {
 
         List<Element<C21OrderBundle>> c21OrderBundleWithOrder = createC21OrderService.addToC21OrderBundle(
             caseData.getTemporaryC21Order(), caseData.getJudgeAndLegalAdvisor(), caseData.getC21OrderBundle());
-        assertThat(c21OrderBundleWithOrder).size().isEqualTo(1);
+        assertThat(c21OrderBundleWithOrder.size()).isEqualTo(1);
 
         C21OrderBundle c21OrderBundle = c21OrderBundleWithOrder.get(0).getValue();
 
         assertThat(c21OrderBundle.getC21OrderDocument().getFilename()).isEqualTo("C21_1.pdf");
+        assertThat(c21OrderBundle.getOrderDate()).isEqualTo(
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"));
         assertThat(c21OrderBundle.getOrderTitle()).isEqualTo("Example order title");
         assertThat(c21OrderBundle.getJudgeTitleAndName()).isEqualTo("His Honour Judge Johnson");
     }
@@ -58,8 +63,7 @@ class CreateC21OrderServiceTest {
 
         List<Element<C21OrderBundle>> c21OrderBundleWithTwoOrders = createC21OrderService.addToC21OrderBundle(
             caseData.getTemporaryC21Order(), caseData.getJudgeAndLegalAdvisor(), caseData.getC21OrderBundle());
-        assertThat(c21OrderBundleWithTwoOrders).size().isEqualTo(2);
-
+        assertThat(c21OrderBundleWithTwoOrders.size()).isEqualTo(2);
         C21OrderBundle previousC21 = c21OrderBundleWithTwoOrders.get(0).getValue();
         C21OrderBundle appendedC21 = c21OrderBundleWithTwoOrders.get(1).getValue();
 
@@ -77,8 +81,8 @@ class CreateC21OrderServiceTest {
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
         assertThat(templateData.get("orderTitle")).isEqualTo("Order");
         assertThat(templateData.get("orderDetails")).isEqualTo("Example order details");
-        assertThat(templateData.get("todaysDate")).isEqualTo(dateFormatterService.formatLocalDateToString(TODAYS_DATE,
-            FormatStyle.LONG));
+        assertThat(templateData.get("todaysDate")).isEqualTo(
+            dateFormatterService.formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG));
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("");
         assertThat(templateData.get("legalAdvisorName")).isEqualTo("");
         assertThat(templateData.get("children")).isEqualTo(ImmutableList.of());
@@ -94,14 +98,14 @@ class CreateC21OrderServiceTest {
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
         assertThat(templateData.get("orderTitle")).isEqualTo("Example order title");
         assertThat(templateData.get("orderDetails")).isEqualTo("Example order details");
-        assertThat(templateData.get("todaysDate")).isEqualTo(dateFormatterService.formatLocalDateToString(TODAYS_DATE,
-            FormatStyle.LONG));
+        assertThat(templateData.get("todaysDate")).isEqualTo(
+            dateFormatterService.formatLocalDateToString(time.now().toLocalDate(), FormatStyle.LONG));
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("His Honour Judge Johnson");
         assertThat(templateData.get("legalAdvisorName")).isEqualTo("John Clarke");
         assertThat(templateData.get("children")).isEqualTo(getExpectedChildren());
     }
 
-    private CaseData buildCaseData(boolean mandatory) {
+    private CaseData buildCaseData(boolean addAllFields) {
         C21Order.C21OrderBuilder c21OrderBuilder = C21Order.builder()
             .orderDetails("Example order details");
 
@@ -110,7 +114,7 @@ class CreateC21OrderServiceTest {
             .familyManCaseNumber("123")
             .temporaryC21Order(c21OrderBuilder.build());
 
-        if (mandatory) {
+        if (addAllFields) {
             caseDataBuilder
                 .temporaryC21Order(c21OrderBuilder
                     .orderTitle("Example order title")
@@ -131,7 +135,8 @@ class CreateC21OrderServiceTest {
             ImmutableMap.of(
                 "name", "Bran Stark",
                 "gender", "Male",
-                "dateOfBirth", dateFormatterService.formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG)),
+                "dateOfBirth", dateFormatterService.formatLocalDateToString(time.now().toLocalDate(),
+                    FormatStyle.LONG)),
             ImmutableMap.of(
                 "name", "Sansa Stark",
                 "gender", "",
