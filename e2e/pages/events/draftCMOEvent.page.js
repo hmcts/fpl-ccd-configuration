@@ -17,10 +17,10 @@ module.exports = {
     I.click('Continue');
   },
 
-  enterRecital() {
+  enterRecital(recitals) {
     I.click('Add new');
-    I.fillField('#recitals_0_title', 'title test');
-    I.fillField('#recitals_0_description', 'description');
+    I.fillField('#recitals_0_title', recitals.title);
+    I.fillField('#recitals_0_description', recitals.description);
   },
 
   getActiveElementIndex() {
