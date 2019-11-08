@@ -5,7 +5,7 @@
     "ListElementCode": "assignee",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "DirectionAssignees",
-    "ElementLabel": "Who has complied with this direction?",
+    "ElementLabel": "Party",
     "SecurityClassification": "Public"
   },
   {
@@ -23,7 +23,7 @@
     "ListElementCode": "complied",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "YesOrNo",
-    "ElementLabel": "Have you complied with this direction?",
+    "ElementLabel": "Has this direction been complied with?",
     "SecurityClassification": "Public"
   },
   {
@@ -59,7 +59,7 @@
     "ID": "DirectionResponse",
     "ListElementCode": "cannotComplyReason",
     "FieldType": "TextArea",
-    "ElementLabel": " ",
+    "ElementLabel": "Give details",
     "SecurityClassification": "Public",
     "FieldShowCondition": "complied=\"No\""
   },
@@ -80,15 +80,6 @@
     "FieldType": "Document",
     "ElementLabel": "Upload a supporting file",
     "HintText": "You can upload JPG, BMP, PNG, TIF or PDF files up to 10MB in size.",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "complied=\"No\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "DirectionResponse",
-    "ListElementCode": "cannotComplyDocumentDetails",
-    "FieldType": "TextArea",
-    "ElementLabel": "Give details",
     "SecurityClassification": "Public",
     "FieldShowCondition": "complied=\"No\""
   }

@@ -29,6 +29,5 @@ module.exports = {
     I.fillField(this.fields(party, index).direction.cannotComplyReason, response.complied.no.cannotComplyReason);
     I.checkOption(this.fields(party, index).direction.c2Upload);
     I.attachFile(this.fields(party, index).direction.supportingFile, file);
-    I.fillField(this.fields(party, index).direction.supportingDocumentDetails, response.complied.no.cannotComplyDocumentDetails);
   },
 };

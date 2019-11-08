@@ -5,7 +5,6 @@ module.exports = {
     },
     no: {
       cannotComplyReason: 'I cannot comply because...',
-      cannotComplyDocumentDetails: 'Some example details',
     },
   },
 };

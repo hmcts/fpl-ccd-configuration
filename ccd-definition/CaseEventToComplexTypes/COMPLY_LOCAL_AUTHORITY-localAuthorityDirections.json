@@ -14,8 +14,19 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "directionText",
+    "ListElementCode": "directionNeeded",
     "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "directionText = \"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "dateToBeCompletedBy",
+    "EventElementLabel": "Deadline",
+    "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY"
   },
   {
@@ -24,15 +35,6 @@
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "response.complied",
-    "FieldDisplayOrder": 3,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
-    "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "response.file",
     "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
   },
@@ -50,7 +52,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "response.cannotComplyTitle",
+    "ListElementCode": "response.file",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
   },
@@ -59,9 +61,18 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "response.cannotComplyReason",
+    "ListElementCode": "response.cannotComplyTitle",
     "FieldDisplayOrder": 7,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
+    "CaseFieldID": "localAuthorityDirections",
+    "ListElementCode": "response.cannotComplyReason",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -69,15 +80,6 @@
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
     "ListElementCode": "response.c2Uploaded",
-    "FieldDisplayOrder": 8,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
-    "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "response.cannotComplyFile",
     "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
   },
@@ -86,7 +88,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_LOCAL_AUTHORITY",
     "CaseFieldID": "localAuthorityDirections",
-    "ListElementCode": "response.cannotComplyDocumentDetails",
+    "ListElementCode": "response.cannotComplyFile",
     "FieldDisplayOrder": 10,
     "DisplayContext": "OPTIONAL"
   }

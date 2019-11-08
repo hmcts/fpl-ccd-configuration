@@ -21,5 +21,4 @@ public class DirectionResponse {
     private final String cannotComplyReason;
     private final List<String> c2Uploaded;
     private final DocumentReference cannotComplyFile;
-    private final String cannotComplyDocumentDetails;
 }

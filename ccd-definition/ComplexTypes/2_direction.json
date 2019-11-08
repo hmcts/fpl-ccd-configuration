@@ -96,7 +96,7 @@
     "ListElementCode": "responses",
     "FieldType": "Collection",
     "FieldTypeParameter": "DirectionResponse",
-    "ElementLabel": "Responses",
+    "ElementLabel": "Compliance",
     "SecurityClassification": "Public",
     "FieldShowCondition": "directionNeeded!=\"No\""
   }
