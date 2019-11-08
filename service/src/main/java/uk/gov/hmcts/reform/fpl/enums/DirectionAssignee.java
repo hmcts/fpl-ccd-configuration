@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
-import java.util.stream.Stream;
-
 public enum DirectionAssignee {
     ALL_PARTIES("allParties"),
     LOCAL_AUTHORITY("localAuthorityDirections"),
@@ -18,12 +16,5 @@ public enum DirectionAssignee {
 
     public String getValue() {
         return value;
-    }
-
-    public static DirectionAssignee fromString(String value) {
-        return Stream.of(DirectionAssignee.values())
-            .filter(x -> x.getValue().equals(value))
-            .findFirst()
-            .orElse(null);
     }
 }

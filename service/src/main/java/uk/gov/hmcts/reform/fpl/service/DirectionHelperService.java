@@ -156,16 +156,16 @@ public class DirectionHelperService {
      * @param caseData data from case.
      * @return Map of roles and directions.
      */
-    public Map<String, List<Element<Direction>>> collectDirectionsToMap(CaseData caseData) {
+    public Map<DirectionAssignee, List<Element<Direction>>> collectDirectionsToMap(CaseData caseData) {
         final List<Element<Direction>> emptyList = ImmutableList.of();
 
         return Map.of(
-            ALL_PARTIES.getValue(), defaultIfNull(caseData.getAllParties(), emptyList),
-            LOCAL_AUTHORITY.getValue(), defaultIfNull(caseData.getLocalAuthorityDirections(), emptyList),
-            CAFCASS.getValue(), defaultIfNull(caseData.getCafcassDirections(), emptyList),
-            COURT.getValue(), defaultIfNull(caseData.getCourtDirections(), emptyList),
-            PARENTS_AND_RESPONDENTS.getValue(), defaultIfNull(caseData.getParentsAndRespondentsDirections(), emptyList),
-            OTHERS.getValue(), defaultIfNull(caseData.getOtherPartiesDirections(), emptyList));
+            ALL_PARTIES, defaultIfNull(caseData.getAllParties(), emptyList),
+            LOCAL_AUTHORITY, defaultIfNull(caseData.getLocalAuthorityDirections(), emptyList),
+            CAFCASS, defaultIfNull(caseData.getCafcassDirections(), emptyList),
+            COURT, defaultIfNull(caseData.getCourtDirections(), emptyList),
+            PARENTS_AND_RESPONDENTS, defaultIfNull(caseData.getParentsAndRespondentsDirections(), emptyList),
+            OTHERS, defaultIfNull(caseData.getOtherPartiesDirections(), emptyList));
     }
 
     /**
@@ -175,7 +175,7 @@ public class DirectionHelperService {
      * @return a list of directions with hidden variables added where a response is present.
      */
     public List<Element<Direction>> addHiddenVariablesToResponseForManyAssignees(
-        Map<String, List<Element<Direction>>> directionMap) {
+        Map<DirectionAssignee, List<Element<Direction>>> directionMap) {
         return directionMap.entrySet()
             .stream()
             .map(entry -> addHiddenVariablesToResponseForAssignee(entry.getKey(), entry.getValue()))
@@ -183,7 +183,7 @@ public class DirectionHelperService {
             .collect(toList());
     }
 
-    private List<Element<Direction>> addHiddenVariablesToResponseForAssignee(String assignee,
+    private List<Element<Direction>> addHiddenVariablesToResponseForAssignee(DirectionAssignee assignee,
                                                                              List<Element<Direction>> directions) {
         return directions.stream()
             .filter(element -> isNotEmpty(element.getValue().getResponse()))
@@ -192,7 +192,7 @@ public class DirectionHelperService {
                 .id(x.getId())
                 .value(x.getValue().toBuilder()
                     .response(x.getValue().getResponse().toBuilder()
-                        .assignee(DirectionAssignee.fromString(assignee))
+                        .assignee(assignee)
                         .directionId(x.getId())
                         .build())
                     .build())
@@ -281,6 +281,7 @@ public class DirectionHelperService {
                 .build())
             .build();
     }
+
 
     private String booleanToYesOrNo(boolean value) {
         return value ? "Yes" : "No";

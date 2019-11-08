@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
@@ -57,7 +58,8 @@ public class ComplyWithDirectionsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Map<String, List<Element<Direction>>> directionsMap = directionHelperService.collectDirectionsToMap(caseData);
+        Map<DirectionAssignee, List<Element<Direction>>> directionsMap =
+            directionHelperService.collectDirectionsToMap(caseData);
 
         List<DirectionResponse> directionsToUpdate = directionHelperService
             .addHiddenVariablesToResponseForManyAssignees(directionsMap).stream()

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Objects.isNull;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Data
 @Builder(toBuilder = true)
@@ -29,10 +29,6 @@ public class Direction {
     private List<Element<DirectionResponse>> responses;
 
     public List<Element<DirectionResponse>> getResponses() {
-        if (isNull(responses)) {
-            return new ArrayList<>();
-        }
-
-        return responses;
+        return defaultIfNull(responses, new ArrayList<>());
     }
 }

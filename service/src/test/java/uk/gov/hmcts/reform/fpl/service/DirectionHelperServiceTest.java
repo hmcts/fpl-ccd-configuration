@@ -276,7 +276,7 @@ class DirectionHelperServiceTest {
             DirectionResponse newResponse = DirectionResponse.builder()
                 .assignee(LOCAL_AUTHORITY)
                 .complied("Yes")
-                .supportingDocumentDetails("example details")
+                .documentDetails("example details")
                 .directionId(uuid)
                 .build();
 
@@ -487,7 +487,8 @@ class DirectionHelperServiceTest {
 
         @Test
         void shouldReturnMapWithEmptyListWhenNoDirectionsForAssignee() {
-            Map<String, List<Element<Direction>>> map = service.collectDirectionsToMap(CaseData.builder().build());
+            Map<DirectionAssignee, List<Element<Direction>>> map =
+                service.collectDirectionsToMap(CaseData.builder().build());
 
             assertThat(new ArrayList<>(map.values()))
                 .isEqualTo(ImmutableList.of(EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST, EMPTY_LIST));
@@ -495,11 +496,12 @@ class DirectionHelperServiceTest {
 
         @Test
         void shouldReturnMapWithDirectionListWhenDirectionsForAssignees() {
-            Map<String, List<Element<Direction>>> map =
+            Map<DirectionAssignee, List<Element<Direction>>> map =
                 service.collectDirectionsToMap(populateCaseDataWithFixedDirections().build());
 
-            Map<String, List<Element<Direction>>> expectedMap = Stream.of(DirectionAssignee.values()).collect(
-                toMap(DirectionAssignee::getValue, DirectionHelperServiceTest.this::buildDirections));
+            Map<DirectionAssignee, List<Element<Direction>>> expectedMap = Stream.of(DirectionAssignee.values())
+                .collect(toMap(directionAssignee ->
+                    directionAssignee, DirectionHelperServiceTest.this::buildDirections));
 
             assertThat(map).isEqualTo(expectedMap);
         }
@@ -514,7 +516,7 @@ class DirectionHelperServiceTest {
             String complied = "Yes";
 
             List<Element<Direction>> directions = service.addHiddenVariablesToResponseForManyAssignees(
-                ImmutableMap.of(LOCAL_AUTHORITY.getValue(), buildDirection(LOCAL_AUTHORITY, uuid, complied)));
+                ImmutableMap.of(LOCAL_AUTHORITY, buildDirection(LOCAL_AUTHORITY, uuid, complied)));
 
             assertThat(directions.get(0).getValue().getResponse().getAssignee()).isEqualTo(LOCAL_AUTHORITY);
             assertThat(directions.get(0).getValue().getResponse().getDirectionId()).isEqualTo(uuid);
@@ -525,7 +527,7 @@ class DirectionHelperServiceTest {
             String complied = null;
 
             List<Element<Direction>> directions = service.addHiddenVariablesToResponseForManyAssignees(
-                ImmutableMap.of(LOCAL_AUTHORITY.getValue(), buildDirection(LOCAL_AUTHORITY, uuid, complied)));
+                ImmutableMap.of(LOCAL_AUTHORITY, buildDirection(LOCAL_AUTHORITY, uuid, complied)));
 
             assertThat(directions).isEmpty();
         }
@@ -533,11 +535,11 @@ class DirectionHelperServiceTest {
         @Test
         void shouldNotReturnDirectionWhenNoResponse() {
             List<Element<Direction>> directions = service.addHiddenVariablesToResponseForManyAssignees(
-                ImmutableMap.of(LOCAL_AUTHORITY.getValue(), ImmutableList.of(Element.<Direction>builder()
-                        .value(Direction.builder()
-                            .directionText("Direction")
-                            .build())
-                        .build())));
+                ImmutableMap.of(LOCAL_AUTHORITY, ImmutableList.of(Element.<Direction>builder()
+                    .value(Direction.builder()
+                        .directionText("Direction")
+                        .build())
+                    .build())));
 
             assertThat(directions).isEmpty();
         }
@@ -549,8 +551,8 @@ class DirectionHelperServiceTest {
 
             List<Element<Direction>> directions = service.addHiddenVariablesToResponseForManyAssignees(
                 ImmutableMap.of(
-                    LOCAL_AUTHORITY.getValue(), buildDirection(LOCAL_AUTHORITY, uuid, complied),
-                    CAFCASS.getValue(), buildDirection(CAFCASS, otherUuid, complied)
+                    LOCAL_AUTHORITY, buildDirection(LOCAL_AUTHORITY, uuid, complied),
+                    CAFCASS, buildDirection(CAFCASS, otherUuid, complied)
                 ));
 
             assertThat(directions.get(0).getValue().getResponse().getAssignee()).isEqualTo(LOCAL_AUTHORITY);
@@ -562,12 +564,11 @@ class DirectionHelperServiceTest {
         @Test
         void shouldAddCorrectAssigneeAndDirectionWhenSameDirectionWithValidResponses() {
             String complied = "Yes";
-            UUID otherUuid = UUID.randomUUID();
 
             List<Element<Direction>> directions = service.addHiddenVariablesToResponseForManyAssignees(
                 ImmutableMap.of(
-                    LOCAL_AUTHORITY.getValue(), buildDirection(LOCAL_AUTHORITY, uuid, complied),
-                    CAFCASS.getValue(), buildDirection(CAFCASS, uuid, complied)
+                    LOCAL_AUTHORITY, buildDirection(LOCAL_AUTHORITY, uuid, complied),
+                    CAFCASS, buildDirection(CAFCASS, uuid, complied)
                 ));
 
             assertThat(directions.get(0).getValue().getResponse().getAssignee()).isEqualTo(LOCAL_AUTHORITY);
