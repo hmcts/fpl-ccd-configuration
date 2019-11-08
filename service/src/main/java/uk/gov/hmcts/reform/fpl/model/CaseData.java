@@ -133,5 +133,5 @@ public class CaseData {
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
 
-    private final Order caseManagementOrder;
+    private final CaseManagementOrder caseManagementOrder;
 }
