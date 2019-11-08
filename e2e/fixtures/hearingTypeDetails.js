@@ -1,7 +1,7 @@
 module.exports = [
   {
     caseManagement: 'Case management',
-    venue: 'CARDIFF ABERDARE HEARING CENTRE',
+    venue: 'Cardiff, Aberdare Hearing Centre',
     date: {
       day: '01',
       month: '01',
@@ -20,7 +20,7 @@ module.exports = [
   },
   {
     caseManagement: 'Case management',
-    venue: 'CARDIFF BLACKWOOD HEARING CENTRE NP2 2XB',
+    venue: 'Cardiff, Blackwood Hearing Centre, NP2 2XB',
     date: {
       day: '02',
       month: '02',
