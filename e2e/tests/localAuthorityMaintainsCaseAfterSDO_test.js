@@ -1,6 +1,7 @@
 const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const directions = require('../fixtures/directions.js');
+const recitals = require('../fixtures/recitals.js');
 
 let caseId;
 
@@ -57,5 +58,6 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
 Scenario('local authority draft CMO', async (I, caseViewPage, draftCMOEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.draftCMO);
   await draftCMOEventPage.draftCMO();
+  await draftCMOEventPage.enterRecital(recitals[0]);
   I.completeEvent('Submit');
 });
