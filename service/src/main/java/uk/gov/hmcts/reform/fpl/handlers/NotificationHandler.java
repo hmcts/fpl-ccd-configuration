@@ -44,11 +44,14 @@ public class NotificationHandler {
 
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
+    private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
     private final HmctsEmailContentProvider hmctsEmailContentProvider;
     private final CafcassEmailContentProvider cafcassEmailContentProvider;
+    private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
     private final C21OrderEmailContentProvider c21OrderEmailContentProvider;
+    private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final NotificationClient notificationClient;
     private final IdamApi idamApi;
 
@@ -123,6 +126,28 @@ public class NotificationHandler {
 
         sendNotification(GATEKEEPER_SUBMISSION_TEMPLATE.getTemplateId(),
             email, parameters, reference);
+    }
+
+    @EventListener
+    public void notifyCafcassOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
+        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
+        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+        Map<String, Object> parameters = cafcassEmailContentProviderSDOIssued
+            .buildCafcassStandardDirectionOrderIssuedNotification(caseDetails, localAuthorityCode);
+        String reference = String.valueOf(caseDetails.getId());
+        String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
+        sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, reference);
+    }
+
+    @EventListener
+    public void notifyLocalAuthorityOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
+        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
+        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+        Map<String, Object> parameters = localAuthorityEmailContentProvider
+            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseDetails, localAuthorityCode);
+        String reference = Long.toString(caseDetails.getId());
+        String email = localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode).getEmail();
+        sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, reference);
     }
 
     private void sendNotification(final String templateId,

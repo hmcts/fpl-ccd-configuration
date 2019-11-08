@@ -67,9 +67,8 @@ Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage,
 Scenario('Judiciary creates C21 order for the case', async (I, caseViewPage, createC21OrderEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createC21Order);
   await createC21OrderEventPage.enterOrder();
-  I.click('Continue');
+  await I.click('Continue');
   await createC21OrderEventPage.enterJudgeAndLegalAdvisor('Sotomayer', 'Peter Parker');
-  I.click('Continue');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.createC21Order);
   caseViewPage.selectTab(caseViewPage.tabs.orders);

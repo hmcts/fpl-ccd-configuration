@@ -89,7 +89,7 @@ class C21OrderControllerTest {
         DocmosisDocument docmosisDocument = new DocmosisDocument(C21_DOCUMENT_TITLE, pdf);
         Document document = document();
 
-        CallbackRequest caseDetails = mapper.readValue(readBytes("fixtures/C21CaseData.json"),
+        CallbackRequest caseDetails = mapper.readValue(readBytes("core-case-data-store-api/callback-request.json"),
             CallbackRequest.class);
 
         CaseData caseData = mapper.convertValue(caseDetails.getCaseDetails().getData(), CaseData.class);
@@ -123,7 +123,7 @@ class C21OrderControllerTest {
         DocmosisDocument docmosisDocument = new DocmosisDocument(C21_DOCUMENT_TITLE, pdf);
         Document document = document();
 
-        CallbackRequest caseDetails = mapper.readValue(readBytes("fixtures/C21CaseData.json"),
+        CallbackRequest caseDetails = mapper.readValue(readBytes("core-case-data-store-api/callback-request.json"),
             CallbackRequest.class);
 
         CaseData caseData = mapper.convertValue(caseDetails.getCaseDetails().getData(), CaseData.class);
