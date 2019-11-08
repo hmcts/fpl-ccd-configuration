@@ -189,22 +189,6 @@ class CaseValidatorServiceTest {
         assertThat(errors).isEmpty();
     }
 
-    @Test
-    void shouldReturnAnErrorWhenSolicitorDoesNotHaveNameAndEmail() {
-        CaseData caseData = partiallyCompleteCaseData()
-            .grounds(grounds())
-            .applicants(applicants(true))
-            .respondents1(respondents())
-            .build();
-
-        List<String> errors = caseValidatorService.validateCaseDetails(caseData);
-        assertThat(errors).containsOnlyOnce(
-            "In the applicant section:",
-            "• Enter the solicitor's full name",
-            "• Enter the solicitor's email"
-        );
-    }
-
     private CaseData emptyMandatoryCaseData() {
         return CaseData.builder()
             .caseName("Test case")
