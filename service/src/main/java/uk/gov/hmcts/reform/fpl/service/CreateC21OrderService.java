@@ -34,7 +34,6 @@ public class CreateC21OrderService {
         this.dateFormatterService = dateFormatterService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.time = time;
-        System.out.println(time.getClass().getCanonicalName());
     }
 
     public Map<String, Object> getC21OrderTemplateData(CaseData caseData) {
