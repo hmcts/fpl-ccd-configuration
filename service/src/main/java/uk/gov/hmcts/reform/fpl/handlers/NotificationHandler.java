@@ -8,14 +8,18 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
+import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
@@ -27,6 +31,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEM
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 
 @Slf4j
 @Component
@@ -38,10 +43,13 @@ public class NotificationHandler {
 
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
+    private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
     private final HmctsEmailContentProvider hmctsEmailContentProvider;
     private final CafcassEmailContentProvider cafcassEmailContentProvider;
+    private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
+    private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final NotificationClient notificationClient;
     private final IdamApi idamApi;
 
@@ -96,6 +104,28 @@ public class NotificationHandler {
         String reference = String.valueOf(caseDetails.getId());
 
         sendNotification(GATEKEEPER_SUBMISSION_TEMPLATE, email, parameters, reference);
+    }
+
+    @EventListener
+    public void notifyCafcassOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
+        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
+        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+        Map<String, Object> parameters = cafcassEmailContentProviderSDOIssued
+            .buildCafcassStandardDirectionOrderIssuedNotification(caseDetails, localAuthorityCode);
+        String reference = String.valueOf(caseDetails.getId());
+        String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
+        sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, reference);
+    }
+
+    @EventListener
+    public void notifyLocalAuthorityOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
+        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
+        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+        Map<String, Object> parameters = localAuthorityEmailContentProvider
+            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseDetails, localAuthorityCode);
+        String reference = Long.toString(caseDetails.getId());
+        String email = localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode).getEmail();
+        sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, reference);
     }
 
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
