@@ -8,7 +8,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class JudgeAndLegalAdvisorHelperTest {
     @Test
-    public void legalAdvisorNameShouldBeEmptyWhenJudgeAndLegalAdvisorNull() {
+    public void shouldHaveEmptyLegalAdvisorNameWhenJudgeAndLegalAdvisorNull() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = null;
 
         String legalAdvisorName = JudgeAndLegalAdvisorHelper.getLegalAdvisorName(judgeAndLegalAdvisor);
@@ -17,7 +17,7 @@ public class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    public void judgeNameShouldBeEmptyWhenJudgeAndLegalAdvisorNull() {
+    public void shouldHaveEmptyJudgeNameWhenJudgeAndLegalAdvisorNull() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = null;
 
         String judgeTitleAndName = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor);
@@ -26,7 +26,7 @@ public class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    public void judgeNameShouldBeEmptyWhenJudgeTitleAndNameNotProvided() {
+    public void shouldHaveEmptyJudgeNameWhenJudgeTitleAndNameNotProvided() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .legalAdvisorName("Freddie")
             .build();
@@ -37,7 +37,7 @@ public class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    public void judgeNameShouldBeProperlyFormattedWhenTitleAndNameProvided() {
+    public void shouldHaveProperlyFormattedJudgeNameWhenTitleAndNameProvided() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
             .judgeLastName("Dredd")
@@ -49,7 +49,7 @@ public class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    public void magistrateNameShouldBeProperlyFormattedWhenWhenMagistrateSelected() {
+    public void shouldHaveProperlyFormattedMagistrateNameWhenWhenMagistrateSelected() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(JudgeOrMagistrateTitle.MAGISTRATES)
             .judgeFullName("Steve Stevenson")
@@ -59,5 +59,4 @@ public class JudgeAndLegalAdvisorHelperTest {
 
         assertThat(result).isEqualTo("Steve Stevenson (JP)");
     }
-
 }

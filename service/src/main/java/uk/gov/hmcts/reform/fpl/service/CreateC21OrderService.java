@@ -3,13 +3,11 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.google.common.collect.ImmutableMap;
 import org.assertj.core.util.Lists;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.C21OrderBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
@@ -23,7 +21,6 @@ import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 @Service
 public class CreateC21OrderService {
@@ -55,17 +52,6 @@ public class CreateC21OrderService {
             .build();
     }
 
-    public C21Order addDocumentToC21Order(CaseData caseData, Document document) {
-        return caseData.getTemporaryC21Order().toBuilder()
-            .c21OrderDocument(DocumentReference.builder()
-                .url(document.links.self.href)
-                .binaryUrl(document.links.binary.href)
-                .filename(document.originalDocumentName)
-                .build())
-            .orderTitle(defaultIfBlank(caseData.getTemporaryC21Order().getOrderTitle(), "Order"))
-            .build();
-    }
-
     public List<Element<C21OrderBundle>> addToC21OrderBundle(C21Order tempC21,
                                                              JudgeAndLegalAdvisor judgeAndLegalAdvisor,
                                                              List<Element<C21OrderBundle>> c21OrderBundle) {
@@ -83,10 +69,6 @@ public class CreateC21OrderService {
             .build());
 
         return c21OrderBundle;
-    }
-
-    public String generateIndexForFileName(List<Element<C21OrderBundle>> c21OrderBundle) {
-        return (c21OrderBundle != null) ? Integer.toString(c21OrderBundle.size() + 1) : "1";
     }
 
     private String getOrderTitle(CaseData caseData) {
