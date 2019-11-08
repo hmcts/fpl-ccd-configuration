@@ -87,8 +87,7 @@ class NotifyGatekeeperTest {
                 .content(readBytes("core-case-data-store-api/callback-request.json")))
             .andExpect(status().isOk());
 
-        verify(notificationClient, times(1)).sendEmail(
-            GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL,
+        verify(notificationClient, times(1)).sendEmail(GATEKEEPER_SUBMISSION_TEMPLATE, GATEKEEPER_EMAIL,
             expectedGatekeeperParameters, "12345");
     }
 }
