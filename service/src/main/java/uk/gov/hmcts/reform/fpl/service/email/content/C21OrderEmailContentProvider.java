@@ -24,10 +24,8 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 @Service
 public class C21OrderEmailContentProvider extends AbstractEmailContentProvider {
 
-    private final HearingBookingService hearingBookingService;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final ObjectMapper objectMapper;
-    private final DateFormatterService dateFormatterService;
 
     protected C21OrderEmailContentProvider(@Value("${ccd.ui.base.url}")String uiBaseUrl,
                                            ObjectMapper objectMapper,
@@ -35,11 +33,9 @@ public class C21OrderEmailContentProvider extends AbstractEmailContentProvider {
                                            LocalAuthorityNameLookupConfiguration
                                                localAuthorityNameLookupConfiguration,
                                            DateFormatterService dateFormatterService) {
-        super(uiBaseUrl);
+        super(uiBaseUrl, dateFormatterService, hearingBookingService);
         this.objectMapper = objectMapper;
-        this.hearingBookingService = hearingBookingService;
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
-        this.dateFormatterService = dateFormatterService;
     }
 
     public Map<String, Object> buildC21OrderNotification(final CaseDetails caseDetails,
