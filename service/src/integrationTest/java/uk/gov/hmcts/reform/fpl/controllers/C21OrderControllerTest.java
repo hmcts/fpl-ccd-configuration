@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.CreateC21OrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
 import java.util.List;
 import java.util.Map;
@@ -35,7 +36,6 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
@@ -160,7 +160,7 @@ class C21OrderControllerTest {
         assertThat(c21BundleEntry.getC21OrderDocument()).isEqualTo(c21Order.getC21OrderDocument());
         assertThat(c21BundleEntry.getOrderTitle()).isEqualTo(c21Order.getOrderTitle());
         assertThat(c21BundleEntry.getOrderDate()).isEqualTo("1st November 2019");
-        assertThat(c21BundleEntry.getJudgeTitleAndName()).isEqualTo(formatJudgeTitleAndName(
+        assertThat(c21BundleEntry.getJudgeTitleAndName()).isEqualTo(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
             caseData.getJudgeAndLegalAdvisor()));
     }
 
@@ -184,11 +184,11 @@ class C21OrderControllerTest {
             .put("todaysDate", "1st November 2019")
             .put("judgeTitleAndName", "Her Honour Judge Judy")
             .put("legalAdvisorName", "Peter Parker")
-            .put("children", getChildrenDetails())
+            .put("children", createChildrenDetails())
             .build();
     }
 
-    private List<Map<String, String>> getChildrenDetails() {
+    private List<Map<String, String>> createChildrenDetails() {
         return ImmutableList.of(
             ImmutableMap.of(
                 "gender", "Boy",
@@ -205,21 +205,9 @@ class C21OrderControllerTest {
                 .c21OrderDocument(c21Order.getC21OrderDocument())
                 .orderTitle(c21Order.getOrderTitle())
                 .orderDate("1st November 2019")
-                .judgeTitleAndName(formatJudgeTitleAndName(judgeAndLegalAdvisor))
+                .judgeTitleAndName(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor))
                 .build())
             .build());
         return c21OrderBundle;
-    }
-
-    private String formatJudgeTitleAndName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        if (judgeAndLegalAdvisor == null || judgeAndLegalAdvisor.getJudgeTitle() == null) {
-            return "";
-        }
-
-        if (judgeAndLegalAdvisor.getJudgeTitle() == MAGISTRATES) {
-            return judgeAndLegalAdvisor.getJudgeFullName() + " (JP)";
-        } else {
-            return judgeAndLegalAdvisor.getJudgeTitle().getLabel() + " " + judgeAndLegalAdvisor.getJudgeLastName();
-        }
     }
 }

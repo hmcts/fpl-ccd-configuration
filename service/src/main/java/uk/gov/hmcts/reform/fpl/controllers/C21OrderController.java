@@ -15,10 +15,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.interfaces.C21CaseOrderGroup;
-import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CreateC21OrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -26,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
 import java.util.Map;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
 
 @Api
@@ -75,9 +72,7 @@ public class C21OrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
-
-        String index = (caseData.getC21OrderBundle() != null)
-            ? Integer.toString(caseData.getC21OrderBundle().size() + 1) : "1";
+        String index = createC21OrderService.generateIndexForFileName(caseData.getC21OrderBundle());
 
         Document c21Document = getDocument(
             authorization,
@@ -85,7 +80,7 @@ public class C21OrderController {
             index,
             createC21OrderService.getC21OrderTemplateData(caseData));
 
-        data.put("temporaryC21Order", addDocumentToC21Order(caseData, c21Document));
+        data.put("temporaryC21Order", createC21OrderService.addDocumentToC21Order(caseData, c21Document));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data).build();
