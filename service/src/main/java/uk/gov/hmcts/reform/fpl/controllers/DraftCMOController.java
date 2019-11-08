@@ -12,16 +12,20 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Api
@@ -30,11 +34,15 @@ import static org.apache.commons.lang3.StringUtils.isEmpty;
 public class DraftCMOController {
     private final ObjectMapper mapper;
     private final DraftCMOService draftCMOService;
+    private final DirectionHelperService directionHelperService;
 
     @Autowired
-    public DraftCMOController(ObjectMapper mapper, DraftCMOService draftCMOService) {
+    public DraftCMOController(ObjectMapper mapper,
+                              DraftCMOService draftCMOService,
+                              DirectionHelperService directionHelperService) {
         this.mapper = mapper;
         this.draftCMOService = draftCMOService;
+        this.directionHelperService = directionHelperService;
     }
 
     @PostMapping("/about-to-start")
@@ -42,6 +50,15 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> caseDataMap = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
+
+        if (!isNull(caseData.getCaseManagementOrder())) {
+            Map<String, List<Element<Direction>>> directions = directionHelperService.sortDirectionsByAssignee(
+                caseData.getCaseManagementOrder().getDirections());
+
+            directions.forEach((key, value) -> {
+                caseDataMap.put(key, value);
+            });
+        }
 
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
 
@@ -73,25 +90,26 @@ public class DraftCMOController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         DynamicList list = mapper.convertValue(caseDetails.getData().get("cmoHearingDateList"), DynamicList.class);
 
         CaseData updated = caseData.toBuilder()
-            .caseManagementOrder(Order.builder().build())
+            .caseManagementOrder(CaseManagementOrder.builder().build())
             .build();
 
-        Order order = updated.getCaseManagementOrder()
-            .toBuilder().hearingDate(list.getValue().getCode())
+        CaseManagementOrder order = updated.getCaseManagementOrder().toBuilder()
+            .hearingDate(list.getValue().getLabel())
+            .hearingDateId(list.getValue().getCode())
+            .directions(directionHelperService.combineAllDirectionsForCMO(caseData))
             .build();
 
         caseDetails.getData().remove("cmoHearingDateList");
+        caseDetails.getData().remove("allPartiesCustom");
         caseDetails.getData().put("caseManagementOrder", order);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
-
     }
 }

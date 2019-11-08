@@ -285,6 +285,7 @@ class DraftOrdersControllerTest {
             assertThat(caseData.getStandardDirectionOrder().getOrderDoc()).isNotNull();
             assertThat(caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()).isNotNull();
             assertThat(caseData.getJudgeAndLegalAdvisor()).isNull();
+            assertThat(caseData.getAllParties()).isNull();
         }
     }
 

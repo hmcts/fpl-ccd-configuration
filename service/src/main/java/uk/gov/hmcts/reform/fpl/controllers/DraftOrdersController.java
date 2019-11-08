@@ -165,6 +165,7 @@ public class DraftOrdersController {
 
         caseDetails.getData().put("standardDirectionOrder", order);
         caseDetails.getData().remove("judgeAndLegalAdvisor");
+        caseDetails.getData().remove("allParties");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
