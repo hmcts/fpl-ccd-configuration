@@ -63,7 +63,7 @@ class ComplyWithDirectionsControllerTest {
 
         assertThat(roleDirectionsContainExpectedAllPartiesDirection(caseData.getLocalAuthorityDirections()));
         assertThat(roleDirectionsContainExpectedAllPartiesDirection(caseData.getCafcassDirections()));
-        assertThat(roleDirectionsContainExpectedAllPartiesDirection(caseData.getCourtDirections()));
+        assertThat(roleDirectionsContainExpectedAllPartiesDirection(caseData.getCourtDirectionsCustom()));
         assertThat(roleDirectionsContainExpectedAllPartiesDirection(caseData.getOtherPartiesDirections()));
         assertThat(roleDirectionsContainExpectedAllPartiesDirection(caseData.getParentsAndRespondentsDirections()));
     }
