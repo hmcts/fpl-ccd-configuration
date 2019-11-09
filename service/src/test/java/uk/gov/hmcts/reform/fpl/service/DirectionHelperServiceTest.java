@@ -497,7 +497,9 @@ class DirectionHelperServiceTest {
         @Test
         void shouldReturnMapWithDirectionListWhenDirectionsForAssignees() {
             Map<DirectionAssignee, List<Element<Direction>>> map =
-                service.collectDirectionsToMap(populateCaseDataWithFixedDirections().build());
+                service.collectDirectionsToMap(populateCaseDataWithFixedDirections()
+                    .courtDirectionsCustom(buildDirections(COURT))
+                    .build());
 
             Map<DirectionAssignee, List<Element<Direction>>> expectedMap = Stream.of(DirectionAssignee.values())
                 .collect(toMap(directionAssignee ->
