@@ -14,8 +14,19 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_CAFCASS",
     "CaseFieldID": "cafcassDirections",
-    "ListElementCode": "directionText",
+    "ListElementCode": "directionNeeded",
     "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "directionText = \"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_CAFCASS",
+    "CaseFieldID": "cafcassDirections",
+    "ListElementCode": "dateToBeCompletedBy",
+    "EventElementLabel": "Deadline",
+    "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY"
   },
   {
@@ -24,15 +35,6 @@
     "CaseEventID": "COMPLY_CAFCASS",
     "CaseFieldID": "cafcassDirections",
     "ListElementCode": "response.complied",
-    "FieldDisplayOrder": 3,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_CAFCASS",
-    "CaseFieldID": "cafcassDirections",
-    "ListElementCode": "response.file",
     "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
   },
@@ -50,7 +52,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_CAFCASS",
     "CaseFieldID": "cafcassDirections",
-    "ListElementCode": "response.cannotComplyTitle",
+    "ListElementCode": "response.file",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
   },
@@ -59,7 +61,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_CAFCASS",
     "CaseFieldID": "cafcassDirections",
-    "ListElementCode": "response.cannotComplyReason",
+    "ListElementCode": "response.cannotComplyTitle",
     "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL"
   },
@@ -68,7 +70,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_CAFCASS",
     "CaseFieldID": "cafcassDirections",
-    "ListElementCode": "response.c2Uploaded",
+    "ListElementCode": "response.cannotComplyReason",
     "FieldDisplayOrder": 8,
     "DisplayContext": "OPTIONAL"
   },
@@ -77,7 +79,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_CAFCASS",
     "CaseFieldID": "cafcassDirections",
-    "ListElementCode": "response.cannotComplyFile",
+    "ListElementCode": "response.c2Uploaded",
     "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
   },
@@ -86,7 +88,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_CAFCASS",
     "CaseFieldID": "cafcassDirections",
-    "ListElementCode": "response.cannotComplyDocumentDetails",
+    "ListElementCode": "response.cannotComplyFile",
     "FieldDisplayOrder": 10,
     "DisplayContext": "OPTIONAL"
   }
