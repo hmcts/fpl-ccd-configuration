@@ -147,6 +147,9 @@ class NotificationHandlerTest {
 
             given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
                 .willReturn(parameters);
+
+            given(c21OrderEmailContentProvider.buildC21OrderNotification(callbackRequest().getCaseDetails(),
+                LOCAL_AUTHORITY_CODE)).willReturn(parameters);
         }
 
         @Test
@@ -179,9 +182,6 @@ class NotificationHandlerTest {
 
         @Test
         void shouldNotifyPartiesOnC21OrderSubmission() throws IOException, NotificationClientException {
-            given(c21OrderEmailContentProvider.buildC21OrderNotification(callbackRequest().getCaseDetails(),
-                LOCAL_AUTHORITY_CODE)).willReturn(parameters);
-
             notificationHandler.sendNotificationForC21Order(new C21OrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
             verify(notificationClient, times(1)).sendEmail(
