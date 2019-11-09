@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -51,6 +52,7 @@ public class CaseDataExtractionService {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
     private final DirectionHelperService directionHelperService;
+    private final HearingVenueLookUpService hearingVenueLookUpService;
 
     private static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
 
@@ -59,12 +61,14 @@ public class CaseDataExtractionService {
                                      HearingBookingService hearingBookingService,
                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
                                      OrdersLookupService ordersLookupService,
-                                     DirectionHelperService directionHelperService) {
+                                     DirectionHelperService directionHelperService,
+                                     HearingVenueLookUpService hearingVenueLookUpService) {
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.ordersLookupService = ordersLookupService;
         this.directionHelperService = directionHelperService;
+        this.hearingVenueLookUpService = hearingVenueLookUpService;
     }
 
     // TODO
@@ -161,10 +165,12 @@ public class CaseDataExtractionService {
         HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData
             .getHearingDetails());
 
+        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
+
         return ImmutableMap.of(
             "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),
                 FormatStyle.LONG),
-            "hearingVenue", prioritisedHearingBooking.getVenue(),
+            "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
             "preHearingAttendance", prioritisedHearingBooking.getPreHearingAttendance(),
             "hearingTime", prioritisedHearingBooking.getTime(),
             "judgeName", prioritisedHearingBooking.getJudgeTitle() + " "
