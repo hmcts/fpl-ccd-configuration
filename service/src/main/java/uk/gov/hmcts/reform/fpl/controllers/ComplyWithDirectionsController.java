@@ -45,8 +45,18 @@ public class ComplyWithDirectionsController {
             .getDirectionsForAssignee(caseData.getStandardDirectionOrder().getDirections(), ALL_PARTIES);
 
         directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections())
-            .forEach((assignee, directions) -> caseDetails.getData()
-                .put(assignee, directionHelperService.extractPartyResponse(assignee, allPartyDirections)));
+            .forEach((assignee, directions) -> {
+
+                // courtDirectionsCustom is used here to stop giving C and D permissions on the CourtDirections object.
+                if (assignee.equals("courtDirections")) {
+                    caseDetails.getData()
+                        .put(assignee.concat("Custom"),
+                            directionHelperService.extractPartyResponse(assignee, allPartyDirections));
+                } else {
+                    caseDetails.getData()
+                        .put(assignee, directionHelperService.extractPartyResponse(assignee, allPartyDirections));
+                }
+            });
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

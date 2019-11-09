@@ -159,11 +159,12 @@ public class DirectionHelperService {
     public Map<DirectionAssignee, List<Element<Direction>>> collectDirectionsToMap(CaseData caseData) {
         final List<Element<Direction>> emptyList = ImmutableList.of();
 
+        // courtDirectionsCustom is used due to the workaround in ComplyWithDirectionsController
         return Map.of(
             ALL_PARTIES, defaultIfNull(caseData.getAllParties(), emptyList),
             LOCAL_AUTHORITY, defaultIfNull(caseData.getLocalAuthorityDirections(), emptyList),
             CAFCASS, defaultIfNull(caseData.getCafcassDirections(), emptyList),
-            COURT, defaultIfNull(caseData.getCourtDirections(), emptyList),
+            COURT, defaultIfNull(caseData.getCourtDirectionsCustom(), emptyList),
             PARENTS_AND_RESPONDENTS, defaultIfNull(caseData.getParentsAndRespondentsDirections(), emptyList),
             OTHERS, defaultIfNull(caseData.getOtherPartiesDirections(), emptyList));
     }
