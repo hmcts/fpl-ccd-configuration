@@ -54,7 +54,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('local authority create CMO', async (I, caseViewPage, draftCMOEventPage) => {
+Scenario('local authority creates CMO', async (I, caseViewPage, draftCMOEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.draftCMO);
   await draftCMOEventPage.associateHearingDate('1 Jan 2050');
   I.completeEvent('Submit');
