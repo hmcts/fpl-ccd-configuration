@@ -49,7 +49,6 @@ public class C21OrderEmailContentProvider extends AbstractEmailContentProvider {
             "hearingDetailsCallout", buildSubjectLineWithHearingBookingDateSuffix(subjectLine, caseData),
             "reference", String.valueOf(caseDetails.getId()),
             "caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId()
-
         );
     }
 
