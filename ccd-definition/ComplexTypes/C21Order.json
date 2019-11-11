@@ -13,14 +13,31 @@
     "ListElementCode": "orderDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Order details",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "orderDate!=\"*\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C21Order",
+    "ListElementCode": "document",
+    "FieldType": "Document",
+    "ElementLabel": "Order document",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "C21Order",
-    "ListElementCode": "c21OrderDocument",
-    "FieldType": "Document",
-    "ElementLabel": "Order PDF",
+    "ListElementCode": "orderDate",
+    "FieldType": "Text",
+    "ElementLabel": "Date and time of upload",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C21Order",
+    "ListElementCode": "judgeTitleAndName",
+    "FieldType": "Text",
+    "ElementLabel": "Judge or Magistrate",
     "SecurityClassification": "Public"
   }
 ]

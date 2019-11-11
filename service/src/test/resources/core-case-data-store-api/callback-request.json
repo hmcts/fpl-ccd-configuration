@@ -478,7 +478,7 @@
         "judgeLastName": "Judy",
         "legalAdvisorName": "Peter Parker"
       },
-      "temporaryC21Order": {
+      "c21Order": {
         "orderDetails": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit",
         "orderTitle": "Order"
       }
