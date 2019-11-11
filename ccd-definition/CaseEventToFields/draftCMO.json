@@ -18,7 +18,7 @@
     "CaseFieldID": "orderBasis",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
-    "PageID": "2",
+    "PageID": "recitals",
     "PageLabel": " ",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1
@@ -30,7 +30,7 @@
     "CaseFieldID": "addRecitalLabel",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
-    "PageID": "2",
+    "PageID": "recitals",
     "PageLabel": " ",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1
@@ -42,7 +42,7 @@
     "CaseFieldID": "recitals",
     "PageFieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL",
-    "PageID": "2",
+    "PageID": "recitals",
     "PageLabel": " ",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1
