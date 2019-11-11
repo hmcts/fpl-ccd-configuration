@@ -34,7 +34,7 @@ public class DraftCMOController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> caseData = caseDetails.getData();
-        
+
         caseData.put("cmoHearingDateList", draftCMOService.getHearingDatesDynamic(caseDetails));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
