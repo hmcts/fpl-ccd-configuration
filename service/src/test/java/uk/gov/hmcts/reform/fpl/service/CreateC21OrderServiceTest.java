@@ -49,7 +49,7 @@
 //    @BeforeEach
 //    void setup() {
 //        this.service = new CreateC21OrderService(dateFormatterService,
-//            hmctsCourtLookupConfiguration, uploadDocumentService, docmosisService, time);
+//            hmctsCourtLookupConfiguration, time);
 //    }
 //    @Test
 //    void shouldAppendNewC21OrderToEmptyC21Orders() {
@@ -63,6 +63,7 @@
 //
 //        C21Orders c21Orders = c21OrdersWithOrder.get(0).getValue();
 //
+//        //check c21Orders contains
 //        assertThat(c21Orders.getC21OrderDocument().getFilename()).isEqualTo("C21_1.pdf");
 //        assertThat(c21Orders.getOrderDate()).isEqualTo(
 //            dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "h:mma, d MMMM yyyy"));

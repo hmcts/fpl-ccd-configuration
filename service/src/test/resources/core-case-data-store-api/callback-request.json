@@ -479,9 +479,10 @@
         "legalAdvisorName": "Peter Parker"
       },
       "c21Order": {
-        "orderTitle": "Order",
+        "orderTitle": "Example Order",
         "orderDetails": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit"
-      }
+      },
+      "familyManCaseNumber": "12345L"
     }
   },
   "case_details_before": {
