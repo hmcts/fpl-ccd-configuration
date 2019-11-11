@@ -35,6 +35,6 @@ services:
       - ./docker/docmosis/templates:/home/docmosis/templates:rw
     ports:
       - 5433:8080
-  networks:
-    ccd-network:
+networks:
+   ccd-network:
       external: true
