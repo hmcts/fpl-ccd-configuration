@@ -213,7 +213,7 @@ dependencies {
   compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
   //overriding com.fasterxml.jackson.core:jackson-databind to fix CVE issues suppressed
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.0'
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.1'
   compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
   compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.10.0'
 
