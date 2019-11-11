@@ -33,12 +33,12 @@ public class DraftCMOController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        Map<String, Object> caseDataMap = caseDetails.getData();
+        Map<String, Object> caseData = caseDetails.getData();
 
-        caseDataMap.put("cmoHearingDateList", draftCMOService.getHearingDatesDynamic(caseDetails));
+        caseData.put("cmoHearingDateList", draftCMOService.getHearingDatesDynamic(caseDetails));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDataMap)
+            .data(caseData)
             .build();
     }
 
@@ -49,21 +49,20 @@ public class DraftCMOController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         DynamicList list = mapper.convertValue(caseDetails.getData().get("cmoHearingDateList"), DynamicList.class);
 
-        CaseData updated = caseData.toBuilder()
+        CaseData updatedCaseData = caseData.toBuilder()
             .caseManagementOrder(CaseManagementOrder.builder().build())
             .build();
 
-        CaseManagementOrder order = updated.getCaseManagementOrder()
+        CaseManagementOrder caseManagementOrder = updatedCaseData.getCaseManagementOrder()
             .toBuilder().hearingDate(list.getValue().getLabel())
             .hearingDateId(list.getValue().getCode())
             .build();
 
         caseDetails.getData().remove("cmoHearingDateList");
-        caseDetails.getData().put("caseManagementOrder", order);
+        caseDetails.getData().put("caseManagementOrder", caseManagementOrder);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
-
     }
 }

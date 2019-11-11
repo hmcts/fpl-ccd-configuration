@@ -52,7 +52,7 @@ class DraftCMOControllerTest {
     private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(date);
 
     @Test
-    void aboutToStartCallbackShouldFillTheHearingDatesList() throws Exception {
+    void aboutToStartCallbackShouldPopulateHearingDatesList() throws Exception {
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -66,15 +66,6 @@ class DraftCMOControllerTest {
             draftCMOService.convertDate(date));
 
         actAndAssert(request, expected);
-    }
-
-    private void actAndAssert(CallbackRequest request, List<String> expected) throws Exception {
-        MvcResult response = makeRequest(request, "about-to-start");
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        assertThat(getReturnedDatesFromResponse(callbackResponse)).isEqualTo(expected);
     }
 
     @Test
@@ -107,7 +98,16 @@ class DraftCMOControllerTest {
             .isEqualTo(date.plusDays(5).toString());
     }
 
-    private List<String> getReturnedDatesFromResponse(AboutToStartOrSubmitCallbackResponse callbackResponse) {
+    private void actAndAssert(CallbackRequest request, List<String> expected) throws Exception {
+        MvcResult response = makeRequest(request, "about-to-start");
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
+    }
+
+    private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {
         Map<String, Object> cmoHearingResponse = mapper.convertValue(
             callbackResponse.getData().get("cmoHearingDateList"), Map.class);
 
