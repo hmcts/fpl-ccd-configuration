@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicElementIndicator;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.utils.HearingDateHelper;
@@ -19,7 +18,6 @@ import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -90,22 +88,5 @@ public class DraftCMOService {
 
     public String convertDate(LocalDate date) {
         return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
-    }
-
-    class HearingDate implements DynamicElementIndicator {
-
-        private LocalDate date;
-        private UUID id;
-
-        HearingDate(UUID id, LocalDate date) {
-            this.id = id;
-            this.date = date;
-        }
-
-        @Override
-        public DynamicListElement toDynamicElement() {
-            final String dateString = convertDate(date);
-            return DynamicListElement.builder().code(id.toString()).label(dateString).build();
-        }
     }
 }
