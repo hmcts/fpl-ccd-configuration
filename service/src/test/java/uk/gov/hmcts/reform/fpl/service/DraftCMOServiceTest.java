@@ -52,6 +52,7 @@ public class DraftCMOServiceTest {
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCmoHasPreviousSelectedValue() {
+        
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of(
                 "hearingDetails", createHearingBookings(date),
