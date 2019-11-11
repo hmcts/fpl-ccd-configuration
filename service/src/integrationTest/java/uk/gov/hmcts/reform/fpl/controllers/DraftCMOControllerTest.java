@@ -104,9 +104,7 @@ class DraftCMOControllerTest {
 
         assertThat(caseData.getCaseManagementOrder().getHearingDate())
             .isEqualTo(date.plusDays(5).toString());
-    }
 
-    private List<String> getReturnedDatesFromResponse(AboutToStartOrSubmitCallbackResponse callbackResponse) {
         assertThat(callbackResponse.getData().get("cmoHearingDateList"))
             .isNull();
     }
