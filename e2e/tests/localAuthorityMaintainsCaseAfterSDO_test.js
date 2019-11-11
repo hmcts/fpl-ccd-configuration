@@ -1,7 +1,6 @@
 const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const directions = require('../fixtures/directions.js');
-const recitals = require('../fixtures/recitals.js');
 
 let caseId;
 
@@ -58,7 +57,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
 Scenario('local authority creates CMO', async (I, caseViewPage, draftCMOEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.draftCMO);
   await draftCMOEventPage.associateHearingDate('1 Jan 2050');
-  I.click('Continue')
-  await draftCMOEventPage.enterRecital(recitals[0]);
+  I.click('Continue');
+  await draftCMOEventPage.enterRecital('Recital 1', 'Recital 1 description');
   I.completeEvent('Submit');
 });

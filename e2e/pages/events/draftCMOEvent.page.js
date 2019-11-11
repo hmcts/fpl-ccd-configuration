@@ -14,9 +14,9 @@ module.exports = {
     I.selectOption(this.fields.cmoHearingDateList, date);
   },
 
-  enterRecital(recitals) {
+  enterRecital(title,description) {
     I.click('Add new');
-    I.fillField(this.fields.recitals.title, recitals.title);
-    I.fillField(this.fields.recitals.description, recitals.description);
+    I.fillField(this.fields.recitals.title, title);
+    I.fillField(this.fields.recitals.description, description);
   },
 };
