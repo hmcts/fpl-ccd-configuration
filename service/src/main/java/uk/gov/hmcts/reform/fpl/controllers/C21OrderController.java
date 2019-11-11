@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,9 +16,6 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.interfaces.C21CaseOrderGroup;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.C21OrderBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CreateC21OrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
@@ -25,10 +23,9 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
-import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Api
 @RequestMapping("/callback/create-order")
@@ -36,21 +33,15 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
 public class C21OrderController {
 
     private final ObjectMapper mapper;
-    private final DocmosisDocumentGeneratorService docmosisService;
-    private final UploadDocumentService uploadDocumentService;
-    private final CreateC21OrderService createC21OrderService;
+    private final CreateC21OrderService service;
     private final ValidateGroupService validateGroupService;
 
     @Autowired
     public C21OrderController(ObjectMapper mapper,
-                              DocmosisDocumentGeneratorService docmosisService,
-                              UploadDocumentService uploadDocumentService,
-                              CreateC21OrderService createC21OrderService,
+                              CreateC21OrderService service,
                               ValidateGroupService validateGroupService) {
         this.mapper = mapper;
-        this.docmosisService = docmosisService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.createC21OrderService = createC21OrderService;
+        this.service = service;
         this.validateGroupService = validateGroupService;
     }
 
@@ -71,57 +62,38 @@ public class C21OrderController {
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
-        String index = generateIndexForFileName(caseData.getC21OrderBundle());
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Document c21Document = getDocument(
-            authorization,
-            userId,
-            index,
-            createC21OrderService.getC21OrderTemplateData(caseData));
+        Document c21Document = service.getDocument(authorization, userId, caseData);
 
-        data.put("temporaryC21Order", addDocumentToC21Order(caseData, c21Document));
+        caseDetails.getData().put("c21Order", service.addDocumentToC21(caseData, c21Document));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data).build();
+            .data(caseDetails.getData())
+            .build();
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestBody CallbackRequest callbackRequest) {
-        Map<String, Object> data = callbackRequest.getCaseDetails().getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        data.put("c21OrderBundle", createC21OrderService.addToC21OrderBundle(
-            caseData.getTemporaryC21Order(), caseData.getJudgeAndLegalAdvisor(), caseData.getC21OrderBundle()));
-        data.remove("temporaryC21Order");
-        data.remove("judgeAndLegalAdvisor");
+        C21Order c21Order = service.addJudgeAndDateToC21(caseData);
 
-        return AboutToStartOrSubmitCallbackResponse.builder().data(data).build();
-    }
+        List<Element<C21Order>> c21Orders = defaultIfNull(caseData.getC21Orders(), Lists.newArrayList());
 
-    private String generateIndexForFileName(List<Element<C21OrderBundle>> c21OrderBundle) {
-        return (c21OrderBundle != null) ? Integer.toString(c21OrderBundle.size() + 1) : "1";
-    }
+        c21Orders.add(Element.<C21Order>builder()
+            .id(UUID.randomUUID())
+            .value(c21Order)
+            .build());
 
-    private C21Order addDocumentToC21Order(CaseData caseData, Document document) {
-        return caseData.getTemporaryC21Order().toBuilder()
-            .c21OrderDocument(DocumentReference.builder()
-                .url(document.links.self.href)
-                .binaryUrl(document.links.binary.href)
-                .filename(document.originalDocumentName)
-                .build())
-            .orderTitle(defaultIfBlank(caseData.getTemporaryC21Order().getOrderTitle(), "Order"))
+        caseDetails.getData().put("c21Orders", c21Orders);
+        caseDetails.getData().remove("c21Order");
+        caseDetails.getData().remove("judgeAndLegalAdvisor");
+
+        return AboutToStartOrSubmitCallbackResponse.builder()
+            .data(caseDetails.getData())
             .build();
-    }
-
-    private Document getDocument(@RequestHeader("authorization") String authorization,
-                                 @RequestHeader("user-id") String userId,
-                                 String index,
-                                 Map<String, Object> templateData) {
-        DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, C21);
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-            C21.getDocumentTitle() + "_" + index + ".pdf");
     }
 }

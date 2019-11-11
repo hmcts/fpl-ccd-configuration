@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "C21OrderComplexType",
     "CaseEventID": "createC21Order",
-    "CaseFieldID": "temporaryC21Order",
+    "CaseFieldID": "c21Order",
     "ListElementCode": "orderTitle",
     "EventElementLabel": "Order title",
     "FieldDisplayOrder": 1,
@@ -13,7 +13,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "C21OrderComplexType",
     "CaseEventID": "createC21Order",
-    "CaseFieldID": "temporaryC21Order",
+    "CaseFieldID": "c21Order",
     "ListElementCode": "orderDetails",
     "EventElementLabel": "Order details",
     "FieldDisplayOrder": 2,
@@ -21,14 +21,25 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C21OrderCheckAnswer",
+    "ID": "C21OrderComplexType",
     "CaseEventID": "createC21Order",
-    "CaseFieldID": "temporaryC21Order",
-    "ListElementCode": "c21OrderDocument",
+    "CaseFieldID": "c21Order",
+    "ListElementCode": "document",
     "EventElementLabel": "Order document",
     "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY",
-    "FieldShowCondition": "c21OrderDocument=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "document=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "C21OrderComplexType",
+    "CaseEventID": "createC21Order",
+    "CaseFieldID": "c21Order",
+    "ListElementCode": "orderDate",
+    "EventElementLabel": "Date and time of upload",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "document=\"DO_NOT_SHOW\""
   },
   {
     "LiveFrom": "01/01/2017",

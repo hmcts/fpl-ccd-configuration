@@ -68,7 +68,7 @@
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "c21OrderBundle",
+    "CaseFieldID": "c21Orders",
     "TabFieldDisplayOrder": 3
   },
   {

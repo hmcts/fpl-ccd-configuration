@@ -607,16 +607,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "c21OrderBundle",
+    "ID": "c21Orders",
     "Label": "C21 Order",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C21OrderBundle",
+    "FieldTypeParameter": "C21Order",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "temporaryC21Order",
+    "ID": "c21Order",
     "Label": "Create an order",
     "FieldType": "C21Order",
     "SecurityClassification": "Public"
