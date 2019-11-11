@@ -33,12 +33,6 @@ public class DraftCMOController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        Map<String, Object> caseDataMap = caseDetails.getData();
-
-        caseDataMap.put("cmoHearingDateList", draftCMOService.getHearingDatesDynamic(caseDetails));
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDataMap)
 
         Map<String, Object> caseData = caseDetails.getData();
 
