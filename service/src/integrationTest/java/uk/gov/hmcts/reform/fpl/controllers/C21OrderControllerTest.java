@@ -80,15 +80,15 @@ class C21OrderControllerTest {
 
         byte[] pdf = {1, 2, 3, 4, 5};
         Document document = document();
-        String C21_DOCUMENT_TITLE = C21.getDocumentTitle();
-        DocmosisDocument docmosisDocument = new DocmosisDocument(C21_DOCUMENT_TITLE, pdf);
+        String c21DocumentTitle = C21.getDocumentTitle();
+        DocmosisDocument docmosisDocument = new DocmosisDocument(c21DocumentTitle, pdf);
 
         given(dateFormatterService.formatLocalDateTimeBaseUsingFormat(any(), any()))
             .willReturn("1st November 2019");
         given(dateFormatterService.formatLocalDateToString(any(), any()))
             .willReturn("1st November 2019");
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, C21_DOCUMENT_TITLE + "1.pdf"))
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, c21DocumentTitle + "1.pdf"))
             .willReturn(document);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "mid-event");
