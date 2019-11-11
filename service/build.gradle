@@ -232,6 +232,7 @@ dependencies {
 
   integrationTestCompile configurations.testRuntime {
     exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'
+    exclude group: 'org.springframework.security'
     exclude group: 'io.springfox'
   }
 

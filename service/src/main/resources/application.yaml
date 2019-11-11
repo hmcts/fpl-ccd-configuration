@@ -21,6 +21,8 @@ idam:
 
 spring:
   profiles: integration-test
+  security:
+    enabled: false
 
 management:
   endpoints:
