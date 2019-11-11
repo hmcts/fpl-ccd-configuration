@@ -9,7 +9,7 @@ import org.springframework.security.config.annotation.web.configurers.oauth2.ser
 
 @Configuration
 @EnableWebSecurity
-@ConditionalOnProperty(value="spring.security.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(value = "spring.security.enabled", havingValue = "true", matchIfMissing = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
