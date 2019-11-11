@@ -58,6 +58,7 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCMOEventPag
   await caseViewPage.goToNewActions(config.applicationActions.draftCMO);
   await draftCMOEventPage.associateHearingDate('1 Jan 2050');
   I.click('Continue');
+  await I.addAnotherElementToCollection();
   await draftCMOEventPage.enterRecital('Recital 1', 'Recital 1 description');
   I.completeEvent('Submit');
 });

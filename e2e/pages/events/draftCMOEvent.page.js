@@ -14,8 +14,7 @@ module.exports = {
     I.selectOption(this.fields.cmoHearingDateList, date);
   },
 
-  enterRecital(title,description) {
-    I.click('Add new');
+  async enterRecital(title,description) {
     I.fillField(this.fields.recitals.title, title);
     I.fillField(this.fields.recitals.description, description);
   },
