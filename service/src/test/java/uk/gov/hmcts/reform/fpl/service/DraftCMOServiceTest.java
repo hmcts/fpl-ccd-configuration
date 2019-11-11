@@ -31,7 +31,7 @@ public class DraftCMOServiceTest {
     private final LocalDate date = LocalDate.now();
 
     @Test
-    void getHearingDatesDynamic_shouldReturnHearingDateDynamicList() {
+    void shouldReturnHearingDateDynamicListWhenCaseDetailsHasHearingDate() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of(
                 "hearingDetails", createHearingBookings(date))
@@ -48,11 +48,10 @@ public class DraftCMOServiceTest {
 
         assertThat(hearingList.getListItems().get(2).getLabel())
             .isEqualTo(draftCMOService.convertDate(date));
-
     }
 
     @Test
-    void getHearingDatesDynamicShouldFillTheHearingDatesListWithPreviousSelectedValue() {
+    void shouldReturnHearingDateDynamicListWhenCmoHasPreviousSelectedValue() {
 
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of(
@@ -73,7 +72,7 @@ public class DraftCMOServiceTest {
     }
 
     @Test
-    void shouldReturnHearingDateDynamicListIfHearingDatesNotNull() {
+    void shouldReturnHearingDateDynamicListWhenHearingDatesNotNull() {
         DynamicList hearingList = draftCMOService.buildDynamicListFromHearingDetails(
             createHearingBookings(date));
 
