@@ -214,7 +214,7 @@ dependencies {
 
   //overriding com.fasterxml.jackson.core:jackson-databind to fix CVE issues suppressed
   compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.0'
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
+  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.1'
   compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.10.0'
 
   testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot) {
