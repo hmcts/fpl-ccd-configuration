@@ -12,7 +12,6 @@ module.exports = {
   associateHearingDate(date) {
     I.waitForElement(this.fields.cmoHearingDateList);
     I.selectOption(this.fields.cmoHearingDateList, date);
-    I.click('Continue');
   },
 
   enterRecital(recitals) {
