@@ -479,8 +479,8 @@
         "legalAdvisorName": "Peter Parker"
       },
       "c21Order": {
-        "orderDetails": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit",
-        "orderTitle": "Order"
+        "orderTitle": "Order",
+        "orderDetails": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit"
       }
     }
   },
