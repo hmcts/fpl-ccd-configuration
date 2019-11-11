@@ -36,5 +36,5 @@ services:
     ports:
       - 5433:8080
 networks:
-   ccd-network:
+  ccd-network:
       external: true
