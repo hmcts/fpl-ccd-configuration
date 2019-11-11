@@ -77,11 +77,7 @@ public class DraftOrdersController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (!isNull(caseData.getStandardDirectionOrder())) {
-            List<Element<Direction>> nonCustomDirections = directionHelperService
-                .removeCustomDirections(caseData.getStandardDirectionOrder().getDirections());
-
-            Map<String, List<Element<Direction>>> directions = directionHelperService
-                .sortDirectionsByAssignee(nonCustomDirections);
+            Map<String, List<Element<Direction>>> directions = sortDirectionsByAssignee(caseData);
 
             directions.forEach((key, value) -> caseDetails.getData().put(key, value));
 
@@ -92,6 +88,13 @@ public class DraftOrdersController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private Map<String, List<Element<Direction>>> sortDirectionsByAssignee(CaseData caseData) {
+        List<Element<Direction>> nonCustomDirections = directionHelperService
+            .removeCustomDirections(caseData.getStandardDirectionOrder().getDirections());
+
+        return directionHelperService.sortDirectionsByAssignee(nonCustomDirections);
     }
 
     @PostMapping("/mid-event")

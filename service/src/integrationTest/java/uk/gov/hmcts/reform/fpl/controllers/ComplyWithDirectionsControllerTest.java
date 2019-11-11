@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
@@ -22,7 +23,9 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
+import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -71,7 +74,7 @@ class ComplyWithDirectionsControllerTest {
     @SuppressWarnings("unchecked")
     @Test
     void aboutToSubmitCallbackShouldAddResponseToResponses() throws Exception {
-        UUID uuid = UUID.randomUUID();
+        UUID uuid = randomUUID();
 
         List<Element<Direction>> directions = ImmutableList.of(Element.<Direction>builder()
             .id(uuid)
@@ -83,11 +86,11 @@ class ComplyWithDirectionsControllerTest {
             .build());
 
         Order sdo = Order.builder().directions(ImmutableList.of(Element.<Direction>builder()
-                .id(uuid)
-                .value(Direction.builder()
-                    .directionType("example direction")
-                    .build())
-                .build()))
+            .id(uuid)
+            .value(Direction.builder()
+                .directionType("example direction")
+                .build())
+            .build()))
             .build();
 
         CallbackRequest request = CallbackRequest.builder()
@@ -104,19 +107,14 @@ class ComplyWithDirectionsControllerTest {
     }
 
     private List<Direction> directionsForAllRoles() {
-        return ImmutableList.of(
-            Direction.builder().assignee(ALL_PARTIES).build(),
-            Direction.builder().assignee(LOCAL_AUTHORITY).build(),
-            Direction.builder().assignee(PARENTS_AND_RESPONDENTS).build(),
-            Direction.builder().assignee(CAFCASS).build(),
-            Direction.builder().assignee(OTHERS).build(),
-            Direction.builder().assignee(COURT).build()
-        );
+        return Stream.of(DirectionAssignee.values())
+            .map(directionAssignee -> Direction.builder().assignee(directionAssignee).build())
+            .collect(toList());
     }
 
     private List<Element<Direction>> buildDirections(List<Direction> directions) {
         return directions.stream().map(direction -> Element.<Direction>builder()
-            .id(UUID.randomUUID())
+            .id(randomUUID())
             .value(direction)
             .build())
             .collect(toList());
@@ -124,7 +122,7 @@ class ComplyWithDirectionsControllerTest {
 
     private List<Element<Direction>> buildDirections(Direction direction) {
         return ImmutableList.of(Element.<Direction>builder()
-            .id(UUID.randomUUID())
+            .id(randomUUID())
             .value(direction)
             .build());
     }
@@ -146,9 +144,11 @@ class ComplyWithDirectionsControllerTest {
     }
 
     private boolean roleDirectionsContainExpectedAllPartiesDirection(List<Element<Direction>> roleDirections) {
+        final Direction allPartiesDirection = Direction.builder().assignee(ALL_PARTIES).build();
+
         return roleDirections.stream()
             .map(Element::getValue)
-            .anyMatch(x -> x.equals(Direction.builder().assignee(ALL_PARTIES).build()));
+            .anyMatch(x -> x.equals(allPartiesDirection));
     }
 
     @SuppressWarnings("unchecked")

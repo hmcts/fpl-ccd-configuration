@@ -16,8 +16,8 @@ public class DirectionResponse {
     private final UUID directionId;
     private final DirectionAssignee assignee;
     private final String complied;
-    private final DocumentReference file;
     private final String documentDetails;
+    private final DocumentReference file;
     private final String cannotComplyReason;
     private final List<String> c2Uploaded;
     private final DocumentReference cannotComplyFile;

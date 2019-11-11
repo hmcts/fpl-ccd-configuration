@@ -21,20 +21,9 @@
     "LiveFrom": "01/01/2017",
     "ID": "DirectionResponse",
     "ListElementCode": "complied",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "YesOrNo",
+    "FieldType": "YesOrNo",
     "ElementLabel": "Has this direction been complied with?",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "DirectionResponse",
-    "ListElementCode": "file",
-    "FieldType": "Document",
-    "ElementLabel": "Upload file",
-    "HintText": "You can upload JPG, BMP, PNG, TIF or PDF files up to 10MB in size.",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "complied=\"Yes\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -44,6 +33,17 @@
     "ElementLabel": "Give details",
     "SecurityClassification": "Public",
     "FieldShowCondition": "complied=\"Yes\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "file",
+    "FieldType": "Document",
+    "ElementLabel": "Upload file",
+    "HintText": "You can upload JPG, BMP, PNG, TIF or PDF files up to 10MB in size.",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "complied=\"Yes\"",
+    "Comment": "Similar field to cannotComplyFile. There are two definitions so the user has a clean field when changing answer"
   },
   {
     "LiveFrom": "01/01/2017",

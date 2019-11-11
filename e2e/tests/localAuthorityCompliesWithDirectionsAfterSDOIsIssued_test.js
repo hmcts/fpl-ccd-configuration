@@ -52,6 +52,6 @@ Scenario('local authority complies with directions', async (I, caseViewPage, com
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeAnswerInTab(1, 'Compliance 1', 'Party', 'Local Authority');
   I.seeAnswerInTab(3, 'Compliance 1', 'Has this direction been complied with?', 'Yes');
-  I.seeAnswerInTab(4, 'Compliance 1', 'Upload file', 'mockFile.txt');
-  I.seeAnswerInTab(5, 'Compliance 1', 'Give details', response.complied.yes.documentDetails);
+  I.seeAnswerInTab(4, 'Compliance 1', 'Give details', response.complied.yes.documentDetails);
+  I.seeAnswerInTab(5, 'Compliance 1', 'Upload file', 'mockFile.txt');
 });

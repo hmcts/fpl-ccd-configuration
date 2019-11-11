@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 
 @Api
@@ -44,19 +43,11 @@ public class ComplyWithDirectionsController {
         List<Element<Direction>> allPartyDirections = directionHelperService
             .getDirectionsForAssignee(caseData.getStandardDirectionOrder().getDirections(), ALL_PARTIES);
 
-        directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections())
-            .forEach((assignee, directions) -> {
+        Map<String, List<Element<Direction>>> sortedDirections =
+            directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections());
 
-                // courtDirectionsCustom is used here to stop giving C and D permissions on the CourtDirections object.
-                if (assignee.equals("courtDirections")) {
-                    caseDetails.getData()
-                        .put(assignee.concat("Custom"),
-                            directionHelperService.extractPartyResponse(assignee, allPartyDirections));
-                } else {
-                    caseDetails.getData()
-                        .put(assignee, directionHelperService.extractPartyResponse(assignee, allPartyDirections));
-                }
-            });
+        sortedDirections.forEach((assignee, directions) -> directionHelperService
+            .addAssigneeDirectionKeyValuePairsToCaseData(assignee, allPartyDirections, caseDetails));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -71,13 +62,10 @@ public class ComplyWithDirectionsController {
         Map<DirectionAssignee, List<Element<Direction>>> directionsMap =
             directionHelperService.collectDirectionsToMap(caseData);
 
-        List<DirectionResponse> directionsToUpdate = directionHelperService
-            .addHiddenVariablesToResponseForManyAssignees(directionsMap).stream()
-            .map(x -> x.getValue().getResponse())
-            .collect(toList());
+        List<DirectionResponse> responses = directionHelperService.getResponses(directionsMap);
 
         directionHelperService.addResponsesToDirections(
-            directionsToUpdate, caseData.getStandardDirectionOrder().getDirections());
+            responses, caseData.getStandardDirectionOrder().getDirections());
 
         caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
 
