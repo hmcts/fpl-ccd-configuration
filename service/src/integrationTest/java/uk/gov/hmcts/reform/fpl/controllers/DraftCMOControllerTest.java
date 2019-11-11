@@ -67,15 +67,6 @@ class DraftCMOControllerTest {
         actAndAssert(request, expected);
     }
 
-    private void actAndAssert(CallbackRequest request, List<String> expected) throws Exception {
-        MvcResult response = makeRequest(request, "about-to-start");
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
-        assertThat(getReturnedDatesFromResponse(callbackResponse)).isEqualTo(expected);
-    }
-
     @Test
     void aboutToSubmitShouldPopulateHiddenHearingDateField() throws Exception {
         List<Element<HearingBooking>> hearingDetails = createHearingBookings(date);
