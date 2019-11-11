@@ -1,7 +1,12 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Getter
 public enum Section {
-    APPLICANT("applicant", "applicant"),
+    APPLICANT(new String[] {"applicant", "solicitor"}, "applicant"),
     CHILDREN("children", "children"),
     ORDERS("orders", "orders and directions needed"),
     RESPONDENTS("respondent", "respondents"),
@@ -10,19 +15,10 @@ public enum Section {
     DOCUMENTS("document", "documents"),
     CASENAME("casename", "case name");
 
-    private final String errorKey;
+    private final String[] errorKeys;
     private final String sectionHeaderName;
 
     Section(String errorKey, String sectionHeaderName) {
-        this.errorKey = errorKey;
-        this.sectionHeaderName = sectionHeaderName;
-    }
-
-    public String getErrorKey() {
-        return errorKey;
-    }
-
-    public String getSectionHeaderName() {
-        return sectionHeaderName;
+        this(new String[] {errorKey}, sectionHeaderName);
     }
 }

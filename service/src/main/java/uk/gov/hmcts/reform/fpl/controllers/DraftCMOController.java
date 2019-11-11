@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,17 +11,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Order;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 
-import java.util.List;
 import java.util.Map;
-
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 
 @Api
 @RestController
@@ -41,30 +34,8 @@ public class DraftCMOController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> caseDataMap = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
 
-        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
-
-        DynamicList hearingDatesDynamic = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
-        Object cmoObject = caseDataMap.get("caseManagementOrder");
-
-        if (cmoObject != null) {
-            Order cmo = mapper.convertValue(cmoObject, Order.class);
-            String hearingDate = ObjectUtils.isEmpty(cmo) ? "" : cmo.getHearingDate();
-            if (!isEmpty(hearingDate)) {
-                DynamicListElement element = DynamicListElement.builder()
-                    .label(hearingDate)
-                    .code(hearingDate)
-                    .build();
-
-                hearingDatesDynamic.setValue(element);
-                if (!hearingDatesDynamic.getListItems().contains(element)) {
-                    hearingDatesDynamic.getListItems().add(element);
-                }
-            }
-        }
-
-        caseDataMap.put("cmoHearingDateList", hearingDatesDynamic);
+        caseDataMap.put("cmoHearingDateList", draftCMOService.getHearingDatesDynamic(caseDetails));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDataMap)
@@ -79,11 +50,12 @@ public class DraftCMOController {
         DynamicList list = mapper.convertValue(caseDetails.getData().get("cmoHearingDateList"), DynamicList.class);
 
         CaseData updated = caseData.toBuilder()
-            .caseManagementOrder(Order.builder().build())
+            .caseManagementOrder(CaseManagementOrder.builder().build())
             .build();
 
-        Order order = updated.getCaseManagementOrder()
-            .toBuilder().hearingDate(list.getValue().getCode())
+        CaseManagementOrder order = updated.getCaseManagementOrder()
+            .toBuilder().hearingDate(list.getValue().getLabel())
+            .hearingDateId(list.getValue().getCode())
             .build();
 
         caseDetails.getData().remove("cmoHearingDateList");

@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -58,6 +57,9 @@ public class CaseData {
     }
 
     private final Proceeding proceeding;
+
+    @NotNull(message = "You need to add details to solicitor")
+    @Valid
     private final Solicitor solicitor;
     private final FactorsParenting factorsParenting;
     private final Allocation allocationProposal;
@@ -133,5 +135,5 @@ public class CaseData {
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
 
-    private final Order caseManagementOrder;
+    private final CaseManagementOrder caseManagementOrder;
 }

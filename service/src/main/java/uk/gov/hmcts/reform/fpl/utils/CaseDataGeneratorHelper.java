@@ -160,11 +160,6 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    public static Order createCaseManagementOrder(String hearingDate) {
-        return Order.builder()
-            .hearingDate(hearingDate).build();
-    }
-
     public static List<Element<Respondent>> createRespondents() {
         return ImmutableList.of(
             Element.<Respondent>builder()
