@@ -183,9 +183,7 @@ dependencies {
   annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
 
-  compile (group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot) {
-    exclude group: 'com.fasterxml.jackson.core', module: 'jackson-databind'
-  }
+  compile (group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot)
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
 
@@ -211,11 +209,6 @@ dependencies {
   compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
   compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
-
-  //overriding com.fasterxml.jackson.core:jackson-databind to fix CVE issues suppressed
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.10.0'
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.10.0'
-  compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.10.0'
 
   testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot) {
     exclude group: 'junit', module: 'junit'
