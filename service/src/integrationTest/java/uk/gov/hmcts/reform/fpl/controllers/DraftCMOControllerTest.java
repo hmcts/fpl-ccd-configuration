@@ -53,7 +53,6 @@ class DraftCMOControllerTest {
 
     @Test
     void aboutToStartCallbackShouldPopulateHearingDatesList() throws Exception {
-
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of("hearingDetails", hearingDetails))
@@ -96,6 +95,9 @@ class DraftCMOControllerTest {
 
         assertThat(caseData.getCaseManagementOrder().getHearingDate())
             .isEqualTo(date.plusDays(5).toString());
+
+        assertThat(callbackResponse.getData().get("cmoHearingDateList"))
+            .isNull();
     }
 
     private void actAndAssert(CallbackRequest request, List<String> expected) throws Exception {
