@@ -5,7 +5,7 @@ const recitals = require('../fixtures/recitals.js');
 
 let caseId;
 
-Feature('draft CMO after sdo');
+Feature('Local authority manages case after SDO is issued');
 
 Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage, draftStandardDirectionsEventPage) => {
   if (!caseId) {
@@ -55,9 +55,8 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('local authority associate CMO to hearing date', async (I, caseViewPage, draftCMOEventPage) => {
+Scenario('local authority creates CMO', async (I, caseViewPage, draftCMOEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.draftCMO);
   await draftCMOEventPage.associateHearingDate('1 Jan 2050');
-  await draftCMOEventPage.enterRecital(recitals[0]);
   I.completeEvent('Submit');
 });

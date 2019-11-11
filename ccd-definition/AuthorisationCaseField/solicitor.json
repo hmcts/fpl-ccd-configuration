@@ -382,6 +382,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "recitals",
     "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "CRUD"
+    "CRUD": "CRU"
   }
 ]

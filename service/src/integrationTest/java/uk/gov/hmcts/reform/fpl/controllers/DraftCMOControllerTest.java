@@ -52,8 +52,7 @@ class DraftCMOControllerTest {
     private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(date);
 
     @Test
-    void aboutToStartCallbackShouldFillTheHearingDatesList() throws Exception {
-
+    void aboutToStartCallbackShouldPopulateHearingDatesList() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of("hearingDetails", hearingDetails))
@@ -108,6 +107,20 @@ class DraftCMOControllerTest {
     }
 
     private List<String> getReturnedDatesFromResponse(AboutToStartOrSubmitCallbackResponse callbackResponse) {
+        assertThat(callbackResponse.getData().get("cmoHearingDateList"))
+            .isNull();
+    }
+
+    private void actAndAssert(CallbackRequest request, List<String> expected) throws Exception {
+        MvcResult response = makeRequest(request, "about-to-start");
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
+    }
+
+    private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {
         Map<String, Object> cmoHearingResponse = mapper.convertValue(
             callbackResponse.getData().get("cmoHearingDateList"), Map.class);
 
