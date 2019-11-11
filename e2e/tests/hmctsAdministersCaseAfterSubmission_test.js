@@ -136,7 +136,6 @@ Scenario('HMCTS admin creates C21 order for the case', async (I, caseViewPage, c
   I.seeEventSubmissionConfirmation(config.administrationActions.createC21Order);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeAnswerInTab(1, 'C21 Order 1', 'Order title', 'Example Title');
-  //Order details have been hidden in complex type, but page still thinks they are present at questionNo 2?
   I.seeAnswerInTab(3, 'C21 Order 1', 'Order document', 'C21_Order_1.pdf');
   I.seeAnswerInTab(4, 'C21 Order 1', 'Date and time of upload', dateFormat(now, 'd mmmm yyyy'));
   I.seeAnswerInTab(5, 'C21 Order 1', 'Judge or Magistrate', 'Her Honour Judge Sotomayer');

@@ -18,14 +18,18 @@ import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.interfaces.C21CaseOrderGroup;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CreateC21OrderService;
+import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
 import java.util.List;
-import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
 
 @Api
 @RequestMapping("/callback/create-order")
@@ -35,16 +39,22 @@ public class C21OrderController {
     private final ObjectMapper mapper;
     private final CreateC21OrderService service;
     private final ValidateGroupService validateGroupService;
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+    private final UploadDocumentService uploadDocumentService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Autowired
     public C21OrderController(ObjectMapper mapper,
                               CreateC21OrderService service,
                               ValidateGroupService validateGroupService,
+                              DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
+                              UploadDocumentService uploadDocumentService,
                               ApplicationEventPublisher applicationEventPublisher) {
         this.mapper = mapper;
         this.service = service;
         this.validateGroupService = validateGroupService;
+        this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
+        this.uploadDocumentService = uploadDocumentService;
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
@@ -67,9 +77,9 @@ public class C21OrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Document c21Document = service.getDocument(authorization, userId, caseData);
+        Document c21Document = getDocument(authorization, userId, caseData);
 
-        caseDetails.getData().put("c21Order", service.addDocumentToC21(caseData, c21Document));
+        caseDetails.getData().put("c21Order", service.addDocumentToC21(caseData.getC21Order(), c21Document));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -82,12 +92,12 @@ public class C21OrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        C21Order c21Order = service.addJudgeAndDateToC21(caseData);
+        C21Order c21Order = service.buildC21Order(caseData.getC21Order(), caseData.getJudgeAndLegalAdvisor());
 
         List<Element<C21Order>> c21Orders = defaultIfNull(caseData.getC21Orders(), Lists.newArrayList());
 
         c21Orders.add(Element.<C21Order>builder()
-            .id(UUID.randomUUID())
+            .id(randomUUID())
             .value(c21Order)
             .build());
 
@@ -106,5 +116,16 @@ public class C21OrderController {
                                      @RequestBody CallbackRequest callbackRequest) {
 
         applicationEventPublisher.publishEvent(new C21OrderEvent(callbackRequest, authorization, userId));
+    }
+
+    private Document getDocument(@RequestHeader("authorization") String authorization,
+                                @RequestHeader("user-id") String userId,
+                                CaseData caseData) {
+        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
+            service.getC21OrderTemplateData(caseData), C21);
+        String index = (caseData.getC21Orders() != null) ? Integer.toString(caseData.getC21Orders().size() + 1) : "1";
+
+        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
+            C21.getDocumentTitle() + index + ".pdf");
     }
 }
