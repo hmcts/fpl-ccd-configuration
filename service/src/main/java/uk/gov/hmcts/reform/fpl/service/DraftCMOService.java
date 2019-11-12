@@ -7,16 +7,17 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.utils.HearingDateHelper;
 
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -52,11 +53,11 @@ public class DraftCMOService {
     private void prePopulateHearingDateSelection(List<Element<HearingBooking>> hearingDetails,
                                                  DynamicList hearingDatesDynamic,
                                                  CaseManagementOrder caseManagementOrder) {
-        String hearingDateId = isEmpty(caseManagementOrder) ? "" : caseManagementOrder.getHearingDateId();
+        UUID hearingDateId = isEmpty(caseManagementOrder) ? null : caseManagementOrder.getHearingDateId();
         // There was a previous hearing date therefore we need to remap it
         String date = hearingDetails.stream()
             .filter(Objects::nonNull)
-            .filter(element -> element.getId().toString().equals(caseManagementOrder.getHearingDateId()))
+            .filter(element -> element.getId().equals(caseManagementOrder.getHearingDateId()))
             .findFirst()
             .map(element -> convertDate(element.getValue().getDate()))
             .orElse("");
@@ -73,15 +74,15 @@ public class DraftCMOService {
     }
 
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
-        List<HearingDateHelper> hearingDates = hearingDetails
+        List<HearingDateDynamicElement> hearingDates = hearingDetails
             .stream()
-            .map(element -> new HearingDateHelper(element.getId(), element.getValue().getDate(), dateFormatterService))
+            .map(element -> new HearingDateDynamicElement(convertDate(element.getValue().getDate()), element.getId()))
             .collect(toList());
 
         return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);
     }
 
-    private String convertDate(LocalDate date) {
+    public String convertDate(LocalDate date) {
         return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
     }
 }

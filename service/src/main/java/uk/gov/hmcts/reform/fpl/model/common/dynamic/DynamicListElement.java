@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.model.common.dynamic;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.UUID;
+
 /**
  * An element of the {@link DynamicList}.
  *
@@ -19,7 +21,7 @@ public class DynamicListElement {
     /**
      * Property that maps to the value attribute of the option tag.
      */
-    private final String code;
+    private final UUID code;
 
     /**
      * Property that maps to the label attribute of the option tag.

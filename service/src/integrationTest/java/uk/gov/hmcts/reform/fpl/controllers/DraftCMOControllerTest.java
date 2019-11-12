@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,7 +42,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 @OverrideAutoConfiguration(enabled = true)
 @SuppressWarnings("unchecked")
 class DraftCMOControllerTest {
-
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
 
@@ -82,7 +82,7 @@ class DraftCMOControllerTest {
         dynamicHearingDates
             .setValue(
                 DynamicListElement.builder()
-                    .code(date.plusDays(5).toString())
+                    .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
                     .label(date.plusDays(5).toString())
                     .build());
 
@@ -137,7 +137,7 @@ class DraftCMOControllerTest {
     private List<Element<HearingBooking>> createHearingBookings(LocalDate date) {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
-                .id(UUID.randomUUID())
+                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
                 .value(createHearingBooking(date.plusDays(5)))
                 .build(),
             Element.<HearingBooking>builder()
