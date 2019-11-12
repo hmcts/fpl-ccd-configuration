@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCaseManagementOrder;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftCMOController.class)
@@ -145,8 +146,7 @@ class DraftCMOControllerTest {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of(
-                    "cmoHearingDateList", dynamicHearingDates,
-                    "allPartiesCustom", createAllPartiesCustomDirection()))
+                    "cmoHearingDateList", dynamicHearingDates))
                 .build())
             .build();
 
@@ -159,8 +159,39 @@ class DraftCMOControllerTest {
 
         assertThat(caseData.getCaseManagementOrder().getHearingDate())
             .isEqualTo(date.plusDays(5).toString());
-        assertThat(caseData.getCaseManagementOrder().getDirections().containsAll(createAllPartiesCustomDirection()));
         assertThat(caseData.getAllParties()).isNull();
+    }
+
+    @Test
+    void aboutToSubmitShouldSetAssigneeToDirectionsWhenAllPartiesAreProvided() throws Exception {
+        List<Element<HearingBooking>> hearingDetails = createHearingBookings(date);
+
+        DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
+
+        dynamicHearingDates
+            .setValue(
+                DynamicListElement.builder()
+                    .code(date.plusDays(5).toString())
+                    .label(date.plusDays(5).toString())
+                    .build());
+
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of(
+                    "cmoHearingDateList", dynamicHearingDates,
+                    "allParties", createAllPartiesDirection()))
+                .build())
+            .build();
+
+        MvcResult response = makeRequest(request, "about-to-submit");
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        Direction allPartiesDirection = caseData.getCaseManagementOrder().getDirections().get(0).getValue();
+
+        assertThat(allPartiesDirection.getAssignee()).isEqualTo(ALL_PARTIES);
     }
 
     private List<String> getReturnedDatesFromResponse(AboutToStartOrSubmitCallbackResponse callbackResponse) {
@@ -202,7 +233,7 @@ class DraftCMOControllerTest {
         );
     }
 
-    private List<Element<Direction>> createAllPartiesCustomDirection() {
+    private List<Element<Direction>> createAllPartiesDirection() {
         return ImmutableList.of(
             Element.<Direction>builder()
                 .id(UUID.randomUUID())
