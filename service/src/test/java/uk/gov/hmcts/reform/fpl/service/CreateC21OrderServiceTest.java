@@ -22,8 +22,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -85,13 +88,15 @@ class CreateC21OrderServiceTest {
             .document(DocumentReference.builder().build())
             .build();
 
-        C21Order returnedOrder = service.addCustomValuesToC21Order(c21Order, JudgeAndLegalAdvisor.builder().build());
+        Element<C21Order> returnedElement = service.addCustomValuesToC21Order(c21Order,
+            JudgeAndLegalAdvisor.builder().build());
 
-        assertThat(returnedOrder.getOrderTitle()).isEqualTo("Order");
-        assertThat(returnedOrder.getDocument()).isEqualTo(DocumentReference.builder().build());
-        assertThat(returnedOrder.getOrderDetails()).isEqualTo("Some details");
-        assertThat(returnedOrder.getOrderDate()).isNotNull();
-        assertThat(returnedOrder.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder().build());
+        assertThat(returnedElement.getValue().getOrderTitle()).isEqualTo("Order");
+        assertThat(returnedElement.getValue().getDocument()).isEqualTo(DocumentReference.builder().build());
+        assertThat(returnedElement.getValue().getOrderDetails()).isEqualTo("Some details");
+        assertThat(returnedElement.getValue().getOrderDate()).isNotNull();
+        assertThat(returnedElement.getValue().getJudgeAndLegalAdvisor()).isEqualTo(
+            JudgeAndLegalAdvisor.builder().build());
     }
 
     @Test
@@ -102,13 +107,15 @@ class CreateC21OrderServiceTest {
             .document(DocumentReference.builder().build())
             .build();
 
-        C21Order returnedOrder = service.addCustomValuesToC21Order(c21Order, JudgeAndLegalAdvisor.builder().build());
+        Element<C21Order> returnedElement = service.addCustomValuesToC21Order(c21Order,
+            JudgeAndLegalAdvisor.builder().build());
 
-        assertThat(returnedOrder.getOrderTitle()).isEqualTo("Order");
-        assertThat(returnedOrder.getDocument()).isEqualTo(DocumentReference.builder().build());
-        assertThat(returnedOrder.getOrderDetails()).isEqualTo("Some details");
-        assertThat(returnedOrder.getOrderDate()).isNotNull();
-        assertThat(returnedOrder.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder().build());
+        assertThat(returnedElement.getValue().getOrderTitle()).isEqualTo("Order");
+        assertThat(returnedElement.getValue().getDocument()).isEqualTo(DocumentReference.builder().build());
+        assertThat(returnedElement.getValue().getOrderDetails()).isEqualTo("Some details");
+        assertThat(returnedElement.getValue().getOrderDate()).isNotNull();
+        assertThat(returnedElement.getValue().getJudgeAndLegalAdvisor()).isEqualTo(
+            JudgeAndLegalAdvisor.builder().build());
     }
 
     @Test
@@ -119,13 +126,15 @@ class CreateC21OrderServiceTest {
             .document(DocumentReference.builder().build())
             .build();
 
-        C21Order returnedOrder = service.addCustomValuesToC21Order(c21Order, JudgeAndLegalAdvisor.builder().build());
+        Element<C21Order> returnedElement = service.addCustomValuesToC21Order(c21Order,
+            JudgeAndLegalAdvisor.builder().build());
 
-        assertThat(returnedOrder.getOrderTitle()).isEqualTo("Order");
-        assertThat(returnedOrder.getDocument()).isEqualTo(DocumentReference.builder().build());
-        assertThat(returnedOrder.getOrderDetails()).isEqualTo("Some details");
-        assertThat(returnedOrder.getOrderDate()).isNotNull();
-        assertThat(returnedOrder.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder().build());
+        assertThat(returnedElement.getValue().getOrderTitle()).isEqualTo("Order");
+        assertThat(returnedElement.getValue().getDocument()).isEqualTo(DocumentReference.builder().build());
+        assertThat(returnedElement.getValue().getOrderDetails()).isEqualTo("Some details");
+        assertThat(returnedElement.getValue().getOrderDate()).isNotNull();
+        assertThat(returnedElement.getValue().getJudgeAndLegalAdvisor()).isEqualTo(
+            JudgeAndLegalAdvisor.builder().build());
     }
 
     @Test
@@ -136,13 +145,15 @@ class CreateC21OrderServiceTest {
             .document(DocumentReference.builder().build())
             .build();
 
-        C21Order returnedOrder = service.addCustomValuesToC21Order(c21Order, JudgeAndLegalAdvisor.builder().build());
+        Element<C21Order> returnedElement = service.addCustomValuesToC21Order(c21Order,
+            JudgeAndLegalAdvisor.builder().build());
 
-        assertThat(returnedOrder.getOrderTitle()).isEqualTo("Example Title");
-        assertThat(returnedOrder.getDocument()).isEqualTo(DocumentReference.builder().build());
-        assertThat(returnedOrder.getOrderDetails()).isEqualTo("Some details");
-        assertThat(returnedOrder.getOrderDate()).isNotNull();
-        assertThat(returnedOrder.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder().build());
+        assertThat(returnedElement.getValue().getOrderTitle()).isEqualTo("Example Title");
+        assertThat(returnedElement.getValue().getDocument()).isEqualTo(DocumentReference.builder().build());
+        assertThat(returnedElement.getValue().getOrderDetails()).isEqualTo("Some details");
+        assertThat(returnedElement.getValue().getOrderDate()).isNotNull();
+        assertThat(returnedElement.getValue().getJudgeAndLegalAdvisor()).isEqualTo(
+            JudgeAndLegalAdvisor.builder().build());
     }
 
     @Test
@@ -153,17 +164,17 @@ class CreateC21OrderServiceTest {
             .document(DocumentReference.builder().build())
             .build();
 
-        C21Order returnedOrder = service.addCustomValuesToC21Order(c21Order, JudgeAndLegalAdvisor.builder()
+        Element<C21Order> returnedElement = service.addCustomValuesToC21Order(c21Order, JudgeAndLegalAdvisor.builder()
             .judgeTitle(HER_HONOUR_JUDGE)
             .judgeLastName("Judy")
             .legalAdvisorName("Peter Parker")
             .build());
 
-        assertThat(returnedOrder.getOrderTitle()).isEqualTo("Example Title");
-        assertThat(returnedOrder.getDocument()).isEqualTo(DocumentReference.builder().build());
-        assertThat(returnedOrder.getOrderDetails()).isEqualTo("Some details");
-        assertThat(returnedOrder.getOrderDate()).isNotNull();
-        assertThat(returnedOrder.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder()
+        assertThat(returnedElement.getValue().getOrderTitle()).isEqualTo("Example Title");
+        assertThat(returnedElement.getValue().getDocument()).isEqualTo(DocumentReference.builder().build());
+        assertThat(returnedElement.getValue().getOrderDetails()).isEqualTo("Some details");
+        assertThat(returnedElement.getValue().getOrderDate()).isNotNull();
+        assertThat(returnedElement.getValue().getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder()
             .judgeTitle(HER_HONOUR_JUDGE)
             .judgeLastName("Judy")
             .legalAdvisorName("Peter Parker")
@@ -181,6 +192,19 @@ class CreateC21OrderServiceTest {
 
         Map<String, Object> templateData = service.getC21OrderTemplateData(caseData);
         assertThat(templateData).isEqualTo(expectedMap);
+    }
+
+    @Test
+    void shouldReturnCorrectIndexWhenNoExistingC21Orders() {
+        assertThat(service.getIndexForC21Document(emptyList())).isEqualTo("1");
+    }
+
+    @Test
+    void shouldReturnCorrectIndexWhenAddingToExistingC21Orders() {
+        List<Element<C21Order>> c21Orders = new ArrayList<>();
+        c21Orders.add(Element.<C21Order>builder().build());
+        assertThat(service.getIndexForC21Document(c21Orders)).isEqualTo("2");
+
     }
 
     @SuppressWarnings("unchecked")
@@ -228,5 +252,4 @@ class CreateC21OrderServiceTest {
                 .build()))
             .build();
     }
-
 }

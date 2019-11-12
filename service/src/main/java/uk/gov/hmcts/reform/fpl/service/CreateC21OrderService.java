@@ -17,6 +17,7 @@ import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
@@ -48,16 +49,20 @@ public class CreateC21OrderService {
     /**
      * Method to format title of order, add {@link JudgeAndLegalAdvisor} object and a formatted order date.
      *
-     * @param c21Order this value will contain fixed details and document values as well as customisable values.
+     * @param c21Order             this value will contain fixed details and document values as well as customisable
+     *                             values.
      * @param judgeAndLegalAdvisor the judge and legal advisor for the order.
-     * @return fully populated C21Order.
+     * @return Element containing randomUUID and a fully populated C21Order.
      */
-    public C21Order addCustomValuesToC21Order(C21Order c21Order, JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        return c21Order.toBuilder()
-            .orderTitle(defaultIfBlank(c21Order.getOrderTitle(), "Order"))
-            .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
-            .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
-                "h:mma, d MMMM yyyy"))
+    public Element<C21Order> addCustomValuesToC21Order(C21Order c21Order, JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        return Element.<C21Order>builder()
+            .id(randomUUID())
+            .value(c21Order.toBuilder()
+                .orderTitle(defaultIfBlank(c21Order.getOrderTitle(), "Order"))
+                .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
+                .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
+                    "h:mma, d MMMM yyyy"))
+                .build())
             .build();
     }
 
@@ -76,6 +81,10 @@ public class CreateC21OrderService {
             .build();
     }
 
+    public String getIndexForC21Document(List<Element<C21Order>> c21Orders) {
+        return Integer.toString(c21Orders.size() + 1);
+    }
+
     private String getCourtName(String courtName) {
         return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
     }
@@ -86,7 +95,7 @@ public class CreateC21OrderService {
             .map(Child::getParty)
             .map(child -> ImmutableMap.of(
                 "name", child.getFirstName() + " " + child.getLastName(),
-                "gender", child.getGender(),
+                "gender", defaultIfNull(child.getGender(), ""),
                 "dateOfBirth", child.getDateOfBirth() != null ? dateFormatterService
                     .formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG) : ""))
             .collect(toList());

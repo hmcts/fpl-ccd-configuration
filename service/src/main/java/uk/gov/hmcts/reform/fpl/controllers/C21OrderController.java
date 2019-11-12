@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
 import java.util.List;
 
-import static java.util.UUID.randomUUID;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
 
 @Api
@@ -86,10 +85,8 @@ public class C21OrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<C21Order>> c21Orders = caseData.getC21Orders();
-        c21Orders.add(Element.<C21Order>builder()
-            .id(randomUUID())
-            .value(service.addCustomValuesToC21Order(caseData.getC21Order(), caseData.getJudgeAndLegalAdvisor()))
-            .build());
+
+        c21Orders.add(service.addCustomValuesToC21Order(caseData.getC21Order(), caseData.getJudgeAndLegalAdvisor()));
 
         caseDetails.getData().put("c21Orders", c21Orders);
         caseDetails.getData().remove("c21Order");
@@ -105,9 +102,8 @@ public class C21OrderController {
                                 CaseData caseData) {
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
             service.getC21OrderTemplateData(caseData), C21);
-        String index = (caseData.getC21Orders() != null) ? Integer.toString(caseData.getC21Orders().size() + 1) : "1";
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-            C21.getDocumentTitle() + index + ".pdf");
+            C21.getDocumentTitle() + service.getIndexForC21Document(caseData.getC21Orders()) + ".pdf");
     }
 }

@@ -14,7 +14,8 @@
     "FieldType": "TextArea",
     "ElementLabel": "Order details",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "orderDate!=\"*\""
+    "FieldShowCondition": "orderDate!=\"*\"",
+    "Comment": "Order details should not be displayed in the tab view. When orderDate is set, order has reached tab view stage"
   },
   {
     "LiveFrom": "01/01/2017",

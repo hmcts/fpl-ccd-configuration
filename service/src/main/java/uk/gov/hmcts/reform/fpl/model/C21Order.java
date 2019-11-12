@@ -13,5 +13,4 @@ public class C21Order {
     private final DocumentReference document;
     private final String orderDate;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
-
 }

@@ -131,7 +131,7 @@ class C21OrderControllerTest {
 
             assertThat(caseData.getC21Order()).isEqualTo(null);
             assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(null);
-            assertThat(c21Orders.get(0)).extracting("value").isEqualTo(expectedOrder);
+            assertThat(c21Orders.get(0).getValue()).isEqualTo(expectedOrder);
         }
     }
 
