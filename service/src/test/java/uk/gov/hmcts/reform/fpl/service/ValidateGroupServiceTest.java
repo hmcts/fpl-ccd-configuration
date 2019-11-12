@@ -33,7 +33,7 @@ class ValidateGroupServiceTest {
     void shouldReturnAnErrorWhenFamilyManCaseNumberIsNotPopulated() {
         List<String> errors = validateGroupService.validateGroup(CaseData.builder().build(), C21CaseOrderGroup.class);
 
-        assertThat(errors).containsOnlyOnce("Enter Familyman case number");
+        assertThat(errors).containsExactly("Enter Familyman case number");
     }
 
     @Test

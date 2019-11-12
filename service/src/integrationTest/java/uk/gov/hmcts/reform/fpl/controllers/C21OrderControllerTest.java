@@ -36,6 +36,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
@@ -121,7 +122,7 @@ class C21OrderControllerTest {
                 .orderDetails("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
                 .orderDate("1st November 2019")
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                    .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
+                    .judgeTitle(HER_HONOUR_JUDGE)
                     .judgeLastName("Judy")
                     .legalAdvisorName("Peter Parker")
                     .build())

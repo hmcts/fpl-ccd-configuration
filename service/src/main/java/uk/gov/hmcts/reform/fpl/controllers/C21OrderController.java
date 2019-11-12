@@ -30,7 +30,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
 @RequestMapping("/callback/create-order")
 @RestController
 public class C21OrderController {
-
     private final ObjectMapper mapper;
     private final CreateC21OrderService service;
     private final ValidateGroupService validateGroupService;

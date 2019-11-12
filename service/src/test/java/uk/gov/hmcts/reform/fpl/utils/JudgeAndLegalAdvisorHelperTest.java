@@ -1,10 +1,11 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import org.junit.jupiter.api.Test;
-import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 
 class JudgeAndLegalAdvisorHelperTest {
 
@@ -23,8 +24,9 @@ class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    void shouldReturnEmptyJudgeNameWhenJudgeTitleAndNameIsNotProvided() {
+    void shouldReturnEmptyJudgeNameWhenJudgeTitleIsNotProvided() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(null)
             .legalAdvisorName("Freddie")
             .build();
 
@@ -36,7 +38,7 @@ class JudgeAndLegalAdvisorHelperTest {
     @Test
     void shouldReturnProperlyFormattedJudgeNameWhenTitleAndNameAreProvided() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
+            .judgeTitle(HIS_HONOUR_JUDGE)
             .judgeLastName("Dredd")
             .build();
 
@@ -48,7 +50,7 @@ class JudgeAndLegalAdvisorHelperTest {
     @Test
     void shouldReturnProperlyFormattedMagistrateNameWhenMagistrateIsSelected() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .judgeTitle(JudgeOrMagistrateTitle.MAGISTRATES)
+            .judgeTitle(MAGISTRATES)
             .judgeFullName("Steve Stevenson")
             .build();
 
