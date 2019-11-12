@@ -1,8 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
@@ -38,6 +42,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopula
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, HearingVenueLookUpService.class})
 class NoticeOfProceedingsServiceTest {
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -50,8 +55,16 @@ class NoticeOfProceedingsServiceTest {
     private HearingBookingService hearingBookingService = new HearingBookingService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
 
-    private NoticeOfProceedingsService noticeOfProceedingService = new NoticeOfProceedingsService(dateFormatterService,
-        hearingBookingService, hmctsCourtLookupConfiguration);
+    @Autowired
+    private HearingVenueLookUpService hearingVenueLookUpService;
+
+    private NoticeOfProceedingsService noticeOfProceedingService;
+
+    @BeforeEach
+    void setup() {
+        noticeOfProceedingService = new NoticeOfProceedingsService(dateFormatterService,
+            hearingBookingService, hmctsCourtLookupConfiguration, hearingVenueLookUpService);
+    }
 
     @Test
     void shouldRetrieveExistingC6AWhenC6ANotIncludedInTemplateList() {
@@ -169,7 +182,7 @@ class NoticeOfProceedingsServiceTest {
     }
 
     @Test
-    void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated() {
+    void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated()  {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .noticeOfProceedings(NoticeOfProceedings.builder()
@@ -191,7 +204,8 @@ class NoticeOfProceedingsServiceTest {
         assertThat(templateData.get("childrenNames")).isEqualTo("Bran Stark, Sansa Stark and Jon Snow");
         assertThat(templateData.get("hearingDate")).isEqualTo(dateFormatterService
             .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
-        assertThat(templateData.get("hearingVenue")).isEqualTo("Venue");
+        assertThat(templateData.get("hearingVenue"))
+            .isEqualTo("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("08.15am");
         assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("His Honour Judge Samuel Davidson");

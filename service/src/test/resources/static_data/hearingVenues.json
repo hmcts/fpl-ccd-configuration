@@ -1,0 +1,12 @@
+[
+  {
+    "hearingVenueId": "Venue",
+    "venue": "Venue",
+    "address": {
+      "AddressLine1": "Crown Building",
+      "AddressLine2": "Aberdare Hearing Centre",
+      "PostTown": "Aberdare",
+      "PostCode": "CF44 7DW"
+    }
+  }
+]
