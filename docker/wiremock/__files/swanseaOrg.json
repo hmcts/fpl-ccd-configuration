@@ -9,8 +9,8 @@
       "caseworker-publiclaw",
       "caseworker-publiclaw-solicitor"
     ],
-    "idamStatus": "ACTIVE?",
-    "idamStatusCode": "0?",
+    "idamStatus": "ACTIVE",
+    "idamStatusCode": "0",
     "idamMessage": ""
   },
   {
@@ -23,8 +23,8 @@
       "caseworker-publiclaw",
       "caseworker-publiclaw-solicitor"
     ],
-    "idamStatus": "ACTIVE?",
-    "idamStatusCode": "0?",
+    "idamStatus": "ACTIVE",
+    "idamStatusCode": "0",
     "idamMessage": ""
   },
   {
@@ -37,8 +37,8 @@
       "caseworker-publiclaw",
       "caseworker-publiclaw-solicitor"
     ],
-    "idamStatus": "ACTIVE?",
-    "idamStatusCode": "0?",
+    "idamStatus": "ACTIVE",
+    "idamStatusCode": "0",
     "idamMessage": ""
   }
 ]

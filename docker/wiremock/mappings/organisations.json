@@ -7,7 +7,6 @@
         "equalTo": "ACTIVE"
       }
     }
-
   },
   "response": {
     "status": 200,
