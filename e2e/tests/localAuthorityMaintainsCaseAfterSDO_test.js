@@ -60,4 +60,6 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   await I.completeEvent('Submit');
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeAnswerInTab(1, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
+  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
+  await draftCaseManagementOrderEventPage.validatePreviousSelectedHearingDate('1 Jan 2050');
 });
