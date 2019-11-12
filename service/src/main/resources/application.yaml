@@ -21,8 +21,6 @@ idam:
 
 spring:
   profiles: integration-test
-  security:
-    enabled: false
 
 management:
   endpoints:
@@ -77,6 +75,7 @@ fpl:
 spring:
   profiles: local
   security:
+    enabled: true
     oauth2:
       resourceserver:
         jwt:
