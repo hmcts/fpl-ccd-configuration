@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
+import uk.gov.hmcts.reform.fpl.interfaces.EPOGroup;
 
 import java.util.List;
 
