@@ -21,6 +21,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Data
@@ -138,4 +139,8 @@ public class CaseData {
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final C21Order c21Order;
     private final List<Element<C21Order>> c21Orders;
+
+    public List<Element<C21Order>> getC21Orders() {
+        return defaultIfNull(c21Orders, new ArrayList<>());
+    }
 }

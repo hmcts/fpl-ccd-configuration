@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
-import org.assertj.core.util.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 import java.util.List;
 
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
 
 @Api
@@ -87,13 +85,10 @@ public class C21OrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        C21Order c21Order = service.buildC21Order(caseData.getC21Order(), caseData.getJudgeAndLegalAdvisor());
-
-        List<Element<C21Order>> c21Orders = defaultIfNull(caseData.getC21Orders(), Lists.newArrayList());
-
+        List<Element<C21Order>> c21Orders = caseData.getC21Orders();
         c21Orders.add(Element.<C21Order>builder()
             .id(randomUUID())
-            .value(c21Order)
+            .value(service.addCustomValuesToC21Order(caseData.getC21Order(), caseData.getJudgeAndLegalAdvisor()))
             .build());
 
         caseDetails.getData().put("c21Orders", c21Orders);

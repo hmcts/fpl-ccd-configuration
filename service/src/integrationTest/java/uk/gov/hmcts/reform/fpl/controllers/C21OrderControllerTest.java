@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
@@ -75,63 +78,61 @@ class C21OrderControllerTest {
         assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
     }
 
-    @Test
-    void midEventShouldGenerateC21OrderDocument() throws Exception {
+    @Nested
+    class DateTests {
 
-        byte[] pdf = {1, 2, 3, 4, 5};
-        Document document = document();
-        String C21_DOCUMENT_TITLE = C21.getDocumentTitle();
-        DocmosisDocument docmosisDocument = new DocmosisDocument(C21_DOCUMENT_TITLE, pdf);
+        @BeforeEach
+        void setup() {
+            given(dateFormatterService.formatLocalDateTimeBaseUsingFormat(any(), any()))
+                .willReturn("1st November 2019");
+            given(dateFormatterService.formatLocalDateToString(any(), any()))
+                .willReturn("1st November 2019");
+        }
 
-        given(dateFormatterService.formatLocalDateTimeBaseUsingFormat(any(), any()))
-            .willReturn("1st November 2019");
-        given(dateFormatterService.formatLocalDateToString(any(), any()))
-            .willReturn("1st November 2019");
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, C21_DOCUMENT_TITLE + "1.pdf"))
-            .willReturn(document);
+        @Test
+        void midEventShouldGenerateC21OrderDocument() throws Exception {
+            byte[] pdf = {1, 2, 3, 4, 5};
+            Document document = document();
+            DocmosisDocument docmosisDocument = new DocmosisDocument(C21.getDocumentTitle(), pdf);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "mid-event");
+            given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+            given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, C21.getDocumentTitle() + "1.pdf"))
+                .willReturn(document);
 
-        CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+            AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "mid-event");
 
-        C21Order c21Order = responseCaseData.getC21Order();
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertDocumentAddedCorrectly(document, c21Order);
-    }
+            assertThat(caseData.getC21Order().getDocument()).isEqualTo(DocumentReference.builder()
+                .binaryUrl(document.links.binary.href)
+                .filename(document.originalDocumentName)
+                .url(document.links.self.href)
+                .build());
+        }
 
-    private void assertDocumentAddedCorrectly(Document document, C21Order c21Order) {
-        assertThat(c21Order.getDocument().getBinaryUrl()).isEqualTo(document.links.binary.href);
-        assertThat(c21Order.getDocument().getFilename()).isEqualTo(document.originalDocumentName);
-        assertThat(c21Order.getDocument().getUrl()).isEqualTo(document.links.self.href);
-    }
+        @Test
+        void aboutToSubmitShouldUpdateCaseData() throws Exception {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "about-to-submit");
 
-    @Test
-    void aboutToSubmitShouldUpdateCaseData() throws Exception {
-        given(dateFormatterService.formatLocalDateTimeBaseUsingFormat(any(), any()))
-            .willReturn("1st November 2019");
-        given(dateFormatterService.formatLocalDateToString(any(), any()))
-            .willReturn("1st November 2019");
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "about-to-submit");
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        CaseData responseCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+            C21Order expectedOrder = C21Order.builder()
+                .orderTitle("Example Order")
+                .orderDetails("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+                .orderDate("1st November 2019")
+                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                    .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
+                    .judgeLastName("Judy")
+                    .legalAdvisorName("Peter Parker")
+                    .build())
+                .build();
 
-        C21Order expectedOrder = C21Order.builder()
-            .orderTitle("Example Order")
-            .orderDetails("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-            .orderDate("1st November 2019")
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(JudgeOrMagistrateTitle.HER_HONOUR_JUDGE)
-                .judgeLastName("Judy")
-                .legalAdvisorName("Peter Parker")
-                .build())
-            .build();
+            List<Element<C21Order>> c21Orders = caseData.getC21Orders();
 
-        List<Element<C21Order>> c21Orders = responseCaseData.getC21Orders();
-
-        assertThat(responseCaseData.getC21Order()).isEqualTo(null);
-        assertThat(responseCaseData.getJudgeAndLegalAdvisor()).isEqualTo(null);
-        assertThat(c21Orders.get(0)).extracting("value").isEqualTo(expectedOrder);
+            assertThat(caseData.getC21Order()).isEqualTo(null);
+            assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(null);
+            assertThat(c21Orders.get(0)).extracting("value").isEqualTo(expectedOrder);
+        }
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request, String endpoint)

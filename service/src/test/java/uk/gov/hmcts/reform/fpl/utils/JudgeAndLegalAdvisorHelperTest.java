@@ -6,9 +6,10 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class JudgeAndLegalAdvisorHelperTest {
+class JudgeAndLegalAdvisorHelperTest {
+
     @Test
-    public void shouldHaveEmptyLegalAdvisorNameWhenJudgeAndLegalAdvisorNull() {
+    void shouldHaveEmptyLegalAdvisorNameWhenJudgeAndLegalAdvisorNull() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = null;
 
         String legalAdvisorName = JudgeAndLegalAdvisorHelper.getLegalAdvisorName(judgeAndLegalAdvisor);
@@ -17,7 +18,7 @@ public class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    public void shouldHaveEmptyJudgeNameWhenJudgeAndLegalAdvisorNull() {
+    void shouldHaveEmptyJudgeNameWhenJudgeAndLegalAdvisorNull() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = null;
 
         String judgeTitleAndName = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor);
@@ -26,7 +27,7 @@ public class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    public void shouldHaveEmptyJudgeNameWhenJudgeTitleAndNameNotProvided() {
+    void shouldHaveEmptyJudgeNameWhenJudgeTitleAndNameNotProvided() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .legalAdvisorName("Freddie")
             .build();
@@ -37,7 +38,7 @@ public class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    public void shouldHaveProperlyFormattedJudgeNameWhenTitleAndNameProvided() {
+    void shouldHaveProperlyFormattedJudgeNameWhenTitleAndNameProvided() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE)
             .judgeLastName("Dredd")
@@ -49,7 +50,7 @@ public class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
-    public void shouldHaveProperlyFormattedMagistrateNameWhenWhenMagistrateSelected() {
+    void shouldHaveProperlyFormattedMagistrateNameWhenWhenMagistrateSelected() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(JudgeOrMagistrateTitle.MAGISTRATES)
             .judgeFullName("Steve Stevenson")
