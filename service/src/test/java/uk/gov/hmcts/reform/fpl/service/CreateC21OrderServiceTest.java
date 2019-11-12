@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
@@ -203,7 +202,6 @@ class CreateC21OrderServiceTest {
         List<Element<C21Order>> c21Orders = new ArrayList<>();
         c21Orders.add(Element.<C21Order>builder().build());
         assertThat(service.getIndexForC21Document(c21Orders)).isEqualTo("2");
-
     }
 
     @SuppressWarnings("unchecked")
