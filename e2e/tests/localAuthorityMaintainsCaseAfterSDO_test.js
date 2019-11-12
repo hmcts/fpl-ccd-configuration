@@ -54,8 +54,10 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('local authority creates CMO', async (I, caseViewPage, draftCMOEventPage) => {
-  await caseViewPage.goToNewActions(config.applicationActions.draftCMO);
-  await draftCMOEventPage.associateHearingDate('1 Jan 2050');
-  I.completeEvent('Submit');
+Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
+  await draftCaseManagementOrderEventPage.associateHearingDate('1 Jan 2050');
+  await I.completeEvent('Submit');
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
+  I.seeAnswerInTab(1, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
 });

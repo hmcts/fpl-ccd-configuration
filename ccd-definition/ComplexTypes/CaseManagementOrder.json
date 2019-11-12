@@ -14,6 +14,7 @@
     "FieldType": "Text",
     "ElementLabel": "Hearing Date Id",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "hearingDate=\"DO_NOT_SHOW\""
+    "FieldShowCondition": "hearingDate=\"DO_NOT_SHOW\"",
+    "Comment": "Hearing date id has been used here to uniquely identify selected date in case management order"
   }
 ]

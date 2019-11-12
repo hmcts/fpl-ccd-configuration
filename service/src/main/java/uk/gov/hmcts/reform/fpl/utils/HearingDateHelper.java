@@ -9,7 +9,6 @@ import java.time.format.FormatStyle;
 import java.util.UUID;
 
 public class HearingDateHelper implements DynamicElementIndicator {
-
     private LocalDate date;
     private UUID id;
     private final DateFormatterService dateFormatterService;
