@@ -68,12 +68,6 @@ public class DirectionHelperService {
         return directions;
     }
 
-    public List<Element<Direction>> combineAllDirectionsForCMO(CaseData caseData) {
-        List<Element<Direction>> directions = new ArrayList<>();
-        directions.addAll(assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES));
-        return directions;
-    }
-
     /**
      * Adds values that would otherwise be lost in CCD to directions.
      * Values include readOnly, directionRemovable and directionText.
@@ -160,7 +154,6 @@ public class DirectionHelperService {
     private String booleanToYesOrNo(boolean value) {
         return value ? "Yes" : "No";
     }
-
 
     private List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
                                                             DirectionAssignee assignee) {

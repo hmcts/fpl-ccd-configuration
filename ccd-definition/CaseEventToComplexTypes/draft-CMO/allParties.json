@@ -20,7 +20,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "AllParties",
+    "ID": "allParties",
     "CaseEventID": "draftCMO",
     "CaseFieldID": "allParties",
     "ListElementCode": "dateToBeCompletedBy",

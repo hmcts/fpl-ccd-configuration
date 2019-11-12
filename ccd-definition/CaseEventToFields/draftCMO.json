@@ -18,7 +18,7 @@
     "CaseFieldID": "allParties",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
-    "PageID": "AllParties",
+    "PageID": "allParties",
     "PageLabel": " ",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -25,8 +26,11 @@ import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 
 @Api
 @RestController
@@ -51,13 +55,13 @@ public class DraftCMOController {
         Map<String, Object> caseDataMap = caseDetails.getData();
         CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
 
+        // Resetting allParties - could be pre-populated via SDO
+        caseDataMap.remove("allParties");
+
         if (!isNull(caseData.getCaseManagementOrder())) {
             Map<String, List<Element<Direction>>> directions = directionHelperService.sortDirectionsByAssignee(
                 caseData.getCaseManagementOrder().getDirections());
-
-            directions.forEach((key, value) -> {
-                caseDataMap.put(key, value);
-            });
+            directions.forEach(caseDataMap::put);
         }
 
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
@@ -101,15 +105,30 @@ public class DraftCMOController {
         CaseManagementOrder order = updated.getCaseManagementOrder().toBuilder()
             .hearingDate(list.getValue().getLabel())
             .hearingDateId(list.getValue().getCode())
-            .directions(directionHelperService.combineAllDirectionsForCMO(caseData))
+            .directions(setDirectionAssignee(caseData.getAllParties(), ALL_PARTIES))
             .build();
 
         caseDetails.getData().remove("cmoHearingDateList");
-        caseDetails.getData().remove("allPartiesCustom");
+        caseDetails.getData().remove("allParties");
         caseDetails.getData().put("caseManagementOrder", order);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private List<Element<Direction>> setDirectionAssignee(List<Element<Direction>> directions,
+                                                            DirectionAssignee assignee) {
+        if (!isNull(directions)) {
+            return directions.stream()
+                .map(element -> Element.<Direction>builder()
+                    .id(element.getId())
+                    .value(element.getValue().toBuilder()
+                        .assignee(assignee).build())
+                    .build())
+                .collect(toList());
+        } else {
+            return emptyList();
+        }
     }
 }

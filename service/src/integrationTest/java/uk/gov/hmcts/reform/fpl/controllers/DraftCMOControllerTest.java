@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -143,7 +144,9 @@ class DraftCMOControllerTest {
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of("cmoHearingDateList", dynamicHearingDates))
+                .data(ImmutableMap.of(
+                    "cmoHearingDateList", dynamicHearingDates,
+                    "allPartiesCustom", createAllPartiesCustomDirection()))
                 .build())
             .build();
 
@@ -156,6 +159,8 @@ class DraftCMOControllerTest {
 
         assertThat(caseData.getCaseManagementOrder().getHearingDate())
             .isEqualTo(date.plusDays(5).toString());
+        assertThat(caseData.getCaseManagementOrder().getDirections().containsAll(createAllPartiesCustomDirection()));
+        assertThat(caseData.getAllParties()).isNull();
     }
 
     private List<String> getReturnedDatesFromResponse(AboutToStartOrSubmitCallbackResponse callbackResponse) {
@@ -195,5 +200,16 @@ class DraftCMOControllerTest {
                 .value(createHearingBooking(date))
                 .build()
         );
+    }
+
+    private List<Element<Direction>> createAllPartiesCustomDirection() {
+        return ImmutableList.of(
+            Element.<Direction>builder()
+                .id(UUID.randomUUID())
+                .value(Direction.builder()
+                    .directionType("Mock direction type")
+                    .directionText("Mock direction text")
+                    .build())
+                .build());
     }
 }
