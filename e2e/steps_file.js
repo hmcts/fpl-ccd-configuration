@@ -147,10 +147,11 @@ module.exports = function () {
       enterGroundsEventPage.enterThresholdCriteriaDetails();
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-      uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
-      uploadDocumentsEventPage.uploadSocialWorkStatement(config.testFile);
+      uploadDocumentsEventPage.selectSocialWorkChronologyToFollow();
+      uploadDocumentsEventPage.selectSocialWorkStatementIncludedInSWET();
       uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
       uploadDocumentsEventPage.uploadCarePlan(config.testFile);
+      uploadDocumentsEventPage.uploadSWET(config.testFile);
       uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
       uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
       await this.completeEvent('Save and continue');
