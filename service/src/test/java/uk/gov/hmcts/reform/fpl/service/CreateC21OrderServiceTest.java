@@ -184,13 +184,12 @@ class CreateC21OrderServiceTest {
     @Test
     void shouldCreateExpectedMapWhenGivenPopulatedCaseData() {
         LocalDate localDate = LocalDate.now();
-        String date = localDate.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG));
-
+        String date = dateFormatterService.formatLocalDateToString(localDate, FormatStyle.LONG);
         CaseData caseData = populatedCaseData(localDate);
 
         Map<String, Object> expectedMap = expectedData(date);
-
         Map<String, Object> templateData = service.getC21OrderTemplateData(caseData);
+
         assertThat(templateData).isEqualTo(expectedMap);
     }
 
