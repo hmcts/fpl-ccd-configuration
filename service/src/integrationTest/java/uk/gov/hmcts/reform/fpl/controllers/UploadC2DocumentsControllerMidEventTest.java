@@ -56,6 +56,15 @@ class UploadC2DocumentsControllerMidEventTest {
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
+    @Test
+    void shouldNotReturnAnErrorWhenHearingDateIsSetToTomorrow() throws Exception {
+        CallbackRequest request = createCallbackRequestWithTempC2Bundle();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
+
+        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+    }
+
     private CallbackRequest createCallbackRequestWithTempC2Bundle() {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -78,17 +87,6 @@ class UploadC2DocumentsControllerMidEventTest {
                     "temporaryC2Document", ImmutableMap.of()))
                 .build())
             .build();
-    }
-
-    private MvcResult performResponseCallBack(CallbackRequest request) throws Exception {
-        return mockMvc
-            .perform(post("/callback/upload-c2/mid-event")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request) throws Exception {
