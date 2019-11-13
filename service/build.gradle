@@ -155,7 +155,7 @@ sonarqube {
     property "sonar.jacoco.itReportPath", file("${project.buildDir}/jacoco/integration.exec")
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
-    property "sonar.coverage.exclusions", "**/model/**"
+    property "sonar.coverage.exclusions", "**/model/**, **/config/*Configuration.java"
     // Excludes sonar cloud testing to avoid duplication of code warning
     property "sonar.exclusions", "**/model/OldChild.java, **/model/ChildParty.java"
   }
@@ -184,6 +184,11 @@ dependencies {
   compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.10'
 
   compile (group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: versions.springBoot)
+
+  compile group: 'org.springframework.security', name: 'spring-security-config'
+  compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
+  compile group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
+  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '7.9' // override to fix vulnerability issue (CVE-2019-17195)
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
 
