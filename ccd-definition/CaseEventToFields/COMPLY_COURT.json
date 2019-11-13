@@ -1,0 +1,15 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_COURT",
+    "CaseFieldID": "courtDirectionsCustom",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "COMPLEX",
+    "PageID": "1",
+    "PageLabel": " ",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "Comment": "courtDirectionsCustom is used here to prevent Gatekeeper inadvertently getting C and D permissions in draftSDO journey on courtDirections. We do not want them to able to create/delete directions"
+  }
+]

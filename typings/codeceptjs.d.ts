@@ -375,7 +375,7 @@ declare namespace CodeceptJS {
 
 
   export interface uploadDocumentsPage {
-    uploadSocialWorkStatement(file: string) : void,
+    selectSocialWorkStatementIncludedInSWET() : void,
     uploadSocialWorkAssessment(file: string) : void,
     uploadCarePlan(file: string) : void,
     uploadAdditionalDocuments(file: string) : void,
