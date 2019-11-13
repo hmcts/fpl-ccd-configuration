@@ -57,7 +57,6 @@ class DraftCMOServiceTest {
     }
 
     @Test
-    // Test has been added to cover the prePopulateHearingDateSelection code for Sonar cube
     void shouldReturnHearingDateDynamicListWhenCmoHasPreviousSelectedValue() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of(
@@ -70,8 +69,8 @@ class DraftCMOServiceTest {
 
         DynamicList hearingList = draftCMOService.getHearingDateDynamicList(caseDetails);
 
-        assertThat(hearingList.getListItems())
-            .contains(DynamicListElement.builder()
+        assertThat(hearingList.getValue())
+            .isEqualTo(DynamicListElement.builder()
                 .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
                 .label(draftCMOService.convertDate(date.plusDays(2)))
                 .build());
