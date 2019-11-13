@@ -3,7 +3,7 @@ dependencies:
     version: 2.13.0
     repository: '@hmctspublic'
   - name: ccd
-    version: 3.0.4
+    version: 3.3.1
     repository: '@hmctspublic'
     tags:
       - fpl-ccd-stack
