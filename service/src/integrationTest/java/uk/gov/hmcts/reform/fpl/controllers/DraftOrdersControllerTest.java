@@ -105,7 +105,8 @@ class DraftOrdersControllerTest {
             Direction.builder().directionType(title).assignee(PARENTS_AND_RESPONDENTS).build(),
             Direction.builder().directionType(title).assignee(CAFCASS).build(),
             Direction.builder().directionType(title).assignee(OTHERS).build(),
-            Direction.builder().directionType(title).assignee(COURT).build()
+            Direction.builder().directionType(title).assignee(COURT).build(),
+            Direction.builder().directionType(title).custom("Yes").assignee(COURT).build()
         );
 
         Order sdo = Order.builder().directions(buildDirections(directions)).build();
@@ -128,7 +129,7 @@ class DraftOrdersControllerTest {
         assertThat(extractDirections(caseData.getParentsAndRespondentsDirections())).containsOnly(directions.get(2));
         assertThat(extractDirections(caseData.getCafcassDirections())).containsOnly(directions.get(3));
         assertThat(extractDirections(caseData.getOtherPartiesDirections())).containsOnly(directions.get(4));
-        assertThat(extractDirections(caseData.getCourtDirections())).containsOnly(directions.get(5));
+        assertThat(extractDirections(caseData.getCourtDirections())).containsOnly(directions.get(5)).hasSize(1);
     }
 
     @Nested
