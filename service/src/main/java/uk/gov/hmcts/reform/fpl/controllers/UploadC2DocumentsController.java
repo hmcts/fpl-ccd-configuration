@@ -17,14 +17,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -78,8 +79,7 @@ public class UploadC2DocumentsController {
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if(isNull(caseData.getTemporaryC2Document().getDocument()))
-        {
+        if (isNull(caseData.getTemporaryC2Document().getDocument())) {
             errors.add("A document must be uploaded");
         }
 

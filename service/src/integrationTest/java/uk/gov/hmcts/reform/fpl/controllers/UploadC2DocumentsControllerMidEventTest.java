@@ -68,7 +68,9 @@ class UploadC2DocumentsControllerMidEventTest {
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
-    private CallbackRequest createCallbackRequestWithTempC2Bundle(String documentUrl, String binaryUrl, String filename) {
+    private CallbackRequest createCallbackRequestWithTempC2Bundle(String documentUrl,
+                                                                  String binaryUrl,
+                                                                  String filename) {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of(
@@ -78,16 +80,15 @@ class UploadC2DocumentsControllerMidEventTest {
             .build();
     }
 
-    private ImmutableMap documentOrEmptyMap(String documentUrl, String binaryUrl, String filename)
-    {
-        if(isNull(documentUrl)) {
+    private ImmutableMap documentOrEmptyMap(String documentUrl, String binaryUrl, String filename) {
+        if (isNull(documentUrl)) {
             return ImmutableMap.of();
-        }
-        else {
+        } else {
             return ImmutableMap.of(
-                "document_url", documentUrl,
-                "document_binary_url", binaryUrl,
-                "document_filename", filename);
+                "document", ImmutableMap.of(
+                    "document_url", documentUrl,
+                    "document_binary_url", binaryUrl,
+                    "document_filename", filename));
         }
     }
 
