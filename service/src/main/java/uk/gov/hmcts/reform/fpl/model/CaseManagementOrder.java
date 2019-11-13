@@ -11,5 +11,5 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CaseManagementOrder {
     private final String hearingDate;
-    private final UUID hearingDateId;
+    private final UUID id;
 }

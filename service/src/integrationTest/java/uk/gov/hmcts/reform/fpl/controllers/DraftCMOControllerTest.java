@@ -94,8 +94,8 @@ class DraftCMOControllerTest {
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(caseData.getCaseManagementOrder().getHearingDate())
-            .isEqualTo(date.plusDays(5).toString());
+        assertThat(caseData.getCaseManagementOrder()).extracting("id", "hearingDate")
+            .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), date.plusDays(5).toString());
     }
 
     private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {
