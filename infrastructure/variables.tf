@@ -86,9 +86,11 @@ variable "security_enabled" {
 }
 
 variable "idam_token_issuer_uri" {
-  type = "string"
+  type    = "string"
+  default = ""
 }
 
 variable "idam_token_jwk_set_uri" {
-  type = "string"
+  type    = "string"
+  default = ""
 }
