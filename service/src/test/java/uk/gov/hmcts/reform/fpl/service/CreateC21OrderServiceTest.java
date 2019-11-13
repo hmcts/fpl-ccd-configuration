@@ -21,11 +21,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -190,18 +187,6 @@ class CreateC21OrderServiceTest {
         Map<String, Object> templateData = service.getC21OrderTemplateData(caseData);
 
         assertThat(templateData).isEqualTo(expectedMap);
-    }
-
-    @Test
-    void shouldReturnCorrectIndexWhenNoExistingC21Orders() {
-        assertThat(service.getIndexForC21Document(emptyList())).isEqualTo("1");
-    }
-
-    @Test
-    void shouldReturnCorrectIndexWhenAddingToExistingC21Orders() {
-        List<Element<C21Order>> c21Orders = new ArrayList<>();
-        c21Orders.add(Element.<C21Order>builder().build());
-        assertThat(service.getIndexForC21Document(c21Orders)).isEqualTo("2");
     }
 
     @SuppressWarnings("unchecked")

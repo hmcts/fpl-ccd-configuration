@@ -81,10 +81,6 @@ public class CreateC21OrderService {
             .build();
     }
 
-    public String getIndexForC21Document(List<Element<C21Order>> c21Orders) {
-        return Integer.toString(c21Orders.size() + 1);
-    }
-
     private String getCourtName(String courtName) {
         return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
     }
