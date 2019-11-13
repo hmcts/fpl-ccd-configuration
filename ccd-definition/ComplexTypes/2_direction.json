@@ -80,5 +80,26 @@
     "ElementLabel": "Status",
     "SecurityClassification": "Public",
     "FieldShowCondition": "directionNeeded!=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "response",
+    "FieldType": "DirectionResponse",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionNeeded!=\"No\"",
+    "Comment": "This field is used for display purpose only. This neatens up the UI allowing only one response per party"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "responses",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "DirectionResponse",
+    "ElementLabel": "Compliance",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionNeeded!=\"No\"",
+    "Comment": "A single response is stored in this collection in aboutToSubmit allowing for multiple responses to the same direction"
   }
 ]
