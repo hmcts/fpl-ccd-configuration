@@ -44,8 +44,6 @@ class DraftCMOServiceTest {
 
         DynamicList hearingList = draftCMOService.getHearingDateDynamicList(caseDetails);
 
-
-
         assertThat(hearingList.getListItems())
             .containsAll(Arrays.asList(
                 DynamicListElement.builder()
