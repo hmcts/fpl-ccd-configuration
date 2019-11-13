@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -53,6 +54,27 @@ class DraftCMOServiceTest {
                     .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
                     .label(draftCMOService.convertDate(date))
                     .build()));
+    }
+
+    @Test
+    // Test has been added to cover the prePopulateHearingDateSelection code for Sonar cube
+    void shouldReturnHearingDateDynamicListWhenCmoHasPreviousSelectedValue() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of(
+                "hearingDetails", createHearingBookings(date),
+                "caseManagementOrder", CaseManagementOrder.builder()
+                    .hearingDate(draftCMOService.convertDate(date.plusDays(2)))
+                    .hearingDateId(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                    .build()
+            )).build();
+
+        DynamicList hearingList = draftCMOService.getHearingDateDynamicList(caseDetails);
+
+        assertThat(hearingList.getListItems())
+            .contains(DynamicListElement.builder()
+                .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                .label(draftCMOService.convertDate(date.plusDays(2)))
+                .build());
     }
 
     private List<Element<HearingBooking>> createHearingBookings(LocalDate now) {
