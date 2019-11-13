@@ -37,7 +37,7 @@ class UploadC2DocumentsControllerMidEventTest {
 
     @Test
     void shouldReturnAnErrorWhenDocumentIsNotUploaded() throws Exception {
-        CallbackRequest request = createCallbackRequestWithTempC2Bundle(null,null,null);
+        CallbackRequest request = createCallbackRequestWithTempC2Bundle(null, null, null);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
 
@@ -46,7 +46,7 @@ class UploadC2DocumentsControllerMidEventTest {
 
     @Test
     void shouldNotReturnAnErrorWhenDocumentIsUploaded() throws Exception {
-        CallbackRequest request = createCallbackRequestWithTempC2Bundle(DOCUMENT_URL,BINARY_URL,FILENAME);
+        CallbackRequest request = createCallbackRequestWithTempC2Bundle(DOCUMENT_URL, BINARY_URL, FILENAME);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
 
