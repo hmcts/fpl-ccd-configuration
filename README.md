@@ -121,5 +121,14 @@ Note: Case number will be printed to the console while tests run e.g. `Applicati
 ## Service:
 See [fpl-service](service/README.md) for more information.
 
+## Stubbing 
+Some external dependencies need to be stubbed (i.e. professional reference data). 
+
+Docker-compose configures Wiremock to be exposed under port 8765.
+
+docker/wiremock folder configures the stubs themselves refer to the [documentation](http://wiremock.org)
+for additional guide. 
+   
+
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
