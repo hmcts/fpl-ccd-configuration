@@ -96,7 +96,7 @@ public class C21OrderController {
             .build();
     }
 
-    public Document getDocument(@RequestHeader("authorization") String authorization,
+    private Document getDocument(@RequestHeader("authorization") String authorization,
                                 @RequestHeader("user-id") String userId,
                                 CaseData caseData) {
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
