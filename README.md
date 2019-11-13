@@ -126,8 +126,9 @@ Some external dependencies need to be stubbed (i.e. professional reference data)
 
 Docker-compose configures Wiremock to be exposed under port 8765.
 
-docker/wiremock folder configures the stubs themselves refer to the [documentation](http://wiremock.org)
-for additional guide. 
+docker/wiremock folder configures the stubs themselves. 
+Refer to the [documentation](http://wiremock.org)
+for an additional guide. 
    
 
 ## License
