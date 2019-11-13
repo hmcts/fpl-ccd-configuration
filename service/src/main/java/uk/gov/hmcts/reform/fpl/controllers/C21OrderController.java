@@ -116,6 +116,6 @@ public class C21OrderController {
             service.getC21OrderTemplateData(caseData), C21);
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-            C21.getDocumentTitle() + service.getIndexForC21Document(caseData.getC21Orders()) + ".pdf");
+            C21.getDocumentTitle());
     }
 }

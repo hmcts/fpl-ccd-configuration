@@ -104,7 +104,7 @@ class NoticeOfProceedingsControllerAboutToSubmitTest {
 
     private Map<String, Object> createTemplatePlaceholders() {
         return Map.of(
-            "courtName", "Family Court sitting at Swansea",
+            "courtName", "Swansea Family Court",
             "familyManCaseNumber", "SW123123",
             "applicantName", "James Nelson",
             "orderTypes", "Care order",

@@ -96,7 +96,7 @@ class C21OrderControllerTest {
             DocmosisDocument docmosisDocument = new DocmosisDocument(C21.getDocumentTitle(), pdf);
 
             given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-            given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, C21.getDocumentTitle() + "1.pdf"))
+            given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, C21.getDocumentTitle()))
                 .willReturn(document);
 
             AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "mid-event");
