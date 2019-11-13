@@ -79,3 +79,16 @@ variable "idam_client_id" {
 variable "idam_client_redirect_uri" {
   type = "string"
 }
+
+variable "security_enabled" {
+  type = "string"
+  default = "false"
+}
+
+variable "idam_token_issuer_uri" {
+  type = "string"
+}
+
+variable "idam_token_jwk_set_uri" {
+  type = "string"
+}

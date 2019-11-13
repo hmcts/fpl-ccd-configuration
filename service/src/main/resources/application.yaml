@@ -74,6 +74,13 @@ fpl:
 
 spring:
   profiles: local
+  security:
+    enabled: true
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://fr-am:8080/openam/oauth2/hmcts
+          jwk-set-uri: http://localhost:5000/o/jwks
 
 idam:
   api:
