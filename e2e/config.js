@@ -54,6 +54,7 @@ module.exports = {
     changeCaseName: 'Change case name',
     submitCase: 'Submit application',
     deleteApplication: 'Delete an application',
+    draftCaseManagementOrder: 'Draft CMO',
     complyWithDirections: 'Comply with directions',
   },
   administrationActions: {
