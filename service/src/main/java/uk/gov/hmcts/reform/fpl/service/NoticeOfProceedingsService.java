@@ -19,6 +19,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
@@ -111,13 +113,18 @@ public class NoticeOfProceedingsService {
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
 
         return ImmutableMap.of(
-            "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),
-                FormatStyle.LONG),
+            "hearingDate", dateFormatterService.formatLocalDateToString(
+                prioritisedHearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG),
             "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
-            "preHearingAttendance", prioritisedHearingBooking.getPreHearingAttendance(),
-            "hearingTime", prioritisedHearingBooking.getTime()
+            "preHearingAttendance", calculatePrehearingAttendance(prioritisedHearingBooking.getStartDate()),
+            "hearingTime", prioritisedHearingBooking.getStartDate().toLocalTime()
         );
     }
+
+    private LocalTime calculatePrehearingAttendance(LocalDateTime startDate) {
+        return startDate.toLocalTime().minusHours(1);
+    }
+
 
     private String getOrderTypes(Orders orders) {
         return orders.getOrderType().stream()

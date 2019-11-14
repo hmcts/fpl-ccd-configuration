@@ -27,6 +27,8 @@ import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.FormatStyle;
 import java.util.Base64;
 import java.util.List;
@@ -47,14 +49,13 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 @Service
 public class CaseDataExtractionService {
 
+    private static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
     private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
     private final DirectionHelperService directionHelperService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
-
-    private static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
 
     @Autowired
     public CaseDataExtractionService(DateFormatterService dateFormatterService,
@@ -168,14 +169,18 @@ public class CaseDataExtractionService {
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
 
         return ImmutableMap.of(
-            "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),
-                FormatStyle.LONG),
+            "hearingDate", dateFormatterService.formatLocalDateToString(
+                prioritisedHearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG),
             "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
-            "preHearingAttendance", prioritisedHearingBooking.getPreHearingAttendance(),
-            "hearingTime", prioritisedHearingBooking.getTime(),
+            "preHearingAttendance", calculatePrehearingAttendance(prioritisedHearingBooking.getStartDate()),
+            "hearingTime", prioritisedHearingBooking.getStartDate().toLocalTime(),
             "judgeName", prioritisedHearingBooking.getJudgeTitle() + " "
                 + prioritisedHearingBooking.getJudgeName()
         );
+    }
+
+    private LocalTime calculatePrehearingAttendance(LocalDateTime startDate) {
+        return startDate.toLocalTime().minusHours(1);
     }
 
     private String getOrderTypes(CaseData caseData) {

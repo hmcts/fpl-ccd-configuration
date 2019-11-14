@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -80,7 +79,8 @@ public class NoticeOfProceedingsController {
                 .getMostUrgentHearingBooking(caseData.getHearingDetails());
 
             caseDetails.getData().put("proceedingLabel", String.format("The case management hearing will be on the %s.",
-                dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG)));
+                dateFormatterService.formatLocalDateToString(
+                    hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG)));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

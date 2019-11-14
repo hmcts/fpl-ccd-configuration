@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableList;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,15 +10,14 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.interfaces.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
+import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Api
 @RestController
@@ -26,11 +25,18 @@ import java.util.Objects;
 public class HearingBookingDetailsController {
     private final MapperService mapperService;
     private final HearingBookingService hearingBookingService;
+    private final ValidateGroupService validateGroupService;
+    private final ObjectMapper mapper;
 
     @Autowired
-    public HearingBookingDetailsController(MapperService mapperService, HearingBookingService hearingBookingService) {
+    public HearingBookingDetailsController(MapperService mapperService,
+                                           HearingBookingService hearingBookingService,
+                                           ValidateGroupService validateGroupService,
+                                           ObjectMapper mapper) {
         this.mapperService = mapperService;
         this.hearingBookingService = hearingBookingService;
+        this.validateGroupService = validateGroupService;
+        this.mapper = mapper;
     }
 
     @PostMapping("/about-to-start")
@@ -48,26 +54,18 @@ public class HearingBookingDetailsController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        final List<String> errors = caseData.getHearingDetails()
+            .stream()
+            .flatMap(hearingDetail -> validateGroupService.validateGroup(
+                hearingDetail, HearingBookingDetailsGroup.class).stream())
+            .distinct()
+            .collect(Collectors.toList());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(validate(caseDetails))
+            .errors(errors)
             .build();
-    }
-
-    private List<String> validate(CaseDetails caseDetails) {
-        ImmutableList.Builder<String> errors = ImmutableList.builder();
-
-        CaseData caseData = mapperService.mapObject(caseDetails.getData(), CaseData.class);
-
-        caseData.getHearingDetails().stream()
-            .map(Element::getValue)
-            .map(HearingBooking::getDate)
-            .filter(Objects::nonNull)
-            .filter(hearingDate -> !hearingDate.isAfter(LocalDate.now()))
-            .findAny()
-            .ifPresent(error -> errors.add("Enter a future date"));
-
-        return errors.build();
     }
 }

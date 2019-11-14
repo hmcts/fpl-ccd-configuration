@@ -67,7 +67,8 @@ public abstract class AbstractEmailContentProvider {
     private String getHearingBooking(CaseData data) {
         if (!isNull(data.getHearingDetails())) {
             return dateFormatterService.formatLocalDateToString(
-                hearingBookingService.getMostUrgentHearingBooking(data.getHearingDetails()).getDate(),FormatStyle.LONG);
+                hearingBookingService.getMostUrgentHearingBooking(
+                    data.getHearingDetails()).getStartDate().toLocalDate(),FormatStyle.LONG);
         }
         return "";
     }

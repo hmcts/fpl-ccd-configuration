@@ -35,7 +35,7 @@
     "PageLabel": " ",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "FieldShowCondition": "hearingDetails.date=\"\""
+    "FieldShowCondition": "hearingDetails.startDate=\"\""
   },
   {
     "LiveFrom": "01/01/2017",

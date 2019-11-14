@@ -34,12 +34,11 @@ public class CaseDataGeneratorHelper {
         // NO-OP
     }
 
-    public static HearingBooking createHearingBooking(LocalDate date) {
+    public static HearingBooking createHearingBooking(LocalDateTime startDate, LocalDateTime endDate) {
         return HearingBooking.builder()
-            .date(date)
+            .startDate(startDate)
             .venue("Venue")
-            .preHearingAttendance("08.15am")
-            .time("09.15am")
+            .endDate(endDate)
             .judgeTitle("HHJ")
             .judgeName("Judith Law")
             .build();

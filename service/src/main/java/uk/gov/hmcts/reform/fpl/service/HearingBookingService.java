@@ -33,7 +33,7 @@ public class HearingBookingService {
 
         return hearingBookings.stream()
             .map(Element::getValue)
-            .min(comparing(HearingBooking::getDate))
+            .min(comparing(HearingBooking::getStartDate))
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
     }
 }
