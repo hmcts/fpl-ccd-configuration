@@ -47,6 +47,8 @@ class UploadC2DocumentsControllerTest {
     private static final ZonedDateTime ZONE_DATE_TIME = ZonedDateTime.now(ZoneId.of("Europe/London"));
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy", Locale.UK);
 
+    private static final String ERROR_MESSAGE = "A document must be uploaded";
+
     @MockBean
     private UserDetailsService userDetailsService;
 
@@ -69,7 +71,7 @@ class UploadC2DocumentsControllerTest {
     void shouldCreateC2DocumentBundle() throws Exception {
         CallbackRequest request = createCallbackRequestWithTempC2Bundle();
 
-        MvcResult response = performResponseCallBack(request);
+        MvcResult response = performResponseCallBack(request, "about-to-submit");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -97,7 +99,7 @@ class UploadC2DocumentsControllerTest {
             .caseDetails(callbackRequest().getCaseDetails())
             .build();
 
-        MvcResult response = performResponseCallBack(request);
+        MvcResult response = performResponseCallBack(request,"about-to-submit");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -122,6 +124,30 @@ class UploadC2DocumentsControllerTest {
             .isEqualTo(dateFormatterService.formatLocalDateToString(ZONE_DATE_TIME.toLocalDate(), FormatStyle.MEDIUM));
     }
 
+    @Test
+    void midEventShouldNotReturnAnErrorWhenDocumentIsUploaded() throws Exception {
+        CallbackRequest request = createCallbackRequestWithTempC2Bundle();
+
+        MvcResult response = performResponseCallBack(request,"mid-event");
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+    }
+
+    @Test
+    void midEventShouldReturnAnErrorWhenDocumentIsNotUploaded() throws Exception {
+        CallbackRequest request = createCallbackRequestWithTempC2BundleWithoutDocument();
+
+        MvcResult response = performResponseCallBack(request,"mid-event");
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+    }
+
     private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) throws IOException {
         Document document = document();
 
@@ -129,6 +155,15 @@ class UploadC2DocumentsControllerTest {
         assertThat(documentBundle.getDocument().getFilename()).isEqualTo(document.originalDocumentName);
         assertThat(documentBundle.getDocument().getBinaryUrl()).isEqualTo(document.links.binary.href);
         assertThat(documentBundle.getDescription()).isEqualTo(description);
+    }
+
+    private CallbackRequest createCallbackRequestWithTempC2BundleWithoutDocument() {
+        return CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of(
+                    "temporaryC2Document", ImmutableMap.of()))
+                .build())
+            .build();
     }
 
     private CallbackRequest createCallbackRequestWithTempC2Bundle() {
@@ -146,9 +181,9 @@ class UploadC2DocumentsControllerTest {
             .build();
     }
 
-    private MvcResult performResponseCallBack(CallbackRequest request) throws Exception {
+    private MvcResult performResponseCallBack(CallbackRequest request, String endpoint) throws Exception {
         return mockMvc
-            .perform(post("/callback/upload-c2/about-to-submit")
+            .perform(post("/callback/upload-c2/" + endpoint)
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
