@@ -99,7 +99,7 @@ class UploadC2DocumentsControllerTest {
             .caseDetails(callbackRequest().getCaseDetails())
             .build();
 
-        MvcResult response = performResponseCallBack(request,"about-to-submit");
+        MvcResult response = performResponseCallBack(request, "about-to-submit");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
