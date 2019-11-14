@@ -46,8 +46,12 @@ public class ComplyWithDirectionsController {
         Map<String, List<Element<Direction>>> sortedDirections =
             directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections());
 
-        sortedDirections.forEach((assignee, directions) -> directionHelperService
-            .addAssigneeDirectionKeyValuePairsToCaseData(assignee, allPartyDirections, caseDetails));
+        sortedDirections.forEach((assignee, directions) -> {
+            directions.addAll(allPartyDirections);
+
+            directionHelperService
+                .addAssigneeDirectionKeyValuePairsToCaseData(assignee, directions, caseDetails);
+        });
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
