@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -145,7 +146,8 @@ class ComplyWithDirectionsControllerTest {
             && roleDirectionsContainExpectedDirections(caseData.getCafcassDirections(), CAFCASS)
             && roleDirectionsContainExpectedDirections(caseData.getCourtDirectionsCustom(), COURT)
             && roleDirectionsContainExpectedDirections(caseData.getOtherPartiesDirections(), OTHERS)
-            && roleDirectionsContainExpectedDirections(caseData.getParentsAndRespondentsDirections(), PARENTS_AND_RESPONDENTS);
+            && roleDirectionsContainExpectedDirections(caseData.getParentsAndRespondentsDirections(), PARENTS_AND_RESPONDENTS)
+            && roleDirectionsContainExpectedDirections(emptyList(), ALL_PARTIES);
     }
 
     private boolean roleDirectionsContainExpectedDirections(List<Element<Direction>> roleDirections,

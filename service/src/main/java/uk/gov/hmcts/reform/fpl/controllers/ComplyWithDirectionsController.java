@@ -44,8 +44,10 @@ public class ComplyWithDirectionsController {
             directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections());
 
         sortedDirections.forEach((assignee, directions) -> {
-            directions.addAll(sortedDirections.get(ALL_PARTIES.getValue()));
-            directionHelperService.addAssigneeDirectionKeyValuePairsToCaseData(assignee, directions, caseDetails);
+            if (!assignee.equals(ALL_PARTIES.getValue())) {
+                directions.addAll(sortedDirections.get(ALL_PARTIES.getValue()));
+                directionHelperService.addAssigneeDirectionKeyValuePairsToCaseData(assignee, directions, caseDetails);
+            }
         });
 
         return AboutToStartOrSubmitCallbackResponse.builder()

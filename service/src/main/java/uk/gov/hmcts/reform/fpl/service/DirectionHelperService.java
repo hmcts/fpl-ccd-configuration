@@ -154,7 +154,7 @@ public class DirectionHelperService {
     }
 
     /**
-     * Adds assignee directions key value pairs to caseDetails. Does not add directions when the assignee is allParties.
+     * Adds assignee directions key value pairs to caseDetails.
      *
      * <p></p>
      * courtDirectionsCustom is used here to stop giving C and D permissions on the CourtDirections object
@@ -167,12 +167,10 @@ public class DirectionHelperService {
     public void addAssigneeDirectionKeyValuePairsToCaseData(String assignee,
                                                             List<Element<Direction>> directions,
                                                             CaseDetails caseDetails) {
-        if (!assignee.equals(ALL_PARTIES.getValue())) {
-            if (assignee.equals(COURT.getValue())) {
-                caseDetails.getData().put(assignee.concat("Custom"), extractPartyResponse(assignee, directions));
-            } else {
-                caseDetails.getData().put(assignee, extractPartyResponse(assignee, directions));
-            }
+        if (assignee.equals(COURT.getValue())) {
+            caseDetails.getData().put(assignee.concat("Custom"), extractPartyResponse(assignee, directions));
+        } else {
+            caseDetails.getData().put(assignee, extractPartyResponse(assignee, directions));
         }
     }
 
