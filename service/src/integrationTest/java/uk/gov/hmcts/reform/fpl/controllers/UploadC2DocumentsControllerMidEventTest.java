@@ -15,9 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 
-import java.util.Optional;
-
-import static java.util.Objects.isNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,7 +35,7 @@ class UploadC2DocumentsControllerMidEventTest {
 
     @Test
     void shouldReturnAnErrorWhenDocumentIsNotUploaded() throws Exception {
-        CallbackRequest request = createCallbackRequestWithTempC2Bundle(null);
+        CallbackRequest request = createCallbackRequestWithTempC2BundleWithoutDocument();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
 
@@ -47,29 +44,30 @@ class UploadC2DocumentsControllerMidEventTest {
 
     @Test
     void shouldNotReturnAnErrorWhenDocumentIsUploaded() throws Exception {
-        CallbackRequest request = createCallbackRequestWithTempC2Bundle(DOCUMENT_URL);
+        CallbackRequest request = createCallbackRequestWithTempC2BundleWithDocument();
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
 
         assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
     }
 
-    private CallbackRequest createCallbackRequestWithTempC2Bundle(String documentUrl) {
+    private CallbackRequest createCallbackRequestWithTempC2BundleWithoutDocument() {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of(
-                    "temporaryC2Document", documentOrEmptyMap(documentUrl)))
+                    "temporaryC2Document", ImmutableMap.of()))
                 .build())
             .build();
     }
 
-    private ImmutableMap documentOrEmptyMap(String documentUrl) {
-        if (isNull(documentUrl)) {
-            return ImmutableMap.of();
-        } else {
-            return ImmutableMap.of(
-                "document", Document.builder().build());
-        }
+    private CallbackRequest createCallbackRequestWithTempC2BundleWithDocument() {
+        return CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of(
+                    "temporaryC2Document", ImmutableMap.of(
+                        "document", Document.builder().build())))
+                .build())
+            .build();
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request) throws Exception {
