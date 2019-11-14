@@ -70,7 +70,9 @@ class UploadC2DocumentsControllerTest {
 
     @Test
     void shouldCreateC2DocumentBundle() throws Exception {
-        CallbackRequest request = createCallbackRequestWithTempC2Bundle();
+        Map<String,Object> data = createTemporaryC2Document();
+
+        CallbackRequest request = createCallbackRequestWithTempC2Bundle(data);
 
         MvcResult response = performResponseCallBack(request, "about-to-submit");
 
@@ -127,7 +129,9 @@ class UploadC2DocumentsControllerTest {
 
     @Test
     void midEventShouldNotReturnAnErrorWhenDocumentIsUploaded() throws Exception {
-        CallbackRequest request = createCallbackRequestWithTempC2Bundle();
+        Map<String,Object> data = createTemporaryC2Document();
+
+        CallbackRequest request = createCallbackRequestWithTempC2Bundle(data);
 
         MvcResult response = performResponseCallBack(request,"mid-event");
 
@@ -142,7 +146,7 @@ class UploadC2DocumentsControllerTest {
         Map<String, Object> data = ImmutableMap.of(
             "temporaryC2Document", ImmutableMap.of());
 
-        CallbackRequest request = createCallbackRequestWithTempC2BundleWithoutDocument(data);
+        CallbackRequest request = createCallbackRequestWithTempC2Bundle(data);
 
         MvcResult response = performResponseCallBack(request, "mid-event");
 
@@ -161,7 +165,7 @@ class UploadC2DocumentsControllerTest {
         assertThat(documentBundle.getDescription()).isEqualTo(description);
     }
 
-    private CallbackRequest createCallbackRequestWithTempC2BundleWithoutDocument(Map<String, Object> data) {
+    private CallbackRequest createCallbackRequestWithTempC2Bundle(Map<String, Object> data) {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .data(data)
@@ -169,19 +173,15 @@ class UploadC2DocumentsControllerTest {
             .build();
     }
 
-    private CallbackRequest createCallbackRequestWithTempC2Bundle() {
-        return CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of(
-                    "temporaryC2Document", ImmutableMap.of(
-                        "document", ImmutableMap.of(
-                            "document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
-                            "document_binary_url",
-                            "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
-                            "document_filename", "file.pdf"),
-                        "description", "Test description")))
-                .build())
-            .build();
+    private Map<String,Object> createTemporaryC2Document() {
+        return ImmutableMap.of(
+            "temporaryC2Document", ImmutableMap.of(
+                "document", ImmutableMap.of(
+                    "document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
+                    "document_binary_url",
+                    "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
+                    "document_filename", "file.pdf"),
+                "description", "Test description"));
     }
 
     private MvcResult performResponseCallBack(CallbackRequest request, String endpoint) throws Exception {
