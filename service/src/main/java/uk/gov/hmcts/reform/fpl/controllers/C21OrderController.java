@@ -109,9 +109,9 @@ public class C21OrderController {
         applicationEventPublisher.publishEvent(new C21OrderEvent(callbackRequest, authorization, userId));
     }
 
-    private Document getDocument(@RequestHeader("authorization") String authorization,
-                                @RequestHeader("user-id") String userId,
-                                CaseData caseData) {
+    private Document getDocument(String authorization,
+                                 String userId,
+                                 CaseData caseData) {
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
             service.getC21OrderTemplateData(caseData), C21);
 
