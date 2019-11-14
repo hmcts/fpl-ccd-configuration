@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -17,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.TestTimeConfig;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -52,7 +51,7 @@ class C21OrderControllerTest {
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
-    @MockBean
+    @Autowired
     private DateFormatterService dateFormatterService;
 
     @Autowired
@@ -78,61 +77,50 @@ class C21OrderControllerTest {
         assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
     }
 
-    @Nested
-    class DateTests {
+    @Test
+    void midEventShouldGenerateC21OrderDocument() throws Exception {
+        byte[] pdf = {1, 2, 3, 4, 5};
+        Document document = document();
+        DocmosisDocument docmosisDocument = new DocmosisDocument(C21.getDocumentTitle(), pdf);
 
-        @BeforeEach
-        void setup() {
-            given(dateFormatterService.formatLocalDateTimeBaseUsingFormat(any(), any()))
-                .willReturn("1st November 2019");
-            given(dateFormatterService.formatLocalDateToString(any(), any()))
-                .willReturn("1st November 2019");
-        }
+        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, C21.getDocumentTitle()))
+            .willReturn(document);
 
-        @Test
-        void midEventShouldGenerateC21OrderDocument() throws Exception {
-            byte[] pdf = {1, 2, 3, 4, 5};
-            Document document = document();
-            DocmosisDocument docmosisDocument = new DocmosisDocument(C21.getDocumentTitle(), pdf);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "mid-event");
 
-            given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-            given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, C21.getDocumentTitle()))
-                .willReturn(document);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-            AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "mid-event");
+        assertThat(caseData.getC21Order().getDocument()).isEqualTo(DocumentReference.builder()
+            .binaryUrl(document.links.binary.href)
+            .filename(document.originalDocumentName)
+            .url(document.links.self.href)
+            .build());
+    }
 
-            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+    @Test
+    void aboutToSubmitShouldUpdateCaseData() throws Exception {
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "about-to-submit");
 
-            assertThat(caseData.getC21Order().getDocument()).isEqualTo(DocumentReference.builder()
-                .binaryUrl(document.links.binary.href)
-                .filename(document.originalDocumentName)
-                .url(document.links.self.href)
-                .build());
-        }
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        @Test
-        void aboutToSubmitShouldUpdateCaseData() throws Exception {
-            AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "about-to-submit");
+        C21Order expectedOrder = C21Order.builder()
+            .orderTitle("Example Order")
+            .orderDetails("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+            .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                TestTimeConfig.NOW, "h:mma, d MMMM yyyy"))
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HER_HONOUR_JUDGE)
+                .judgeLastName("Judy")
+                .legalAdvisorName("Peter Parker")
+                .build())
+            .build();
 
-            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        List<Element<C21Order>> c21Orders = caseData.getC21Orders();
 
-            C21Order expectedOrder = C21Order.builder()
-                .orderTitle("Example Order")
-                .orderDetails("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                .orderDate("1st November 2019")
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                    .judgeTitle(HER_HONOUR_JUDGE)
-                    .judgeLastName("Judy")
-                    .legalAdvisorName("Peter Parker")
-                    .build())
-                .build();
-
-            List<Element<C21Order>> c21Orders = caseData.getC21Orders();
-
-            assertThat(caseData.getC21Order()).isEqualTo(null);
-            assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(null);
-            assertThat(c21Orders.get(0).getValue()).isEqualTo(expectedOrder);
-        }
+        assertThat(caseData.getC21Order()).isEqualTo(null);
+        assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(null);
+        assertThat(c21Orders.get(0).getValue()).isEqualTo(expectedOrder);
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request, String endpoint)
