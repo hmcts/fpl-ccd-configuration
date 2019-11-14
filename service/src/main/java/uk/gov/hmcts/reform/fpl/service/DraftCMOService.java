@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Service
 public class DraftCMOService {
@@ -41,7 +41,7 @@ public class DraftCMOService {
 
         DynamicList hearingDatesDynamic = buildDynamicListFromHearingDetails(hearingDetails);
 
-        if (!isEmpty(caseData.getCaseManagementOrder())) {
+        if (isNotEmpty(caseData.getCaseManagementOrder())) {
             prePopulateHearingDateSelection(hearingDetails,
                 hearingDatesDynamic,
                 caseData.getCaseManagementOrder());
@@ -53,7 +53,7 @@ public class DraftCMOService {
     private void prePopulateHearingDateSelection(List<Element<HearingBooking>> hearingDetails,
                                                  DynamicList hearingDatesDynamic,
                                                  CaseManagementOrder caseManagementOrder) {
-        UUID hearingDateId = isEmpty(caseManagementOrder) ? null : caseManagementOrder.getId();
+        UUID hearingDateId = caseManagementOrder.getId();
         // There was a previous hearing date therefore we need to remap it
         String date = hearingDetails.stream()
             .filter(Objects::nonNull)
@@ -68,9 +68,6 @@ public class DraftCMOService {
             .build();
 
         hearingDatesDynamic.setValue(listElement);
-        if (!hearingDatesDynamic.getListItems().contains(listElement)) {
-            hearingDatesDynamic.getListItems().add(listElement);
-        }
     }
 
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
