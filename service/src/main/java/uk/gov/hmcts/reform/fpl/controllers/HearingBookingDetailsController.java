@@ -12,12 +12,14 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.interfaces.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.MapperService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Api
 @RestController
@@ -56,12 +58,19 @@ public class HearingBookingDetailsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        final List<String> errors = caseData.getHearingDetails()
-            .stream()
-            .flatMap(hearingDetail -> validateGroupService.validateGroup(
-                hearingDetail, HearingBookingDetailsGroup.class).stream())
-            .distinct()
-            .collect(Collectors.toList());
+        final List<String> errors = new ArrayList<>();
+        List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
+
+        for (int i = 0; i < hearingDetails.size(); i++) {
+            HearingBooking hearingDetail = hearingDetails.get(i).getValue();
+            for (String message : validateGroupService.validateGroup(hearingDetail, HearingBookingDetailsGroup.class)) {
+                // Format the message if there is more than one hearing
+                if (hearingDetails.size() != 1) {
+                    message = String.format("%s (Hearing%s)", message, (i == 0) ? "" : (" " + (i + 1)));
+                }
+                errors.add(message);
+            }
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
