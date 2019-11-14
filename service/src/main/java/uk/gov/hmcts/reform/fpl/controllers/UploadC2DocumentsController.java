@@ -70,11 +70,11 @@ public class UploadC2DocumentsController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(validate(caseDetails))
+            .errors(validateDocumentUpload(caseDetails))
             .build();
     }
 
-    private List<String> validate(CaseDetails caseDetails) {
+    private List<String> validateDocumentUpload(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
