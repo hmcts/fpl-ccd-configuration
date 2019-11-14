@@ -29,28 +29,19 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "date",
-    "FieldType": "Date",
-    "ElementLabel": "Date",
-    "HintText": "For example, 27 09 2019",
+    "ListElementCode": "startDate",
+    "FieldType": "DateTime",
+    "ElementLabel": "Start date and time",
+    "HintText": "Use 24 hour format",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "preHearingAttendance",
-    "FieldType": "Text",
-    "ElementLabel": "Pre-hearing attendance",
-    "HintText": "This is usually one hour before the hearing",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingBooking",
-    "ListElementCode": "time",
-    "FieldType": "Text",
-    "ElementLabel": "Hearing time",
-    "HintText": "For example, 2:30pm",
+    "ListElementCode": "endDate",
+    "FieldType": "DateTime",
+    "ElementLabel": "End date and time",
+    "HintText": "Use 24 hour format",
     "SecurityClassification": "Public"
   },
   {
