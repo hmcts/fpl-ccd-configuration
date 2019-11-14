@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
@@ -225,18 +224,18 @@ public class CaseDataGeneratorHelper {
             Element.<C21Order>builder()
                 .id(UUID.randomUUID())
                 .value(C21Order.builder()
-                    .orderTitle(randomAlphabetic(10))
-                    .orderDetails(randomAlphabetic(10))
+                    .orderTitle("Winter is here")
+                    .orderDetails("Westeros")
                     .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
                         LocalDateTime.now().plusDays(59), FORMAT_STYLE))
                     .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                        .legalAdvisorName(randomAlphabetic(10))
-                        .judgeFullName(randomAlphabetic(10))
-                        .judgeLastName(randomAlphabetic(10))
+                        .legalAdvisorName("Baratheon")
+                        .judgeFullName("Tyrion Lannister")
+                        .judgeLastName("Lannister")
                         .judgeTitle(HIS_HONOUR_JUDGE)
                         .build())
                     .document(DocumentReference.builder()
-                        .filename(randomAlphabetic(10) + ".pdf")
+                        .filename("C21 2.pdf")
                         .url("http://" + String.join("/", "dm-store:8080", "documents",
                             UUID.randomUUID().toString()))
                         .binaryUrl("http://" + String.join("/", "dm-store:8080", "documents",
@@ -247,18 +246,18 @@ public class CaseDataGeneratorHelper {
             Element.<C21Order>builder()
                 .id(UUID.randomUUID())
                 .value(C21Order.builder()
-                    .orderTitle(randomAlphabetic(10))
-                    .orderDetails(randomAlphabetic(10))
+                    .orderTitle("Black Sails")
+                    .orderDetails("Long John Silver")
                     .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
                         LocalDateTime.now().plusDays(56), FORMAT_STYLE))
                     .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                        .legalAdvisorName(randomAlphabetic(10))
-                        .judgeFullName(randomAlphabetic(10))
-                        .judgeLastName(randomAlphabetic(10))
+                        .legalAdvisorName("Edward Teach")
+                        .judgeFullName("Captain Flint")
+                        .judgeLastName("Scott")
                         .judgeTitle(DEPUTY_DISTRICT_JUDGE)
                         .build())
                     .document(DocumentReference.builder()
-                        .filename(randomAlphabetic(10) + ".pdf")
+                        .filename("C21 3.pdf")
                         .url("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
                         .binaryUrl("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
                         .build())
