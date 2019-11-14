@@ -812,6 +812,34 @@ class DirectionHelperServiceTest {
                 .isEqualTo(directions);
         }
 
+        @Test
+        void shouldAddCustomKeyValuePairWhenDirectionsBelongToCourt() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .data(new HashMap<>())
+                .build();
+
+            List<Element<Direction>> directions = new ArrayList<>(buildDirections(COURT));
+
+            service.addAssigneeDirectionKeyValuePairsToCaseData(COURT.getValue(), directions, caseDetails);
+
+            assertThat(caseDetails.getData()).hasSize(1)
+                .extracting("courtDirectionsCustom")
+                .isEqualTo(directions);
+        }
+
+        @Test
+        void shouldNotAddKeyValuePairWhenDirectionsBelongToAllParties() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .data(new HashMap<>())
+                .build();
+
+            List<Element<Direction>> directions = new ArrayList<>(buildDirections(ALL_PARTIES));
+
+            service.addAssigneeDirectionKeyValuePairsToCaseData(ALL_PARTIES.getValue(), directions, caseDetails);
+
+            assertThat(caseDetails.getData()).isEmpty();
+        }
+
         private List<Element<Direction>> expectedDirection() {
             return buildDirections(LOCAL_AUTHORITY);
         }

@@ -52,7 +52,7 @@ class ComplyWithDirectionsControllerTest {
     private static final String USER_ID = "1";
 
     @Test
-    void aboutToStartCallbackShouldSplitAllPartiesDirectionsIntoSeparateCollections() throws Exception {
+    void aboutToStartCallbackShouldAddAllPartiesDirectionsIntoSeparateRoleCollections() throws Exception {
         List<Direction> directions = directionsForAllRoles();
         Order sdo = Order.builder().directions(buildDirections(directions)).build();
 
@@ -64,11 +64,7 @@ class ComplyWithDirectionsControllerTest {
 
         CaseData caseData = makeRequest(request, "about-to-start");
 
-        assertThat(roleDirectionsContainExpectedAllPartiesDirection(caseData.getLocalAuthorityDirections()));
-        assertThat(roleDirectionsContainExpectedAllPartiesDirection(caseData.getCafcassDirections()));
-        assertThat(roleDirectionsContainExpectedAllPartiesDirection(caseData.getCourtDirectionsCustom()));
-        assertThat(roleDirectionsContainExpectedAllPartiesDirection(caseData.getOtherPartiesDirections()));
-        assertThat(roleDirectionsContainExpectedAllPartiesDirection(caseData.getParentsAndRespondentsDirections()));
+        assertThat(collectionsContainDirectionsForRoleAndAllParties(caseData));
     }
 
     @SuppressWarnings("unchecked")
@@ -143,12 +139,23 @@ class ComplyWithDirectionsControllerTest {
         return mapper.convertValue(callbackResponse.getData(), CaseData.class);
     }
 
-    private boolean roleDirectionsContainExpectedAllPartiesDirection(List<Element<Direction>> roleDirections) {
+    @SuppressWarnings("LineLength")
+    private boolean collectionsContainDirectionsForRoleAndAllParties(CaseData caseData) {
+        return roleDirectionsContainExpectedDirections(caseData.getLocalAuthorityDirections(), LOCAL_AUTHORITY)
+            && roleDirectionsContainExpectedDirections(caseData.getCafcassDirections(), CAFCASS)
+            && roleDirectionsContainExpectedDirections(caseData.getCourtDirectionsCustom(), COURT)
+            && roleDirectionsContainExpectedDirections(caseData.getOtherPartiesDirections(), OTHERS)
+            && roleDirectionsContainExpectedDirections(caseData.getParentsAndRespondentsDirections(), PARENTS_AND_RESPONDENTS);
+    }
+
+    private boolean roleDirectionsContainExpectedDirections(List<Element<Direction>> roleDirections,
+                                                            DirectionAssignee assignee) {
         final Direction allPartiesDirection = Direction.builder().assignee(ALL_PARTIES).build();
+        final Direction directions = Direction.builder().assignee(assignee).build();
 
         return roleDirections.stream()
             .map(Element::getValue)
-            .anyMatch(x -> x.equals(allPartiesDirection));
+            .anyMatch(x -> x.equals(allPartiesDirection) && x.equals(directions));
     }
 
     @SuppressWarnings("unchecked")
