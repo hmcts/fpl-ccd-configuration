@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang3.RandomStringUtils;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -18,17 +20,22 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 
 public class CaseDataGeneratorHelper {
+
+    private static final DateFormatterService DATE_FORMATTER_SERVICE = new DateFormatterService();
+    private static final String FORMAT_STYLE = "h:mma, d MMMM yyyy";
 
     private CaseDataGeneratorHelper() {
         // NO-OP
@@ -48,7 +55,7 @@ public class CaseDataGeneratorHelper {
     public static List<Element<Applicant>> createPopulatedApplicants() {
         return ImmutableList.of(
             Element.<Applicant>builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .value(Applicant.builder()
                     .leadApplicantIndicator("No")
                     .party(ApplicantParty.builder()
@@ -73,7 +80,7 @@ public class CaseDataGeneratorHelper {
                     .build())
                 .build(),
             Element.<Applicant>builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .value(Applicant.builder()
                     .leadApplicantIndicator("No")
                     .party(ApplicantParty.builder()
@@ -102,7 +109,7 @@ public class CaseDataGeneratorHelper {
     public static List<Element<Child>> createPopulatedChildren() {
         return ImmutableList.of(
             Element.<Child>builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .value(Child.builder()
                     .party(ChildParty.builder()
                         .firstName("Bran")
@@ -113,7 +120,7 @@ public class CaseDataGeneratorHelper {
                     .build())
                 .build(),
             Element.<Child>builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .value(Child.builder()
                     .party(ChildParty.builder()
                         .firstName("Sansa")
@@ -122,7 +129,7 @@ public class CaseDataGeneratorHelper {
                     .build())
                 .build(),
             Element.<Child>builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .value(Child.builder()
                     .party(ChildParty.builder()
                         .firstName("Jon")
@@ -136,7 +143,7 @@ public class CaseDataGeneratorHelper {
         return Order.builder()
             .directions(ImmutableList.of(
                 Element.<Direction>builder()
-                    .id(UUID.randomUUID())
+                    .id(randomUUID())
                     .value(Direction.builder()
                         .directionType("Test SDO type 1")
                         .directionText("Test body 1")
@@ -145,7 +152,7 @@ public class CaseDataGeneratorHelper {
                         .build())
                     .build(),
                 Element.<Direction>builder()
-                    .id(UUID.randomUUID())
+                    .id(randomUUID())
                     .value(Direction.builder()
                         .directionType("Test SDO type 2")
                         .directionText("Test body 2")
@@ -166,7 +173,7 @@ public class CaseDataGeneratorHelper {
     public static List<Element<Respondent>> createRespondents() {
         return ImmutableList.of(
             Element.<Respondent>builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .value(Respondent.builder().party(
                     RespondentParty.builder()
                         .firstName("Timothy")
@@ -176,7 +183,7 @@ public class CaseDataGeneratorHelper {
                     .build())
                 .build(),
             Element.<Respondent>builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .value(Respondent.builder().party(
                     RespondentParty.builder()
                         .firstName("Sarah")
@@ -195,5 +202,72 @@ public class CaseDataGeneratorHelper {
                 .filename("Mock file")
                 .build())
             .build();
+    }
+
+    public static List<Element<C21Order>> createC21Orders() {
+        return ImmutableList.of(
+            Element.<C21Order>builder()
+                .value(C21Order.builder()
+                    .orderTitle("Example Order")
+                    .orderDetails(
+                        "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+                    .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
+                        LocalDateTime.now().plusDays(57), FORMAT_STYLE))
+                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                        .legalAdvisorName("Peter Parker")
+                        .judgeLastName("Judy")
+                        .judgeTitle(HER_HONOUR_JUDGE)
+                        .build())
+                    .build())
+                .build(),
+            Element.<C21Order>builder()
+                .id(UUID.randomUUID())
+                .value(C21Order.builder()
+                    .orderTitle(RandomStringUtils.randomAlphabetic(10))
+                    .orderDetails(RandomStringUtils.randomAlphabetic(10))
+                    .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
+                        LocalDateTime.now().plusDays(59), FORMAT_STYLE))
+                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                        .legalAdvisorName(RandomStringUtils.randomAlphabetic(10))
+                        .judgeFullName(RandomStringUtils.randomAlphabetic(10))
+                        .judgeLastName(RandomStringUtils.randomAlphabetic(10))
+                        .judgeTitle(HER_HONOUR_JUDGE)
+                        .build())
+                    .document(DocumentReference.builder()
+                        .filename(RandomStringUtils.randomAlphabetic(10) + ".pdf")
+                        .url("http://" + String.join("/", "dm-store:8080", "documents",
+                            UUID.randomUUID().toString()))
+                        .binaryUrl("http://" + String.join("/", "dm-store:8080", "documents",
+                            UUID.randomUUID().toString(), "binary"))
+                        .build())
+                    .build())
+                .build(),
+            Element.<C21Order>builder()
+                .id(UUID.randomUUID())
+                .value(C21Order.builder()
+                    .orderTitle(RandomStringUtils.randomAlphabetic(10))
+                    .orderDetails(RandomStringUtils.randomAlphabetic(10))
+                    .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
+                        LocalDateTime.now().plusDays(56), FORMAT_STYLE))
+                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                        .legalAdvisorName(RandomStringUtils.randomAlphabetic(10))
+                        .judgeFullName(RandomStringUtils.randomAlphabetic(10))
+                        .judgeLastName(RandomStringUtils.randomAlphabetic(10))
+                        .judgeTitle(HER_HONOUR_JUDGE)
+                        .build())
+                    .document(DocumentReference.builder()
+                        .filename(RandomStringUtils.randomAlphabetic(10) + ".pdf")
+                        .url("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
+                        .binaryUrl("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary")
+                        .build())
+                    .build())
+                .build());
+    }
+
+    public static List<Element<HearingBooking>> createHearingBookings(final LocalDate date) {
+        return ImmutableList.of(Element.<HearingBooking>builder()
+            .id(randomUUID())
+            .value(createHearingBooking(date))
+            .build());
     }
 }
