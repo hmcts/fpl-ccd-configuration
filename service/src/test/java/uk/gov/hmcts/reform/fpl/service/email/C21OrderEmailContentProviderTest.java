@@ -123,7 +123,7 @@ class C21OrderEmailContentProviderTest {
                                 .judgeTitle(HER_HONOUR_JUDGE)
                                 .build())
                             .document(DocumentReference.builder()
-                                .filename("C21 2.pdf")
+                                .filename("C21 1.pdf")
                                 .url("http://" + String.join("/", "dm-store:8080", "documents",
                                     randomUUID().toString()))
                                 .binaryUrl("http://" + String.join("/", "dm-store:8080", "documents",
