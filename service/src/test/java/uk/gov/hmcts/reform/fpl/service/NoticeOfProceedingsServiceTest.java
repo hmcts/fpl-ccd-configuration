@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +51,8 @@ class NoticeOfProceedingsServiceTest {
     private static final String COURT_EMAIL = "example@court.com";
     private static final String CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL);
     private static final LocalDate TODAYS_DATE = LocalDate.now();
+    private static final LocalDateTime TODAYS_DATE_TIME = LocalDateTime.now();
+
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
@@ -224,15 +227,15 @@ class NoticeOfProceedingsServiceTest {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(LocalDate.now().plusDays(5)))
+                .value(createHearingBooking(TODAYS_DATE_TIME.plusDays(5), TODAYS_DATE_TIME.plusDays(6)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(LocalDate.now().plusDays(5)))
+                .value(createHearingBooking(TODAYS_DATE_TIME.plusDays(5), TODAYS_DATE_TIME.plusDays(6)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(TODAYS_DATE))
+                .value(createHearingBooking(TODAYS_DATE_TIME, TODAYS_DATE_TIME.plusDays(1)))
                 .build()
         );
     }

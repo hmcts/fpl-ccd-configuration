@@ -217,15 +217,16 @@ class CaseDataExtractionServiceTest {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(LocalDate.now().plusDays(5)))
+                .value(createHearingBooking(TODAYS_DATE_TIME.plusDays(5), TODAYS_DATE_TIME.plusDays(6)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(LocalDate.now().plusDays(5)))
+                .value(createHearingBooking(TODAYS_DATE_TIME.plusDays(5), TODAYS_DATE_TIME.plusDays(6)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(TODAYS_DATE))
-                .build());
+                .value(createHearingBooking(TODAYS_DATE_TIME, TODAYS_DATE_TIME.plusDays(1)))
+                .build()
+        );
     }
 }
