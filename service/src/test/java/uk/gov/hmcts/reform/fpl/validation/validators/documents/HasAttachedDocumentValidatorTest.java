@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.validation.validators.document;
+package uk.gov.hmcts.reform.fpl.validation.validators.documents;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
