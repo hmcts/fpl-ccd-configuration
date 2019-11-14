@@ -129,7 +129,7 @@ class UploadC2DocumentsControllerTest {
     void midEventShouldNotReturnAnErrorWhenDocumentIsUploaded() throws Exception {
         CallbackRequest request = createCallbackRequestWithTempC2Bundle();
 
-        MvcResult response = performResponseCallBack(request, "mid-event");
+        MvcResult response = performResponseCallBack(request,"mid-event");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
