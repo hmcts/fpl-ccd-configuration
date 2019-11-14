@@ -28,6 +28,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -128,7 +129,7 @@ class UploadC2DocumentsControllerTest {
     void midEventShouldNotReturnAnErrorWhenDocumentIsUploaded() throws Exception {
         CallbackRequest request = createCallbackRequestWithTempC2Bundle();
 
-        MvcResult response = performResponseCallBack(request,"mid-event");
+        MvcResult response = performResponseCallBack(request, "mid-event");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -138,9 +139,12 @@ class UploadC2DocumentsControllerTest {
 
     @Test
     void midEventShouldReturnAnErrorWhenDocumentIsNotUploaded() throws Exception {
-        CallbackRequest request = createCallbackRequestWithTempC2BundleWithoutDocument();
+        Map<String, Object> data = ImmutableMap.of(
+            "temporaryC2Document", ImmutableMap.of());
 
-        MvcResult response = performResponseCallBack(request,"mid-event");
+        CallbackRequest request = createCallbackRequestWithTempC2BundleWithoutDocument(data);
+
+        MvcResult response = performResponseCallBack(request, "mid-event");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -157,11 +161,10 @@ class UploadC2DocumentsControllerTest {
         assertThat(documentBundle.getDescription()).isEqualTo(description);
     }
 
-    private CallbackRequest createCallbackRequestWithTempC2BundleWithoutDocument() {
+    private CallbackRequest createCallbackRequestWithTempC2BundleWithoutDocument(Map<String, Object> data) {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of(
-                    "temporaryC2Document", ImmutableMap.of()))
+                .data(data)
                 .build())
             .build();
     }
