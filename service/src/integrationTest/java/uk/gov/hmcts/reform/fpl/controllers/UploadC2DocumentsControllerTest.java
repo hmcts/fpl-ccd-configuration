@@ -47,7 +47,7 @@ class UploadC2DocumentsControllerTest {
     private static final ZonedDateTime ZONE_DATE_TIME = ZonedDateTime.now(ZoneId.of("Europe/London"));
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy", Locale.UK);
 
-    private static final String ERROR_MESSAGE = "A document must be uploaded";
+    private static final String ERROR_MESSAGE = "You need to upload a file.";
 
     @MockBean
     private UserDetailsService userDetailsService;

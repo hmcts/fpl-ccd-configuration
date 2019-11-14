@@ -80,7 +80,7 @@ public class UploadC2DocumentsController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (isNull(caseData.getTemporaryC2Document().getDocument())) {
-            errors.add("A document must be uploaded");
+            errors.add("You need to upload a file.");
         }
 
         return errors.build();
