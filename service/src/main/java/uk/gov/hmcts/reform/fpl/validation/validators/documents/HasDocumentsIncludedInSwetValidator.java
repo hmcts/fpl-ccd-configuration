@@ -1,9 +1,9 @@
-package uk.gov.hmcts.reform.fpl.validators;
+package uk.gov.hmcts.reform.fpl.validation.validators.documents;
 
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.HasDocumentsIncludedInSwet;
-import uk.gov.hmcts.reform.fpl.validators.models.ValidationDocumentMap;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
+import uk.gov.hmcts.reform.fpl.validation.models.ValidationDocumentMap;
 
 import java.util.ArrayList;
 import java.util.List;

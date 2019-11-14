@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.model.interfaces.TelephoneContacts;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.HasContactDirection;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.HasTelephoneOrMobile;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.HasContactDirection;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.HasTelephoneOrMobile;
 
 import java.time.LocalDate;
 

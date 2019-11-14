@@ -1,6 +1,6 @@
-package uk.gov.hmcts.reform.fpl.validators;
+package uk.gov.hmcts.reform.fpl.validation.validators.time;
 
-import uk.gov.hmcts.reform.fpl.validators.interfaces.TimeNotZero;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.TimeNotZero;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;

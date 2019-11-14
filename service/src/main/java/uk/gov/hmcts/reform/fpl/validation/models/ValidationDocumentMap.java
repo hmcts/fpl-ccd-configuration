@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.validators.models;
+package uk.gov.hmcts.reform.fpl.validation.models;
 
 import lombok.Builder;
 import lombok.Data;

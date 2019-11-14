@@ -1,7 +1,7 @@
-package uk.gov.hmcts.reform.fpl.validators;
+package uk.gov.hmcts.reform.fpl.validation.validators.time;
 
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.HasStartDateAfterEndDate;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.HasStartDateAfterEndDate;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

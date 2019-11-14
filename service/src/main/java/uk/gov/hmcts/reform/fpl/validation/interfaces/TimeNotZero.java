@@ -1,20 +1,19 @@
-package uk.gov.hmcts.reform.fpl.validators.interfaces;
+package uk.gov.hmcts.reform.fpl.validation.interfaces;
 
-import uk.gov.hmcts.reform.fpl.validators.HasContactDirectionValidator;
+import uk.gov.hmcts.reform.fpl.validation.validators.time.TimeNotZeroValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-@Target(ElementType.TYPE)
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = { HasContactDirectionValidator.class })
-public @interface HasContactDirection {
-    String message() default "Enter the contact's full name";
+@Constraint(validatedBy = TimeNotZeroValidator.class)
+public @interface TimeNotZero {
+    String message() default "Enter a valid time";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

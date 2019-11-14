@@ -1,7 +1,7 @@
-package uk.gov.hmcts.reform.fpl.validators;
+package uk.gov.hmcts.reform.fpl.validation.validators.documents;
 
 import uk.gov.hmcts.reform.fpl.model.common.Document;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.HasAttachedDocument;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.HasAttachedDocument;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

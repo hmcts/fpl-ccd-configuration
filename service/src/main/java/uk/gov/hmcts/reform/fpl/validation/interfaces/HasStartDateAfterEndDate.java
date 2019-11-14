@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.validators.interfaces;
+package uk.gov.hmcts.reform.fpl.validation.interfaces;
 
 import javax.validation.Payload;
 
