@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
 @Service
@@ -19,6 +19,6 @@ public class ValidateGroupService {
 
     public <T> List<String> validateGroup(T data, Class<?>...groups) {
         return validator.validate(data, groups).stream()
-            .map(error -> error.getMessage()).collect(Collectors.toList());
+            .map(ConstraintViolation::getMessage).collect(Collectors.toList());
     }
 }
