@@ -5,7 +5,8 @@
     "ListElementCode": "orderTitle",
     "FieldType": "Text",
     "ElementLabel": "Order title",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "Max": "90"
   },
   {
     "LiveFrom": "01/01/2017",
