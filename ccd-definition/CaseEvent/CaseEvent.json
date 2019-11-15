@@ -688,6 +688,8 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "draftCMO",
     "Name": "Draft CMO",
+    "Description": "Draft Case Management Order",
+    "DisplayOrder": 1,
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",

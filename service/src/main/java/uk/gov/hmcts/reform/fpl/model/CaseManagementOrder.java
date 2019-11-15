@@ -6,6 +6,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @Builder(toBuilder = true)
@@ -14,4 +15,5 @@ public class CaseManagementOrder {
     private final String hearingDate;
     private final String hearingDateId;
     private final List<Element<Direction>> directions;
+    private final UUID id;
 }

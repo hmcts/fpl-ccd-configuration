@@ -4,7 +4,7 @@ const directions = require('../fixtures/directions.js');
 
 let caseId;
 
-Feature('draft CMO after sdo');
+Feature('Local authority manages case after SDO is issued');
 
 Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage, draftStandardDirectionsEventPage) => {
   if (!caseId) {
@@ -54,10 +54,14 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
   await I.navigateToCaseDetails(caseId);
 });
 
-Scenario('local authority draft CMO', async (I, caseViewPage, draftCMOEventPage) => {
-  await caseViewPage.goToNewActions(config.applicationActions.draftCMO);
-  await draftCMOEventPage.associateHearingDate('1 Jan 2050');
+Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
+  await draftCaseManagementOrderEventPage.associateHearingDate('1 Jan 2050');
+  await I.completeEvent('Submit');
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
+  I.seeAnswerInTab(1, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
   I.completeEvent('Submit');
   await draftCMOEventPage.enterDatesForDirections(directions[0])
-  I.completeEvent('Submit');
+  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
+  await draftCaseManagementOrderEventPage.validatePreviousSelectedHearingDate('1 Jan 2050');
 });

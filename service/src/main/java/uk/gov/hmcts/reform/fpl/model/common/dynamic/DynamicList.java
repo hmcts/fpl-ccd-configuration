@@ -30,13 +30,13 @@ public class DynamicList {
      *
      * @param elements elements to convert into options for the dropdown
      * @param selected a {@link DynamicListElement} that will be the default selected element of the list
-     * @param <T>      a class that implements {@link DynamicElementParser#toDynamicElement()}
+     * @param <T>      a class that implements {@link DynamicElementIndicator#toDynamicElement()}
      * @return a {@link DynamicList} to be sent to CCD
      */
-    public static <T extends DynamicElementParser> DynamicList toDynamicList(List<T> elements,
-                                                                             DynamicListElement selected) {
+    public static <T extends DynamicElementIndicator> DynamicList toDynamicList(List<T> elements,
+                                                                                DynamicListElement selected) {
         List<DynamicListElement> items = elements.stream()
-            .map(DynamicElementParser::toDynamicElement)
+            .map(DynamicElementIndicator::toDynamicElement)
             .collect(Collectors.toList());
 
         return DynamicList.builder().listItems(items).value(selected).build();

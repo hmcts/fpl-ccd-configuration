@@ -5,6 +5,7 @@
     "ListElementCode": "hearingDate",
     "FieldType": "Text",
     "ElementLabel": "Which hearing is this order for?",
+<<<<<<< HEAD
     "SecurityClassification": "Public"
   },
   {
@@ -23,6 +24,18 @@
     "FieldType": "Collection",
     "ElementLabel": "Directions",
     "FieldTypeParameter": "Direction",
+=======
+>>>>>>> 54a6c4503edd13b89b99c3198ab34fbdc39fe341
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "ListElementCode": "id",
+    "FieldType": "Text",
+    "ElementLabel": "id",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "hearingDate=\"DO_NOT_SHOW\"",
+    "Comment": "Id has been used here to uniquely identify selected date in case management order"
   }
 ]

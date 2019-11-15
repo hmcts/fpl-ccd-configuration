@@ -33,7 +33,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStandardDirectionOrders;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, JsonOrdersLookupService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, JsonOrdersLookupService.class,
+    HearingVenueLookUpService.class})
 class CaseDataExtractionServiceTest {
     @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
 
@@ -53,13 +54,17 @@ class CaseDataExtractionServiceTest {
     @Autowired
     private OrdersLookupService ordersLookupService;
 
+    @Autowired
+    private HearingVenueLookUpService hearingVenueLookUpService;
+
     private CaseDataExtractionService caseDataExtractionService;
 
     @BeforeEach
     void setup() {
         // required for DI
         this.caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
-            hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService);
+            hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService,
+            hearingVenueLookUpService);
     }
 
     @Test
@@ -155,7 +160,8 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("children")).isEqualTo(getExpectedChildren());
         assertThat(templateData.get("hearingDate")).isEqualTo(dateFormatterService
             .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
-        assertThat(templateData.get("hearingVenue")).isEqualTo("Venue");
+        assertThat(templateData.get("hearingVenue"))
+            .isEqualTo("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");
         assertThat(templateData.get("judgeName")).isEqualTo("HHJ Judith Law");
         assertThat(templateData.get("preHearingAttendance")).isEqualTo("08.15am");
         assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
