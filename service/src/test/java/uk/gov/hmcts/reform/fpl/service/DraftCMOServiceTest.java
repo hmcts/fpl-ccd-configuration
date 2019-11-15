@@ -13,105 +13,117 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.time.LocalDate;
+import java.time.format.FormatStyle;
+import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
+import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, DateFormatterService.class, DraftCMOService.class})
-public class DraftCMOServiceTest {
+class DraftCMOServiceTest {
 
     @Autowired
     private DraftCMOService draftCMOService;
+
+    @Autowired
+    private DateFormatterService dateFormatterService;
 
     private final LocalDate date = LocalDate.now();
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCaseDetailsHasHearingDate() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of(
-                "hearingDetails", createHearingBookings(date))
-            )
+            .data(ImmutableMap.of("hearingDetails", createHearingBookings(date)))
             .build();
 
-        DynamicList hearingList = draftCMOService.getHearingDatesDynamic(caseDetails);
+        DynamicList hearingList = draftCMOService.getHearingDateDynamicList(caseDetails);
 
-        assertThat(hearingList.getListItems().get(0).getLabel())
-            .isEqualTo(draftCMOService.convertDate(date.plusDays(5)));
-
-        assertThat(hearingList.getListItems().get(1).getLabel())
-            .isEqualTo(draftCMOService.convertDate(date.plusDays(2)));
-
-        assertThat(hearingList.getListItems().get(2).getLabel())
-            .isEqualTo(draftCMOService.convertDate(date));
+        assertThat(hearingList.getListItems())
+            .containsAll(Arrays.asList(
+                DynamicListElement.builder()
+                    .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                    .label(formatLocalDateToMediumStyle(5))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                    .label(formatLocalDateToMediumStyle(2))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                    .label(formatLocalDateToMediumStyle(0))
+                    .build()));
     }
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCmoHasPreviousSelectedValue() {
-
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of(
                 "hearingDetails", createHearingBookings(date),
-                "caseManagementOrder", createCaseManagementOrder(draftCMOService.convertDate(date.plusDays(2)))
-                )).build();
+                "caseManagementOrder", CaseManagementOrder.builder()
+                    .hearingDate(formatLocalDateToMediumStyle(2))
+                    .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                    .build()
+            )).build();
 
-        DynamicList hearingList = draftCMOService.getHearingDatesDynamic(caseDetails);
+        DynamicList hearingList = draftCMOService.getHearingDateDynamicList(caseDetails);
 
-        assertThat(hearingList.getListItems().get(0).getLabel())
-            .isEqualTo(draftCMOService.convertDate(date.plusDays(5)));
-
-        assertThat(hearingList.getListItems().get(1).getLabel())
-            .isEqualTo(draftCMOService.convertDate(date.plusDays(2)));
-
-        assertThat(hearingList.getListItems().get(2).getLabel())
-            .isEqualTo(draftCMOService.convertDate(date));
+        assertThat(hearingList.getValue())
+            .isEqualTo(DynamicListElement.builder()
+                .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                .label(formatLocalDateToMediumStyle(2))
+                .build());
     }
 
     @Test
-    void shouldReturnHearingDateDynamicListWhenHearingDatesNotNull() {
-        DynamicList hearingList = draftCMOService.buildDynamicListFromHearingDetails(
-            createHearingBookings(date));
+    void shouldReturnCaseManagementOrderWhenProvidedCaseDetails() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of("cmoHearingDateList", getDynamicList()))
+            .build();
 
-        assertThat(hearingList.getListItems().get(0).getLabel())
-            .isEqualTo(draftCMOService.convertDate(date.plusDays(5)));
+        CaseManagementOrder caseManagementOrder = draftCMOService.getCaseManagementOrder(caseDetails);
 
-        assertThat(hearingList.getListItems().get(1).getLabel())
-            .isEqualTo(draftCMOService.convertDate(date.plusDays(2)));
-
-        assertThat(hearingList.getListItems().get(2).getLabel())
-            .isEqualTo(draftCMOService.convertDate(date));
+        assertThat(caseManagementOrder).isNotNull()
+            .extracting("id", "hearingDate").containsExactly(
+            fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"),
+            formatLocalDateToMediumStyle(5));
     }
 
-    @Test
-    void convertDateShouldReturnDateInUKFormat() {
-        String dateInUKFormat = draftCMOService.convertDate(LocalDate.of(2019,11,11));
-        assertThat(dateInUKFormat).isEqualTo("11 Nov 2019");
-    }
+    private DynamicList getDynamicList() {
+        DynamicList dynamicList = draftCMOService.buildDynamicListFromHearingDetails(createHearingBookings(date));
 
-    private CaseManagementOrder createCaseManagementOrder(String hearingDate) {
-        return CaseManagementOrder.builder()
-            .hearingDate(hearingDate)
-            .hearingDateId(UUID.fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2").toString()).build();
+        DynamicListElement listElement = DynamicListElement.builder()
+            .label(formatLocalDateToMediumStyle(5))
+            .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+            .build();
+
+        dynamicList.setValue(listElement);
+        return dynamicList;
     }
 
     private List<Element<HearingBooking>> createHearingBookings(LocalDate now) {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
-                .id(UUID.randomUUID())
+                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
                 .value(createHearingBooking(now.plusDays(5)))
                 .build(),
             Element.<HearingBooking>builder()
-                .id(UUID.fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
                 .value(createHearingBooking(now.plusDays(2)))
                 .build(),
             Element.<HearingBooking>builder()
-                .id(UUID.randomUUID())
+                .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
                 .value(createHearingBooking(now))
                 .build()
         );
+    }
+
+    private String formatLocalDateToMediumStyle(int i) {
+        return dateFormatterService.formatLocalDateToString(date.plusDays(i), FormatStyle.MEDIUM);
     }
 }

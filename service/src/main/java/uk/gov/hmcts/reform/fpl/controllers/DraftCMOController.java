@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 
 import java.util.Map;
@@ -35,7 +33,7 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         Map<String, Object> caseData = caseDetails.getData();
 
-        caseData.put("cmoHearingDateList", draftCMOService.getHearingDatesDynamic(caseDetails));
+        caseData.put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseData)
@@ -44,19 +42,8 @@ public class DraftCMOController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        DynamicList list = mapper.convertValue(caseDetails.getData().get("cmoHearingDateList"), DynamicList.class);
-
-        CaseData updatedCaseData = caseData.toBuilder()
-            .caseManagementOrder(CaseManagementOrder.builder().build())
-            .build();
-
-        CaseManagementOrder caseManagementOrder = updatedCaseData.getCaseManagementOrder()
-            .toBuilder().hearingDate(list.getValue().getLabel())
-            .hearingDateId(list.getValue().getCode())
-            .build();
+        CaseManagementOrder caseManagementOrder = draftCMOService.getCaseManagementOrder(caseDetails);
 
         caseDetails.getData().remove("cmoHearingDateList");
         caseDetails.getData().put("caseManagementOrder", caseManagementOrder);

@@ -14,6 +14,11 @@ module.exports = {
     I.selectOption(this.fields.cmoHearingDateList, date);
   },
 
+  validatePreviousSelectedHearingDate(date) {
+    I.waitForElement(this.fields.cmoHearingDateList);
+    I.see(date,this.fields.cmoHearingDateList);
+  },
+
   async enterRecital(title,description) {
     I.fillField(this.fields.recitals.title, title);
     I.fillField(this.fields.recitals.description, description);

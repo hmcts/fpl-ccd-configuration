@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.Document;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 
 public class CaseDataGeneratorHelper {
@@ -183,5 +186,14 @@ public class CaseDataGeneratorHelper {
                     .build())
                 .build()
         );
+    }
+
+    public static Document createDocumentWithAttachedFile() {
+        return Document.builder()
+            .documentStatus(ATTACHED.getLabel())
+            .typeOfDocument(DocumentReference.builder()
+                .filename("Mock file")
+                .build())
+            .build();
     }
 }
