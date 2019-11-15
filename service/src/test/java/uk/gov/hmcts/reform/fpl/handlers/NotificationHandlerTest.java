@@ -139,6 +139,9 @@ class NotificationHandlerTest {
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS));
 
+            given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
+                .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+
             given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
 
@@ -185,7 +188,7 @@ class NotificationHandlerTest {
             notificationHandler.sendNotificationForC21Order(new C21OrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
             verify(notificationClient, times(1)).sendEmail(
-                eq(C21_ORDER_NOTIFICATION_TEMPLATE), eq(COURT_EMAIL_ADDRESS),
+                eq(C21_ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 eq(parameters), eq("12345"));
 
             verify(notificationClient, times(1)).sendEmail(
