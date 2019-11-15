@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -29,7 +28,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C21_ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
@@ -93,17 +91,10 @@ public class NotificationHandler {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
 
-        Map<String, Object> parameters = c21OrderEmailContentProvider.buildC21OrderNotification(
-            caseDetails, localAuthorityCode);
         String reference = Long.toString(caseDetails.getId());
 
-        String localAuthorityEmail = localAuthorityEmailLookupConfiguration.getLocalAuthority(
-            localAuthorityCode).getEmail();
-        String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
-
-        Stream.of(localAuthorityEmail, cafcassEmail)
-            .filter(StringUtils::isNotBlank)
-            .forEach(email -> sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, email, parameters, reference));
+        sendC21NotificationForLocalAuthority(caseDetails, localAuthorityCode, reference);
+        sendC21NotificationForCafcass(caseDetails, localAuthorityCode, reference);
     }
 
     @EventListener
@@ -159,5 +150,25 @@ public class NotificationHandler {
         } catch (NotificationClientException e) {
             log.error("Failed to send submission notification (with template id: {}) to {}", templateId, email, e);
         }
+    }
+
+    private void sendC21NotificationForCafcass(final CaseDetails caseDetails,
+                                               final String localAuthorityCode,
+                                               final String reference) {
+        Map<String, Object> cafCassParameters =
+            c21OrderEmailContentProvider.buildC21OrderNotificationParametersForCafcass(caseDetails, localAuthorityCode);
+        String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
+        sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, cafcassEmail, cafCassParameters, reference);
+    }
+
+    private void sendC21NotificationForLocalAuthority(final CaseDetails caseDetails,
+                                                      final String localAuthorityCode,
+                                                      final String reference) {
+        Map<String, Object> localAuthorityParameters =
+            c21OrderEmailContentProvider.buildC21OrderNotificationParametersForLocalAuthority(
+                caseDetails, localAuthorityCode);
+        String localAuthorityEmail = localAuthorityEmailLookupConfiguration.getLocalAuthority(
+            localAuthorityCode).getEmail();
+        sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, localAuthorityEmail, localAuthorityParameters, reference);
     }
 }

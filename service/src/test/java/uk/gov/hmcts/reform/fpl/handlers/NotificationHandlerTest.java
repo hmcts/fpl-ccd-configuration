@@ -151,8 +151,11 @@ class NotificationHandlerTest {
             given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
                 .willReturn(parameters);
 
-            given(c21OrderEmailContentProvider.buildC21OrderNotification(callbackRequest().getCaseDetails(),
-                LOCAL_AUTHORITY_CODE)).willReturn(parameters);
+            given(c21OrderEmailContentProvider.buildC21OrderNotificationParametersForLocalAuthority(
+                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE)).willReturn(parameters);
+
+            given(c21OrderEmailContentProvider.buildC21OrderNotificationParametersForCafcass(
+                callbackRequest().getCaseDetails(), CAFCASS_EMAIL_ADDRESS)).willReturn(parameters);
         }
 
         @Test
