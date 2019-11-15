@@ -1,5 +1,5 @@
 module.exports = {
-  allocation: 'The proceedings continue to be allocated to Lewis Birks',
+  allocation: 'The proceedings continue to be allocated to Paul Wilson',
   application: 'The local authority has applied for a care order',
   todaysHearing: 'Today\'s case was listed for an INTERIM CARE ORDER HEARING',
   childrensCurrentArrangement: 'Mock arrangement',

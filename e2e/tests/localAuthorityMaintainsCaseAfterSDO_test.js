@@ -64,7 +64,7 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeAnswerInTab(1, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
   I.seeAnswerInTab(1, 'Schedule', 'Do you want to include a schedule?', 'Yes');
-  I.seeAnswerInTab(2, 'Schedule', 'Allocation', 'The proceedings continue to be allocated to Lewis Birks');
+  I.seeAnswerInTab(2, 'Schedule', 'Allocation', 'The proceedings continue to be allocated to Paul Wilson');
   I.seeAnswerInTab(3, 'Schedule', 'Application', 'The local authority has applied for a care order');
   I.seeAnswerInTab(4, 'Schedule', 'Today\'s hearing', 'Today\'s case was listed for an INTERIM CARE ORDER HEARING');
   I.seeAnswerInTab(5, 'Schedule', 'Children\'s current arrangements', 'Mock arrangement');
