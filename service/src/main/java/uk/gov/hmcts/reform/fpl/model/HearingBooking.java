@@ -19,10 +19,10 @@ public class HearingBooking {
     private final String type;
     private final String typeDetails;
     private final String venue;
-    @TimeNotZero(groups = HearingBookingDetailsGroup.class)
+    @TimeNotZero(message = "Enter a valid start time", groups = HearingBookingDetailsGroup.class)
     @HasFutureDate(message = "Enter a start date in the future", groups = HearingBookingDetailsGroup.class)
     private final LocalDateTime startDate;
-    @TimeNotZero(groups = HearingBookingDetailsGroup.class)
+    @TimeNotZero(message = "Enter a valid end time", groups = HearingBookingDetailsGroup.class)
     @HasFutureDate(message = "Enter an end date in the future", groups = HearingBookingDetailsGroup.class)
     private final LocalDateTime endDate;
     private final List<String> hearingNeedsBooked;

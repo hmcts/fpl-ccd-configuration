@@ -58,23 +58,28 @@ public class HearingBookingDetailsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        final List<String> errors = new ArrayList<>();
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
 
-        for (int i = 0; i < hearingDetails.size(); i++) {
-            HearingBooking hearingDetail = hearingDetails.get(i).getValue();
-            for (String message : validateGroupService.validateGroup(hearingDetail, HearingBookingDetailsGroup.class)) {
-                // Format the message if there is more than one hearing
-                if (hearingDetails.size() != 1) {
-                    message = String.format("%s (Hearing%s)", message, (i == 0) ? "" : (" " + (i + 1)));
-                }
-                errors.add(message);
-            }
-        }
+        final List<String> errors = validate(hearingDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .errors(errors)
             .build();
+    }
+
+    private List<String> validate(List<Element<HearingBooking>> hearingDetails) {
+        final List<String> errors = new ArrayList<>();
+        for (int i = 0; i < hearingDetails.size(); i++) {
+            HearingBooking hearingDetail = hearingDetails.get(i).getValue();
+            for (String message : validateGroupService.validateGroup(hearingDetail, HearingBookingDetailsGroup.class)) {
+                // Format the message if there is more than one hearing
+                if (hearingDetails.size() != 1) {
+                    message = message.concat(" for hearing " + (i + 1));
+                }
+                errors.add(message);
+            }
+        }
+        return errors;
     }
 }
