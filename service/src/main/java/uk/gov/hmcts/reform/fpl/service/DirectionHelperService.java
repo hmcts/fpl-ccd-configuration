@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 
@@ -11,7 +13,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
@@ -19,6 +24,7 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -77,21 +83,151 @@ public class DirectionHelperService {
      */
     public void persistHiddenDirectionValues(List<Element<Direction>> directionWithValues,
                                              List<Element<Direction>> directionToAddValues) {
-        directionToAddValues
-            .forEach(directionToAddValue -> directionWithValues
-                .stream()
-                .filter(direction ->
-                    direction.getValue().getDirectionType().equals(directionToAddValue.getValue().getDirectionType()))
-                .forEach(direction -> {
-                    directionToAddValue.getValue().setReadOnly(direction.getValue().getReadOnly());
-                    directionToAddValue.getValue().setDirectionRemovable(direction.getValue().getDirectionRemovable());
-                    directionToAddValue.getValue().setAssignee(defaultIfNull(
-                        directionToAddValue.getValue().getAssignee(), direction.getValue().getAssignee()));
+        directionToAddValues.forEach(directionToAddValue -> directionWithValues
+            .stream()
+            .filter(direction -> hasSameDirectionType(directionToAddValue, direction))
+            .forEach(direction -> {
+                directionToAddValue.getValue().setReadOnly(direction.getValue().getReadOnly());
+                directionToAddValue.getValue().setDirectionRemovable(direction.getValue().getDirectionRemovable());
+                directionToAddValue.getValue().setAssignee(defaultIfNull(
+                    directionToAddValue.getValue().getAssignee(), direction.getValue().getAssignee()));
 
-                    if (!direction.getValue().getReadOnly().equals("No")) {
-                        directionToAddValue.getValue().setDirectionText(direction.getValue().getDirectionText());
-                    }
-                }));
+                if (!direction.getValue().getReadOnly().equals("No")) {
+                    directionToAddValue.getValue().setDirectionText(direction.getValue().getDirectionText());
+                }
+            }));
+    }
+
+    private boolean hasSameDirectionType(Element<Direction> directionToAddValue, Element<Direction> direction) {
+        return direction.getValue().getDirectionType().equals(directionToAddValue.getValue().getDirectionType());
+    }
+
+    /**
+     * Adds a response by an assignee to a direction where the direction ID of the response matches the direction ID
+     * of the direction.
+     *
+     * @param responses  a list of single responses to directions.
+     * @param directions a list of directions with combined responses.
+     */
+    public void addResponsesToDirections(List<DirectionResponse> responses, List<Element<Direction>> directions) {
+        directions.forEach(direction -> responses.stream()
+            .filter(response -> response.getDirectionId().equals(direction.getId()))
+            .forEach(response -> {
+                direction.getValue().getResponses().removeIf(x ->
+                    responseExists(response, direction) && x.getValue().getAssignee().equals(response.getAssignee()));
+
+                direction.getValue().getResponses()
+                    .add(Element.<DirectionResponse>builder()
+                        .id(UUID.randomUUID())
+                        .value(response)
+                        .build());
+            }));
+    }
+
+    private boolean responseExists(DirectionResponse response, Element<Direction> direction) {
+        return isNotEmpty(direction.getValue().getResponses()) && response.getDirectionId().equals(direction.getId())
+            && direction.getValue().getResponses().stream()
+            .anyMatch(directionResponse -> directionResponse.getValue().getAssignee().equals(response.getAssignee()));
+    }
+
+    /**
+     * Extracts a specific response to a direction by a party.
+     *
+     * @param assignee   the role that responded to the direction.
+     * @param directions a list of directions.
+     * @return a list of directions with the correct response associated.
+     */
+    public List<Element<Direction>> extractPartyResponse(String assignee, List<Element<Direction>> directions) {
+        return directions.stream()
+            .map(element -> Element.<Direction>builder()
+                .id(element.getId())
+                .value(element.getValue().toBuilder()
+                    .response(element.getValue().getResponses().stream()
+                        .filter(response -> response.getValue().getDirectionId().equals(element.getId()))
+                        .filter(response -> response.getValue().getAssignee().getValue().equals(assignee))
+                        .map(Element::getValue)
+                        .findFirst()
+                        .orElse(null))
+                    .build())
+                .build())
+            .collect(toList());
+    }
+
+    /**
+     * Adds assignee directions key value pairs to caseDetails.
+     *
+     * <p></p>
+     * courtDirectionsCustom is used here to stop giving C and D permissions on the CourtDirections object
+     * in draft standard direction order for gatekeeper user when they also have the court admin role.
+     *
+     * @param assignee    the string value of the map key.
+     * @param directions  a list of directions.
+     * @param caseDetails the caseDetails to be updated.
+     */
+    public void addAssigneeDirectionKeyValuePairsToCaseData(String assignee,
+                                                            List<Element<Direction>> directions,
+                                                            CaseDetails caseDetails) {
+        if (assignee.equals("courtDirections")) {
+            caseDetails.getData().put(assignee.concat("Custom"), extractPartyResponse(assignee, directions));
+        } else {
+            caseDetails.getData().put(assignee, extractPartyResponse(assignee, directions));
+        }
+    }
+
+    /**
+     * Collects directions for all parties and places them into single map, where the key is the role direction,
+     * and the value is the list of directions associated.
+     *
+     * <p></p>
+     * courtDirectionsCustom is used due to the workaround in {@link #addAssigneeDirectionKeyValuePairsToCaseData}.
+     *
+     * @param caseData data from case.
+     * @return Map of roles and directions.
+     */
+    public Map<DirectionAssignee, List<Element<Direction>>> collectDirectionsToMap(CaseData caseData) {
+        return Map.of(
+            ALL_PARTIES, defaultIfNull(caseData.getAllParties(), emptyList()),
+            LOCAL_AUTHORITY, defaultIfNull(caseData.getLocalAuthorityDirections(), emptyList()),
+            CAFCASS, defaultIfNull(caseData.getCafcassDirections(), emptyList()),
+            COURT, defaultIfNull(caseData.getCourtDirectionsCustom(), emptyList()),
+            PARENTS_AND_RESPONDENTS, defaultIfNull(caseData.getParentsAndRespondentsDirections(), emptyList()),
+            OTHERS, defaultIfNull(caseData.getOtherPartiesDirections(), emptyList()));
+    }
+
+    /**
+     * Gets responses with populated directionId and assignee wherever a response is present within a direction.
+     *
+     * @param directionMap a map of directions where assignee is key and value is a list of directions.
+     * @return a list of responses with hidden variables added.
+     */
+    public List<DirectionResponse> getResponses(Map<DirectionAssignee, List<Element<Direction>>> directionMap) {
+        return directionMap.entrySet()
+            .stream()
+            .map(entry -> addHiddenVariablesToResponseForAssignee(entry.getKey(), entry.getValue()))
+            .flatMap(List::stream)
+            .map(element -> element.getValue().getResponse())
+            .collect(toList());
+    }
+
+    private List<Element<Direction>> addHiddenVariablesToResponseForAssignee(DirectionAssignee assignee,
+                                                                             List<Element<Direction>> directions) {
+        return directions.stream()
+            .filter(elementsWithInvalidResponse())
+            .map(element -> Element.<Direction>builder()
+                .id(element.getId())
+                .value(element.getValue().toBuilder()
+                    .response(element.getValue().getResponse().toBuilder()
+                        .assignee(assignee)
+                        .directionId(element.getId())
+                        .build())
+                    .build())
+                .build())
+            .collect(Collectors.toList());
+    }
+
+    private Predicate<Element<Direction>> elementsWithInvalidResponse() {
+        return element -> isNotEmpty(element.getValue().getResponse())
+            && isNotEmpty(element.getValue().getResponse().getComplied());
     }
 
     /**
@@ -103,8 +239,33 @@ public class DirectionHelperService {
      */
     public Map<String, List<Element<Direction>>> sortDirectionsByAssignee(List<Element<Direction>> directions) {
         return directions.stream()
-            .filter(x -> x.getValue().getCustom() == null)
             .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee().getValue()));
+    }
+
+    /**
+     * Removes directions where custom is set to Yes.
+     *
+     * @param directions any list of directions.
+     * @return a list of directions that are not custom.
+     */
+    public List<Element<Direction>> removeCustomDirections(List<Element<Direction>> directions) {
+        return directions.stream()
+            .filter(element -> !"Yes".equals(element.getValue().getCustom()))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Filters a list of directions to return only the directions belonging to specific assignee.
+     *
+     * @param directions a list of directions.
+     * @param assignee   the assignee of the directions to be returned.
+     * @return a list of directions belonging to the assignee.
+     */
+    public List<Element<Direction>> getDirectionsForAssignee(List<Element<Direction>> directions,
+                                                             DirectionAssignee assignee) {
+        return directions.stream()
+            .filter(element -> element.getValue().getAssignee().equals(assignee))
+            .collect(Collectors.toList());
     }
 
     /**
@@ -154,7 +315,6 @@ public class DirectionHelperService {
     private String booleanToYesOrNo(boolean value) {
         return value ? "Yes" : "No";
     }
-
 
     private List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
                                                             DirectionAssignee assignee) {

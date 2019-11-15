@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
+import java.io.IOException;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +93,7 @@ public class NoticeOfProceedingsController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
-        @RequestBody @NotNull CallbackRequest callbackRequest) {
+        @RequestBody @NotNull CallbackRequest callbackRequest)  throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
