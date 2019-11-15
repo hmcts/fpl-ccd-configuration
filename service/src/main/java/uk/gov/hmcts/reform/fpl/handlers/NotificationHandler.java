@@ -97,7 +97,8 @@ public class NotificationHandler {
             caseDetails, localAuthorityCode);
         String reference = Long.toString(caseDetails.getId());
 
-        String localAuthorityEmail = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
+        String localAuthorityEmail = localAuthorityEmailLookupConfiguration.getLocalAuthority(
+            localAuthorityCode).getEmail();
         String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
 
         Stream.of(localAuthorityEmail, cafcassEmail)
