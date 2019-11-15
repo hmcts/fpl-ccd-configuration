@@ -201,7 +201,6 @@ public class CaseDataGeneratorHelper {
     public static List<Element<Direction>> createDirection(DirectionAssignee assignee) {
         return ImmutableList.of(
             Element.<Direction>builder()
-                .id(UUID.randomUUID())
                 .value(Direction.builder()
                     .directionText("Mock direction text")
                     .assignee(assignee)

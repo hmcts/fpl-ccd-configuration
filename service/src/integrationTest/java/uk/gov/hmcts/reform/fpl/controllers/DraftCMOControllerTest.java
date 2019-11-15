@@ -107,12 +107,10 @@ class DraftCMOControllerTest {
             .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), date.plusDays(5).toString());
 
         List<Element<Direction>> responseDirections = caseManagementOrder.getDirections();
-        Direction allPartiesDirection = responseDirections.get(0).getValue();
-        Direction expectedDirection = createDirection(ALL_PARTIES).get(0).getValue();
 
         assertThat(callbackResponse.getData()).doesNotContainKey("allParties");
         assertThat(responseDirections.size()).isEqualTo(1);
-        assertThat(allPartiesDirection).isEqualTo(expectedDirection);
+        assertThat(responseDirections).isEqualTo(createDirection(ALL_PARTIES));
     }
 
     private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {

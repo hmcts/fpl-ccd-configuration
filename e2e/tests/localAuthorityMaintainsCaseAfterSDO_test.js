@@ -57,11 +57,12 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
 Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await draftCaseManagementOrderEventPage.associateHearingDate('1 Jan 2050');
+  I.click('Continue');
+  await draftCaseManagementOrderEventPage.enterDatesForDirections(directions[0]);
   await I.completeEvent('Submit');
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeAnswerInTab(1, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
-  I.completeEvent('Submit');
-  await draftCMOEventPage.enterDatesForDirections(directions[0])
+  I.seeAnswerInTab(2, 'Directions 1', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await draftCaseManagementOrderEventPage.validatePreviousSelectedHearingDate('1 Jan 2050');
 });
