@@ -133,7 +133,7 @@ class UploadC2DocumentsControllerTest {
 
         CallbackRequest request = createCallbackRequestWithTempC2Bundle(data);
 
-        MvcResult response = performResponseCallBack(request,"mid-event");
+        MvcResult response = performResponseCallBack(request, "mid-event");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
