@@ -45,7 +45,6 @@ public class C21OrderEmailContentProvider extends AbstractEmailContentProvider {
 
     public Map<String, Object> buildC21OrderNotification(final CaseDetails caseDetails,
                                                          final String localAuthorityCode) {
-        // Validation within our frontend ensures that the following data is present
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         final String subjectLine = buildSubjectLine(caseData);
         return Map.of(
