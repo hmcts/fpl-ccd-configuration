@@ -30,7 +30,7 @@ public class HearingBooking {
     private final String judgeTitle;
     private final String judgeName;
 
-    public boolean datesOnSameDay() {
+    public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());
     }
 }

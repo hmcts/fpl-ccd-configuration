@@ -183,7 +183,7 @@ public class CaseDataExtractionService {
         final LocalDateTime startDate = hearingBooking.getStartDate();
         final LocalDateTime endDate = hearingBooking.getEndDate();
 
-        if (hearingBooking.datesOnSameDay()) {
+        if (hearingBooking.hasDatesOnSameDay()) {
             // Example 3:30pm - 5:30pm
             hearingTime = String.format("%s - %s", formatTime(startDate), formatTime(endDate));
         } else {
@@ -198,7 +198,7 @@ public class CaseDataExtractionService {
         String hearingDate = "";
 
         // If they aren't on the same date return nothing
-        if (hearingBooking.datesOnSameDay()) {
+        if (hearingBooking.hasDatesOnSameDay()) {
             hearingDate = dateFormatterService.formatLocalDateToString(
                 hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG);
         }
