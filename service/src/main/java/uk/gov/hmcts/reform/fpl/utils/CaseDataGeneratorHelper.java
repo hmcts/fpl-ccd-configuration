@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.collect.ImmutableList;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -195,5 +196,16 @@ public class CaseDataGeneratorHelper {
                 .filename("Mock file")
                 .build())
             .build();
+    }
+
+    public static List<Element<Direction>> createDirection(DirectionAssignee assignee) {
+        return ImmutableList.of(
+            Element.<Direction>builder()
+                .id(UUID.randomUUID())
+                .value(Direction.builder()
+                    .directionText("Mock direction text")
+                    .assignee(assignee)
+                    .build())
+                .build());
     }
 }

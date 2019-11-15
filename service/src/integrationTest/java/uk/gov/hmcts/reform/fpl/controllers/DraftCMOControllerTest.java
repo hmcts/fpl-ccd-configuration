@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -35,6 +37,8 @@ import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDirection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
 @ActiveProfiles("integration-test")
@@ -60,8 +64,10 @@ class DraftCMOControllerTest {
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
 
     @Test
-    void aboutToStartCallbackShouldPopulateHearingDatesList() throws Exception {
-        Map<String, Object> data = ImmutableMap.of("hearingDetails", hearingDetails);
+    void aboutToStartCallbackShouldPopulateHearingDatesListAndDirections() throws Exception {
+        Map<String, Object> data = ImmutableMap.of(
+            "hearingDetails", hearingDetails,
+            "caseManagementOrder", ImmutableMap.of("directions", createDirection(ALL_PARTIES)));
 
         List<String> expected = Arrays.asList(
             date.plusDays(5).format(dateTimeFormatter),
@@ -71,10 +77,11 @@ class DraftCMOControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
+        assertThat(callbackResponse.getData()).containsKey("allParties");
     }
 
     @Test
-    void aboutToSubmitShouldPopulateHiddenHearingDateField() throws Exception {
+    void aboutToSubmitShouldPopulateHiddenHearingDateFieldAndCmoDirection() throws Exception {
         List<Element<HearingBooking>> hearingDetails = createHearingBookings(date);
 
         DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
@@ -86,17 +93,26 @@ class DraftCMOControllerTest {
                     .label(date.plusDays(5).toString())
                     .build());
 
-        Map<String, Object> data = ImmutableMap.of("cmoHearingDateList", dynamicHearingDates);
+        Map<String, Object> data = ImmutableMap.of("cmoHearingDateList", dynamicHearingDates,
+            "allParties", createDirection(null));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
 
         assertThat(callbackResponse.getData()).doesNotContainKey("cmoHearingDateList");
-        assertThat(callbackResponse.getData()).doesNotContainKey("allParties");
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
-        assertThat(caseData.getCaseManagementOrder()).extracting("id", "hearingDate")
+        assertThat(caseManagementOrder).extracting("id", "hearingDate")
             .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), date.plusDays(5).toString());
+
+        List<Element<Direction>> responseDirections = caseManagementOrder.getDirections();
+        Direction allPartiesDirection = responseDirections.get(0).getValue();
+        Direction expectedDirection = createDirection(ALL_PARTIES).get(0).getValue();
+
+        assertThat(callbackResponse.getData()).doesNotContainKey("allParties");
+        assertThat(responseDirections.size()).isEqualTo(1);
+        assertThat(allPartiesDirection).isEqualTo(expectedDirection);
     }
 
     private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {

@@ -23,6 +23,8 @@ import java.util.List;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDirection;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, DateFormatterService.class, DraftCMOService.class})
@@ -92,6 +94,17 @@ class DraftCMOServiceTest {
             .extracting("id", "hearingDate").containsExactly(
             fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"),
             formatLocalDateToMediumStyle(5));
+    }
+
+    @Test
+    void shouldSetDirectionAssigneeToAllPartiesWhenAllPartiesDirectionIsProvided() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of("cmoHearingDateList", getDynamicList(),
+                "allParties", createDirection(null)))
+            .build();
+
+        CaseManagementOrder caseManagementOrder = draftCMOService.getCaseManagementOrder(caseDetails);
+        assertThat(caseManagementOrder.getDirections().get(0).getValue().getAssignee()).isEqualTo(ALL_PARTIES);
     }
 
     private DynamicList getDynamicList() {
