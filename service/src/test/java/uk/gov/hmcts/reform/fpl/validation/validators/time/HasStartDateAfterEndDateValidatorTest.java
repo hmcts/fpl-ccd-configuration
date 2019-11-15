@@ -32,6 +32,21 @@ class HasStartDateAfterEndDateValidatorTest extends TimeValidatorTest {
     }
 
     @Test
+    void shouldReturnAnErrorWhenDatesAreTheEnd() {
+        hearingBooking = HearingBooking.builder()
+            .startDate(FUTURE)
+            .endDate(FUTURE)
+            .build();
+
+        final List<String> violations = validator.validate(hearingBooking, group)
+            .stream()
+            .map(ConstraintViolation::getMessage)
+            .collect(Collectors.toList());
+
+        assertThat(violations).hasSize(1).containsOnlyOnce("The start date cannot be after the end date");
+    }
+
+    @Test
     void shouldNotReturnAnErrorWhenStartDateIsBeforeTheEndDate() {
         hearingBooking = HearingBooking.builder()
             .startDate(LocalDateTime.now().plusDays(1))
