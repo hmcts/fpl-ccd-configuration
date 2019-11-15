@@ -14,8 +14,8 @@ module.exports = {
       alternativeCarers: '#schedule_alternativeCarers',
       threshold: '#schedule_threshold',
       keyIssues: '#schedule_keyIssues',
-      partiesPositions: '#schedule_partiesPositions'
-    }
+      partiesPositions: '#schedule_partiesPositions',
+    },
   },
 
   associateHearingDate(date) {
@@ -40,5 +40,5 @@ module.exports = {
     I.fillField(this.fields.schedule.threshold, schedule.threshold);
     I.fillField(this.fields.schedule.keyIssues, schedule.keyIssues);
     I.fillField(this.fields.schedule.partiesPositions, schedule.partiesPositions);
-  }
+  },
 };

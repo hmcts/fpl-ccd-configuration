@@ -8,5 +8,5 @@ module.exports = {
   alternativeCarers: 'Inform the local authority in writing within 7 days',
   threshold: 'The S.31 threshold for the making of orders is in dispute',
   keyIssues: 'Are there any other family or friends capable of caring in the children',
-  partiesPositions: 'The mother agrees section 20'
-}
+  partiesPositions: 'The mother agrees section 20',
+};
