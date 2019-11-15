@@ -169,18 +169,45 @@ public class CaseDataExtractionService {
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
 
         return ImmutableMap.of(
-            "hearingDate", dateFormatterService.formatLocalDateToString(
-                prioritisedHearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG),
+            "hearingDate", getHearingDate(prioritisedHearingBooking),
             "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
             "preHearingAttendance", calculatePrehearingAttendance(prioritisedHearingBooking.getStartDate()),
-            "hearingTime", prioritisedHearingBooking.getStartDate().toLocalTime(),
+            "hearingTime", getHearingTime(prioritisedHearingBooking),
             "judgeName", prioritisedHearingBooking.getJudgeTitle() + " "
                 + prioritisedHearingBooking.getJudgeName()
         );
     }
 
-    private LocalTime calculatePrehearingAttendance(LocalDateTime startDate) {
-        return startDate.toLocalTime().minusHours(1);
+    private String getHearingTime(HearingBooking hearingBooking) {
+        String hearingTime;
+        final LocalDateTime startDate = hearingBooking.getStartDate();
+        final LocalDateTime endDate = hearingBooking.getEndDate();
+
+        if (hearingBooking.onSameDay()) {
+            // Example 3:30pm - 5:30pm
+            hearingTime = String.format("%s - %s", formatTime(startDate), formatTime(endDate));
+        } else {
+            // Example 18 June, 3:40pm - 19 June, 2:30pm
+            hearingTime = String.format("%s - %s", formatDateTime(startDate), formatDateTime(endDate));
+        }
+
+        return hearingTime;
+    }
+
+    private String getHearingDate(HearingBooking hearingBooking) {
+        String hearingDate = "";
+
+        // If they aren't on the same date return nothing
+        if (hearingBooking.onSameDay()) {
+            hearingDate = dateFormatterService.formatLocalDateToString(
+                hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG);
+        }
+
+        return hearingDate;
+    }
+
+    private LocalTime calculatePrehearingAttendance(LocalDateTime dateTime) {
+        return dateTime.toLocalTime().minusHours(1);
     }
 
     private String getOrderTypes(CaseData caseData) {
@@ -279,5 +306,13 @@ public class CaseDataExtractionService {
             (direction.getDateToBeCompletedBy() != null ? dateFormatterService
                 .formatLocalDateTimeBaseUsingFormat(direction.getDateToBeCompletedBy(),
                     dateFormattingConfig.getPattern()) : "unknown"));
+    }
+
+    private String formatDateTime(LocalDateTime dateTime) {
+        return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM, h:mma");
+    }
+
+    private String formatTime(LocalDateTime dateTime) {
+        return dateFormatterService.formatLocalTimeToString(dateTime.toLocalTime(), FormatStyle.SHORT);
     }
 }

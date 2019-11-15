@@ -4,9 +4,12 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
+
+// FIXME: 15/11/2019 Change name to DateTimeFormatterService? or a separate service for time formatting?
 
 @Service
 public class DateFormatterService {
@@ -16,5 +19,9 @@ public class DateFormatterService {
 
     public String formatLocalDateTimeBaseUsingFormat(LocalDateTime dateTime, String format) {
         return dateTime.format(DateTimeFormatter.ofPattern(format, Locale.UK));
+    }
+
+    public String formatLocalTimeToString(LocalTime time, FormatStyle style) {
+        return time.format(DateTimeFormatter.ofLocalizedTime(style).localizedBy(Locale.UK));
     }
 }

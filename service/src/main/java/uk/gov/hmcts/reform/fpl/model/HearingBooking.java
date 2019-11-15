@@ -29,4 +29,8 @@ public class HearingBooking {
     private final String hearingNeedsDetails;
     private final String judgeTitle;
     private final String judgeName;
+
+    public boolean onSameDay() {
+        return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());
+    }
 }
