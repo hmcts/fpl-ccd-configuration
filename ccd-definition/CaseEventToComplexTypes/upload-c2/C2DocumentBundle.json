@@ -7,7 +7,7 @@
     "ListElementCode": "document",
     "EventElementLabel": "Upload a file",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -27,7 +27,7 @@
     "ListElementCode": "document",
     "EventElementLabel": "Upload a file",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
