@@ -95,7 +95,7 @@ public class DraftCMOService {
             .directions(setDirectionAssignee(caseData.getAllParties(), ALL_PARTIES))
             .build();
     }
-    
+
     private List<Element<Direction>> setDirectionAssignee(List<Element<Direction>> directions,
                                                           DirectionAssignee assignee) {
         if (!isNull(directions)) {

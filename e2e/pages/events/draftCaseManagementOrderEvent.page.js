@@ -16,8 +16,9 @@ module.exports = {
     I.see(date, this.fields.cmoHearingDateList);
   },
 
-  async enterDatesForDirections(direction) {
+  async enterDirection(direction) {
     await I.addAnotherElementToCollection();
     await draftDirections.enterDate('allParties', direction);
+    await draftDirections.enterDescription('allParties', direction);
   },
 };

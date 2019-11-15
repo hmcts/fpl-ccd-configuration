@@ -47,6 +47,7 @@ public class DraftCMOController {
         // Resetting allParties - could be pre-populated via SDO
         caseDetails.getData().remove("allParties");
 
+        // Only allParties needed for now. Leaving logic in for the convenience of upcoming directions
         if (!isNull(caseData.getCaseManagementOrder())) {
             Map<String, List<Element<Direction>>> directions = directionHelperService.sortDirectionsByAssignee(
                 caseData.getCaseManagementOrder().getDirections());

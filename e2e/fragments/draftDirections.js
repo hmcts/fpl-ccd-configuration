@@ -26,4 +26,8 @@ module.exports = {
     I.fillField(this.fields(party, index).direction.dueDate.minute, direction.dueDate.minute);
     I.fillField(this.fields(party, index).direction.dueDate.second, direction.dueDate.second);
   },
+
+  enterDescription(party, direction, index = 0) {
+    I.fillField(this.fields(party, index).direction.description, direction.description);
+  },
 };
