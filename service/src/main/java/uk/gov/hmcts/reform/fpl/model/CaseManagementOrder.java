@@ -14,4 +14,5 @@ public class CaseManagementOrder {
     private final String hearingDate;
     private final UUID hearingDateId;
     private final Schedule schedule;
+    private final UUID id;
 }

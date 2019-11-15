@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Service
 public class DraftCMOService {
@@ -41,7 +41,7 @@ public class DraftCMOService {
 
         DynamicList hearingDatesDynamic = buildDynamicListFromHearingDetails(hearingDetails);
 
-        if (!isEmpty(caseData.getCaseManagementOrder())) {
+        if (isNotEmpty(caseData.getCaseManagementOrder())) {
             prePopulateHearingDateSelection(hearingDetails,
                 hearingDatesDynamic,
                 caseData.getCaseManagementOrder());
@@ -53,13 +53,13 @@ public class DraftCMOService {
     private void prePopulateHearingDateSelection(List<Element<HearingBooking>> hearingDetails,
                                                  DynamicList hearingDatesDynamic,
                                                  CaseManagementOrder caseManagementOrder) {
-        UUID hearingDateId = isEmpty(caseManagementOrder) ? null : caseManagementOrder.getHearingDateId();
+        UUID hearingDateId = caseManagementOrder.getId();
         // There was a previous hearing date therefore we need to remap it
         String date = hearingDetails.stream()
             .filter(Objects::nonNull)
-            .filter(element -> element.getId().equals(caseManagementOrder.getHearingDateId()))
+            .filter(element -> element.getId().equals(caseManagementOrder.getId()))
             .findFirst()
-            .map(element -> convertDate(element.getValue().getDate()))
+            .map(element -> formatLocalDateToMediumStyle(element.getValue().getDate()))
             .orElse("");
 
         DynamicListElement listElement = DynamicListElement.builder()
@@ -68,21 +68,28 @@ public class DraftCMOService {
             .build();
 
         hearingDatesDynamic.setValue(listElement);
-        if (!hearingDatesDynamic.getListItems().contains(listElement)) {
-            hearingDatesDynamic.getListItems().add(listElement);
-        }
     }
 
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
         List<HearingDateDynamicElement> hearingDates = hearingDetails
             .stream()
-            .map(element -> new HearingDateDynamicElement(convertDate(element.getValue().getDate()), element.getId()))
+            .map(element -> new HearingDateDynamicElement(
+                formatLocalDateToMediumStyle(element.getValue().getDate()), element.getId()))
             .collect(toList());
 
         return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);
     }
 
-    public String convertDate(LocalDate date) {
+    public CaseManagementOrder getCaseManagementOrder(CaseDetails caseDetails) {
+        DynamicList list = mapper.convertValue(caseDetails.getData().get("cmoHearingDateList"), DynamicList.class);
+
+        return CaseManagementOrder.builder()
+            .hearingDate(list.getValue().getLabel())
+            .id(list.getValue().getCode())
+            .build();
+    }
+
+    private String formatLocalDateToMediumStyle(LocalDate date) {
         return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
     }
 }

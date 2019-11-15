@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.time.LocalDate;
+import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,6 +30,9 @@ class DraftCMOServiceTest {
 
     @Autowired
     private DraftCMOService draftCMOService;
+
+    @Autowired
+    private DateFormatterService dateFormatterService;
 
     private final LocalDate date = LocalDate.now();
 
@@ -44,15 +48,15 @@ class DraftCMOServiceTest {
             .containsAll(Arrays.asList(
                 DynamicListElement.builder()
                     .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-                    .label(draftCMOService.convertDate(date.plusDays(5)))
+                    .label(formatLocalDateToMediumStyle(5))
                     .build(),
                 DynamicListElement.builder()
                     .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
-                    .label(draftCMOService.convertDate(date.plusDays(2)))
+                    .label(formatLocalDateToMediumStyle(2))
                     .build(),
                 DynamicListElement.builder()
                     .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
-                    .label(draftCMOService.convertDate(date))
+                    .label(formatLocalDateToMediumStyle(0))
                     .build()));
     }
 
@@ -62,8 +66,8 @@ class DraftCMOServiceTest {
             .data(ImmutableMap.of(
                 "hearingDetails", createHearingBookings(date),
                 "caseManagementOrder", CaseManagementOrder.builder()
-                    .hearingDate(draftCMOService.convertDate(date.plusDays(2)))
-                    .hearingDateId(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                    .hearingDate(formatLocalDateToMediumStyle(2))
+                    .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
                     .build()
             )).build();
 
@@ -72,8 +76,34 @@ class DraftCMOServiceTest {
         assertThat(hearingList.getValue())
             .isEqualTo(DynamicListElement.builder()
                 .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
-                .label(draftCMOService.convertDate(date.plusDays(2)))
+                .label(formatLocalDateToMediumStyle(2))
                 .build());
+    }
+
+    @Test
+    void shouldReturnCaseManagementOrderWhenProvidedCaseDetails() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of("cmoHearingDateList", getDynamicList()))
+            .build();
+
+        CaseManagementOrder caseManagementOrder = draftCMOService.getCaseManagementOrder(caseDetails);
+
+        assertThat(caseManagementOrder).isNotNull()
+            .extracting("id", "hearingDate").containsExactly(
+            fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"),
+            formatLocalDateToMediumStyle(5));
+    }
+
+    private DynamicList getDynamicList() {
+        DynamicList dynamicList = draftCMOService.buildDynamicListFromHearingDetails(createHearingBookings(date));
+
+        DynamicListElement listElement = DynamicListElement.builder()
+            .label(formatLocalDateToMediumStyle(5))
+            .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+            .build();
+
+        dynamicList.setValue(listElement);
+        return dynamicList;
     }
 
     private List<Element<HearingBooking>> createHearingBookings(LocalDate now) {
@@ -91,5 +121,9 @@ class DraftCMOServiceTest {
                 .value(createHearingBooking(now))
                 .build()
         );
+    }
+
+    private String formatLocalDateToMediumStyle(int i) {
+        return dateFormatterService.formatLocalDateToString(date.plusDays(i), FormatStyle.MEDIUM);
     }
 }
