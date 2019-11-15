@@ -15,9 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvider;
@@ -33,7 +31,9 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createC21Orders;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createJudgeAndLegalAdvisor;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 
 @ExtendWith(SpringExtension.class)
@@ -69,7 +69,7 @@ class C21OrderEmailContentProviderTest {
 
     @Test
     void shouldReturnExactC21NotificationParametersWithUploadedDocumentUrl() {
-        CaseDetails caseDetails = populateCaseDetailsWithSingleC21Element();
+        CaseDetails caseDetails = createCaseDetailsWithSingleC21Element();
 
         final String subjectLine = "Jones, " + familyManCaseNumber;
 
@@ -91,7 +91,7 @@ class C21OrderEmailContentProviderTest {
 
     @Test
     void shouldReturnExactC21NotificationParametersWithMostRecentUploadedDocumentUrl() {
-        CaseDetails caseDetails = populateCaseDetails();
+        CaseDetails caseDetails = createCaseDetails();
 
         Map<String, Object> returnedParameters = c21OrderEmailContentProvider.buildC21OrderNotification(caseDetails,
             LOCAL_AUTHORITY_CODE);
@@ -107,7 +107,7 @@ class C21OrderEmailContentProviderTest {
                 "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
     }
 
-    private CaseDetails populateCaseDetailsWithSingleC21Element() {
+    private CaseDetails createCaseDetailsWithSingleC21Element() {
         return CaseDetails.builder()
             .id(167888L)
             .data(ImmutableMap.of("hearingDetails", createHearingBookings(LocalDate.now()),
@@ -117,18 +117,9 @@ class C21OrderEmailContentProviderTest {
                             .orderTitle("Example Order")
                             .orderDetails(
                                 "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                                .legalAdvisorName("Peter Parker")
-                                .judgeLastName("Judy")
-                                .judgeTitle(HER_HONOUR_JUDGE)
-                                .build())
-                            .document(DocumentReference.builder()
-                                .filename("C21 1.pdf")
-                                .url("http://" + String.join("/", "dm-store:8080", "documents",
-                                    randomUUID().toString()))
-                                .binaryUrl("http://" + String.join("/", "dm-store:8080", "documents",
-                                    randomUUID().toString(), "binary"))
-                                .build())
+                            .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker",
+                                "Judy", null, HER_HONOUR_JUDGE))
+                            .document(createDocumentReference(randomUUID().toString()))
                             .build())
                         .build()),
                 "respondents1", createRespondents(),
@@ -136,7 +127,7 @@ class C21OrderEmailContentProviderTest {
             .build();
     }
 
-    private CaseDetails populateCaseDetails() {
+    private CaseDetails createCaseDetails() {
         return CaseDetails.builder()
             .id(12345L)
             .data(ImmutableMap.of("hearingDetails", createHearingBookings(LocalDate.now()),

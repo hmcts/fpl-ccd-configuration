@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 import static com.google.common.collect.Iterables.getLast;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
@@ -69,7 +69,7 @@ public class C21OrderEmailContentProvider extends AbstractEmailContentProvider {
 
     private String buildSubjectLineWithHearingBookingDateSuffix(final String subjectLine, final CaseData caseData) {
         String hearingDate = "";
-        if (!isEmpty(caseData.getHearingDetails())) {
+        if (isNotEmpty(caseData.getHearingDetails())) {
             hearingDate = " hearing " + dateFormatterService.formatLocalDateToString(
                 hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()).getDate(),
                 FormatStyle.MEDIUM);

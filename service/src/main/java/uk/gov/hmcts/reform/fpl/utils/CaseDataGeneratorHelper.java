@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang3.RandomStringUtils;
+import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
@@ -228,19 +230,9 @@ public class CaseDataGeneratorHelper {
                     .orderDetails("Westeros")
                     .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
                         LocalDateTime.now().plusDays(59), FORMAT_STYLE))
-                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                        .legalAdvisorName("Baratheon")
-                        .judgeFullName("Tyrion Lannister")
-                        .judgeLastName("Lannister")
-                        .judgeTitle(HIS_HONOUR_JUDGE)
-                        .build())
-                    .document(DocumentReference.builder()
-                        .filename("C21 2.pdf")
-                        .url("http://" + String.join("/", "dm-store:8080", "documents",
-                            UUID.randomUUID().toString()))
-                        .binaryUrl("http://" + String.join("/", "dm-store:8080", "documents",
-                            UUID.randomUUID().toString(), "binary"))
-                        .build())
+                    .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Baratheon",
+                        "Tyrion Lannister", "Lannister", HIS_HONOUR_JUDGE))
+                    .document(createDocumentReference(randomUUID().toString()))
                     .build())
                 .build(),
             Element.<C21Order>builder()
@@ -250,12 +242,8 @@ public class CaseDataGeneratorHelper {
                     .orderDetails("Long John Silver")
                     .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
                         LocalDateTime.now().plusDays(56), FORMAT_STYLE))
-                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                        .legalAdvisorName("Edward Teach")
-                        .judgeFullName("Captain Flint")
-                        .judgeLastName("Scott")
-                        .judgeTitle(DEPUTY_DISTRICT_JUDGE)
-                        .build())
+                    .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Edward Teach",
+                        "Captain Flint", "Scott", DEPUTY_DISTRICT_JUDGE))
                     .document(DocumentReference.builder()
                         .filename("C21 3.pdf")
                         .url("http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079")
@@ -270,5 +258,26 @@ public class CaseDataGeneratorHelper {
             .id(randomUUID())
             .value(createHearingBooking(date))
             .build());
+    }
+
+    public static DocumentReference createDocumentReference(final String id) {
+        final String documentUrl = "http://" + String.join("/", "dm-store:8080", "documents", id);
+        return DocumentReference.builder()
+            .filename(RandomStringUtils.randomAlphabetic(12) + ".pdf")
+            .url(documentUrl)
+            .binaryUrl(documentUrl + "/binary")
+            .build();
+    }
+
+    public static JudgeAndLegalAdvisor createJudgeAndLegalAdvisor(final String legalAdvisorName,
+                                                                  final String judgeFullName,
+                                                                  final String judgeLastName,
+                                                                  final JudgeOrMagistrateTitle judgeTitle) {
+        return JudgeAndLegalAdvisor.builder()
+            .legalAdvisorName(legalAdvisorName)
+            .judgeLastName(judgeLastName)
+            .judgeFullName(judgeFullName)
+            .judgeTitle(judgeTitle)
+            .build();
     }
 }
