@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.validation.validators.time;
 
-import uk.gov.hmcts.reform.fpl.validation.interfaces.HasFutureDate;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasFutureDate;
 
 import java.time.LocalDateTime;
 import javax.validation.ConstraintValidator;

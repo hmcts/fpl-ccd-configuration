@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.validation.interfaces;
+package uk.gov.hmcts.reform.fpl.validation.interfaces.time;
 
 import uk.gov.hmcts.reform.fpl.validation.validators.time.HasFutureDateValidator;
 

@@ -4,9 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.interfaces.HearingBookingDetailsGroup;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.HasFutureDate;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.HasStartDateAfterEndDate;
-import uk.gov.hmcts.reform.fpl.validation.interfaces.TimeNotZero;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasFutureDate;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasStartDateAfterEndDate;
+import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotZero;
 
 import java.time.LocalDateTime;
 import java.util.List;
