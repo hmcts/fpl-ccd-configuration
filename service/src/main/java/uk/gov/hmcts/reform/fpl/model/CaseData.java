@@ -147,4 +147,6 @@ public class CaseData {
     public List<Element<C21Order>> getC21Orders() {
         return defaultIfNull(c21Orders, new ArrayList<>());
     }
+
+    private final CaseManagementOrder caseManagementOrder;
 }

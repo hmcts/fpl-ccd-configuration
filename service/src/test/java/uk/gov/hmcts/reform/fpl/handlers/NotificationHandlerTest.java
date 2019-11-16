@@ -69,6 +69,7 @@ class NotificationHandlerTest {
     private static final String CAFCASS_NAME = "cafcass";
     private static final String GATEKEEPER_EMAIL_ADDRESS = "FamilyPublicLaw+gatekeeper@gmail.com";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
+    private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
 
     @Mock
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -118,11 +119,21 @@ class NotificationHandlerTest {
     @Nested
     class C2UploadedNotificationChecks {
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
-        final Map<String, Object> parameters = ImmutableMap.<String, Object>builder()
+        final Map<String, Object> commonParameters = ImmutableMap.<String, Object>builder()
             .put("subjectLine", subjectLine)
             .put("hearingDetailsCallout", subjectLine)
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
+
+        final Map<String, Object> c21CafcassParameters = ImmutableMap.<String, Object>builder()
+            .putAll(commonParameters)
+            .put("localAuthorityOrCafcass", CAFCASS_NAME)
+            .build();
+
+        final Map<String, Object> c21LocalAuthorityParameters = ImmutableMap.<String, Object>builder()
+            .putAll(commonParameters)
+            .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)
             .build();
 
         @BeforeEach
@@ -145,14 +156,14 @@ class NotificationHandlerTest {
             given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
 
-            given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
-                .willReturn("Example Local Authority");
-
             given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
-                .willReturn(parameters);
+                .willReturn(commonParameters);
 
-            given(c21OrderEmailContentProvider.buildC21OrderNotification(callbackRequest().getCaseDetails(),
-                LOCAL_AUTHORITY_CODE)).willReturn(parameters);
+            given(c21OrderEmailContentProvider.buildC21OrderNotificationParametersForLocalAuthority(
+                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE)).willReturn(c21LocalAuthorityParameters);
+
+            given(c21OrderEmailContentProvider.buildC21OrderNotificationParametersForCafcass(
+                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE)).willReturn(c21CafcassParameters);
         }
 
         @Test
@@ -165,7 +176,7 @@ class NotificationHandlerTest {
 
             verify(notificationClient, never())
                 .sendEmail(eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-admin@test.com"),
-                    eq(parameters), eq("12345"));
+                    eq(commonParameters), eq("12345"));
         }
 
         @Test
@@ -180,7 +191,7 @@ class NotificationHandlerTest {
             notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
             verify(notificationClient, times(1)).sendEmail(
-                eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-non-admin@test.com"), eq(parameters), eq("12345"));
+                eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-non-admin@test.com"), eq(commonParameters), eq("12345"));
         }
 
         @Test
@@ -189,11 +200,11 @@ class NotificationHandlerTest {
 
             verify(notificationClient, times(1)).sendEmail(
                 eq(C21_ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-                eq(parameters), eq("12345"));
+                eq(c21LocalAuthorityParameters), eq("12345"));
 
             verify(notificationClient, times(1)).sendEmail(
                 eq(C21_ORDER_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
-                eq(parameters), eq("12345"));
+                eq(c21CafcassParameters), eq("12345"));
         }
     }
 
