@@ -216,11 +216,8 @@ public class CaseDataGeneratorHelper {
                         "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
                     .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
                         LocalDateTime.now().plusDays(57), FORMAT_STYLE))
-                    .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                        .legalAdvisorName("Peter Parker")
-                        .judgeLastName("Judy")
-                        .judgeTitle(HER_HONOUR_JUDGE)
-                        .build())
+                    .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker",
+                        "Judy", null, HER_HONOUR_JUDGE))
                     .build())
                 .build(),
             Element.<C21Order>builder()

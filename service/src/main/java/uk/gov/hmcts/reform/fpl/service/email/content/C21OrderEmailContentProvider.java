@@ -1,27 +1,22 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
 import java.time.format.FormatStyle;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Stream;
 
-import static com.google.common.collect.Iterables.getLast;
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
@@ -48,29 +43,24 @@ public class C21OrderEmailContentProvider extends AbstractEmailContentProvider {
     }
 
     public Map<String, Object> buildC21OrderNotificationParametersForCafcass(final CaseDetails caseDetails,
-                                                                             final String localAuthorityCode) {
+                                                                             final String localAuthorityCode,
+                                                                          final String mostRecentUploadedDocumentUrl) {
         return ImmutableMap.<String, Object>builder()
             .putAll(commonC21NotificationParameters(caseDetails))
+            .put("linkToDocStore", mostRecentUploadedDocumentUrl)
             .put("localAuthorityOrCafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
             .build();
     }
 
     public Map<String, Object> buildC21OrderNotificationParametersForLocalAuthority(final CaseDetails caseDetails,
-                                                                                    final String localAuthorityCode) {
+                                                                                    final String localAuthorityCode,
+                                                                          final String mostRecentUploadedDocumentUrl) {
         return ImmutableMap.<String, Object>builder()
             .putAll(commonC21NotificationParameters(caseDetails))
+            .put("linkToDocStore", mostRecentUploadedDocumentUrl)
             .put("localAuthorityOrCafcass",
                 localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .build();
-    }
-
-    private String mostRecentUploadedC21DocumentUrl(final List<Element<C21Order>> c21Orders) {
-        return getLast(c21Orders.stream()
-            .filter(Objects::nonNull)
-            .map(Element::getValue)
-            .filter(Objects::nonNull)
-            .collect(toList()))
-            .getDocument().getBinaryUrl();
     }
 
     private String buildSubjectLineWithHearingBookingDateSuffix(final String subjectLine, final CaseData caseData) {

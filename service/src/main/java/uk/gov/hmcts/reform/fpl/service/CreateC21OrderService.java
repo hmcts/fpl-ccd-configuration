@@ -16,7 +16,9 @@ import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import static com.google.common.collect.Iterables.getLast;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -95,5 +97,14 @@ public class CreateC21OrderService {
                 "dateOfBirth", child.getDateOfBirth() != null ? dateFormatterService
                     .formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG) : ""))
             .collect(toList());
+    }
+
+    public String mostRecentUploadedC21DocumentUrl(final List<Element<C21Order>> c21Orders) {
+        return getLast(c21Orders.stream()
+            .filter(Objects::nonNull)
+            .map(Element::getValue)
+            .filter(Objects::nonNull)
+            .collect(toList()))
+            .getDocument().getBinaryUrl();
     }
 }

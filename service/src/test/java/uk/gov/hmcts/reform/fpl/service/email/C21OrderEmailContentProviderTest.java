@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -38,71 +39,102 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, C21OrderEmailContentProvider.class,
-    HearingBookingService.class, LocalAuthorityNameLookupConfiguration.class, DateFormatterService.class})
+    HearingBookingService.class, LocalAuthorityNameLookupConfiguration.class, DateFormatterService.class,
+    CafcassLookupConfiguration.class})
 class C21OrderEmailContentProviderTest {
-    private final LocalDate date = LocalDate.now();
+    private final LocalDate today = LocalDate.now();
     private final DateFormatterService dateFormatterService = new DateFormatterService();
     private final HearingBookingService hearingBookingService = new HearingBookingService();
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
+    private static final String CAFCASS_EMAIL = "FamilyPublicLaw+cafcass@gmail.com";
+    private static final String CAFCASS_NAME = "Example Cafcass";
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    @MockBean
+    private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @MockBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private C21OrderEmailContentProvider c21OrderEmailContentProvider;
 
     private String familyManCaseNumber;
+    private String documentId;
+    private String subjectLine;
 
     @BeforeEach
     void setup() {
         this.c21OrderEmailContentProvider = new C21OrderEmailContentProvider("",
-            objectMapper, hearingBookingService, localAuthorityNameLookupConfiguration, dateFormatterService);
+            objectMapper, hearingBookingService, localAuthorityNameLookupConfiguration, dateFormatterService,
+            cafcassLookupConfiguration);
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
+        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+            .willReturn((new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL)));
+
         familyManCaseNumber = RandomStringUtils.randomAlphabetic(8);
+        documentId = randomUUID().toString();
+        subjectLine = "Jones, " + familyManCaseNumber;
     }
 
     @Test
     void shouldReturnExactC21NotificationParametersWithUploadedDocumentUrl() {
+        final String documentUrl = "http://dm-store:8080/documents/" + documentId + "/binary";
         CaseDetails caseDetails = createCaseDetailsWithSingleC21Element();
 
-        final String subjectLine = "Jones, " + familyManCaseNumber;
+        Map<String, Object> returnedCafcassParameters =
+            c21OrderEmailContentProvider.buildC21OrderNotificationParametersForCafcass(
+                caseDetails, LOCAL_AUTHORITY_CODE, documentUrl);
 
-        Map<String, Object> returnedParameters = c21OrderEmailContentProvider.buildC21OrderNotification(caseDetails,
-            LOCAL_AUTHORITY_CODE);
+        assertThat(returnedCafcassParameters)
+            .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
+                "linkToDocStore", "reference", "caseUrl")
+            .containsExactly(subjectLine, "Example Cafcass",
+                (subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(today, FormatStyle.MEDIUM)),
+                documentUrl, "167888", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/167888");
 
-        assertThat(returnedParameters)
-            .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout", "reference",
-                 "caseUrl")
+        Map<String, Object> returnedLocalAuthorityParameters =
+            c21OrderEmailContentProvider.buildC21OrderNotificationParametersForLocalAuthority(
+                caseDetails, LOCAL_AUTHORITY_CODE, documentUrl);
+
+        assertThat(returnedLocalAuthorityParameters)
+            .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
+                "linkToDocStore", "reference", "caseUrl")
             .containsExactly(subjectLine, "Example Local Authority",
-                subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM),
-                "167888", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/167888");
-
-        /*  extracting separately as document_binary_url in populateCaseDetailsWithSingleC21Element()
-            method uses UUID.randomUUID()
-         */
-        assertThat(returnedParameters).extracting("linkToDocStore").isNotEqualTo("");
+                (subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(today, FormatStyle.MEDIUM)),
+                documentUrl, "167888", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/167888");
     }
 
     @Test
     void shouldReturnExactC21NotificationParametersWithMostRecentUploadedDocumentUrl() {
-        CaseDetails caseDetails = createCaseDetails();
+        final String mostRecentDocumentUrl = "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
+        CaseDetails caseDetails = createCaseDetailsWithMultipleC21Elements();
 
-        Map<String, Object> returnedParameters = c21OrderEmailContentProvider.buildC21OrderNotification(caseDetails,
-            LOCAL_AUTHORITY_CODE);
+        Map<String, Object> returnedCafcassParameters =
+            c21OrderEmailContentProvider.buildC21OrderNotificationParametersForCafcass(
+                caseDetails, LOCAL_AUTHORITY_CODE, mostRecentDocumentUrl);
 
-        final String subjectLine = "Jones, " + familyManCaseNumber;
+        assertThat(returnedCafcassParameters)
+            .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
+                "linkToDocStore", "reference", "caseUrl")
+            .containsExactly(subjectLine, "Example Cafcass",
+                subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(today, FormatStyle.MEDIUM),
+                 mostRecentDocumentUrl, "12345", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
 
-        assertThat(returnedParameters)
-            .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout", "linkToDocStore",
-                "reference", "caseUrl")
+        Map<String, Object> returnedLocalAuthorityParameters =
+            c21OrderEmailContentProvider.buildC21OrderNotificationParametersForLocalAuthority(
+                caseDetails, LOCAL_AUTHORITY_CODE, mostRecentDocumentUrl);
+
+        assertThat(returnedLocalAuthorityParameters)
+            .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
+                "linkToDocStore", "reference", "caseUrl")
             .containsExactly(subjectLine, "Example Local Authority",
-                subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM),
+                subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(today, FormatStyle.MEDIUM),
                 "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary", "12345",
                 "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
     }
@@ -119,7 +151,7 @@ class C21OrderEmailContentProviderTest {
                                 "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
                             .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker",
                                 "Judy", null, HER_HONOUR_JUDGE))
-                            .document(createDocumentReference(randomUUID().toString()))
+                            .document(createDocumentReference(documentId))
                             .build())
                         .build()),
                 "respondents1", createRespondents(),
@@ -127,10 +159,10 @@ class C21OrderEmailContentProviderTest {
             .build();
     }
 
-    private CaseDetails createCaseDetails() {
+    private CaseDetails createCaseDetailsWithMultipleC21Elements() {
         return CaseDetails.builder()
             .id(12345L)
-            .data(ImmutableMap.of("hearingDetails", createHearingBookings(LocalDate.now()),
+            .data(ImmutableMap.of("hearingDetails", createHearingBookings(today),
                 "c21Orders", createC21Orders(),
                 "respondents1", createRespondents(),
                 "familyManCaseNumber", familyManCaseNumber))

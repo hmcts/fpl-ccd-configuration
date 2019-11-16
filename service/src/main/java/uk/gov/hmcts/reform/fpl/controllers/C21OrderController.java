@@ -106,7 +106,11 @@ public class C21OrderController {
                                      @RequestHeader(value = "user-id") String userId,
                                      @RequestBody CallbackRequest callbackRequest) {
 
-        applicationEventPublisher.publishEvent(new C21OrderEvent(callbackRequest, authorization, userId));
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        String mostRecentDocumentUrl = service.mostRecentUploadedC21DocumentUrl(caseData.getC21Orders());
+
+        applicationEventPublisher.publishEvent(new C21OrderEvent(callbackRequest, authorization, userId,
+            C21OrderEvent.C21OrderEventData.builder().documentUrl(mostRecentDocumentUrl).build()));
     }
 
     private Document getDocument(String authorization,
