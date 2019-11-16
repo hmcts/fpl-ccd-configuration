@@ -130,13 +130,13 @@ class NotificationHandlerTest {
         final Map<String, Object> c21CafcassParameters = ImmutableMap.<String, Object>builder()
             .putAll(commonParameters)
             .put("localAuthorityOrCafcass", CAFCASS_NAME)
-            .put("linkToDocStore", documentUrl)
+            .put("linkToDocument", documentUrl)
             .build();
 
         final Map<String, Object> c21LocalAuthorityParameters = ImmutableMap.<String, Object>builder()
             .putAll(commonParameters)
             .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)
-            .put("linkToDocStore", documentUrl)
+            .put("linkToDocument", documentUrl)
             .build();
 
         @BeforeEach

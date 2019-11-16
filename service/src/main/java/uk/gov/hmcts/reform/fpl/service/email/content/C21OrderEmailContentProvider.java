@@ -46,8 +46,7 @@ public class C21OrderEmailContentProvider extends AbstractEmailContentProvider {
                                                                              final String localAuthorityCode,
                                                                           final String mostRecentUploadedDocumentUrl) {
         return ImmutableMap.<String, Object>builder()
-            .putAll(commonC21NotificationParameters(caseDetails))
-            .put("linkToDocStore", mostRecentUploadedDocumentUrl)
+            .putAll(commonC21NotificationParameters(caseDetails, mostRecentUploadedDocumentUrl))
             .put("localAuthorityOrCafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
             .build();
     }
@@ -56,8 +55,7 @@ public class C21OrderEmailContentProvider extends AbstractEmailContentProvider {
                                                                                     final String localAuthorityCode,
                                                                           final String mostRecentUploadedDocumentUrl) {
         return ImmutableMap.<String, Object>builder()
-            .putAll(commonC21NotificationParameters(caseDetails))
-            .put("linkToDocStore", mostRecentUploadedDocumentUrl)
+            .putAll(commonC21NotificationParameters(caseDetails, mostRecentUploadedDocumentUrl))
             .put("localAuthorityOrCafcass",
                 localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .build();
@@ -75,11 +73,13 @@ public class C21OrderEmailContentProvider extends AbstractEmailContentProvider {
             .collect(joining(","));
     }
 
-    private Map<String, Object> commonC21NotificationParameters(final CaseDetails caseDetails) {
+    private Map<String, Object> commonC21NotificationParameters(final CaseDetails caseDetails,
+                                                                final String linkToDocument) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         final String subjectLine = buildSubjectLine(caseData);
         return ImmutableMap.of(
             "subjectLine", subjectLine,
+            "linkToDocument", linkToDocument,
             "hearingDetailsCallout", buildSubjectLineWithHearingBookingDateSuffix(subjectLine, caseData),
             "reference", String.valueOf(caseDetails.getId()),
             "caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId()

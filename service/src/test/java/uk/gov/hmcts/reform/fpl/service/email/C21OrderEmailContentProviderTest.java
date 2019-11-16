@@ -93,7 +93,7 @@ class C21OrderEmailContentProviderTest {
 
         assertThat(returnedCafcassParameters)
             .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
-                "linkToDocStore", "reference", "caseUrl")
+                "linkToDocument", "reference", "caseUrl")
             .containsExactly(subjectLine, "Example Cafcass",
                 (subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(today, FormatStyle.MEDIUM)),
                 documentUrl, "167888", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/167888");
@@ -104,7 +104,7 @@ class C21OrderEmailContentProviderTest {
 
         assertThat(returnedLocalAuthorityParameters)
             .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
-                "linkToDocStore", "reference", "caseUrl")
+                "linkToDocument", "reference", "caseUrl")
             .containsExactly(subjectLine, "Example Local Authority",
                 (subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(today, FormatStyle.MEDIUM)),
                 documentUrl, "167888", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/167888");
@@ -121,7 +121,7 @@ class C21OrderEmailContentProviderTest {
 
         assertThat(returnedCafcassParameters)
             .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
-                "linkToDocStore", "reference", "caseUrl")
+                "linkToDocument", "reference", "caseUrl")
             .containsExactly(subjectLine, "Example Cafcass",
                 subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(today, FormatStyle.MEDIUM),
                  mostRecentDocumentUrl, "12345", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
@@ -132,7 +132,7 @@ class C21OrderEmailContentProviderTest {
 
         assertThat(returnedLocalAuthorityParameters)
             .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
-                "linkToDocStore", "reference", "caseUrl")
+                "linkToDocument", "reference", "caseUrl")
             .containsExactly(subjectLine, "Example Local Authority",
                 subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(today, FormatStyle.MEDIUM),
                 "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary", "12345",
