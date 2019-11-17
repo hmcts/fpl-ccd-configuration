@@ -105,12 +105,11 @@ public class C21OrderController {
     public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
                                      @RequestHeader(value = "user-id") String userId,
                                      @RequestBody CallbackRequest callbackRequest) {
-
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
         String mostRecentDocumentUrl = service.mostRecentUploadedC21DocumentUrl(caseData.getC21Orders());
 
         applicationEventPublisher.publishEvent(new C21OrderEvent(callbackRequest, authorization, userId,
-            C21OrderEvent.C21OrderEventData.builder().documentUrl(mostRecentDocumentUrl).build()));
+            buildC21OrderEventData(mostRecentDocumentUrl)));
     }
 
     private Document getDocument(String authorization,
@@ -121,5 +120,11 @@ public class C21OrderController {
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
             C21.getDocumentTitle());
+    }
+
+    private C21OrderEvent.C21OrderEventData buildC21OrderEventData(final String mostRecentDocumentUrl) {
+        return C21OrderEvent.C21OrderEventData.builder()
+            .documentUrl(mostRecentDocumentUrl)
+            .build();
     }
 }
