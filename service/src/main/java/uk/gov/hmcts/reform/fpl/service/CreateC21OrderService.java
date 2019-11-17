@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -83,6 +84,13 @@ public class CreateC21OrderService {
             .build();
     }
 
+    public C21OrderEvent.C21OrderEventData buildC21OrderEventData(final CaseData caseData) {
+        final String mostRecentDocumentUrl = mostRecentUploadedC21DocumentUrl(caseData.getC21Orders());
+        return C21OrderEvent.C21OrderEventData.builder()
+            .documentUrl(mostRecentDocumentUrl)
+            .build();
+    }
+
     private String getCourtName(String courtName) {
         return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
     }
@@ -99,7 +107,7 @@ public class CreateC21OrderService {
             .collect(toList());
     }
 
-    public String mostRecentUploadedC21DocumentUrl(final List<Element<C21Order>> c21Orders) {
+    private String mostRecentUploadedC21DocumentUrl(final List<Element<C21Order>> c21Orders) {
         return getLast(c21Orders.stream()
             .filter(Objects::nonNull)
             .map(Element::getValue)

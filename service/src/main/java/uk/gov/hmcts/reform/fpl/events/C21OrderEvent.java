@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.events;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Value;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
 @Data
@@ -17,7 +18,7 @@ public class C21OrderEvent extends CallbackEvent {
         this.c21OrderEventData = c21OrderEventData;
     }
 
-    @Data
+    @Value
     @Builder
     public static class C21OrderEventData {
         private final String documentUrl;
