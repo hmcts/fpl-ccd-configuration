@@ -120,7 +120,7 @@ class NotificationHandlerTest {
     class C2UploadedNotificationChecks {
         final String documentUrl = "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
-        final Map<String, Object> commonParameters = ImmutableMap.<String, Object>builder()
+        final Map<String, Object> c2Parameters = ImmutableMap.<String, Object>builder()
             .put("subjectLine", subjectLine)
             .put("hearingDetailsCallout", subjectLine)
             .put("reference", "12345")
@@ -128,13 +128,13 @@ class NotificationHandlerTest {
             .build();
 
         final Map<String, Object> c21CafcassParameters = ImmutableMap.<String, Object>builder()
-            .putAll(commonParameters)
+            .putAll(c2Parameters)
             .put("localAuthorityOrCafcass", CAFCASS_NAME)
             .put("linkToDocument", documentUrl)
             .build();
 
         final Map<String, Object> c21LocalAuthorityParameters = ImmutableMap.<String, Object>builder()
-            .putAll(commonParameters)
+            .putAll(c2Parameters)
             .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)
             .put("linkToDocument", documentUrl)
             .build();
@@ -160,7 +160,7 @@ class NotificationHandlerTest {
                 .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
 
             given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
-                .willReturn(commonParameters);
+                .willReturn(c2Parameters);
 
             given(c21OrderEmailContentProvider.buildC21OrderNotificationParametersForLocalAuthority(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentUrl))
@@ -181,7 +181,7 @@ class NotificationHandlerTest {
 
             verify(notificationClient, never())
                 .sendEmail(eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-admin@test.com"),
-                    eq(commonParameters), eq("12345"));
+                    eq(c2Parameters), eq("12345"));
         }
 
         @Test
@@ -196,7 +196,7 @@ class NotificationHandlerTest {
             notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
             verify(notificationClient, times(1)).sendEmail(
-                eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-non-admin@test.com"), eq(commonParameters), eq("12345"));
+                eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-non-admin@test.com"), eq(c2Parameters), eq("12345"));
         }
 
         @Test
