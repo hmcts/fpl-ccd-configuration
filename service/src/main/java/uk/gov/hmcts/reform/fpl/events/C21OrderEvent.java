@@ -1,12 +1,11 @@
 package uk.gov.hmcts.reform.fpl.events;
 
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
-@Data
+@Value
 @EqualsAndHashCode(callSuper = true)
 public class C21OrderEvent extends CallbackEvent {
 
