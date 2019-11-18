@@ -230,22 +230,19 @@ class NoticeOfProceedingsServiceTest {
                 .id(UUID.randomUUID())
                 .value(createHearingBooking(
                     LocalDateTime.of(TODAYS_DATE, LocalTime.of(9, 30)),
-                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(11, 30))
-                    ))
+                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(11, 30))))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
                 .value(createHearingBooking(
                     LocalDateTime.of(TODAYS_DATE, LocalTime.of(12, 30)),
-                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(13, 30))
-                    ))
+                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(13, 30))))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
                 .value(createHearingBooking(
                     LocalDateTime.of(TODAYS_DATE, LocalTime.of(15, 30)),
-                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(16, 0))
-                    ))
+                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(16, 0))))
                 .build()
         );
     }
