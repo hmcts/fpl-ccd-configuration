@@ -10,10 +10,12 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.exceptions.NoAssociatedUsersException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.Set;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.BDDMockito.given;
@@ -62,5 +64,17 @@ class LocalAuthorityUserServiceTest {
         verify(caseUserApi, times(2)).updateCaseRolesForUser(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(CREATOR_USER_ID),
             refEq(new CaseUser(additionalUserId,caseRoles)));
+    }
+
+    @Test
+    void shouldThrowCustomExceptionWhenValidLocalAuthorityHasNoUsers() throws IllegalArgumentException {
+        given(localAuthorityUserLookupConfiguration.getUserIds(LOCAL_AUTHORITY)).willReturn(
+            ImmutableList.<String>builder().build()
+        );
+
+        assertThatThrownBy(() ->
+            localAuthorityUserService.grantUserAccessWithCaseRole(CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY))
+            .isInstanceOf(NoAssociatedUsersException.class)
+            .hasMessage("No users found for the local authority 'example'");
     }
 }
