@@ -10,7 +10,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
-import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -24,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +51,6 @@ class NoticeOfProceedingsServiceTest {
     private static final String COURT_EMAIL = "example@court.com";
     private static final String CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL);
     private static final LocalDate TODAYS_DATE = LocalDate.now();
-    private static final LocalDateTime TODAYS_DATE_TIME = LocalDateTime.now();
-
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
@@ -149,7 +147,7 @@ class NoticeOfProceedingsServiceTest {
                 .proceedingTypes(emptyList())
                 .build())
             .orders(Orders.builder()
-                .orderType(ImmutableList.<OrderType>of(CARE_ORDER)).build())
+                .orderType(ImmutableList.of(CARE_ORDER)).build())
             .build();
 
         Map<String, Object> templateData = noticeOfProceedingService.getNoticeOfProceedingTemplateData(caseData);
@@ -212,8 +210,8 @@ class NoticeOfProceedingsServiceTest {
             .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
         assertThat(templateData.get("hearingVenue"))
             .isEqualTo("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo("08.15am");
-        assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo("8:30am");
+        assertThat(templateData.get("hearingTime")).isEqualTo("9:30am - 11:30am");
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("His Honour Judge Samuel Davidson");
         assertThat(templateData.get("legalAdvisorName")).isEqualTo("John Bishop");
     }
@@ -230,15 +228,24 @@ class NoticeOfProceedingsServiceTest {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(TODAYS_DATE_TIME.plusDays(5), TODAYS_DATE_TIME.plusDays(6)))
+                .value(createHearingBooking(
+                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(9, 30)),
+                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(11, 30))
+                    ))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(TODAYS_DATE_TIME.plusDays(5), TODAYS_DATE_TIME.plusDays(6)))
+                .value(createHearingBooking(
+                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(12, 30)),
+                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(13, 30))
+                    ))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(TODAYS_DATE_TIME, TODAYS_DATE_TIME.plusDays(1)))
+                .value(createHearingBooking(
+                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(15, 30)),
+                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(16, 0))
+                    ))
                 .build()
         );
     }
