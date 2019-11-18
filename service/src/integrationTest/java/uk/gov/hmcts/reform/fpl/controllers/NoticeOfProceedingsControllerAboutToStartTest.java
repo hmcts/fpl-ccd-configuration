@@ -80,7 +80,7 @@ class NoticeOfProceedingsControllerAboutToStartTest {
         String proceedingLabel = callbackResponse.getData().get("proceedingLabel").toString();
 
         String expectedContent = String.format("The case management hearing will be on the %s.", dateFormatterService
-            .formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "h:mma, d MMMM yyyy"));
+            .formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "d MMMM yyyy"));
 
         assertThat(proceedingLabel).isEqualTo(expectedContent);
     }
