@@ -41,6 +41,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCustomDirection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDirection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftCMOController.class)
@@ -96,7 +97,7 @@ class DraftCMOControllerTest {
                     .build());
 
         Map<String, Object> data = ImmutableMap.of("cmoHearingDateList", dynamicHearingDates,
-            "allParties", createDirection(null));
+            "allParties", createUnassignedDirection);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
 
@@ -104,9 +105,6 @@ class DraftCMOControllerTest {
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
-
-        assertThat(caseManagementOrder).extracting("id", "hearingDate")
-            .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), date.plusDays(5).toString());
 
         List<Element<Direction>> responseDirections = caseManagementOrder.getDirections();
 
