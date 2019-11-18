@@ -44,7 +44,7 @@ public class LocalAuthorityUserService {
         this.client = idamClient;
     }
 
-    public void grantUserAccess(String creatorUserId, String caseId, String caseLocalAuthority) {
+    public void grantUserAccessWithCaseRole(String creatorUserId, String caseId, String caseLocalAuthority) {
         try {
             Thread.sleep(10);
         } catch (InterruptedException e) {

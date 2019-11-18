@@ -51,25 +51,9 @@ class LocalAuthorityUserServiceTest {
         );
 
         assertThatThrownBy(() ->
-            localAuthorityUserService.grantUserAccess(AUTH_TOKEN, CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY))
+            localAuthorityUserService.grantUserAccessWithCaseRole(CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY))
             .isInstanceOf(NoAssociatedUsersException.class)
             .hasMessage("No users found for the local authority 'example'");
-    }
-
-    @Test
-    void shouldNotMakeCallToGrantAccessEndpointWhenUserCreatingCaseIsOnlyUserWithinLocalAuthority() {
-        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
-        given(localAuthorityUserLookupConfiguration.getUserIds(LOCAL_AUTHORITY)).willReturn(
-            ImmutableList.<String>builder()
-                .add(CREATOR_USER_ID)
-                .build()
-        );
-
-        localAuthorityUserService.grantUserAccess(AUTH_TOKEN, CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY);
-
-        verify(caseAccessApi, never()).grantAccessToCase(
-            any(), any(), any(), any(), any(), any(), any()
-        );
     }
 
     @Test
@@ -83,7 +67,7 @@ class LocalAuthorityUserServiceTest {
                 .build()
         );
 
-        localAuthorityUserService.grantUserAccess(AUTH_TOKEN, CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccessWithCaseRole(CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY);
 
         verify(caseAccessApi, times(1)).grantAccessToCase(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CREATOR_USER_ID), eq(JURISDICTION),
@@ -106,7 +90,7 @@ class LocalAuthorityUserServiceTest {
             eq(CASE_TYPE), eq(CASE_ID), refEq(new UserId(firstAdditionalUserId)));
 
 
-        localAuthorityUserService.grantUserAccess(AUTH_TOKEN, CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccessWithCaseRole(CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY);
 
         verify(caseAccessApi, times(1)).grantAccessToCase(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CREATOR_USER_ID), eq(JURISDICTION),
