@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.events;
 
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -9,17 +8,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 @EqualsAndHashCode(callSuper = true)
 public class C21OrderEvent extends CallbackEvent {
 
-    private final C21OrderEventData c21OrderEventData;
+    private final String mostRecentUploadedDocumentUrl;
 
     public C21OrderEvent(CallbackRequest callbackRequest, String authorization, String userId,
-                         C21OrderEventData c21OrderEventData) {
+                         String mostRecentUploadedDocumentUrl) {
         super(callbackRequest, authorization, userId);
-        this.c21OrderEventData = c21OrderEventData;
-    }
-
-    @Value
-    @Builder
-    public static class C21OrderEventData {
-        private final String documentUrl;
+        this.mostRecentUploadedDocumentUrl = mostRecentUploadedDocumentUrl;
     }
 }

@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvide
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,7 +63,7 @@ class C21OrderEmailContentProviderTest {
     private C21OrderEmailContentProvider c21OrderEmailContentProvider;
 
     private String familyManCaseNumber;
-    private String documentId;
+    private UUID documentId;
     private String subjectLine;
 
     @BeforeEach
@@ -78,12 +79,12 @@ class C21OrderEmailContentProviderTest {
             .willReturn((new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL)));
 
         familyManCaseNumber = RandomStringUtils.randomAlphabetic(8);
-        documentId = randomUUID().toString();
+        documentId = randomUUID();
         subjectLine = "Jones, " + familyManCaseNumber;
     }
 
     @Test
-    void shouldReturnExactC21NotificationParametersWithUploadedDocumentUrl() {
+    void shouldReturnExactC21CafcassNotificationParametersWithUploadedDocumentUrl() {
         final String documentUrl = "http://dm-store:8080/documents/" + documentId + "/binary";
         CaseDetails caseDetails = createCaseDetailsWithSingleC21Element();
 
@@ -111,7 +112,24 @@ class C21OrderEmailContentProviderTest {
     }
 
     @Test
-    void shouldReturnExactC21NotificationParametersWithMostRecentUploadedDocumentUrl() {
+    void shouldReturnExactC21LocalAuthorityNotificationParametersWithUploadedDocumentUrl() {
+        final String documentUrl = "http://dm-store:8080/documents/" + documentId + "/binary";
+        CaseDetails caseDetails = createCaseDetailsWithSingleC21Element();
+
+        Map<String, Object> returnedLocalAuthorityParameters =
+            c21OrderEmailContentProvider.buildC21OrderNotificationParametersForLocalAuthority(
+                caseDetails, LOCAL_AUTHORITY_CODE, documentUrl);
+
+        assertThat(returnedLocalAuthorityParameters)
+            .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
+                "linkToDocument", "reference", "caseUrl")
+            .containsExactly(subjectLine, "Example Local Authority",
+                (subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(today, FormatStyle.MEDIUM)),
+                documentUrl, "167888", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/167888");
+    }
+
+    @Test
+    void shouldReturnExactC21CafcassNotificationParametersWithMostRecentUploadedDocumentUrl() {
         final String mostRecentDocumentUrl = "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
         CaseDetails caseDetails = createCaseDetailsWithMultipleC21Elements();
 
@@ -139,6 +157,24 @@ class C21OrderEmailContentProviderTest {
                 "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
     }
 
+    @Test
+    void shouldReturnExactC21LocalAuthorityNotificationParametersWithMostRecentUploadedDocumentUrl() {
+        final String mostRecentDocumentUrl = "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
+        CaseDetails caseDetails = createCaseDetailsWithMultipleC21Elements();
+
+        Map<String, Object> returnedLocalAuthorityParameters =
+            c21OrderEmailContentProvider.buildC21OrderNotificationParametersForLocalAuthority(
+                caseDetails, LOCAL_AUTHORITY_CODE, mostRecentDocumentUrl);
+
+        assertThat(returnedLocalAuthorityParameters)
+            .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
+                "linkToDocument", "reference", "caseUrl")
+            .containsExactly(subjectLine, "Example Local Authority",
+                subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(today, FormatStyle.MEDIUM),
+                "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary", "12345",
+                "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345");
+    }
+
     private CaseDetails createCaseDetailsWithSingleC21Element() {
         return CaseDetails.builder()
             .id(167888L)
@@ -151,7 +187,7 @@ class C21OrderEmailContentProviderTest {
                                 "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
                             .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker",
                                 "Judy", null, HER_HONOUR_JUDGE))
-                            .document(createDocumentReference(documentId))
+                            .document(createDocumentReference(documentId.toString()))
                             .build())
                         .build()),
                 "respondents1", createRespondents(),

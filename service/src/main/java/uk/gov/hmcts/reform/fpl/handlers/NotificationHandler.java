@@ -91,10 +91,8 @@ public class NotificationHandler {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
 
-        String documentUrl = event.getC21OrderEventData().getDocumentUrl();
-
-        sendC21NotificationForLocalAuthority(caseDetails, localAuthorityCode, documentUrl);
-        sendC21NotificationForCafcass(caseDetails, localAuthorityCode, documentUrl);
+        sendC21NotificationForLocalAuthority(caseDetails, localAuthorityCode, event.getMostRecentUploadedDocumentUrl());
+        sendC21NotificationForCafcass(caseDetails, localAuthorityCode, event.getMostRecentUploadedDocumentUrl());
     }
 
     @EventListener

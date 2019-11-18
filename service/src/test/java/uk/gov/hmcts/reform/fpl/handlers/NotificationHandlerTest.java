@@ -118,7 +118,7 @@ class NotificationHandlerTest {
 
     @Nested
     class C2UploadedNotificationChecks {
-        final String documentUrl = "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
+        final String mostRecentUploadedDocumentUrl = "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
         final Map<String, Object> c2Parameters = ImmutableMap.<String, Object>builder()
             .put("subjectLine", subjectLine)
@@ -130,13 +130,13 @@ class NotificationHandlerTest {
         final Map<String, Object> c21CafcassParameters = ImmutableMap.<String, Object>builder()
             .putAll(c2Parameters)
             .put("localAuthorityOrCafcass", CAFCASS_NAME)
-            .put("linkToDocument", documentUrl)
+            .put("linkToDocument", mostRecentUploadedDocumentUrl)
             .build();
 
         final Map<String, Object> c21LocalAuthorityParameters = ImmutableMap.<String, Object>builder()
             .putAll(c2Parameters)
             .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)
-            .put("linkToDocument", documentUrl)
+            .put("linkToDocument", mostRecentUploadedDocumentUrl)
             .build();
 
         @BeforeEach
@@ -163,11 +163,11 @@ class NotificationHandlerTest {
                 .willReturn(c2Parameters);
 
             given(c21OrderEmailContentProvider.buildC21OrderNotificationParametersForLocalAuthority(
-                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentUrl))
+                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, mostRecentUploadedDocumentUrl))
                 .willReturn(c21LocalAuthorityParameters);
 
             given(c21OrderEmailContentProvider.buildC21OrderNotificationParametersForCafcass(
-                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, documentUrl))
+                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, mostRecentUploadedDocumentUrl))
                 .willReturn(c21CafcassParameters);
         }
 
@@ -201,10 +201,8 @@ class NotificationHandlerTest {
 
         @Test
         void shouldNotifyPartiesOnC21OrderSubmission() throws IOException, NotificationClientException {
-            C21OrderEvent.C21OrderEventData c21OrderEventData = C21OrderEvent.C21OrderEventData.builder()
-                .documentUrl(documentUrl).build();
             notificationHandler.sendNotificationForC21Order(new C21OrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
-                c21OrderEventData));
+                mostRecentUploadedDocumentUrl));
 
             verify(notificationClient, times(1)).sendEmail(
                 eq(C21_ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
