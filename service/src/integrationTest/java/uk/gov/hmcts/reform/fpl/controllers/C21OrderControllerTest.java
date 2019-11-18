@@ -203,7 +203,7 @@ class C21OrderControllerTest {
             .build();
     }
 
-    private Map<String, Object> similarParameters() {
+    private Map<String, Object> commonNotificationParameters() {
         final String documentUrl = "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
         final String subjectLine = "Jones, " + FAMILY_MAN_CASE_NUMBER;
 
@@ -219,14 +219,14 @@ class C21OrderControllerTest {
 
     private Map<String, Object> c21CafcassParameters() {
         return ImmutableMap.<String, Object>builder()
-            .putAll(similarParameters())
+            .putAll(commonNotificationParameters())
             .put("localAuthorityOrCafcass", CAFCASS_NAME)
             .build();
     }
 
     private Map<String, Object> c21LocalAuthorityParameters() {
         return ImmutableMap.<String, Object>builder()
-            .putAll(similarParameters())
+            .putAll(commonNotificationParameters())
             .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)
             .build();
     }
