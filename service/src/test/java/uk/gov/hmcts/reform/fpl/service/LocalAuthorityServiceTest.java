@@ -11,9 +11,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
-
-import java.util.ArrayList;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
@@ -43,8 +41,8 @@ class LocalAuthorityServiceTest {
 
         given(codeConfig.getLocalAuthorityCode("example.gov.uk")).willReturn(LOCAL_AUTHORITY_CODE);
 
-        given(idamApi.retrieveUserDetails(AUTH_TOKEN)).willReturn(
-            new UserDetails("1", email, "Mock", "Mock", new ArrayList<>()));
+        given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
+            UserInfo.builder().sub(email).build());
 
         String domain = localAuthorityService.getLocalAuthorityCode(AUTH_TOKEN);
 
@@ -53,7 +51,7 @@ class LocalAuthorityServiceTest {
 
     @Test
     void shouldReturnExceptionWhenIdamApiThrows() {
-        given(idamApi.retrieveUserDetails(AUTH_TOKEN)).willThrow(
+        given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willThrow(
             new RuntimeException("user does not exist"));
 
         assertThatThrownBy(() -> localAuthorityService.getLocalAuthorityCode(AUTH_TOKEN))
