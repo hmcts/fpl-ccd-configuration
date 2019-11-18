@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
@@ -35,16 +34,19 @@ public class NoticeOfProceedingsService {
     private HearingBookingService hearingBookingService;
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private HearingVenueLookUpService hearingVenueLookUpService;
+    private CommonCaseDataExtractionService commonCaseDataExtractionService;
 
     @Autowired
     public NoticeOfProceedingsService(DateFormatterService dateFormatterService,
-                                     HearingBookingService hearingBookingService,
-                                     HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                      HearingVenueLookUpService hearingVenueLookUpService) {
+                                      HearingBookingService hearingBookingService,
+                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
+                                      HearingVenueLookUpService hearingVenueLookUpService,
+                                      CommonCaseDataExtractionService commonCaseDataExtractionService) {
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.hearingVenueLookUpService = hearingVenueLookUpService;
+        this.commonCaseDataExtractionService = commonCaseDataExtractionService;
     }
 
     public List<Element<DocumentBundle>> getRemovedDocumentBundles(CaseData caseData,
@@ -112,49 +114,12 @@ public class NoticeOfProceedingsService {
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
 
         return ImmutableMap.of(
-            "hearingDate", getHearingDate(prioritisedHearingBooking),
+            "hearingDate", commonCaseDataExtractionService.getHearingDate(prioritisedHearingBooking),
             "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
-            "preHearingAttendance", extractPrehearingAttendance(prioritisedHearingBooking),
-            "hearingTime", getHearingTime(prioritisedHearingBooking)
+            "preHearingAttendance", commonCaseDataExtractionService.extractPrehearingAttendance(
+                prioritisedHearingBooking),
+            "hearingTime", commonCaseDataExtractionService.getHearingTime(prioritisedHearingBooking)
         );
-    }
-
-    private String getHearingTime(HearingBooking hearingBooking) {
-        String hearingTime;
-        final LocalDateTime startDate = hearingBooking.getStartDate();
-        final LocalDateTime endDate = hearingBooking.getEndDate();
-
-        if (hearingBooking.hasDatesOnSameDay()) {
-            // Example 3:30pm - 5:30pm
-            hearingTime = String.format("%s - %s", formatTime(startDate), formatTime(endDate));
-        } else {
-            // Example 18 June, 3:40pm - 19 June, 2:30pm
-            hearingTime = String.format("%s - %s", formatDateTime(startDate), formatDateTime(endDate));
-        }
-
-        return hearingTime;
-    }
-
-    private String getHearingDate(HearingBooking hearingBooking) {
-        String hearingDate = "";
-
-        // If they aren't on the same date return nothing
-        if (hearingBooking.hasDatesOnSameDay()) {
-            hearingDate = dateFormatterService.formatLocalDateToString(
-                hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG);
-        }
-
-        return hearingDate;
-    }
-
-    private String extractPrehearingAttendance(HearingBooking booking) {
-        LocalDateTime time = calculatePrehearingAttendance(booking.getStartDate());
-
-        return booking.hasDatesOnSameDay() ? formatTime(time) : formatDateTime(time);
-    }
-
-    private LocalDateTime calculatePrehearingAttendance(LocalDateTime dateTime) {
-        return dateTime.minusHours(1);
     }
 
     private String getOrderTypes(Orders orders) {
@@ -192,13 +157,5 @@ public class NoticeOfProceedingsService {
         }
 
         return childrenNames;
-    }
-
-    private String formatDateTime(LocalDateTime dateTime) {
-        return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM, h:mma");
-    }
-
-    private String formatTime(LocalDateTime dateTime) {
-        return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "h:mma");
     }
 }

@@ -57,6 +57,8 @@ class NoticeOfProceedingsServiceTest {
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
+    private CommonCaseDataExtractionService commonCaseDataExtractionService = new CommonCaseDataExtractionService(
+        dateFormatterService);
 
     @Autowired
     private HearingVenueLookUpService hearingVenueLookUpService;
@@ -66,7 +68,8 @@ class NoticeOfProceedingsServiceTest {
     @BeforeEach
     void setup() {
         noticeOfProceedingService = new NoticeOfProceedingsService(dateFormatterService,
-            hearingBookingService, hmctsCourtLookupConfiguration, hearingVenueLookUpService);
+            hearingBookingService, hmctsCourtLookupConfiguration, hearingVenueLookUpService,
+            commonCaseDataExtractionService);
     }
 
     @Test
@@ -185,7 +188,7 @@ class NoticeOfProceedingsServiceTest {
     }
 
     @Test
-    void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated()  {
+    void shouldMapCaseDataPropertiesToTemplatePlaceholderDataWhenCaseDataIsFullyPopulated() {
         CaseData caseData = initNoticeOfProceedingCaseData()
             .children1(createPopulatedChildren())
             .noticeOfProceedings(NoticeOfProceedings.builder()
