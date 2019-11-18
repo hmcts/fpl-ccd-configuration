@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStanda
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, JsonOrdersLookupService.class,
     HearingVenueLookUpService.class})
 class CaseDataExtractionServiceTest {
-    @SuppressWarnings( {"membername", "AbbreviationAsWordInName"})
+    @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_NAME = "Example Court";
