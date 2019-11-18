@@ -107,33 +107,6 @@ class CaseInitiationControllerTest {
         assertThat(response.getResponse().getContentAsString()).isEqualTo(MAPPER.writeValueAsString(expectedResponse));
     }
 
-    /*@Test
-    void grantAccessShouldBeCalledOnceForEachUser() throws Exception {
-        given(serviceAuthorisationApi.serviceToken(anyMap()))
-            .willReturn(SERVICE_AUTH_TOKEN);
-
-        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
-            .id(Long.valueOf(CASE_ID))
-            .data(ImmutableMap.<String, Object>builder()
-                .put("caseLocalAuthority", "example")
-                .build()).build())
-            .build();
-
-        mockMvc
-            .perform(post("/callback/case-initiation/submitted")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsString(request)))
-            .andExpect(status().isOk());
-
-        Thread.sleep(3000);
-
-        verify(caseAccessApi, times(3)).grantAccessToCase(
-            eq(AUTH_TOKEN), any(), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID), any()
-        );
-    }*/
-
     @Test
     void updateCaseRolesShouldBeCalledOnceForEachUser() throws Exception {
         given(serviceAuthorisationApi.serviceToken(anyMap()))
