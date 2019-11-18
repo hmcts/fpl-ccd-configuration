@@ -54,6 +54,7 @@ public class LocalAuthorityUserService {
                 Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
                 try {
                     String authentication = client.authenticateUser("fpl-system-update@mailnesia.com", "Password12");
+                    System.out.println("Authentication is" + authentication);
                     caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), caseId, userId,
                         new CaseUser(userId, caseRoles));
                     logger.info("Added case roles {} to user {}", caseRoles, userId);

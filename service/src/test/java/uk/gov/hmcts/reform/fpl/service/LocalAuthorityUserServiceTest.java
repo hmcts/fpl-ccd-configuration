@@ -1,25 +1,22 @@
-/*package uk.gov.hmcts.reform.fpl.service;
+package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
-import feign.RetryableException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
-import uk.gov.hmcts.reform.ccd.client.model.UserId;
+import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.exceptions.NoAssociatedUsersException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import java.util.Set;
+
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -28,74 +25,42 @@ class LocalAuthorityUserServiceTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String SERVICE_AUTH_TOKEN = "Bearer service token";
-    private static final String JURISDICTION = "PUBLICLAW";
-    private static final String CASE_TYPE = "CARE_SUPERVISION_EPO";
     private static final String CASE_ID = "1";
     private static final String CREATOR_USER_ID = "1";
     private static final String LOCAL_AUTHORITY = "example";
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
+
     @Mock
-    private CaseAccessApi caseAccessApi;
+    private CaseUserApi caseUserApi;
     @Mock
     private LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
+
+    @Mock
+    private IdamClient client;
 
     @InjectMocks
     private LocalAuthorityUserService localAuthorityUserService;
 
     @Test
-    void shouldThrowCustomExceptionWhenValidLocalAuthorityHasNoUsers() throws IllegalArgumentException {
-        given(localAuthorityUserLookupConfiguration.getUserIds(LOCAL_AUTHORITY)).willReturn(
-            ImmutableList.<String>builder().build()
-        );
+    void shouldMakeCallToUpdateCaseRoleEndpointToGrantAccessRolesToUsersWithinLocalAuthority() {
+        String additionalUserId = "1";
+        Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
 
-        assertThatThrownBy(() ->
-            localAuthorityUserService.grantUserAccessWithCaseRole(CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY))
-            .isInstanceOf(NoAssociatedUsersException.class)
-            .hasMessage("No users found for the local authority 'example'");
-    }
-
-    @Test
-    void shouldMakeCallToGrantAccessEndpointOnlyToGrantAccessToRemainingUsersWithinLocalAuthority() {
-        String additionalUserId = "2";
-
-        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+        given(client.authenticateUser("fpl-system-update@mailnesia.com", "Password12")).willReturn(AUTH_TOKEN);
         given(localAuthorityUserLookupConfiguration.getUserIds(LOCAL_AUTHORITY)).willReturn(
             ImmutableList.<String>builder()
                 .add(CREATOR_USER_ID, additionalUserId)
                 .build()
         );
 
-        //given(client.authenticateUser)
-
-        localAuthorityUserService.grantUserAccessWithCaseRole(CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY);
-
-        verify(caseAccessApi, times(1)).grantAccessToCase(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CREATOR_USER_ID), eq(JURISDICTION),
-            eq(CASE_TYPE), eq(CASE_ID), refEq(new UserId(additionalUserId)));
-    }
-
-    @Test
-    void shouldNotThrowExceptionWhenCallToGrandAccessEndpointFailedForOneOfTheUsers() {
-        String firstAdditionalUserId = "2";
-        String secondAdditionalUserId = "3";
-
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
-        given(localAuthorityUserLookupConfiguration.getUserIds(LOCAL_AUTHORITY)).willReturn(
-            ImmutableList.<String>builder()
-                .add(CREATOR_USER_ID, firstAdditionalUserId, secondAdditionalUserId)
-                .build()
-        );
-        willThrow(new RetryableException(500, "Some error", null, null)).given(caseAccessApi).grantAccessToCase(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CREATOR_USER_ID), eq(JURISDICTION),
-            eq(CASE_TYPE), eq(CASE_ID), refEq(new UserId(firstAdditionalUserId)));
-
 
         localAuthorityUserService.grantUserAccessWithCaseRole(CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY);
 
-        verify(caseAccessApi, times(1)).grantAccessToCase(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CREATOR_USER_ID), eq(JURISDICTION),
-            eq(CASE_TYPE), eq(CASE_ID), refEq(new UserId(secondAdditionalUserId)));
+        verify(caseUserApi, times(2)).updateCaseRolesForUser(
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(CREATOR_USER_ID),
+            refEq(new CaseUser(additionalUserId,caseRoles)));
     }
-}*/
+}

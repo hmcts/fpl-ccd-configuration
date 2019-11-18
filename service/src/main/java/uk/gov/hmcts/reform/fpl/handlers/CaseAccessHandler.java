@@ -21,11 +21,10 @@ public class CaseAccessHandler {
     @EventListener
     public void grantCaseAccessToAllLocalAuthorityUsers(InitiatedCaseEvent event) {
         String userId = event.getUserId();
-        String authorization = event.getAuthorization();
         String caseId = Long.toString(event.getCallbackRequest().getCaseDetails().getId());
         String caseLocalAuthority = (String) event.getCallbackRequest().getCaseDetails().getData()
             .get("caseLocalAuthority");
 
-        //localAuthorityUserService.grantUserAccess(authorization, userId, caseId, caseLocalAuthority);
+        localAuthorityUserService.grantUserAccessWithCaseRole(userId, caseId, caseLocalAuthority);
     }
 }
