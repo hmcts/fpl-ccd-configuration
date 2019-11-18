@@ -14,13 +14,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
+import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 class CaseInitiationControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
+    private static final String SERVICE_AUTH_TOKEN = "Bearer service token";
     private static final String USER_ID = "10";
     private static final String CASE_ID = "1";
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -47,6 +54,9 @@ class CaseInitiationControllerTest {
 
     @MockBean
     private CaseAccessApi caseAccessApi;
+
+    @MockBean
+    private CaseUserApi caseUserApi;
 
     @Test
     void shouldAddCaseLocalAuthorityToCaseData() throws Exception {
@@ -123,6 +133,33 @@ class CaseInitiationControllerTest {
             eq(AUTH_TOKEN), any(), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID), any()
         );
     }*/
+
+    @Test
+    void updateCaseRolesShouldBeCalledOnceForEachUser() throws Exception {
+        given(serviceAuthorisationApi.serviceToken(anyMap()))
+            .willReturn(SERVICE_AUTH_TOKEN);
+
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .id(Long.valueOf(CASE_ID))
+            .data(ImmutableMap.<String, Object>builder()
+                .put("caseLocalAuthority", "example")
+                .build()).build())
+            .build();
+
+        mockMvc
+            .perform(post("/callback/case-initiation/submitted")
+                .header("authorization", AUTH_TOKEN)
+                .header("user-id", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(MAPPER.writeValueAsString(request)))
+            .andExpect(status().isOk());
+
+        Thread.sleep(3000);
+
+        verify(caseUserApi, times(3)).updateCaseRolesForUser(
+            eq(AUTH_TOKEN), any(), eq(CASE_ID), eq(USER_ID), any()
+        );
+    }
 
     /*@Test
     void shouldContinueAddingUsersAfterGrantAccessFailure() throws Exception {
