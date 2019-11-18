@@ -48,7 +48,6 @@ class LocalAuthorityUserServiceTest {
     @Test
     void shouldMakeCallToUpdateCaseRoleEndpointToGrantAccessRolesToUsersWithinLocalAuthority() {
         String additionalUserId = "1";
-        Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
 
         given(client.authenticateUser("fpl-system-update@mailnesia.com", "Password12")).willReturn(AUTH_TOKEN);
         given(localAuthorityUserLookupConfiguration.getUserIds(LOCAL_AUTHORITY)).willReturn(
@@ -60,6 +59,8 @@ class LocalAuthorityUserServiceTest {
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
         localAuthorityUserService.grantUserAccessWithCaseRole(CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY);
+
+        Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
 
         verify(caseUserApi, times(2)).updateCaseRolesForUser(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(CREATOR_USER_ID),
