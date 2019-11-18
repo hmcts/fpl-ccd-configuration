@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service;
+/*package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import feign.RetryableException;
@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.model.UserId;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.NoAssociatedUsersException;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -19,7 +20,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -67,6 +67,8 @@ class LocalAuthorityUserServiceTest {
                 .build()
         );
 
+        //given(client.authenticateUser)
+
         localAuthorityUserService.grantUserAccessWithCaseRole(CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY);
 
         verify(caseAccessApi, times(1)).grantAccessToCase(
@@ -96,4 +98,4 @@ class LocalAuthorityUserServiceTest {
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CREATOR_USER_ID), eq(JURISDICTION),
             eq(CASE_TYPE), eq(CASE_ID), refEq(new UserId(secondAdditionalUserId)));
     }
-}
+}*/

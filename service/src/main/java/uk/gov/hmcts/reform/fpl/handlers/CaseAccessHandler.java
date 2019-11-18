@@ -26,6 +26,6 @@ public class CaseAccessHandler {
         String caseLocalAuthority = (String) event.getCallbackRequest().getCaseDetails().getData()
             .get("caseLocalAuthority");
 
-        localAuthorityUserService.grantUserAccess(authorization, userId, caseId, caseLocalAuthority);
+        //localAuthorityUserService.grantUserAccess(authorization, userId, caseId, caseLocalAuthority);
     }
 }
