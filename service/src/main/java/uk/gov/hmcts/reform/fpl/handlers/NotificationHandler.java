@@ -91,11 +91,10 @@ public class NotificationHandler {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
 
-        String reference = Long.toString(caseDetails.getId());
         String documentUrl = event.getC21OrderEventData().getDocumentUrl();
 
-        sendC21NotificationForLocalAuthority(caseDetails, localAuthorityCode, reference, documentUrl);
-        sendC21NotificationForCafcass(caseDetails, localAuthorityCode, reference, documentUrl);
+        sendC21NotificationForLocalAuthority(caseDetails, localAuthorityCode, documentUrl);
+        sendC21NotificationForCafcass(caseDetails, localAuthorityCode, documentUrl);
     }
 
     @EventListener
@@ -153,26 +152,24 @@ public class NotificationHandler {
         }
     }
 
-    private void sendC21NotificationForCafcass(final CaseDetails caseDetails,
-                                               final String localAuthorityCode,
-                                               final String reference,
+    private void sendC21NotificationForCafcass(final CaseDetails caseDetails, final String localAuthorityCode,
                                                final String mostRecentUploadedDocumentUrl) {
         Map<String, Object> cafCassParameters =
             c21OrderEmailContentProvider.buildC21OrderNotificationParametersForCafcass(
                 caseDetails, localAuthorityCode, mostRecentUploadedDocumentUrl);
         String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
-        sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, cafcassEmail, cafCassParameters, reference);
+        sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, cafcassEmail, cafCassParameters,
+            Long.toString(caseDetails.getId()));
     }
 
-    private void sendC21NotificationForLocalAuthority(final CaseDetails caseDetails,
-                                                      final String localAuthorityCode,
-                                                      final String reference,
+    private void sendC21NotificationForLocalAuthority(final CaseDetails caseDetails, final String localAuthorityCode,
                                                       final String mostRecentUploadedDocumentUrl) {
         Map<String, Object> localAuthorityParameters =
             c21OrderEmailContentProvider.buildC21OrderNotificationParametersForLocalAuthority(
                 caseDetails, localAuthorityCode, mostRecentUploadedDocumentUrl);
         String localAuthorityEmail = localAuthorityEmailLookupConfiguration.getLocalAuthority(
             localAuthorityCode).getEmail();
-        sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, localAuthorityEmail, localAuthorityParameters, reference);
+        sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, localAuthorityEmail, localAuthorityParameters,
+            Long.toString(caseDetails.getId()));
     }
 }
