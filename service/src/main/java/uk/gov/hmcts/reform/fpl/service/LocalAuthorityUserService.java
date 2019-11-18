@@ -44,41 +44,23 @@ public class LocalAuthorityUserService {
         this.client = idamClient;
     }
 
-    public void grantUserAccess(String authorization, String creatorUserId, String caseId, String caseLocalAuthority) {
+    public void grantUserAccess(String creatorUserId, String caseId, String caseLocalAuthority) {
         try {
             Thread.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
-        try {
-            String authentication = client.authenticateUser("fpl-system-update@mailnesia.com", "Password12");
-            caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), caseId, creatorUserId,
-                new CaseUser(creatorUserId, caseRoles));
-            logger.info("Added case roles {} to user {}", caseRoles, creatorUserId);
-        } catch (FeignException exception) {
-            logger.warn(String.format("Error adding case roles %s to user %s", caseRoles, creatorUserId), exception);
-        }
-
-
         findUserIds(caseLocalAuthority).stream()
-            .filter(userId -> !Objects.equals(userId, creatorUserId))
             .forEach(userId -> {
-                logger.debug("Granting user {} access to case {}", userId, caseId);
-
+                Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
                 try {
-                    caseAccessApi.grantAccessToCase(
-                        authorization,
-                        authTokenGenerator.generate(),
-                        creatorUserId,
-                        JURISDICTION,
-                        CASE_TYPE,
-                        caseId,
-                        new UserId(userId));
-
-                } catch (Exception ex) {
-                    logger.warn("Could not grant user {} access to case {}", userId, caseId, ex);
+                    String authentication = client.authenticateUser("fpl-system-update@mailnesia.com", "Password12");
+                    caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), caseId, userId,
+                        new CaseUser(userId, caseRoles));
+                    logger.info("Added case roles {} to user {}", caseRoles, userId);
+                } catch (FeignException exception) {
+                    logger.warn(String.format("Error adding case roles %s to user %s", caseRoles, creatorUserId), exception);
                 }
             });
     }
