@@ -43,12 +43,6 @@ public class LocalAuthorityUserService {
     }
 
     public void grantUserAccessWithCaseRole(String creatorUserId, String caseId, String caseLocalAuthority) {
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         findUserIds(caseLocalAuthority).stream()
             .forEach(userId -> {
                 Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
