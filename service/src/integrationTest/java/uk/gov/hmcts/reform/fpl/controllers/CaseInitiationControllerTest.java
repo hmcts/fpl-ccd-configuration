@@ -19,6 +19,9 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
@@ -60,8 +63,8 @@ class CaseInitiationControllerTest {
 
     @Test
     void shouldAddCaseLocalAuthorityToCaseData() throws Exception {
-        given(idamApi.retrieveUserDetails(AUTH_TOKEN)).willReturn(
-            new UserDetails(null, "user@example.gov.uk", null, null, null));
+        given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
+            UserInfo.builder().sub("user@example.gov.uk").build());
 
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
@@ -93,8 +96,8 @@ class CaseInitiationControllerTest {
                 .build())
             .build();
 
-        given(idamApi.retrieveUserDetails(AUTH_TOKEN))
-            .willReturn(new UserDetails(null, "user@email.gov.uk", null, null, null));
+        given(idamApi.retrieveUserInfo(AUTH_TOKEN))
+            .willReturn(UserInfo.builder().sub("user@email.gov.uk").build());
 
         MvcResult response = mockMvc
             .perform(post("/callback/case-initiation/about-to-submit")
