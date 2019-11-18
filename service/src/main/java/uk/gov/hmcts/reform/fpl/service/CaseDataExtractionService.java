@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.FormatStyle;
 import java.util.Base64;
 import java.util.List;
@@ -171,7 +170,7 @@ public class CaseDataExtractionService {
         return ImmutableMap.of(
             "hearingDate", getHearingDate(prioritisedHearingBooking),
             "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
-            "preHearingAttendance", calculatePrehearingAttendance(prioritisedHearingBooking.getStartDate()),
+            "preHearingAttendance", extractPrehearingAttendance(prioritisedHearingBooking),
             "hearingTime", getHearingTime(prioritisedHearingBooking),
             "judgeName", prioritisedHearingBooking.getJudgeTitle() + " "
                 + prioritisedHearingBooking.getJudgeName()
@@ -206,8 +205,14 @@ public class CaseDataExtractionService {
         return hearingDate;
     }
 
-    private LocalTime calculatePrehearingAttendance(LocalDateTime dateTime) {
-        return dateTime.toLocalTime().minusHours(1);
+    private String extractPrehearingAttendance(HearingBooking booking) {
+        LocalDateTime time = calculatePrehearingAttendance(booking.getStartDate());
+
+        return booking.hasDatesOnSameDay() ? formatTime(time) : formatDateTime(time);
+    }
+
+    private LocalDateTime calculatePrehearingAttendance(LocalDateTime dateTime) {
+        return dateTime.minusHours(1);
     }
 
     private String getOrderTypes(CaseData caseData) {
@@ -313,6 +318,6 @@ public class CaseDataExtractionService {
     }
 
     private String formatTime(LocalDateTime dateTime) {
-        return dateFormatterService.formatLocalTimeToString(dateTime.toLocalTime(), FormatStyle.SHORT);
+        return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "h:mma");
     }
 }
