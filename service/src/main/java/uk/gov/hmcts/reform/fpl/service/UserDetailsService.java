@@ -21,6 +21,6 @@ public class UserDetailsService {
      * @return Users full name.
      */
     public String getUserName(String authorization) {
-        return idamApi.retrieveUserDetails(authorization).getFullName();
+        return idamApi.retrieveUserInfo(authorization).getName();
     }
 }
