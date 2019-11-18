@@ -23,11 +23,13 @@ import java.util.List;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCustomDirection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDirection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, DateFormatterService.class, DraftCMOService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, DateFormatterService.class, DraftCMOService.class,
+    DirectionHelperService.class})
 class DraftCMOServiceTest {
 
     @Autowired
@@ -35,6 +37,9 @@ class DraftCMOServiceTest {
 
     @Autowired
     private DateFormatterService dateFormatterService;
+
+    @Autowired
+    private DirectionHelperService directionHelperService;
 
     private final LocalDate date = LocalDate.now();
 
@@ -96,7 +101,7 @@ class DraftCMOServiceTest {
             fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"),
             formatLocalDateToMediumStyle(5));
 
-        assertThat(caseManagementOrder.getDirections()).isEqualTo(createDirection(ALL_PARTIES));
+        assertThat(caseManagementOrder.getDirections()).isEqualTo(createCustomDirection(ALL_PARTIES));
     }
 
     private DynamicList getDynamicList() {

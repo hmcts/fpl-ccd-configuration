@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -21,8 +19,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-import static java.util.Collections.emptyList;
-import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
@@ -31,11 +27,14 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 public class DraftCMOService {
     private final ObjectMapper mapper;
     private final DateFormatterService dateFormatterService;
+    private final DirectionHelperService directionHelperService;
 
     @Autowired
-    public DraftCMOService(DateFormatterService dateFormatterService, ObjectMapper mapper) {
+    public DraftCMOService(DateFormatterService dateFormatterService, ObjectMapper mapper,
+                           DirectionHelperService directionHelperService) {
         this.mapper = mapper;
         this.dateFormatterService = dateFormatterService;
+        this.directionHelperService = directionHelperService;
     }
 
     public DynamicList getHearingDateDynamicList(CaseDetails caseDetails) {
@@ -92,23 +91,8 @@ public class DraftCMOService {
         return CaseManagementOrder.builder()
             .hearingDate(list.getValue().getLabel())
             .id(list.getValue().getCode())
-            .directions(setDirectionAssignee(caseData.getAllParties(), ALL_PARTIES))
+            .directions(directionHelperService.assignCustomDirections(caseData.getAllParties(), ALL_PARTIES))
             .build();
-    }
-
-    private List<Element<Direction>> setDirectionAssignee(List<Element<Direction>> directions,
-                                                          DirectionAssignee assignee) {
-        if (!isNull(directions)) {
-            return directions.stream()
-                .map(element -> Element.<Direction>builder()
-                    .id(element.getId())
-                    .value(element.getValue().toBuilder()
-                        .assignee(assignee).build())
-                    .build())
-                .collect(toList());
-        } else {
-            return emptyList();
-        }
     }
 
     private String formatLocalDateToMediumStyle(LocalDate date) {

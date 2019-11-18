@@ -38,6 +38,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCustomDirection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDirection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
@@ -111,7 +112,7 @@ class DraftCMOControllerTest {
 
         assertThat(callbackResponse.getData()).doesNotContainKey("allParties");
         assertThat(responseDirections.size()).isEqualTo(1);
-        assertThat(responseDirections).isEqualTo(createDirection(ALL_PARTIES));
+        assertThat(responseDirections).isEqualTo(createCustomDirection(ALL_PARTIES));
         assertThat(caseData.getCaseManagementOrder()).extracting("id", "hearingDate")
             .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), date.plusDays(5).toString());
     }

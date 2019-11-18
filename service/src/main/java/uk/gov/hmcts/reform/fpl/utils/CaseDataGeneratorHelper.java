@@ -207,4 +207,16 @@ public class CaseDataGeneratorHelper {
                     .build())
                 .build());
     }
+
+    public static List<Element<Direction>> createCustomDirection(DirectionAssignee assignee) {
+        return ImmutableList.of(
+            Element.<Direction>builder()
+                .value(Direction.builder()
+                    .directionText("Mock direction text")
+                    .assignee(assignee)
+                    .readOnly("No")
+                    .custom("Yes")
+                    .build())
+                .build());
+    }
 }
