@@ -59,27 +59,25 @@ Scenario('Gatekeeper enters hearing details and submits', async (I, caseViewPage
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
   I.seeAnswerInTab(1, 'Hearing 1', 'Type of hearing', hearingDetails[0].caseManagement);
   I.seeAnswerInTab(2, 'Hearing 1', 'Venue', hearingDetails[0].venue);
-  I.seeAnswerInTab(3, 'Hearing 1', 'Date', '1 Jan 2050');
-  I.seeAnswerInTab(4, 'Hearing 1', 'Pre-hearing attendance', hearingDetails[0].preHearingAttendance);
-  I.seeAnswerInTab(5, 'Hearing 1', 'Hearing time', hearingDetails[0].time);
-  I.seeAnswerInTab(6, 'Hearing 1', 'Hearing needs booked', hearingDetails[0].type.interpreter);
-  I.seeAnswerInTab(6, 'Hearing 1', '', hearingDetails[0].type.welsh);
-  I.seeAnswerInTab(6, 'Hearing 1', '', hearingDetails[0].type.somethingElse);
-  I.seeAnswerInTab(7, 'Hearing 1', 'Give details', hearingDetails[0].giveDetails);
-  I.seeAnswerInTab(8, 'Hearing 1', 'Judge or magistrate\'s title', hearingDetails[0].judgeTitle);
-  I.seeAnswerInTab(9, 'Hearing 1', 'Judge or magistrate\'s last name', hearingDetails[0].lastName);
+  I.seeAnswerInTab(3, 'Hearing 1', 'Start date and time', '1 Jan 2050, 3:15:00 PM');
+  I.seeAnswerInTab(4, 'Hearing 1', 'End date and time', '2 Jan 2050, 4:30:00 PM');
+  I.seeAnswerInTab(5, 'Hearing 1', 'Hearing needs booked', hearingDetails[0].type.interpreter);
+  I.seeAnswerInTab(5, 'Hearing 1', '', hearingDetails[0].type.welsh);
+  I.seeAnswerInTab(5, 'Hearing 1', '', hearingDetails[0].type.somethingElse);
+  I.seeAnswerInTab(6, 'Hearing 1', 'Give details', hearingDetails[0].giveDetails);
+  I.seeAnswerInTab(7, 'Hearing 1', 'Judge or magistrate\'s title', hearingDetails[0].judgeTitle);
+  I.seeAnswerInTab(8, 'Hearing 1', 'Judge or magistrate\'s last name', hearingDetails[0].lastName);
 
   I.seeAnswerInTab(1, 'Hearing 2', 'Type of hearing', hearingDetails[1].caseManagement);
   I.seeAnswerInTab(2, 'Hearing 2', 'Venue', hearingDetails[1].venue);
-  I.seeAnswerInTab(3, 'Hearing 2', 'Date', '2 Feb 2060');
-  I.seeAnswerInTab(4, 'Hearing 2', 'Pre-hearing attendance', hearingDetails[1].preHearingAttendance);
-  I.seeAnswerInTab(5, 'Hearing 2', 'Hearing time', hearingDetails[1].time);
-  I.seeAnswerInTab(6, 'Hearing 2', 'Hearing needs booked', hearingDetails[1].type.interpreter);
-  I.seeAnswerInTab(6, 'Hearing 2', '', hearingDetails[1].type.welsh);
-  I.seeAnswerInTab(6, 'Hearing 2', '', hearingDetails[1].type.somethingElse);
-  I.seeAnswerInTab(7, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
-  I.seeAnswerInTab(8, 'Hearing 2', 'Judge or magistrate\'s title', hearingDetails[1].judgeTitle);
-  I.seeAnswerInTab(9, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
+  I.seeAnswerInTab(3, 'Hearing 2', 'Start date and time', '1 Jan 2060, 11:00:00 AM');
+  I.seeAnswerInTab(4, 'Hearing 2', 'End date and time', '1 Jan 2060, 2:00:00 PM');
+  I.seeAnswerInTab(5, 'Hearing 2', 'Hearing needs booked', hearingDetails[1].type.interpreter);
+  I.seeAnswerInTab(5, 'Hearing 2', '', hearingDetails[1].type.welsh);
+  I.seeAnswerInTab(5, 'Hearing 2', '', hearingDetails[1].type.somethingElse);
+  I.seeAnswerInTab(6, 'Hearing 2', 'Give details', hearingDetails[1].giveDetails);
+  I.seeAnswerInTab(7, 'Hearing 2', 'Judge or magistrate\'s title', hearingDetails[1].judgeTitle);
+  I.seeAnswerInTab(8, 'Hearing 2', 'Judge or magistrate\'s last name', hearingDetails[1].lastName);
 });
 
 Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftStandardDirectionsEventPage) => {
