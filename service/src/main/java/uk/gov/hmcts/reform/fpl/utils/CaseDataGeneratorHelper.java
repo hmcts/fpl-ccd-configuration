@@ -220,5 +220,5 @@ public class CaseDataGeneratorHelper {
                 .build());
     }
 
-    public static List<Element<Direction>> createUnassignedDirection = createDirection(null);
+    public static List<Element<Direction>> unassignedDirection = createDirection(null);
 }

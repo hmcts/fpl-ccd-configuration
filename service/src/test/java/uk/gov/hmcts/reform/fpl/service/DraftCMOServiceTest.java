@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCustomDirection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.unassignedDirection;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, DateFormatterService.class, DraftCMOService.class,
@@ -91,9 +91,9 @@ class DraftCMOServiceTest {
     void shouldReturnCaseManagementOrderWhenProvidedCaseDetails() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of("cmoHearingDateList", getDynamicList(), "allParties",
-                createUnassignedDirection)).build();
+                unassignedDirection)).build();
 
-        CaseManagementOrder caseManagementOrder = draftCMOService.getCMO(caseDetails);
+        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseDetails);
 
         assertThat(caseManagementOrder).isNotNull()
             .extracting("id", "hearingDate").containsExactly(

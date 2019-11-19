@@ -64,7 +64,7 @@ public class DraftCMOController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseManagementOrder caseManagementOrder = draftCMOService.getCMO(caseDetails);
+        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseDetails);
 
         caseDetails.getData().remove("cmoHearingDateList");
         caseDetails.getData().put("caseManagementOrder", caseManagementOrder);

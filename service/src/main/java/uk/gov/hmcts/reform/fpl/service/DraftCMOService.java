@@ -84,7 +84,7 @@ public class DraftCMOService {
         return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);
     }
 
-    public CaseManagementOrder getCMO(CaseDetails caseDetails) {
+    public CaseManagementOrder prepareCMO(CaseDetails caseDetails) {
         DynamicList list = mapper.convertValue(caseDetails.getData().get("cmoHearingDateList"), DynamicList.class);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
