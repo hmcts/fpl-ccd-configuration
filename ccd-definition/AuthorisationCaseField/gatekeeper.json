@@ -51,14 +51,14 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "parentsAndRespondentsDirections",
+    "CaseFieldID": "respondentDirections",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "RU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "parentsAndRespondentsCustom",
+    "CaseFieldID": "respondentDirectionsCustom",
     "UserRole": "caseworker-publiclaw-gatekeeper",
     "CRUD": "CRUD"
   },
