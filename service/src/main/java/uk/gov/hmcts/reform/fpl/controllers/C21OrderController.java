@@ -117,7 +117,7 @@ public class C21OrderController {
         String mostRecentUploadedDocumentUrl = service.mostRecentUploadedC21DocumentUrl(caseData.getC21Orders());
 
         applicationEventPublisher.publishEvent(new C21OrderEvent(callbackRequest, authorization, userId,
-            prefixGatewayConfigurationUrlForC21EmailNotification(mostRecentUploadedDocumentUrl)));
+            concatGatewayConfigurationUrlAndMostRecentUploadedC21DocumentPath(mostRecentUploadedDocumentUrl)));
     }
 
     private Document getDocument(String authorization,
@@ -130,7 +130,8 @@ public class C21OrderController {
             C21.getDocumentTitle());
     }
 
-    private String prefixGatewayConfigurationUrlForC21EmailNotification(final String mostRecentUploadedC21DocumentUrl) {
+    private String concatGatewayConfigurationUrlAndMostRecentUploadedC21DocumentPath(
+        final String mostRecentUploadedC21DocumentUrl) {
         final String gatewayUrl = gatewayConfiguration.getGatewayUrl();
 
         try {
