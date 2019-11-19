@@ -1,0 +1,23 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Respondents",
+    "ListElementCode": "1",
+    "ListElement": "Respondent 1",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Respondents",
+    "ListElementCode": "2",
+    "ListElement": "Respondent 2",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Respondents",
+    "ListElementCode": "3",
+    "ListElement": "Respondent 3",
+    "DisplayOrder": 3
+  }
+]
