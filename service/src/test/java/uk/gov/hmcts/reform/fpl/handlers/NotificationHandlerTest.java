@@ -26,7 +26,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvi
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -125,9 +125,8 @@ class NotificationHandlerTest {
 
         @Test
         void shouldNotNotifyHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
-            given(idamApi.retrieveUserDetails(AUTH_TOKEN))
-                .willReturn(new UserDetails("1", "hmcts-admin@test.com",
-                    "Hmcts", "Test", HMCTS_ADMIN.getRoles()));
+            given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
+                UserInfo.builder().sub("hmcts-admin@test.com").roles(HMCTS_ADMIN.getRoles()).build());
 
             notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
@@ -138,9 +137,8 @@ class NotificationHandlerTest {
 
         @Test
         void shouldNotifyNonHmctsAdminOnC2Upload() throws IOException, NotificationClientException {
-            given(idamApi.retrieveUserDetails(AUTH_TOKEN))
-                .willReturn(new UserDetails("1", "hmcts-non-admin@test.com",
-                    "Hmcts", "Test", LOCAL_AUTHORITY.getRoles()));
+            given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
+                UserInfo.builder().sub("hmcts-non-admin@test.com").roles(LOCAL_AUTHORITY.getRoles()).build());
 
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Court(COURT_NAME, "hmcts-non-admin@test.com"));

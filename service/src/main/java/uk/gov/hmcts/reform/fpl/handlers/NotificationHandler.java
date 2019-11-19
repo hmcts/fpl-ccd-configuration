@@ -67,7 +67,7 @@ public class NotificationHandler {
 
     @EventListener
     public void sendNotificationForC2Upload(final C2UploadedEvent caseEvent) {
-        List<String> roles = idamApi.retrieveUserDetails(caseEvent.getAuthorization()).getRoles();
+        List<String> roles = idamApi.retrieveUserInfo(caseEvent.getAuthorization()).getRoles();
 
         if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoles())) {
             CaseDetails caseDetailsFromEvent = caseEvent.getCallbackRequest().getCaseDetails();
