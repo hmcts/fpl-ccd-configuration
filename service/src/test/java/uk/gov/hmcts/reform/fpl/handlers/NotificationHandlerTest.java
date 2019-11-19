@@ -118,7 +118,7 @@ class NotificationHandlerTest {
 
     @Nested
     class C2UploadedNotificationChecks {
-        final String mostRecentUploadedDocumentUrl = "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
+        final String mostRecentUploadedDocumentUrl = "http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
         final Map<String, Object> c2Parameters = ImmutableMap.<String, Object>builder()
             .put("subjectLine", subjectLine)
