@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.model.common;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.interfaces.UploadDocumentsGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasAttachedDocument;
 
 import javax.validation.constraints.NotBlank;

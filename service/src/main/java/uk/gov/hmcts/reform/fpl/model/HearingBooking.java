@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.interfaces.HearingBookingDetailsGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasFutureDate;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasStartDateAfterEndDate;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotZero;

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.fpl.validation.validators.time;
 
-import uk.gov.hmcts.reform.fpl.interfaces.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.validators.ValidatorTest;
 
 import java.time.LocalDateTime;
