@@ -11,7 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.GeneralEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.GeneralInboxLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 
@@ -20,14 +20,14 @@ import static org.mockito.BDDMockito.given;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, LocalAuthorityEmailLookupConfiguration.class,
-    InboxLookupService.class, GeneralEmailLookupConfiguration.class})
+    InboxLookupService.class, GeneralInboxLookupConfiguration.class})
 public class InboxLookupServiceTest {
 
     @MockBean
     private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
 
     @MockBean
-    private GeneralEmailLookupConfiguration generalEmailLookupConfiguration;
+    private GeneralInboxLookupConfiguration generalInboxLookupConfiguration;
 
     @Autowired
     private ObjectMapper mapper;
@@ -46,7 +46,7 @@ public class InboxLookupServiceTest {
         this.inboxLookupService =
             new InboxLookupService(mapper,
                 localAuthorityEmailLookupConfiguration,
-                generalEmailLookupConfiguration);
+                generalInboxLookupConfiguration);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class InboxLookupServiceTest {
         buildCaseDetails("");
         getMockLocalAuthorityEmail("");
 
-        given(generalEmailLookupConfiguration.getGeneralInbox())
+        given(generalInboxLookupConfiguration.getGeneralInbox())
             .willReturn(GENERAL_INBOX);
 
         String email = inboxLookupService.getLocalAuthorityOrFallbackEmail(caseDetails, LOCAL_AUTHORITY_CODE);

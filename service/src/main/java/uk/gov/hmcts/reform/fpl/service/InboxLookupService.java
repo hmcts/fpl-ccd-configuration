@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.GeneralEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.GeneralInboxLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
@@ -12,17 +12,16 @@ import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Service
 public class InboxLookupService {
-
     private final ObjectMapper objectMapper;
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
-    private final GeneralEmailLookupConfiguration generalEmailLookupConfiguration;
+    private final GeneralInboxLookupConfiguration generalInboxLookupConfiguration;
 
     public InboxLookupService(ObjectMapper objectMapper,
                               LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration,
-                              GeneralEmailLookupConfiguration generalEmailLookupConfiguration) {
+                              GeneralInboxLookupConfiguration generalInboxLookupConfiguration) {
         this.objectMapper = objectMapper;
         this.localAuthorityEmailLookupConfiguration = localAuthorityEmailLookupConfiguration;
-        this.generalEmailLookupConfiguration = generalEmailLookupConfiguration;
+        this.generalInboxLookupConfiguration = generalInboxLookupConfiguration;
     }
 
     public String getLocalAuthorityOrFallbackEmail(CaseDetails caseDetails, String localAuthorityCode) {
@@ -30,7 +29,7 @@ public class InboxLookupService {
         if (isEmpty(email)) {
             CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
             email = isNotEmpty(caseData.getSolicitor().getEmail())
-                ? caseData.getSolicitor().getEmail() : generalEmailLookupConfiguration.getGeneralInbox();
+                ? caseData.getSolicitor().getEmail() : generalInboxLookupConfiguration.getGeneralInbox();
         }
         return email;
     }

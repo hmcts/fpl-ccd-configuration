@@ -64,6 +64,8 @@ fpl:
     mapping: 'example=>cafcass:cafcass@cafcass.com'
   local_authority_code_to_shared_inbox:
     mapping: 'example=>local-authority@local-authority.com'
+  general_fpla_inbox:
+    mapping: 'FamilyPublicLaw+generalinbox@gmail.com'
   local_authority_user:
     mapping: 'example=>1,2,3'
   system_update:

@@ -5,11 +5,11 @@ import org.springframework.stereotype.Service;
 
 @lombok.Data
 @Service
-public class GeneralEmailLookupConfiguration {
+public class GeneralInboxLookupConfiguration {
 
     private final String generalInbox;
 
-    public GeneralEmailLookupConfiguration(@Value("${fpl.general_fpla_inbox.mapping}") String generalInbox) {
+    public GeneralInboxLookupConfiguration(@Value("${fpl.general_fpla_inbox.mapping}") String generalInbox) {
         this.generalInbox = generalInbox;
     }
 }
