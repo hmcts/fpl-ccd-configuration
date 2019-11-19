@@ -14,7 +14,7 @@ import javax.validation.ConstraintViolation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-class TimeNotZeroValidatorTest extends TimeValidatorTest {
+class HasSetTimeValidatorTest extends TimeValidatorTest {
 
     @Test
     void shouldReturnAnErrorWhenAllTimeFieldsAreZero() {
@@ -33,7 +33,7 @@ class TimeNotZeroValidatorTest extends TimeValidatorTest {
     }
 
     @Test
-    void shouldNotReturnAnErrorWhenATimeFieldIsNotZero() {
+    void shouldNotReturnAnErrorWhenTimeIsNotZero() {
         hearingBooking = HearingBooking.builder()
             .startDate(FUTURE.plusHours(16))
             .endDate(FUTURE.plusDays(1))

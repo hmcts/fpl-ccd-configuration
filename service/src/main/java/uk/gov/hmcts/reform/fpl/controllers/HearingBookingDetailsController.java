@@ -60,7 +60,7 @@ public class HearingBookingDetailsController {
 
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
 
-        final List<String> errors = validate(hearingDetails);
+        final List<String> errors = validateHearingBookings(hearingDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -68,7 +68,7 @@ public class HearingBookingDetailsController {
             .build();
     }
 
-    private List<String> validate(List<Element<HearingBooking>> hearingDetails) {
+    private List<String> validateHearingBookings(List<Element<HearingBooking>> hearingDetails) {
         final List<String> errors = new ArrayList<>();
         for (int i = 0; i < hearingDetails.size(); i++) {
             HearingBooking hearingDetail = hearingDetails.get(i).getValue();

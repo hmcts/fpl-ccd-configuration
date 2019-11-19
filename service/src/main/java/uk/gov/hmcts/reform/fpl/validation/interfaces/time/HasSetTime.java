@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.fpl.validation.interfaces.time;
 
-import uk.gov.hmcts.reform.fpl.validation.validators.time.TimeNotZeroValidator;
+import uk.gov.hmcts.reform.fpl.validation.validators.time.HasSetTimeValidator;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,8 +11,8 @@ import javax.validation.Payload;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = TimeNotZeroValidator.class)
-public @interface TimeNotZero {
+@Constraint(validatedBy = HasSetTimeValidator.class)
+public @interface HasSetTime {
     String message() default "Enter a valid time";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};

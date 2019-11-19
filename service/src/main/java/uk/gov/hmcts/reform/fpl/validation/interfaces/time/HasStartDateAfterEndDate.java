@@ -14,8 +14,6 @@ import javax.validation.Payload;
 @Constraint(validatedBy = HasStartDateAfterEndDateValidator.class)
 public @interface HasStartDateAfterEndDate {
     String message() default "The start date cannot be after the end date";
-
     Class<?>[] groups() default {};
-
     Class<? extends Payload>[] payload() default {};
 }

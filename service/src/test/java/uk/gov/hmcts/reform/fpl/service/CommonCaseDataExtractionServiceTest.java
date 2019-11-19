@@ -26,7 +26,7 @@ class CommonCaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldReturnTheDateWhenStartAndEndDateAreNotTheSame() {
+    void shouldReturnTheFormattedDateWhenStartAndEndDateAreNotTheSame() {
         hearingBooking = createHearingBookingWithTimesOnDifferentDays();
 
         final String hearingDate = commonCaseDataExtractionService.getHearingDate(hearingBooking);
@@ -35,7 +35,7 @@ class CommonCaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldReturnAnEmptyDateWhenStartAndEndDateAreTheSame() {
+    void shouldReturnAnEmptyStringWhenStartAndEndDateAreTheSame() {
         hearingBooking = createHearingBookingWithTimesOnSameDay();
 
         final String hearingDate = commonCaseDataExtractionService.getHearingDate(hearingBooking);
@@ -44,7 +44,7 @@ class CommonCaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldReturnTheTimeRangeWithDatesWhenStartAndEndDateAreNotTheSame() {
+    void shouldReturnTheFormattedTimeRangeWithDatesWhenStartAndEndDateAreNotTheSame() {
         hearingBooking = createHearingBookingWithTimesOnDifferentDays();
 
         final String hearingTime = commonCaseDataExtractionService.getHearingTime(hearingBooking);
@@ -53,7 +53,7 @@ class CommonCaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldReturnTheTimeRangeWhenStartAndEndDateAreTheSame() {
+    void shouldReturnTheFormattedTimeRangeWhenStartAndEndDateAreTheSame() {
         hearingBooking = createHearingBookingWithTimesOnSameDay();
 
         final String hearingTime = commonCaseDataExtractionService.getHearingTime(hearingBooking);
@@ -62,7 +62,7 @@ class CommonCaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldReturnATimeThatIsOneHourBeforeTheStartTime() {
+    void shouldReturnAFormattedTimeThatIsOneHourBeforeTheStartTime() {
         hearingBooking = createHearingBookingWithTimesOnSameDay();
 
         final String prehearingAttendance = commonCaseDataExtractionService.extractPrehearingAttendance(hearingBooking);
