@@ -30,8 +30,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
@@ -56,9 +55,6 @@ class CaseInitiationControllerTest {
 
     @MockBean
     private IdamApi idamApi;
-
-    @MockBean
-    private CaseAccessApi caseAccessApi;
 
     @MockBean
     private CaseUserApi caseUserApi;
@@ -148,14 +144,13 @@ class CaseInitiationControllerTest {
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_ID), any());
     }
 
-    /*@Test
+    @Test
     void shouldContinueAddingUsersAfterGrantAccessFailure() throws Exception {
         given(serviceAuthorisationApi.serviceToken(anyMap()))
             .willReturn(SERVICE_AUTH_TOKEN);
 
-        doThrow(RuntimeException.class).when(caseAccessApi).grantAccessToCase(
-            any(), any(), any(), any(), any(), any(), any()
-        );
+        doThrow(RuntimeException.class).when(caseUserApi).updateCaseRolesForUser(
+            any(), any(), any(), any(), any());
 
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .id(Long.valueOf(CASE_ID))
@@ -174,8 +169,7 @@ class CaseInitiationControllerTest {
 
         Thread.sleep(3000);
 
-        verify(caseAccessApi, times(3)).grantAccessToCase(
-            eq(AUTH_TOKEN), any(), eq(USER_ID), eq(JURISDICTION), eq(CASE_TYPE), eq(CASE_ID), any()
-        );
-    }*/
+        verify(caseUserApi, times(1)).updateCaseRolesForUser(
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_ID), any());
+    }
 }

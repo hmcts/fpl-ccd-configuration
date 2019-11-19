@@ -58,7 +58,7 @@ class LocalAuthorityUserServiceTest {
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
-        localAuthorityUserService.grantUserAccessWithCaseRole(CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
         Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
 
@@ -74,7 +74,7 @@ class LocalAuthorityUserServiceTest {
         );
 
         assertThatThrownBy(() ->
-            localAuthorityUserService.grantUserAccessWithCaseRole(CREATOR_USER_ID, CASE_ID, LOCAL_AUTHORITY))
+            localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY))
             .isInstanceOf(NoAssociatedUsersException.class)
             .hasMessage("No users found for the local authority 'example'");
     }

@@ -42,19 +42,20 @@ public class LocalAuthorityUserService {
         this.client = idamClient;
     }
 
-    public void grantUserAccessWithCaseRole(String creatorUserId, String caseId, String caseLocalAuthority) {
+    public void grantUserAccessWithCaseRole(String caseId, String caseLocalAuthority) {
         findUserIds(caseLocalAuthority).stream()
             .forEach(userId -> {
                 Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
                 try {
                     String authentication = client.authenticateUser("fpl-system-update@mailnesia.com", "Password12");
                     System.out.println("Authentication is" + authentication);
+                    System.out.println("user is" + userId);
                     caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), caseId, userId,
                         new CaseUser(userId, caseRoles));
                     logger.info("Added case roles {} to user {}", caseRoles, userId);
                 } catch (FeignException exception) {
                     logger.warn(String.format("Error adding case roles %s to user %s",
-                        caseRoles, creatorUserId), exception);
+                        caseRoles, userId), exception);
                 }
             });
     }
