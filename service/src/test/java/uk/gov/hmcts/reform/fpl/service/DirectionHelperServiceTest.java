@@ -592,9 +592,10 @@ class DirectionHelperServiceTest {
 
         @Test
         void shouldNotReturnResponseWhenCompliedHasNotBeenAnswered() {
+            String complied = null;
 
             List<DirectionResponse> responses = service.getResponses(
-                ImmutableMap.of(LOCAL_AUTHORITY, buildDirection(LOCAL_AUTHORITY, uuid, null)));
+                ImmutableMap.of(LOCAL_AUTHORITY, buildDirection(LOCAL_AUTHORITY, uuid, complied)));
 
             assertThat(responses).isEmpty();
         }
