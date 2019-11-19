@@ -603,5 +603,29 @@
     "Label": "Upload C2",
     "FieldType": "C2DocumentBundle",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cmoHearingDateList",
+    "Label": "Which hearing is this order for?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseManagementOrder",
+    "Label": "Case management order",
+    "FieldType": "CaseManagementOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "schedule",
+    "Label": "Schedule",
+    "FieldType": "Schedule",
+    "SecurityClassification": "Public"
   }
 ]
