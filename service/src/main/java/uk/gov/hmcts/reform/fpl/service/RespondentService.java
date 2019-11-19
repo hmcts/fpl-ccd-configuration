@@ -7,14 +7,19 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.stream.Collectors.toList;
+import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Service
 public class RespondentService {
@@ -83,5 +88,33 @@ public class RespondentService {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
+    }
+
+    public String buildRespondentLabel(List<Element<Respondent>> respondents) {
+        StringBuilder sb = new StringBuilder();
+
+        if (isNotEmpty(respondents)) {
+            AtomicInteger i = new AtomicInteger(1);
+
+            respondents.forEach(respondent -> {
+                sb.append("Respondent")
+                    .append(" ")
+                    .append(i)
+                    .append(" ")
+                    .append("-")
+                    .append(" ")
+                    .append(defaultIfNull(respondent.getValue().getParty().firstName, ""))
+                    .append(" ")
+                    .append(defaultIfNull(respondent.getValue().getParty().lastName, ""))
+                    .append("\n");
+
+                i.incrementAndGet();
+            });
+
+        } else {
+            sb.append("No respondents on the case");
+        }
+
+        return sb.toString();
     }
 }

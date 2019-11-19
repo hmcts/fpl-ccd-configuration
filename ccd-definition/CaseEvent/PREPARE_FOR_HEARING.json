@@ -198,7 +198,7 @@
     "PreConditionState(s)": "PREPARE_FOR_HEARING",
     "PostConditionState": "PREPARE_FOR_HEARING",
     "SecurityClassification": "Public",
-    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/on-behalf/about-to-start",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-on-behalf/about-to-start",
     "EndButtonLabel": "Save and continue"
   }
 ]

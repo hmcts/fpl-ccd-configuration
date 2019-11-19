@@ -62,49 +62,6 @@ public class ComplyWithDirectionsController {
             .build();
     }
 
-    @PostMapping("/on-behalf/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToStart2(@RequestBody CallbackRequest callbackrequest) {
-        CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        List<Element<Direction>> respondentsDirections = directionHelperService
-            .getDirectionsForAssignee(caseData.getStandardDirectionOrder().getDirections(), PARENTS_AND_RESPONDENTS);
-
-        caseDetails.getData().put("parentsAndRespondentsCustom", respondentsDirections);
-
-        List<Element<Respondent>> respondents = defaultIfNull(caseData.getRespondents1(), emptyList());
-
-        StringBuilder sb = new StringBuilder();
-
-        if (isNotEmpty(respondents)) {
-            AtomicInteger i = new AtomicInteger(1);
-
-            respondents.forEach(y -> {
-                    sb.append("Respondent")
-                        .append(" ")
-                        .append(i)
-                        .append(" ")
-                        .append("-")
-                        .append(" ")
-                        .append(y.getValue().getParty().firstName)
-                        .append(" ")
-                        .append(y.getValue().getParty().lastName)
-                        .append("\n");
-
-                    i.incrementAndGet();
-                });
-
-        } else {
-            sb.append("No respondents on the case");
-        }
-
-        caseDetails.getData().put("respondents1_label", sb.toString());
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
-            .build();
-    }
-
     @PostMapping("about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
