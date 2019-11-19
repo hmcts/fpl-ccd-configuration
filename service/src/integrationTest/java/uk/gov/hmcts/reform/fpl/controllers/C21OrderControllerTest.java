@@ -204,7 +204,7 @@ class C21OrderControllerTest {
     }
 
     private Map<String, Object> commonNotificationParameters() {
-        final String documentUrl = "http://fake-document-gateway-host/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
+        final String documentUrl = "http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
         final String subjectLine = "Jones, " + FAMILY_MAN_CASE_NUMBER;
 
         return ImmutableMap.<String, Object>builder()

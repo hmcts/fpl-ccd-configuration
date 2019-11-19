@@ -132,7 +132,7 @@ public class C21OrderController {
 
     private String concatGatewayConfigurationUrlAndMostRecentUploadedC21DocumentPath(
         final String mostRecentUploadedC21DocumentUrl) {
-        final String gatewayUrl = gatewayConfiguration.getGatewayUrl();
+        final String gatewayUrl = gatewayConfiguration.getUrl();
 
         try {
             URI uri = new URI(mostRecentUploadedC21DocumentUrl);

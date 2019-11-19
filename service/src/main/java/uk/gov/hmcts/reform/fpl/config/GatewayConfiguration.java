@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 public class GatewayConfiguration {
-    private final String gatewayUrl;
+    private final String url;
 
-    public GatewayConfiguration(@Value("${document_management.gateway_url}") String gatewayUrl) {
-        this.gatewayUrl = gatewayUrl;
+    public GatewayConfiguration(@Value("${gateway.url}") String url) {
+        this.url = url;
     }
 }

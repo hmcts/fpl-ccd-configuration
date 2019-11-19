@@ -95,7 +95,7 @@ variable "idam_token_jwk_set_uri" {
   default = ""
 }
 
-variable "document_management_gateway_url" {
+variable "gateway_url" {
   type    = "string"
   default = ""
 }

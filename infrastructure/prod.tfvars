@@ -9,4 +9,4 @@ docmosis_vault = "docmosisiaasprodkv"
 
 idam_client_id = "fpl_case_service"
 idam_client_redirect_uri = "https://fpl-case-service-prod.service.core-compute-prod.internal/oauth2/callback"
-document_management_gateway_url = "https://gateway-ccd.prod.platform.hmcts.net"
+gateway_url = "https://gateway-ccd.prod.platform.hmcts.net"
