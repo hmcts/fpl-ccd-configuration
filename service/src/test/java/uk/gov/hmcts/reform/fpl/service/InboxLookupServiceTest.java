@@ -11,7 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.GeneralFplaEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.GeneralEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 
@@ -20,33 +20,33 @@ import static org.mockito.BDDMockito.given;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, LocalAuthorityEmailLookupConfiguration.class,
-    GenericInboxLookupService.class, GeneralFplaEmailLookupConfiguration.class})
-public class GenericInboxLookupServiceTest {
+    InboxLookupService.class, GeneralEmailLookupConfiguration.class})
+public class InboxLookupServiceTest {
 
     @MockBean
     private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
 
     @MockBean
-    private GeneralFplaEmailLookupConfiguration generalFplaEmailLookupConfiguration;
+    private GeneralEmailLookupConfiguration generalEmailLookupConfiguration;
 
     @Autowired
     private ObjectMapper mapper;
 
-    private GenericInboxLookupService genericInboxLookupService;
+    private InboxLookupService inboxLookupService;
 
     private CaseDetails caseDetails;
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
     private static final String SOLICITOR_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
-    private static final String GENERAL_FPLA_INBOX = "FamilyPublicLaw+generalInbox@gmail.com";
+    private static final String GENERAL_INBOX = "FamilyPublicLaw+generalInbox@gmail.com";
 
     @BeforeEach
     void setup() {
-        this.genericInboxLookupService =
-            new GenericInboxLookupService(mapper,
+        this.inboxLookupService =
+            new InboxLookupService(mapper,
                 localAuthorityEmailLookupConfiguration,
-                generalFplaEmailLookupConfiguration);
+                generalEmailLookupConfiguration);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class GenericInboxLookupServiceTest {
         buildCaseDetails(SOLICITOR_EMAIL_ADDRESS);
         getMockLocalAuthorityEmail(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-        String email = genericInboxLookupService.getEmail(caseDetails, LOCAL_AUTHORITY_CODE);
+        String email = inboxLookupService.getLocalAuthorityOrFallbackEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
         assertThat(email).isEqualTo(LOCAL_AUTHORITY_EMAIL_ADDRESS);
     }
@@ -64,7 +64,7 @@ public class GenericInboxLookupServiceTest {
         buildCaseDetails(SOLICITOR_EMAIL_ADDRESS);
         getMockLocalAuthorityEmail("");
 
-        String email = genericInboxLookupService.getEmail(caseDetails, LOCAL_AUTHORITY_CODE);
+        String email = inboxLookupService.getLocalAuthorityOrFallbackEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
         assertThat(email).isEqualTo(SOLICITOR_EMAIL_ADDRESS);
     }
@@ -74,12 +74,12 @@ public class GenericInboxLookupServiceTest {
         buildCaseDetails("");
         getMockLocalAuthorityEmail("");
 
-        given(generalFplaEmailLookupConfiguration.getGeneralFplaInbox())
-            .willReturn(GENERAL_FPLA_INBOX);
+        given(generalEmailLookupConfiguration.getGeneralInbox())
+            .willReturn(GENERAL_INBOX);
 
-        String email = genericInboxLookupService.getEmail(caseDetails, LOCAL_AUTHORITY_CODE);
+        String email = inboxLookupService.getLocalAuthorityOrFallbackEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
-        assertThat(email).isEqualTo(GENERAL_FPLA_INBOX);
+        assertThat(email).isEqualTo(GENERAL_INBOX);
     }
 
     private void getMockLocalAuthorityEmail(String localAuthorityEmailAddress) {

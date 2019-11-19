@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -19,7 +18,7 @@ import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
-import uk.gov.hmcts.reform.fpl.service.GenericInboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
@@ -53,7 +52,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @SuppressWarnings("LineLength")
 @ExtendWith(SpringExtension.class)
 class NotificationHandlerTest {
-
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
     private static final String COURT_NAME = "Test court";
@@ -100,8 +98,8 @@ class NotificationHandlerTest {
     @Mock
     private LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
 
-    @InjectMocks
-    private GenericInboxLookupService genericInboxLookupService;
+    @Mock
+    private InboxLookupService genericInboxLookupService;
 
     @InjectMocks
     private NotificationHandler notificationHandler;
@@ -273,8 +271,6 @@ class NotificationHandlerTest {
     void shouldNotifyLocalAuthorityOfIssuedStandardDirectionsOrder() throws IOException, NotificationClientException {
         final Map<String, Object> expectedParameters = getStandardDirectionTemplateParameters();
 
-        CaseDetails caseDetails = CaseDetails.builder().build();
-
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
@@ -284,7 +280,7 @@ class NotificationHandlerTest {
         given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
-        given(genericInboxLookupService.getEmail(caseDetails, LOCAL_AUTHORITY_CODE))
+        given(genericInboxLookupService.getLocalAuthorityOrFallbackEmail(callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
         notificationHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));

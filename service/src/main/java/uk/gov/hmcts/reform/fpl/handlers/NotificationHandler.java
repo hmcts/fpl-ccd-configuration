@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
-import uk.gov.hmcts.reform.fpl.service.GenericInboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
@@ -51,7 +51,7 @@ public class NotificationHandler {
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final NotificationClient notificationClient;
     private final IdamApi idamApi;
-    private final GenericInboxLookupService genericInboxLookupService;
+    private final InboxLookupService inboxLookupService;
 
     @EventListener
     public void sendNotificationToHmctsAdmin(SubmittedCaseEvent event) {
@@ -124,7 +124,7 @@ public class NotificationHandler {
         Map<String, Object> parameters = localAuthorityEmailContentProvider
             .buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseDetails, localAuthorityCode);
         String reference = Long.toString(caseDetails.getId());
-        String email = genericInboxLookupService.getEmail(caseDetails, localAuthorityCode);
+        String email = inboxLookupService.getLocalAuthorityOrFallbackEmail(caseDetails, localAuthorityCode);
         sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, reference);
     }
 
