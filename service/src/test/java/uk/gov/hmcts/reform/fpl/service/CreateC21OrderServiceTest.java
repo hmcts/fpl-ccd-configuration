@@ -25,6 +25,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createC21Orders;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
@@ -187,6 +188,15 @@ class CreateC21OrderServiceTest {
         Map<String, Object> templateData = service.getC21OrderTemplateData(caseData);
 
         assertThat(templateData).isEqualTo(expectedMap);
+    }
+
+    @Test
+    void shouldReturnMostRecentUploadedC21DocumentUrl() {
+        final String expectedMostRecentUploadedC21DocumentUrl = "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
+        final String returnedMostRecentUploadedC21DocumentUrl = service.mostRecentUploadedC21DocumentUrl(
+            createC21Orders());
+
+        assertThat(expectedMostRecentUploadedC21DocumentUrl).isEqualTo(returnedMostRecentUploadedC21DocumentUrl);
     }
 
     @SuppressWarnings("unchecked")
