@@ -44,7 +44,7 @@ docmosis:
 
 document_management:
   url: http://fake-document-management-store-api
-  dm_host_url: http://fake-document-gateway-host
+  gateway_url: http://fake-document-gateway-host
 
 notify:
   api_key: testApiKey
@@ -105,7 +105,7 @@ docmosis:
 
 document_management:
   url: http://localhost:3453
-  dm_host_url: https://gateway-${SERVICE_FQDN}
+  gateway_url: http://localhost:3453
 
 notify:
   api_key: fake-key

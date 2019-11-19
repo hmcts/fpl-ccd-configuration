@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.config.DocumentConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -15,8 +14,6 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
@@ -34,16 +31,13 @@ public class CreateC21OrderService {
     private final DateFormatterService dateFormatterService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final Time time;
-    private final DocumentConfiguration documentConfiguration;
 
     public CreateC21OrderService(DateFormatterService dateFormatterService,
                                  HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                 Time time,
-                                 DocumentConfiguration documentConfiguration) {
+                                 Time time) {
         this.dateFormatterService = dateFormatterService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.time = time;
-        this.documentConfiguration = documentConfiguration;
     }
 
     public C21Order addDocumentToC21(C21Order c21Order, Document document) {
@@ -108,21 +102,11 @@ public class CreateC21OrderService {
     }
 
     public String mostRecentUploadedC21DocumentUrl(final List<Element<C21Order>> c21Orders) {
-        String mostRecentUploadedC21DocumentUrl = getLast(c21Orders.stream()
+        return getLast(c21Orders.stream()
             .filter(Objects::nonNull)
             .map(Element::getValue)
             .filter(Objects::nonNull)
             .collect(toList()))
             .getDocument().getBinaryUrl();
-
-        final String documentHostUrl = documentConfiguration.getDocumentHostUrl();
-
-        try {
-            URL url = new URL(mostRecentUploadedC21DocumentUrl);
-            mostRecentUploadedC21DocumentUrl = documentHostUrl + url.getPath();
-        } catch (MalformedURLException e) {
-            log.error("mostRecentUploadedC21DocumentUrl url incorrect.", e);
-        }
-        return mostRecentUploadedC21DocumentUrl;
     }
 }

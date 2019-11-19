@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.config.DocumentConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -26,6 +25,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createC21Orders;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
@@ -40,14 +40,12 @@ class CreateC21OrderServiceTest {
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
-    private DocumentConfiguration documentConfiguration = new DocumentConfiguration("");
 
     private CreateC21OrderService service;
 
     @BeforeEach
     void setup() {
-        this.service = new CreateC21OrderService(dateFormatterService, hmctsCourtLookupConfiguration, time,
-            documentConfiguration);
+        this.service = new CreateC21OrderService(dateFormatterService, hmctsCourtLookupConfiguration, time);
     }
 
     @Test
@@ -190,6 +188,15 @@ class CreateC21OrderServiceTest {
         Map<String, Object> templateData = service.getC21OrderTemplateData(caseData);
 
         assertThat(templateData).isEqualTo(expectedMap);
+    }
+
+    @Test
+    void shouldReturnMostRecentUploadedC21DocumentUrl() {
+        final String expectedMostRecentUploadedC21DocumentUrl = "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
+        final String returnedMostRecentUploadedC21DocumentUrl = service.mostRecentUploadedC21DocumentUrl(
+            createC21Orders());
+
+        assertThat(expectedMostRecentUploadedC21DocumentUrl).isEqualTo(returnedMostRecentUploadedC21DocumentUrl);
     }
 
     @SuppressWarnings("unchecked")

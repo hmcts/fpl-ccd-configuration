@@ -155,11 +155,11 @@ class C21OrderControllerTest {
 
         verify(notificationClient, times(1)).sendEmail(
             eq(C21_ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(c21LocalAuthorityParameters()), eq(expectedCaseReference));
+            eq(expectedC21LocalAuthorityParameters()), eq(expectedCaseReference));
 
         verify(notificationClient, times(1)).sendEmail(
             eq(C21_ORDER_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
-            eq(c21CafcassParameters()), eq(expectedCaseReference));
+            eq(expectedC21CafcassParameters()), eq(expectedCaseReference));
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request, String endpoint)
@@ -217,14 +217,14 @@ class C21OrderControllerTest {
             .build();
     }
 
-    private Map<String, Object> c21CafcassParameters() {
+    private Map<String, Object> expectedC21CafcassParameters() {
         return ImmutableMap.<String, Object>builder()
             .putAll(commonNotificationParameters())
             .put("localAuthorityOrCafcass", CAFCASS_NAME)
             .build();
     }
 
-    private Map<String, Object> c21LocalAuthorityParameters() {
+    private Map<String, Object> expectedC21LocalAuthorityParameters() {
         return ImmutableMap.<String, Object>builder()
             .putAll(commonNotificationParameters())
             .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)

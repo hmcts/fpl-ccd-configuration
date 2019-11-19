@@ -238,7 +238,7 @@ public class CaseDataGeneratorHelper {
                     .orderTitle("Black Sails")
                     .orderDetails("Long John Silver")
                     .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
-                        LocalDateTime.now().plusDays(56), FORMAT_STYLE))
+                        LocalDateTime.now().plusDays(60), FORMAT_STYLE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Edward Teach",
                         "Captain Flint", "Scott", DEPUTY_DISTRICT_JUDGE))
                     .document(DocumentReference.builder()
