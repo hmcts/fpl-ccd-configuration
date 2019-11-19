@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.config.DocumentConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -39,12 +40,14 @@ class CreateC21OrderServiceTest {
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
+    private DocumentConfiguration documentConfiguration = new DocumentConfiguration("");
 
     private CreateC21OrderService service;
 
     @BeforeEach
     void setup() {
-        this.service = new CreateC21OrderService(dateFormatterService, hmctsCourtLookupConfiguration, time);
+        this.service = new CreateC21OrderService(dateFormatterService, hmctsCourtLookupConfiguration, time,
+            documentConfiguration);
     }
 
     @Test
