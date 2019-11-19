@@ -48,7 +48,7 @@
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
     "CaseFieldID": "caseManagementOrder",
-    "TabFieldDisplayOrder": 2
+    "TabFieldDisplayOrder": 1
   },
   {
     "LiveFrom": "01/01/2017",
@@ -58,7 +58,7 @@
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
     "CaseFieldID": "schedule",
-    "TabFieldDisplayOrder": 3
+    "TabFieldDisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
@@ -68,7 +68,7 @@
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
     "CaseFieldID": "recitals",
-    "TabFieldDisplayOrder": 2
+    "TabFieldDisplayOrder": 3
   },
   {
     "LiveFrom": "01/01/2017",
