@@ -18,7 +18,19 @@
     "CaseFieldID": "allParties",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
-    "PageID": "allParties",
+    "PageID": 2,
+    "PageLabel": " ",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "draftCMO",
+    "CaseFieldID": "schedule",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "PageID": 3,
     "PageLabel": " ",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1
