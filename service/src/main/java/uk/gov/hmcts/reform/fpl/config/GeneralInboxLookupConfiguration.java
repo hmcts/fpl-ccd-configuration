@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 @lombok.Data
 @Service
 public class GeneralInboxLookupConfiguration {
-
     private final String generalInbox;
 
     public GeneralInboxLookupConfiguration(@Value("${fpl.general_fpla_inbox.mapping}") String generalInbox) {
