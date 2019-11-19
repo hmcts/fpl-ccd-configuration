@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
@@ -44,20 +44,16 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 class DraftCMOControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-
-    @Autowired
-    private DraftCMOService draftCMOService;
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper mapper;
-
-    private final LocalDate date = LocalDate.now();
+    private final LocalDateTime date = LocalDateTime.now();
     private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(date);
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
+    @Autowired
+    private DraftCMOService draftCMOService;
+    @Autowired
+    private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper mapper;
 
     @Test
     void aboutToStartCallbackShouldPopulateHearingDatesList() throws Exception {
@@ -134,19 +130,19 @@ class DraftCMOControllerTest {
             .andReturn();
     }
 
-    private List<Element<HearingBooking>> createHearingBookings(LocalDate date) {
+    private List<Element<HearingBooking>> createHearingBookings(LocalDateTime date) {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
                 .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-                .value(createHearingBooking(date.plusDays(5)))
+                .value(createHearingBooking(date.plusDays(5), date.plusDays(6)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(date.plusDays(2)))
+                .value(createHearingBooking(date.plusDays(2), date.plusDays(3)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(date))
+                .value(createHearingBooking(date, date.plusDays(1)))
                 .build()
         );
     }

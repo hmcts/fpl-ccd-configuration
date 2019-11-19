@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.validation.validators.time;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -29,12 +28,9 @@ class HasFutureDateValidatorTest extends TimeValidatorTest {
         assertThat(violations).hasSize(1).containsOnly("Enter a start date in the future");
     }
 
-    @Disabled
     @Test
     void shouldNotReturnAnErrorIfDateIsToday() {
-        // FIXME: 14/11/2019 Date time has nanosecond precision, need the mocking that joe provides to get this to
-        //  work properly
-        hearingBooking = HearingBooking.builder().startDate(LocalDateTime.now()).endDate(FUTURE).build();
+        hearingBooking = HearingBooking.builder().startDate(LocalDateTime.now().plusMinutes(1)).endDate(FUTURE).build();
 
         final Set<ConstraintViolation<HearingBooking>> violations = validator.validate(hearingBooking, group);
 
