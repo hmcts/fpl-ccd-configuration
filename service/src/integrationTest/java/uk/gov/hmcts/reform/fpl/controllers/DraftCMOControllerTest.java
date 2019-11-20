@@ -79,6 +79,7 @@ class DraftCMOControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
 
+        assertThat(callbackResponse.getData()).doesNotContainKey("allPartiesCustom");
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
         assertThat(callbackResponse.getData()).containsKey("allParties");
     }
