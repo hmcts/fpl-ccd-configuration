@@ -14,7 +14,7 @@ import javax.validation.ConstraintViolation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-class HasStartDateAfterEndDateValidatorTest extends TimeValidatorTest {
+class HasEndDateAfterStartDateValidatorTest extends TimeValidatorTest {
 
     @Test
     void shouldReturnAnErrorWhenStartDateIsAfterEndDate() {

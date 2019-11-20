@@ -32,18 +32,18 @@ class HearingBookingServiceTest {
 
     @Test
     void shouldReturnHearingBookingIfHearingBookingIsPrePopulated() {
-        LocalDateTime time = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
         CaseData caseData = CaseData.builder()
             .hearingDetails(
                 ImmutableList.of(Element.<HearingBooking>builder()
                     .value(
-                        HearingBooking.builder().startDate(time).build())
+                        HearingBooking.builder().startDate(now).build())
                     .build()))
             .build();
 
         List<Element<HearingBooking>> hearingList = service.expandHearingBookingCollection(caseData);
 
-        assertThat(hearingList.get(0).getValue().getStartDate()).isEqualTo(time);
+        assertThat(hearingList.get(0).getValue().getStartDate()).isEqualTo(now);
     }
 
     @Test

@@ -44,8 +44,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 class DraftCMOControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-    private final LocalDateTime date = LocalDateTime.now();
-    private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(date);
+    private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
+    private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
     @Autowired
@@ -60,9 +60,9 @@ class DraftCMOControllerTest {
         Map<String, Object> data = ImmutableMap.of("hearingDetails", hearingDetails);
 
         List<String> expected = Arrays.asList(
-            date.plusDays(5).format(dateTimeFormatter),
-            date.plusDays(2).format(dateTimeFormatter),
-            date.format(dateTimeFormatter));
+            TODAYS_DATE.plusDays(5).format(dateTimeFormatter),
+            TODAYS_DATE.plusDays(2).format(dateTimeFormatter),
+            TODAYS_DATE.format(dateTimeFormatter));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
 
@@ -71,7 +71,7 @@ class DraftCMOControllerTest {
 
     @Test
     void aboutToSubmitShouldPopulateHiddenHearingDateField() throws Exception {
-        List<Element<HearingBooking>> hearingDetails = createHearingBookings(date);
+        List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
 
         DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
 
@@ -79,7 +79,7 @@ class DraftCMOControllerTest {
             .setValue(
                 DynamicListElement.builder()
                     .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-                    .label(date.plusDays(5).toString())
+                    .label(TODAYS_DATE.plusDays(5).toString())
                     .build());
 
         Map<String, Object> data = ImmutableMap.of("cmoHearingDateList", dynamicHearingDates);
@@ -91,7 +91,7 @@ class DraftCMOControllerTest {
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
         assertThat(caseData.getCaseManagementOrder()).extracting("id", "hearingDate")
-            .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), date.plusDays(5).toString());
+            .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), TODAYS_DATE.plusDays(5).toString());
     }
 
     private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {
