@@ -130,25 +130,30 @@ class CaseInitiationControllerTest {
 
     @Test
     void updateCaseRolesShouldBeCalledOnceForEachUser() throws Exception {
-        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
-            .id(Long.valueOf(CASE_ID))
-            .data(ImmutableMap.<String, Object>builder()
-                .put("caseLocalAuthority", "example")
-                .build()).build())
-            .build();
+        CallbackRequest request = createCallbackRequest();
 
-        mockMvc
-            .perform(post("/callback/case-initiation/submitted")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_IDS[0])
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(MAPPER.writeValueAsString(request)))
-            .andExpect(status().isOk());
+        performResponseCallBackSubmitted(request);
 
         Thread.sleep(3000);
 
-        Set<String> caseRoles = Set.of("[LASOLICITOR]", "[CREATOR]");
+        verifyUpdateCaseRolesWasCalledForEachUser();
+    }
 
+    @Test
+    void shouldContinueAddingCaseRolesToUsersAfterGrantAccessFailure() throws Exception {
+        doThrow(RuntimeException.class).when(caseUserApi).updateCaseRolesForUser(
+            any(), any(), any(), any(), any());
+
+        CallbackRequest request = createCallbackRequest();
+
+        performResponseCallBackSubmitted(request);
+
+        Thread.sleep(3000);
+
+        verifyUpdateCaseRolesWasCalledForEachUser();
+    }
+
+    private void verifyUpdateCaseRolesWasCalledForEachUser() {
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]),
             refEq(new CaseUser(USER_IDS[0], caseRoles)));
@@ -160,24 +165,7 @@ class CaseInitiationControllerTest {
             refEq(new CaseUser(USER_IDS[2], caseRoles)));
     }
 
-    @Test
-    void shouldContinueAddingCaseRolesToUsersAfterGrantAccessFailure() throws Exception {
-        given(serviceAuthorisationApi.serviceToken(anyMap()))
-            .willReturn(SERVICE_AUTH_TOKEN);
-
-        given(client.authenticateUser("fpl-system-update@mailnesia.com", "Password12")).willReturn(AUTH_TOKEN);
-        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
-
-        doThrow(RuntimeException.class).when(caseUserApi).updateCaseRolesForUser(
-            any(), any(), any(), any(), any());
-
-        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
-            .id(Long.valueOf(CASE_ID))
-            .data(ImmutableMap.<String, Object>builder()
-                .put("caseLocalAuthority", "example")
-                .build()).build())
-            .build();
-
+    private void performResponseCallBackSubmitted(CallbackRequest request) throws Exception {
         mockMvc
             .perform(post("/callback/case-initiation/submitted")
                 .header("authorization", AUTH_TOKEN)
@@ -185,17 +173,14 @@ class CaseInitiationControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(MAPPER.writeValueAsString(request)))
             .andExpect(status().isOk()).andReturn();
+    }
 
-        Thread.sleep(3000);
-
-        verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]),
-            refEq(new CaseUser(USER_IDS[0], caseRoles)));
-        verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[1]),
-            refEq(new CaseUser(USER_IDS[1], caseRoles)));
-        verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[2]),
-            refEq(new CaseUser(USER_IDS[2], caseRoles)));
+    private CallbackRequest createCallbackRequest() {
+        return CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .id(Long.valueOf(CASE_ID))
+            .data(ImmutableMap.<String, Object>builder()
+                .put("caseLocalAuthority", "example")
+                .build()).build())
+            .build();
     }
 }

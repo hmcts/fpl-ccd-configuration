@@ -66,15 +66,7 @@ class LocalAuthorityUserServiceTest {
 
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
-        verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]),
-            refEq(new CaseUser(USER_IDS[0],caseRoles)));
-        verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[1]),
-            refEq(new CaseUser(USER_IDS[1],caseRoles)));
-        verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[2]),
-            refEq(new CaseUser(USER_IDS[2],caseRoles)));
+        verifyUpdateCaseRolesWasCalledForEachUser();
     }
 
     @Test
@@ -102,6 +94,10 @@ class LocalAuthorityUserServiceTest {
 
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
+        verifyUpdateCaseRolesWasCalledForEachUser();
+    }
+
+    private void verifyUpdateCaseRolesWasCalledForEachUser() {
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]),
             refEq(new CaseUser(USER_IDS[0], caseRoles)));
