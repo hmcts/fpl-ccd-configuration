@@ -54,16 +54,16 @@ class LocalAuthorityUserServiceTest {
         given(client.authenticateUser("fpl-system-update@mailnesia.com", "Password12")).willReturn(AUTH_TOKEN);
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
-    }
 
-    @Test
-    void shouldMakeCallToUpdateCaseRoleEndpointToGrantAccessRolesToUsersWithinLocalAuthority() {
         given(localAuthorityUserLookupConfiguration.getUserIds(LOCAL_AUTHORITY)).willReturn(
             ImmutableList.<String>builder()
                 .add(USER_IDS)
                 .build()
         );
+    }
 
+    @Test
+    void shouldMakeCallToUpdateCaseRoleEndpointToGrantAccessRolesToUsersWithinLocalAuthority() {
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
         verifyUpdateCaseRolesWasCalledForEachUser();
@@ -83,12 +83,6 @@ class LocalAuthorityUserServiceTest {
 
     @Test
     void shouldNotThrowExceptionWhenCallToUpdateCaseRoleEndpointEndpointFailedForOneOfTheUsers() {
-        given(localAuthorityUserLookupConfiguration.getUserIds(LOCAL_AUTHORITY)).willReturn(
-            ImmutableList.<String>builder()
-                .add(USER_IDS)
-                .build()
-        );
-
         willThrow(new RetryableException(500, "Some error", null, null)).given(caseUserApi).updateCaseRolesForUser(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq("1"), refEq(new CaseUser("1",caseRoles)));
 
