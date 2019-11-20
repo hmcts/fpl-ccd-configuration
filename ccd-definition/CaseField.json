@@ -623,9 +623,42 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "allPartiesLabelSDO",
+    "Label": "## For all parties",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "schedule",
     "Label": "Schedule",
     "FieldType": "Schedule",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderBasisLabel",
+    "Label": "## Basis of order",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "addRecitalLabel",
+    "Label": "### Add recital",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "recitals",
+    "Label": "Recitals",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Recitals",
     "SecurityClassification": "Public"
   }
 ]

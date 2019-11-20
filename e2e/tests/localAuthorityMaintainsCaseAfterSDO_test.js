@@ -62,6 +62,9 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   await draftCaseManagementOrderEventPage.enterDirection(directions[0]);
   I.click('Continue');
   await draftCaseManagementOrderEventPage.enterSchedule(schedule);
+  I.click('Continue');
+  await I.addAnotherElementToCollection();
+  await draftCaseManagementOrderEventPage.enterRecital('Recital 1', 'Recital 1 description');
   await I.completeEvent('Submit');
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeAnswerInTab(1, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
@@ -80,6 +83,7 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   I.seeAnswerInTab(9, 'Schedule', 'Threshold', 'The S.31 threshold for the making of orders is in dispute');
   I.seeAnswerInTab(10, 'Schedule', 'Key issues', 'Are there any other family or friends capable of caring in the children');
   I.seeAnswerInTab(11, 'Schedule', 'Parties\' positions', 'The mother agrees section 20');
+  I.seeAnswerInTab(1, 'Recitals 1', 'Recital title', 'Recital 1');
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await draftCaseManagementOrderEventPage.validatePreviousSelectedHearingDate('1 Jan 2050');
 });

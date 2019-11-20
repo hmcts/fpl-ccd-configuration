@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 
 import java.util.List;
@@ -18,4 +19,5 @@ public class CaseManagementOrder {
     private final List<Element<Direction>> directions;
     private final Schedule schedule;
     private final UUID id;
+    private final Recital recital;
 }
