@@ -249,10 +249,11 @@ public class CaseDataGeneratorHelper {
                 .build());
     }
 
-    public static List<Element<HearingBooking>> createHearingBookings(final LocalDate date) {
+    public static List<Element<HearingBooking>> createHearingBookings(final LocalDateTime startDate,
+                                                                      final LocalDateTime endDate) {
         return ImmutableList.of(Element.<HearingBooking>builder()
             .id(randomUUID())
-            .value(createHearingBooking(date))
+            .value(createHearingBooking(startDate, endDate))
             .build());
     }
 
