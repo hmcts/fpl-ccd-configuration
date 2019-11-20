@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
@@ -30,8 +29,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
@@ -141,11 +143,14 @@ class CaseInitiationControllerTest {
         Set<String> caseRoles = Set.of("[LASOLICITOR]", "[CREATOR]");
 
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]), refEq(new CaseUser(USER_IDS[0], caseRoles)));
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]),
+            refEq(new CaseUser(USER_IDS[0], caseRoles)));
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[1]), refEq(new CaseUser(USER_IDS[1], caseRoles)));
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[1]),
+            refEq(new CaseUser(USER_IDS[1], caseRoles)));
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[2]), refEq(new CaseUser(USER_IDS[2], caseRoles)));
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[2]),
+            refEq(new CaseUser(USER_IDS[2], caseRoles)));
     }
 
     @Test
@@ -179,10 +184,13 @@ class CaseInitiationControllerTest {
         Set<String> caseRoles = Set.of("[LASOLICITOR]", "[CREATOR]");
 
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]), refEq(new CaseUser(USER_IDS[0], caseRoles)));
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]),
+            refEq(new CaseUser(USER_IDS[0], caseRoles)));
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[1]), refEq(new CaseUser(USER_IDS[1], caseRoles)));
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[1]),
+            refEq(new CaseUser(USER_IDS[1], caseRoles)));
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[2]), refEq(new CaseUser(USER_IDS[2], caseRoles)));
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[2]),
+            refEq(new CaseUser(USER_IDS[2], caseRoles)));
     }
 }
