@@ -31,8 +31,8 @@ module.exports = {
 
   async enterDirection(direction) {
     await I.addAnotherElementToCollection();
-    await draftDirections.enterTitleAndDescription('allParties', direction);
-    await draftDirections.enterDate('allParties', direction);
+    await draftDirections.enterTitleAndDescription('allPartiesCustom', direction);
+    await draftDirections.enterDate('allPartiesCustom', direction);
   },
 
   async enterSchedule(schedule) {

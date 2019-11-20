@@ -44,14 +44,14 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        // Resetting allParties - could be pre-populated via SDO
-        caseDetails.getData().remove("allParties");
-
         // Only allParties needed for now. Leaving logic in for the convenience of upcoming directions
         if (!isNull(caseData.getCaseManagementOrder())) {
             Map<String, List<Element<Direction>>> directions = directionHelperService.sortDirectionsByAssignee(
                 caseData.getCaseManagementOrder().getDirections());
             directions.forEach(caseDetails.getData()::put);
+        } else {
+            // Resetting allPartiesCustom - could be pre-populated via SDO
+            caseDetails.getData().remove("allPartiesCustom");
         }
 
         caseDetails.getData().put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));
@@ -68,7 +68,6 @@ public class DraftCMOController {
 
         caseDetails.getData().remove("cmoHearingDateList");
         caseDetails.getData().put("caseManagementOrder", caseManagementOrder);
-        caseDetails.getData().remove("allParties");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

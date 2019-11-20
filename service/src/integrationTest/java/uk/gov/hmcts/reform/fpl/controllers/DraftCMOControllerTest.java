@@ -97,7 +97,7 @@ class DraftCMOControllerTest {
                     .build());
 
         Map<String, Object> data = ImmutableMap.of("cmoHearingDateList", dynamicHearingDates,
-            "allParties", unassignedDirection);
+            "allPartiesCustom", unassignedDirection);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
 
@@ -108,7 +108,6 @@ class DraftCMOControllerTest {
 
         List<Element<Direction>> responseDirections = caseManagementOrder.getDirections();
 
-        assertThat(callbackResponse.getData()).doesNotContainKey("allParties");
         assertThat(responseDirections.size()).isEqualTo(1);
         assertThat(responseDirections).isEqualTo(createCustomDirection(ALL_PARTIES));
         assertThat(caseData.getCaseManagementOrder()).extracting("id", "hearingDate")

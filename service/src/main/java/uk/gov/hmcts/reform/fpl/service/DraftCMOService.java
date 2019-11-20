@@ -91,7 +91,7 @@ public class DraftCMOService {
         return CaseManagementOrder.builder()
             .hearingDate(list.getValue().getLabel())
             .id(list.getValue().getCode())
-            .directions(directionHelperService.assignCustomDirections(caseData.getAllParties(), ALL_PARTIES))
+            .directions(directionHelperService.assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES))
             .build();
     }
 
