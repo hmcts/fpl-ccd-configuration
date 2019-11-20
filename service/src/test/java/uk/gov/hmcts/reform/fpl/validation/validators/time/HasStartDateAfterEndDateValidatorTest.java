@@ -32,7 +32,7 @@ class HasStartDateAfterEndDateValidatorTest extends TimeValidatorTest {
     }
 
     @Test
-    void shouldReturnAnErrorWhenDatesAreTheEnd() {
+    void shouldReturnAnErrorWhenDatesAreTheSame() {
         hearingBooking = HearingBooking.builder()
             .startDate(FUTURE)
             .endDate(FUTURE)
