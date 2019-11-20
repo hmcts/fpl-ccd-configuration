@@ -8,6 +8,7 @@ import javax.validation.ConstraintValidatorContext;
 
 public class HasEndDateAfterStartDateValidator implements
     ConstraintValidator<HasEndDateAfterStartDate, HearingBooking> {
+
     @Override
     public boolean isValid(HearingBooking hearingBooking, ConstraintValidatorContext context) {
         return hearingBooking.getEndDate().isAfter(hearingBooking.getStartDate());

@@ -1,6 +1,7 @@
 const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const dateFormat = require('dateformat');
+const dateToString = require('../helpers/date_to_string_helper');
 
 let caseId;
 
@@ -101,10 +102,13 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
   I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
   caseViewPage.selectTab(caseViewPage.tabs.hearings);
+
+  let startDate = dateToString(hearingDetails[0].startDate);
+  let endDate = dateToString(hearingDetails[0].endDate);
   I.seeAnswerInTab(1, 'Hearing 1', 'Type of hearing', hearingDetails[0].caseManagement);
   I.seeAnswerInTab(2, 'Hearing 1', 'Venue', hearingDetails[0].venue);
-  I.seeAnswerInTab(3, 'Hearing 1', 'Start date and time', '1 Jan 2050, 3:15:00 PM');
-  I.seeAnswerInTab(4, 'Hearing 1', 'End date and time', '2 Jan 2050, 4:30:00 PM');
+  I.seeAnswerInTab(3, 'Hearing 1', 'Start date and time', dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
+  I.seeAnswerInTab(4, 'Hearing 1', 'End date and time', dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
   I.seeAnswerInTab(5, 'Hearing 1', 'Hearing needs booked', hearingDetails[0].type.interpreter);
   I.seeAnswerInTab(5, 'Hearing 1', '', hearingDetails[0].type.welsh);
   I.seeAnswerInTab(5, 'Hearing 1', '', hearingDetails[0].type.somethingElse);
@@ -112,10 +116,12 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(7, 'Hearing 1', 'Judge or magistrate\'s title', hearingDetails[0].judgeTitle);
   I.seeAnswerInTab(8, 'Hearing 1', 'Judge or magistrate\'s last name', hearingDetails[0].lastName);
 
+  startDate = dateToString(hearingDetails[1].startDate);
+  endDate = dateToString(hearingDetails[1].endDate);
   I.seeAnswerInTab(1, 'Hearing 2', 'Type of hearing', hearingDetails[1].caseManagement);
   I.seeAnswerInTab(2, 'Hearing 2', 'Venue', hearingDetails[1].venue);
-  I.seeAnswerInTab(3, 'Hearing 2', 'Start date and time', '1 Jan 2060, 11:00:00 AM');
-  I.seeAnswerInTab(4, 'Hearing 2', 'End date and time', '1 Jan 2060, 2:00:00 PM');
+  I.seeAnswerInTab(3, 'Hearing 2', 'Start date and time', dateFormat(startDate, 'd mmm yyyy, h:MM:ss TT'));
+  I.seeAnswerInTab(4, 'Hearing 2', 'End date and time', dateFormat(endDate, 'd mmm yyyy, h:MM:ss TT'));
   I.seeAnswerInTab(5, 'Hearing 2', 'Hearing needs booked', hearingDetails[1].type.interpreter);
   I.seeAnswerInTab(5, 'Hearing 2', '', hearingDetails[1].type.welsh);
   I.seeAnswerInTab(5, 'Hearing 2', '', hearingDetails[1].type.somethingElse);
