@@ -47,8 +47,6 @@ public class LocalAuthorityUserService {
                 Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
                 try {
                     String authentication = client.authenticateUser("fpl-system-update@mailnesia.com", "Password12");
-                    System.out.println("Authentication is" + authentication);
-                    System.out.println("user is" + userId);
                     caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), caseId, userId,
                         new CaseUser(userId, caseRoles));
                     logger.info("Added case roles {} to user {}", caseRoles, userId);
@@ -61,7 +59,6 @@ public class LocalAuthorityUserService {
 
     private List<String> findUserIds(String localAuthorityCode) {
         List<String> userIds = localAuthorityUserLookupConfiguration.getUserIds(localAuthorityCode);
-        System.out.println("user ids are" + userIds);
         if (userIds.isEmpty()) {
             throw new NoAssociatedUsersException("No users found for the local authority '" + localAuthorityCode + "'");
         }

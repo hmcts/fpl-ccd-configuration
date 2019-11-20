@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.InitiatedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityUserService;
 
 import java.util.Map;
 
@@ -22,14 +22,14 @@ import java.util.Map;
 public class CaseInitiationController {
 
     private final LocalAuthorityService localAuthorityNameService;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final LocalAuthorityUserService localAuthorityUserService;
 
 
     @Autowired
     public CaseInitiationController(LocalAuthorityService localAuthorityNameService,
-                                    ApplicationEventPublisher applicationEventPublisher) {
+                                    LocalAuthorityUserService localAuthorityUserService) {
         this.localAuthorityNameService = localAuthorityNameService;
-        this.applicationEventPublisher = applicationEventPublisher;
+        this.localAuthorityUserService = localAuthorityUserService;
     }
 
     @PostMapping("/about-to-submit")
@@ -49,10 +49,12 @@ public class CaseInitiationController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
 
-        applicationEventPublisher.publishEvent(new InitiatedCaseEvent(callbackRequest, authorization, userId));
+        String caseId = Long.toString(callbackRequest.getCaseDetails().getId());
+        String caseLocalAuthority = (String) callbackRequest.getCaseDetails().getData()
+            .get("caseLocalAuthority");
+
+        localAuthorityUserService.grantUserAccessWithCaseRole(caseId, caseLocalAuthority);
     }
 }
