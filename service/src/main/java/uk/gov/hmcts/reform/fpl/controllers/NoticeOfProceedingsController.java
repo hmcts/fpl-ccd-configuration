@@ -29,13 +29,14 @@ import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
 
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 

@@ -11,9 +11,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
-import javax.validation.Validation;
 import java.util.List;
 import java.util.UUID;
+
+import javax.validation.Validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
