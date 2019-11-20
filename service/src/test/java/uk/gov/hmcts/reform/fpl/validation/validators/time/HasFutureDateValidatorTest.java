@@ -29,7 +29,7 @@ class HasFutureDateValidatorTest extends TimeValidatorTest {
     }
 
     @Test
-    void shouldNotReturnAnErrorIfDateIsToday() {
+    void shouldNotReturnAnErrorIfDateIsTodayButTimeIsFuture() {
         hearingBooking = HearingBooking.builder().startDate(LocalDateTime.now().plusMinutes(1)).endDate(FUTURE).build();
 
         final Set<ConstraintViolation<HearingBooking>> violations = validator.validate(hearingBooking, group);
