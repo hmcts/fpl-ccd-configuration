@@ -73,11 +73,14 @@ public class HearingBookingDetailsController {
         for (int i = 0; i < hearingDetails.size(); i++) {
             HearingBooking hearingDetail = hearingDetails.get(i).getValue();
             for (String message : validateGroupService.validateGroup(hearingDetail, HearingBookingDetailsGroup.class)) {
+                String formattedMessage;
                 // Format the message if there is more than one hearing
                 if (hearingDetails.size() != 1) {
-                    message = message.concat(" for hearing " + (i + 1));
+                    formattedMessage = String.format("%s for hearing %d", message, i + 1);
+                } else {
+                    formattedMessage = message;
                 }
-                errors.add(message);
+                errors.add(formattedMessage);
             }
         }
         return errors;
