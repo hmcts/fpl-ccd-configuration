@@ -33,7 +33,7 @@ class LocalAuthorityUserServiceTest {
     private static final String CASE_ID = "1";
     private static final String[] USER_IDS = {"1", "2", "3"};
     private static final String LOCAL_AUTHORITY = "example";
-    Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
+    private static final Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -48,6 +49,7 @@ class CaseInitiationControllerTest {
     private static final String[] USER_IDS = {"1", "2", "3"};
     private static final String CASE_ID = "1";
     private static final ObjectMapper MAPPER = new ObjectMapper();
+    private static final Set<String> caseRoles = Set.of("[LASOLICITOR]", "[CREATOR]");
 
     @Autowired
     private MockMvc mockMvc;
@@ -67,11 +69,21 @@ class CaseInitiationControllerTest {
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
 
-    @Test
-    void shouldAddCaseLocalAuthorityToCaseData() throws Exception {
+    @BeforeEach
+    void setup() {
+        given(client.authenticateUser("fpl-system-update@mailnesia.com", "Password12")).willReturn(AUTH_TOKEN);
+
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+
+        given(serviceAuthorisationApi.serviceToken(anyMap()))
+            .willReturn(SERVICE_AUTH_TOKEN);
+
         given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
             UserInfo.builder().sub("user@example.gov.uk").build());
+    }
 
+    @Test
+    void shouldAddCaseLocalAuthorityToCaseData() throws Exception {
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
                 .put("caseName", "title")
@@ -118,11 +130,6 @@ class CaseInitiationControllerTest {
 
     @Test
     void updateCaseRolesShouldBeCalledOnceForEachUser() throws Exception {
-        given(serviceAuthorisationApi.serviceToken(anyMap()))
-            .willReturn(SERVICE_AUTH_TOKEN);
-
-        given(client.authenticateUser("fpl-system-update@mailnesia.com", "Password12")).willReturn(AUTH_TOKEN);
-        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .id(Long.valueOf(CASE_ID))
             .data(ImmutableMap.<String, Object>builder()
@@ -180,8 +187,6 @@ class CaseInitiationControllerTest {
             .andExpect(status().isOk()).andReturn();
 
         Thread.sleep(3000);
-
-        Set<String> caseRoles = Set.of("[LASOLICITOR]", "[CREATOR]");
 
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]),
