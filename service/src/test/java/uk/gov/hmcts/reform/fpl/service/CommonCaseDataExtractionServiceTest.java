@@ -41,7 +41,7 @@ class CommonCaseDataExtractionServiceTest {
 
         final Optional<String> hearingDate = commonCaseDataExtractionService.getHearingDate(hearingBooking);
 
-        assertThat(hearingDate.get()).isEqualTo("11 December 2020");
+        assertThat(hearingDate.orElse("")).isEqualTo("11 December 2020");
     }
 
     @Test
