@@ -53,7 +53,7 @@ public class LocalAuthorityUserService {
                     caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), caseId, userId,
                         new CaseUser(userId, caseRoles));
                     logger.info("Added case roles {} to user {}", caseRoles, userId);
-                } catch (FeignException exception) {
+                } catch (Exception exception) {
                     logger.warn(String.format("Error adding case roles %s to user %s",
                         caseRoles, userId), exception);
                 }
@@ -62,7 +62,7 @@ public class LocalAuthorityUserService {
 
     private List<String> findUserIds(String localAuthorityCode) {
         List<String> userIds = localAuthorityUserLookupConfiguration.getUserIds(localAuthorityCode);
-
+        System.out.println("user ids are" + userIds);
         if (userIds.isEmpty()) {
             throw new NoAssociatedUsersException("No users found for the local authority '" + localAuthorityCode + "'");
         }

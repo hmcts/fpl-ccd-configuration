@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -42,9 +43,8 @@ class CaseInitiationControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String SERVICE_AUTH_TOKEN = "Bearer service token";
-    private static final String USER_ID = "1";
+    private static final String[] USER_IDS = {"1", "2", "3"};
     private static final String CASE_ID = "1";
-    private static final String CREATOR_USER_ID = "1";
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Autowired
@@ -131,21 +131,21 @@ class CaseInitiationControllerTest {
         mockMvc
             .perform(post("/callback/case-initiation/submitted")
                 .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
+                .header("user-id", USER_IDS[0])
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(MAPPER.writeValueAsString(request)))
             .andExpect(status().isOk());
 
         Thread.sleep(3000);
 
-        Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
+        Set<String> caseRoles = Set.of("[LASOLICITOR]", "[CREATOR]");
 
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_ID), any());
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]), refEq(new CaseUser(USER_IDS[0], caseRoles)));
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq("2"), any());
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[1]), refEq(new CaseUser(USER_IDS[1], caseRoles)));
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq("3"), any());
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[2]), refEq(new CaseUser(USER_IDS[2], caseRoles)));
     }
 
     @Test
@@ -169,14 +169,20 @@ class CaseInitiationControllerTest {
         mockMvc
             .perform(post("/callback/case-initiation/submitted")
                 .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
+                .header("user-id", USER_IDS[0])
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(MAPPER.writeValueAsString(request)))
             .andExpect(status().isOk()).andReturn();
 
         Thread.sleep(3000);
 
+        Set<String> caseRoles = Set.of("[LASOLICITOR]", "[CREATOR]");
+
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_ID), any());
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]), refEq(new CaseUser(USER_IDS[0], caseRoles)));
+        verify(caseUserApi, times(1)).updateCaseRolesForUser(
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[1]), refEq(new CaseUser(USER_IDS[1], caseRoles)));
+        verify(caseUserApi, times(1)).updateCaseRolesForUser(
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[2]), refEq(new CaseUser(USER_IDS[2], caseRoles)));
     }
 }
