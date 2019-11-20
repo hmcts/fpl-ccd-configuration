@@ -67,10 +67,7 @@ class DraftCMOControllerTest {
 
     @Test
     void aboutToStartCallbackShouldPopulateHearingDatesListAndDirections() throws Exception {
-        Map<String, Object> data = ImmutableMap.of(
-            "hearingDetails", hearingDetails,
-            "caseManagementOrder", ImmutableMap.of("directions", createDirection(ALL_PARTIES)));
-
+        Map<String, Object> data = ImmutableMap.of("hearingDetails", hearingDetails);
 
         List<String> expected = Arrays.asList(
             date.plusDays(5).format(dateTimeFormatter),
@@ -79,9 +76,30 @@ class DraftCMOControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
 
-        assertThat(callbackResponse.getData()).doesNotContainKey("allPartiesCustom");
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
-        assertThat(callbackResponse.getData()).containsKey("allParties");
+    }
+
+    @Test
+    void aboutToStartCallbackShouldRemoveExistingDirectionOnCaseDataWhenCmoIsNotPopulated() throws Exception {
+        Map<String, Object> data = ImmutableMap.of(
+            "hearingDetails", hearingDetails,
+            "allPartiesCustom", ImmutableList.of());
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
+
+        assertThat(callbackResponse.getData()).doesNotContainKey("allPartiesCustom");
+    }
+
+    @Test
+    void aboutToStartCallbackShouldPreserveCollectionOnCaseDataIfCmoIsPopulated() throws Exception {
+        Map<String, Object> data = ImmutableMap.of(
+            "hearingDetails", hearingDetails,
+            "caseManagementOrder", ImmutableMap.of("directions", createDirection(ALL_PARTIES)),
+            "allPartiesCustom", ImmutableList.of());
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
+
+        assertThat(callbackResponse.getData()).containsKey("allPartiesCustom");
     }
 
     @Test
