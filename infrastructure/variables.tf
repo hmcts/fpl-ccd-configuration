@@ -94,3 +94,8 @@ variable "idam_token_jwk_set_uri" {
   type    = "string"
   default = ""
 }
+
+variable "gateway_url" {
+  type    = "string"
+  default = ""
+}

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.interfaces.C21CaseOrderGroup;
 import uk.gov.hmcts.reform.fpl.interfaces.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -29,7 +30,14 @@ class ValidateGroupServiceTest {
     }
 
     @Test
-    void shouldReturnAnErrorIfFamilyManCaseNumberAndHearingBookingDetailsIsNotPopulated() {
+    void shouldReturnAnErrorWhenFamilyManCaseNumberIsNotPopulated() {
+        List<String> errors = validateGroupService.validateGroup(CaseData.builder().build(), C21CaseOrderGroup.class);
+
+        assertThat(errors).containsExactly("Enter Familyman case number");
+    }
+
+    @Test
+    void shouldReturnAnErrorWhenFamilyManCaseNumberAndHearingBookingDetailsIsNotPopulated() {
         CaseData caseData = CaseData.builder().build();
         List<String> errors = validateGroupService.validateGroup(caseData, NoticeOfProceedingsGroup.class);
 
@@ -40,7 +48,7 @@ class ValidateGroupServiceTest {
     }
 
     @Test
-    void shouldNotReturnAnErrorIfFamilyManCaseNumberAndHearingBookingDetailsIsPopulated() {
+    void shouldNotReturnAnErrorWhenFamilyManCaseNumberAndHearingBookingDetailsIsPopulated() {
         CaseData caseData = CaseData.builder()
             .hearingDetails(ImmutableList.of(
                 Element.<HearingBooking>builder()
