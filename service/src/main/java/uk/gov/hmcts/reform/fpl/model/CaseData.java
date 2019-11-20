@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.interfaces.C21CaseOrderGroup;
 import uk.gov.hmcts.reform.fpl.interfaces.EPOGroup;
 import uk.gov.hmcts.reform.fpl.interfaces.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.interfaces.UploadDocumentsGroup;
@@ -22,6 +23,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Data
@@ -48,7 +50,7 @@ public class CaseData {
     private final List<@NotNull(message = "You need to add details to applicant")
         Element<Applicant>> applicants;
     @NotNull(message = "You need to add details to respondents")
-    private final List<@NotNull(message = "You need to add details to respondents")Element<Respondent>> respondents1;
+    private final List<@NotNull(message = "You need to add details to respondents") Element<Respondent>> respondents1;
 
     @Valid
     private final Respondent getFirstRespondent() {
@@ -117,7 +119,8 @@ public class CaseData {
     @NotNull(message = "You need to add details to children")
     @Valid
     private final List<@NotNull(message = "You need to add details to children") Element<Child>> children1;
-    @NotBlank(message = "Enter Familyman case number", groups = NoticeOfProceedingsGroup.class)
+    @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,
+        C21CaseOrderGroup.class})
     private final String familyManCaseNumber;
     private final NoticeOfProceedings noticeOfProceedings;
 
@@ -138,5 +141,12 @@ public class CaseData {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
+    private final C21Order c21Order;
+    private final List<Element<C21Order>> c21Orders;
+
+    public List<Element<C21Order>> getC21Orders() {
+        return defaultIfNull(c21Orders, new ArrayList<>());
+    }
+
     private final CaseManagementOrder caseManagementOrder;
 }
