@@ -6,52 +6,56 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
 @ExtendWith(SpringExtension.class)
 class HasEndDateAfterStartDateValidatorTest extends TimeValidatorTest {
 
     @Test
     void shouldReturnAnErrorWhenStartDateIsAfterEndDate() {
-        hearingBooking = HearingBooking.builder()
-            .startDate(FUTURE)
-            .endDate(LocalDateTime.now().plusDays(1))
-            .build();
+        hearingBooking = createHearingBooking(FUTURE, LocalDateTime.now());
 
         final List<String> violations = validator.validate(hearingBooking, group)
             .stream()
             .map(ConstraintViolation::getMessage)
             .collect(Collectors.toList());
 
-        assertThat(violations).hasSize(1).containsOnlyOnce("The start date cannot be after the end date");
+        assertThat(violations).contains("The start date cannot be after the end date");
     }
 
     @Test
-    void shouldReturnAnErrorWhenDatesAreTheSame() {
-        hearingBooking = HearingBooking.builder()
-            .startDate(FUTURE)
-            .endDate(FUTURE)
-            .build();
+    void shouldReturnAnErrorWhenDatesAndTimesAreTheSame() {
+        hearingBooking = createHearingBooking(FUTURE, FUTURE);
 
         final List<String> violations = validator.validate(hearingBooking, group)
             .stream()
             .map(ConstraintViolation::getMessage)
             .collect(Collectors.toList());
 
-        assertThat(violations).hasSize(1).containsOnlyOnce("The start date cannot be after the end date");
+        assertThat(violations).contains("The start date cannot be after the end date");
+    }
+
+    @Test
+    void shouldNotReturnAnErrorWhenDatesAreTheSameAndTimesAreDifferent() {
+        hearingBooking = createHearingBooking(
+            LocalDateTime.of(FUTURE.toLocalDate(), LocalTime.of(2, 2, 2)),
+            LocalDateTime.of(FUTURE.toLocalDate(), LocalTime.of(3, 3, 3)));
+
+        final Set<ConstraintViolation<HearingBooking>> violations = validator.validate(hearingBooking, group);
+
+        assertThat(violations).isEmpty();
     }
 
     @Test
     void shouldNotReturnAnErrorWhenStartDateIsBeforeTheEndDate() {
-        hearingBooking = HearingBooking.builder()
-            .startDate(LocalDateTime.now().plusDays(1))
-            .endDate(FUTURE)
-            .build();
+        hearingBooking = createHearingBooking(LocalDateTime.now().plusDays(1), FUTURE);
 
         final Set<ConstraintViolation<HearingBooking>> violations = validator.validate(hearingBooking, group);
 
