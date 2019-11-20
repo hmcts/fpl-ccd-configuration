@@ -167,7 +167,7 @@ public class DirectionHelperService {
     public void addAssigneeDirectionKeyValuePairsToCaseData(String assignee,
                                                             List<Element<Direction>> directions,
                                                             CaseDetails caseDetails) {
-        if (assignee.equals("courtDirections")) {
+        if (assignee.equals(COURT.getValue())) {
             caseDetails.getData().put(assignee.concat("Custom"), extractPartyResponse(assignee, directions));
         } else {
             caseDetails.getData().put(assignee, extractPartyResponse(assignee, directions));
