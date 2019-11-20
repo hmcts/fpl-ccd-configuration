@@ -30,7 +30,6 @@ class LocalAuthorityUserServiceTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String SERVICE_AUTH_TOKEN = "Bearer service token";
     private static final String CASE_ID = "1";
-    private static final String CREATOR_USER_ID = "1";
     private static final String[] USER_IDS = {"1", "2", "3"};
     private static final String LOCAL_AUTHORITY = "example";
 
