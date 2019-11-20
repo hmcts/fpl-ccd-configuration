@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import feign.RetryableException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +33,7 @@ class LocalAuthorityUserServiceTest {
     private static final String CASE_ID = "1";
     private static final String[] USER_IDS = {"1", "2", "3"};
     private static final String LOCAL_AUTHORITY = "example";
+    Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
@@ -47,20 +49,22 @@ class LocalAuthorityUserServiceTest {
     @InjectMocks
     private LocalAuthorityUserService localAuthorityUserService;
 
+    @BeforeEach
+    void setup() {
+        given(client.authenticateUser("fpl-system-update@mailnesia.com", "Password12")).willReturn(AUTH_TOKEN);
+
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
+    }
+
     @Test
     void shouldMakeCallToUpdateCaseRoleEndpointToGrantAccessRolesToUsersWithinLocalAuthority() {
-        given(client.authenticateUser("fpl-system-update@mailnesia.com", "Password12")).willReturn(AUTH_TOKEN);
         given(localAuthorityUserLookupConfiguration.getUserIds(LOCAL_AUTHORITY)).willReturn(
             ImmutableList.<String>builder()
                 .add(USER_IDS)
                 .build()
         );
 
-        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
-
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
-
-        Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
 
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]),
@@ -87,11 +91,6 @@ class LocalAuthorityUserServiceTest {
 
     @Test
     void shouldNotThrowExceptionWhenCallToUpdateCaseRoleEndpointEndpointFailedForOneOfTheUsers() {
-        given(client.authenticateUser("fpl-system-update@mailnesia.com", "Password12")).willReturn(AUTH_TOKEN);
-
-        Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
-
-        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
         given(localAuthorityUserLookupConfiguration.getUserIds(LOCAL_AUTHORITY)).willReturn(
             ImmutableList.<String>builder()
                 .add(USER_IDS)
