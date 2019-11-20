@@ -142,12 +142,19 @@ class CaseInitiationControllerTest {
 
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_ID), any());
+        verify(caseUserApi, times(1)).updateCaseRolesForUser(
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq("2"), any());
+        verify(caseUserApi, times(1)).updateCaseRolesForUser(
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq("3"), any());
     }
 
     @Test
     void shouldContinueAddingUsersAfterGrantAccessFailure() throws Exception {
         given(serviceAuthorisationApi.serviceToken(anyMap()))
             .willReturn(SERVICE_AUTH_TOKEN);
+
+        given(client.authenticateUser("fpl-system-update@mailnesia.com", "Password12")).willReturn(AUTH_TOKEN);
+        given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
         doThrow(RuntimeException.class).when(caseUserApi).updateCaseRolesForUser(
             any(), any(), any(), any(), any());
