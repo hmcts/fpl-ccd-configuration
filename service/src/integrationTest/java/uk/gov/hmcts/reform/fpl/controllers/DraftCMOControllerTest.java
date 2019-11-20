@@ -38,10 +38,10 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.UNASSIGNED_DIRECTION;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCustomDirection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDirection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.UNASSIGNED_DIRECTION;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftCMOController.class)
@@ -77,29 +77,6 @@ class DraftCMOControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
-    }
-
-    @Test
-    void aboutToStartCallbackShouldRemoveExistingDirectionOnCaseDataWhenCmoIsNotPopulated() throws Exception {
-        Map<String, Object> data = ImmutableMap.of(
-            "hearingDetails", hearingDetails,
-            "allPartiesCustom", ImmutableList.of());
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
-
-        assertThat(callbackResponse.getData()).doesNotContainKey("allPartiesCustom");
-    }
-
-    @Test
-    void aboutToStartCallbackShouldPreserveDirectionOnCaseDataIfCmoIsPopulated() throws Exception {
-        Map<String, Object> data = ImmutableMap.of(
-            "hearingDetails", hearingDetails,
-            "caseManagementOrder", ImmutableMap.of("directions", createDirection(ALL_PARTIES)),
-            "allPartiesCustom", ImmutableList.of());
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
-
-        assertThat(callbackResponse.getData()).containsKey("allPartiesCustom");
     }
 
     @Test
