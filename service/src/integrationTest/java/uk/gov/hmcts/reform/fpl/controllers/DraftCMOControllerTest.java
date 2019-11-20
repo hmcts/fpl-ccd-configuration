@@ -40,7 +40,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.UNASSIGNED_DIRECTION;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCustomDirection;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDirection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
 @ActiveProfiles("integration-test")
