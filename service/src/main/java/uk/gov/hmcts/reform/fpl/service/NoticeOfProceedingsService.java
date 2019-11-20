@@ -92,7 +92,7 @@ public class NoticeOfProceedingsService {
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
 
         return ImmutableMap.of(
-            "hearingDate", commonCaseDataExtractionService.getHearingDate(prioritisedHearingBooking),
+            "hearingDate", commonCaseDataExtractionService.getHearingDate(prioritisedHearingBooking).orElse(""),
             "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
             "preHearingAttendance", commonCaseDataExtractionService.extractPrehearingAttendance(
                 prioritisedHearingBooking),

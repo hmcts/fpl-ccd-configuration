@@ -8,6 +8,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -29,18 +30,18 @@ class CommonCaseDataExtractionServiceTest {
     void shouldReturnTheFormattedDateWhenStartAndEndDateAreNotTheSame() {
         hearingBooking = createHearingBookingWithTimesOnDifferentDays();
 
-        final String hearingDate = commonCaseDataExtractionService.getHearingDate(hearingBooking);
+        final Optional<String> hearingDate = commonCaseDataExtractionService.getHearingDate(hearingBooking);
 
-        assertThat(hearingDate).isEmpty();
+        assertThat(hearingDate.isEmpty());
     }
 
     @Test
     void shouldReturnAnEmptyStringWhenStartAndEndDateAreTheSame() {
         hearingBooking = createHearingBookingWithTimesOnSameDay();
 
-        final String hearingDate = commonCaseDataExtractionService.getHearingDate(hearingBooking);
+        final Optional<String> hearingDate = commonCaseDataExtractionService.getHearingDate(hearingBooking);
 
-        assertThat(hearingDate).isEqualTo("11 December 2020");
+        assertThat(hearingDate.get()).isEqualTo("11 December 2020");
     }
 
     @Test

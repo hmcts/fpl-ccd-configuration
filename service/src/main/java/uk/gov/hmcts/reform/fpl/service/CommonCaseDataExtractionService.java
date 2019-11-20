@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
+import java.util.Optional;
 
 @Service
 public class CommonCaseDataExtractionService {
@@ -34,8 +35,8 @@ public class CommonCaseDataExtractionService {
         return hearingTime;
     }
 
-    public String getHearingDate(HearingBooking hearingBooking) {
-        String hearingDate = "";
+    public Optional<String> getHearingDate(HearingBooking hearingBooking) {
+        String hearingDate = null;
 
         // If they aren't on the same date return nothing
         if (hearingBooking.hasDatesOnSameDay()) {
@@ -43,7 +44,7 @@ public class CommonCaseDataExtractionService {
                 hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG);
         }
 
-        return hearingDate;
+        return Optional.ofNullable(hearingDate);
     }
 
     public String extractPrehearingAttendance(HearingBooking booking) {
