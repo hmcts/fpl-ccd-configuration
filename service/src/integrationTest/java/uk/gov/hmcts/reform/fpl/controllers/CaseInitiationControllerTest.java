@@ -149,7 +149,7 @@ class CaseInitiationControllerTest {
     }
 
     @Test
-    void shouldContinueAddingUsersAfterGrantAccessFailure() throws Exception {
+    void shouldContinueAddingCaseRolesToUsersAfterGrantAccessFailure() throws Exception {
         given(serviceAuthorisationApi.serviceToken(anyMap()))
             .willReturn(SERVICE_AUTH_TOKEN);
 
