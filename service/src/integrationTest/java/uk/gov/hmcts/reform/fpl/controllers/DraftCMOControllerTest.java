@@ -80,6 +80,29 @@ class DraftCMOControllerTest {
     }
 
     @Test
+    void aboutToStartCallbackShouldRemoveExistingDirectionOnCaseDataWhenCmoIsNotPopulated() throws Exception {
+        Map<String, Object> data = ImmutableMap.of(
+            "hearingDetails", hearingDetails,
+            "allPartiesCustom", ImmutableList.of());
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
+
+        assertThat(callbackResponse.getData()).doesNotContainKey("allPartiesCustom");
+    }
+
+    @Test
+    void aboutToStartCallbackShouldPreserveDirectionOnCaseDataIfCmoIsPopulated() throws Exception {
+        Map<String, Object> data = ImmutableMap.of(
+            "hearingDetails", hearingDetails,
+            "caseManagementOrder", ImmutableMap.of("directions", createDirection(ALL_PARTIES)),
+            "allPartiesCustom", ImmutableList.of());
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
+
+        assertThat(callbackResponse.getData()).containsKey("allPartiesCustom");
+    }
+
+    @Test
     void aboutToSubmitShouldPopulateHiddenHearingDateFieldAndCmoDirection() throws Exception {
         List<Element<HearingBooking>> hearingDetails = createHearingBookings(date);
 
