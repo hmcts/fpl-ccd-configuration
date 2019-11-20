@@ -91,7 +91,7 @@ class DraftCMOControllerTest {
     }
 
     @Test
-    void aboutToStartCallbackShouldPreserveCollectionOnCaseDataIfCmoIsPopulated() throws Exception {
+    void aboutToStartCallbackShouldPreserveDirectionOnCaseDataIfCmoIsPopulated() throws Exception {
         Map<String, Object> data = ImmutableMap.of(
             "hearingDetails", hearingDetails,
             "caseManagementOrder", ImmutableMap.of("directions", createDirection(ALL_PARTIES)),
