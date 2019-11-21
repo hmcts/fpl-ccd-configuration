@@ -137,7 +137,7 @@ class CaseInitiationControllerTest {
 
         Thread.sleep(3000);
 
-        verifyUpdateCaseRolesWasCalledForEachUser();
+        verifyUpdateCaseRolesWasCalledOnceForEachUser();
     }
 
     @Test
@@ -151,10 +151,10 @@ class CaseInitiationControllerTest {
 
         Thread.sleep(3000);
 
-        verifyUpdateCaseRolesWasCalledForEachUser();
+        verifyUpdateCaseRolesWasCalledOnceForEachUser();
     }
 
-    private void verifyUpdateCaseRolesWasCalledForEachUser() {
+    private void verifyUpdateCaseRolesWasCalledOnceForEachUser() {
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]),
             refEq(new CaseUser(USER_IDS[0], caseRoles)));

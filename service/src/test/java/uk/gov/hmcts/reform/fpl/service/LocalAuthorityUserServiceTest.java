@@ -86,10 +86,10 @@ class LocalAuthorityUserServiceTest {
     }
 
     @Test
-    void shouldMakeCallToUpdateCaseRoleEndpointToGrantAccessRolesToUsersWithinLocalAuthority() {
+    void shouldMakeCallToUpdateCaseRoleEndpointWhenUsersWithinLocalAuthority() {
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
-        verifyUpdateCaseRolesWasCalledForEachUser();
+        verifyUpdateCaseRolesWasCalledOnceForEachUser();
     }
 
     @Test
@@ -105,16 +105,16 @@ class LocalAuthorityUserServiceTest {
     }
 
     @Test
-    void shouldNotThrowExceptionWhenCallToUpdateCaseRoleEndpointEndpointFailedForOneOfTheUsers() {
+    void shouldNotThrowExceptionWhenCallToUpdateCaseRoleEndpointFailsForOneUser() {
         willThrow(new RetryableException(500, "Some error", null, null)).given(caseUserApi).updateCaseRolesForUser(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq("1"), refEq(new CaseUser("1",caseRoles)));
 
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
-        verifyUpdateCaseRolesWasCalledForEachUser();
+        verifyUpdateCaseRolesWasCalledOnceForEachUser();
     }
 
-    private void verifyUpdateCaseRolesWasCalledForEachUser() {
+    private void verifyUpdateCaseRolesWasCalledOnceForEachUser() {
         verify(caseUserApi, times(1)).updateCaseRolesForUser(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]),
             refEq(new CaseUser(USER_IDS[0], caseRoles)));
