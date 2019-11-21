@@ -50,7 +50,8 @@ public class CaseInitiationController {
     public void handleSubmittedEvent(
         @RequestBody CallbackRequest callbackRequest) {
 
-        String caseId = Long.toString(callbackRequest.getCaseDetails().getId());
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        String caseId = Long.toString(caseDetails.getId());
         String caseLocalAuthority = (String) callbackRequest.getCaseDetails().getData()
             .get("caseLocalAuthority");
 
