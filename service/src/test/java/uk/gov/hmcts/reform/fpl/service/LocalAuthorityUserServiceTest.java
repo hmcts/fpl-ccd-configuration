@@ -82,7 +82,7 @@ class LocalAuthorityUserServiceTest {
     void shouldMakeCallToUpdateCaseRoleEndpointWhenUsersWithinLocalAuthority() {
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
-        verifyUpdateCaseRolesWasCalledOnceForEachUser();
+        verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(1);
     }
 
     @Test
@@ -112,17 +112,25 @@ class LocalAuthorityUserServiceTest {
 
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
-        verifyUpdateCaseRolesWasCalledOnceForEachUser();
+        verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(1);
     }
 
-    private void verifyUpdateCaseRolesWasCalledOnceForEachUser() {
-        verify(caseUserApi, times(1)).updateCaseRolesForUser(
+    @Test
+    void shouldUpdateUserRolesWhenRolesAreAlreadyAssignedToUser() {
+        localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
+
+        verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(2);
+    }
+
+    private void verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(int times) {
+        verify(caseUserApi, times(times)).updateCaseRolesForUser(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[0]),
             refEq(new CaseUser(USER_IDS[0], caseRoles)));
-        verify(caseUserApi, times(1)).updateCaseRolesForUser(
+        verify(caseUserApi, times(times)).updateCaseRolesForUser(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[1]),
             refEq(new CaseUser(USER_IDS[1], caseRoles)));
-        verify(caseUserApi, times(1)).updateCaseRolesForUser(
+        verify(caseUserApi, times(times)).updateCaseRolesForUser(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq(USER_IDS[2]),
             refEq(new CaseUser(USER_IDS[2], caseRoles)));
     }
