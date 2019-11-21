@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.PublicLawEmailLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Solicitor;
 
 import java.util.Optional;
+
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 @Service
 public class InboxLookupService {
@@ -23,23 +25,28 @@ public class InboxLookupService {
         this.publicLawEmailLookupConfiguration = publicLawEmailLookupConfiguration;
     }
 
-    public String getLocalAuthorityOrFallbackEmail(final CaseDetails caseDetails, final String localAuthorityCode) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+    public String getNotificationRecipientEmail(final CaseDetails caseDetails, final String localAuthorityCode) {
+        Solicitor solicitor = objectMapper.convertValue(caseDetails.getData().get("solicitor"), Solicitor.class);
+
         return getLocalAuthorityEmail(localAuthorityCode)
-            .orElse(getFallbackEmail(caseData));
+            .orElse(getFallbackEmail(solicitor));
     }
 
     private Optional<String> getLocalAuthorityEmail(final String localAuthorityCode) {
-        return Optional.ofNullable(
-            localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode).getEmail());
+        return isNotBlank(
+            localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode).getEmail())
+            ? Optional.of(localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode).getEmail())
+            : Optional.empty();
     }
 
-    private Optional<String> getSolicitorEmail(final CaseData caseData) {
-        return Optional.ofNullable(caseData.getSolicitor().getEmail());
+    private Optional<String> getSolicitorEmail(final Solicitor solicitor) {
+        return isNotBlank(solicitor.getEmail())
+            ? Optional.of(solicitor.getEmail())
+            : Optional.empty();
     }
 
-    private String getFallbackEmail(final CaseData caseData) {
-        return getSolicitorEmail(caseData)
+    private String getFallbackEmail(final Solicitor solicitor) {
+        return getSolicitorEmail(solicitor)
             .orElse(publicLawEmailLookupConfiguration.getEmailAddress());
     }
 }

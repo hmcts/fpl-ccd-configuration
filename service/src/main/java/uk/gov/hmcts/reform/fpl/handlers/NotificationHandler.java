@@ -139,7 +139,7 @@ public class NotificationHandler {
         Map<String, Object> parameters = localAuthorityEmailContentProvider
             .buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseDetails, localAuthorityCode);
         String reference = Long.toString(caseDetails.getId());
-        String email = inboxLookupService.getLocalAuthorityOrFallbackEmail(caseDetails, localAuthorityCode);
+        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
         sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, reference);
     }
 

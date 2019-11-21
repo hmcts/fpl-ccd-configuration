@@ -49,46 +49,60 @@ public class InboxLookupServiceTest {
 
     @Test
     void shouldReturnLocalAuthorityEmailWhenEmailExist() {
-        CaseDetails caseDetails = buildCaseDetailsWithSolicitorEmail(SOLICITOR_EMAIL_ADDRESS);
+        CaseDetails caseDetails = buildCaseDetailsWithSolicitorEmail();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
-        String email = inboxLookupService.getLocalAuthorityOrFallbackEmail(caseDetails, LOCAL_AUTHORITY_CODE);
+        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
         assertThat(email).isEqualTo(LOCAL_AUTHORITY_EMAIL_ADDRESS);
     }
 
     @Test
     void shouldReturnSolicitorEmailWhenLocalAuthorityEmailDoesNotExist() {
-        CaseDetails caseDetails = buildCaseDetailsWithSolicitorEmail(SOLICITOR_EMAIL_ADDRESS);
+        CaseDetails caseDetails = buildCaseDetailsWithSolicitorEmail();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(null));
 
-        String email = inboxLookupService.getLocalAuthorityOrFallbackEmail(caseDetails, LOCAL_AUTHORITY_CODE);
+        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
         assertThat(email).isEqualTo(SOLICITOR_EMAIL_ADDRESS);
     }
 
     @Test
-    void shouldReturnPublicLawEmailWhenLocalAuthorityEmailAndSolicitorEmailDoesNotExist() {
-        CaseDetails caseDetails = buildCaseDetailsWithSolicitorEmail(null);
+    void shouldReturnSolicitorEmailWhenLocalAuthorityEmailIsEmpty() {
+        CaseDetails caseDetails = buildCaseDetailsWithSolicitorEmail();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(null));
+            .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(""));
+
+        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
+
+        assertThat(email).isEqualTo(SOLICITOR_EMAIL_ADDRESS);
+    }
+
+    @Test
+    void shouldReturnPublicLawEmailWhenLocalAuthorityEmailAndSolicitorEmailIsEmpty() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of("solicitor", Solicitor.builder().email("").build()))
+            .build();
+
+        given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
+            .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(""));
 
         given(publicLawEmailLookupConfiguration.getEmailAddress())
             .willReturn(PUBLIC_LAW_EMAIL);
 
-        String email = inboxLookupService.getLocalAuthorityOrFallbackEmail(caseDetails, LOCAL_AUTHORITY_CODE);
+        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
         assertThat(email).isEqualTo(PUBLIC_LAW_EMAIL);
     }
 
-    private CaseDetails buildCaseDetailsWithSolicitorEmail(final String solicitorEmail) {
+    private CaseDetails buildCaseDetailsWithSolicitorEmail() {
         return CaseDetails.builder()
-            .data(ImmutableMap.of("solicitor", Solicitor.builder().email(solicitorEmail).build()))
+            .data(ImmutableMap.of("solicitor", Solicitor.builder().email(SOLICITOR_EMAIL_ADDRESS).build()))
             .build();
     }
 }
