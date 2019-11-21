@@ -7,6 +7,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.interfaces.C21CaseOrderGroup;
 import uk.gov.hmcts.reform.fpl.interfaces.EPOGroup;
 import uk.gov.hmcts.reform.fpl.interfaces.NoticeOfProceedingsGroup;
+import uk.gov.hmcts.reform.fpl.interfaces.NotifyGatekeeperGroup;
 import uk.gov.hmcts.reform.fpl.interfaces.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -120,7 +121,7 @@ public class CaseData {
     @Valid
     private final List<@NotNull(message = "You need to add details to children") Element<Child>> children1;
     @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,
-        C21CaseOrderGroup.class})
+        C21CaseOrderGroup.class, NotifyGatekeeperGroup.class})
     private final String familyManCaseNumber;
     private final NoticeOfProceedings noticeOfProceedings;
 
