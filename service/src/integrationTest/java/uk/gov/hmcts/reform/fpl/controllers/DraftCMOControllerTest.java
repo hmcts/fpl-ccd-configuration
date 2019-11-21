@@ -64,7 +64,7 @@ class DraftCMOControllerTest {
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
 
     @Test
-    void aboutToStartCallbackShouldPopulateHearingDatesListAndDirections() throws Exception {
+    void aboutToStartCallbackShouldPopulateHearingDatesListAndRemoveAllPartiesCustomDirection() throws Exception {
         Map<String, Object> data = ImmutableMap.of("hearingDetails", hearingDetails);
 
         List<String> expected = Arrays.asList(
