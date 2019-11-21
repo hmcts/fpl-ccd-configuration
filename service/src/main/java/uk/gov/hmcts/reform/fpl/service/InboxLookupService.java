@@ -3,34 +3,43 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.GeneralInboxLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.PublicLawEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
-import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.springframework.util.ObjectUtils.isEmpty;
+import java.util.Optional;
 
 @Service
 public class InboxLookupService {
     private final ObjectMapper objectMapper;
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
-    private final GeneralInboxLookupConfiguration generalInboxLookupConfiguration;
+    private final PublicLawEmailLookupConfiguration publicLawEmailLookupConfiguration;
 
     public InboxLookupService(ObjectMapper objectMapper,
                               LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration,
-                              GeneralInboxLookupConfiguration generalInboxLookupConfiguration) {
+                              PublicLawEmailLookupConfiguration publicLawEmailLookupConfiguration) {
         this.objectMapper = objectMapper;
         this.localAuthorityEmailLookupConfiguration = localAuthorityEmailLookupConfiguration;
-        this.generalInboxLookupConfiguration = generalInboxLookupConfiguration;
+        this.publicLawEmailLookupConfiguration = publicLawEmailLookupConfiguration;
     }
 
-    public String getLocalAuthorityOrFallbackEmail(CaseDetails caseDetails, String localAuthorityCode) {
-        String email = localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode).getEmail();
-        if (isEmpty(email)) {
-            CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-            email = isNotEmpty(caseData.getSolicitor().getEmail())
-                ? caseData.getSolicitor().getEmail() : generalInboxLookupConfiguration.getGeneralInbox();
-        }
-        return email;
+    public String getLocalAuthorityOrFallbackEmail(final CaseDetails caseDetails, final String localAuthorityCode) {
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        return getLocalAuthorityEmail(localAuthorityCode)
+            .orElse(getFallbackEmail(caseData));
+    }
+
+    private Optional<String> getLocalAuthorityEmail(final String localAuthorityCode) {
+        return Optional.ofNullable(
+            localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode).getEmail());
+    }
+
+    private Optional<String> getSolicitorEmail(final CaseData caseData) {
+        return Optional.ofNullable(caseData.getSolicitor().getEmail());
+    }
+
+    private String getFallbackEmail(final CaseData caseData) {
+        return getSolicitorEmail(caseData)
+            .orElse(publicLawEmailLookupConfiguration.getEmailAddress());
     }
 }

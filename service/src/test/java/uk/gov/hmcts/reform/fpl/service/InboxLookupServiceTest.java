@@ -11,8 +11,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.GeneralInboxLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.PublicLawEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,39 +20,39 @@ import static org.mockito.BDDMockito.given;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, LocalAuthorityEmailLookupConfiguration.class,
-    InboxLookupService.class, GeneralInboxLookupConfiguration.class})
+    InboxLookupService.class, PublicLawEmailLookupConfiguration.class})
 public class InboxLookupServiceTest {
 
     @MockBean
     private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
 
     @MockBean
-    private GeneralInboxLookupConfiguration generalInboxLookupConfiguration;
+    private PublicLawEmailLookupConfiguration publicLawEmailLookupConfiguration;
 
     @Autowired
     private ObjectMapper mapper;
 
     private InboxLookupService inboxLookupService;
 
-    private CaseDetails caseDetails;
-
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
     private static final String SOLICITOR_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
-    private static final String GENERAL_INBOX = "FamilyPublicLaw+generalInbox@gmail.com";
+    private static final String PUBLIC_LAW_EMAIL = "FamilyPublicLaw+PublicLawEmail@gmail.com";
 
     @BeforeEach
     void setup() {
         this.inboxLookupService =
             new InboxLookupService(mapper,
                 localAuthorityEmailLookupConfiguration,
-                generalInboxLookupConfiguration);
+                publicLawEmailLookupConfiguration);
     }
 
     @Test
-    void shouldReturnLocalAuthorityInboxWhenMappingExist() {
-        buildCaseDetails(SOLICITOR_EMAIL_ADDRESS);
-        getMockLocalAuthorityEmail(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+    void shouldReturnLocalAuthorityEmailWhenEmailExist() {
+        CaseDetails caseDetails = buildCaseDetailsWithSolicitorEmail(SOLICITOR_EMAIL_ADDRESS);
+
+        given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
+            .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS));
 
         String email = inboxLookupService.getLocalAuthorityOrFallbackEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
@@ -60,9 +60,11 @@ public class InboxLookupServiceTest {
     }
 
     @Test
-    void shouldReturnSolicitorEmailWhenLocalAuthorityInboxNotExist() {
-        buildCaseDetails(SOLICITOR_EMAIL_ADDRESS);
-        getMockLocalAuthorityEmail("");
+    void shouldReturnSolicitorEmailWhenLocalAuthorityEmailDoesNotExist() {
+        CaseDetails caseDetails = buildCaseDetailsWithSolicitorEmail(SOLICITOR_EMAIL_ADDRESS);
+
+        given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
+            .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(null));
 
         String email = inboxLookupService.getLocalAuthorityOrFallbackEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
@@ -70,26 +72,23 @@ public class InboxLookupServiceTest {
     }
 
     @Test
-    void shouldReturnGeneralInboxWhenSolicitorEmailNotExist() {
-        buildCaseDetails("");
-        getMockLocalAuthorityEmail("");
+    void shouldReturnPublicLawEmailWhenLocalAuthorityEmailAndSolicitorEmailDoesNotExist() {
+        CaseDetails caseDetails = buildCaseDetailsWithSolicitorEmail(null);
 
-        given(generalInboxLookupConfiguration.getGeneralInbox())
-            .willReturn(GENERAL_INBOX);
+        given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
+            .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(null));
+
+        given(publicLawEmailLookupConfiguration.getEmailAddress())
+            .willReturn(PUBLIC_LAW_EMAIL);
 
         String email = inboxLookupService.getLocalAuthorityOrFallbackEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
-        assertThat(email).isEqualTo(GENERAL_INBOX);
+        assertThat(email).isEqualTo(PUBLIC_LAW_EMAIL);
     }
 
-    private void getMockLocalAuthorityEmail(String localAuthorityEmailAddress) {
-        given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(localAuthorityEmailAddress));
-    }
-
-    private void buildCaseDetails(String email) {
-        caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of("solicitor", Solicitor.builder().email(email).build()))
+    private CaseDetails buildCaseDetailsWithSolicitorEmail(final String solicitorEmail) {
+        return CaseDetails.builder()
+            .data(ImmutableMap.of("solicitor", Solicitor.builder().email(solicitorEmail).build()))
             .build();
     }
 }

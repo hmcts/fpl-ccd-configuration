@@ -114,7 +114,7 @@ class NotificationHandlerTest {
     private LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
 
     @Mock
-    private InboxLookupService genericInboxLookupService;
+    private InboxLookupService inboxLookupService;
 
     @InjectMocks
     private NotificationHandler notificationHandler;
@@ -346,7 +346,7 @@ class NotificationHandlerTest {
         given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
-        given(genericInboxLookupService.getLocalAuthorityOrFallbackEmail(callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE))
+        given(inboxLookupService.getLocalAuthorityOrFallbackEmail(callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
         notificationHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));

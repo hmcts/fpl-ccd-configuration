@@ -28,7 +28,7 @@ java:
         - local-authority-code-to-hmcts-court-mapping
         - local-authority-code-to-cafcass-mapping
         - local-authority-code-to-shared-inbox-mapping
-        - general-fpla-inbox-mapping
+        - public-law-email-mapping
         - system-update-user-username
         - system-update-user-password
 
