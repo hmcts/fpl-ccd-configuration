@@ -14,7 +14,7 @@ import javax.validation.ConstraintViolation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-class HasSetTimeValidatorTest extends TimeValidatorTest {
+class TimeNotMidnightValidatorTest extends TimeValidatorTest {
 
     @Test
     void shouldReturnAnErrorWhenAllTimeFieldsAreZero() {
