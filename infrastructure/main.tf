@@ -146,7 +146,7 @@ module "case-service" {
     FPL_LOCAL_AUTHORITY_CODE_TO_HMCTS_COURT_MAPPING     = "${data.azurerm_key_vault_secret.local_authority_code_to_hmcts_court_mapping.value}"
     FPL_LOCAL_AUTHORITY_CODE_TO_CAFCASS_MAPPING         = "${data.azurerm_key_vault_secret.local_authority_code_to_cafcass_mapping.value}"
     FPL_LOCAL_AUTHORITY_CODE_TO_SHARED_INBOX_MAPPING    = "${data.azurerm_key_vault_secret.local_authority_code_to_shared_inbox_mapping.value}"
-    FPL_DEFAULT_EMAIL_MAPPING                        = "${data.azurerm_key_vault_secret.default_email_mapping.value}"
+    FPL_DEFAULT_EMAIL_MAPPING                           = "${data.azurerm_key_vault_secret.default_email_mapping.value}"
     NOTIFY_API_KEY                                      = "${data.azurerm_key_vault_secret.notify_api_key.value}"
     FPL_SYSTEM_UPDATE_USERNAME                          = "${data.azurerm_key_vault_secret.system_update_user_username.value}"
     FPL_SYSTEM_UPDATE_PASSWORD                          = "${data.azurerm_key_vault_secret.system_update_user_password.value}"
