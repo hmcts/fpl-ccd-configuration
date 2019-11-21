@@ -37,6 +37,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.ResourceReader.readBytes;
 
 @ActiveProfiles("integration-test")
@@ -47,7 +48,7 @@ class CaseInitiationControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String SERVICE_AUTH_TOKEN = "Bearer service token";
     private static final String[] USER_IDS = {"1", "2", "3"};
-    private static final String CASE_ID = "1";
+    private static final String CASE_ID = "12345";
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final Set<String> caseRoles = Set.of("[LASOLICITOR]", "[CREATOR]");
 
@@ -130,7 +131,7 @@ class CaseInitiationControllerTest {
 
     @Test
     void updateCaseRolesShouldBeCalledOnceForEachUser() throws Exception {
-        CallbackRequest request = createCallbackRequest();
+        CallbackRequest request = callbackRequest();
 
         performResponseCallBackSubmitted(request);
 
@@ -144,7 +145,7 @@ class CaseInitiationControllerTest {
         doThrow(RuntimeException.class).when(caseUserApi).updateCaseRolesForUser(
             any(), any(), any(), any(), any());
 
-        CallbackRequest request = createCallbackRequest();
+        CallbackRequest request = callbackRequest();
 
         performResponseCallBackSubmitted(request);
 
@@ -173,14 +174,5 @@ class CaseInitiationControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(MAPPER.writeValueAsString(request)))
             .andExpect(status().isOk()).andReturn();
-    }
-
-    private CallbackRequest createCallbackRequest() {
-        return CallbackRequest.builder().caseDetails(CaseDetails.builder()
-            .id(Long.valueOf(CASE_ID))
-            .data(ImmutableMap.<String, Object>builder()
-                .put("caseLocalAuthority", "example")
-                .build()).build())
-            .build();
     }
 }

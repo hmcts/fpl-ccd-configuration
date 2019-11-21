@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
@@ -55,9 +56,15 @@ class LocalAuthorityUserServiceTest {
     @MockBean
     private IdamClient client;
 
+    @Value("${system_update.username}")
+    private String username;
+
+    @Value("${system_update.password}")
+    private String password;
+
     @Autowired
     private final SystemUpdateUserConfiguration userConfig = new SystemUpdateUserConfiguration(
-        "fpl-system-update@mailnesia.com", "Password12");
+        username, password);
 
     private LocalAuthorityUserService localAuthorityUserService;
 
