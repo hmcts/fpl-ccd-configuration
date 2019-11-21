@@ -116,7 +116,7 @@ class LocalAuthorityUserServiceTest {
     }
 
     @Test
-    void shouldUpdateUserRolesWhenRolesAreAlreadyAssignedToUser() {
+    void shouldUpdateCaseRolesWhenRolesAreAlreadyAssignedToUser() {
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
         localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY);
 
