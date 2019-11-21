@@ -50,11 +50,15 @@ public class CommonCaseDataExtractionService {
     public String extractPrehearingAttendance(HearingBooking booking) {
         LocalDateTime time = calculatePrehearingAttendance(booking.getStartDate());
 
-        return booking.hasDatesOnSameDay() ? formatTime(time) : formatDateTime(time);
+        return booking.hasDatesOnSameDay() ? formatTime(time) : formatDateTimeWithYear(time);
     }
 
     private LocalDateTime calculatePrehearingAttendance(LocalDateTime dateTime) {
         return dateTime.minusHours(1);
+    }
+
+    private String formatDateTimeWithYear(LocalDateTime dateTime) {
+        return dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateTime, "d MMMM yyyy, h:mma");
     }
 
     private String formatDateTime(LocalDateTime dateTime) {

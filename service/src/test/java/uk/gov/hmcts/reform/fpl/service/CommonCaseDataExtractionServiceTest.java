@@ -65,7 +65,16 @@ class CommonCaseDataExtractionServiceTest {
     }
 
     @Test
-    void shouldReturnAFormattedTimeThatIsOneHourBeforeTheStartTime() {
+    void shouldReturnAFormattedDateWhenStartAndEndDateAreNotTheSame() {
+        hearingBooking = createHearingBookingWithTimesOnDifferentDays();
+
+        final String prehearingAttendance = commonCaseDataExtractionService.extractPrehearingAttendance(hearingBooking);
+
+        assertThat(prehearingAttendance).isEqualTo("11 December 2020, 2:30pm");
+    }
+
+    @Test
+    void shouldReturnAFormattedTimeWhenStartAndEndDateAreTheSame() {
         hearingBooking = createHearingBookingWithTimesOnSameDay();
 
         final String prehearingAttendance = commonCaseDataExtractionService.extractPrehearingAttendance(hearingBooking);
