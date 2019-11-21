@@ -35,7 +35,7 @@ public class CommonCaseDataExtractionService {
         return hearingTime;
     }
 
-    public Optional<String> getHearingDate(HearingBooking hearingBooking) {
+    public Optional<String> getHearingDateIfHearingsOnSameDay(HearingBooking hearingBooking) {
         String hearingDate = null;
 
         // If they aren't on the same date return nothing

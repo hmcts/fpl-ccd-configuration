@@ -30,7 +30,8 @@ class CommonCaseDataExtractionServiceTest {
     void shouldReturnTheFormattedDateWhenStartAndEndDateAreNotTheSame() {
         hearingBooking = createHearingBookingWithTimesOnDifferentDays();
 
-        final Optional<String> hearingDate = commonCaseDataExtractionService.getHearingDate(hearingBooking);
+        final Optional<String> hearingDate = commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
+            hearingBooking);
 
         assertThat(hearingDate.isEmpty());
     }
@@ -39,7 +40,8 @@ class CommonCaseDataExtractionServiceTest {
     void shouldReturnAnEmptyStringWhenStartAndEndDateAreTheSame() {
         hearingBooking = createHearingBookingWithTimesOnSameDay();
 
-        final Optional<String> hearingDate = commonCaseDataExtractionService.getHearingDate(hearingBooking);
+        final Optional<String> hearingDate = commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
+            hearingBooking);
 
         assertThat(hearingDate.orElse("")).isEqualTo("11 December 2020");
     }
