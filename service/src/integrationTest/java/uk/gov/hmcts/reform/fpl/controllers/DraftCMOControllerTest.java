@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -76,6 +75,7 @@ class DraftCMOControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
+        assertThat(callbackResponse.getData()).doesNotContainKey("allPartiesCustom");
     }
 
     @Test
@@ -101,11 +101,8 @@ class DraftCMOControllerTest {
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
-        List<Element<Direction>> responseDirections = caseManagementOrder.getDirections();
-
-        assertThat(responseDirections.size()).isEqualTo(1);
-        assertThat(responseDirections).isEqualTo(createCustomDirection(ALL_PARTIES));
-        assertThat(caseData.getCaseManagementOrder()).extracting("id", "hearingDate")
+        assertThat(caseManagementOrder.getDirections()).isEqualTo(createCustomDirection(ALL_PARTIES));
+        assertThat(caseManagementOrder).extracting("id", "hearingDate")
             .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), date.plusDays(5).toString());
     }
 

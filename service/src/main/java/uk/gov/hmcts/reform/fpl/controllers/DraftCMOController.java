@@ -48,6 +48,7 @@ public class DraftCMOController {
         if (!isNull(caseData.getCaseManagementOrder())) {
             Map<String, List<Element<Direction>>> directions = directionHelperService.sortDirectionsByAssignee(
                 caseData.getCaseManagementOrder().getDirections());
+
             directions.forEach(caseDetails.getData()::put);
         } else {
             // Resetting allPartiesCustom - could be pre-populated via SDO

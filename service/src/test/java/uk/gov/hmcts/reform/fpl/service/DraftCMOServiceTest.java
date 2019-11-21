@@ -46,7 +46,8 @@ class DraftCMOServiceTest {
     @Test
     void shouldReturnHearingDateDynamicListWhenCaseDetailsHasHearingDate() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of("hearingDetails", createHearingBookings(date)))
+            .data(ImmutableMap.of(
+                "hearingDetails", createHearingBookings(date)))
             .build();
 
         DynamicList hearingList = draftCMOService.getHearingDateDynamicList(caseDetails);
@@ -90,8 +91,10 @@ class DraftCMOServiceTest {
     @Test
     void shouldReturnCaseManagementOrderWhenProvidedCaseDetails() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of("cmoHearingDateList", getDynamicList(), "allPartiesCustom",
-                createUnassignedDirection())).build();
+            .data(ImmutableMap.of(
+                "cmoHearingDateList", getDynamicList(),
+                "allPartiesCustom", createUnassignedDirection()
+            )).build();
 
         CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseDetails);
 
