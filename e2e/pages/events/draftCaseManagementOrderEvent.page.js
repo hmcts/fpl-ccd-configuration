@@ -2,6 +2,10 @@ const { I } = inject();
 
 module.exports = {
   fields: {
+    recitals: {
+      title: '#recitals_0_title',
+      description: '#recitals_0_description',
+    },
     cmoHearingDateList: '#cmoHearingDateList',
     schedule: {
       includeSchedule: '#schedule_includeSchedule-Yes',
@@ -40,5 +44,10 @@ module.exports = {
     I.fillField(this.fields.schedule.threshold, schedule.threshold);
     I.fillField(this.fields.schedule.keyIssues, schedule.keyIssues);
     I.fillField(this.fields.schedule.partiesPositions, schedule.partiesPositions);
+  },
+
+  async enterRecital(title,description) {
+    I.fillField(this.fields.recitals.title, title);
+    I.fillField(this.fields.recitals.description, description);
   },
 };
