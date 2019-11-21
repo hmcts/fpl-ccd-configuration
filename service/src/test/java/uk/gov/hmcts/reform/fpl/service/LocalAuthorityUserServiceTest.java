@@ -5,13 +5,17 @@ import feign.RetryableException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.NoAssociatedUsersException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
@@ -26,6 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, SystemUpdateUserConfiguration.class})
 class LocalAuthorityUserServiceTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
@@ -35,23 +40,34 @@ class LocalAuthorityUserServiceTest {
     private static final String LOCAL_AUTHORITY = "example";
     private static final Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
 
-    @Mock
+    @MockBean
     private AuthTokenGenerator authTokenGenerator;
 
-    @Mock
+    @MockBean
     private CaseUserApi caseUserApi;
-    @Mock
+
+    @MockBean
+    private CaseAccessApi caseAccessApi;
+
+    @MockBean
     private LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
 
-    @Mock
+    @MockBean
     private IdamClient client;
 
-    @InjectMocks
+    @Autowired
+    private final SystemUpdateUserConfiguration userConfig = new SystemUpdateUserConfiguration(
+        "fpl-system-update@mailnesia.com", "Password12");
+
     private LocalAuthorityUserService localAuthorityUserService;
 
     @BeforeEach
     void setup() {
-        given(client.authenticateUser("fpl-system-update@mailnesia.com", "Password12")).willReturn(AUTH_TOKEN);
+        this.localAuthorityUserService = new LocalAuthorityUserService(
+            caseAccessApi,localAuthorityUserLookupConfiguration,
+            authTokenGenerator,caseUserApi,client,userConfig);
+
+        given(client.authenticateUser(userConfig.getUserName(),userConfig.getPassword())).willReturn(AUTH_TOKEN);
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
