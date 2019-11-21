@@ -18,9 +18,9 @@ class TimeNotMidnightValidatorTest extends TimeValidatorTest {
 
     @Test
     void shouldReturnAnErrorWhenAllTimeIsMidnight() {
-        final LocalTime MIDNIGHT = LocalTime.of(0, 0, 0);
+        final LocalTime midnight = LocalTime.of(0, 0, 0);
         hearingBooking = HearingBooking.builder()
-            .startDate(LocalDateTime.of(FUTURE.toLocalDate(), MIDNIGHT))
+            .startDate(LocalDateTime.of(FUTURE.toLocalDate(), midnight))
             .endDate(FUTURE.plusDays(1))
             .build();
 
