@@ -17,10 +17,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TimeNotMidnightValidatorTest extends TimeValidatorTest {
 
     @Test
-    void shouldReturnAnErrorWhenAllTimeFieldsAreZero() {
-        final LocalTime ZERO = LocalTime.of(0, 0, 0);
+    void shouldReturnAnErrorWhenAllTimeIsMidnight() {
+        final LocalTime MIDNIGHT = LocalTime.of(0, 0, 0);
         hearingBooking = HearingBooking.builder()
-            .startDate(LocalDateTime.of(FUTURE.toLocalDate(), ZERO))
+            .startDate(LocalDateTime.of(FUTURE.toLocalDate(), MIDNIGHT))
             .endDate(FUTURE.plusDays(1))
             .build();
 
@@ -33,7 +33,7 @@ class TimeNotMidnightValidatorTest extends TimeValidatorTest {
     }
 
     @Test
-    void shouldNotReturnAnErrorWhenTimeIsNotZero() {
+    void shouldNotReturnAnErrorWhenTimeIsNotMidnight() {
         hearingBooking = HearingBooking.builder()
             .startDate(FUTURE.plusHours(16))
             .endDate(FUTURE.plusDays(1))
