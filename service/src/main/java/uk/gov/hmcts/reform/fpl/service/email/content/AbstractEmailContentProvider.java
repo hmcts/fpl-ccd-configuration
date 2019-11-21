@@ -24,8 +24,8 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 public abstract class AbstractEmailContentProvider {
 
     final String uiBaseUrl;
-    private final DateFormatterService dateFormatterService;
-    private final HearingBookingService hearingBookingService;
+    final DateFormatterService dateFormatterService;
+    final HearingBookingService hearingBookingService;
 
     protected AbstractEmailContentProvider(String uiBaseUrl, DateFormatterService dateFormatterService,
                                            HearingBookingService hearingBookingService) {
@@ -51,7 +51,7 @@ public abstract class AbstractEmailContentProvider {
             .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
     }
 
-    protected ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(CaseDetails caseDetails, CaseData caseData) {
+    ImmutableMap.Builder<String, Object> getSDOPersonalisationBuilder(CaseDetails caseDetails, CaseData caseData) {
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", isNull(caseData.getFamilyManCaseNumber()) ? "" : caseData.getFamilyManCaseNumber() + ",")
             .put("leadRespondentsName", capitalize(caseData.getRespondents1()

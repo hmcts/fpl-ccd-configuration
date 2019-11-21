@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
@@ -24,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 
 @Service
 public class NoticeOfProceedingsService {
@@ -37,8 +34,8 @@ public class NoticeOfProceedingsService {
 
     @Autowired
     public NoticeOfProceedingsService(DateFormatterService dateFormatterService,
-                                     HearingBookingService hearingBookingService,
-                                     HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
+                                      HearingBookingService hearingBookingService,
+                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
                                       HearingVenueLookUpService hearingVenueLookUpService) {
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
@@ -75,35 +72,16 @@ public class NoticeOfProceedingsService {
             .put("applicantName", getFirstApplicantName(caseData.getApplicants()))
             .put("orderTypes", getOrderTypes(caseData.getOrders()))
             .put("childrenNames", getAllChildrenNames(caseData.getAllChildren()))
-            .put("judgeTitleAndName",
-                formatJudgeTitleAndName(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
-            .put("legalAdvisorName", getLegalAdvisorName(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
+            .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
+                caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
+            .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
+                caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
             .putAll(hearingBookingData)
             .build();
     }
 
     private String getCourtName(String courtName) {
         return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
-    }
-
-    private String getLegalAdvisorName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        if (judgeAndLegalAdvisor == null) {
-            return "";
-        }
-
-        return defaultIfNull(judgeAndLegalAdvisor.getLegalAdvisorName(), "");
-    }
-
-    private String formatJudgeTitleAndName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        if (judgeAndLegalAdvisor == null || judgeAndLegalAdvisor.getJudgeTitle() == null) {
-            return "";
-        }
-
-        if (judgeAndLegalAdvisor.getJudgeTitle() == MAGISTRATES) {
-            return judgeAndLegalAdvisor.getJudgeFullName() + " (JP)";
-        } else {
-            return judgeAndLegalAdvisor.getJudgeTitle().getLabel() + " " + judgeAndLegalAdvisor.getJudgeLastName();
-        }
     }
 
     private Map<String, Object>  getHearingBookingData(List<Element<HearingBooking>> hearingBookings) {
