@@ -607,6 +607,24 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c21Orders",
+    "Label": "C21 order",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "C21Order",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "c21Order",
+    "Label": "Create an order",
+    "FieldType": "C21Order",
+    "SecurityClassification": "Public",
+    "Comment": "Event is single order centric: c21Order added to Collection of orders above (displayed in orders tab) then deleted from case data so that event can be used to create a new order"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "cmoHearingDateList",
     "Label": "Which hearing is this order for?",
     "FieldType": "DynamicList",
@@ -618,6 +636,39 @@
     "ID": "caseManagementOrder",
     "Label": "Case management order",
     "FieldType": "CaseManagementOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "schedule",
+    "Label": "Schedule",
+    "FieldType": "Schedule",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderBasisLabel",
+    "Label": "## Basis of order",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "addRecitalLabel",
+    "Label": "### Add recital",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "recitals",
+    "Label": "Recitals",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Recitals",
     "SecurityClassification": "Public"
   }
 ]
