@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.NoAssociatedUsersException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
@@ -22,28 +23,31 @@ public class LocalAuthorityUserService {
     private final CaseAccessApi caseAccessApi;
     private final CaseUserApi caseUserApi;
     private final LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
+    private SystemUpdateUserConfiguration userConfig;
     private final AuthTokenGenerator authTokenGenerator;
     private final IdamClient client;
+    private final Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
 
     @Autowired
     public LocalAuthorityUserService(CaseAccessApi caseAccessApi,
                                      LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration,
                                      AuthTokenGenerator authTokenGenerator,
                                      CaseUserApi caseUserApi,
-                                     IdamClient idamClient) {
+                                     IdamClient idamClient,
+                                     SystemUpdateUserConfiguration userConfig) {
         this.caseAccessApi = caseAccessApi;
         this.localAuthorityUserLookupConfiguration = localAuthorityUserLookupConfiguration;
         this.authTokenGenerator = authTokenGenerator;
         this.caseUserApi = caseUserApi;
         this.client = idamClient;
+        this.userConfig = userConfig;
     }
 
     public void grantUserAccessWithCaseRole(String caseId, String caseLocalAuthority) {
         findUserIds(caseLocalAuthority).stream()
             .forEach(userId -> {
-                Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
                 try {
-                    String authentication = client.authenticateUser("fpl-system-update@mailnesia.com", "Password12");
+                    String authentication = client.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
                     caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), caseId, userId,
                         new CaseUser(userId, caseRoles));
                     logger.info("Added case roles {} to user {}", caseRoles, userId);
