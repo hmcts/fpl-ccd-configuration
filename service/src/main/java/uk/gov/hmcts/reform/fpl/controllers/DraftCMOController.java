@@ -12,13 +12,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
-
-import java.util.List;
-import java.util.Map;
 
 import static java.util.Objects.isNull;
 
@@ -46,10 +41,8 @@ public class DraftCMOController {
 
         // Only allParties needed for now. Leaving logic in for the convenience of upcoming directions
         if (!isNull(caseData.getCaseManagementOrder())) {
-            Map<String, List<Element<Direction>>> directions = directionHelperService.sortDirectionsByAssignee(
-                caseData.getCaseManagementOrder().getDirections());
-
-            directions.forEach(caseDetails.getData()::put);
+            directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
+                .forEach(caseDetails.getData()::put);
         } else {
             // Resetting allPartiesCustom - could be pre-populated via SDO
             caseDetails.getData().remove("allPartiesCustom");
