@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Data
 @Configuration
-public class PublicLawEmailLookupConfiguration {
+public class DefaultEmailLookupConfiguration {
     private final String emailAddress;
 
-    public PublicLawEmailLookupConfiguration(@Value("${fpl.public_law_email.mapping}") String emailAddress) {
+    public DefaultEmailLookupConfiguration(@Value("${fpl.default_email.mapping}") String emailAddress) {
         this.emailAddress = emailAddress;
     }
 }

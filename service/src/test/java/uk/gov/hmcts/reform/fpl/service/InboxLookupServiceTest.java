@@ -11,8 +11,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.config.DefaultEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.PublicLawEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,14 +20,14 @@ import static org.mockito.BDDMockito.given;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, LocalAuthorityEmailLookupConfiguration.class,
-    InboxLookupService.class, PublicLawEmailLookupConfiguration.class})
+    InboxLookupService.class, DefaultEmailLookupConfiguration.class})
 public class InboxLookupServiceTest {
 
     @MockBean
     private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
 
     @MockBean
-    private PublicLawEmailLookupConfiguration publicLawEmailLookupConfiguration;
+    private DefaultEmailLookupConfiguration defaultEmailLookupConfiguration;
 
     @Autowired
     private ObjectMapper mapper;
@@ -44,7 +44,7 @@ public class InboxLookupServiceTest {
         this.inboxLookupService =
             new InboxLookupService(mapper,
                 localAuthorityEmailLookupConfiguration,
-                publicLawEmailLookupConfiguration);
+                defaultEmailLookupConfiguration);
     }
 
     @Test
@@ -92,7 +92,7 @@ public class InboxLookupServiceTest {
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(""));
 
-        given(publicLawEmailLookupConfiguration.getEmailAddress())
+        given(defaultEmailLookupConfiguration.getEmailAddress())
             .willReturn(PUBLIC_LAW_EMAIL);
 
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);

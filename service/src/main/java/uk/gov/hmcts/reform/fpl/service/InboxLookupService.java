@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.config.DefaultEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.PublicLawEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 
 import java.util.Optional;
@@ -15,14 +15,14 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 public class InboxLookupService {
     private final ObjectMapper objectMapper;
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
-    private final PublicLawEmailLookupConfiguration publicLawEmailLookupConfiguration;
+    private final DefaultEmailLookupConfiguration defaultEmailLookupConfiguration;
 
     public InboxLookupService(ObjectMapper objectMapper,
                               LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration,
-                              PublicLawEmailLookupConfiguration publicLawEmailLookupConfiguration) {
+                              DefaultEmailLookupConfiguration defaultEmailLookupConfiguration) {
         this.objectMapper = objectMapper;
         this.localAuthorityEmailLookupConfiguration = localAuthorityEmailLookupConfiguration;
-        this.publicLawEmailLookupConfiguration = publicLawEmailLookupConfiguration;
+        this.defaultEmailLookupConfiguration = defaultEmailLookupConfiguration;
     }
 
     public String getNotificationRecipientEmail(final CaseDetails caseDetails, final String localAuthorityCode) {
@@ -47,6 +47,6 @@ public class InboxLookupService {
 
     private String getFallbackEmail(final Solicitor solicitor) {
         return getSolicitorEmail(solicitor)
-            .orElse(publicLawEmailLookupConfiguration.getEmailAddress());
+            .orElse(defaultEmailLookupConfiguration.getEmailAddress());
     }
 }
