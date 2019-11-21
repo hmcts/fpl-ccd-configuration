@@ -67,8 +67,8 @@ fpl:
     mapping: 'example=>cafcass:cafcass@cafcass.com'
   local_authority_code_to_shared_inbox:
     mapping: 'example=>local-authority@local-authority.com'
-  public_law_email:
-    mapping: 'FamilyPublicLaw+PublicLawEmail@gmail.com'
+  default_email:
+    mapping: 'FamilyPublicLaw@gmail.com'
   local_authority_user:
     mapping: 'example=>1,2,3'
   system_update:
@@ -136,7 +136,7 @@ fpl:
   local_authority_code_to_shared_inbox:
     mapping: 'SA=>FamilyPublicLaw+sa@gmail.com;HN=>FamilyPublicLaw+hn@gmail.com'
   public_law_email:
-    mapping: 'FamilyPublicLaw+PublicLawEmail@gmail.com'
+    mapping: 'FamilyPublicLaw@gmail.com'
   system_update:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
