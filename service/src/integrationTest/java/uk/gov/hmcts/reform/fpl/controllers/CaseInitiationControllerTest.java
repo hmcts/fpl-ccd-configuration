@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,6 +28,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -71,6 +73,12 @@ class CaseInitiationControllerTest {
 
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
+
+    @Value("${fpl.system_update.username}")
+    private String username;
+
+    @Value("${fpl.system_update.password}")
+    private String password;
 
     @BeforeEach
     void setup() {
