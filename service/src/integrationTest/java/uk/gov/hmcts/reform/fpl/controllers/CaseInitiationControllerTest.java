@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,6 +20,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
+import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
@@ -74,15 +74,12 @@ class CaseInitiationControllerTest {
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
 
-    @Value("${fpl.system_update.username}")
-    private String username;
-
-    @Value("${fpl.system_update.password}")
-    private String password;
+    @Autowired
+    private SystemUpdateUserConfiguration userConfig;
 
     @BeforeEach
     void setup() {
-        given(client.authenticateUser(SYSTEM_USER_USERNAME, SYSTEM_USER_PASSWORD)).willReturn(AUTH_TOKEN);
+        given(client.authenticateUser(userConfig.getUserName(),userConfig.getPassword())).willReturn(AUTH_TOKEN);
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
