@@ -194,7 +194,7 @@ class C21OrderControllerTest {
                 .id(19898989L)
                 .data(ImmutableMap.of(
                     "c21Orders", createC21Orders(),
-                    "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusDays(1)),
+                    "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
                     "respondents1", createRespondents(),
                     "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
                     "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER))

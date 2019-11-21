@@ -100,15 +100,15 @@ class NoticeOfProceedingsControllerAboutToStartTest {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(TODAYS_DATE.plusDays(5), TODAYS_DATE.plusDays(6)))
+                .value(createHearingBooking(TODAYS_DATE.plusDays(5), TODAYS_DATE.plusHours(6)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(TODAYS_DATE.plusDays(2), TODAYS_DATE.plusDays(3)))
+                .value(createHearingBooking(TODAYS_DATE.plusDays(2), TODAYS_DATE.plusMinutes(45)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(TODAYS_DATE, TODAYS_DATE.plusDays(1)))
+                .value(createHearingBooking(TODAYS_DATE, TODAYS_DATE.plusHours(2)))
                 .build()
         );
     }
