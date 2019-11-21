@@ -1,3 +1,2 @@
-// In "American" format so that it is understood properly by the formatter
-module.exports = (date) => date.month + '-' + date.day + '-' + date.year + ' ' +
+module.exports = (date) => date.year + '-' + date.month + '-' + date.day + ' ' +
   date.hour + ':' + date.minute + ':' + date.second;
