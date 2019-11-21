@@ -49,8 +49,6 @@ class CaseInitiationControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String SERVICE_AUTH_TOKEN = "Bearer service token";
-    private static final String SYSTEM_USER_USERNAME = "fpl-system-update@mailnesia.com";
-    private static final String SYSTEM_USER_PASSWORD = "Password12";
     private static final String[] USER_IDS = {"1", "2", "3"};
     private static final String CASE_ID = "12345";
     private static final ObjectMapper MAPPER = new ObjectMapper();
