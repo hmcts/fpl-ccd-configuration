@@ -37,7 +37,7 @@ public class InboxLookupServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
     private static final String SOLICITOR_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
-    private static final String PUBLIC_LAW_EMAIL = "FamilyPublicLaw+PublicLawEmail@gmail.com";
+    private static final String DEFAULT_EMAIL = "FamilyPublicLaw@gmail.com";
 
     @BeforeEach
     void setup() {
@@ -93,11 +93,11 @@ public class InboxLookupServiceTest {
             .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(""));
 
         given(defaultEmailLookupConfiguration.getEmailAddress())
-            .willReturn(PUBLIC_LAW_EMAIL);
+            .willReturn(DEFAULT_EMAIL);
 
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
-        assertThat(email).isEqualTo(PUBLIC_LAW_EMAIL);
+        assertThat(email).isEqualTo(DEFAULT_EMAIL);
     }
 
     private CaseDetails buildCaseDetailsWithSolicitorEmail() {
