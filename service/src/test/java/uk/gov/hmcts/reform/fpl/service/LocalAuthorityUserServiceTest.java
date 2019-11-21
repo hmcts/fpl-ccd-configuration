@@ -39,6 +39,7 @@ class LocalAuthorityUserServiceTest {
     private static final String CASE_ID = "1";
     private static final String[] USER_IDS = {"1", "2", "3"};
     private static final String LOCAL_AUTHORITY = "example";
+    private static final String INVALID_LOCAL_AUTHORITY = "invalid local authority";
     private static final Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
 
     @MockBean
@@ -102,6 +103,14 @@ class LocalAuthorityUserServiceTest {
             localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, LOCAL_AUTHORITY))
             .isInstanceOf(NoAssociatedUsersException.class)
             .hasMessage("No users found for the local authority 'example'");
+    }
+
+    @Test
+    void shouldThrowCustomExceptionWhenInValidLocalAuthorityHasNoUsers() throws IllegalArgumentException {
+        assertThatThrownBy(() ->
+            localAuthorityUserService.grantUserAccessWithCaseRole(CASE_ID, INVALID_LOCAL_AUTHORITY))
+            .isInstanceOf(NoAssociatedUsersException.class)
+            .hasMessage("No users found for the local authority '" + INVALID_LOCAL_AUTHORITY + "'");
     }
 
     @Test
