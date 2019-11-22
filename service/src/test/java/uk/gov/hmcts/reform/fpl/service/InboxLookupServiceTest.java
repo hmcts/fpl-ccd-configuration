@@ -48,7 +48,7 @@ public class InboxLookupServiceTest {
 
     @Test
     void shouldReturnLocalAuthorityEmailWhenLocalAuthorityEmailExist() {
-        CaseDetails caseDetails = buildCaseDetailsWithSolicitorEmail();
+        CaseDetails caseDetails = buildCaseDetails();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS));
@@ -60,7 +60,7 @@ public class InboxLookupServiceTest {
 
     @Test
     void shouldReturnSolicitorEmailWhenLocalAuthorityEmailDoesNotExist() {
-        CaseDetails caseDetails = buildCaseDetailsWithSolicitorEmail();
+        CaseDetails caseDetails = buildCaseDetails();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(null));
@@ -72,7 +72,7 @@ public class InboxLookupServiceTest {
 
     @Test
     void shouldReturnSolicitorEmailWhenLocalAuthorityEmailIsEmpty() {
-        CaseDetails caseDetails = buildCaseDetailsWithSolicitorEmail();
+        CaseDetails caseDetails = buildCaseDetails();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(""));
@@ -99,7 +99,7 @@ public class InboxLookupServiceTest {
         assertThat(email).isEqualTo(DEFAULT_EMAIL);
     }
 
-    private CaseDetails buildCaseDetailsWithSolicitorEmail() {
+    private CaseDetails buildCaseDetails() {
         return CaseDetails.builder()
             .data(ImmutableMap.of("solicitor", Solicitor.builder().email(SOLICITOR_EMAIL_ADDRESS).build()))
             .build();
