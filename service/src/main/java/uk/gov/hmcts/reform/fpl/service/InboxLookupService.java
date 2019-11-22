@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.DefaultEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 
@@ -14,15 +14,15 @@ import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 public class InboxLookupService {
     private final ObjectMapper objectMapper;
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
-    private final DefaultEmailLookupConfiguration defaultEmailLookupConfiguration;
+    private final String defaultEmail;
 
     @Autowired
     public InboxLookupService(ObjectMapper objectMapper,
                               LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration,
-                              DefaultEmailLookupConfiguration defaultEmailLookupConfiguration) {
+                              @Value("${fpl.default_email.mapping}") String defaultEmail) {
         this.objectMapper = objectMapper;
         this.localAuthorityEmailLookupConfiguration = localAuthorityEmailLookupConfiguration;
-        this.defaultEmailLookupConfiguration = defaultEmailLookupConfiguration;
+        this.defaultEmail = defaultEmail;
     }
 
     public String getNotificationRecipientEmail(final CaseDetails caseDetails, final String localAuthorityCode) {
@@ -37,6 +37,6 @@ public class InboxLookupService {
     }
 
     private String getFallbackEmail(final Solicitor solicitor) {
-        return defaultIfBlank(getSolicitorEmail(solicitor), defaultEmailLookupConfiguration.getEmailAddress());
+        return defaultIfBlank(getSolicitorEmail(solicitor), defaultEmail);
     }
 }

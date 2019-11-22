@@ -11,7 +11,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.DefaultEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 
@@ -20,7 +19,7 @@ import static org.mockito.BDDMockito.given;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, LocalAuthorityEmailLookupConfiguration.class,
-    InboxLookupService.class, DefaultEmailLookupConfiguration.class})
+    InboxLookupService.class})
 public class InboxLookupServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
@@ -29,9 +28,6 @@ public class InboxLookupServiceTest {
 
     @MockBean
     private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
-
-    @MockBean
-    private DefaultEmailLookupConfiguration defaultEmailLookupConfiguration;
 
     @Autowired
     private ObjectMapper mapper;
@@ -43,7 +39,7 @@ public class InboxLookupServiceTest {
         this.inboxLookupService = new InboxLookupService(
             mapper,
             localAuthorityEmailLookupConfiguration,
-            defaultEmailLookupConfiguration);
+            DEFAULT_EMAIL);
     }
 
     @Test
@@ -90,9 +86,6 @@ public class InboxLookupServiceTest {
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
             .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(""));
-
-        given(defaultEmailLookupConfiguration.getEmailAddress())
-            .willReturn(DEFAULT_EMAIL);
 
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
