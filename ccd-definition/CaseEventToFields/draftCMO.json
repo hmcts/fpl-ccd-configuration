@@ -32,7 +32,19 @@
     "DisplayContext": "READONLY",
     "PageID": 3,
     "PageLabel": " ",
-    "PageDisplayOrder": 2,
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "draftCMO",
+    "CaseFieldID": "otherPartiesDirectionLabelCMO",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": 3,
+    "PageLabel": " ",
+    "PageDisplayOrder": 3,
     "PageColumnNumber": 1
   },
   {
@@ -40,23 +52,35 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "draftCMO",
     "CaseFieldID": "otherPartiesDirectionsCustom",
-    "PageFieldDisplayOrder": 2,
+    "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
     "PageID": 3,
     "PageLabel": " ",
-    "PageDisplayOrder": 2,
+    "PageDisplayOrder": 3,
     "PageColumnNumber": 1
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "draftCMO",
-    "CaseFieldID": "respondentsKeyCMO",
+    "CaseFieldID": "parentsAndRespondentsKeyCMO",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": 4,
     "PageLabel": " ",
-    "PageDisplayOrder": 2,
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "draftCMO",
+    "CaseFieldID": "parentsAndrespondentsDirectionLabelCMO",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": 4,
+    "PageLabel": " ",
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1
   },
   {
@@ -64,11 +88,11 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "draftCMO",
     "CaseFieldID": "parentsAndRespondentsCustom",
-    "PageFieldDisplayOrder": 2,
+    "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
     "PageID": 4,
     "PageLabel": " ",
-    "PageDisplayOrder": 2,
+    "PageDisplayOrder": 4,
     "PageColumnNumber": 1
   },
   {
@@ -80,7 +104,7 @@
     "DisplayContext": "READONLY",
     "PageID": 5,
     "PageLabel": " ",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 5,
     "PageColumnNumber": 1
   },
   {
@@ -92,7 +116,7 @@
     "DisplayContext": "READONLY",
     "PageID": 5,
     "PageLabel": " ",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 5,
     "PageColumnNumber": 1
   },
   {
@@ -104,7 +128,7 @@
     "DisplayContext": "OPTIONAL",
     "PageID": 5,
     "PageLabel": " ",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 5,
     "PageColumnNumber": 1
   }
 ]

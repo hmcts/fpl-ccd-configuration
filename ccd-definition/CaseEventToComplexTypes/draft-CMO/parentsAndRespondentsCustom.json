@@ -14,8 +14,8 @@
     "ID": "ParentsAndRespondentsCustom",
     "CaseEventID": "draftCMO",
     "CaseFieldID": "parentsAndRespondentsCustom",
-    "ListElementCode": "respondentsAssignee",
-    "FieldDisplayOrder": 3,
+    "ListElementCode": "directionText",
+    "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
   {
