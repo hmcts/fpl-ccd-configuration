@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -205,6 +207,45 @@ public class CaseDataGeneratorHelper {
                 .filename("Mock file")
                 .build())
             .build();
+    }
+
+    public static Others createOthers() {
+        return Others.builder()
+            .firstOther(Other.builder()
+                .birthplace("Newry")
+                .childInformation("Child suffers from ADD")
+                .DOB("02/02/05")
+                .gender("Male")
+                .name("Kyle Stafford")
+                .telephone("02838882404")
+                .address(Address.builder()
+                    .addressLine1("1 Some street")
+                    .addressLine2("Some road")
+                    .postTown("some town")
+                    .postcode("BT66 7RR")
+                    .county("Some county")
+                    .country("UK")
+                    .build())
+                .build())
+            .additionalOthers(ImmutableList.of(
+                Element.<Other>builder()
+                    .value(Other.builder()
+                        .birthplace("Craigavon")
+                        .DOB("02/02/05")
+                        .gender("Female")
+                        .name("Sarah Simpson")
+                        .telephone("02838882404")
+                        .address(Address.builder()
+                            .addressLine1("1 Some street")
+                            .addressLine2("Some road")
+                            .postTown("some town")
+                            .postcode("BT66 7RR")
+                            .county("Some county")
+                            .country("UK")
+                            .build())
+                        .build())
+                    .build()
+            )).build();
     }
 
     public static List<Element<C21Order>> createC21Orders() {

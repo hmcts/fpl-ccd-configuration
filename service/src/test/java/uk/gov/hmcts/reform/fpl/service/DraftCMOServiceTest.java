@@ -23,6 +23,8 @@ import java.util.List;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, DateFormatterService.class, DraftCMOService.class})
@@ -92,6 +94,56 @@ class DraftCMOServiceTest {
             .extracting("id", "hearingDate").containsExactly(
             fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"),
             formatLocalDateToMediumStyle(5));
+    }
+
+    @Test
+    void shouldFormatRespondentsIntoKeyWhenRespondentsArePresent() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of("respondents1", createRespondents()))
+            .build();
+
+        String respondentsKey = draftCMOService.createRespondentsKey(caseDetails);
+
+        assertThat(respondentsKey).contains(
+            "Respondent 1: Timothy Jones",
+            "Respondent 2: Sarah Simpson"
+        );
+    }
+
+    @Test
+    void shouldReturnEmptyStringWhenRespondentsAreNotPresent() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of())
+            .build();
+
+        String respondentsKey = draftCMOService.createRespondentsKey(caseDetails);
+
+        assertThat(respondentsKey).isEqualTo("");
+    }
+
+    @Test
+    void shouldFormatOthersIntoKeyWhenOthersArePresent() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of("others", createOthers()))
+            .build();
+
+        String othersKey = draftCMOService.createOtherPartiesKey(caseDetails);
+
+        assertThat(othersKey).contains(
+            "Person 1: Kyle Stafford",
+            "Other Person 2: Sarah Simpson"
+        );
+    }
+
+    @Test
+    void shouldReturnEmptyStringWhenOthersAreNotPresent() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of())
+            .build();
+
+        String othersKey = draftCMOService.createRespondentsKey(caseDetails);
+
+        assertThat(othersKey).isEqualTo("");
     }
 
     private DynamicList getDynamicList() {
