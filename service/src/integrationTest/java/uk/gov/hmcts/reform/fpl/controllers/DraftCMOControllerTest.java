@@ -36,8 +36,8 @@ import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCustomDirection;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
@@ -76,10 +76,13 @@ class DraftCMOControllerTest {
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
         assertThat(callbackResponse.getData()).doesNotContainKey("allPartiesCustom");
+        assertThat(callbackResponse.getData()).doesNotContainKey("localAuthorityDirectionsCustom");
+        assertThat(callbackResponse.getData()).doesNotContainKey("cafcassDirectionsCustom");
+        assertThat(callbackResponse.getData()).doesNotContainKey("courtDirectionsCustom");
     }
 
     @Test
-    void aboutToSubmitShouldPopulateHiddenHearingDateFieldAndCmoDirection() throws Exception {
+    void aboutToSubmitShouldPopulateHiddenHearingDateFieldAndCmoDirections() throws Exception {
         List<Element<HearingBooking>> hearingDetails = createHearingBookings(date);
 
         DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
@@ -92,7 +95,10 @@ class DraftCMOControllerTest {
                     .build());
 
         Map<String, Object> data = ImmutableMap.of("cmoHearingDateList", dynamicHearingDates,
-            "allPartiesCustom", createUnassignedDirection());
+            "allPartiesCustom", createElementCollection(createUnassignedDirection()),
+            "localAuthorityDirectionsCustom", createElementCollection(createUnassignedDirection()),
+            "cafcassDirectionsCustom", createElementCollection(createUnassignedDirection()),
+            "courtDirectionsCustom", createElementCollection(createUnassignedDirection()));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
 
@@ -101,7 +107,7 @@ class DraftCMOControllerTest {
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
-        assertThat(caseManagementOrder.getDirections()).isEqualTo(createCustomDirection(ALL_PARTIES));
+        assertThat(caseManagementOrder.getDirections()).isEqualTo(createCmoDirections());
         assertThat(caseManagementOrder).extracting("id", "hearingDate")
             .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), date.plusDays(5).toString());
     }

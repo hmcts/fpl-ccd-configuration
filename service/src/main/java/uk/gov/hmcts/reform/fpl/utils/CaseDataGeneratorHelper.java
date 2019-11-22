@@ -31,6 +31,9 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
@@ -279,29 +282,47 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    public static List<Element<Direction>> createDirection(DirectionAssignee assignee) {
+    public static List<Element<Direction>> createElementCollection(Direction direction) {
         return ImmutableList.of(
             Element.<Direction>builder()
-                .value(Direction.builder()
-                    .directionText("Mock direction text")
-                    .assignee(assignee)
-                    .build())
-                .build());
+                .value(direction)
+                .build()
+        );
     }
 
-    public static List<Element<Direction>> createCustomDirection(DirectionAssignee assignee) {
-        return ImmutableList.of(
-            Element.<Direction>builder()
-                .value(Direction.builder()
-                    .directionText("Mock direction text")
-                    .assignee(assignee)
-                    .readOnly("No")
-                    .custom("Yes")
-                    .build())
-                .build());
+    public static Direction createDirection(DirectionAssignee assignee) {
+        return Direction.builder()
+            .directionText("Mock direction text")
+            .assignee(assignee)
+            .build();
     }
 
-    public static List<Element<Direction>> createUnassignedDirection() {
+    public static Direction createCustomDirection(DirectionAssignee assignee) {
+        return Direction.builder()
+            .directionText("Mock direction text")
+            .assignee(assignee)
+            .readOnly("No")
+            .custom("Yes")
+            .build();
+    }
+
+    public static Direction createUnassignedDirection() {
         return createDirection(null);
+    }
+
+    public static List<Element<Direction>> createCmoDirections() {
+        return ImmutableList.of(
+            Element.<Direction>builder()
+                .value(createCustomDirection(ALL_PARTIES))
+                .build(),
+            Element.<Direction>builder()
+                .value(createCustomDirection(LOCAL_AUTHORITY))
+                .build(),
+            Element.<Direction>builder()
+                .value(createCustomDirection(CAFCASS))
+                .build(),
+            Element.<Direction>builder()
+                .value(createCustomDirection(COURT))
+                .build());
     }
 }

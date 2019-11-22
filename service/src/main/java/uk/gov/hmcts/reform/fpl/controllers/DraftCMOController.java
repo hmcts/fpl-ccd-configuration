@@ -44,8 +44,11 @@ public class DraftCMOController {
             directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
                 .forEach(caseDetails.getData()::put);
         } else {
-            // Resetting allPartiesCustom - could be pre-populated via SDO
+            // Resetting custom directions - could be pre-populated via SDO
             caseDetails.getData().remove("allPartiesCustom");
+            caseDetails.getData().remove("localAuthorityDirectionsCustom");
+            caseDetails.getData().remove("cafcassDirectionsCustom");
+            caseDetails.getData().remove("courtDirectionsCustom");
         }
 
         caseDetails.getData().put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));

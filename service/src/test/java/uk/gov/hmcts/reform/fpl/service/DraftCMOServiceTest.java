@@ -22,8 +22,8 @@ import java.util.List;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCustomDirection;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
@@ -93,7 +93,10 @@ class DraftCMOServiceTest {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of(
                 "cmoHearingDateList", getDynamicList(),
-                "allPartiesCustom", createUnassignedDirection()
+                "allPartiesCustom", createElementCollection(createUnassignedDirection()),
+                "localAuthorityDirectionsCustom", createElementCollection(createUnassignedDirection()),
+                "cafcassDirectionsCustom", createElementCollection(createUnassignedDirection()),
+                "courtDirectionsCustom", createElementCollection(createUnassignedDirection())
             )).build();
 
         CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseDetails);
@@ -103,7 +106,7 @@ class DraftCMOServiceTest {
             fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"),
             formatLocalDateToMediumStyle(5));
 
-        assertThat(caseManagementOrder.getDirections()).isEqualTo(createCustomDirection(ALL_PARTIES));
+        assertThat(caseManagementOrder.getDirections()).isEqualTo(createCmoDirections());
     }
 
     private DynamicList getDynamicList() {

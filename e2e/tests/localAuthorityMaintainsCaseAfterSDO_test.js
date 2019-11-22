@@ -72,6 +72,18 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   I.seeAnswerInTab(4, 'Directions 1', 'Description', 'Mock description');
   I.seeAnswerInTab(5, 'Directions 1', 'For', 'All parties');
   I.seeAnswerInTab(6, 'Directions 1', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+  I.seeAnswerInTab(1, 'Directions 2', 'Direction title', 'Mock title');
+  I.seeAnswerInTab(4, 'Directions 2', 'Description', 'Mock description');
+  I.seeAnswerInTab(5, 'Directions 2', 'For', 'Local Authority');
+  I.seeAnswerInTab(6, 'Directions 2', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+  I.seeAnswerInTab(1, 'Directions 3', 'Direction title', 'Mock title');
+  I.seeAnswerInTab(4, 'Directions 3', 'Description', 'Mock description');
+  I.seeAnswerInTab(5, 'Directions 3', 'For', 'Cafcass');
+  I.seeAnswerInTab(6, 'Directions 3', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+  I.seeAnswerInTab(1, 'Directions 4', 'Direction title', 'Mock title');
+  I.seeAnswerInTab(4, 'Directions 4', 'Description', 'Mock description');
+  I.seeAnswerInTab(5, 'Directions 4', 'For', 'Court');
+  I.seeAnswerInTab(6, 'Directions 4', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
   I.seeAnswerInTab(1, 'Schedule', 'Do you want to include a schedule?', 'Yes');
   I.seeAnswerInTab(2, 'Schedule', 'Allocation', 'The proceedings continue to be allocated to Paul Wilson');
   I.seeAnswerInTab(3, 'Schedule', 'Application', 'The local authority has applied for a care order');
