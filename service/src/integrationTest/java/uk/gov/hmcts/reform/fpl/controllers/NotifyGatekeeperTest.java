@@ -55,17 +55,7 @@ class NotifyGatekeeperTest {
 
     @Test
     void shouldReturnErrorsWhenFamilymanNumberIsNotProvided() throws Exception {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of("data", "some data"))
-                .build())
-            .build();
-
-        MvcResult mvc = makeRequest(request, "about-to-start");
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(mvc.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = requestWithoutCaseNumber();
 
         assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
     }
@@ -108,5 +98,18 @@ class NotifyGatekeeperTest {
                 .content(mapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andReturn();
+    }
+
+    private AboutToStartOrSubmitCallbackResponse requestWithoutCaseNumber() throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .data(ImmutableMap.of("data", "some data"))
+                .build())
+            .build();
+
+        MvcResult mvc = makeRequest(request, "about-to-start");
+
+        return mapper.readValue(mvc.getResponse().getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 }
