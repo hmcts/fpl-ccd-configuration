@@ -58,5 +58,17 @@
     "PageLabel": " ",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "draftCMO",
+    "CaseFieldID": "cmoStatus",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "cmoStatus",
+    "PageLabel": " ",
+    "PageDisplayOrder": 4,
+    "PageColumnNumber": 1
   }
 ]
