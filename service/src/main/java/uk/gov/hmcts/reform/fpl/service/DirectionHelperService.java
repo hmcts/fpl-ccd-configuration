@@ -55,9 +55,9 @@ public class DirectionHelperService {
 
         directions.addAll(assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(), LOCAL_AUTHORITY));
 
-        directions.addAll(caseData.getParentsAndRespondentsDirections());
+        directions.addAll(caseData.getRespondentDirections());
 
-        directions.addAll(assignCustomDirections(caseData.getParentsAndRespondentsCustom(), PARENTS_AND_RESPONDENTS));
+        directions.addAll(assignCustomDirections(caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS));
 
         directions.addAll(caseData.getCafcassDirections());
 
@@ -190,7 +190,7 @@ public class DirectionHelperService {
             LOCAL_AUTHORITY, defaultIfNull(caseData.getLocalAuthorityDirections(), emptyList()),
             CAFCASS, defaultIfNull(caseData.getCafcassDirections(), emptyList()),
             COURT, defaultIfNull(caseData.getCourtDirectionsCustom(), emptyList()),
-            PARENTS_AND_RESPONDENTS, defaultIfNull(caseData.getParentsAndRespondentsDirections(), emptyList()),
+            PARENTS_AND_RESPONDENTS, defaultIfNull(caseData.getRespondentDirections(), emptyList()),
             OTHERS, defaultIfNull(caseData.getOtherPartiesDirections(), emptyList()));
     }
 

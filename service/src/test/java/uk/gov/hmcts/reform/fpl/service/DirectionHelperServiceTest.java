@@ -49,7 +49,7 @@ class DirectionHelperServiceTest {
         CaseData caseData = populateCaseDataWithFixedDirections()
             .allPartiesCustom(buildCustomDirections())
             .localAuthorityDirectionsCustom(buildCustomDirections())
-            .parentsAndRespondentsCustom(buildCustomDirections())
+            .respondentDirectionsCustom(buildCustomDirections())
             .cafcassDirectionsCustom(buildCustomDirections())
             .otherPartiesDirectionsCustom(buildCustomDirections())
             .courtDirectionsCustom(buildCustomDirections())
@@ -836,7 +836,7 @@ class DirectionHelperServiceTest {
         return CaseData.builder()
             .allParties(buildDirections(ALL_PARTIES))
             .localAuthorityDirections(buildDirections(LOCAL_AUTHORITY))
-            .parentsAndRespondentsDirections(buildDirections(PARENTS_AND_RESPONDENTS))
+            .respondentDirections(buildDirections(PARENTS_AND_RESPONDENTS))
             .cafcassDirections(buildDirections(CAFCASS))
             .otherPartiesDirections(buildDirections(OTHERS))
             .courtDirections(buildDirections(COURT));
