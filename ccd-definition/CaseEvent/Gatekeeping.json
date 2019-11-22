@@ -186,7 +186,7 @@
     "ID": "uploadDocumentsAfterGatekeeping",
     "Name": "Documents",
     "Description": "Only here for backwards compatibility with case history",
-    "DisplayOrder": 12,
+    "DisplayOrder": 13,
     "PreConditionState(s)": "Gatekeeping",
     "PostConditionState": "Gatekeeping",
     "SecurityClassification": "Public",
