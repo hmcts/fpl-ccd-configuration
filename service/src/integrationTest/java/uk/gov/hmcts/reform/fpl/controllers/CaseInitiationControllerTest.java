@@ -77,7 +77,7 @@ class CaseInitiationControllerTest {
 
     @BeforeEach
     void setup() {
-        given(client.authenticateUser(userConfig.getUserName(),userConfig.getPassword())).willReturn(AUTH_TOKEN);
+        given(client.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(AUTH_TOKEN);
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
