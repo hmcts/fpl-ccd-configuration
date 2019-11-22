@@ -22,6 +22,10 @@ import static org.mockito.BDDMockito.given;
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, LocalAuthorityEmailLookupConfiguration.class,
     InboxLookupService.class, DefaultEmailLookupConfiguration.class})
 public class InboxLookupServiceTest {
+    private static final String LOCAL_AUTHORITY_CODE = "example";
+    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
+    private static final String SOLICITOR_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
+    private static final String DEFAULT_EMAIL = "FamilyPublicLaw@gmail.com";
 
     @MockBean
     private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
@@ -34,21 +38,16 @@ public class InboxLookupServiceTest {
 
     private InboxLookupService inboxLookupService;
 
-    private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
-    private static final String SOLICITOR_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
-    private static final String DEFAULT_EMAIL = "FamilyPublicLaw@gmail.com";
-
     @BeforeEach
     void setup() {
-        this.inboxLookupService =
-            new InboxLookupService(mapper,
-                localAuthorityEmailLookupConfiguration,
-                defaultEmailLookupConfiguration);
+        this.inboxLookupService = new InboxLookupService(
+            mapper,
+            localAuthorityEmailLookupConfiguration,
+            defaultEmailLookupConfiguration);
     }
 
     @Test
-    void shouldReturnLocalAuthorityEmailWhenEmailExist() {
+    void shouldReturnLocalAuthorityEmailWhenLocalAuthorityEmailExist() {
         CaseDetails caseDetails = buildCaseDetailsWithSolicitorEmail();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
