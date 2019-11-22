@@ -401,7 +401,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "allPartiesLabelSDO",
+    "CaseFieldID": "allPartiesLabelCMO",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
   },
@@ -415,7 +415,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "localAuthorityDirectionsLabelSDO",
+    "CaseFieldID": "localAuthorityDirectionsLabelCMO",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
   },
@@ -429,7 +429,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "cafcassDirectionsLabelSDO",
+    "CaseFieldID": "cafcassDirectionsLabelCMO",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
   },
@@ -443,7 +443,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "courtDirectionsLabelSDO",
+    "CaseFieldID": "courtDirectionsLabelCMO",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
   },
