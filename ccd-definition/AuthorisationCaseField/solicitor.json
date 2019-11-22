@@ -143,7 +143,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "documents_socialWorkOther",
-    "UserRole": "[LASOLICITOR]",
+    "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRUD"
   },
   {
@@ -220,7 +220,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondents1",
-    "UserRole": "[LASOLICITOR]",
+    "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRUD"
   },
   {
@@ -297,14 +297,14 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "children1",
-    "UserRole": "[LASOLICITOR]",
+    "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "statementOfService",
-    "UserRole": "[LASOLICITOR]",
+    "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRUD"
   },
   {
