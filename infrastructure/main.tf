@@ -147,6 +147,7 @@ module "case-service" {
     SPRING_SECURITY_ENABLED                             = "${var.security_enabled}"
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI = "${var.idam_token_issuer_uri}"
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI = "${var.idam_token_jwk_set_uri}"
+    GATEWAY_URL                                         = "${var.gateway_url}"
 
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE  = false
