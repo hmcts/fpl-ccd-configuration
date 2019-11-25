@@ -29,7 +29,7 @@ java:
         - local-authority-code-to-hmcts-court-mapping
         - local-authority-code-to-cafcass-mapping
         - local-authority-code-to-shared-inbox-mapping
-        - default-email-mapping
+        - local-authority-fallback-inbox
         - system-update-user-username
         - system-update-user-password
 

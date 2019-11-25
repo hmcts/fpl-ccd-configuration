@@ -24,7 +24,7 @@ public class InboxLookupServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
     private static final String SOLICITOR_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
-    private static final String DEFAULT_EMAIL = "FamilyPublicLaw@gmail.com";
+    private static final String FALLBACK_INBOX = "FamilyPublicLaw@gmail.com";
 
     @MockBean
     private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
@@ -39,7 +39,7 @@ public class InboxLookupServiceTest {
         this.inboxLookupService = new InboxLookupService(
             mapper,
             localAuthorityEmailLookupConfiguration,
-            DEFAULT_EMAIL);
+            FALLBACK_INBOX);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class InboxLookupServiceTest {
 
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
-        assertThat(email).isEqualTo(DEFAULT_EMAIL);
+        assertThat(email).isEqualTo(FALLBACK_INBOX);
     }
 
     private CaseDetails buildCaseDetails() {

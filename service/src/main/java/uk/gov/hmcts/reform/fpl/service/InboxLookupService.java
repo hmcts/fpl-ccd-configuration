@@ -14,15 +14,15 @@ import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 public class InboxLookupService {
     private final ObjectMapper objectMapper;
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
-    private final String defaultEmail;
+    private final String fallbackInbox;
 
     @Autowired
     public InboxLookupService(ObjectMapper objectMapper,
                               LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration,
-                              @Value("${fpl.default_email.mapping}") String defaultEmail) {
+                              @Value("${fpl.local_authority_fallback_inbox}") String fallbackInbox) {
         this.objectMapper = objectMapper;
         this.localAuthorityEmailLookupConfiguration = localAuthorityEmailLookupConfiguration;
-        this.defaultEmail = defaultEmail;
+        this.fallbackInbox = fallbackInbox;
     }
 
     public String getNotificationRecipientEmail(final CaseDetails caseDetails, final String localAuthorityCode) {
@@ -37,6 +37,6 @@ public class InboxLookupService {
     }
 
     private String getFallbackEmail(final Solicitor solicitor) {
-        return defaultIfBlank(getSolicitorEmail(solicitor), defaultEmail);
+        return defaultIfBlank(getSolicitorEmail(solicitor), fallbackInbox);
     }
 }
