@@ -246,19 +246,5 @@
     "ShowSummary": "N",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "laRoleOnly",
-    "Name": "LA ROLE SHOULD SEE ME",
-    "Description": "look at me I'm a description",
-    "DisplayOrder": 21,
-    "PreConditionState(s)": "Open",
-    "PostConditionState": "Open",
-    "SecurityClassification": "Public",
-    "ShowSummary": "N",
-    "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"
   }
 ]

@@ -670,13 +670,5 @@
     "FieldType": "Collection",
     "FieldTypeParameter": "Recitals",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "aLabel",
-    "Label": "Look at me, I'm a label",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
   }
 ]
