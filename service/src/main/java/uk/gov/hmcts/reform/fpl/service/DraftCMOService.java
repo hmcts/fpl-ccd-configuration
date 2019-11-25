@@ -1,14 +1,18 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Recital;
+import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
@@ -81,11 +85,19 @@ public class DraftCMOService {
     }
 
     public CaseManagementOrder getCaseManagementOrder(CaseDetails caseDetails) {
-        DynamicList list = mapper.convertValue(caseDetails.getData().get("cmoHearingDateList"), DynamicList.class);
+        final Map<String, Object> data = caseDetails.getData();
+        DynamicList list = mapper.convertValue(data.get("cmoHearingDateList"), DynamicList.class);
+        // QUESTION: 25/11/2019 should these objects then be cleaned up and repopulated on about to start?
+        CMOStatus cmoStatus = mapper.convertValue(data.get("cmoStatus"), CMOStatus.class);
+        Schedule schedule = mapper.convertValue(data.get("schedule"), Schedule.class);
+        List<Element<Recital>> recitals = mapper.convertValue(data.get("recitals"), new TypeReference<>() {});
 
         return CaseManagementOrder.builder()
             .hearingDate(list.getValue().getLabel())
             .id(list.getValue().getCode())
+            .cmoStatus(cmoStatus)
+            .schedule(schedule)
+            .recitals(recitals)
             .build();
     }
 
