@@ -679,5 +679,13 @@
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "CMOStatus",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "shareableCMO",
+    "Label": "Case management order",
+    "FieldType": "CaseManagementOrder",
+    "SecurityClassification": "Public"
   }
 ]

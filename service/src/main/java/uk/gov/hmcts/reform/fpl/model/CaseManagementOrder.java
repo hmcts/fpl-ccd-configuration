@@ -16,7 +16,6 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CaseManagementOrder {
     private final String hearingDate;
-    private final UUID hearingDateId; // QUESTION: 25/11/2019 What is this? Why is this? Is this not just id?
     private final Schedule schedule;
     private final UUID id;
     private final List<Element<Recital>> recitals;
