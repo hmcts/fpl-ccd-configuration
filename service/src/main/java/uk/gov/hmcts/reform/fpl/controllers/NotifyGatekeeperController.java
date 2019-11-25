@@ -14,9 +14,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
-import uk.gov.hmcts.reform.fpl.interfaces.NotifyGatekeeperGroup;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.validation.groups.NotifyGatekeeperGroup;
 
 @Api
 @RestController
