@@ -2,13 +2,22 @@ module.exports = [
   {
     caseManagement: 'Case management',
     venue: 'Cardiff, Aberdare Hearing Centre',
-    date: {
+    startDate: {
+      second: '00',
+      minute: '15',
+      hour: '15',
       day: '01',
       month: '01',
       year: '2050',
     },
-    preHearingAttendance: 'Pre hearing attendance',
-    time: 'hearing time',
+    endDate: {
+      second: '00',
+      minute: '30',
+      hour: '16',
+      day: '02',
+      month: '01',
+      year: '2050',
+    },
     type: {
       interpreter: 'Interpreter',
       welsh: 'Spoken or written Welsh',
@@ -21,13 +30,22 @@ module.exports = [
   {
     caseManagement: 'Case management',
     venue: 'Cardiff, Blackwood Hearing Centre, NP2 2XB',
-    date: {
-      day: '02',
-      month: '02',
+    startDate: {
+      second: '00',
+      minute: '00',
+      hour: '11',
+      day: '01',
+      month: '01',
       year: '2060',
     },
-    preHearingAttendance: 'Pre hearing attendance',
-    time: '2.30',
+    endDate: {
+      second: '00',
+      minute: '00',
+      hour: '14',
+      day: '01',
+      month: '01',
+      year: '2060',
+    },
     type: {
       interpreter: 'Interpreter',
       welsh: 'Spoken or written Welsh',
