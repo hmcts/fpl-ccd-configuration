@@ -111,6 +111,24 @@ class DraftCMOServiceTest {
         assertThat(caseManagementOrder.getDirections()).isEqualTo(createCmoDirections());
     }
 
+    @Test
+    void shouldRemoveCustomDirectionsWhenPresentInCaseDetails() {
+        Map<String, Object> caseData = new HashMap<>();
+
+        Stream.of(DirectionAssignee.values()).forEach(direction ->
+            caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
+        );
+
+        CaseDetails caseDetails = CaseDetails.builder().data(caseData).build();
+
+        draftCMOService.removeExistingCustomDirections(caseDetails);
+
+        assertThat(caseDetails.getData()).doesNotContainKey("allPartiesCustom");
+        assertThat(caseDetails.getData()).doesNotContainKey("localAuthorityDirectionsCustom");
+        assertThat(caseDetails.getData()).doesNotContainKey("cafcassDirectionsCustom");
+        assertThat(caseDetails.getData()).doesNotContainKey("courtDirectionsCustom");
+    }
+
     private DynamicList getDynamicList() {
         DynamicList dynamicList = draftCMOService.buildDynamicListFromHearingDetails(createHearingBookings(date));
 

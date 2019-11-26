@@ -100,6 +100,13 @@ public class DraftCMOService {
             .build();
     }
 
+    public void removeExistingCustomDirections(CaseDetails caseDetails) {
+        caseDetails.getData().remove("allPartiesCustom");
+        caseDetails.getData().remove("localAuthorityDirectionsCustom");
+        caseDetails.getData().remove("cafcassDirectionsCustom");
+        caseDetails.getData().remove("courtDirectionsCustom");
+    }
+
     private String formatLocalDateToMediumStyle(LocalDate date) {
         return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
     }

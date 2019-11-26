@@ -43,7 +43,7 @@ public class DraftCMOController {
             directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
                 .forEach(caseDetails.getData()::put);
         } else {
-            removeExistingCustomDirections(caseDetails);
+            draftCMOService.removeExistingCustomDirections(caseDetails);
         }
 
         caseDetails.getData().put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));
@@ -64,12 +64,5 @@ public class DraftCMOController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
-    }
-
-    private void removeExistingCustomDirections(CaseDetails caseDetails) {
-        caseDetails.getData().remove("allPartiesCustom");
-        caseDetails.getData().remove("localAuthorityDirectionsCustom");
-        caseDetails.getData().remove("cafcassDirectionsCustom");
-        caseDetails.getData().remove("courtDirectionsCustom");
     }
 }
