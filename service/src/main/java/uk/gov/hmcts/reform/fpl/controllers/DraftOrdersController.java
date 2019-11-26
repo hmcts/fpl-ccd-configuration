@@ -210,9 +210,7 @@ public class DraftOrdersController {
             .collect(Collectors.toList());
     }
 
-    private Document getDocument(@RequestHeader("authorization") String authorization,
-                                 @RequestHeader("user-id") String userId,
-                                 Map<String, Object> templateData) {
+    private Document getDocument(String authorization, String userId, Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
 
         String docTitle = document.getDocumentTitle();
