@@ -426,7 +426,7 @@ class DirectionHelperServiceTest {
                     .build())
                 .build());
 
-            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY.getValue(), directions);
+            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY, directions);
 
             assertThat(expected.get(0).getValue().getResponse()).isNotNull();
         }
@@ -445,7 +445,7 @@ class DirectionHelperServiceTest {
                     .build())
                 .build());
 
-            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY.getValue(), directions);
+            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY, directions);
 
             assertThat(expected.get(0).getValue().getResponse()).isNull();
         }
@@ -464,7 +464,7 @@ class DirectionHelperServiceTest {
                     .build())
                 .build());
 
-            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY.getValue(), directions);
+            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY, directions);
 
             assertThat(expected.get(0).getValue().getResponse()).isNull();
         }
@@ -483,7 +483,7 @@ class DirectionHelperServiceTest {
                     .build())
                 .build());
 
-            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY.getValue(), directions);
+            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY, directions);
 
             assertThat(expected.get(0).getValue().getResponse()).isNull();
         }
@@ -509,7 +509,7 @@ class DirectionHelperServiceTest {
                     .build())
                 .build());
 
-            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY.getValue(), directions);
+            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY, directions);
 
             assertThat(expected.get(0).getValue().getResponse().getAssignee()).isEqualTo(LOCAL_AUTHORITY);
         }
@@ -542,7 +542,7 @@ class DirectionHelperServiceTest {
                         .build())
                     .build());
 
-            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY.getValue(), directions);
+            List<Element<Direction>> expected = service.extractPartyResponse(LOCAL_AUTHORITY, directions);
 
             assertThat(expected.get(0).getValue().getResponse()).isNotNull();
             assertThat(expected.get(1).getValue().getResponse()).isNotNull();
@@ -671,9 +671,10 @@ class DirectionHelperServiceTest {
                 .addAll(buildDirections(LOCAL_AUTHORITY))
                 .build();
 
-            Map<String, List<Element<Direction>>> sortedDirections = service.sortDirectionsByAssignee(directions);
+            Map<DirectionAssignee, List<Element<Direction>>> sortedDirections = service.sortDirectionsByAssignee(
+                directions);
 
-            assertThat(sortedDirections).containsOnlyKeys(LOCAL_AUTHORITY.getValue());
+            assertThat(sortedDirections).containsOnlyKeys(LOCAL_AUTHORITY);
         }
 
         @Test
@@ -683,9 +684,10 @@ class DirectionHelperServiceTest {
                 .addAll(buildDirections(COURT))
                 .build();
 
-            Map<String, List<Element<Direction>>> sortedDirections = service.sortDirectionsByAssignee(directions);
+            Map<DirectionAssignee, List<Element<Direction>>> sortedDirections = service.sortDirectionsByAssignee(
+                directions);
 
-            assertThat(sortedDirections).containsOnlyKeys(LOCAL_AUTHORITY.getValue(), COURT.getValue());
+            assertThat(sortedDirections).containsOnlyKeys(LOCAL_AUTHORITY, COURT);
         }
     }
 
@@ -760,7 +762,7 @@ class DirectionHelperServiceTest {
                 .build();
 
             service.addAssigneeDirectionKeyValuePairsToCaseData(
-                LOCAL_AUTHORITY.getValue(), buildDirections(LOCAL_AUTHORITY), caseDetails);
+                LOCAL_AUTHORITY, buildDirections(LOCAL_AUTHORITY), caseDetails);
 
             assertThat(caseDetails.getData().get(LOCAL_AUTHORITY.getValue())).isEqualTo(expectedDirection());
         }
@@ -775,7 +777,7 @@ class DirectionHelperServiceTest {
                 .build();
 
             service.addAssigneeDirectionKeyValuePairsToCaseData(
-                LOCAL_AUTHORITY.getValue(), buildDirections(LOCAL_AUTHORITY), caseDetails);
+                LOCAL_AUTHORITY, buildDirections(LOCAL_AUTHORITY), caseDetails);
 
             assertThat(caseDetails.getData().get(LOCAL_AUTHORITY.getValue())).isEqualTo(expectedDirection());
         }
@@ -790,7 +792,7 @@ class DirectionHelperServiceTest {
                 .build();
 
             service.addAssigneeDirectionKeyValuePairsToCaseData(
-                LOCAL_AUTHORITY.getValue(), buildDirections(LOCAL_AUTHORITY), caseDetails);
+                LOCAL_AUTHORITY, buildDirections(LOCAL_AUTHORITY), caseDetails);
 
             assertThat(caseDetails.getData()).hasSize(2)
                 .extracting(LOCAL_AUTHORITY.getValue())
@@ -807,7 +809,7 @@ class DirectionHelperServiceTest {
             directions.addAll(buildDirections(LOCAL_AUTHORITY));
             directions.addAll(buildDirections(ALL_PARTIES));
 
-            service.addAssigneeDirectionKeyValuePairsToCaseData(LOCAL_AUTHORITY.getValue(), directions, caseDetails);
+            service.addAssigneeDirectionKeyValuePairsToCaseData(LOCAL_AUTHORITY, directions, caseDetails);
 
             assertThat(caseDetails.getData()).hasSize(1)
                 .extracting(LOCAL_AUTHORITY.getValue())
@@ -822,7 +824,7 @@ class DirectionHelperServiceTest {
 
             List<Element<Direction>> directions = new ArrayList<>(buildDirections(COURT));
 
-            service.addAssigneeDirectionKeyValuePairsToCaseData(COURT.getValue(), directions, caseDetails);
+            service.addAssigneeDirectionKeyValuePairsToCaseData(COURT, directions, caseDetails);
 
             assertThat(caseDetails.getData()).hasSize(1)
                 .extracting("courtDirectionsCustom")
