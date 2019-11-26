@@ -68,7 +68,7 @@ public class DraftCMOService {
             .filter(Objects::nonNull)
             .filter(element -> element.getId().equals(caseManagementOrder.getId()))
             .findFirst()
-            .map(element -> formatLocalDateToMediumStyle(element.getValue().getDate()))
+            .map(element -> formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()))
             .orElse("");
 
         DynamicListElement listElement = DynamicListElement.builder()
@@ -83,7 +83,7 @@ public class DraftCMOService {
         List<HearingDateDynamicElement> hearingDates = hearingDetails
             .stream()
             .map(element -> new HearingDateDynamicElement(
-                formatLocalDateToMediumStyle(element.getValue().getDate()), element.getId()))
+                formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()), element.getId()))
             .collect(toList());
 
         return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);
@@ -96,7 +96,7 @@ public class DraftCMOService {
         return CaseManagementOrder.builder()
             .hearingDate(list.getValue().getLabel())
             .id(list.getValue().getCode())
-            .directions(combineAllDirectionsForcmo(caseData))
+            .directions(combineAllDirectionsForCMO(caseData))
             .build();
     }
 
@@ -105,7 +105,7 @@ public class DraftCMOService {
     }
 
     // Temporary, to be replaced by directionHelperService.combineAllDirections once all directions have been added
-    private List<Element<Direction>> combineAllDirectionsForcmo(CaseData caseData) {
+    private List<Element<Direction>> combineAllDirectionsForCMO(CaseData caseData) {
         List<Element<Direction>> directions = new ArrayList<>();
 
         directions.addAll(directionHelperService.assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES));

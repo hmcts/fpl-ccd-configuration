@@ -39,16 +39,11 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        // Only allParties needed for now. Leaving logic in for the convenience of upcoming directions
         if (!isNull(caseData.getCaseManagementOrder())) {
             directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
                 .forEach(caseDetails.getData()::put);
         } else {
-            // Resetting custom directions - could be pre-populated via SDO
-            caseDetails.getData().remove("allPartiesCustom");
-            caseDetails.getData().remove("localAuthorityDirectionsCustom");
-            caseDetails.getData().remove("cafcassDirectionsCustom");
-            caseDetails.getData().remove("courtDirectionsCustom");
+            removeExistingCustomDirections(caseDetails);
         }
 
         caseDetails.getData().put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));
@@ -69,5 +64,12 @@ public class DraftCMOController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private void removeExistingCustomDirections(CaseDetails caseDetails) {
+        caseDetails.getData().remove("allPartiesCustom");
+        caseDetails.getData().remove("localAuthorityDirectionsCustom");
+        caseDetails.getData().remove("cafcassDirectionsCustom");
+        caseDetails.getData().remove("courtDirectionsCustom");
     }
 }
