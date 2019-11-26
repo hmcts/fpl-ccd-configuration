@@ -15,6 +15,7 @@ import java.util.UUID;
 public class DirectionResponse {
     private final UUID directionId;
     private final DirectionAssignee assignee;
+    private final String respondingOnBehalfOf;
     private final String complied;
     private final String documentDetails;
     private final DocumentReference file;

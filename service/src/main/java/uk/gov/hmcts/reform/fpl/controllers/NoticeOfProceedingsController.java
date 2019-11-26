@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.ProceedingType;
-import uk.gov.hmcts.reform.fpl.interfaces.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -28,14 +27,13 @@ import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.NoticeOfProceedingsService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 
-import java.io.IOException;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -71,7 +69,7 @@ public class NoticeOfProceedingsController {
     }
 
     @PostMapping("/about-to-start")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -80,7 +78,8 @@ public class NoticeOfProceedingsController {
                 .getMostUrgentHearingBooking(caseData.getHearingDetails());
 
             caseDetails.getData().put("proceedingLabel", String.format("The case management hearing will be on the %s.",
-                dateFormatterService.formatLocalDateToString(hearingBooking.getDate(), FormatStyle.LONG)));
+                dateFormatterService.formatLocalDateToString(
+                    hearingBooking.getStartDate().toLocalDate(), FormatStyle.LONG)));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -93,7 +92,7 @@ public class NoticeOfProceedingsController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
-        @RequestBody @NotNull CallbackRequest callbackRequest)  throws IOException {
+        @RequestBody @NotNull CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);

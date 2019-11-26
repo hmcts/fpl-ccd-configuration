@@ -54,6 +54,7 @@ module.exports = {
     changeCaseName: 'Change case name',
     submitCase: 'Submit application',
     deleteApplication: 'Delete an application',
+    draftCaseManagementOrder: 'Draft CMO',
     complyWithDirections: 'Comply with directions',
   },
   administrationActions: {
@@ -70,6 +71,7 @@ module.exports = {
     addStatementOfService: 'Add statement of service (c9)',
     uploadC2Documents: 'Upload a C2',
     draftStandardDirections: 'Draft standard directions',
+    createC21Order: 'Create an order',
   },
   // files
   testFile: './e2e/fixtures/mockFile.txt',

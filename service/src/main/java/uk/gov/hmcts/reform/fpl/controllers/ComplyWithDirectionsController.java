@@ -48,14 +48,15 @@ public class ComplyWithDirectionsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Direction>> allPartyDirections = directionHelperService
-            .getDirectionsForAssignee(caseData.getStandardDirectionOrder().getDirections(), ALL_PARTIES);
-
         Map<String, List<Element<Direction>>> sortedDirections =
             directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections());
 
-        sortedDirections.forEach((assignee, directions) -> directionHelperService
-            .addAssigneeDirectionKeyValuePairsToCaseData(assignee, allPartyDirections, caseDetails));
+        sortedDirections.forEach((assignee, directions) -> {
+            if (!assignee.equals(ALL_PARTIES.getValue())) {
+                directions.addAll(sortedDirections.get(ALL_PARTIES.getValue()));
+                directionHelperService.addAssigneeDirectionKeyValuePairsToCaseData(assignee, directions, caseDetails);
+            }
+        });
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

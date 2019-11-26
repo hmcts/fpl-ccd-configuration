@@ -29,6 +29,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.Collections.EMPTY_LIST;
+import static java.util.Collections.emptyList;
+import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +51,7 @@ class DirectionHelperServiceTest {
         CaseData caseData = populateCaseDataWithFixedDirections()
             .allPartiesCustom(buildCustomDirections())
             .localAuthorityDirectionsCustom(buildCustomDirections())
-            .parentsAndRespondentsCustom(buildCustomDirections())
+            .respondentDirectionsCustom(buildCustomDirections())
             .cafcassDirectionsCustom(buildCustomDirections())
             .otherPartiesDirectionsCustom(buildCustomDirections())
             .courtDirectionsCustom(buildCustomDirections())
@@ -101,7 +103,7 @@ class DirectionHelperServiceTest {
 
     @Test
     void persistHiddenDirectionValues_shouldAddValuesHiddenInCcdUiIncludingTextWhenReadOnlyIsYes() {
-        UUID uuid = UUID.randomUUID();
+        UUID uuid = randomUUID();
 
         List<Element<Direction>> withHiddenValues = ImmutableList.of(
             Element.<Direction>builder()
@@ -129,7 +131,7 @@ class DirectionHelperServiceTest {
 
     @Test
     void persistHiddenDirectionValues_shouldAddValuesHiddenInCcdUiExcludingTextWhenReadOnlyIsNo() {
-        UUID uuid = UUID.randomUUID();
+        UUID uuid = randomUUID();
 
         List<Element<Direction>> withHiddenValues = ImmutableList.of(
             Element.<Direction>builder()
@@ -235,7 +237,7 @@ class DirectionHelperServiceTest {
 
     @Nested
     class AddResponsesToDirections {
-        private final UUID uuid = UUID.randomUUID();
+        private final UUID uuid = randomUUID();
 
         @Test
         void shouldAddNewResponsesWhenNonePreviouslyExisted() {
@@ -408,7 +410,7 @@ class DirectionHelperServiceTest {
 
     @Nested
     class ExtractPartyResponse {
-        private final UUID uuid = UUID.randomUUID();
+        private final UUID uuid = randomUUID();
 
         @Test
         void shouldExtractListResponsesWhenDirectionIdMatches() {
@@ -437,7 +439,7 @@ class DirectionHelperServiceTest {
                     .responses(ImmutableList.of(Element.<DirectionResponse>builder()
                         .value(DirectionResponse.builder()
                             .assignee(LOCAL_AUTHORITY)
-                            .directionId(UUID.randomUUID())
+                            .directionId(randomUUID())
                             .build())
                         .build()))
                     .build())
@@ -475,7 +477,7 @@ class DirectionHelperServiceTest {
                     .responses(ImmutableList.of(Element.<DirectionResponse>builder()
                         .value(DirectionResponse.builder()
                             .assignee(CAFCASS)
-                            .directionId(UUID.randomUUID())
+                            .directionId(randomUUID())
                             .build())
                         .build()))
                     .build())
@@ -514,7 +516,7 @@ class DirectionHelperServiceTest {
 
         @Test
         void shouldPlaceResponsesWhenMultipleDirections() {
-            UUID otherUuid = UUID.randomUUID();
+            UUID otherUuid = randomUUID();
 
             List<Element<Direction>> directions = ImmutableList.of(
                 Element.<Direction>builder()
@@ -577,7 +579,7 @@ class DirectionHelperServiceTest {
 
     @Nested
     class GetResponses {
-        final UUID uuid = UUID.randomUUID();
+        final UUID uuid = randomUUID();
 
         @Test
         void shouldAddCorrectAssigneeAndDirectionToResponseWhenResponseExists() {
@@ -615,7 +617,7 @@ class DirectionHelperServiceTest {
         @Test
         void shouldAddCorrectAssigneeAndDirectionWhenMultipleDifferentResponsesExist() {
             String complied = "Yes";
-            UUID otherUuid = UUID.randomUUID();
+            UUID otherUuid = randomUUID();
 
             List<DirectionResponse> responses = service.getResponses(
                 ImmutableMap.of(
@@ -795,8 +797,202 @@ class DirectionHelperServiceTest {
                 .isEqualTo(expectedDirection());
         }
 
+        @Test
+        void shouldAddKeyValuePairsWhenDirectionsToAddHaveDifferentAssignees() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .data(new HashMap<>())
+                .build();
+
+            List<Element<Direction>> directions = new ArrayList<>();
+            directions.addAll(buildDirections(LOCAL_AUTHORITY));
+            directions.addAll(buildDirections(ALL_PARTIES));
+
+            service.addAssigneeDirectionKeyValuePairsToCaseData(LOCAL_AUTHORITY.getValue(), directions, caseDetails);
+
+            assertThat(caseDetails.getData()).hasSize(1)
+                .extracting(LOCAL_AUTHORITY.getValue())
+                .isEqualTo(directions);
+        }
+
+        @Test
+        void shouldAddCustomKeyValuePairWhenDirectionsBelongToCourt() {
+            CaseDetails caseDetails = CaseDetails.builder()
+                .data(new HashMap<>())
+                .build();
+
+            List<Element<Direction>> directions = new ArrayList<>(buildDirections(COURT));
+
+            service.addAssigneeDirectionKeyValuePairsToCaseData(COURT.getValue(), directions, caseDetails);
+
+            assertThat(caseDetails.getData()).hasSize(1)
+                .extracting("courtDirectionsCustom")
+                .isEqualTo(directions);
+        }
+
         private List<Element<Direction>> expectedDirection() {
             return buildDirections(LOCAL_AUTHORITY);
+        }
+    }
+
+    @Nested
+    class FilterResponsesNotCompliedOnBehalfOfByTheCourt {
+
+        @Test
+        void shouldFilterResponsesWhenResponseAssigneeIsNotCourt() {
+            String onBehalfOf = "NOT_RELEVANT";
+
+            List<Element<DirectionResponse>> responses = createResponses(LOCAL_AUTHORITY, "RESPONDENT_1");
+
+            List<Element<Direction>> directions = createDirectionWithResponses(responses);
+
+            service.filterResponsesNotCompliedOnBehalfOfByTheCourt(onBehalfOf, directions);
+
+            assertThat(directions.get(0).getValue().getResponses()).isEmpty();
+        }
+
+        @Test
+        void shouldNotErrorWhenResponsesInDirectionAreNull() {
+            String onBehalfOf = "NOT_RELEVANT";
+
+            List<Element<Direction>> directions = createDirectionWithResponses(null);
+
+            service.filterResponsesNotCompliedOnBehalfOfByTheCourt(onBehalfOf, directions);
+
+            assertThat(directions.get(0).getValue().getResponses()).isEmpty();
+        }
+
+        @Test
+        void shouldFilterResponsesWhenEmptyOnBehalfOf() {
+            String onBehalfOf = "RESPONDENT";
+            List<Element<DirectionResponse>> responses = createResponses(COURT, null);
+
+            List<Element<Direction>> directions = createDirectionWithResponses(responses);
+
+            service.filterResponsesNotCompliedOnBehalfOfByTheCourt(onBehalfOf, directions);
+
+            assertThat(directions.get(0).getValue().getResponses()).isEmpty();
+        }
+
+        @Test
+        void shouldFilterResponsesWhenFilteringForDirectionsOnBehalfOfSomeoneElse() {
+            String onBehalfOf = "OTHER";
+
+            List<Element<DirectionResponse>> responses = createResponses(COURT, "RESPONDENT_1");
+
+            List<Element<Direction>> directions = createDirectionWithResponses(responses);
+
+            service.filterResponsesNotCompliedOnBehalfOfByTheCourt(onBehalfOf, directions);
+
+            assertThat(directions.get(0).getValue().getResponses()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnResponsesWhenCorrectRespondingOnBehalfOf() {
+            String onBehalfOf = "RESPONDENT";
+
+            List<Element<DirectionResponse>> responses = createResponses(COURT, "RESPONDENT_1");
+
+            List<Element<Direction>> directions = createDirectionWithResponses(responses);
+
+            service.filterResponsesNotCompliedOnBehalfOfByTheCourt(onBehalfOf, directions);
+
+            assertThat(directions.get(0).getValue().getResponses()).isEqualTo(responses);
+        }
+
+        private List<Element<DirectionResponse>> createResponses(DirectionAssignee localAuthority, String onBehalfOf) {
+            List<Element<DirectionResponse>> responses = new ArrayList<>();
+            responses.add(Element.<DirectionResponse>builder()
+                .value(DirectionResponse.builder()
+                    .assignee(localAuthority)
+                    .respondingOnBehalfOf(onBehalfOf)
+                    .build())
+                .build());
+            return responses;
+        }
+
+        private List<Element<Direction>> createDirectionWithResponses(List<Element<DirectionResponse>> responses) {
+            List<Element<Direction>> directions = new ArrayList<>();
+            directions.add(Element.<Direction>builder()
+                .value(Direction.builder()
+                    .responses(responses)
+                    .build())
+                .build());
+            return directions;
+        }
+    }
+
+    @Nested
+    class AddResponseElementsToDirection {
+        UUID responseId = randomUUID();
+        UUID directionId = randomUUID();
+
+        @Test
+        void shouldAddResponseElementWhenThereAreNoResponses() {
+            List<Element<DirectionResponse>> responses = createDirectionResponses(responseId, directionId);
+
+            List<Element<Direction>> directions = createDirections(directionId, new ArrayList<>());
+
+            service.addResponseElementsToDirections(responses, directions);
+
+            assertThat(directions.get(0).getValue().getResponses()).hasSize(1);
+        }
+
+        @Test
+        void shouldAddResponseElementWhenThereAreResponsesWithDifferentResponseId() {
+            List<Element<DirectionResponse>> responses = createDirectionResponses(responseId, directionId);
+
+            List<Element<Direction>> directions =
+                createDirections(directionId, createDirectionResponses(randomUUID(), directionId));
+
+            service.addResponseElementsToDirections(responses, directions);
+
+            assertThat(directions.get(0).getValue().getResponses()).hasSize(2);
+        }
+
+        @Test
+        void shouldReplaceResponseElementWhenThereIsResponsesWithSameResponseId() {
+            List<Element<DirectionResponse>> responses = createDirectionResponses(responseId, directionId);
+
+            List<Element<Direction>> directions =
+                createDirections(directionId, createDirectionResponses(responseId, directionId));
+
+            service.addResponseElementsToDirections(responses, directions);
+
+            assertThat(directions.get(0).getValue().getResponses()).hasSize(1);
+        }
+
+        @Test
+        void shouldNotAddResponseElementWhenDifferentDirectionId() {
+            List<Element<DirectionResponse>> responses = createDirectionResponses(responseId, randomUUID());
+
+            List<Element<Direction>> directions = createDirections(directionId, new ArrayList<>());
+
+            service.addResponseElementsToDirections(responses, directions);
+
+            assertThat(directions.get(0).getValue().getResponses()).isEmpty();
+        }
+
+        private List<Element<Direction>> createDirections(UUID directionId,
+                                                          List<Element<DirectionResponse>> responses) {
+            List<Element<Direction>> directions = new ArrayList<>();
+            directions.add(Element.<Direction>builder()
+                .id(directionId)
+                .value(Direction.builder()
+                    .responses(responses)
+                    .build())
+                .build());
+            return directions;
+        }
+
+        private List<Element<DirectionResponse>> createDirectionResponses(UUID responseId, UUID directionId) {
+            List<Element<DirectionResponse>> responses = new ArrayList<>();
+            responses.add(Element.<DirectionResponse>builder()
+                .id(responseId)
+                .value(DirectionResponse.builder()
+                    .directionId(directionId)
+                    .build())
+                .build());
+            return responses;
         }
     }
 
@@ -804,7 +1000,7 @@ class DirectionHelperServiceTest {
         return CaseData.builder()
             .allParties(buildDirections(ALL_PARTIES))
             .localAuthorityDirections(buildDirections(LOCAL_AUTHORITY))
-            .parentsAndRespondentsDirections(buildDirections(PARENTS_AND_RESPONDENTS))
+            .respondentDirections(buildDirections(PARENTS_AND_RESPONDENTS))
             .cafcassDirections(buildDirections(CAFCASS))
             .otherPartiesDirections(buildDirections(OTHERS))
             .courtDirections(buildDirections(COURT));

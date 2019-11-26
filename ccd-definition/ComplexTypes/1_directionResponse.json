@@ -2,19 +2,19 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionResponse",
-    "ListElementCode": "respondingOnBehalfOf",
-    "FieldType": "FixedList",
-    "FieldTypeParameter": "Respondents",
-    "ElementLabel": "For",
+    "ListElementCode": "assignee",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "DirectionAssignees",
+    "ElementLabel": "Party",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionResponse",
-    "ListElementCode": "assignee",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "DirectionAssignees",
-    "ElementLabel": "Party",
+    "ListElementCode": "respondingOnBehalfOf",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "Respondents",
+    "ElementLabel": "Complying on behalf of",
     "SecurityClassification": "Public"
   },
   {

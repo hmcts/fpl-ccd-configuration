@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "localAuthorityDirectionsCustomCustom",
+    "CaseFieldID": "localAuthorityDirectionsCustom",
     "ListElementCode": "directionType",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 1,

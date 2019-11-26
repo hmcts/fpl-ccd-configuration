@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
@@ -25,25 +25,25 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
-
 @Service
 public class NoticeOfProceedingsService {
     private DateFormatterService dateFormatterService;
     private HearingBookingService hearingBookingService;
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private HearingVenueLookUpService hearingVenueLookUpService;
+    private CommonCaseDataExtractionService commonCaseDataExtractionService;
 
     @Autowired
     public NoticeOfProceedingsService(DateFormatterService dateFormatterService,
-                                     HearingBookingService hearingBookingService,
-                                     HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                      HearingVenueLookUpService hearingVenueLookUpService) {
+                                      HearingBookingService hearingBookingService,
+                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
+                                      HearingVenueLookUpService hearingVenueLookUpService,
+                                      CommonCaseDataExtractionService commonCaseDataExtractionService) {
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.hearingVenueLookUpService = hearingVenueLookUpService;
+        this.commonCaseDataExtractionService = commonCaseDataExtractionService;
     }
 
     public List<Element<DocumentBundle>> getRemovedDocumentBundles(CaseData caseData,
@@ -75,9 +75,10 @@ public class NoticeOfProceedingsService {
             .put("applicantName", getFirstApplicantName(caseData.getApplicants()))
             .put("orderTypes", getOrderTypes(caseData.getOrders()))
             .put("childrenNames", getAllChildrenNames(caseData.getAllChildren()))
-            .put("judgeTitleAndName",
-                formatJudgeTitleAndName(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
-            .put("legalAdvisorName", getLegalAdvisorName(caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
+            .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
+                caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
+            .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
+                caseData.getNoticeOfProceedings().getJudgeAndLegalAdvisor()))
             .putAll(hearingBookingData)
             .build();
     }
@@ -86,36 +87,18 @@ public class NoticeOfProceedingsService {
         return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
     }
 
-    private String getLegalAdvisorName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        if (judgeAndLegalAdvisor == null) {
-            return "";
-        }
-
-        return defaultIfNull(judgeAndLegalAdvisor.getLegalAdvisorName(), "");
-    }
-
-    private String formatJudgeTitleAndName(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        if (judgeAndLegalAdvisor == null || judgeAndLegalAdvisor.getJudgeTitle() == null) {
-            return "";
-        }
-
-        if (judgeAndLegalAdvisor.getJudgeTitle() == MAGISTRATES) {
-            return judgeAndLegalAdvisor.getJudgeFullName() + " (JP)";
-        } else {
-            return judgeAndLegalAdvisor.getJudgeTitle().getLabel() + " " + judgeAndLegalAdvisor.getJudgeLastName();
-        }
-    }
-
     private Map<String, Object>  getHearingBookingData(List<Element<HearingBooking>> hearingBookings) {
         HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(hearingBookings);
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
 
         return ImmutableMap.of(
-            "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),
-                FormatStyle.LONG),
+            "hearingDate", commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
+                prioritisedHearingBooking)
+                .orElse(""),
             "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
-            "preHearingAttendance", prioritisedHearingBooking.getPreHearingAttendance(),
-            "hearingTime", prioritisedHearingBooking.getTime()
+            "preHearingAttendance", commonCaseDataExtractionService.extractPrehearingAttendance(
+                prioritisedHearingBooking),
+            "hearingTime", commonCaseDataExtractionService.getHearingTime(prioritisedHearingBooking)
         );
     }
 

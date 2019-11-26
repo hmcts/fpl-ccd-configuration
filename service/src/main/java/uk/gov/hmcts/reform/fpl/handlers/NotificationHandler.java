@@ -10,10 +10,12 @@ import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
+import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
@@ -27,6 +29,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C21_ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
@@ -49,6 +52,7 @@ public class NotificationHandler {
     private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
+    private final C21OrderEmailContentProvider c21OrderEmailContentProvider;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final NotificationClient notificationClient;
     private final IdamApi idamApi;
@@ -67,7 +71,7 @@ public class NotificationHandler {
 
     @EventListener
     public void sendNotificationForC2Upload(final C2UploadedEvent caseEvent) {
-        List<String> roles = idamApi.retrieveUserDetails(caseEvent.getAuthorization()).getRoles();
+        List<String> roles = idamApi.retrieveUserInfo(caseEvent.getAuthorization()).getRoles();
 
         if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoles())) {
             CaseDetails caseDetailsFromEvent = caseEvent.getCallbackRequest().getCaseDetails();
@@ -80,6 +84,15 @@ public class NotificationHandler {
             String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
             sendNotification(C2_UPLOAD_NOTIFICATION_TEMPLATE, email, parameters, reference);
         }
+    }
+
+    @EventListener
+    public void sendNotificationForC21Order(final C21OrderEvent event) {
+        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
+        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+
+        sendC21NotificationForLocalAuthority(caseDetails, localAuthorityCode, event.getMostRecentUploadedDocumentUrl());
+        sendC21NotificationForCafcass(caseDetails, localAuthorityCode, event.getMostRecentUploadedDocumentUrl());
     }
 
     @EventListener
@@ -135,5 +148,26 @@ public class NotificationHandler {
         } catch (NotificationClientException e) {
             log.error("Failed to send submission notification (with template id: {}) to {}", templateId, email, e);
         }
+    }
+
+    private void sendC21NotificationForCafcass(final CaseDetails caseDetails, final String localAuthorityCode,
+                                               final String mostRecentUploadedDocumentUrl) {
+        Map<String, Object> cafCassParameters =
+            c21OrderEmailContentProvider.buildC21OrderNotificationParametersForCafcass(
+                caseDetails, localAuthorityCode, mostRecentUploadedDocumentUrl);
+        String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
+        sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, cafcassEmail, cafCassParameters,
+            Long.toString(caseDetails.getId()));
+    }
+
+    private void sendC21NotificationForLocalAuthority(final CaseDetails caseDetails, final String localAuthorityCode,
+                                                      final String mostRecentUploadedDocumentUrl) {
+        Map<String, Object> localAuthorityParameters =
+            c21OrderEmailContentProvider.buildC21OrderNotificationParametersForLocalAuthority(
+                caseDetails, localAuthorityCode, mostRecentUploadedDocumentUrl);
+        String localAuthorityEmail = localAuthorityEmailLookupConfiguration.getLocalAuthority(
+            localAuthorityCode).getEmail();
+        sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, localAuthorityEmail, localAuthorityParameters,
+            Long.toString(caseDetails.getId()));
     }
 }

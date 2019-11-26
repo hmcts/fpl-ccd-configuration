@@ -23,6 +23,7 @@ import static java.util.Objects.isNull;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
@@ -55,9 +56,9 @@ public class DirectionHelperService {
 
         directions.addAll(assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(), LOCAL_AUTHORITY));
 
-        directions.addAll(caseData.getParentsAndRespondentsDirections());
+        directions.addAll(caseData.getRespondentDirections());
 
-        directions.addAll(assignCustomDirections(caseData.getParentsAndRespondentsCustom(), PARENTS_AND_RESPONDENTS));
+        directions.addAll(assignCustomDirections(caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS));
 
         directions.addAll(caseData.getCafcassDirections());
 
@@ -131,6 +132,39 @@ public class DirectionHelperService {
     }
 
     /**
+     * Removes responses from a direction where they have not been complied on behalf of someone by the court.
+     *
+     * @param onBehalfOf a string matching part of the respondingOnBehalfOf variable.
+     * @param directions a list of directions.
+     */
+    public void filterResponsesNotCompliedOnBehalfOfByTheCourt(String onBehalfOf, List<Element<Direction>> directions) {
+        directions.forEach(directionElement -> directionElement.getValue().getResponses()
+            .removeIf(x -> COURT != x.getValue().getAssignee()
+                || isEmpty(x.getValue().getRespondingOnBehalfOf())
+                || !x.getValue().getRespondingOnBehalfOf().contains(onBehalfOf)));
+    }
+
+    /**
+     * Adds a direction response element to a direction where the direction id matches.
+     *
+     * @param responses  a list of direction response elements.
+     * @param directions a list of directions.
+     */
+    public void addResponseElementsToDirections(List<Element<DirectionResponse>> responses,
+                                                List<Element<Direction>> directions) {
+        directions.forEach(direction -> responses.stream()
+            .filter(response -> response.getValue().getDirectionId().equals(direction.getId()))
+            .forEach(response -> {
+                direction.getValue().getResponses().removeIf(x -> response.getId().equals(x.getId()));
+                direction.getValue().getResponses().add(response);
+            }));
+    }
+
+    public void compareDirectionsForComplyOnBehalf(DirectionAssignee assignee, List<Element<Direction>> directions) {
+
+    }
+
+    /**
      * Extracts a specific response to a direction by a party.
      *
      * @param assignee   the role that responded to the direction.
@@ -148,6 +182,7 @@ public class DirectionHelperService {
                         .map(Element::getValue)
                         .findFirst()
                         .orElse(null))
+                    .responses(emptyList())
                     .build())
                 .build())
             .collect(toList());
@@ -167,7 +202,7 @@ public class DirectionHelperService {
     public void addAssigneeDirectionKeyValuePairsToCaseData(String assignee,
                                                             List<Element<Direction>> directions,
                                                             CaseDetails caseDetails) {
-        if (assignee.equals("courtDirections")) {
+        if (assignee.equals(COURT.getValue())) {
             caseDetails.getData().put(assignee.concat("Custom"), extractPartyResponse(assignee, directions));
         } else {
             caseDetails.getData().put(assignee, extractPartyResponse(assignee, directions));
@@ -190,7 +225,7 @@ public class DirectionHelperService {
             LOCAL_AUTHORITY, defaultIfNull(caseData.getLocalAuthorityDirections(), emptyList()),
             CAFCASS, defaultIfNull(caseData.getCafcassDirections(), emptyList()),
             COURT, defaultIfNull(caseData.getCourtDirectionsCustom(), emptyList()),
-            PARENTS_AND_RESPONDENTS, defaultIfNull(caseData.getParentsAndRespondentsDirections(), emptyList()),
+            PARENTS_AND_RESPONDENTS, defaultIfNull(caseData.getRespondentDirections(), emptyList()),
             OTHERS, defaultIfNull(caseData.getOtherPartiesDirections(), emptyList()));
     }
 

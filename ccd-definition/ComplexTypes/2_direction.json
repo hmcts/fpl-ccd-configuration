@@ -30,7 +30,7 @@
     "ID": "Direction",
     "ListElementCode": "directionRemovable",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Is this direction Needed?",
+    "ElementLabel": "Is this direction needed?",
     "SecurityClassification": "Public",
     "FieldShowCondition": "directionType CONTAINS \"DO NOT SHOW\""
   },
@@ -39,7 +39,7 @@
     "ID": "Direction",
     "ListElementCode": "directionNeeded",
     "FieldType": "YesOrNo",
-    "ElementLabel": "Is this direction Needed?",
+    "ElementLabel": "Is this direction needed?",
     "SecurityClassification": "Public",
     "FieldShowCondition": "directionRemovable=\"Yes\""
   },

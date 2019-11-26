@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
-import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 /**
  * Gets a Local Authority name.
@@ -29,8 +29,8 @@ public class LocalAuthorityService {
      * @return caseLocalAuthority for user.
      */
     public String getLocalAuthorityCode(String authorization) {
-        UserDetails userDetails = idamApi.retrieveUserDetails(authorization);
-        String email = userDetails.getEmail();
+        UserInfo userInfo = idamApi.retrieveUserInfo(authorization);
+        String email = userInfo.getSub();
         String domain = extractEmailDomain(email);
 
         return localAuthorityCodeLookupConfiguration.getLocalAuthorityCode(domain);
