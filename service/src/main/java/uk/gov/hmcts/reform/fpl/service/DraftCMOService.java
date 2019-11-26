@@ -36,7 +36,8 @@ public class DraftCMOService {
     private final DirectionHelperService directionHelperService;
 
     @Autowired
-    public DraftCMOService(DateFormatterService dateFormatterService, ObjectMapper mapper,
+    public DraftCMOService(DateFormatterService dateFormatterService,
+                           ObjectMapper mapper,
                            DirectionHelperService directionHelperService) {
         this.mapper = mapper;
         this.dateFormatterService = dateFormatterService;
@@ -124,7 +125,7 @@ public class DraftCMOService {
         String firstName = defaultIfNull(respondentParty.getFirstName(), "");
         String lastName = defaultIfNull(respondentParty.getLastName(), "");
 
-        return firstName + " " + lastName;
+        return String.format("%s %s", firstName, lastName);
     }
 
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
