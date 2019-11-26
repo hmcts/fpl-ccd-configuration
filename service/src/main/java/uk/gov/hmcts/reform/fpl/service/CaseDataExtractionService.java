@@ -48,14 +48,14 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 @Service
 public class CaseDataExtractionService {
 
+    private static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
     private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
     private final DirectionHelperService directionHelperService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
-
-    private static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
+    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
 
     @Autowired
     public CaseDataExtractionService(DateFormatterService dateFormatterService,
@@ -63,13 +63,15 @@ public class CaseDataExtractionService {
                                      HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
                                      OrdersLookupService ordersLookupService,
                                      DirectionHelperService directionHelperService,
-                                     HearingVenueLookUpService hearingVenueLookUpService) {
+                                     HearingVenueLookUpService hearingVenueLookUpService,
+                                     CommonCaseDataExtractionService commonCaseDataExtractionService) {
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.ordersLookupService = ordersLookupService;
         this.directionHelperService = directionHelperService;
         this.hearingVenueLookUpService = hearingVenueLookUpService;
+        this.commonCaseDataExtractionService = commonCaseDataExtractionService;
     }
 
     // TODO
@@ -169,11 +171,13 @@ public class CaseDataExtractionService {
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
 
         return ImmutableMap.of(
-            "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),
-                FormatStyle.LONG),
+            "hearingDate", commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
+                prioritisedHearingBooking)
+                .orElse(""),
             "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
-            "preHearingAttendance", prioritisedHearingBooking.getPreHearingAttendance(),
-            "hearingTime", prioritisedHearingBooking.getTime(),
+            "preHearingAttendance", commonCaseDataExtractionService.extractPrehearingAttendance(
+                prioritisedHearingBooking),
+            "hearingTime", commonCaseDataExtractionService.getHearingTime(prioritisedHearingBooking),
             "judgeName", prioritisedHearingBooking.getJudgeTitle() + " "
                 + prioritisedHearingBooking.getJudgeName()
         );

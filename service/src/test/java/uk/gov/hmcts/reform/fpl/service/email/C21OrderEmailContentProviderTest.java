@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvider;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Map;
 import java.util.UUID;
@@ -117,9 +118,10 @@ class C21OrderEmailContentProviderTest {
     }
 
     private CaseDetails createCaseDetailsWithSingleC21Element() {
+        final LocalDateTime now = LocalDateTime.now();
         return CaseDetails.builder()
             .id(167888L)
-            .data(ImmutableMap.of("hearingDetails", createHearingBookings(LocalDate.now()),
+            .data(ImmutableMap.of("hearingDetails", createHearingBookings(now, now.plusDays(1)),
                 "c21Orders", ImmutableList.of(
                     Element.<C21Order>builder()
                         .value(C21Order.builder()

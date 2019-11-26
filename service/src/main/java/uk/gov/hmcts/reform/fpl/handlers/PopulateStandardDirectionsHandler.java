@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +35,7 @@ import static java.util.stream.Collectors.toList;
 
 @Component
 public class PopulateStandardDirectionsHandler {
+    private static final Boolean IGNORE_WARNING = true;
     private final ObjectMapper mapper;
     private final OrdersLookupService ordersLookupService;
     private final CoreCaseDataApi coreCaseDataApi;
@@ -44,7 +44,6 @@ public class PopulateStandardDirectionsHandler {
     private final SystemUpdateUserConfiguration userConfig;
     private final DirectionHelperService directionHelperService;
     private final HearingBookingService hearingBookingService;
-    private static final Boolean IGNORE_WARNING = true;
 
     @Autowired
     public PopulateStandardDirectionsHandler(ObjectMapper mapper,
@@ -125,13 +124,13 @@ public class PopulateStandardDirectionsHandler {
             HearingBooking mostUrgentBooking = hearingBookingService.getMostUrgentHearingBooking(caseData
                 .getHearingDetails());
 
-            completeBy = buildDateTime(mostUrgentBooking.getDate(),
+            completeBy = buildDateTime(mostUrgentBooking.getStartDate(),
                 Integer.parseInt(direction.getDisplay().getDelta()));
         }
         return completeBy;
     }
 
-    private LocalDateTime buildDateTime(LocalDate date, int delta) {
-        return date.plusDays(delta).atStartOfDay();
+    private LocalDateTime buildDateTime(LocalDateTime date, int delta) {
+        return date.plusDays(delta);
     }
 }
