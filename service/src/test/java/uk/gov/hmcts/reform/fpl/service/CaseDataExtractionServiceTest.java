@@ -92,7 +92,7 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
         assertThat(templateData.get("allParties")).isNull();
         assertThat(templateData.get("localAuthorityDirections")).isNull();
-        assertThat(templateData.get("parentsAndRespondentsDirections")).isNull();
+        assertThat(templateData.get("respondentDirections")).isNull();
         assertThat(templateData.get("cafcassDirections")).isNull();
         assertThat(templateData.get("otherPartiesDirections")).isNull();
         assertThat(templateData.get("courtDirections")).isNull();
