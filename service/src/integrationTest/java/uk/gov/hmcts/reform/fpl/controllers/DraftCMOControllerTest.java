@@ -58,8 +58,11 @@ class DraftCMOControllerTest {
     private ObjectMapper mapper;
 
     @Test
-    void aboutToStartCallbackShouldPopulateHearingDatesList() throws Exception {
-        Map<String, Object> data = ImmutableMap.of("hearingDetails", hearingDetails);
+    void aboutToStartCallbackShouldPopulateHearingDatesListAndSetAssigneeDropdownKeys() throws Exception {
+        Map<String, Object> data = ImmutableMap.of(
+            "hearingDetails", hearingDetails,
+            "respondents1", createRespondents(),
+            "others", createOthers());
 
         List<String> expected = Arrays.asList(
             TODAYS_DATE.plusDays(5).format(dateTimeFormatter),
@@ -69,16 +72,6 @@ class DraftCMOControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
-    }
-
-    @Test
-    void aboutToStartShouldSetAssigneeDropdownKeysWhenEventIsFirstVisited() throws Exception {
-        Map<String, Object> data = ImmutableMap.of(
-            "hearingDetails", hearingDetails,
-            "respondents1", createRespondents(),
-            "others", createOthers());
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
 
         String parentsAndRespondentsKeyCmo =
             mapper.convertValue(callbackResponse.getData().get("parentsAndRespondentsDropdownKeyCMO"), String.class);
