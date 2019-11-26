@@ -69,7 +69,7 @@ public class DraftCMOService {
             .filter(Objects::nonNull)
             .filter(element -> element.getId().equals(caseManagementOrder.getId()))
             .findFirst()
-            .map(element -> formatLocalDateToMediumStyle(element.getValue().getDate()))
+            .map(element -> formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()))
             .orElse("");
 
         DynamicListElement listElement = DynamicListElement.builder()
@@ -131,7 +131,7 @@ public class DraftCMOService {
         List<HearingDateDynamicElement> hearingDates = hearingDetails
             .stream()
             .map(element -> new HearingDateDynamicElement(
-                formatLocalDateToMediumStyle(element.getValue().getDate()), element.getId()))
+                formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()), element.getId()))
             .collect(toList());
 
         return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);

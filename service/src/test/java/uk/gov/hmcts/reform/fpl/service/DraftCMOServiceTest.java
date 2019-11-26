@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.List;
@@ -31,13 +31,11 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
     DirectionHelperService.class})
 class DraftCMOServiceTest {
 
+    private final LocalDateTime date = LocalDateTime.now();
     @Autowired
     private DraftCMOService draftCMOService;
-
     @Autowired
     private DateFormatterService dateFormatterService;
-
-    private final LocalDate date = LocalDate.now();
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCaseDetailsHasHearingDate() {
@@ -153,24 +151,24 @@ class DraftCMOServiceTest {
         return dynamicList;
     }
 
-    private List<Element<HearingBooking>> createHearingBookings(LocalDate now) {
+    private List<Element<HearingBooking>> createHearingBookings(LocalDateTime now) {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
                 .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-                .value(createHearingBooking(now.plusDays(5)))
+                .value(createHearingBooking(now.plusDays(5), now.plusDays(6)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
-                .value(createHearingBooking(now.plusDays(2)))
+                .value(createHearingBooking(now.plusDays(2), now.plusDays(3)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
-                .value(createHearingBooking(now))
+                .value(createHearingBooking(now, now.plusDays(1)))
                 .build()
         );
     }
 
     private String formatLocalDateToMediumStyle(int i) {
-        return dateFormatterService.formatLocalDateToString(date.plusDays(i), FormatStyle.MEDIUM);
+        return dateFormatterService.formatLocalDateToString(date.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
     }
 }

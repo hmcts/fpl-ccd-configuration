@@ -46,12 +46,11 @@ public class CaseDataGeneratorHelper {
         // NO-OP
     }
 
-    public static HearingBooking createHearingBooking(LocalDate date) {
+    public static HearingBooking createHearingBooking(LocalDateTime startDate, LocalDateTime endDate) {
         return HearingBooking.builder()
-            .date(date)
+            .startDate(startDate)
             .venue("Venue")
-            .preHearingAttendance("08.15am")
-            .time("09.15am")
+            .endDate(endDate)
             .judgeTitle("HHJ")
             .judgeName("Judith Law")
             .build();
@@ -291,10 +290,11 @@ public class CaseDataGeneratorHelper {
                 .build());
     }
 
-    public static List<Element<HearingBooking>> createHearingBookings(final LocalDate date) {
+    public static List<Element<HearingBooking>> createHearingBookings(final LocalDateTime startDate,
+                                                                      final LocalDateTime endDate) {
         return ImmutableList.of(Element.<HearingBooking>builder()
             .id(randomUUID())
-            .value(createHearingBooking(date))
+            .value(createHearingBooking(startDate, endDate))
             .build());
     }
 
