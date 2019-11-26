@@ -90,7 +90,7 @@ public class DraftCMOService {
                 RespondentParty respondentParty = caseData.getRespondents1().get(i).getValue().getParty();
 
                 String key = String.format("Respondent %d - %s", i + 1, getRespondentsFullName(respondentParty));
-                stringBuilder.append(key).append("\n").append("\n");
+                stringBuilder.append(key).append("\n\n");
             }
         }
 
@@ -113,7 +113,7 @@ public class DraftCMOService {
                     key = String.format("Other Person %d - %s", i + 1, defaultIfNull(other.getName(), ""));
                 }
 
-                stringBuilder.append(key).append("\n").append("\n");
+                stringBuilder.append(key).append("\n\n");
             }
         }
 
