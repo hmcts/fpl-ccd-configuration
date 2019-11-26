@@ -37,7 +37,6 @@ public class DraftCMOController {
             .build();
     }
 
-    // TODO: 26/11/2019 Test me / alter tests
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
