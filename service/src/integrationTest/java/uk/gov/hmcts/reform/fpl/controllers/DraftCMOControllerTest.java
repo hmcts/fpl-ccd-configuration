@@ -74,7 +74,7 @@ class DraftCMOControllerTest {
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
 
         String parentsAndRespondentsKeyCmo =
-            mapper.convertValue(callbackResponse.getData().get("parentsAndRespondentsDropdownKeyCMO"), String.class);
+            mapper.convertValue(callbackResponse.getData().get("respondentsDropdownKeyCMO"), String.class);
         String otherPartiesKeyCMO =
             mapper.convertValue(callbackResponse.getData().get("otherPartiesDropdownKeyCMO"), String.class);
 

@@ -101,7 +101,7 @@ class DraftCMOServiceTest {
             .data(ImmutableMap.of("respondents1", createRespondents()))
             .build();
 
-        String respondentsKey = draftCMOService.createParentsAndRespondentAssigneeDropdownKey(caseDetails);
+        String respondentsKey = draftCMOService.createRespondentAssigneeDropdownKey(caseDetails);
 
         assertThat(respondentsKey).contains(
             "Respondent 1 - Timothy Jones",
@@ -112,7 +112,7 @@ class DraftCMOServiceTest {
     void shouldReturnEmptyStringWhenRespondentsAreNotPresent() {
         CaseDetails caseDetails = CaseDetails.builder().data(ImmutableMap.of()).build();
 
-        String respondentsKey = draftCMOService.createParentsAndRespondentAssigneeDropdownKey(caseDetails);
+        String respondentsKey = draftCMOService.createRespondentAssigneeDropdownKey(caseDetails);
 
         assertThat(respondentsKey).isEqualTo("");
     }
@@ -134,7 +134,7 @@ class DraftCMOServiceTest {
             .data(ImmutableMap.of())
             .build();
 
-        String othersKey = draftCMOService.createParentsAndRespondentAssigneeDropdownKey(caseDetails);
+        String othersKey = draftCMOService.createRespondentAssigneeDropdownKey(caseDetails);
 
         assertThat(othersKey).isEqualTo("");
     }

@@ -69,20 +69,16 @@ public class DraftCMOController {
             .build();
     }
 
-    private CaseDetails setCustomDirectionDropdownKeys(CaseDetails caseDetails) {
+    private void setCustomDirectionDropdownKeys(CaseDetails caseDetails) {
         caseDetails.getData().put("otherPartiesDropdownKeyCMO",
             draftCMOService.createOtherPartiesAssigneeDropdownKey(caseDetails));
 
-        caseDetails.getData().put("parentsAndRespondentsDropdownKeyCMO",
-            draftCMOService.createParentsAndRespondentAssigneeDropdownKey(caseDetails));
-
-        return caseDetails;
+        caseDetails.getData().put("respondentsDropdownKeyCMO",
+            draftCMOService.createRespondentAssigneeDropdownKey(caseDetails));
     }
 
-    private CaseDetails removeExistingDirectionsFromCaseDetails(CaseDetails caseDetails) {
-        caseDetails.getData().remove("parentsAndRespondentsCustom");
+    private void removeExistingDirectionsFromCaseDetails(CaseDetails caseDetails) {
+        caseDetails.getData().remove("respondentDirectionsCustom");
         caseDetails.getData().remove("otherPartiesDirectionsCustom");
-
-        return caseDetails;
     }
 }

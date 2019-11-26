@@ -21,8 +21,8 @@ module.exports = {
       keyIssues: '#schedule_keyIssues',
       partiesPositions: '#schedule_partiesPositions',
     },
-    parentsAndRespondentsDirection: {
-      assigneeDropdown: '#parentsAndRespondentsCustom_0_parentsAndRespondentsAssignee'
+    respondentDirectionsCustom: {
+      assigneeDropdown: '#respondentDirectionsCustom_0_parentsAndRespondentsAssignee'
     },
     otherPartiesDirectionsCustom: {
       assigneeDropdown: '#otherPartiesDirectionsCustom_0_otherPartiesAssignee'
@@ -55,9 +55,9 @@ module.exports = {
 
   async enterDirection(direction) {
     await I.addAnotherElementToCollection();
-    await draftDirections.enterTitleAndDescription('parentsAndRespondentsCustom', direction);
-    await I.selectOption(this.fields.parentsAndRespondentsDirection.assigneeDropdown, 'Respondent 1');
-    await draftDirections.enterDate('parentsAndRespondentsCustom', direction);
+    await draftDirections.enterTitleAndDescription('respondentDirectionsCustom', direction);
+    await I.selectOption(this.fields.respondentDirectionsCustom.assigneeDropdown, 'Respondent 1');
+    await draftDirections.enterDate('respondentDirectionsCustom', direction);
     await I.click('Continue');
     await I.addAnotherElementToCollection();
     await draftDirections.enterTitleAndDescription('otherPartiesDirectionsCustom', direction);

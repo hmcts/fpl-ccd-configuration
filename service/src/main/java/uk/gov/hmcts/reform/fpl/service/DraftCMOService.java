@@ -80,7 +80,7 @@ public class DraftCMOService {
         hearingDatesDynamic.setValue(listElement);
     }
 
-    public String createParentsAndRespondentAssigneeDropdownKey(CaseDetails caseDetails) {
+    public String createRespondentAssigneeDropdownKey(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         StringBuilder stringBuilder = new StringBuilder();
@@ -152,7 +152,7 @@ public class DraftCMOService {
     private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
         List<Element<Direction>> directions = new ArrayList<>();
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getParentsAndRespondentsCustom(),
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getRespondentDirectionsCustom(),
             PARENTS_AND_RESPONDENTS));
 
         directions.addAll(directionHelperService.assignCustomDirections(caseData.getOtherPartiesDirectionsCustom(),
