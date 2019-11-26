@@ -47,8 +47,8 @@ module.exports = {
     await this.enterDate('allParties', direction);
     await I.retryUntilExists(() => I.click('Continue'), '#localAuthorityDirections');
     await this.enterDate('localAuthorityDirections', direction);
-    await I.retryUntilExists(() => I.click('Continue'), '#parentsAndRespondentsDirections');
-    await this.enterDate('parentsAndRespondentsDirections', direction);
+    await I.retryUntilExists(() => I.click('Continue'), '#respondentDirections');
+    await this.enterDate('respondentDirections', direction);
     await I.retryUntilExists(() => I.click('Continue'), '#cafcassDirections');
     await this.enterDate('cafcassDirections', direction);
     await I.retryUntilExists(() => I.click('Continue'), '#otherPartiesDirections');
