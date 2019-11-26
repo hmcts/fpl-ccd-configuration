@@ -41,7 +41,7 @@ public class DraftCMOController {
 
         if (!isNull(caseData.getCaseManagementOrder())) {
             directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
-                .forEach((key, value) -> caseDetails.getData().put(key, value));
+                .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
         } else {
             draftCMOService.removeExistingCustomDirections(caseDetails);
         }
