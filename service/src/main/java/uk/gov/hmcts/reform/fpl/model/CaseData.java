@@ -80,8 +80,8 @@ public class CaseData {
     private final List<Element<Direction>> cafcassDirectionsCustom;
     private final List<Element<Direction>> otherPartiesDirections;
     private final List<Element<Direction>> otherPartiesDirectionsCustom;
-    private final List<Element<Direction>> parentsAndRespondentsDirections;
-    private final List<Element<Direction>> parentsAndRespondentsCustom;
+    private final List<Element<Direction>> respondentDirections;
+    private final List<Element<Direction>> respondentDirectionsCustom;
     private final Order standardDirectionOrder;
     @NotNull(message = "You need to add details to hearing needed")
     @Valid
