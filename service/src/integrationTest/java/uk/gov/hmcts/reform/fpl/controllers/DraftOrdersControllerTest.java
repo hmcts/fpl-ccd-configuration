@@ -38,6 +38,7 @@ import uk.gov.service.notify.NotificationClient;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -126,7 +127,7 @@ class DraftOrdersControllerTest {
 
         assertThat(extractDirections(caseData.getAllParties())).containsOnly(directions.get(0));
         assertThat(extractDirections(caseData.getLocalAuthorityDirections())).containsOnly(directions.get(1));
-        assertThat(extractDirections(caseData.getParentsAndRespondentsDirections())).containsOnly(directions.get(2));
+        assertThat(extractDirections(caseData.getRespondentDirections())).containsOnly(directions.get(2));
         assertThat(extractDirections(caseData.getCafcassDirections())).containsOnly(directions.get(3));
         assertThat(extractDirections(caseData.getOtherPartiesDirections())).containsOnly(directions.get(4));
         assertThat(extractDirections(caseData.getCourtDirections())).containsOnly(directions.get(5)).hasSize(1);
@@ -372,7 +373,8 @@ class DraftOrdersControllerTest {
                     "hearingDetails", ImmutableList.of(
                         Element.builder()
                             .value(HearingBooking.builder()
-                                .date(LocalDate.of(2020, 10, 20))
+                                .startDate(LocalDateTime.of(2020, 10, 20, 11, 11, 11))
+                                .endDate(LocalDateTime.of(2020, 11, 20, 11, 11, 11))
                                 .build())
                             .build()),
                     "respondents1", ImmutableList.of(
