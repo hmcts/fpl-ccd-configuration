@@ -55,19 +55,22 @@ public class ComplyOnBehalfController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Map<String, List<Element<Direction>>> sortedDirections =
+        Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
             directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections());
 
         sortedDirections.forEach((assignee, directions) -> {
-            if (!assignee.equals(ALL_PARTIES.getValue())) {
-                directions.addAll(sortedDirections.get(ALL_PARTIES.getValue()));
+            if (assignee != ALL_PARTIES) {
+                directions.addAll(sortedDirections.get(ALL_PARTIES));
             }
 
-            if (assignee.equals(PARENTS_AND_RESPONDENTS.getValue())) {
+            if (assignee == PARENTS_AND_RESPONDENTS) {
                 directionHelperService.filterResponsesNotCompliedOnBehalfOfByTheCourt("RESPONDENT", directions);
 
                 caseDetails.getData().put(PARENTS_AND_RESPONDENTS.getValue().concat("Custom"), directions);
 
+            } else {
+                caseDetails.getData().put(assignee.getValue().concat("Custom"),
+                    directionHelperService.extractPartyResponse(assignee, directions));
             }
 
             //TODO: others
@@ -76,18 +79,14 @@ public class ComplyOnBehalfController {
             //
             //      caseDetails.getData().put(OTHERS.getValue().concat("Custom"), directions);
             //}
-
-            else {
-                caseDetails.getData()
-                    .put(assignee.concat("Custom"), directionHelperService.extractPartyResponse(assignee, directions));
-            }
         });
 
         //TODO: others label
         //TODO: extract to service
 
         // RESPONDENT LABEL //////////////
-        String respondentsLabel = respondentService.buildRespondentLabel(defaultIfNull(caseData.getRespondents1(), emptyList()));
+        String respondentsLabel =
+            respondentService.buildRespondentLabel(defaultIfNull(caseData.getRespondents1(), emptyList()));
 
         caseDetails.getData().put("respondents1_label", respondentsLabel);
         //////////////////////////////////
