@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.validators;
+package uk.gov.hmcts.reform.fpl.validation.validators;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,9 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.List;
-
 import java.util.stream.Collectors;
-
 import javax.validation.Validation;
 import javax.validation.Validator;
 
