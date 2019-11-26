@@ -145,7 +145,7 @@ public class DirectionHelperService {
                 .value(element.getValue().toBuilder()
                     .response(element.getValue().getResponses().stream()
                         .filter(response -> response.getValue().getDirectionId().equals(element.getId()))
-                        .filter(response -> response.getValue().getAssignee() == assignee)
+                        .filter(response -> response.getValue().getAssignee().equals(assignee))
                         .map(Element::getValue)
                         .findFirst()
                         .orElse(null))
@@ -168,7 +168,7 @@ public class DirectionHelperService {
     public void addAssigneeDirectionKeyValuePairsToCaseData(DirectionAssignee assignee,
                                                             List<Element<Direction>> directions,
                                                             CaseDetails caseDetails) {
-        if (assignee == COURT) {
+        if (assignee.equals(COURT)) {
             caseDetails.getData().put(assignee.getValue().concat("Custom"), extractPartyResponse(assignee, directions));
         } else {
             caseDetails.getData().put(assignee.getValue(), extractPartyResponse(assignee, directions));

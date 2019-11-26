@@ -44,7 +44,7 @@ public class ComplyWithDirectionsController {
             directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections());
 
         sortedDirections.forEach((assignee, directions) -> {
-            if (assignee != ALL_PARTIES) {
+            if (!assignee.equals(ALL_PARTIES)) {
                 directions.addAll(sortedDirections.get(ALL_PARTIES));
                 directionHelperService.addAssigneeDirectionKeyValuePairsToCaseData(assignee, directions, caseDetails);
             }

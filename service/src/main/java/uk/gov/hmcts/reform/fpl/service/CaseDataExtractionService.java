@@ -200,7 +200,7 @@ public class CaseDataExtractionService {
             .orElse("");
     }
 
-    private ImmutableMap<String, List<Map<String, String>>> getGroupedDirections(CaseData caseData)
+    private Map<String, List<Map<String, String>>> getGroupedDirections(CaseData caseData)
         throws IOException {
         OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
 
