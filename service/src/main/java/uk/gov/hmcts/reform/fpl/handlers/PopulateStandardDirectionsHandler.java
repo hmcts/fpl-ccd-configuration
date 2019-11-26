@@ -112,7 +112,7 @@ public class PopulateStandardDirectionsHandler {
             .collect(toList());
 
         directionHelperService.sortDirectionsByAssignee(directions)
-            .forEach((key, value) -> caseDetails.getData().put(key, value));
+            .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
         return caseDetails.getData();
     }
