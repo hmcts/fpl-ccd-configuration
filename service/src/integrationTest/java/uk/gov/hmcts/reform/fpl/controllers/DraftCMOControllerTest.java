@@ -75,9 +75,9 @@ class DraftCMOControllerTest {
 
     @Test
     void aboutToSubmitShouldPopulateCaseManagementOrder() throws Exception {
-        List<Element<HearingBooking>> hearingDetails1 = createHearingBookings(TODAYS_DATE);
+        List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
 
-        DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails1);
+        DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
 
         dynamicHearingDates.setValue(
             DynamicListElement.builder()
