@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -206,8 +207,9 @@ public class CaseDataExtractionService {
             return ImmutableMap.of();
         }
 
-        Map<String, List<Element<Direction>>> groupedDirections = directionHelperService.sortDirectionsByAssignee(
-            directionHelperService.numberDirections(caseData.getStandardDirectionOrder().getDirections()));
+        Map<DirectionAssignee, List<Element<Direction>>> groupedDirections =
+            directionHelperService.sortDirectionsByAssignee(directionHelperService.numberDirections(
+                caseData.getStandardDirectionOrder().getDirections()));
 
         ImmutableMap.Builder<String, List<Map<String, String>>> formattedDirections = ImmutableMap.builder();
 
@@ -220,7 +222,7 @@ public class CaseDataExtractionService {
                     "body", defaultIfNull(direction.getDirectionText(), EMPTY_PLACEHOLDER)))
                 .collect(toList());
 
-            formattedDirections.put(key, directionsList);
+            formattedDirections.put(key.getValue(), directionsList);
         });
 
         return formattedDirections.build();
