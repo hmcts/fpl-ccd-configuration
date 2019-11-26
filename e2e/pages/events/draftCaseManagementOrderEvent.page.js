@@ -22,11 +22,11 @@ module.exports = {
       partiesPositions: '#schedule_partiesPositions',
     },
     respondentDirectionsCustom: {
-      assigneeDropdown: '#respondentDirectionsCustom_0_parentsAndRespondentsAssignee'
+      assigneeDropdown: '#respondentDirectionsCustom_0_parentsAndRespondentsAssignee',
     },
     otherPartiesDirectionsCustom: {
-      assigneeDropdown: '#otherPartiesDirectionsCustom_0_otherPartiesAssignee'
-    }
+      assigneeDropdown: '#otherPartiesDirectionsCustom_0_otherPartiesAssignee',
+    },
   },
 
   associateHearingDate(date) {

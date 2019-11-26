@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.enums;
 
-
 public enum OrderType {
     CARE_ORDER("Care order"),
     INTERIM_CARE_ORDER("Interim care order"),

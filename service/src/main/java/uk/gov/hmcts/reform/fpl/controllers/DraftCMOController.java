@@ -44,7 +44,7 @@ public class DraftCMOController {
             directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
                 .forEach(caseDetails.getData()::put);
         } else {
-            removeExistingDirectionsFromCaseDetails(caseDetails);
+            removeExistingCustomDirections(caseDetails);
         }
 
         caseDetails.getData().put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));
@@ -77,7 +77,7 @@ public class DraftCMOController {
             draftCMOService.createRespondentAssigneeDropdownKey(caseDetails));
     }
 
-    private void removeExistingDirectionsFromCaseDetails(CaseDetails caseDetails) {
+    private void removeExistingCustomDirections(CaseDetails caseDetails) {
         caseDetails.getData().remove("respondentDirectionsCustom");
         caseDetails.getData().remove("otherPartiesDirectionsCustom");
     }
