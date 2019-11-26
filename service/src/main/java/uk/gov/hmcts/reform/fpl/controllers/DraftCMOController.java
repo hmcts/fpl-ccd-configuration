@@ -51,7 +51,6 @@ public class DraftCMOController {
                 break;
             case PARTIES_REVIEW:
                 // Move to new entry in case details that everyone has permissions to see
-                // TODO: 25/11/2019 Make this viewable on for other users
                 caseDetails.getData().put("shareableCMO", caseManagementOrder);
                 break;
             case SELF_REVIEW:
