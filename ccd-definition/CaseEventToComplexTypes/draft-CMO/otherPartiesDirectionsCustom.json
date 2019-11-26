@@ -23,7 +23,7 @@
     "ID": "OtherPartiesDirectionsCustom",
     "CaseEventID": "draftCMO",
     "CaseFieldID": "otherPartiesDirectionsCustom",
-    "ListElementCode": "otherPersonAssignee",
+    "ListElementCode": "otherPartiesAssignee",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   },

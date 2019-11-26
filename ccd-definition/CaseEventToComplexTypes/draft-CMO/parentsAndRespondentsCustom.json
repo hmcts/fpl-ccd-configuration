@@ -23,7 +23,7 @@
     "ID": "ParentsAndRespondentsCustom",
     "CaseEventID": "draftCMO",
     "CaseFieldID": "parentsAndRespondentsCustom",
-    "ListElementCode": "respondentsAssignee",
+    "ListElementCode": "parentsAndRespondentsAssignee",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   },

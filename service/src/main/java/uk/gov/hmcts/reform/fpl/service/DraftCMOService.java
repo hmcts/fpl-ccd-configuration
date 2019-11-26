@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,17 +26,21 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 
 @Service
 public class DraftCMOService {
     private final ObjectMapper mapper;
     private final DateFormatterService dateFormatterService;
+    private final DirectionHelperService directionHelperService;
 
     @Autowired
-    public DraftCMOService(DateFormatterService dateFormatterService, ObjectMapper mapper) {
+    public DraftCMOService(DateFormatterService dateFormatterService, ObjectMapper mapper,
+                           DirectionHelperService directionHelperService) {
         this.mapper = mapper;
         this.dateFormatterService = dateFormatterService;
+        this.directionHelperService = directionHelperService;
     }
 
     public DynamicList getHearingDateDynamicList(CaseDetails caseDetails) {
@@ -74,28 +80,27 @@ public class DraftCMOService {
         hearingDatesDynamic.setValue(listElement);
     }
 
-    public String createRespondentsKey(CaseDetails caseDetails) {
+    public String createParentsAndRespondentAssigneeDropdownKey(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        StringBuilder stringBuilder = new StringBuilder("");
+        StringBuilder stringBuilder = new StringBuilder();
 
         if (isNotEmpty(caseData.getRespondents1())) {
             for (int i = 0; i < caseData.getRespondents1().size(); i++) {
                 RespondentParty respondentParty = caseData.getRespondents1().get(i).getValue().getParty();
 
-                String key = String.format("Respondent %d: %s", i + 1, getRespondentsFullName(respondentParty));
-                stringBuilder.append(key).append("\n");
+                String key = String.format("Respondent %d - %s", i + 1, getRespondentsFullName(respondentParty));
+                stringBuilder.append(key).append("\n").append("\n");
             }
         }
 
-        return stringBuilder.toString();
+        return stringBuilder.toString().stripTrailing();
     }
 
-    public String createOtherPartiesKey(CaseDetails caseDetails) {
+    public String createOtherPartiesAssigneeDropdownKey(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        System.out.println(caseData.getOthers());
 
-        StringBuilder stringBuilder = new StringBuilder("");
+        StringBuilder stringBuilder = new StringBuilder();
 
         if (isNotEmpty(caseData.getOthers())) {
             for (int i = 0; i < caseData.getOthers().getAllOthers().size(); i++) {
@@ -103,16 +108,16 @@ public class DraftCMOService {
                 String key;
 
                 if (i == 0) {
-                    key = String.format("Person %d: %s", i + 1, defaultIfNull(other.getName(), ""));
+                    key = String.format("Person %d - %s", i + 1, defaultIfNull(other.getName(), ""));
                 } else {
-                    key = String.format("Other Person %d: %s", i + 1, defaultIfNull(other.getName(), ""));
+                    key = String.format("Other Person %d - %s", i + 1, defaultIfNull(other.getName(), ""));
                 }
 
-                stringBuilder.append(key).append("\n");
+                stringBuilder.append(key).append("\n").append("\n");
             }
         }
 
-        return stringBuilder.toString();
+        return stringBuilder.toString().stripTrailing();
     }
 
     private String getRespondentsFullName(RespondentParty respondentParty) {
@@ -134,11 +139,26 @@ public class DraftCMOService {
 
     public CaseManagementOrder getCaseManagementOrder(CaseDetails caseDetails) {
         DynamicList list = mapper.convertValue(caseDetails.getData().get("cmoHearingDateList"), DynamicList.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return CaseManagementOrder.builder()
             .hearingDate(list.getValue().getLabel())
             .id(list.getValue().getCode())
+            .directions(combineAllDirectionsForCmo(caseData))
             .build();
+    }
+
+    // Temporary, to be replaced by directionHelperService.combineAllDirections once all directions have been added
+    private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
+        List<Element<Direction>> directions = new ArrayList<>();
+
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getParentsAndRespondentsCustom(),
+            PARENTS_AND_RESPONDENTS));
+
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getOtherPartiesDirectionsCustom(),
+            OTHERS));
+
+        return directions;
     }
 
     private String formatLocalDateToMediumStyle(LocalDate date) {

@@ -36,6 +36,8 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftCMOController.class)
@@ -71,6 +73,29 @@ class DraftCMOControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
+    }
+
+    @Test
+    void aboutToStartShouldSetAssigneeDropdownKeysWhenEventIsFirstVisited() throws Exception {
+        Map<String, Object> data = ImmutableMap.of(
+            "hearingDetails", hearingDetails,
+            "respondents1", createRespondents(),
+            "others", createOthers());
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
+
+        String parentsAndRespondentsKeyCmo =
+            mapper.convertValue(callbackResponse.getData().get("parentsAndRespondentsDropdownKeyCMO"), String.class);
+        String otherPartiesKeyCMO =
+            mapper.convertValue(callbackResponse.getData().get("otherPartiesDropdownKeyCMO"), String.class);
+
+        assertThat(parentsAndRespondentsKeyCmo).contains(
+            "Respondent 1 - Timothy Jones",
+            "Respondent 2 - Sarah Simpson");
+
+        assertThat(otherPartiesKeyCMO).contains(
+            "Person 1 - Kyle Stafford",
+            "Other Person 2 - Sarah Simpson");
     }
 
     @Test

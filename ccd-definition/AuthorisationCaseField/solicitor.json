@@ -408,9 +408,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "parentsAndRespondentsKeyCMO",
+    "CaseFieldID": "parentsAndRespondentsDropdownKeyCMO",
     "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "R"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -429,9 +429,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "otherPartiesKeyCMO",
+    "CaseFieldID": "otherPartiesDropdownKeyCMO",
     "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "R"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",

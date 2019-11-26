@@ -59,6 +59,8 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await draftCaseManagementOrderEventPage.associateHearingDate('1 Jan 2050');
   I.click('Continue');
+  await draftCaseManagementOrderEventPage.enterDirection(directions[0]);
+  I.click('Continue');
   await draftCaseManagementOrderEventPage.enterSchedule(schedule);
   I.click('Continue');
   await I.addAnotherElementToCollection();
@@ -66,6 +68,16 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   await I.completeEvent('Submit');
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeAnswerInTab(1, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
+  I.seeAnswerInTab(1, 'Directions 1', 'Direction title', 'Mock title');
+  I.seeAnswerInTab(4, 'Directions 1', 'Description', 'Mock description');
+  I.seeAnswerInTab(5, 'Directions 1', 'For', 'Parents and other respondents');
+  I.seeAnswerInTab(6, 'Directions 1', 'Assignee', 'Respondent 1');
+  I.seeAnswerInTab(7, 'Directions 1', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+  I.seeAnswerInTab(1, 'Directions 2', 'Direction title', 'Mock title');
+  I.seeAnswerInTab(4, 'Directions 2', 'Description', 'Mock description');
+  I.seeAnswerInTab(5, 'Directions 2', 'For', 'Other parties');
+  I.seeAnswerInTab(6, 'Directions 2', 'Assignee', 'Person 1');
+  I.seeAnswerInTab(7, 'Directions 2', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
   I.seeAnswerInTab(1, 'Schedule', 'Do you want to include a schedule?', 'Yes');
   I.seeAnswerInTab(2, 'Schedule', 'Allocation', 'The proceedings continue to be allocated to Paul Wilson');
   I.seeAnswerInTab(3, 'Schedule', 'Application', 'The local authority has applied for a care order');

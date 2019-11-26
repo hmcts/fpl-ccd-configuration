@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 
-import java.util.Map;
+import static java.util.Objects.isNull;
 
 @Api
 @RestController
@@ -21,22 +23,36 @@ import java.util.Map;
 public class DraftCMOController {
     private final ObjectMapper mapper;
     private final DraftCMOService draftCMOService;
+    private final DirectionHelperService directionHelperService;
+
 
     @Autowired
-    public DraftCMOController(ObjectMapper mapper, DraftCMOService draftCMOService) {
+    public DraftCMOController(ObjectMapper mapper,
+                              DraftCMOService draftCMOService,
+                              DirectionHelperService directionHelperService) {
         this.mapper = mapper;
         this.draftCMOService = draftCMOService;
+        this.directionHelperService = directionHelperService;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        Map<String, Object> caseData = caseDetails.getData();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseData.put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));
+        if (!isNull(caseData.getCaseManagementOrder())) {
+            directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
+                .forEach(caseDetails.getData()::put);
+        } else {
+            removeExistingDirectionsFromCaseDetails(caseDetails);
+        }
+
+        caseDetails.getData().put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));
+
+        setCustomDirectionDropdownKeys(caseDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseData)
+            .data(caseDetails.getData())
             .build();
     }
 
@@ -51,5 +67,22 @@ public class DraftCMOController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private CaseDetails setCustomDirectionDropdownKeys(CaseDetails caseDetails) {
+        caseDetails.getData().put("otherPartiesDropdownKeyCMO",
+            draftCMOService.createOtherPartiesAssigneeDropdownKey(caseDetails));
+
+        caseDetails.getData().put("parentsAndRespondentsDropdownKeyCMO",
+            draftCMOService.createParentsAndRespondentAssigneeDropdownKey(caseDetails));
+
+        return caseDetails;
+    }
+
+    private CaseDetails removeExistingDirectionsFromCaseDetails(CaseDetails caseDetails) {
+        caseDetails.getData().remove("parentsAndRespondentsCustom");
+        caseDetails.getData().remove("otherPartiesDirectionsCustom");
+
+        return caseDetails;
     }
 }

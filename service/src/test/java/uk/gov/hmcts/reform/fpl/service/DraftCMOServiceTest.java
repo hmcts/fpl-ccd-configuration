@@ -23,11 +23,12 @@ import java.util.List;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, DateFormatterService.class, DraftCMOService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, DateFormatterService.class, DraftCMOService.class,
+    DirectionHelperService.class})
 class DraftCMOServiceTest {
 
     @Autowired
@@ -102,37 +103,31 @@ class DraftCMOServiceTest {
             .data(ImmutableMap.of("respondents1", createRespondents()))
             .build();
 
-        String respondentsKey = draftCMOService.createRespondentsKey(caseDetails);
+        String respondentsKey = draftCMOService.createParentsAndRespondentAssigneeDropdownKey(caseDetails);
 
         assertThat(respondentsKey).contains(
-            "Respondent 1: Timothy Jones",
-            "Respondent 2: Sarah Simpson"
-        );
+            "Respondent 1 - Timothy Jones",
+            "Respondent 2 - Sarah Simpson");
     }
 
     @Test
     void shouldReturnEmptyStringWhenRespondentsAreNotPresent() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of())
-            .build();
+        CaseDetails caseDetails = CaseDetails.builder().data(ImmutableMap.of()).build();
 
-        String respondentsKey = draftCMOService.createRespondentsKey(caseDetails);
+        String respondentsKey = draftCMOService.createParentsAndRespondentAssigneeDropdownKey(caseDetails);
 
         assertThat(respondentsKey).isEqualTo("");
     }
 
     @Test
     void shouldFormatOthersIntoKeyWhenOthersArePresent() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of("others", createOthers()))
-            .build();
+        CaseDetails caseDetails = CaseDetails.builder().data(ImmutableMap.of("others", createOthers())).build();
 
-        String othersKey = draftCMOService.createOtherPartiesKey(caseDetails);
+        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(caseDetails);
 
         assertThat(othersKey).contains(
-            "Person 1: Kyle Stafford",
-            "Other Person 2: Sarah Simpson"
-        );
+            "Person 1 - Kyle Stafford",
+            "Other Person 2 - Sarah Simpson");
     }
 
     @Test
@@ -141,7 +136,7 @@ class DraftCMOServiceTest {
             .data(ImmutableMap.of())
             .build();
 
-        String othersKey = draftCMOService.createRespondentsKey(caseDetails);
+        String othersKey = draftCMOService.createParentsAndRespondentAssigneeDropdownKey(caseDetails);
 
         assertThat(othersKey).isEqualTo("");
     }

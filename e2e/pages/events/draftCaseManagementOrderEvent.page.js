@@ -1,4 +1,5 @@
 const { I } = inject();
+const draftDirections = require('../../fragments/draftDirections');
 
 module.exports = {
   fields: {
@@ -20,6 +21,12 @@ module.exports = {
       keyIssues: '#schedule_keyIssues',
       partiesPositions: '#schedule_partiesPositions',
     },
+    parentsAndRespondentsDirection: {
+      assigneeDropdown: '#parentsAndRespondentsCustom_0_parentsAndRespondentsAssignee'
+    },
+    otherPartiesDirectionsCustom: {
+      assigneeDropdown: '#otherPartiesDirectionsCustom_0_otherPartiesAssignee'
+    }
   },
 
   associateHearingDate(date) {
@@ -44,6 +51,18 @@ module.exports = {
     I.fillField(this.fields.schedule.threshold, schedule.threshold);
     I.fillField(this.fields.schedule.keyIssues, schedule.keyIssues);
     I.fillField(this.fields.schedule.partiesPositions, schedule.partiesPositions);
+  },
+
+  async enterDirection(direction) {
+    await I.addAnotherElementToCollection();
+    await draftDirections.enterTitleAndDescription('parentsAndRespondentsCustom', direction);
+    await I.selectOption(this.fields.parentsAndRespondentsDirection.assigneeDropdown, 'Respondent 1');
+    await draftDirections.enterDate('parentsAndRespondentsCustom', direction);
+    await I.click('Continue');
+    await I.addAnotherElementToCollection();
+    await draftDirections.enterTitleAndDescription('otherPartiesDirectionsCustom', direction);
+    I.selectOption(this.fields.otherPartiesDirectionsCustom.assigneeDropdown, 'Person 1');
+    await draftDirections.enterDate('otherPartiesDirectionsCustom', direction);
   },
 
   async enterRecital(title,description) {

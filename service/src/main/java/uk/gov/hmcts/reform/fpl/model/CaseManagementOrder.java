@@ -20,6 +20,4 @@ public class CaseManagementOrder {
     private final Schedule schedule;
     private final UUID id;
     private final Recital recital;
-    private final String otherPartiesKeyCMO;
-    private final String parentsAndRespondentsKeyCMO;
 }
