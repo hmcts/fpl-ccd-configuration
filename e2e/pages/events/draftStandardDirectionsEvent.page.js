@@ -22,8 +22,8 @@ module.exports = {
     await draftDirections.enterDate('allParties', direction);
     await I.retryUntilExists(() => I.click('Continue'), '#localAuthorityDirections');
     await draftDirections.enterDate('localAuthorityDirections', direction);
-    await I.retryUntilExists(() => I.click('Continue'), '#parentsAndRespondentsDirections');
-    await draftDirections.enterDate('parentsAndRespondentsDirections', direction);
+    await I.retryUntilExists(() => I.click('Continue'), '#respondentDirections');
+    await draftDirections.enterDate('respondentDirections', direction);
     await I.retryUntilExists(() => I.click('Continue'), '#cafcassDirections');
     await draftDirections.enterDate('cafcassDirections', direction);
     await I.retryUntilExists(() => I.click('Continue'), '#otherPartiesDirections');
