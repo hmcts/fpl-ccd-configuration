@@ -131,7 +131,7 @@ class DraftOrdersControllerTest {
 
         assertThat(extractDirections(caseData.getAllParties())).containsOnly(directions.get(0));
         assertThat(extractDirections(caseData.getLocalAuthorityDirections())).containsOnly(directions.get(1));
-        assertThat(extractDirections(caseData.getParentsAndRespondentsDirections())).containsOnly(directions.get(2));
+        assertThat(extractDirections(caseData.getRespondentDirections())).containsOnly(directions.get(2));
         assertThat(extractDirections(caseData.getCafcassDirections())).containsOnly(directions.get(3));
         assertThat(extractDirections(caseData.getOtherPartiesDirections())).containsOnly(directions.get(4));
         assertThat(extractDirections(caseData.getCourtDirections())).containsOnly(directions.get(5)).hasSize(1);
