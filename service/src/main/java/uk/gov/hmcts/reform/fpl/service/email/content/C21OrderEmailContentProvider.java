@@ -65,8 +65,8 @@ public class C21OrderEmailContentProvider extends AbstractEmailContentProvider {
         String hearingDate = "";
         if (isNotEmpty(caseData.getHearingDetails())) {
             hearingDate = " hearing " + dateFormatterService.formatLocalDateToString(
-                hearingBookingService.getMostUrgentHearingBooking(caseData.getHearingDetails()).getDate(),
-                FormatStyle.MEDIUM);
+                hearingBookingService.getMostUrgentHearingBooking(
+                    caseData.getHearingDetails()).getStartDate().toLocalDate(), FormatStyle.MEDIUM);
         }
         return Stream.of(subjectLine, hearingDate)
             .filter(StringUtils::isNotBlank)
