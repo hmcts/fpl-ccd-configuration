@@ -6,7 +6,7 @@
     "babel-eslint": "^10.0.3",
     "codeceptjs": "2.3.2",
     "dateformat": "^3.0.3",
-    "eslint": "6.6.0",
+    "eslint": "6.7.1",
     "eslint-plugin-codeceptjs": "^1.2.0",
     "glob": "^7.1.6",
     "husky": "^3.1.0",
