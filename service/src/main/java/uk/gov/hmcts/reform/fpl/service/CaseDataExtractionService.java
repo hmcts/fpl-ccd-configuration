@@ -200,8 +200,7 @@ public class CaseDataExtractionService {
             .orElse("");
     }
 
-    private Map<String, List<Map<String, String>>> getGroupedDirections(CaseData caseData)
-        throws IOException {
+    private Map<String, List<Map<String, String>>> getGroupedDirections(CaseData caseData) throws IOException {
         OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
 
         if (caseData.getStandardDirectionOrder() == null) {
@@ -209,8 +208,8 @@ public class CaseDataExtractionService {
         }
 
         Map<DirectionAssignee, List<Element<Direction>>> groupedDirections =
-            directionHelperService.sortDirectionsByAssignee(
-            directionHelperService.numberDirections(caseData.getStandardDirectionOrder().getDirections()));
+            directionHelperService.sortDirectionsByAssignee(directionHelperService.numberDirections(
+                caseData.getStandardDirectionOrder().getDirections()));
 
         ImmutableMap.Builder<String, List<Map<String, String>>> formattedDirections = ImmutableMap.builder();
 
