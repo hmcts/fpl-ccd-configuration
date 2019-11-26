@@ -101,6 +101,29 @@ public class DraftCMOService {
             .build();
     }
 
+    // TODO: 26/11/2019 Test Me
+    public void prepareCaseDetails(CaseDetails caseDetails, CaseManagementOrder caseManagementOrder) {
+        caseDetails.getData().remove("cmoHearingDateList");
+        caseDetails.getData().put("caseManagementOrder", caseManagementOrder);
+
+        switch (caseManagementOrder.getCmoStatus()) {
+            case SEND_TO_JUDGE:
+                // Currently do nothing but something will probably happen here in the future
+                break;
+            case PARTIES_REVIEW:
+                // Move to new entry in case details that everyone has permissions to see
+                caseDetails.getData().put("shareableCMO", caseManagementOrder);
+                break;
+            case SELF_REVIEW:
+                // Remove the party review entry from case details if it exists
+                caseDetails.getData().remove("shareableCMO"); // TODO: 22/11/2019 Change this name
+                break;
+            default:
+                // Do nothing
+                break;
+        }
+    }
+
     private String formatLocalDateToMediumStyle(LocalDate date) {
         return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
     }

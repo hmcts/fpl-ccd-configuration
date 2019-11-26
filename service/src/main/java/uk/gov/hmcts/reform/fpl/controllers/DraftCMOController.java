@@ -37,30 +37,13 @@ public class DraftCMOController {
             .build();
     }
 
+    // TODO: 26/11/2019 Test me / alter tests
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseManagementOrder caseManagementOrder = draftCMOService.getCaseManagementOrder(caseDetails);
 
-        caseDetails.getData().remove("cmoHearingDateList");
-        caseDetails.getData().put("caseManagementOrder", caseManagementOrder);
-
-        switch (caseManagementOrder.getCmoStatus()) {
-            case SEND_TO_JUDGE:
-                // Currently do nothing but something will probably happen here in the future
-                break;
-            case PARTIES_REVIEW:
-                // Move to new entry in case details that everyone has permissions to see
-                caseDetails.getData().put("shareableCMO", caseManagementOrder);
-                break;
-            case SELF_REVIEW:
-                // Remove the party review entry from case details if it exists
-                caseDetails.getData().remove("shareableCMO"); // TODO: 22/11/2019 Change this name
-                break;
-            default:
-                // Do nothing
-                break;
-        }
+        draftCMOService.prepareCaseDetails(caseDetails, caseManagementOrder);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
