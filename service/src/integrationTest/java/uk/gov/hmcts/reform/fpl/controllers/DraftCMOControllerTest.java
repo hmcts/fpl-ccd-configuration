@@ -96,9 +96,6 @@ class DraftCMOControllerTest {
         );
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
-
-        assertThat(callbackResponse.getData()).doesNotContainKey("cmoHearingDateList");
-
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 

@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +20,13 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
 @ExtendWith(SpringExtension.class)
@@ -123,5 +128,47 @@ class DraftCMOServiceTest {
 
     private String formatLocalDateToMediumStyle(int i) {
         return dateFormatterService.formatLocalDateToString(date.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
+    }
+
+    @Nested
+    class PrepareCaseDetailsTest {
+        private HashMap<String, Object> data; // Tries to use an ImmutableMap unless specified
+
+        @BeforeEach
+        void setUp() {
+            data = new HashMap<>();
+        }
+
+        @Test
+        void shouldRemoveCMOHearingDateListAndAddSharableCMOWhenCMOStatusIsPartyReview() {
+            final CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
+                .cmoStatus(PARTIES_REVIEW).build();
+
+            final CaseDetails caseDetails = CaseDetails.builder()
+                .data(data)
+                .build();
+
+            draftCMOService.prepareCaseDetails(caseDetails, caseManagementOrder);
+
+            assertThat(caseDetails.getData()).doesNotContainKey("cmoHearingDateList");
+            assertThat(caseDetails.getData()).containsKey("shareableCMO");
+        }
+
+        @Test
+        void shouldRemoveCMOHearingDateListShareableCMOWhenCMOStatusIsSelfReview() {
+            final CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
+                .cmoStatus(SELF_REVIEW).build();
+
+            data.put("shareableCMO", caseManagementOrder);
+
+            final CaseDetails caseDetails = CaseDetails.builder()
+                .data(data)
+                .build();
+
+            draftCMOService.prepareCaseDetails(caseDetails, caseManagementOrder);
+
+            assertThat(caseDetails.getData()).doesNotContainKeys("cmoHearingDateList", "shareableCMO");
+        }
+
     }
 }
