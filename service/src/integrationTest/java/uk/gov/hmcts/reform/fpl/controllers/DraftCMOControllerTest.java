@@ -75,43 +75,9 @@ class DraftCMOControllerTest {
 
     @Test
     void aboutToSubmitShouldPopulateCaseManagementOrder() throws Exception {
-        Map<String, Object> data = buildIndividualCMOParts(SELF_REVIEW);
+        List<Element<HearingBooking>> hearingDetails1 = createHearingBookings(TODAYS_DATE);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
-
-        assertThat(callbackResponse.getData()).doesNotContainKey("cmoHearingDateList");
-
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
-
-        assertThat(caseManagementOrder).extracting("id", "hearingDate")
-            .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), TODAYS_DATE.plusDays(5).toString());
-        assertThat(caseManagementOrder.getCmoStatus()).isEqualTo(SELF_REVIEW);
-    }
-
-    @Test
-    void aboutToSubmitShouldPopulateCaseManagementOrderAndRemoveSharableCMOWhenStatusIsSelfReview() throws Exception {
-        Map<String, Object> data = buildIndividualCMOParts(SELF_REVIEW);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
-
-        assertThat(callbackResponse.getData()).doesNotContainKey("shareableCMO");
-    }
-
-    @Test
-    void aboutToSubmitShouldPopulateSharableCaseManagementOrderWhenStatusIsPartyReview() throws Exception {
-        Map<String, Object> data = buildIndividualCMOParts(PARTIES_REVIEW);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
-
-        assertThat(callbackResponse.getData()).containsKey("shareableCMO")
-            .extracting("cmoStatus").isEqualTo(PARTIES_REVIEW.name());
-    }
-
-    private Map<String, Object> buildIndividualCMOParts(CMOStatus status) {
-        List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
-
-        DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
+        DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails1);
 
         dynamicHearingDates.setValue(
             DynamicListElement.builder()
@@ -123,11 +89,22 @@ class DraftCMOControllerTest {
             .cmoStatus(PARTIES_REVIEW)
             .build();
 
-        return ImmutableMap.of(
+        Map<String, Object> data = ImmutableMap.of(
             "cmoHearingDateList", dynamicHearingDates,
-            "cmoStatus", status,
+            "cmoStatus", CMOStatus.SELF_REVIEW,
             "shareableCMO", sharableCMO
         );
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
+
+        assertThat(callbackResponse.getData()).doesNotContainKey("cmoHearingDateList");
+
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
+
+        assertThat(caseManagementOrder).extracting("id", "hearingDate")
+            .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), TODAYS_DATE.plusDays(5).toString());
+        assertThat(caseManagementOrder.getCmoStatus()).isEqualTo(SELF_REVIEW);
     }
 
     private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {
