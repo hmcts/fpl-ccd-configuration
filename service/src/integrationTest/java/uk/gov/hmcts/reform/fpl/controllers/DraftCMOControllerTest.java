@@ -37,7 +37,6 @@ import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
@@ -85,14 +84,11 @@ class DraftCMOControllerTest {
                 .label(TODAYS_DATE.plusDays(5).toString())
                 .build());
 
-        CaseManagementOrder sharableCMO = CaseManagementOrder.builder()
-            .cmoStatus(PARTIES_REVIEW)
-            .build();
-
         Map<String, Object> data = ImmutableMap.of(
             "cmoHearingDateList", dynamicHearingDates,
-            "cmoStatus", CMOStatus.SELF_REVIEW,
-            "shareableCMO", sharableCMO
+            "reviewCaseManagementOrder", ImmutableMap.of(
+                "cmoStatus", CMOStatus.SELF_REVIEW
+            )
         );
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
