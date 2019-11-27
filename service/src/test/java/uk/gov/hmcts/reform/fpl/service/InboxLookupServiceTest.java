@@ -70,7 +70,7 @@ class InboxLookupServiceTest {
     }
 
     @Test
-    void shouldReturnSolicitorEmailWhenLocalAuthorityEmailDoesNotExist() {
+    void shouldReturnSolicitorEmailWhenLocalAuthorityEmailIsEmpty() {
         CaseDetails caseDetails = buildCaseDetails();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
