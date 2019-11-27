@@ -103,7 +103,6 @@ public class DraftCMOService {
             .build();
     }
 
-    // TODO: 26/11/2019 Test Me
     public void prepareCaseDetails(CaseDetails caseDetails, CaseManagementOrder caseManagementOrder) {
         caseDetails.getData().remove("cmoHearingDateList");
         caseDetails.getData().put("caseManagementOrder", caseManagementOrder);
