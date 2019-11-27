@@ -167,8 +167,8 @@ public class NotificationHandler {
         Map<String, Object> localAuthorityParameters =
             c21OrderEmailContentProvider.buildC21OrderNotificationParametersForLocalAuthority(
                 caseDetails, localAuthorityCode, mostRecentUploadedDocumentUrl);
-        String localAuthorityEmail = localAuthorityEmailLookupConfiguration.getLocalAuthority(
-            localAuthorityCode).getEmail();
+        String localAuthorityEmail = localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode)
+            .map(LocalAuthorityEmailLookupConfiguration.LocalAuthority::getEmail).get();
         sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, localAuthorityEmail, localAuthorityParameters,
             Long.toString(caseDetails.getId()));
     }

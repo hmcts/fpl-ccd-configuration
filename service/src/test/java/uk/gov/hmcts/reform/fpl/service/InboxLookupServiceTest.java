@@ -14,16 +14,19 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, LocalAuthorityEmailLookupConfiguration.class,
     InboxLookupService.class})
-public class InboxLookupServiceTest {
+class InboxLookupServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
-    private static final String SOLICITOR_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
+    private static final String SOLICITOR_EMAIL_ADDRESS = "FamilyPublicLaw+solicitor@gmail.com";
     private static final String FALLBACK_INBOX = "FamilyPublicLaw@gmail.com";
 
     @MockBean
@@ -47,7 +50,7 @@ public class InboxLookupServiceTest {
         CaseDetails caseDetails = buildCaseDetails();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+            .willReturn(Optional.of(new LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS)));
 
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
@@ -55,11 +58,11 @@ public class InboxLookupServiceTest {
     }
 
     @Test
-    void shouldReturnSolicitorEmailWhenLocalAuthorityEmailDoesNotExist() {
+    void shouldReturnSolicitorEmailWhenLocalAuthorityEmailMappingNotExist() {
         CaseDetails caseDetails = buildCaseDetails();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(null));
+            .willReturn(Optional.empty());
 
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
@@ -67,11 +70,11 @@ public class InboxLookupServiceTest {
     }
 
     @Test
-    void shouldReturnSolicitorEmailWhenLocalAuthorityEmailIsEmpty() {
+    void shouldReturnSolicitorEmailWhenLocalAuthorityEmailDoesNotExist() {
         CaseDetails caseDetails = buildCaseDetails();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(""));
+            .willReturn(Optional.of(new LocalAuthority("")));
 
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 
@@ -85,7 +88,7 @@ public class InboxLookupServiceTest {
             .build();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(new LocalAuthorityEmailLookupConfiguration.LocalAuthority(""));
+            .willReturn(Optional.of(new LocalAuthority("")));
 
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE);
 

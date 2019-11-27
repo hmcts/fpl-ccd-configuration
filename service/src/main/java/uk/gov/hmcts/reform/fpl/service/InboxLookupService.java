@@ -8,7 +8,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 
+import java.util.Optional;
+
 import static org.apache.commons.lang.StringUtils.defaultIfBlank;
+import static uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 
 @Service
 public class InboxLookupService {
@@ -28,8 +31,13 @@ public class InboxLookupService {
     public String getNotificationRecipientEmail(final CaseDetails caseDetails, final String localAuthorityCode) {
         Solicitor solicitor = objectMapper.convertValue(caseDetails.getData().get("solicitor"), Solicitor.class);
 
-        return defaultIfBlank(localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode).getEmail(),
-            getFallbackEmail(solicitor));
+        Optional<LocalAuthority> localAuthorityOptional =
+            localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode);
+
+        return localAuthorityOptional
+            .filter(localAuthority -> !localAuthority.getEmail().isEmpty())
+            .map(LocalAuthority::getEmail)
+            .orElseGet(() -> getFallbackEmail(solicitor));
     }
 
     private String getSolicitorEmail(final Solicitor solicitor) {
