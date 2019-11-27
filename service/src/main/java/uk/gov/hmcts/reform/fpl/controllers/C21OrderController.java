@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.GatewayConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
-import uk.gov.hmcts.reform.fpl.interfaces.C21CaseOrderGroup;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -25,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.CreateC21OrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.validation.groups.C21CaseOrderGroup;
 
 import java.net.URI;
 import java.net.URISyntaxException;

@@ -1,12 +1,12 @@
-package uk.gov.hmcts.reform.fpl.validators;
+package uk.gov.hmcts.reform.fpl.validation.validators.documents;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.interfaces.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
+import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 
 import java.util.List;
 import javax.validation.Validation;
