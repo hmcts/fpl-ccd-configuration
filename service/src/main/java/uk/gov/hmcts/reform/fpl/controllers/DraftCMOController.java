@@ -25,6 +25,7 @@ public class DraftCMOController {
         this.draftCMOService = draftCMOService;
     }
 
+    // TODO: 27/11/2019 populate up the schedule, recital, and reviewCaseManagementOrder
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();

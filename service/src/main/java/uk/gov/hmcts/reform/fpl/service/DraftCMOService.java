@@ -87,7 +87,7 @@ public class DraftCMOService {
     public CaseManagementOrder getCaseManagementOrder(CaseDetails caseDetails) {
         final Map<String, Object> data = caseDetails.getData();
         DynamicList list = mapper.convertValue(data.get("cmoHearingDateList"), DynamicList.class);
-        // QUESTION: 25/11/2019 should these objects then be cleaned up and repopulated on about to start?
+        // TODO: 27/11/2019 clean up the schedule, recital, and reviewCaseManagementOrder
         Map<String, Object> reviewCaseManagementOrder = mapper.convertValue(
             data.get("reviewCaseManagementOrder"), new TypeReference<>() {});
         CMOStatus cmoStatus = mapper.convertValue(reviewCaseManagementOrder.get("cmoStatus"), CMOStatus.class);
