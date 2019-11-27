@@ -49,8 +49,11 @@ public class CaseDataGeneratorHelper {
             .startDate(startDate)
             .venue("Venue")
             .endDate(endDate)
-            .judgeTitle("HHJ")
-            .judgeName("Judith Law")
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HER_HONOUR_JUDGE)
+                .judgeLastName("Law")
+                .legalAdvisorName("Peter Parker")
+                .build())
             .build();
     }
 

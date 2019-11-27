@@ -1,4 +1,5 @@
 const { I } = inject();
+const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
 
 module.exports = {
   fields: function (index) {
@@ -30,8 +31,6 @@ module.exports = {
           somethingElse: `#hearingDetails_${index}_hearingNeedsBooked-SOMETHING_ELSE`,
         },
         giveDetails: `#hearingDetails_${index}_hearingNeedsDetails`,
-        judgeTitle: `#hearingDetails_${index}_judgeTitle`,
-        judgeName: `#hearingDetails_${index}_judgeName`,
       },
     };
   },
@@ -57,8 +56,12 @@ module.exports = {
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.welsh);
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.somethingElse);
     I.fillField(this.fields(elementIndex).hearingBooking.giveDetails, hearingDetails.giveDetails);
-    I.fillField(this.fields(elementIndex).hearingBooking.judgeTitle, hearingDetails.judgeTitle);
-    I.fillField(this.fields(elementIndex).hearingBooking.judgeName, hearingDetails.lastName);
+  },
+
+  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName) {
+    judgeAndLegalAdvisor.selectJudgeTitle();
+    judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
+    judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
 
   async getActiveElementIndex() {

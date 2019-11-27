@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
+import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -170,17 +171,19 @@ public class CaseDataExtractionService {
 
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
 
-        return ImmutableMap.of(
-            "hearingDate", commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
+        return ImmutableMap.<String, Object>builder()
+            .put("hearingDate", commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
                 prioritisedHearingBooking)
-                .orElse(""),
-            "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
-            "preHearingAttendance", commonCaseDataExtractionService.extractPrehearingAttendance(
-                prioritisedHearingBooking),
-            "hearingTime", commonCaseDataExtractionService.getHearingTime(prioritisedHearingBooking),
-            "judgeName", prioritisedHearingBooking.getJudgeTitle() + " "
-                + prioritisedHearingBooking.getJudgeName()
-        );
+                .orElse(""))
+            .put("hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue))
+            .put("preHearingAttendance", commonCaseDataExtractionService.extractPrehearingAttendance(
+                prioritisedHearingBooking))
+            .put("hearingTime", commonCaseDataExtractionService.getHearingTime(prioritisedHearingBooking))
+            .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
+                caseData.getJudgeAndLegalAdvisor()))
+            .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
+                caseData.getJudgeAndLegalAdvisor()))
+            .build();
     }
 
     private String getOrderTypes(CaseData caseData) {
