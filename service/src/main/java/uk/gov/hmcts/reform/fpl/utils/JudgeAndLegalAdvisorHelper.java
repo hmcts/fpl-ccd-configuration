@@ -4,6 +4,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.util.Optional;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
 
 public class JudgeAndLegalAdvisorHelper {
@@ -33,6 +34,10 @@ public class JudgeAndLegalAdvisorHelper {
     }
 
     private static String mapJudgeOrAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        if (isBlank(judgeAndLegalAdvisor.getJudgeLastName()) && isBlank(judgeAndLegalAdvisor.getJudgeFullName())) {
+            return "";
+        }
+
         if (judgeAndLegalAdvisor.getJudgeTitle() == MAGISTRATES) {
             return judgeAndLegalAdvisor.getJudgeFullName() + " (JP)";
         } else {

@@ -37,11 +37,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang.StringUtils.defaultIfBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 
 // Supports SDO case data. Tech debt ticket needed to refactor caseDataExtractionService and NoticeOfProceedingsService
@@ -81,10 +79,14 @@ public class CaseDataExtractionService {
     public Map<String, Object> getStandardOrderDirectionData(CaseData caseData) throws IOException {
         ImmutableMap.Builder data = ImmutableMap.<String, Object>builder();
 
-        data.put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndNameForDraftSDO(
-            caseData.getJudgeAndLegalAdvisor(), EMPTY_PLACEHOLDER));
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = isNotEmpty(caseData.getStandardDirectionOrder())
+            ? caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor() : caseData.getJudgeAndLegalAdvisor();
+
+        data.put("judgeTitleAndName", defaultIfBlank(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
+            judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
+        //Legal advisor will be tied to magistrate in following story - this + tests will need updating then
         data.put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
-            caseData.getJudgeAndLegalAdvisor()));
+            judgeAndLegalAdvisor));
 
         data.put("courtName", caseData.getCaseLocalAuthority() != null
             ? hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName() : EMPTY_PLACEHOLDER);
@@ -128,6 +130,7 @@ public class CaseDataExtractionService {
                 "hearingVenue", EMPTY_PLACEHOLDER,
                 "preHearingAttendance", EMPTY_PLACEHOLDER,
                 "hearingTime", EMPTY_PLACEHOLDER,
+                //hearing legal advisor empty placeholder will be handled in following story
                 "hearingJudgeTitleAndName", EMPTY_PLACEHOLDER
             );
         }
