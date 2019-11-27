@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -50,6 +51,8 @@ class CaseDataExtractionServiceTest {
     private HearingBookingService hearingBookingService = new HearingBookingService();
     private DirectionHelperService directionHelperService = new DirectionHelperService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
+    private CommonCaseDataExtractionService commonCaseDataExtraction = new CommonCaseDataExtractionService(
+        dateFormatterService);
 
     @Autowired
     private OrdersLookupService ordersLookupService;
@@ -64,7 +67,7 @@ class CaseDataExtractionServiceTest {
         // required for DI
         this.caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
             hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService,
-            hearingVenueLookUpService);
+            hearingVenueLookUpService, commonCaseDataExtraction);
     }
 
     @Test
@@ -89,7 +92,7 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
         assertThat(templateData.get("allParties")).isNull();
         assertThat(templateData.get("localAuthorityDirections")).isNull();
-        assertThat(templateData.get("parentsAndRespondentsDirections")).isNull();
+        assertThat(templateData.get("respondentDirections")).isNull();
         assertThat(templateData.get("cafcassDirections")).isNull();
         assertThat(templateData.get("otherPartiesDirections")).isNull();
         assertThat(templateData.get("courtDirections")).isNull();
@@ -163,8 +166,8 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("hearingVenue"))
             .isEqualTo("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");
         assertThat(templateData.get("judgeName")).isEqualTo("HHJ Judith Law");
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo("08.15am");
-        assertThat(templateData.get("hearingTime")).isEqualTo("09.15am");
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo("8:30am");
+        assertThat(templateData.get("hearingTime")).isEqualTo("9:30am - 11:30am");
         assertThat(templateData.get("respondents")).isEqualTo(getExpectedRespondents());
         assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirections());
         assertThat(templateData.get("draftbackground")).isNull();
@@ -217,15 +220,22 @@ class CaseDataExtractionServiceTest {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(LocalDate.now().plusDays(5)))
+                .value(createHearingBooking(
+                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(9, 30)),
+                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(11, 30))))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(LocalDate.now().plusDays(5)))
+                .value(createHearingBooking(
+                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(12, 30)),
+                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(13, 30))))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(TODAYS_DATE))
-                .build());
+                .value(createHearingBooking(
+                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(15, 30)),
+                    LocalDateTime.of(TODAYS_DATE, LocalTime.of(16, 0))))
+                .build()
+        );
     }
 }

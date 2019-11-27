@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.MandatoryDocuments;
-import uk.gov.hmcts.reform.fpl.interfaces.UploadDocumentsGroup;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
 
 import java.util.ArrayList;
 import java.util.List;

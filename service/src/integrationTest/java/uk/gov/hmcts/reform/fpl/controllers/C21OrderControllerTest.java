@@ -27,7 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.service.notify.NotificationClient;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +45,6 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C21_ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
-
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createC21Orders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
@@ -65,7 +64,7 @@ class C21OrderControllerTest {
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
 
-    private final LocalDate dateIn3Months = LocalDate.now().plusMonths(3);
+    private final LocalDateTime dateIn3Months = LocalDateTime.now().plusMonths(3);
 
     @MockBean
     private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
@@ -195,7 +194,7 @@ class C21OrderControllerTest {
                 .id(19898989L)
                 .data(ImmutableMap.of(
                     "c21Orders", createC21Orders(),
-                    "hearingDetails", createHearingBookings(dateIn3Months),
+                    "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
                     "respondents1", createRespondents(),
                     "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
                     "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER))
@@ -211,7 +210,7 @@ class C21OrderControllerTest {
             .put("subjectLine", subjectLine)
             .put("linkToDocument", documentUrl)
             .put("hearingDetailsCallout", subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(
-                dateIn3Months, FormatStyle.MEDIUM))
+                dateIn3Months.toLocalDate(), FormatStyle.MEDIUM))
             .put("reference", "19898989")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/19898989")
             .build();
