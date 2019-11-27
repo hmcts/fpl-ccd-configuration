@@ -170,7 +170,7 @@ public class NotificationHandler {
         String localAuthorityEmail = localAuthorityEmailLookupConfiguration
             .getLocalAuthority(localAuthorityCode)
             .map(LocalAuthorityEmailLookupConfiguration.LocalAuthority::getEmail)
-            .orElseThrow(() -> new NullPointerException("Expected to have local authority email"));
+            .orElseThrow(() -> new NullPointerException("Local authority '" + localAuthorityCode + "' not found"));
         sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, localAuthorityEmail, localAuthorityParameters,
             Long.toString(caseDetails.getId()));
     }
