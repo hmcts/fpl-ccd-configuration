@@ -14,7 +14,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -25,17 +27,22 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftCMOController.class)
@@ -56,7 +63,7 @@ class DraftCMOControllerTest {
     private ObjectMapper mapper;
 
     @Test
-    void aboutToStartCallbackShouldPopulateHearingDatesList() throws Exception {
+    void aboutToStartCallbackShouldPopulateHearingDatesListAndRemoveCustomDirections() throws Exception {
         Map<String, Object> data = ImmutableMap.of("hearingDetails", hearingDetails);
 
         List<String> expected = Arrays.asList(
@@ -67,10 +74,14 @@ class DraftCMOControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
+        assertThat(callbackResponse.getData()).doesNotContainKey("allPartiesCustom");
+        assertThat(callbackResponse.getData()).doesNotContainKey("localAuthorityDirectionsCustom");
+        assertThat(callbackResponse.getData()).doesNotContainKey("cafcassDirectionsCustom");
+        assertThat(callbackResponse.getData()).doesNotContainKey("courtDirectionsCustom");
     }
 
     @Test
-    void aboutToSubmitShouldPopulateHiddenHearingDateField() throws Exception {
+    void aboutToSubmitShouldPopulateHiddenHearingDateFieldAndCustomDirections() throws Exception {
         List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
 
         DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
@@ -82,15 +93,23 @@ class DraftCMOControllerTest {
                     .label(TODAYS_DATE.plusDays(5).toString())
                     .build());
 
-        Map<String, Object> data = ImmutableMap.of("cmoHearingDateList", dynamicHearingDates);
+        Map<String, Object> data = new HashMap<>();
+
+        Stream.of(DirectionAssignee.values()).forEach(direction ->
+            data.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
+        );
+
+        data.put("cmoHearingDateList", dynamicHearingDates);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
 
         assertThat(callbackResponse.getData()).doesNotContainKey("cmoHearingDateList");
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
-        assertThat(caseData.getCaseManagementOrder()).extracting("id", "hearingDate")
+        assertThat(caseManagementOrder.getDirections()).isEqualTo(createCmoDirections());
+        assertThat(caseManagementOrder).extracting("id", "hearingDate")
             .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), TODAYS_DATE.plusDays(5).toString());
     }
 
