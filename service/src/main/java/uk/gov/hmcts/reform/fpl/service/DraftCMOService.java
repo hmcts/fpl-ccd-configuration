@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 
 @Service
 public class DraftCMOService {
@@ -93,9 +94,10 @@ public class DraftCMOService {
                 String key;
 
                 if (i == 0) {
-                    key = String.format("Person %d - %s", i + 1, defaultIfNull(other.getName(), ""));
+                    key = String.format("Person %d - %s", i + 1, defaultIfNull(other.getName(), EMPTY_PLACEHOLDER));
                 } else {
-                    key = String.format("Other Person %d - %s", i + 1, defaultIfNull(other.getName(), ""));
+                    key = String.format("Other Person %d - %s", i + 1,
+                        defaultIfNull(other.getName(), EMPTY_PLACEHOLDER));
                 }
 
                 stringBuilder.append(key).append("\n\n");
@@ -162,7 +164,6 @@ public class DraftCMOService {
         return String.format("%s %s", firstName, lastName);
     }
 
-    // Temporary, to be replaced by directionHelperService.combineAllDirections once all directions have been added
     private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
         List<Element<Direction>> directions = new ArrayList<>();
 

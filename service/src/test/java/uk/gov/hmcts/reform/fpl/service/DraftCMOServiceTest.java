@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -32,6 +34,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
+import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, DateFormatterService.class, DraftCMOService.class,
@@ -165,7 +168,20 @@ class DraftCMOServiceTest {
     }
 
     @Test
-    void shouldReturnEmptyStringWhenOthersAreNotPresent() {
+    void shouldIncludeEmptyStatePlaceholderWhenOthersDoesNotIncludeFullName() {
+        CaseDetails caseDetails = CaseDetails.builder().data(ImmutableMap.of("others", Others.builder()
+            .firstOther(Other.builder()
+                .DOB("02/05/1988")
+                .build())
+            .build())).build();
+
+        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(caseDetails);
+
+        assertThat(othersKey).contains("Person 1 - " + EMPTY_PLACEHOLDER);
+    }
+
+    @Test
+    void shouldReturnEmptyStringWhenOthersAreNotPresentOnCaseData() {
         CaseDetails caseDetails = CaseDetails.builder()
             .data(ImmutableMap.of())
             .build();
