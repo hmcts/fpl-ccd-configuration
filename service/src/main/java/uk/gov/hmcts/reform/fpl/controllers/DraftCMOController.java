@@ -25,7 +25,6 @@ public class DraftCMOController {
     private final DraftCMOService draftCMOService;
     private final DirectionHelperService directionHelperService;
 
-
     @Autowired
     public DraftCMOController(ObjectMapper mapper,
                               DraftCMOService draftCMOService,
@@ -40,16 +39,18 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        caseDetails.getData().put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));
+
+        setCustomDirectionDropdownKeys(caseDetails);
+
         if (!isNull(caseData.getCaseManagementOrder())) {
             directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
                 .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
         } else {
-            removeExistingCustomDirections(caseDetails);
+            draftCMOService.removeExistingCustomDirections(caseDetails);
         }
 
         caseDetails.getData().put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));
-
-        setCustomDirectionDropdownKeys(caseDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -59,7 +60,7 @@ public class DraftCMOController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseManagementOrder caseManagementOrder = draftCMOService.getCaseManagementOrder(caseDetails);
+        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseDetails);
 
         caseDetails.getData().remove("cmoHearingDateList");
         caseDetails.getData().put("caseManagementOrder", caseManagementOrder);
@@ -75,10 +76,5 @@ public class DraftCMOController {
 
         caseDetails.getData().put("respondentsDropdownKeyCMO",
             draftCMOService.createRespondentAssigneeDropdownKey(caseDetails));
-    }
-
-    private void removeExistingCustomDirections(CaseDetails caseDetails) {
-        caseDetails.getData().remove("respondentDirectionsCustom");
-        caseDetails.getData().remove("otherPartiesDirectionsCustom");
     }
 }

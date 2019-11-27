@@ -314,10 +314,6 @@ public class DirectionHelperService {
             .build();
     }
 
-    private String booleanToYesOrNo(boolean value) {
-        return value ? "Yes" : "No";
-    }
-
     /**
      * Iterates over a list of directions and sets properties assignee, custom and readOnly.
      *
@@ -326,7 +322,7 @@ public class DirectionHelperService {
      * @return A list of custom directions.
      */
     public List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
-                                                            DirectionAssignee assignee) {
+                                                           DirectionAssignee assignee) {
         if (!isNull(directions)) {
             return directions.stream()
                 .map(element -> Element.<Direction>builder()
@@ -341,5 +337,9 @@ public class DirectionHelperService {
         } else {
             return emptyList();
         }
+    }
+
+    private String booleanToYesOrNo(boolean value) {
+        return value ? "Yes" : "No";
     }
 }

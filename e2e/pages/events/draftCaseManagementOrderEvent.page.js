@@ -36,7 +36,35 @@ module.exports = {
 
   validatePreviousSelectedHearingDate(date) {
     I.waitForElement(this.fields.cmoHearingDateList);
-    I.see(date,this.fields.cmoHearingDateList);
+    I.see(date, this.fields.cmoHearingDateList);
+  },
+
+  async enterDirection(direction) {
+    await I.addAnotherElementToCollection();
+    await draftDirections.enterTitleAndDescription('allPartiesCustom', direction);
+    await draftDirections.enterDate('allPartiesCustom', direction);
+    await I.click('Continue');
+    await I.addAnotherElementToCollection();
+    await draftDirections.enterTitleAndDescription('localAuthorityDirectionsCustom', direction);
+    await draftDirections.enterDate('localAuthorityDirectionsCustom', direction);
+    await I.click('Continue');
+    await I.addAnotherElementToCollection();
+    await draftDirections.enterTitleAndDescription('respondentDirectionsCustom', direction);
+    await I.selectOption(this.fields.respondentDirectionsCustom.assigneeDropdown, 'Respondent 1');
+    await draftDirections.enterDate('respondentDirectionsCustom', direction);
+    await I.click('Continue');
+    await I.addAnotherElementToCollection();
+    await draftDirections.enterTitleAndDescription('cafcassDirectionsCustom', direction);
+    await draftDirections.enterDate('cafcassDirectionsCustom', direction);
+    await I.click('Continue');
+    await I.addAnotherElementToCollection();
+    await draftDirections.enterTitleAndDescription('otherPartiesDirectionsCustom', direction);
+    I.selectOption(this.fields.otherPartiesDirectionsCustom.assigneeDropdown, 'Person 1');
+    await draftDirections.enterDate('otherPartiesDirectionsCustom', direction);
+    await I.click('Continue');
+    await I.addAnotherElementToCollection();
+    await draftDirections.enterTitleAndDescription('courtDirectionsCustom', direction);
+    await draftDirections.enterDate('courtDirectionsCustom', direction);
   },
 
   async enterSchedule(schedule) {
@@ -53,19 +81,7 @@ module.exports = {
     I.fillField(this.fields.schedule.partiesPositions, schedule.partiesPositions);
   },
 
-  async enterDirection(direction) {
-    await I.addAnotherElementToCollection();
-    await draftDirections.enterTitleAndDescription('respondentDirectionsCustom', direction);
-    await I.selectOption(this.fields.respondentDirectionsCustom.assigneeDropdown, 'Respondent 1');
-    await draftDirections.enterDate('respondentDirectionsCustom', direction);
-    await I.click('Continue');
-    await I.addAnotherElementToCollection();
-    await draftDirections.enterTitleAndDescription('otherPartiesDirectionsCustom', direction);
-    I.selectOption(this.fields.otherPartiesDirectionsCustom.assigneeDropdown, 'Person 1');
-    await draftDirections.enterDate('otherPartiesDirectionsCustom', direction);
-  },
-
-  async enterRecital(title,description) {
+  async enterRecital(title, description) {
     I.fillField(this.fields.recitals.title, title);
     I.fillField(this.fields.recitals.description, description);
   },

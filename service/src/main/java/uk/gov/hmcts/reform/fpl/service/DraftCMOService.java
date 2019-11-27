@@ -26,6 +26,10 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 
@@ -111,7 +115,7 @@ public class DraftCMOService {
         return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);
     }
 
-    public CaseManagementOrder getCaseManagementOrder(CaseDetails caseDetails) {
+    public CaseManagementOrder prepareCMO(CaseDetails caseDetails) {
         DynamicList list = mapper.convertValue(caseDetails.getData().get("cmoHearingDateList"), DynamicList.class);
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -120,6 +124,15 @@ public class DraftCMOService {
             .id(list.getValue().getCode())
             .directions(combineAllDirectionsForCmo(caseData))
             .build();
+    }
+
+    public void removeExistingCustomDirections(CaseDetails caseDetails) {
+        caseDetails.getData().remove("allPartiesCustom");
+        caseDetails.getData().remove("localAuthorityDirectionsCustom");
+        caseDetails.getData().remove("cafcassDirectionsCustom");
+        caseDetails.getData().remove("courtDirectionsCustom");
+        caseDetails.getData().remove("respondentDirectionsCustom");
+        caseDetails.getData().remove("otherPartiesDirectionsCustom");
     }
 
     private void prePopulateHearingDateSelection(List<Element<HearingBooking>> hearingDetails,
@@ -152,6 +165,16 @@ public class DraftCMOService {
     // Temporary, to be replaced by directionHelperService.combineAllDirections once all directions have been added
     private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
         List<Element<Direction>> directions = new ArrayList<>();
+
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES));
+
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(),
+            LOCAL_AUTHORITY));
+
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getCafcassDirectionsCustom(),
+            CAFCASS));
+
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getCourtDirectionsCustom(), COURT));
 
         directions.addAll(directionHelperService.assignCustomDirections(caseData.getRespondentDirectionsCustom(),
             PARENTS_AND_RESPONDENTS));
