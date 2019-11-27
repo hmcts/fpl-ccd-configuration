@@ -38,8 +38,10 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     await I.navigateToCaseDetails(caseId);
     await caseViewPage.goToNewActions(config.administrationActions.addHearingBookingDetails);
     await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[0]);
+    await addHearingBookingDetailsEventPage.enterJudgeAndLegalAdvisor('Reed', 'Rupert Robert');
     await I.addAnotherElementToCollection();
     await addHearingBookingDetailsEventPage.enterHearingDetails(hearingDetails[1]);
+    await addHearingBookingDetailsEventPage.enterJudgeAndLegalAdvisor('Law', 'Peter Parker');
     await I.completeEvent('Save and continue', {summary: 'summary', description: 'description'});
     I.seeEventSubmissionConfirmation(config.administrationActions.addHearingBookingDetails);
     caseViewPage.selectTab(caseViewPage.tabs.hearings);

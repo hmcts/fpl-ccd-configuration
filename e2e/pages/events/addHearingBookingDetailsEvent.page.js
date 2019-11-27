@@ -59,9 +59,11 @@ module.exports = {
   },
 
   async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName) {
-    judgeAndLegalAdvisor.selectJudgeTitle();
-    judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
-    judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
+    const elementIndex = await this.getActiveElementIndex();
+    const complexTypeAppender = `hearingDetails_${elementIndex}_`;
+    judgeAndLegalAdvisor.selectJudgeTitle(complexTypeAppender);
+    judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName, complexTypeAppender);
+    judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName, complexTypeAppender);
   },
 
   async getActiveElementIndex() {
