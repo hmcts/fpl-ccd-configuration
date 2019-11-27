@@ -116,8 +116,8 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(5, 'Hearing 1', '', hearingDetails[0].type.somethingElse);
   I.seeAnswerInTab(6, 'Hearing 1', 'Give details', hearingDetails[0].giveDetails);
   I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', 'Her Honour Judge');
-  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', 'Law');
-  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name', 'Peter Parker');
+  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', 'Reed');
+  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name', 'Rupert Robert');
 
   startDate = dateToString(hearingDetails[1].startDate);
   endDate = dateToString(hearingDetails[1].endDate);
