@@ -48,8 +48,7 @@
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
     "CaseFieldID": "caseManagementOrder",
-    "TabFieldDisplayOrder": 1,
-    "Comment": "Is this supposed to be in DraftOrdersCmoTab or DraftOrdersTab"
+    "TabFieldDisplayOrder": 2
   },
   {
     "LiveFrom": "01/01/2017",
