@@ -675,7 +675,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "reviewCaseManagementOrder",
-    "Label": "Draft Case Management Order",
+    "Label": " ",
     "FieldType": "ReviewCaseManagementOrder",
     "SecurityClassification": "Public"
   },

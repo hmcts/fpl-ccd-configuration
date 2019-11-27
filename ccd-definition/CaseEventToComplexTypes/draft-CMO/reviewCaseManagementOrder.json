@@ -16,7 +16,7 @@
     "CaseEventID": "draftCMO",
     "CaseFieldID": "reviewCaseManagementOrder",
     "ListElementCode": "cmoStatus",
-    "ElementLabel": "Is this ready to be sent to the judge?",
+    "EventElementLabel": "Is this ready to be sent to the judge?",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   }
