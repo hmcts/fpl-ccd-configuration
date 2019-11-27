@@ -88,7 +88,9 @@ public class DraftCMOService {
         final Map<String, Object> data = caseDetails.getData();
         DynamicList list = mapper.convertValue(data.get("cmoHearingDateList"), DynamicList.class);
         // QUESTION: 25/11/2019 should these objects then be cleaned up and repopulated on about to start?
-        CMOStatus cmoStatus = mapper.convertValue(data.get("cmoStatus"), CMOStatus.class);
+        Map<String, Object> reviewCaseManagementOrder = mapper.convertValue(
+            data.get("reviewCaseManagementOrder"), new TypeReference<>() {});
+        CMOStatus cmoStatus = mapper.convertValue(reviewCaseManagementOrder.get("cmoStatus"), CMOStatus.class);
         Schedule schedule = mapper.convertValue(data.get("schedule"), Schedule.class);
         List<Element<Recital>> recitals = mapper.convertValue(data.get("recitals"), new TypeReference<>() {});
 

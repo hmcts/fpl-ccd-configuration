@@ -674,10 +674,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "cmoStatus",
-    "Label": "Is this ready to be sent to the judge?",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "CMOStatus",
+    "ID": "reviewCaseManagementOrder",
+    "Label": "Draft Case Management Order",
+    "FieldType": "ReviewCaseManagementOrder",
     "SecurityClassification": "Public"
   },
   {
