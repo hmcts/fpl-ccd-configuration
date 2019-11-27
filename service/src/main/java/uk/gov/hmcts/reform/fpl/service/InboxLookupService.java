@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,6 @@ import uk.gov.hmcts.reform.fpl.model.Solicitor;
 
 import java.util.Optional;
 
-import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 
 @Service
@@ -35,16 +35,15 @@ public class InboxLookupService {
             localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode);
 
         return localAuthorityOptional
-            .filter(localAuthority -> !localAuthority.getEmail().isEmpty())
             .map(LocalAuthority::getEmail)
-            .orElseGet(() -> getFallbackEmail(solicitor));
+            .filter(StringUtils::isNotBlank)
+            .orElseGet(() -> getSolicitorOrFallbackEmail(solicitor));
     }
 
-    private String getSolicitorEmail(final Solicitor solicitor) {
-        return defaultIfBlank(solicitor.getEmail(), "");
-    }
-
-    private String getFallbackEmail(final Solicitor solicitor) {
-        return defaultIfBlank(getSolicitorEmail(solicitor), fallbackInbox);
+    private String getSolicitorOrFallbackEmail(final Solicitor solicitor) {
+        return Optional.of(solicitor)
+            .map(Solicitor::getEmail)
+            .filter(StringUtils::isNotBlank)
+            .orElse(fallbackInbox);
     }
 }
