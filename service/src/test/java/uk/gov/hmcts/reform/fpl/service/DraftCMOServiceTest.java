@@ -86,7 +86,10 @@ class DraftCMOServiceTest {
     @Test
     void shouldReturnCaseManagementOrderWhenProvidedCaseDetails() {
         CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of("cmoHearingDateList", getDynamicList()))
+            .data(ImmutableMap.of(
+                "cmoHearingDateList", getDynamicList(),
+                "reviewCaseManagementOrder", ImmutableMap.of())
+            )
             .build();
 
         CaseManagementOrder caseManagementOrder = draftCMOService.getCaseManagementOrder(caseDetails);
