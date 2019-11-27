@@ -6,51 +6,55 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
-import uk.gov.hmcts.reform.ccd.client.model.UserId;
+import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
+import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.NoAssociatedUsersException;
+import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class LocalAuthorityUserService {
 
-    private static final String JURISDICTION = "PUBLICLAW";
-    private static final String CASE_TYPE = "CARE_SUPERVISION_EPO";
-
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseAccessApi caseAccessApi;
+    private final CaseUserApi caseUserApi;
     private final LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
+    private SystemUpdateUserConfiguration userConfig;
     private final AuthTokenGenerator authTokenGenerator;
+    private final IdamClient client;
+    private final Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
 
     @Autowired
     public LocalAuthorityUserService(CaseAccessApi caseAccessApi,
                                      LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration,
-                                     AuthTokenGenerator authTokenGenerator) {
+                                     AuthTokenGenerator authTokenGenerator,
+                                     CaseUserApi caseUserApi,
+                                     IdamClient idamClient,
+                                     SystemUpdateUserConfiguration userConfig) {
         this.caseAccessApi = caseAccessApi;
         this.localAuthorityUserLookupConfiguration = localAuthorityUserLookupConfiguration;
         this.authTokenGenerator = authTokenGenerator;
+        this.caseUserApi = caseUserApi;
+        this.client = idamClient;
+        this.userConfig = userConfig;
     }
 
-    public void grantUserAccess(String authorization, String creatorUserId, String caseId, String caseLocalAuthority) {
+    public void grantUserAccessWithCaseRole(String caseId, String caseLocalAuthority) {
         findUserIds(caseLocalAuthority).stream()
-            .filter(userId -> !Objects.equals(userId, creatorUserId))
             .forEach(userId -> {
-                logger.debug("Granting user {} access to case {}", userId, caseId);
-
                 try {
-                    caseAccessApi.grantAccessToCase(
-                        authorization,
-                        authTokenGenerator.generate(),
-                        creatorUserId,
-                        JURISDICTION,
-                        CASE_TYPE,
-                        caseId,
-                        new UserId(userId));
+                    String authentication = client.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
+                    caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), caseId, userId,
+                        new CaseUser(userId, caseRoles));
 
-                } catch (Exception ex) {
-                    logger.warn("Could not grant user {} access to case {}", userId, caseId, ex);
+                    logger.info("Added case roles {} to user {}", caseRoles, userId);
+                } catch (Exception exception) {
+                    logger.warn("Error adding case roles {} to user {}",
+                        caseRoles, userId, exception);
                 }
             });
     }
