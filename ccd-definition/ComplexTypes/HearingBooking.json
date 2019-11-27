@@ -65,18 +65,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "HearingBooking",
-    "ListElementCode": "judgeTitle",
-    "FieldType": "Text",
-    "ElementLabel": "Judge or magistrate's title",
-    "HintText": "For example, His Honour Judge or District Judge",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "HearingBooking",
-    "ListElementCode": "judgeName",
-    "FieldType": "Text",
-    "ElementLabel": "Judge or magistrate's last name",
+    "ListElementCode": "judge",
+    "FieldType": "JudgeAndLegalAdvisor",
+    "ElementLabel": "Judge and legal advisor",
     "SecurityClassification": "Public"
   }
 ]
