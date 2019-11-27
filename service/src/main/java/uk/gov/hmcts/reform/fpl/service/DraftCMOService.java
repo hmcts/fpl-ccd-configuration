@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -21,16 +23,23 @@ import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 
 @Service
 public class DraftCMOService {
     private final ObjectMapper mapper;
     private final DateFormatterService dateFormatterService;
+    private final DirectionHelperService directionHelperService;
 
     @Autowired
-    public DraftCMOService(DateFormatterService dateFormatterService, ObjectMapper mapper) {
+    public DraftCMOService(DateFormatterService dateFormatterService, ObjectMapper mapper,
+                           DirectionHelperService directionHelperService) {
         this.mapper = mapper;
         this.dateFormatterService = dateFormatterService;
+        this.directionHelperService = directionHelperService;
     }
 
     public DynamicList getHearingDateDynamicList(CaseDetails caseDetails) {
@@ -80,16 +89,42 @@ public class DraftCMOService {
         return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);
     }
 
-    public CaseManagementOrder getCaseManagementOrder(CaseDetails caseDetails) {
+    public CaseManagementOrder prepareCMO(CaseDetails caseDetails) {
         DynamicList list = mapper.convertValue(caseDetails.getData().get("cmoHearingDateList"), DynamicList.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         return CaseManagementOrder.builder()
             .hearingDate(list.getValue().getLabel())
             .id(list.getValue().getCode())
+            .directions(combineAllDirectionsForCMO(caseData))
             .build();
+    }
+
+    public void removeExistingCustomDirections(CaseDetails caseDetails) {
+        caseDetails.getData().remove("allPartiesCustom");
+        caseDetails.getData().remove("localAuthorityDirectionsCustom");
+        caseDetails.getData().remove("cafcassDirectionsCustom");
+        caseDetails.getData().remove("courtDirectionsCustom");
     }
 
     private String formatLocalDateToMediumStyle(LocalDate date) {
         return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
+    }
+
+    // Temporary, to be replaced by directionHelperService.combineAllDirections once all directions have been added
+    private List<Element<Direction>> combineAllDirectionsForCMO(CaseData caseData) {
+        List<Element<Direction>> directions = new ArrayList<>();
+
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES));
+
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(),
+            LOCAL_AUTHORITY));
+
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getCafcassDirectionsCustom(),
+            CAFCASS));
+
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getCourtDirectionsCustom(), COURT));
+
+        return directions;
     }
 }
