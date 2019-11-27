@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 
@@ -58,38 +57,15 @@ public class ComplyOnBehalfController {
         Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
             directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections());
 
-        sortedDirections.forEach((assignee, directions) -> {
-            if (assignee != ALL_PARTIES) {
-                directions.addAll(sortedDirections.get(ALL_PARTIES));
-            }
-
-            if (assignee == PARENTS_AND_RESPONDENTS) {
-                directionHelperService.filterResponsesNotCompliedOnBehalfOfByTheCourt("RESPONDENT", directions);
-
-                caseDetails.getData().put(PARENTS_AND_RESPONDENTS.getValue().concat("Custom"), directions);
-
-            } else {
-                caseDetails.getData().put(assignee.getValue().concat("Custom"),
-                    directionHelperService.extractPartyResponse(assignee, directions));
-            }
-
-            //TODO: others
-            //if (assignee.equals(OTHERS.getValue())) {
-            //      directionHelperService.filterResponsesNotCompliedOnBehalfOfByTheCourt("OTHERS", directions);
-            //
-            //      caseDetails.getData().put(OTHERS.getValue().concat("Custom"), directions);
-            //}
-        });
+        directionHelperService.addDirectionsToCaseDetails(caseDetails, sortedDirections);
 
         //TODO: others label
         //TODO: extract to service
 
-        // RESPONDENT LABEL //////////////
         String respondentsLabel =
             respondentService.buildRespondentLabel(defaultIfNull(caseData.getRespondents1(), emptyList()));
 
         caseDetails.getData().put("respondents1_label", respondentsLabel);
-        //////////////////////////////////
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

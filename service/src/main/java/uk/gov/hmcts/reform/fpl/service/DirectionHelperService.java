@@ -132,6 +132,52 @@ public class DirectionHelperService {
     }
 
     /**
+     * <b>To be used when court is complying on behalf of other parties</b>
+     * <p></p>
+     * Adds directions to case data for an assignee.
+     *
+     * @param caseDetails   the caseDetails to add the directions to.
+     * @param directionsMap a map where the DirectionAssignee key corresponds to a list of directions elements.
+     */
+    public void addDirectionsToCaseDetails(CaseDetails caseDetails,
+                                           Map<DirectionAssignee, List<Element<Direction>>> directionsMap) {
+        directionsMap.forEach((assignee, directions) -> {
+            switch (assignee) {
+                case ALL_PARTIES:
+                case COURT:
+                    break;
+
+                case PARENTS_AND_RESPONDENTS:
+                    directions.addAll(directionsMap.get(ALL_PARTIES));
+
+                    filterResponsesNotCompliedOnBehalfOfByTheCourt("RESPONDENT", directions);
+
+                    caseDetails.getData().put(convertToCustomCollection(assignee), directions);
+                    break;
+
+                case OTHERS:
+                    directions.addAll(directionsMap.get(ALL_PARTIES));
+
+                    filterResponsesNotCompliedOnBehalfOfByTheCourt("OTHER", directions);
+
+                    caseDetails.getData().put(convertToCustomCollection(assignee), directions);
+                    break;
+
+                // Local authority and Cafcass
+                default:
+                    directions.addAll(directionsMap.get(ALL_PARTIES));
+
+                    caseDetails.getData()
+                        .put(convertToCustomCollection(assignee), extractPartyResponse(assignee, directions));
+            }
+        });
+    }
+
+    private String convertToCustomCollection(DirectionAssignee assignee) {
+        return assignee.getValue().concat("Custom");
+    }
+
+    /**
      * Removes responses from a direction where they have not been complied on behalf of someone by the court.
      *
      * @param onBehalfOf a string matching part of the respondingOnBehalfOf variable.

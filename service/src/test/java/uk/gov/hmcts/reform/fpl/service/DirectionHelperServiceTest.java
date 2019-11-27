@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -994,6 +995,59 @@ class DirectionHelperServiceTest {
                     .build())
                 .build());
             return responses;
+        }
+    }
+
+    @Nested
+    class AddDirectionsToCaseDetails {
+
+        @ParameterizedTest
+        @EnumSource(value = DirectionAssignee.class, names = {"ALL_PARTIES", "COURT"})
+        void shouldDoNothingWhenForDirectionsDoNotNeedToBePopulatedForAssignee(DirectionAssignee assignee) {
+            CaseDetails caseDetails = CaseDetails.builder().build();
+            Map<DirectionAssignee, List<Element<Direction>>> directionsMap = new HashMap<>();
+            directionsMap.put(assignee, buildDirections(assignee));
+
+            service.addDirectionsToCaseDetails(caseDetails, directionsMap);
+
+            assertThat(caseDetails).isEqualTo(CaseDetails.builder().build());
+            assertThat(directionsMap).isEqualTo(ImmutableMap.of(assignee, buildDirections(assignee)));
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = DirectionAssignee.class, names = {"PARENTS_AND_RESPONDENTS", "OTHERS"})
+        void shouldPopulateDirectionsWhenListResponseDirections(DirectionAssignee assignee) {
+            CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+            Map<DirectionAssignee, List<Element<Direction>>> directionsMap = new HashMap<>();
+            directionsMap.put(assignee, buildDirections(assignee));
+            directionsMap.put(ALL_PARTIES, buildDirections(ALL_PARTIES));
+
+            service.addDirectionsToCaseDetails(caseDetails, directionsMap);
+
+            List<Element<Direction>> expectedDirections = buildDirections(assignee);
+            expectedDirections.addAll(buildDirections(ALL_PARTIES));
+
+            assertThat(caseDetails).isEqualTo(CaseDetails.builder()
+                .data(ImmutableMap.of(assignee.getValue().concat("Custom"), expectedDirections))
+                .build());
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = DirectionAssignee.class, names = {"LOCAL_AUTHORITY", "CAFCASS"})
+        void shouldPopulateDirectionsWhenSingleResponseDirections(DirectionAssignee assignee) {
+            CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+            Map<DirectionAssignee, List<Element<Direction>>> directionsMap = new HashMap<>();
+            directionsMap.put(assignee, buildDirections(assignee));
+            directionsMap.put(ALL_PARTIES, buildDirections(ALL_PARTIES));
+
+            service.addDirectionsToCaseDetails(caseDetails, directionsMap);
+
+            List<Element<Direction>> expectedDirections = buildDirections(assignee);
+            expectedDirections.addAll(buildDirections(ALL_PARTIES));
+
+            assertThat(caseDetails).isEqualTo(CaseDetails.builder()
+                .data(ImmutableMap.of(assignee.getValue().concat("Custom"), expectedDirections))
+                .build());
         }
     }
 
