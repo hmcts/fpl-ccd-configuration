@@ -5,7 +5,7 @@ const schedule = require('../fixtures/schedule.js');
 
 let caseId;
 
-Feature('Local authority manages case after SDO is issued');
+Feature('Case Management Order Journey');
 
 Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage, draftStandardDirectionsEventPage) => {
   if (!caseId) {
@@ -55,7 +55,6 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
   await I.navigateToCaseDetails(caseId);
 });
 
-// TODO: 26/11/2019 Alter tests + new tests
 Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await draftCaseManagementOrderEventPage.associateHearingDate('1 Jan 2050');
@@ -66,8 +65,62 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   await draftCaseManagementOrderEventPage.enterRecital('Recital 1', 'Recital 1 description');
   I.click('Continue');
   draftCaseManagementOrderEventPage.markToReviewedBySelf();
-  // I.click('Continue');
   await I.completeEvent('Submit');
+  assertCanSeeCMO(I, caseViewPage);
+  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
+  await draftCaseManagementOrderEventPage.validatePreviousSelectedHearingDate('1 Jan 2050');
+});
+
+const allOtherPartyDetails = [
+  {
+    email: config.hmctsAdminEmail,
+    password: config.hmctsAdminPassword,
+  },
+  {
+    email: config.cafcassEmail,
+    password: config.cafcassPassword,
+  },
+  {
+    email: config.judiciaryEmail,
+    password: config.judiciaryPassword,
+  }];
+
+// This scenario relies on running after 'local authority creates CMO'
+Scenario('Other parties cannot see the draft CMO when it is marked for self review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+  // Ensure the selection is self review
+  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
+  skipToReview(I);
+  draftCaseManagementOrderEventPage.markToReviewedBySelf();
+  await I.completeEvent('Submit');
+
+  for (let userDetails of allOtherPartyDetails) {
+    await assertUserCannotSeeDraftOrders(I, userDetails);
+  }
+
+  // Log back in as LA
+  I.signOut();
+  await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+});
+
+// This scenario relies on running after 'local authority creates CMO'
+// Currently send to judge does the same as party review
+Scenario('Other parties can see the draft CMO when it is marked for party review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+  // Ensure the selection is party review
+  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
+  skipToReview(I);
+  draftCaseManagementOrderEventPage.markToBeReviewedByParties();
+  await I.completeEvent('Submit');
+
+  for (let otherPartyDetails of allOtherPartyDetails) {
+    await assertUserCanSeeDraftOrdersAndCMO(I, otherPartyDetails, caseViewPage);
+  }
+
+  // Log back in as LA
+  I.signOut();
+  await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+});
+
+const assertCanSeeCMO = (I, caseViewPage) => {
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeAnswerInTab(1, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
   I.seeAnswerInTab(1, 'Schedule', 'Do you want to include a schedule?', 'Yes');
@@ -82,6 +135,31 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   I.seeAnswerInTab(10, 'Schedule', 'Key issues', 'Are there any other family or friends capable of caring in the children');
   I.seeAnswerInTab(11, 'Schedule', 'Parties\' positions', 'The mother agrees section 20');
   I.seeAnswerInTab(1, 'Recitals 1', 'Recital title', 'Recital 1');
-  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  await draftCaseManagementOrderEventPage.validatePreviousSelectedHearingDate('1 Jan 2050');
-});
+};
+
+const assertUserCannotSeeDraftOrders = async (I, userDetails) => {
+  await switchUserAndNavigateToCase(I, userDetails);
+  // Assert that it can't be seen
+  I.dontSee('Draft orders', '.tabs .tabs-list');
+};
+
+const assertUserCanSeeDraftOrdersAndCMO = async (I, userDetails, caseViewPage) => {
+  await switchUserAndNavigateToCase(I, userDetails);
+  // Assert that Draft orders can be seen
+  I.see('Draft orders', '.tabs .tabs-list');
+  assertCanSeeCMO(I, caseViewPage);
+};
+
+const switchUserAndNavigateToCase = async (I, userDetails) => {
+  // Sign out and login as admin and navigate to the case
+  I.signOut();
+  await I.signIn(userDetails.email, userDetails.password);
+  await I.navigateToCaseDetails(caseId);
+};
+
+const skipToReview = (I) => {
+  const numOfPagesExcludingReview = 3;
+  for (let i = 0; i < numOfPagesExcludingReview; i++) {
+    I.click('Continue');
+  }
+};
