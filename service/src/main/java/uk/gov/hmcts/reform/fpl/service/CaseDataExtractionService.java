@@ -81,12 +81,10 @@ public class CaseDataExtractionService {
     public Map<String, Object> getStandardOrderDirectionData(CaseData caseData) throws IOException {
         ImmutableMap.Builder data = ImmutableMap.<String, Object>builder();
 
-        if (isNotEmpty(caseData.getStandardDirectionOrder())) {
-            data.put("judgeAndLegalAdvisor", prepareJudgeAndLegalAdvisor(
-                caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()));
-        } else {
-            data.put("judgeAndLegalAdvisor", prepareJudgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build()));
-        }
+        data.put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndNameForDraftSDO(
+            caseData.getJudgeAndLegalAdvisor(), EMPTY_PLACEHOLDER));
+        data.put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
+            caseData.getJudgeAndLegalAdvisor()));
 
         data.put("courtName", caseData.getCaseLocalAuthority() != null
             ? hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName() : EMPTY_PLACEHOLDER);
@@ -123,38 +121,6 @@ public class CaseDataExtractionService {
         return data.build();
     }
 
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> prepareJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        ImmutableMap.Builder map = ImmutableMap.<String, Object>builder();
-
-        if (isEmpty(judgeAndLegalAdvisor)) {
-            return ImmutableMap.of(
-                "judgeTitle", EMPTY_PLACEHOLDER,
-                "legalAdvisorName", EMPTY_PLACEHOLDER
-            );
-        }
-
-        String judgeTitle = EMPTY_PLACEHOLDER;
-
-        if (isNotEmpty(judgeAndLegalAdvisor.getJudgeTitle())) {
-            judgeTitle = defaultIfBlank(judgeAndLegalAdvisor.getJudgeTitle().getLabel(), EMPTY_PLACEHOLDER);
-        }
-
-        map.put("judgeTitle", judgeTitle);
-
-        map.put("legalAdvisorName", defaultIfBlank(judgeAndLegalAdvisor.getLegalAdvisorName(), EMPTY_PLACEHOLDER));
-
-        if (isNotBlank(judgeAndLegalAdvisor.getJudgeLastName())) {
-            map.put("judgeLastName", judgeAndLegalAdvisor.getJudgeLastName());
-        }
-
-        if (isNotBlank(judgeAndLegalAdvisor.getJudgeFullName())) {
-            map.put("judgeFullName", judgeAndLegalAdvisor.getJudgeFullName());
-        }
-
-        return map.build();
-    }
-
     private Map<String, Object> getHearingBookingData(CaseData caseData) {
         if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
             return ImmutableMap.of(
@@ -162,7 +128,7 @@ public class CaseDataExtractionService {
                 "hearingVenue", EMPTY_PLACEHOLDER,
                 "preHearingAttendance", EMPTY_PLACEHOLDER,
                 "hearingTime", EMPTY_PLACEHOLDER,
-                "judgeName", EMPTY_PLACEHOLDER
+                "hearingJudgeTitleAndName", EMPTY_PLACEHOLDER
             );
         }
 
@@ -179,10 +145,10 @@ public class CaseDataExtractionService {
             .put("preHearingAttendance", commonCaseDataExtractionService.extractPrehearingAttendance(
                 prioritisedHearingBooking))
             .put("hearingTime", commonCaseDataExtractionService.getHearingTime(prioritisedHearingBooking))
-            .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
-                caseData.getJudgeAndLegalAdvisor()))
-            .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
-                caseData.getJudgeAndLegalAdvisor()))
+            .put("hearingJudgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
+                prioritisedHearingBooking.getJudgeAndLegalAdvisor()))
+            .put("hearingLegalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
+                prioritisedHearingBooking.getJudgeAndLegalAdvisor()))
             .build();
     }
 

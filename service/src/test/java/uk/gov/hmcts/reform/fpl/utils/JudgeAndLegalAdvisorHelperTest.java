@@ -36,6 +36,18 @@ class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
+    void shouldReturnBlankPlaceholderWhenNoJudgeEnteredForDraftSDO() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(null)
+            .build();
+
+        String judgeTitleAndName = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndNameForDraftSDO(judgeAndLegalAdvisor,
+            "BLANK");
+
+        assertThat(judgeTitleAndName).isEqualTo("BLANK");
+    }
+
+    @Test
     void shouldReturnProperlyFormattedJudgeNameWhenTitleAndNameAreProvided() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(HIS_HONOUR_JUDGE)
