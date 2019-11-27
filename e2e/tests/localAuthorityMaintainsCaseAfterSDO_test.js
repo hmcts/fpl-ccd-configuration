@@ -64,6 +64,9 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   I.click('Continue');
   await I.addAnotherElementToCollection();
   await draftCaseManagementOrderEventPage.enterRecital('Recital 1', 'Recital 1 description');
+  I.click('Continue');
+  draftCaseManagementOrderEventPage.markToReviewedBySelf();
+  // I.click('Continue');
   await I.completeEvent('Submit');
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeAnswerInTab(1, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');

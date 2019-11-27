@@ -22,6 +22,15 @@ module.exports = {
     },
   },
 
+  staticFields: {
+    statusRadioGroup: {
+      groupName: '#reviewCaseManagementOrder_cmoStatus',
+      sendToJudge: 'Yes, send this to the judge',
+      partiesReview: 'No, parties need to review it',
+      selfReview: 'No, I need to make changes',
+    },
+  },
+
   associateHearingDate(date) {
     I.waitForElement(this.fields.cmoHearingDateList);
     I.selectOption(this.fields.cmoHearingDateList, date);
@@ -50,4 +59,23 @@ module.exports = {
     I.fillField(this.fields.recitals.title, title);
     I.fillField(this.fields.recitals.description, description);
   },
+
+  markToBeSentToJudge() {
+    within(this.staticFields.statusRadioGroup.groupName, () => {
+      I.click(locate('label').withText(this.staticFields.statusRadioGroup.sendToJudge));
+    });
+  },
+
+  markToBeReviewedByParties() {
+    within(this.staticFields.statusRadioGroup.groupName, () => {
+      I.click(locate('label').withText(this.staticFields.statusRadioGroup.partiesReview));
+    });
+  },
+
+  markToReviewedBySelf() {
+    within(this.staticFields.statusRadioGroup.groupName, () => {
+      I.click(locate('label').withText(this.staticFields.statusRadioGroup.selfReview));
+    });
+  },
+
 };
