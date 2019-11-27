@@ -109,18 +109,14 @@ public class DraftCMOService {
 
         switch (caseManagementOrder.getCmoStatus()) {
             case SEND_TO_JUDGE:
-                // Currently do nothing but something will probably happen here in the future
-                break;
+                // Does the same as PARTIES_REVIEW for now but in the future this will change
             case PARTIES_REVIEW:
-                // Move to new entry in case details that everyone has permissions to see
                 caseDetails.getData().put("shareableCMO", caseManagementOrder);
                 break;
             case SELF_REVIEW:
-                // Remove the party review entry from case details if it exists
                 caseDetails.getData().remove("shareableCMO"); // TODO: 22/11/2019 Change this name
                 break;
             default:
-                // Do nothing
                 break;
         }
     }
