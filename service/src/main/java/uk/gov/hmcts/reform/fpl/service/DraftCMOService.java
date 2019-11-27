@@ -61,26 +61,6 @@ public class DraftCMOService {
         return hearingDatesDynamic;
     }
 
-    private void prePopulateHearingDateSelection(List<Element<HearingBooking>> hearingDetails,
-                                                 DynamicList hearingDatesDynamic,
-                                                 CaseManagementOrder caseManagementOrder) {
-        UUID hearingDateId = caseManagementOrder.getId();
-        // There was a previous hearing date therefore we need to remap it
-        String date = hearingDetails.stream()
-            .filter(Objects::nonNull)
-            .filter(element -> element.getId().equals(caseManagementOrder.getId()))
-            .findFirst()
-            .map(element -> formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()))
-            .orElse("");
-
-        DynamicListElement listElement = DynamicListElement.builder()
-            .label(date)
-            .code(hearingDateId)
-            .build();
-
-        hearingDatesDynamic.setValue(listElement);
-    }
-
     public String createRespondentAssigneeDropdownKey(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -90,7 +70,7 @@ public class DraftCMOService {
             for (int i = 0; i < caseData.getRespondents1().size(); i++) {
                 RespondentParty respondentParty = caseData.getRespondents1().get(i).getValue().getParty();
 
-                String key = String.format("Respondent %d - %s", i + 1, getRespondentsFullName(respondentParty));
+                String key = String.format("Respondent %d - %s", i + 1, getRespondentFullName(respondentParty));
                 stringBuilder.append(key).append("\n\n");
             }
         }
@@ -121,13 +101,6 @@ public class DraftCMOService {
         return stringBuilder.toString().stripTrailing();
     }
 
-    private String getRespondentsFullName(RespondentParty respondentParty) {
-        String firstName = defaultIfNull(respondentParty.getFirstName(), "");
-        String lastName = defaultIfNull(respondentParty.getLastName(), "");
-
-        return String.format("%s %s", firstName, lastName);
-    }
-
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
         List<HearingDateDynamicElement> hearingDates = hearingDetails
             .stream()
@@ -147,6 +120,33 @@ public class DraftCMOService {
             .id(list.getValue().getCode())
             .directions(combineAllDirectionsForCmo(caseData))
             .build();
+    }
+
+    private void prePopulateHearingDateSelection(List<Element<HearingBooking>> hearingDetails,
+                                                 DynamicList hearingDatesDynamic,
+                                                 CaseManagementOrder caseManagementOrder) {
+        UUID hearingDateId = caseManagementOrder.getId();
+        // There was a previous hearing date therefore we need to remap it
+        String date = hearingDetails.stream()
+            .filter(Objects::nonNull)
+            .filter(element -> element.getId().equals(caseManagementOrder.getId()))
+            .findFirst()
+            .map(element -> formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()))
+            .orElse("");
+
+        DynamicListElement listElement = DynamicListElement.builder()
+            .label(date)
+            .code(hearingDateId)
+            .build();
+
+        hearingDatesDynamic.setValue(listElement);
+    }
+
+    private String getRespondentFullName(RespondentParty respondentParty) {
+        String firstName = defaultIfNull(respondentParty.getFirstName(), "");
+        String lastName = defaultIfNull(respondentParty.getLastName(), "");
+
+        return String.format("%s %s", firstName, lastName);
     }
 
     // Temporary, to be replaced by directionHelperService.combineAllDirections once all directions have been added
