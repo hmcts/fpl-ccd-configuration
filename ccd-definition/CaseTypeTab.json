@@ -59,6 +59,7 @@
     "TabDisplayOrder": 3,
     "CaseFieldID": "shareableCMO",
     "TabFieldDisplayOrder": 2,
+    "TabShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\" OR caseManagementOrder!=\"\" OR shareableCMO!=\"\"",
     "Comment": "The TabFieldDisplayOrder has been left as 2 as it will the other cmo is only viewable by those that can't view the former"
   },
   {
