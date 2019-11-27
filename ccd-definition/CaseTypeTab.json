@@ -44,7 +44,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
-    "TabID": "DraftOrdersCmoTab",
+    "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
     "CaseFieldID": "caseManagementOrder",
@@ -54,12 +54,12 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
-    "TabID": "DraftOrdersCmoTab",
+    "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
     "CaseFieldID": "shareableCMO",
-    "TabFieldDisplayOrder": 1,
-    "Comment": "The TabFieldDisplayOrder has been left as 1 as it will the other cmo is only viewable by those that can't view the former"
+    "TabFieldDisplayOrder": 2,
+    "Comment": "The TabFieldDisplayOrder has been left as 2 as it will the other cmo is only viewable by those that can't view the former"
   },
   {
     "LiveFrom": "01/01/2017",
