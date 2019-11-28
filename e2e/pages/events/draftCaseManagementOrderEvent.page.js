@@ -1,4 +1,5 @@
 const { I } = inject();
+const draftDirections = require('../../fragments/draftDirections');
 
 module.exports = {
   fields: {
@@ -29,7 +30,25 @@ module.exports = {
 
   validatePreviousSelectedHearingDate(date) {
     I.waitForElement(this.fields.cmoHearingDateList);
-    I.see(date,this.fields.cmoHearingDateList);
+    I.see(date, this.fields.cmoHearingDateList);
+  },
+
+  async enterDirection(direction) {
+    await I.addAnotherElementToCollection();
+    await draftDirections.enterTitleAndDescription('allPartiesCustom', direction);
+    await draftDirections.enterDate('allPartiesCustom', direction);
+    await I.click('Continue');
+    await I.addAnotherElementToCollection();
+    await draftDirections.enterTitleAndDescription('localAuthorityDirectionsCustom', direction);
+    await draftDirections.enterDate('localAuthorityDirectionsCustom', direction);
+    await I.click('Continue');
+    await I.addAnotherElementToCollection();
+    await draftDirections.enterTitleAndDescription('cafcassDirectionsCustom', direction);
+    await draftDirections.enterDate('cafcassDirectionsCustom', direction);
+    await I.click('Continue');
+    await I.addAnotherElementToCollection();
+    await draftDirections.enterTitleAndDescription('courtDirectionsCustom', direction);
+    await draftDirections.enterDate('courtDirectionsCustom', direction);
   },
 
   async enterSchedule(schedule) {

@@ -14,5 +14,6 @@ spring:
         local-authority-code-to-hmcts-court-mapping: fpl.local_authority_code_to_hmcts_court.mapping
         local-authority-code-to-cafcass-mapping: fpl.local_authority_code_to_cafcass.mapping
         local-authority-code-to-shared-inbox-mapping: fpl.local_authority_code_to_shared_inbox.mapping
+        local-authority-fallback-inbox: fpl.local_authority_fallback_inbox
         system-update-user-password: fpl.system_update.password
         system-update-user-username: fpl.system_update.username
