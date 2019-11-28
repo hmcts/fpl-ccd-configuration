@@ -71,7 +71,7 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   I.click('Continue');
   draftCaseManagementOrderEventPage.markToReviewedBySelf();
   await I.completeEvent('Submit');
-  assertCanSeeDraftCMO(I, caseViewPage);
+  assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview);
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await draftCaseManagementOrderEventPage.validatePreviousSelectedHearingDate('1 Jan 2050');
 });
@@ -117,7 +117,7 @@ Scenario('Other parties can see the draft CMO when it is marked for party review
   await I.completeEvent('Submit');
 
   for (let otherPartyDetails of allOtherPartyDetails) {
-    await assertUserCanSeeDraftOrdersAndCMO(I, otherPartyDetails, caseViewPage);
+    await assertUserCanSeeDraftOrdersAndCMO(I, otherPartyDetails, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.partiesReview);
   }
 
   // Log back in as LA
@@ -125,7 +125,7 @@ Scenario('Other parties can see the draft CMO when it is marked for party review
   await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
 });
 
-const assertCanSeeDraftCMO = (I, caseViewPage) => {
+const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeAnswerInTab(1, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
   I.seeAnswerInTab(1, 'Directions 1', 'Direction title', 'Mock title');
@@ -156,6 +156,7 @@ const assertCanSeeDraftCMO = (I, caseViewPage) => {
   I.seeAnswerInTab(10, 'Schedule', 'Key issues', 'Are there any other family or friends capable of caring in the children');
   I.seeAnswerInTab(11, 'Schedule', 'Parties\' positions', 'The mother agrees section 20');
   I.seeAnswerInTab(1, 'Recitals 1', 'Recital title', 'Recital 1');
+  I.seeAnswerInTab(6, 'Case management order', 'Is this ready to be sent to the judge?', cmoStatus);
 };
 
 const assertUserCannotSeeDraftOrders = async (I, userDetails) => {
@@ -164,11 +165,11 @@ const assertUserCannotSeeDraftOrders = async (I, userDetails) => {
   I.dontSee('Draft orders', '.tabs .tabs-list');
 };
 
-const assertUserCanSeeDraftOrdersAndCMO = async (I, userDetails, caseViewPage) => {
+const assertUserCanSeeDraftOrdersAndCMO = async (I, userDetails, caseViewPage, cmoStatus) => {
   await switchUserAndNavigateToCase(I, userDetails);
   // Assert that Draft orders can be seen
   I.see('Draft orders', '.tabs .tabs-list');
-  assertCanSeeDraftCMO(I, caseViewPage);
+  assertCanSeeDraftCMO(I, caseViewPage, cmoStatus);
 };
 
 const switchUserAndNavigateToCase = async (I, userDetails) => {
@@ -179,8 +180,8 @@ const switchUserAndNavigateToCase = async (I, userDetails) => {
 };
 
 const skipToReview = (I) => {
-  const numOfPagesExcludingReview = 7;
-  for (let i = 0; i < numOfPagesExcludingReview; i++) {
+  const timeToClickContinue = 7;
+  for (let i = 0; i < timeToClickContinue; i++) {
     I.click('Continue');
   }
 };
