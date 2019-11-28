@@ -146,7 +146,7 @@ class ComplyWithDirectionsControllerTest {
             && roleDirectionsContainExpectedDirections(caseData.getCafcassDirections(), CAFCASS)
             && roleDirectionsContainExpectedDirections(caseData.getCourtDirectionsCustom(), COURT)
             && roleDirectionsContainExpectedDirections(caseData.getOtherPartiesDirections(), OTHERS)
-            && roleDirectionsContainExpectedDirections(caseData.getParentsAndRespondentsDirections(), PARENTS_AND_RESPONDENTS)
+            && roleDirectionsContainExpectedDirections(caseData.getRespondentDirections(), PARENTS_AND_RESPONDENTS)
             && roleDirectionsContainExpectedDirections(emptyList(), ALL_PARTIES);
     }
 
