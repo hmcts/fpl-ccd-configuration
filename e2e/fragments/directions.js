@@ -27,7 +27,7 @@ module.exports = {
     I.fillField(this.fields(party, index).direction.dueDate.second, dueDate.second);
   },
 
-  enterTitleAndDescription(party, title = "", description = "", index = 0) {
+  enterTitleAndDescription(party, title = '', description = '', index = 0) {
     I.fillField(this.fields(party, index).direction.title, title);
     I.fillField(this.fields(party, index).direction.description, description);
   },
