@@ -58,8 +58,7 @@
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "hearingNeedsBooked",
-    "EventElementLabel": "End date and time",
-    "HintText": "Hearing needs booked",
+    "EventElementLabel": "Hearing needs booked",
     "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY"
   },
@@ -69,8 +68,7 @@
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "hearingNeedsDetails",
-    "EventElementLabel": "End date and time",
-    "HintText": "Give details",
+    "EventElementLabel": "Give details",
     "FieldDisplayOrder": 7,
     "FieldShowCondition": "hearingDetails.hearingNeedsBooked!=\"NONE\"",
     "DisplayContext": "MANDATORY"
