@@ -35,4 +35,11 @@ public class ActionCMOController {
             .data(caseDetails.getData())
             .build();
     }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
+                                     @RequestHeader(value = "user-id") String userId,
+                                     @RequestBody CallbackRequest callbackRequest) {
+
+    }
 }
