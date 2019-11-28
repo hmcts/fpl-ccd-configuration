@@ -38,6 +38,18 @@ class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
+    void shouldReturnEmptyJudgeNameWhenJudgeTitleIsProvidedAndJudgeNameIsNotProvided() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(HIS_HONOUR_JUDGE)
+            .judgeLastName(null)
+            .build();
+
+        String judgeTitleAndName = formatJudgeTitleAndName(judgeAndLegalAdvisor);
+
+        assertThat(judgeTitleAndName).isEqualTo("");
+    }
+
+    @Test
     void shouldReturnProperlyFormattedJudgeNameWhenTitleAndNameAreProvided() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(HIS_HONOUR_JUDGE)
