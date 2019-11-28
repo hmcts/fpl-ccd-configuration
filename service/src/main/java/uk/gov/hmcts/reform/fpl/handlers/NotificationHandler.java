@@ -12,11 +12,13 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.CMOIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.CMOEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
@@ -32,6 +34,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C21_ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CASE_MANAGEMENT_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
@@ -53,6 +56,7 @@ public class NotificationHandler {
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
     private final C21OrderEmailContentProvider c21OrderEmailContentProvider;
+    private final CMOEmailContentProvider cmoEmailContentProvider;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final NotificationClient notificationClient;
     private final IdamApi idamApi;
@@ -141,6 +145,15 @@ public class NotificationHandler {
         sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, reference);
     }
 
+    @EventListener
+    public void sendNotificationForCMOOrder(final CMOIssuedEvent event) {
+        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
+        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+
+        sendCMONotificationForRespondents(caseDetails, localAuthorityCode, event.getDocumentUrl());
+        sendCMONotificationForCafcass(caseDetails, localAuthorityCode, event.getDocumentUrl());
+    }
+
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
         log.debug("Sending submission notification (with template id: {}) to {}", templateId, email);
         try {
@@ -168,6 +181,27 @@ public class NotificationHandler {
         String localAuthorityEmail = localAuthorityEmailLookupConfiguration.getLocalAuthority(
             localAuthorityCode).getEmail();
         sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, localAuthorityEmail, localAuthorityParameters,
+            Long.toString(caseDetails.getId()));
+    }
+
+    private void sendCMONotificationForCafcass(final CaseDetails caseDetails, final String localAuthorityCode,
+                                               final String documentUrl) {
+        Map<String, Object> cafcassParameters =
+            cmoEmailContentProvider.buildCMONotificationParametersForCafcass(
+                caseDetails, localAuthorityCode, documentUrl);
+        String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
+        sendNotification(CASE_MANAGEMENT_ORDER_ISSUED_TEMPLATE, cafcassEmail, cafcassParameters,
+            Long.toString(caseDetails.getId()));
+    }
+
+    private void sendCMONotificationForRespondents(final CaseDetails caseDetails, final String localAuthorityCode,
+                                                      final String documentUrl) {
+        Map<String, Object> localAuthorityParameters =
+            cmoEmailContentProvider.buildCMONotificationParametersForRespondents(
+                caseDetails, localAuthorityCode, documentUrl);
+        String localAuthorityEmail = localAuthorityEmailLookupConfiguration.getLocalAuthority(
+            localAuthorityCode).getEmail();
+        sendNotification(CASE_MANAGEMENT_ORDER_ISSUED_TEMPLATE, localAuthorityEmail, localAuthorityParameters,
             Long.toString(caseDetails.getId()));
     }
 }
