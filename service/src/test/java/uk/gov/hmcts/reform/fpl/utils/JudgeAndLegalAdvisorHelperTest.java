@@ -73,6 +73,17 @@ class JudgeAndLegalAdvisorHelperTest {
     }
 
     @Test
+    void shouldReturnJusticeOfPeaceWhenMagistrateWithoutNameIsSelected() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(MAGISTRATES)
+            .build();
+
+        String magistrateName = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor);
+
+        assertThat(magistrateName).isEqualTo("Justice of the Peace");
+    }
+
+    @Test
     private void shouldExtractOtherTitleDescriptionWhenOtherTitleSelected() {
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
             .judgeTitle(OTHER)

@@ -35,12 +35,14 @@ public class JudgeAndLegalAdvisorHelper {
     }
 
     private static String mapJudgeOrAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        if (isBlank(judgeAndLegalAdvisor.getJudgeLastName()) && isBlank(judgeAndLegalAdvisor.getJudgeFullName())) {
+        if (isBlank(judgeAndLegalAdvisor.getJudgeLastName())
+            && judgeAndLegalAdvisor.getJudgeTitle() != MAGISTRATES) {
             return "";
         }
 
         if (judgeAndLegalAdvisor.getJudgeTitle() == MAGISTRATES) {
-            return judgeAndLegalAdvisor.getJudgeFullName() + " (JP)";
+            String magistrateFullName = judgeAndLegalAdvisor.getJudgeFullName();
+            return isBlank(magistrateFullName) ? "Justice of the Peace" : magistrateFullName + " (JP)";
         } else if (judgeAndLegalAdvisor.getJudgeTitle() == OTHER) {
             return judgeAndLegalAdvisor.getOtherTitle() + " " + judgeAndLegalAdvisor.getJudgeLastName();
         } else {
