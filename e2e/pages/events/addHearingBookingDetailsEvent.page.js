@@ -56,6 +56,7 @@ module.exports = {
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.welsh);
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.somethingElse);
     I.fillField(this.fields(elementIndex).hearingBooking.giveDetails, hearingDetails.giveDetails);
+    this.enterJudgeAndLegalAdvisor(hearingDetails.judgeAndLegalAdvisor.judgeLastName, hearingDetails.judgeAndLegalAdvisor.legalAdvisorName);
   },
 
   async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName) {

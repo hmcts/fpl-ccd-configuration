@@ -24,8 +24,11 @@ module.exports = [
       somethingElse: 'Something else',
     },
     giveDetails: 'Some details',
-    judgeTitle: 'Judge title',
-    lastName: 'Judge last name',
+    judgeAndLegalAdvisor: {
+      judgeTitle: 'Her Honour Judge',
+      judgeLastName: 'Reed',
+      legalAdvisorName: 'Rupert Robert',
+    },
   },
   {
     caseManagement: 'Case management',
@@ -52,7 +55,10 @@ module.exports = [
       somethingElse: 'Something else',
     },
     giveDetails: 'Tom jones is going to be there',
-    judgeTitle: 'HHJ',
-    lastName: 'Judge Rinder',
+    judgeAndLegalAdvisor: {
+      judgeTitle: 'Her Honour Judge',
+      judgeLastName: 'Law',
+      legalAdvisorName: 'Peter Parker',
+    },
   },
 ];

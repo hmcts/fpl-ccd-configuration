@@ -26,14 +26,6 @@ public class JudgeAndLegalAdvisorHelper {
             .orElse("");
     }
 
-    public static String formatJudgeTitleAndNameForDraftSDO(JudgeAndLegalAdvisor judgeAndLegalAdvisor,
-                                                            String emptyPlaceholder) {
-        return Optional.ofNullable(judgeAndLegalAdvisor)
-            .filter(judge -> judge.getJudgeTitle() != null)
-            .map(JudgeAndLegalAdvisorHelper::mapJudgeOrAdvisor)
-            .orElse(emptyPlaceholder);
-    }
-
     private static String mapJudgeOrAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         if (isBlank(judgeAndLegalAdvisor.getJudgeLastName())
             && judgeAndLegalAdvisor.getJudgeTitle() != MAGISTRATES) {

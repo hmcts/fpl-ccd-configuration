@@ -74,6 +74,7 @@ class CaseDataExtractionServiceTest {
             .getStandardOrderDirectionData(CaseData.builder().build());
 
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("legalAdvisorName")).isEqualTo("");
         assertThat(templateData.get("courtName")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("generationDate")).isEqualTo(dateFormatterService

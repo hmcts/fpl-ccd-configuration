@@ -6,20 +6,22 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 
 class JudgeAndLegalAdvisorHelperTest {
 
     @Test
     void shouldReturnEmptyLegalAdvisorNameWhenJudgeAndLegalAdvisorIsNull() {
-        String legalAdvisorName = JudgeAndLegalAdvisorHelper.getLegalAdvisorName(null);
+        String legalAdvisorName = getLegalAdvisorName(null);
 
         assertThat(legalAdvisorName).isEqualTo("");
     }
 
     @Test
     void shouldReturnEmptyJudgeNameWhenJudgeAndLegalAdvisorIsNull() {
-        String judgeTitleAndName = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(null);
+        String judgeTitleAndName = formatJudgeTitleAndName(null);
 
         assertThat(judgeTitleAndName).isEqualTo("");
     }
@@ -31,21 +33,9 @@ class JudgeAndLegalAdvisorHelperTest {
             .legalAdvisorName("Freddie")
             .build();
 
-        String judgeTitleAndName = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor);
+        String judgeTitleAndName = formatJudgeTitleAndName(judgeAndLegalAdvisor);
 
         assertThat(judgeTitleAndName).isEqualTo("");
-    }
-
-    @Test
-    void shouldReturnBlankPlaceholderWhenNoJudgeEnteredForDraftSDO() {
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
-            .judgeTitle(null)
-            .build();
-
-        String judgeTitleAndName = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndNameForDraftSDO(judgeAndLegalAdvisor,
-            "BLANK");
-
-        assertThat(judgeTitleAndName).isEqualTo("BLANK");
     }
 
     @Test
@@ -55,7 +45,7 @@ class JudgeAndLegalAdvisorHelperTest {
             .judgeLastName("Dredd")
             .build();
 
-        String judgeTitleAndName = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor);
+        String judgeTitleAndName = formatJudgeTitleAndName(judgeAndLegalAdvisor);
 
         assertThat(judgeTitleAndName).isEqualTo("His Honour Judge Dredd");
     }
@@ -67,7 +57,7 @@ class JudgeAndLegalAdvisorHelperTest {
             .judgeFullName("Steve Stevenson")
             .build();
 
-        String magistrateName = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor);
+        String magistrateName = formatJudgeTitleAndName(judgeAndLegalAdvisor);
 
         assertThat(magistrateName).isEqualTo("Steve Stevenson (JP)");
     }
