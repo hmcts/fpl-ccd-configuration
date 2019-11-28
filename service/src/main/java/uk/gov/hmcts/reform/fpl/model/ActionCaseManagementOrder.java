@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.CMOActionStatus;
 import uk.gov.hmcts.reform.fpl.enums.CMONextHearingStatus;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+
 
 @Data
 @Builder(toBuilder = true)
@@ -13,5 +13,4 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 public class ActionCaseManagementOrder {
     private final CMOActionStatus cmoActionStatus;
     private final CMONextHearingStatus cmoNextHearingStatus;
-    private final DocumentReference orderDoc;
 }
