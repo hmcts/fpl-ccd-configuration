@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 @Data
-@RequiredArgsConstructor
+@Builder(toBuilder = true)
 public class Schedule {
     private final String includeSchedule;
     private final String allocation;
