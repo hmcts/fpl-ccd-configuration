@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
@@ -70,7 +69,7 @@ public class DraftCMOService {
         return data;
     }
 
-    public CaseManagementOrder getCaseManagementOrder(Map<String, Object> caseData) {
+    public CaseManagementOrder prepareCMO(Map<String, Object> caseData) {
         DynamicList list = mapper.convertValue(caseData.get("cmoHearingDateList"), DynamicList.class);
         Map<String, Object> reviewCaseManagementOrder = mapper.convertValue(
             caseData.get("reviewCaseManagementOrder"), new TypeReference<>() {});
@@ -81,9 +80,10 @@ public class DraftCMOService {
         return CaseManagementOrder.builder()
             .hearingDate(list.getValue().getLabel())
             .id(list.getValue().getCode())
-            .cmoStatus(cmoStatus)
+            .directions(combineAllDirectionsForCMO(mapper.convertValue(caseData, CaseData.class)))
             .schedule(schedule)
             .recitals(recitals)
+            .cmoStatus(cmoStatus)
             .build();
     }
 
@@ -112,11 +112,11 @@ public class DraftCMOService {
         }
     }
 
-    public void removeExistingCustomDirections(CaseDetails caseDetails) {
-        caseDetails.getData().remove("allPartiesCustom");
-        caseDetails.getData().remove("localAuthorityDirectionsCustom");
-        caseDetails.getData().remove("cafcassDirectionsCustom");
-        caseDetails.getData().remove("courtDirectionsCustom");
+    public void removeExistingCustomDirections(Map<String, Object> caseData) {
+        caseData.remove("allPartiesCustom");
+        caseData.remove("localAuthorityDirectionsCustom");
+        caseData.remove("cafcassDirectionsCustom");
+        caseData.remove("courtDirectionsCustom");
     }
 
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -32,10 +31,10 @@ import java.util.stream.Stream;
 import static java.util.UUID.fromString;
 import static org.apache.commons.lang3.ArrayUtils.add;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
@@ -47,7 +46,6 @@ class DraftCMOServiceTest {
     private final DraftCMOService draftCMOService;
     private final DateFormatterService dateFormatterService;
     private final ObjectMapper mapper;
-    private final DirectionHelperService directionHelperService;
 
     private CaseManagementOrder caseManagementOrder;
     private List<Element<HearingBooking>> hearingDetails;
@@ -55,12 +53,10 @@ class DraftCMOServiceTest {
     @Autowired
     DraftCMOServiceTest(DraftCMOService draftCMOService,
                         DateFormatterService dateFormatterService,
-                        ObjectMapper mapper,
-                        DirectionHelperService directionHelperService) {
+                        ObjectMapper mapper) {
         this.draftCMOService = draftCMOService;
         this.dateFormatterService = dateFormatterService;
         this.mapper = mapper;
-        this.directionHelperService = directionHelperService;
     }
 
     @BeforeEach
@@ -125,7 +121,7 @@ class DraftCMOServiceTest {
         caseData.put("cmoHearingDateList", getDynamicList());
         caseData.put("reviewCaseManagementOrder", ImmutableMap.of());
 
-        CaseManagementOrder caseManagementOrder = draftCMOService.getCaseManagementOrder(caseData);
+        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData);
 
         assertThat(caseManagementOrder).isNotNull()
             .extracting("id", "hearingDate").containsExactly(
@@ -143,14 +139,12 @@ class DraftCMOServiceTest {
             caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
         );
 
-        CaseDetails caseDetails = CaseDetails.builder().data(caseData).build();
+        draftCMOService.removeExistingCustomDirections(caseData);
 
-        draftCMOService.removeExistingCustomDirections(caseDetails);
-
-        assertThat(caseDetails.getData()).doesNotContainKey("allPartiesCustom");
-        assertThat(caseDetails.getData()).doesNotContainKey("localAuthorityDirectionsCustom");
-        assertThat(caseDetails.getData()).doesNotContainKey("cafcassDirectionsCustom");
-        assertThat(caseDetails.getData()).doesNotContainKey("courtDirectionsCustom");
+        assertThat(caseData).doesNotContainKey("allPartiesCustom");
+        assertThat(caseData).doesNotContainKey("localAuthorityDirectionsCustom");
+        assertThat(caseData).doesNotContainKey("cafcassDirectionsCustom");
+        assertThat(caseData).doesNotContainKey("courtDirectionsCustom");
     }
 
     @Test

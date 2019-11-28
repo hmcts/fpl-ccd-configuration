@@ -88,11 +88,10 @@ class DraftCMOControllerTest {
 
         DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
 
-        dynamicHearingDates.setValue(
-            DynamicListElement.builder()
-                .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-                .label(TODAYS_DATE.plusDays(5).toString())
-                .build());
+        dynamicHearingDates.setValue(DynamicListElement.builder()
+            .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+            .label(TODAYS_DATE.plusDays(5).toString())
+            .build());
 
         Map<String, Object> data = new HashMap<>();
 

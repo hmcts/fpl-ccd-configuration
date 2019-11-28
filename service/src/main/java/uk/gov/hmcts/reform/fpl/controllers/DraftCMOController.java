@@ -44,10 +44,9 @@ public class DraftCMOController {
 
         if (!isNull(caseData.getCaseManagementOrder())) {
             directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
-                .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
+                .forEach((key, value) -> data.put(key.getValue(), value));
         } else {
-            // TODO: 28/11/2019 Do we need caseDetails or can it be data?
-            draftCMOService.removeExistingCustomDirections(caseDetails);
+            draftCMOService.removeExistingCustomDirections(data);
         }
 
         data.putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
@@ -63,8 +62,7 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final Map<String, Object> data = caseDetails.getData();
 
-        // TODO: 28/11/2019 Call this prepareCMO
-        CaseManagementOrder caseManagementOrder = draftCMOService.getCaseManagementOrder(data);
+        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(data);
 
         draftCMOService.prepareCaseDetails(data, caseManagementOrder);
 

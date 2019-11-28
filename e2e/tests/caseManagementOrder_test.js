@@ -71,7 +71,7 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   I.click('Continue');
   draftCaseManagementOrderEventPage.markToReviewedBySelf();
   await I.completeEvent('Submit');
-  assertCanSeeCMO(I, caseViewPage);
+  assertCanSeeDraftCMO(I, caseViewPage);
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await draftCaseManagementOrderEventPage.validatePreviousSelectedHearingDate('1 Jan 2050');
 });
@@ -125,7 +125,7 @@ Scenario('Other parties can see the draft CMO when it is marked for party review
   await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
 });
 
-const assertCanSeeCMO = (I, caseViewPage) => {
+const assertCanSeeDraftCMO = (I, caseViewPage) => {
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeAnswerInTab(1, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
   I.seeAnswerInTab(1, 'Directions 1', 'Direction title', 'Mock title');
@@ -168,7 +168,7 @@ const assertUserCanSeeDraftOrdersAndCMO = async (I, userDetails, caseViewPage) =
   await switchUserAndNavigateToCase(I, userDetails);
   // Assert that Draft orders can be seen
   I.see('Draft orders', '.tabs .tabs-list');
-  assertCanSeeCMO(I, caseViewPage);
+  assertCanSeeDraftCMO(I, caseViewPage);
 };
 
 const switchUserAndNavigateToCase = async (I, userDetails) => {
@@ -179,7 +179,7 @@ const switchUserAndNavigateToCase = async (I, userDetails) => {
 };
 
 const skipToReview = (I) => {
-  const numOfPagesExcludingReview = 3;
+  const numOfPagesExcludingReview = 7;
   for (let i = 0; i < numOfPagesExcludingReview; i++) {
     I.click('Continue');
   }
