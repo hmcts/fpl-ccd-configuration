@@ -69,9 +69,9 @@
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "actionCaseManagementOrder",
+    "CaseFieldID": "caseManagementOrderAction",
     "TabFieldDisplayOrder": 2,
-    "FieldShowCondition": "actionCaseManagementOrder.cmoActionType!=\"SEND_TO_ALL_PARTIES\""
+    "FieldShowCondition": "caseManagementOrderAction.cmoActionType!=\"SEND_TO_ALL_PARTIES\""
   },
   {
     "LiveFrom": "01/01/2017",

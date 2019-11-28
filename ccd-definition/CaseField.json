@@ -722,7 +722,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "actionCaseManagementOrder",
+    "ID": "caseManagementOrderAction",
     "Label": " ",
     "FieldType": "CaseManagementOrderAction",
     "SecurityClassification": "Public"
@@ -730,7 +730,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "actionCaseManagementOrderSchedule",
+    "ID": "caseManagementOrderActionSchedule",
     "Label": "Schedule",
     "FieldType": "Schedule",
     "SecurityClassification": "Public"
@@ -746,7 +746,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "actionCaseManagementOrderRecitals",
+    "ID": "caseManagementOrderActionRecitals",
     "Label": "Recitals",
     "FieldType": "Collection",
     "FieldTypeParameter": "Recitals",
