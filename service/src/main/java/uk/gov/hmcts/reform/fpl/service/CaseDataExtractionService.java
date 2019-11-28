@@ -79,12 +79,11 @@ public class CaseDataExtractionService {
     public Map<String, Object> getStandardOrderDirectionData(CaseData caseData) throws IOException {
         ImmutableMap.Builder data = ImmutableMap.<String, Object>builder();
 
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = isNotEmpty(caseData.getStandardDirectionOrder())
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getStandardDirectionOrder() != null
             ? caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor() : caseData.getJudgeAndLegalAdvisor();
 
         data.put("judgeTitleAndName", defaultIfBlank(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
             judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
-        //Legal advisor will be tied to magistrate in following story - this + tests will need updating then
         data.put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
             judgeAndLegalAdvisor));
 
@@ -125,14 +124,14 @@ public class CaseDataExtractionService {
 
     private Map<String, Object> getHearingBookingData(CaseData caseData) {
         if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
-            return ImmutableMap.of(
-                "hearingDate", EMPTY_PLACEHOLDER,
-                "hearingVenue", EMPTY_PLACEHOLDER,
-                "preHearingAttendance", EMPTY_PLACEHOLDER,
-                "hearingTime", EMPTY_PLACEHOLDER,
-                //hearing legal advisor empty placeholder will be handled in following story
-                "hearingJudgeTitleAndName", EMPTY_PLACEHOLDER
-            );
+            return ImmutableMap.<String, Object>builder()
+                .put("hearingDate", EMPTY_PLACEHOLDER)
+                .put("hearingVenue", EMPTY_PLACEHOLDER)
+                .put("preHearingAttendance", EMPTY_PLACEHOLDER)
+                .put("hearingTime", EMPTY_PLACEHOLDER)
+                .put("hearingJudgeTitleAndName", EMPTY_PLACEHOLDER)
+                .put("hearingLegalAdvisorName", "")
+                .build();
         }
 
         HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData
