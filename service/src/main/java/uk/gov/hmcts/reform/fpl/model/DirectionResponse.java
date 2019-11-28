@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import java.util.List;
 import java.util.UUID;
 
+//TODO: deal with all respondingOnBehalfOf parties
+
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)

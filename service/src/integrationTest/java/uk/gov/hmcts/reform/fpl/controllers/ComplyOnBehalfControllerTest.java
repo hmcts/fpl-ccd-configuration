@@ -109,8 +109,8 @@ class ComplyOnBehalfControllerTest {
 
         CaseData caseData = makeRequest(request, "about-to-submit");
 
-        assertThat(caseData.getStandardDirectionOrder().getDirections().get(0).getValue().getResponses()
-            .containsAll(updatedRespondentDirection.get(0).getValue().getResponses()));
+        assertThat(caseData.getStandardDirectionOrder().getDirections().get(0).getValue().getResponses())
+            .containsAll(updatedRespondentDirection.get(0).getValue().getResponses());
     }
 
     private List<Element<Direction>> directionsForAllRoles() {

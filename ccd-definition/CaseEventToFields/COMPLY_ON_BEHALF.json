@@ -3,25 +3,12 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "localAuthorityDirectionsCustom",
-    "PageFieldDisplayOrder": 1,
-    "DisplayContext": "COMPLEX",
-    "PageID": "Local Authority Directions",
-    "PageLabel": " ",
-    "PageDisplayOrder": 1,
-    "PageColumnNumber": 1,
-    "CaseEventFieldLabel": "For the local authority"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "respondents1_label",
+    "CaseFieldID": "respondents_label",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": "Respondents Directions",
+    "PageID": "Respondents directions",
     "PageLabel": " ",
-    "PageDisplayOrder": 2,
+    "PageDisplayOrder": 1,
     "PageColumnNumber": 1
   },
   {
@@ -31,10 +18,48 @@
     "CaseFieldID": "respondentDirectionsCustom",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "COMPLEX",
-    "PageID": "Respondents Directions",
+    "PageID": "Respondents directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "CaseEventFieldLabel": "For the respondent"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseFieldID": "others_label",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "Other party directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "COMPLEX",
+    "PageID": "Other party directions",
     "PageLabel": " ",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "CaseEventFieldLabel": "For the respondent"
+    "CaseEventFieldLabel": "For other parties"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseFieldID": "cafcassDirectionsCustom",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "COMPLEX",
+    "PageID": "Cafcass directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "CaseEventFieldLabel": "For cafcass"
   }
 ]

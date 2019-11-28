@@ -11,9 +11,18 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionResponse",
-    "ListElementCode": "respondingOnBehalfOf",
+    "ListElementCode": "respondingOnBehalfOfRespondent",
     "FieldType": "FixedList",
     "FieldTypeParameter": "Respondents",
+    "ElementLabel": "Complying on behalf of",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "respondingOnBehalfOfOthers",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "Others",
     "ElementLabel": "Complying on behalf of",
     "SecurityClassification": "Public"
   },

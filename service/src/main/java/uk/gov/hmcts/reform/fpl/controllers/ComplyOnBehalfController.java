@@ -13,22 +13,18 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.toList;
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Api
 @RestController
@@ -37,8 +33,6 @@ public class ComplyOnBehalfController {
     private final ObjectMapper mapper;
     private final DirectionHelperService directionHelperService;
     private final RespondentService respondentService;
-
-    //TODO: integration tests
 
     @Autowired
     public ComplyOnBehalfController(ObjectMapper mapper,
@@ -59,17 +53,52 @@ public class ComplyOnBehalfController {
 
         directionHelperService.addDirectionsToCaseDetails(caseDetails, sortedDirections);
 
-        //TODO: others label
-        //TODO: extract to service
-
         String respondentsLabel =
             respondentService.buildRespondentLabel(defaultIfNull(caseData.getRespondents1(), emptyList()));
 
-        caseDetails.getData().put("respondents1_label", respondentsLabel);
+        String othersLabel = buildOthersLabel(defaultIfNull(caseData.getOthers(), Others.builder().build()));
+
+        caseDetails.getData().put("respondents_label", respondentsLabel);
+        caseDetails.getData().put("others_label", othersLabel);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private String buildOthersLabel(Others others) {
+        StringBuilder sb = new StringBuilder();
+
+        if (isNotEmpty(others.getFirstOther())) {
+            sb.append("Person 1")
+                .append(" ")
+                .append("-")
+                .append(" ")
+                .append(defaultIfNull(others.getFirstOther().getName(), "BLANK - Please complete"))
+                .append("\n");
+        }
+
+        if (isNotEmpty(others.getAdditionalOthers())) {
+            AtomicInteger i = new AtomicInteger(1);
+
+            others.getAdditionalOthers().forEach(other -> {
+                sb.append("Other person")
+                    .append(" ")
+                    .append(i)
+                    .append(" ")
+                    .append("-")
+                    .append(" ")
+                    .append(defaultIfNull(other.getValue().getName(), "BLANK - Please complete"))
+                    .append("\n");
+
+                i.incrementAndGet();
+            });
+
+        } else {
+            sb.append("No others on the case");
+        }
+
+        return sb.toString();
     }
 
     @PostMapping("about-to-submit")
@@ -77,56 +106,7 @@ public class ComplyOnBehalfController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        //TODO: handle COURT user updating a response made by local authority.
-        // How can I pick which direction to overwrite??
-
-        // HANDLE SINGLE RESPONSE DIRECTIONS //////////////////////////////////////////////////////////////////////
-        // uses directionId and assignee to add and update directions. One response per assignee for a direction.
-        Map<DirectionAssignee, List<Element<Direction>>> directionsMap =
-            directionHelperService.collectDirectionsToMap(caseData);
-
-        List<DirectionResponse> responses = directionHelperService.getResponses(directionsMap);
-
-        directionHelperService.addResponsesToDirections(
-            responses, caseData.getStandardDirectionOrder().getDirections());
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        //TODO: handle deleting a response in UI -> compare with caseDetails before?? compare with sdo directions??
-
-        //TODO: extract logic to service
-        //TODO: handle directions of others
-
-        // HANDLE MULTI RESPONSE DIRECTIONS /////////////////////////////////////////////////////////////////////////
-        // uses the id of the element containing the response to update and add directions.
-        Map<DirectionAssignee, List<Element<Direction>>> multiResponseDirections = new HashMap<>();
-        multiResponseDirections.put(PARENTS_AND_RESPONDENTS, caseData.getRespondentDirectionsCustom());
-
-        AtomicReference<UUID> id = new AtomicReference<>();
-
-        // Adds assignee and directionId to each response in responses.
-        List<Element<DirectionResponse>> respondentResponses =
-            multiResponseDirections.get(PARENTS_AND_RESPONDENTS).stream()
-                .map(directionElement -> {
-                    //need to save directionId to add to response
-                    id.set(directionElement.getId());
-
-                    return directionElement.getValue().getResponses();
-                })
-                .flatMap(List::stream)
-                .map(element -> Element.<DirectionResponse>builder()
-                    .id(element.getId())
-                    .value(element.getValue().toBuilder()
-                        .assignee(COURT)
-                        .directionId(id.get())
-                        .build())
-                    .build())
-                .collect(toList());
-
-        directionHelperService.addResponseElementsToDirections(
-            respondentResponses, caseData.getStandardDirectionOrder().getDirections());
-
-        /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        directionHelperService.addComplyOnBehalfResponsesToDirectionsInStandardDirectionsOrder(caseData);
 
         caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
 

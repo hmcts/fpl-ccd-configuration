@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -143,10 +145,6 @@ public class DirectionHelperService {
                                            Map<DirectionAssignee, List<Element<Direction>>> directionsMap) {
         directionsMap.forEach((assignee, directions) -> {
             switch (assignee) {
-                case ALL_PARTIES:
-                case COURT:
-                    break;
-
                 case PARENTS_AND_RESPONDENTS:
                     directions.addAll(directionsMap.get(ALL_PARTIES));
 
@@ -163,12 +161,16 @@ public class DirectionHelperService {
                     caseDetails.getData().put(convertToCustomCollection(assignee), directions);
                     break;
 
-                // Local authority and Cafcass
-                default:
+                case CAFCASS:
                     directions.addAll(directionsMap.get(ALL_PARTIES));
 
                     caseDetails.getData()
                         .put(convertToCustomCollection(assignee), extractPartyResponse(assignee, directions));
+
+                    break;
+
+                default:
+                    break;
             }
         });
     }
@@ -187,27 +189,8 @@ public class DirectionHelperService {
         directions.forEach(directionElement -> directionElement.getValue().getResponses()
             .removeIf(x -> COURT != x.getValue().getAssignee()
                 || isEmpty(x.getValue().getRespondingOnBehalfOf())
-                || !x.getValue().getRespondingOnBehalfOf().contains(onBehalfOf)));
-    }
-
-    /**
-     * Adds a direction response element to a direction where the direction id matches.
-     *
-     * @param responses  a list of direction response elements.
-     * @param directions a list of directions.
-     */
-    public void addResponseElementsToDirections(List<Element<DirectionResponse>> responses,
-                                                List<Element<Direction>> directions) {
-        directions.forEach(direction -> responses.stream()
-            .filter(response -> response.getValue().getDirectionId().equals(direction.getId()))
-            .forEach(response -> {
-                direction.getValue().getResponses().removeIf(x -> response.getId().equals(x.getId()));
-                direction.getValue().getResponses().add(response);
-            }));
-    }
-
-    public void compareDirectionsForComplyOnBehalf(DirectionAssignee assignee, List<Element<Direction>> directions) {
-
+                || !x.getValue().getRespondingOnBehalfOf().contains(onBehalfOf))
+        );
     }
 
     /**
@@ -274,6 +257,92 @@ public class DirectionHelperService {
             COURT, defaultIfNull(caseData.getCourtDirectionsCustom(), emptyList()),
             PARENTS_AND_RESPONDENTS, defaultIfNull(caseData.getRespondentDirections(), emptyList()),
             OTHERS, defaultIfNull(caseData.getOtherPartiesDirections(), emptyList()));
+    }
+
+    /**
+     * Collects custom directions for all parties and places them into single map, where the key is the role direction,
+     * and the value is the list of directions associated.
+     *
+     * @param caseData data from case.
+     * @return Map of roles and directions.
+     */
+    public Map<DirectionAssignee, List<Element<Direction>>> collectCustomDirectionsToMap(CaseData caseData) {
+        return Map.of(
+            ALL_PARTIES, defaultIfNull(caseData.getAllPartiesCustom(), emptyList()),
+            LOCAL_AUTHORITY, defaultIfNull(caseData.getLocalAuthorityDirectionsCustom(), emptyList()),
+            CAFCASS, defaultIfNull(caseData.getCafcassDirectionsCustom(), emptyList()),
+            COURT, defaultIfNull(caseData.getCourtDirectionsCustom(), emptyList()),
+            PARENTS_AND_RESPONDENTS, defaultIfNull(caseData.getRespondentDirectionsCustom(), emptyList()),
+            OTHERS, defaultIfNull(caseData.getOtherPartiesDirectionsCustom(), emptyList()));
+    }
+
+    /**
+     * Adds responses to directions in standard direction order {@link uk.gov.hmcts.reform.fpl.model.Order}.
+     *
+     * @param caseData caseData containing custom role collections and standard directions order.
+     */
+    public void addComplyOnBehalfResponsesToDirectionsInStandardDirectionsOrder(CaseData caseData) {
+        Map<DirectionAssignee, List<Element<Direction>>> customDirectionsMap = collectCustomDirectionsToMap(caseData);
+
+        customDirectionsMap.forEach((assignee, directions) -> {
+            switch (assignee) {
+                case CAFCASS:
+                    List<DirectionResponse> responses = getResponses(ImmutableMap.of(assignee, directions));
+
+                    addResponsesToDirections(responses, caseData.getStandardDirectionOrder().getDirections());
+
+                    break;
+
+                case PARENTS_AND_RESPONDENTS:
+                case OTHERS:
+                    List<Element<DirectionResponse>> updatedResponses =
+                        addVariablesToListResponseDirections(directions);
+
+                    addResponseElementsToDirections(updatedResponses,
+                        caseData.getStandardDirectionOrder().getDirections());
+
+                    break;
+
+                default:
+                    break;
+            }
+        });
+    }
+
+    private List<Element<DirectionResponse>> addVariablesToListResponseDirections(List<Element<Direction>> directions) {
+        AtomicReference<UUID> id = new AtomicReference<>();
+
+        return directions.stream()
+            .map(directionElement -> {
+                id.set(directionElement.getId());
+
+                return directionElement.getValue().getResponses();
+            })
+            .flatMap(List::stream)
+            .map(element -> Element.<DirectionResponse>builder()
+                .id(element.getId())
+                .value(element.getValue().toBuilder()
+                    .assignee(COURT)
+                    .directionId(id.get())
+                    .build())
+                .build())
+            .collect(toList());
+    }
+
+    /**
+     * Adds a direction response element to a direction where the direction id matches.
+     *
+     * @param responses  a list of direction response elements.
+     * @param directions a list of directions.
+     */
+    public void addResponseElementsToDirections(List<Element<DirectionResponse>> responses,
+                                                List<Element<Direction>> directions) {
+        directions.forEach(direction -> responses.stream()
+            .filter(response -> response.getValue().getDirectionId().equals(direction.getId()))
+            .forEach(response -> {
+                direction.getValue().getResponses().removeIf(x -> response.getId().equals(x.getId()));
+                direction.getValue().getResponses().add(response);
+            }));
     }
 
     /**

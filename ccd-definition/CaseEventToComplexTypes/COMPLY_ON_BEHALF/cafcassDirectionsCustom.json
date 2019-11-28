@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "localAuthorityDirectionsCustom",
+    "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "directionType",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 1,
@@ -13,7 +13,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "localAuthorityDirectionsCustom",
+    "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "directionNeeded",
     "FieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
@@ -23,7 +23,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "localAuthorityDirectionsCustom",
+    "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "dateToBeCompletedBy",
     "EventElementLabel": "Deadline",
     "FieldDisplayOrder": 3,
@@ -33,17 +33,18 @@
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "localAuthorityDirectionsCustom",
-    "ListElementCode": "response.complied",
+    "CaseFieldID": "cafcassDirectionsCustom",
+    "ListElementCode": "response.respondingOnBehalfOfRespondent",
     "FieldDisplayOrder": 4,
-    "DisplayContext": "OPTIONAL"
+    "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "localAuthorityDirectionsCustom",
-    "ListElementCode": "response.documentDetails",
+    "CaseFieldID": "cafcassDirectionsCustom",
+    "ListElementCode": "response.complied",
+    "EventElementLabel": "Have they complied with this direction?",
     "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL"
   },
@@ -51,8 +52,8 @@
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "localAuthorityDirectionsCustom",
-    "ListElementCode": "response.file",
+    "CaseFieldID": "cafcassDirectionsCustom",
+    "ListElementCode": "response.documentDetails",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
   },
@@ -60,36 +61,46 @@
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "localAuthorityDirectionsCustom",
-    "ListElementCode": "response.cannotComplyTitle",
+    "CaseFieldID": "cafcassDirectionsCustom",
+    "ListElementCode": "response.file",
     "FieldDisplayOrder": 7,
-    "DisplayContext": "READONLY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "localAuthorityDirectionsCustom",
-    "ListElementCode": "response.cannotComplyReason",
-    "FieldDisplayOrder": 8,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "localAuthorityDirectionsCustom",
-    "ListElementCode": "response.c2Uploaded",
-    "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "localAuthorityDirectionsCustom",
-    "ListElementCode": "response.cannotComplyFile",
+    "CaseFieldID": "cafcassDirectionsCustom",
+    "ListElementCode": "response.cannotComplyTitle",
+    "EventElementLabel": "### Parties need to comply with directions to keep proceedings on track. ###\n\nIf they can’t comply, you need to explain:\n\n• reasons why\n\n• impact on timetable and next hearing\n\n• proposed next actions",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseFieldID": "cafcassDirectionsCustom",
+    "ListElementCode": "response.cannotComplyReason",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseFieldID": "cafcassDirectionsCustom",
+    "ListElementCode": "response.c2Uploaded",
     "FieldDisplayOrder": 10,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseFieldID": "cafcassDirectionsCustom",
+    "ListElementCode": "response.cannotComplyFile",
+    "FieldDisplayOrder": 11,
     "DisplayContext": "OPTIONAL"
   }
 ]
