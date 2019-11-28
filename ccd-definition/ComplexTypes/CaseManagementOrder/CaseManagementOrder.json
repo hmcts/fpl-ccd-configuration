@@ -20,6 +20,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CaseManagementOrder",
+    "ListElementCode": "directions",
+    "FieldType": "Collection",
+    "ElementLabel": "Directions",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
     "ListElementCode": "schedule",
     "FieldType": "Schedule",
     "ElementLabel": "Schedule",

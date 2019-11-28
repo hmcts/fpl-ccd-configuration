@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -25,22 +27,27 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
 import static org.apache.commons.lang3.ArrayUtils.add;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, DateFormatterService.class, DraftCMOService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, DateFormatterService.class, DraftCMOService.class,
+    DirectionHelperService.class})
 class DraftCMOServiceTest {
-
     private final LocalDateTime date = LocalDateTime.now();
     private final DraftCMOService draftCMOService;
     private final DateFormatterService dateFormatterService;
     private final ObjectMapper mapper;
+    private final DirectionHelperService directionHelperService;
 
     private CaseManagementOrder caseManagementOrder;
     private List<Element<HearingBooking>> hearingDetails;
@@ -48,10 +55,12 @@ class DraftCMOServiceTest {
     @Autowired
     DraftCMOServiceTest(DraftCMOService draftCMOService,
                         DateFormatterService dateFormatterService,
-                        ObjectMapper mapper) {
+                        ObjectMapper mapper,
+                        DirectionHelperService directionHelperService) {
         this.draftCMOService = draftCMOService;
         this.dateFormatterService = dateFormatterService;
         this.mapper = mapper;
+        this.directionHelperService = directionHelperService;
     }
 
     @BeforeEach
@@ -107,17 +116,41 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldReturnCaseManagementOrderWhenProvidedCaseDetails() {
-        caseManagementOrder = draftCMOService.getCaseManagementOrder(
-            ImmutableMap.of(
-                "cmoHearingDateList", getDynamicList(),
-                "reviewCaseManagementOrder", ImmutableMap.of()
-            )
+        Map<String, Object> caseData = new HashMap<>();
+
+        Stream.of(DirectionAssignee.values()).forEach(direction ->
+            caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
         );
+
+        caseData.put("cmoHearingDateList", getDynamicList());
+        caseData.put("reviewCaseManagementOrder", ImmutableMap.of());
+
+        CaseManagementOrder caseManagementOrder = draftCMOService.getCaseManagementOrder(caseData);
 
         assertThat(caseManagementOrder).isNotNull()
             .extracting("id", "hearingDate").containsExactly(
             fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"),
             formatLocalDateToMediumStyle(5));
+
+        assertThat(caseManagementOrder.getDirections()).isEqualTo(createCmoDirections());
+    }
+
+    @Test
+    void shouldRemoveCustomDirectionsWhenPresentInCaseDetails() {
+        Map<String, Object> caseData = new HashMap<>();
+
+        Stream.of(DirectionAssignee.values()).forEach(direction ->
+            caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
+        );
+
+        CaseDetails caseDetails = CaseDetails.builder().data(caseData).build();
+
+        draftCMOService.removeExistingCustomDirections(caseDetails);
+
+        assertThat(caseDetails.getData()).doesNotContainKey("allPartiesCustom");
+        assertThat(caseDetails.getData()).doesNotContainKey("localAuthorityDirectionsCustom");
+        assertThat(caseDetails.getData()).doesNotContainKey("cafcassDirectionsCustom");
+        assertThat(caseDetails.getData()).doesNotContainKey("courtDirectionsCustom");
     }
 
     @Test
@@ -175,8 +208,7 @@ class DraftCMOServiceTest {
             Element.<HearingBooking>builder()
                 .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
                 .value(createHearingBooking(now, now.plusDays(1)))
-                .build()
-        );
+                .build());
     }
 
     private String formatLocalDateToMediumStyle(int i) {

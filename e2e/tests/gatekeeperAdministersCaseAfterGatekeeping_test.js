@@ -8,7 +8,7 @@ let caseId;
 
 Feature('Gatekeeper Case administration after gatekeeping');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperEventPage) => {
+Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
@@ -22,9 +22,12 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
 
     I.signOut();
 
-    //hmcts login and send to gatekeeper
+    //hmcts login, enter case number and send to gatekeeper
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
     await I.navigateToCaseDetails(caseId);
+    caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+    enterFamilyManCaseNumberEventPage.enterCaseID();
+    await I.completeEvent('Save and continue');
     caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
     sendCaseToGatekeeperEventPage.enterEmail();
     await I.completeEvent('Save and continue');
