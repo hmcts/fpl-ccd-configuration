@@ -2,7 +2,10 @@ package uk.gov.hmcts.reform.fpl.config;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 
 class LocalAuthorityEmailLookupConfigurationTest {
 
@@ -15,10 +18,9 @@ class LocalAuthorityEmailLookupConfigurationTest {
 
     @Test
     void shouldReturnLocalAuthorityDetailsWhenLocalAuthorityCodeExists() {
-        LocalAuthorityEmailLookupConfiguration.LocalAuthority localauthority =
+        Optional<LocalAuthority> localAuthority =
             configuration.getLocalAuthority(LOCAL_AUTHORITY_CODE);
 
-        assertThat(localauthority).isEqualToComparingFieldByField(
-            new LocalAuthorityEmailLookupConfiguration.LocalAuthority(LOCAL_AUTHORITY_EMAIL));
+        assertThat(localAuthority).get().isEqualToComparingFieldByField(new LocalAuthority(LOCAL_AUTHORITY_EMAIL));
     }
 }
