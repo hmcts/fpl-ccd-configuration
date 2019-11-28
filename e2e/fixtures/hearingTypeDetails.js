@@ -56,7 +56,8 @@ module.exports = [
     },
     giveDetails: 'Tom jones is going to be there',
     judgeAndLegalAdvisor: {
-      judgeTitle: 'Her Honour Judge',
+      judgeTitle: 'Other',
+      otherTitle: 'SuperJudge',
       judgeLastName: 'Law',
       legalAdvisorName: 'Peter Parker',
     },
