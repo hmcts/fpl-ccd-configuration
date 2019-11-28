@@ -117,30 +117,8 @@ class DraftCMOServiceTest {
     }
 
     @Test
-    void shouldRemoveCustomDirectionsWhenPresentInCaseDetails() {
-        Map<String, Object> caseData = new HashMap<>();
-
-        Stream.of(DirectionAssignee.values()).forEach(direction ->
-            caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
-        );
-
-        CaseDetails caseDetails = CaseDetails.builder().data(caseData).build();
-
-        draftCMOService.removeExistingCustomDirections(caseDetails);
-
-        assertThat(caseDetails.getData()).doesNotContainKey("allPartiesCustom");
-        assertThat(caseDetails.getData()).doesNotContainKey("localAuthorityDirectionsCustom");
-        assertThat(caseDetails.getData()).doesNotContainKey("cafcassDirectionsCustom");
-        assertThat(caseDetails.getData()).doesNotContainKey("courtDirectionsCustom");
-    }
-
-    @Test
     void shouldFormatRespondentsIntoKeyWhenRespondentsArePresent() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of("respondents1", createRespondents()))
-            .build();
-
-        String respondentsKey = draftCMOService.createRespondentAssigneeDropdownKey(caseDetails);
+        String respondentsKey = draftCMOService.createRespondentAssigneeDropdownKey(createRespondents());
 
         assertThat(respondentsKey).contains(
             "Respondent 1 - Timothy Jones",
@@ -148,46 +126,26 @@ class DraftCMOServiceTest {
     }
 
     @Test
-    void shouldReturnEmptyStringWhenRespondentsAreNotPresent() {
-        CaseDetails caseDetails = CaseDetails.builder().data(ImmutableMap.of()).build();
-
-        String respondentsKey = draftCMOService.createRespondentAssigneeDropdownKey(caseDetails);
-
-        assertThat(respondentsKey).isEqualTo("");
-    }
-
-    @Test
     void shouldFormatOthersIntoKeyWhenOthersArePresent() {
-        CaseDetails caseDetails = CaseDetails.builder().data(ImmutableMap.of("others", createOthers())).build();
-
-        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(caseDetails);
+        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(createOthers());
 
         assertThat(othersKey).contains(
             "Person 1 - Kyle Stafford",
-            "Other Person 2 - Sarah Simpson");
+            "Other Person 1 - Sarah Simpson");
     }
 
     @Test
-    void shouldIncludeEmptyStatePlaceholderWhenOthersDoesNotIncludeFullName() {
-        CaseDetails caseDetails = CaseDetails.builder().data(ImmutableMap.of("others", Others.builder()
-            .firstOther(Other.builder()
-                .DOB("02/05/1988")
-                .build())
-            .build())).build();
+    void shouldIncludeEmptyStatePlaceholderWhenAnOtherDoesNotIncludeFullName() {
+        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(createFirstOtherWithoutAName());
 
-        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(caseDetails);
-
-        assertThat(othersKey).contains("Person 1 - " + EMPTY_PLACEHOLDER);
+        assertThat(othersKey).contains(
+            "Person 1 - " + EMPTY_PLACEHOLDER,
+            "Other Person 1 - Peter Smith");
     }
 
     @Test
-    void shouldReturnEmptyStringWhenOthersAreNotPresentOnCaseData() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of())
-            .build();
-
-        String othersKey = draftCMOService.createRespondentAssigneeDropdownKey(caseDetails);
-
+    void shouldReturnEmptyStringIfOthersDoesNotExist() {
+        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(Others.builder().build());
         assertThat(othersKey).isEqualTo("");
     }
 
@@ -201,6 +159,46 @@ class DraftCMOServiceTest {
 
         dynamicList.setValue(listElement);
         return dynamicList;
+    }
+
+    @Test
+    void shouldMoveDirectionsToCaseDetailsWhenCMOExistsWithDirections() {
+        Map<String, Object> caseData = new HashMap<>();
+
+        caseData.put("caseManagementOrder", CaseManagementOrder.builder()
+            .directions(createCmoDirections())
+            .build());
+
+        CaseDetails caseDetails = CaseDetails.builder().data(caseData).build();
+
+        draftCMOService.prepareCustomDirections(caseDetails);
+
+        assertThat(caseDetails.getData()).containsKey("allParties");
+        assertThat(caseDetails.getData()).containsKey("localAuthorityDirections");
+        assertThat(caseDetails.getData()).containsKey("cafcassDirections");
+        assertThat(caseDetails.getData()).containsKey("courtDirections");
+        assertThat(caseDetails.getData()).containsKey("otherPartiesDirections");
+        assertThat(caseDetails.getData()).containsKey("respondentDirections");
+    }
+
+    @Test
+    void shouldRemoveCustomDirectionsWhenCMODoesNotExistOnCaseDetails() {
+        Map<String, Object> caseData = new HashMap<>();
+
+        Stream.of(DirectionAssignee.values()).forEach(direction ->
+            caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
+        );
+
+        CaseDetails caseDetails = CaseDetails.builder().data(caseData).build();
+
+        draftCMOService.prepareCustomDirections(caseDetails);
+
+        assertThat(caseDetails.getData()).doesNotContainKey("allPartiesCustom");
+        assertThat(caseDetails.getData()).doesNotContainKey("localAuthorityDirectionsCustom");
+        assertThat(caseDetails.getData()).doesNotContainKey("cafcassDirectionsCustom");
+        assertThat(caseDetails.getData()).doesNotContainKey("courtDirectionsCustom");
+        assertThat(caseDetails.getData()).doesNotContainKey("otherPartiesDirections");
+        assertThat(caseDetails.getData()).doesNotContainKey("respondentDirections");
     }
 
     private List<Element<HearingBooking>> createHearingBookings(LocalDateTime now) {
@@ -221,5 +219,20 @@ class DraftCMOServiceTest {
 
     private String formatLocalDateToMediumStyle(int i) {
         return dateFormatterService.formatLocalDateToString(date.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
+    }
+
+    private Others createFirstOtherWithoutAName() {
+        return Others.builder()
+            .firstOther(Other.builder()
+                .DOB("02/05/1988")
+                .build())
+            .additionalOthers(ImmutableList.of(
+                Element.<Other>builder()
+                    .value(Other.builder()
+                        .name("Peter Smith")
+                        .DOB("02/05/1988")
+                        .build())
+                    .build()
+            )).build();
     }
 }

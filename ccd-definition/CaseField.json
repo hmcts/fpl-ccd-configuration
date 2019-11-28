@@ -723,7 +723,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "respondentsDropdownKeyCMO",
+    "ID": "respondentsDropdownLabelCMO",
     "Label": " ",
     "FieldType": "TextArea",
     "SecurityClassification": "Public"
@@ -739,7 +739,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "otherPartiesDropdownKeyCMO",
+    "ID": "otherPartiesDropdownLabelCMO",
     "Label": " ",
     "FieldType": "TextArea",
     "SecurityClassification": "Public"

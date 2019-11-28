@@ -65,7 +65,7 @@ class DraftCMOControllerTest {
     private ObjectMapper mapper;
 
     @Test
-    void aboutToStartCallbackShouldPrepareCaseDataForCMO() throws Exception {
+    void aboutToStartCallbackShouldPrepareCaseForCMO() throws Exception {
         Map<String, Object> data = ImmutableMap.of(
             "hearingDetails", hearingDetails,
             "respondents1", createRespondents(),
@@ -81,9 +81,9 @@ class DraftCMOControllerTest {
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
 
         String parentsAndRespondentsKeyCmo =
-            mapper.convertValue(callbackResponse.getData().get("respondentsDropdownKeyCMO"), String.class);
+            mapper.convertValue(callbackResponse.getData().get("respondentsDropdownLabelCMO"), String.class);
         String otherPartiesKeyCMO =
-            mapper.convertValue(callbackResponse.getData().get("otherPartiesDropdownKeyCMO"), String.class);
+            mapper.convertValue(callbackResponse.getData().get("otherPartiesDropdownLabelCMO"), String.class);
 
         assertThat(parentsAndRespondentsKeyCmo).contains(
             "Respondent 1 - Timothy Jones",
@@ -91,7 +91,7 @@ class DraftCMOControllerTest {
 
         assertThat(otherPartiesKeyCMO).contains(
             "Person 1 - Kyle Stafford",
-            "Other Person 2 - Sarah Simpson");
+            "Other Person 1 - Sarah Simpson");
 
         assertThat(callbackResponse.getData()).doesNotContainKey("allPartiesCustom");
         assertThat(callbackResponse.getData()).doesNotContainKey("localAuthorityDirectionsCustom");

@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
 import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -23,6 +25,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -66,37 +69,31 @@ public class DraftCMOService {
         return hearingDatesDynamic;
     }
 
-    public String createRespondentAssigneeDropdownKey(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
+    public String createRespondentAssigneeDropdownKey(List<Element<Respondent>> respondents) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (isNotEmpty(caseData.getRespondents1())) {
-            for (int i = 0; i < caseData.getRespondents1().size(); i++) {
-                RespondentParty respondentParty = caseData.getRespondents1().get(i).getValue().getParty();
+        for (int i = 0; i < respondents.size(); i++) {
+            RespondentParty respondentParty = respondents.get(i).getValue().getParty();
 
-                String key = String.format("Respondent %d - %s", i + 1, getRespondentFullName(respondentParty));
-                stringBuilder.append(key).append("\n\n");
-            }
+            String key = String.format("Respondent %d - %s", i + 1, getRespondentFullName(respondentParty));
+            stringBuilder.append(key).append("\n\n");
         }
 
         return stringBuilder.toString().stripTrailing();
     }
 
-    public String createOtherPartiesAssigneeDropdownKey(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
+    public String createOtherPartiesAssigneeDropdownKey(Others others) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        if (isNotEmpty(caseData.getOthers())) {
-            for (int i = 0; i < caseData.getOthers().getAllOthers().size(); i++) {
-                Other other = caseData.getOthers().getAllOthers().get(i);
+        if (isNotEmpty(others)) {
+            for (int i = 0; i < others.getAllOthers().size(); i++) {
+                Other other = others.getAllOthers().get(i);
                 String key;
 
                 if (i == 0) {
-                    key = String.format("Person %d - %s", i + 1, defaultIfNull(other.getName(), EMPTY_PLACEHOLDER));
+                    key = String.format("Person 1 - %s", defaultIfNull(other.getName(), EMPTY_PLACEHOLDER));
                 } else {
-                    key = String.format("Other Person %d - %s", i + 1,
+                    key = String.format("Other Person %d - %s", i,
                         defaultIfNull(other.getName(), EMPTY_PLACEHOLDER));
                 }
 
@@ -128,7 +125,18 @@ public class DraftCMOService {
             .build();
     }
 
-    public void removeExistingCustomDirections(CaseDetails caseDetails) {
+    public void prepareCustomDirections(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if (!isNull(caseData.getCaseManagementOrder())) {
+            directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
+                .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
+        } else {
+            removeExistingCustomDirections(caseDetails);
+        }
+    }
+
+    private void removeExistingCustomDirections(CaseDetails caseDetails) {
         caseDetails.getData().remove("allPartiesCustom");
         caseDetails.getData().remove("localAuthorityDirectionsCustom");
         caseDetails.getData().remove("cafcassDirectionsCustom");

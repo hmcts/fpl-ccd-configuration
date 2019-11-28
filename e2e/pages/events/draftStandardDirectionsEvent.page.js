@@ -19,7 +19,7 @@ module.exports = {
   },
 
   async enterDatesForDirections(direction) {
-    await directions.enterDate('allParties', direction);
+    await directions.enterDate('allParties', direction.dueDate);
     await I.retryUntilExists(() => I.click('Continue'), '#localAuthorityDirections');
     await directions.enterDate('localAuthorityDirections', direction.dueDate);
     await I.retryUntilExists(() => I.click('Continue'), '#respondentDirections');
