@@ -58,7 +58,7 @@
     "CaseEventID": "hearingBookingDetails",
     "CaseFieldID": "hearingDetails",
     "ListElementCode": "hearingNeedsBooked",
-    "EventElementLabel": "End date and time",
+    "EventElementLabel": "Hearing needs booked",
     "HintText": "Hearing needs booked",
     "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY"
