@@ -33,6 +33,6 @@
     "CaseFieldID": "respondentDirectionsCustom",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   }
 ]
