@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 
-import java.util.Map;
+import static java.util.Objects.isNull;
 
 @Api
 @RestController
@@ -21,29 +23,40 @@ import java.util.Map;
 public class DraftCMOController {
     private final ObjectMapper mapper;
     private final DraftCMOService draftCMOService;
+    private final DirectionHelperService directionHelperService;
 
     @Autowired
-    public DraftCMOController(ObjectMapper mapper, DraftCMOService draftCMOService) {
+    public DraftCMOController(ObjectMapper mapper,
+                              DraftCMOService draftCMOService,
+                              DirectionHelperService directionHelperService) {
         this.mapper = mapper;
         this.draftCMOService = draftCMOService;
+        this.directionHelperService = directionHelperService;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        Map<String, Object> caseData = caseDetails.getData();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseData.put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));
+        if (!isNull(caseData.getCaseManagementOrder())) {
+            directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
+                .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
+        } else {
+            draftCMOService.removeExistingCustomDirections(caseDetails);
+        }
+
+        caseDetails.getData().put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseData)
+            .data(caseDetails.getData())
             .build();
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseManagementOrder caseManagementOrder = draftCMOService.getCaseManagementOrder(caseDetails);
+        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseDetails);
 
         caseDetails.getData().remove("cmoHearingDateList");
         caseDetails.getData().put("caseManagementOrder", caseManagementOrder);

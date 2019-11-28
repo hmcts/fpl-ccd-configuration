@@ -16,5 +16,14 @@
     "SecurityClassification": "Public",
     "FieldShowCondition": "hearingDate=\"DO_NOT_SHOW\"",
     "Comment": "Id has been used here to uniquely identify selected date in case management order"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "ListElementCode": "directions",
+    "FieldType": "Collection",
+    "ElementLabel": "Directions",
+    "FieldTypeParameter": "Direction",
+    "SecurityClassification": "Public"
   }
 ]
