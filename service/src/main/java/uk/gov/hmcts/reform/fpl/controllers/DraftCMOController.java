@@ -15,14 +15,16 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 
+import java.util.Map;
+
 import static java.util.Objects.isNull;
 
 @Api
 @RestController
 @RequestMapping("/callback/draft-cmo")
 public class DraftCMOController {
-    private final ObjectMapper mapper;
     private final DraftCMOService draftCMOService;
+    private final ObjectMapper mapper;
     private final DirectionHelperService directionHelperService;
 
     @Autowired
@@ -37,32 +39,35 @@ public class DraftCMOController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        Map<String, Object> data = caseDetails.getData();
+        final CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         if (!isNull(caseData.getCaseManagementOrder())) {
             directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
-                .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
+                .forEach((key, value) -> data.put(key.getValue(), value));
         } else {
-            draftCMOService.removeExistingCustomDirections(caseDetails);
+            draftCMOService.removeExistingCustomDirections(data);
         }
 
-        caseDetails.getData().put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));
+        data.putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
+            caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(data)
             .build();
     }
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseDetails);
+        final Map<String, Object> data = caseDetails.getData();
 
-        caseDetails.getData().remove("cmoHearingDateList");
-        caseDetails.getData().put("caseManagementOrder", caseManagementOrder);
+        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(data);
+
+        draftCMOService.prepareCaseDetails(data, caseManagementOrder);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(caseDetails.getData())
+            .data(data)
             .build();
     }
 }
