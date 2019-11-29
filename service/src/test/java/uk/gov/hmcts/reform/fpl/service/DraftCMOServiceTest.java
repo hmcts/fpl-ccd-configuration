@@ -223,10 +223,10 @@ class DraftCMOServiceTest {
 
         draftCMOService.prepareCustomDirections(caseData);
 
-        assertThat(caseData).containsKeys("allPartiesCustom",
-            "localAuthorityDirectionsCustom",
-            "cafcassDirectionsCustom",
-            "courtDirectionsCustom",
+        assertThat(caseData).containsKeys("allParties",
+            "localAuthorityDirections",
+            "cafcassDirections",
+            "courtDirections",
             "otherPartiesDirections",
             "respondentDirections");
     }
