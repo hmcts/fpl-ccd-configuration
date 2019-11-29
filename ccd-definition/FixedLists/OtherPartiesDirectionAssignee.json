@@ -1,0 +1,72 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirectionAssignee",
+    "ListElementCode": "PERSON_1",
+    "ListElement": "Person 1",
+    "DisplayOrder": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirectionAssignee",
+    "ListElementCode": "OTHER_PERSON_1",
+    "ListElement": "Other Person 1",
+    "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirectionAssignee",
+    "ListElementCode": "OTHER_PERSON_2",
+    "ListElement": "Other Person 2",
+    "DisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirectionAssignee",
+    "ListElementCode": "OTHER_PERSON_3",
+    "ListElement": "Other Person 3",
+    "DisplayOrder": 4
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirectionAssignee",
+    "ListElementCode": "OTHER_PERSON_4",
+    "ListElement": "Other Person 4",
+    "DisplayOrder": 5
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirectionAssignee",
+    "ListElementCode": "OTHER_PERSON_5",
+    "ListElement": "Other Person 5",
+    "DisplayOrder": 6
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirectionAssignee",
+    "ListElementCode": "OTHER_PERSON_6",
+    "ListElement": "Other Person 6",
+    "DisplayOrder": 7
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirectionAssignee",
+    "ListElementCode": "OTHER_PERSON_7",
+    "ListElement": "Other Person 7",
+    "DisplayOrder": 8
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirectionAssignee",
+    "ListElementCode": "OTHER_PERSON_8",
+    "ListElement": "Other Person 8",
+    "DisplayOrder": 9
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OtherPartiesDirectionAssignee",
+    "ListElementCode": "OTHER_PERSON_9",
+    "ListElement": "Other Person 9",
+    "DisplayOrder": 10
+  }
+]
