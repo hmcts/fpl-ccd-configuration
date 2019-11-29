@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
@@ -24,6 +25,8 @@ public class Party {
     public final EmailAddress email;
     public final Telephone telephoneNumber;
 
+    //We do not want Jackson to try demoralizing this
+    @JsonIgnore
     public String getFullName() {
         return String.format("%s %s", defaultString(firstName), defaultString(lastName));
     }
