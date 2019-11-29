@@ -55,11 +55,12 @@ class NoticeOfProceedingsServiceTest {
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
-    private CommonCaseDataExtractionService commonCaseDataExtractionService = new CommonCaseDataExtractionService(
-        dateFormatterService);
 
     @Autowired
     private HearingVenueLookUpService hearingVenueLookUpService;
+
+    private CommonCaseDataExtractionService commonCaseDataExtractionService = new CommonCaseDataExtractionService(
+        dateFormatterService, hearingVenueLookUpService);
 
     private NoticeOfProceedingsService noticeOfProceedingService;
 

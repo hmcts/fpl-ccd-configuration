@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 
 import java.time.LocalDate;
 
+import static org.apache.commons.lang3.StringUtils.defaultString;
+
 @Data
 @AllArgsConstructor
 public class Party {
@@ -21,4 +23,8 @@ public class Party {
     public final Address address;
     public final EmailAddress email;
     public final Telephone telephoneNumber;
+
+    public String getFullName() {
+        return String.format("%s %s", defaultString(firstName), defaultString(lastName));
+    }
 }

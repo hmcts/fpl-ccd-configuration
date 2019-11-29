@@ -189,7 +189,7 @@ public class CaseDataExtractionService {
             .collect(Collectors.joining(", "));
     }
 
-    private String getFirstApplicantName(CaseData caseData) {
+    String getFirstApplicantName(CaseData caseData) {
         return caseData.getAllApplicants().stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
@@ -201,7 +201,7 @@ public class CaseDataExtractionService {
     }
 
     private Map<String, List<Map<String, String>>> getGroupedDirections(CaseData caseData) throws IOException {
-        OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
+        OrderDefinition standardDirectionOrder = ordersLookupService.getDirectionOrder();
 
         if (caseData.getStandardDirectionOrder() == null) {
             return ImmutableMap.of();
@@ -228,7 +228,7 @@ public class CaseDataExtractionService {
         return formattedDirections.build();
     }
 
-    private List<Map<String, String>> getRespondentsNameAndRelationship(CaseData caseData) {
+    public List<Map<String, String>> getRespondentsNameAndRelationship(CaseData caseData) {
 
         if (caseData.getRespondents1() == null || caseData.getRespondents1().isEmpty()) {
             return ImmutableList.of();
@@ -245,7 +245,7 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
+    List<Map<String, String>> getChildrenDetails(CaseData caseData) {
         // children is validated as not null
         return caseData.getAllChildren().stream()
             .map(Element::getValue)
