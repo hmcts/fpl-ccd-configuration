@@ -706,15 +706,31 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "actionCaseManagementOrder",
+    "ID": "reviewCaseManagementOrder",
     "Label": " ",
-    "FieldType": "ActionCaseManagementOrder",
+    "FieldType": "ReviewCaseManagementOrder",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "actionCaseManagementOrderSchedule",
+    "ID": "shareableCMO",
+    "Label": "Case management order",
+    "FieldType": "CaseManagementOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseManagementOrderAction",
+    "Label": " ",
+    "FieldType": "CaseManagementOrderAction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "caseManagementOrderActionSchedule",
     "Label": "Schedule",
     "FieldType": "Schedule",
     "SecurityClassification": "Public"
@@ -722,7 +738,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "cmoActionStatusLabel",
+    "ID": "cmoActionTypeLabel",
     "Label": "### Is this ready to be sent to parties?",
     "FieldType": "Label",
     "SecurityClassification": "Public"
@@ -730,7 +746,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "actionCaseManagementOrderRecitals",
+    "ID": "caseManagementOrderActionRecitals",
     "Label": "Recitals",
     "FieldType": "Collection",
     "FieldTypeParameter": "Recitals",

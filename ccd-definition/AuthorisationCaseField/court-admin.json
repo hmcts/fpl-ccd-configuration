@@ -387,21 +387,28 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "actionCaseManagementOrder",
+    "CaseFieldID": "shareableCMO",
+    "UserRole": "caseworker-publiclaw-courtadmin",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "caseManagementOrderAction",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "actionCaseManagementOrderSchedule",
+    "CaseFieldID": "caseManagementOrderActionSchedule",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "actionCaseManagementOrderRecitals",
+    "CaseFieldID": "caseManagementOrderActionRecitals",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   }

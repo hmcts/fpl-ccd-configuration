@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.events.CMOIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CMOEmailContentProvider;
@@ -49,7 +50,6 @@ public class NotificationHandler {
 
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
-    private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
     private final HmctsEmailContentProvider hmctsEmailContentProvider;
     private final CafcassEmailContentProvider cafcassEmailContentProvider;
     private final CafcassEmailContentProviderSDOIssued cafcassEmailContentProviderSDOIssued;
@@ -58,8 +58,10 @@ public class NotificationHandler {
     private final C21OrderEmailContentProvider c21OrderEmailContentProvider;
     private final CMOEmailContentProvider cmoEmailContentProvider;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
+    private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
     private final NotificationClient notificationClient;
     private final IdamApi idamApi;
+    private final InboxLookupService inboxLookupService;
 
     @EventListener
     public void sendNotificationToHmctsAdmin(SubmittedCaseEvent event) {
@@ -141,7 +143,7 @@ public class NotificationHandler {
         Map<String, Object> parameters = localAuthorityEmailContentProvider
             .buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseDetails, localAuthorityCode);
         String reference = Long.toString(caseDetails.getId());
-        String email = localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode).getEmail();
+        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
         sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, reference);
     }
 
@@ -178,8 +180,10 @@ public class NotificationHandler {
         Map<String, Object> localAuthorityParameters =
             c21OrderEmailContentProvider.buildC21OrderNotificationParametersForLocalAuthority(
                 caseDetails, localAuthorityCode, mostRecentUploadedDocumentUrl);
-        String localAuthorityEmail = localAuthorityEmailLookupConfiguration.getLocalAuthority(
-            localAuthorityCode).getEmail();
+        String localAuthorityEmail = localAuthorityEmailLookupConfiguration
+            .getLocalAuthority(localAuthorityCode)
+            .map(LocalAuthorityEmailLookupConfiguration.LocalAuthority::getEmail)
+            .orElseThrow(() -> new NullPointerException("Local authority '" + localAuthorityCode + "' not found"));
         sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, localAuthorityEmail, localAuthorityParameters,
             Long.toString(caseDetails.getId()));
     }

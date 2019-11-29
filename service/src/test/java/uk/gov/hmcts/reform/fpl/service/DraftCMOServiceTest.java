@@ -1,18 +1,22 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Recital;
+import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
@@ -25,7 +29,10 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
+import static org.apache.commons.lang3.ArrayUtils.add;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -36,23 +43,36 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassi
     DirectionHelperService.class})
 class DraftCMOServiceTest {
     private final LocalDateTime date = LocalDateTime.now();
+    private final DraftCMOService draftCMOService;
+    private final DateFormatterService dateFormatterService;
+    private final ObjectMapper mapper;
+
+    private CaseManagementOrder caseManagementOrder;
+    private List<Element<HearingBooking>> hearingDetails;
 
     @Autowired
-    private DraftCMOService draftCMOService;
+    DraftCMOServiceTest(DraftCMOService draftCMOService,
+                        DateFormatterService dateFormatterService,
+                        ObjectMapper mapper) {
+        this.draftCMOService = draftCMOService;
+        this.dateFormatterService = dateFormatterService;
+        this.mapper = mapper;
+    }
 
-    @Autowired
-    private DateFormatterService dateFormatterService;
-
-    @Autowired
-    private DirectionHelperService directionHelperService;
+    @BeforeEach
+    void setUp() {
+        hearingDetails = createHearingBookings(date);
+    }
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCaseDetailsHasHearingDate() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of(
-                "hearingDetails", createHearingBookings(date))).build();
+        hearingDetails = createHearingBookings(date);
+        caseManagementOrder = CaseManagementOrder.builder().build();
 
-        DynamicList hearingList = draftCMOService.getHearingDateDynamicList(caseDetails);
+        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+            caseManagementOrder, hearingDetails);
+
+        DynamicList hearingList = mapper.convertValue(data.get("cmoHearingDateList"), DynamicList.class);
 
         assertThat(hearingList.getListItems())
             .containsAll(Arrays.asList(
@@ -72,15 +92,16 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCmoHasPreviousSelectedValue() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .data(ImmutableMap.of(
-                "hearingDetails", createHearingBookings(date),
-                "caseManagementOrder", CaseManagementOrder.builder()
-                    .hearingDate(formatLocalDateToMediumStyle(2))
-                    .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
-                    .build())).build();
+        hearingDetails = createHearingBookings(date);
+        caseManagementOrder = CaseManagementOrder.builder()
+            .hearingDate(formatLocalDateToMediumStyle(2))
+            .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+            .build();
 
-        DynamicList hearingList = draftCMOService.getHearingDateDynamicList(caseDetails);
+        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+            caseManagementOrder, hearingDetails);
+
+        DynamicList hearingList = mapper.convertValue(data.get("cmoHearingDateList"), DynamicList.class);
 
         assertThat(hearingList.getValue())
             .isEqualTo(DynamicListElement.builder()
@@ -98,10 +119,9 @@ class DraftCMOServiceTest {
         );
 
         caseData.put("cmoHearingDateList", getDynamicList());
+        caseData.put("reviewCaseManagementOrder", ImmutableMap.of());
 
-        CaseDetails caseDetails = CaseDetails.builder().data(caseData).build();
-
-        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseDetails);
+        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData);
 
         assertThat(caseManagementOrder).isNotNull()
             .extracting("id", "hearingDate").containsExactly(
@@ -119,14 +139,42 @@ class DraftCMOServiceTest {
             caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
         );
 
-        CaseDetails caseDetails = CaseDetails.builder().data(caseData).build();
+        draftCMOService.removeExistingCustomDirections(caseData);
 
-        draftCMOService.removeExistingCustomDirections(caseDetails);
+        assertThat(caseData).doesNotContainKey("allPartiesCustom");
+        assertThat(caseData).doesNotContainKey("localAuthorityDirectionsCustom");
+        assertThat(caseData).doesNotContainKey("cafcassDirectionsCustom");
+        assertThat(caseData).doesNotContainKey("courtDirectionsCustom");
+    }
 
-        assertThat(caseDetails.getData()).doesNotContainKey("allPartiesCustom");
-        assertThat(caseDetails.getData()).doesNotContainKey("localAuthorityDirectionsCustom");
-        assertThat(caseDetails.getData()).doesNotContainKey("cafcassDirectionsCustom");
-        assertThat(caseDetails.getData()).doesNotContainKey("courtDirectionsCustom");
+    @Test
+    void shouldReturnAMapWithAllIndividualCMOEntriesPopulated() {
+        caseManagementOrder = CaseManagementOrder.builder()
+            .hearingDate(formatLocalDateToMediumStyle(2))
+            .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+            .recitals(List.of(Element.<Recital>builder()
+                .value(Recital.builder().build())
+                .build()))
+            .schedule(Schedule.builder().build())
+            .cmoStatus(SELF_REVIEW)
+            .build();
+
+        hearingDetails = createHearingBookings(date);
+
+        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+            caseManagementOrder, hearingDetails);
+
+        assertThat(data).containsKeys("cmoHearingDateList", "schedule", "recitals", "reviewCaseManagementOrder");
+    }
+
+    @Test
+    void shouldReturnAMapWithEmptyRepopulatedEntriesWhenCaseManagementOrderIsNull() {
+        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+            null, hearingDetails);
+
+        assertThat(data.get("schedule")).isNull();
+        assertThat(data.get("recitals")).isNull();
+        assertThat(data.get("reviewCaseManagementOrder")).extracting("cmoStatus").isNull();
     }
 
     private DynamicList getDynamicList() {
@@ -159,5 +207,47 @@ class DraftCMOServiceTest {
 
     private String formatLocalDateToMediumStyle(int i) {
         return dateFormatterService.formatLocalDateToString(date.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
+    }
+
+    @Nested
+    class PrepareCaseDetailsTest {
+        private final String[] keys = {
+            "cmoHearingDateList",
+            "recitals",
+            "schedule",
+            "reviewCaseManagementOrder"};
+
+        private HashMap<String, Object> data; // Tries to use an ImmutableMap unless specified
+
+        @BeforeEach
+        void setUp() {
+            data = new HashMap<>();
+        }
+
+        @Test
+        void shouldRemoveAllRelatedEntriesInCaseDetailsThatAreNotCMOObjectsWhenCMOStatusIsPartyReview() {
+            final CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
+                .cmoStatus(PARTIES_REVIEW).build();
+
+            Arrays.stream(keys).forEach(key -> data.put(key, ""));
+
+            draftCMOService.prepareCaseDetails(data, caseManagementOrder);
+
+            assertThat(data).doesNotContainKeys(keys);
+            assertThat(data).containsKeys("shareableCMO", "caseManagementOrder");
+        }
+
+        @Test
+        void shouldRemoveAllRelatedEntriesInCaseDetailsApartFromCaseManagementOrderWhenCMOStatusIsSelfReview() {
+            final CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
+                .cmoStatus(SELF_REVIEW).build();
+
+            data.put("shareableCMO", caseManagementOrder);
+
+            draftCMOService.prepareCaseDetails(data, caseManagementOrder);
+            assertThat(data).doesNotContainKeys(add(keys, "shareableCMO"));
+            assertThat(data).containsKey("caseManagementOrder");
+        }
+
     }
 }

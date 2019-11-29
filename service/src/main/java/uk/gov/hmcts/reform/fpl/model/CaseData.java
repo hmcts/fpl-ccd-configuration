@@ -150,5 +150,5 @@ public class CaseData {
     }
 
     private final CaseManagementOrder caseManagementOrder;
-    private final ActionCaseManagementOrder actionCaseManagementOrder;
+    private final CaseManagementOrderAction caseManagementOrderAction;
 }
