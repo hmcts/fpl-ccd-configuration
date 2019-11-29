@@ -193,7 +193,10 @@ public class NotificationHandler {
         Map<String, Object> cafcassParameters =
             cmoEmailContentProvider.buildCMONotificationParametersForCafcass(
                 caseDetails, localAuthorityCode, documentUrl);
-        String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
+        String cafcassName = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName();
+        //Todo: get the cafcass/Cafcass Cymru email from FPLA-911 based on cafcass name above
+        //inboxLookupService.getNotificationRecipientEmail(caseDetails, cafcassName);
+        String cafcassEmail = "respondantEmail@test.com";
         sendNotification(CASE_MANAGEMENT_ORDER_ISSUED_TEMPLATE, cafcassEmail, cafcassParameters,
             Long.toString(caseDetails.getId()));
     }
@@ -203,9 +206,9 @@ public class NotificationHandler {
         Map<String, Object> localAuthorityParameters =
             cmoEmailContentProvider.buildCMONotificationParametersForRespondents(
                 caseDetails, localAuthorityCode, documentUrl);
-        String localAuthorityEmail = localAuthorityEmailLookupConfiguration.getLocalAuthority(
-            localAuthorityCode).getEmail();
-        sendNotification(CASE_MANAGEMENT_ORDER_ISSUED_TEMPLATE, localAuthorityEmail, localAuthorityParameters,
+        //Todo: get the list of all the respondants emails FPLA-911 to send notification
+        String respondantEmail = "respondantEmail@test.com";
+        sendNotification(CASE_MANAGEMENT_ORDER_ISSUED_TEMPLATE, respondantEmail, localAuthorityParameters,
             Long.toString(caseDetails.getId()));
     }
 }
