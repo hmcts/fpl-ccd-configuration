@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -75,13 +76,15 @@ public class CommonCaseDataExtractionService {
         }
 
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearingBooking.getVenue());
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
 
         return ImmutableMap.of(
             "hearingDate", getHearingDateIfHearingsOnSameDay(hearingBooking).orElse(""),
             "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
             "preHearingAttendance", extractPrehearingAttendance(hearingBooking),
             "hearingTime", getHearingTime(hearingBooking),
-            "judgeName", String.format("%s %s", hearingBooking.getJudgeTitle(), hearingBooking.getJudgeName())
+            "judgeName", String.format("%s %s", judgeAndLegalAdvisor.getJudgeTitle(),
+                judgeAndLegalAdvisor.getJudgeFullName())
         );
     }
 
