@@ -36,15 +36,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "collectionSimpleType",
-    "Label": "Simple type",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Text",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseLocalAuthority",
     "Label": "Local Authority :",
     "FieldType": "FixedList",
