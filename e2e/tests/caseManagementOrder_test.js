@@ -51,10 +51,11 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
     await draftStandardDirectionsEventPage.markAsFinal();
     await I.completeEvent('Save and continue');
     I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
-    I.signOut();
-
-    await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
   }
+  // Log back in as LA
+  I.signOut();
+  await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+
   await I.navigateToCaseDetails(caseId);
 });
 
@@ -75,20 +76,6 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   await draftCaseManagementOrderEventPage.validatePreviousSelectedHearingDate('1 Jan 2050');
 });
 
-const allOtherPartyDetails = [
-  {
-    email: config.hmctsAdminEmail,
-    password: config.hmctsAdminPassword,
-  },
-  {
-    email: config.cafcassEmail,
-    password: config.cafcassPassword,
-  },
-  {
-    email: config.judiciaryEmail,
-    password: config.judiciaryPassword,
-  }];
-
 // This scenario relies on running after 'local authority creates CMO'
 Scenario('Other parties cannot see the draft CMO when it is marked for self review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   // Ensure the selection is self review
@@ -100,10 +87,6 @@ Scenario('Other parties cannot see the draft CMO when it is marked for self revi
   for (let userDetails of allOtherPartyDetails) {
     await assertUserCannotSeeDraftOrders(I, userDetails);
   }
-
-  // Log back in as LA
-  I.signOut();
-  await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
 });
 
 // This scenario relies on running after 'local authority creates CMO'
@@ -119,10 +102,6 @@ Scenario('Other parties can see the draft CMO when it is marked for party review
   for (let otherPartyDetails of allOtherPartyDetails) {
     await assertUserCanSeeDraftOrdersAndCMO(I, otherPartyDetails, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.partiesReview);
   }
-
-  // Log back in as LA
-  I.signOut();
-  await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
 });
 
 const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
@@ -192,3 +171,17 @@ const skipToReview = (I) => {
     I.click('Continue');
   }
 };
+
+const allOtherPartyDetails = [
+  {
+    email: config.hmctsAdminEmail,
+    password: config.hmctsAdminPassword,
+  },
+  {
+    email: config.cafcassEmail,
+    password: config.cafcassPassword,
+  },
+  {
+    email: config.judiciaryEmail,
+    password: config.judiciaryPassword,
+  }];
