@@ -2,9 +2,14 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
@@ -34,6 +39,8 @@ import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -43,19 +50,18 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPON
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOService {
+    private static final String CASE_LOCAL_AUTHORITY_PROPERTY_NAME = "caseLocalAuthority";
+
     private final ObjectMapper mapper;
     private final DateFormatterService dateFormatterService;
     private final DirectionHelperService directionHelperService;
-
-    @Autowired
-    public DraftCMOService(DateFormatterService dateFormatterService,
-                           ObjectMapper mapper,
-                           DirectionHelperService directionHelperService) {
-        this.mapper = mapper;
-        this.dateFormatterService = dateFormatterService;
-        this.directionHelperService = directionHelperService;
-    }
+    private final CaseDataExtractionService caseDataExtractionService;
+    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
+    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
+    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
 
     public Map<String, Object> extractIndividualCaseManagementOrderObjects(
         CaseManagementOrder caseManagementOrder,
@@ -190,8 +196,77 @@ public class DraftCMOService {
         }
     }
 
-    public Map<String, Object> generateCMOTemplateData(Map<String, Object> caseData) {
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> generateCMOTemplateData(Map<String, Object> caseDataMap) {
+        ImmutableMap.Builder cmoTemplateData = ImmutableMap.<String, Object>builder();
+
+        DynamicList hearingDateList = mapper.convertValue(caseDataMap.get("cmoHearingDateList"), DynamicList.class);
+
+        CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
+
+        cmoTemplateData.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_PLACEHOLDER));
+        cmoTemplateData.put("generationDate",
+            dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG));
+        cmoTemplateData.put("complianceDeadline", caseData.getDateSubmitted() != null
+            ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26),
+            FormatStyle.LONG) : EMPTY_PLACEHOLDER);
+        cmoTemplateData.put("children", caseDataExtractionService.getChildrenDetails(caseData));
+        cmoTemplateData.put("courtName", defaultIfBlank(
+            hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName(), EMPTY_PLACEHOLDER));
+
+        cmoTemplateData.put("applicantName", caseDataExtractionService.getFirstApplicantName(caseData));
+
+        List<Map<String, String>> respondentsNameAndRelationship =
+            caseDataExtractionService.getRespondentsNameAndRelationship(caseData);
+        cmoTemplateData.put("respondents", respondentsNameAndRelationship);
+        cmoTemplateData.put("respondentsProvided", !respondentsNameAndRelationship.isEmpty());
+
+        String localAuthorityCode = (String) caseDataMap.get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+        cmoTemplateData.put("localAuthoritySolicitorEmail", localAuthorityEmailLookupConfiguration
+            .getLocalAuthority(localAuthorityCode)
+            .map(LocalAuthorityEmailLookupConfiguration.LocalAuthority::getEmail)
+            .orElse(""));
+
+        cmoTemplateData.put("localAuthorityName", defaultIfBlank(
+                localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode),
+                EMPTY_PLACEHOLDER));
+
+        // defaulting to EMPTY for now as we currently do not capture
+        cmoTemplateData.put("localAuthoritySolicitorName", EMPTY_PLACEHOLDER);
+        cmoTemplateData.put("localAuthoritySolicitorPhoneNumber", EMPTY_PLACEHOLDER);
+
+        cmoTemplateData.put("respondentOneName", getFirstRespondentFullname(caseData));
+        /*
+         * we need hearingBooking, directions
+         */
+
+        cmoTemplateData.putAll(getHearingBooking(caseData, hearingDateList));
+
         return new HashMap<>();
+    }
+
+    private static String getFirstRespondentFullname(final CaseData caseData) {
+        return isEmpty(caseData.getRespondents1()) ? "" : caseData.getRespondents1()
+            .stream()
+            .filter(Objects::nonNull)
+            .map(Element::getValue)
+            .filter(Objects::nonNull)
+            .findFirst()
+            .map(Respondent::getParty)
+            .map(RespondentParty::getFullName)
+            .orElse("");
+    }
+
+    private Map<String, Object> getHearingBooking(final CaseData caseData, DynamicList hearingDateList) {
+
+        HearingBooking hearingBooking = caseData.getHearingDetails()
+            .stream()
+            .filter(element -> element.getId().equals(hearingDateList.getValue().getCode()))
+            .findFirst()
+            .map(Element::getValue)
+            .orElse(null);
+
+        return commonCaseDataExtractionService.getHearingBookingData(hearingBooking);
     }
 
     private void removeExistingCustomDirections(Map<String, Object> caseData) {
