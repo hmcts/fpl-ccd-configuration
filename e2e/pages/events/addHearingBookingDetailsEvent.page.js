@@ -1,4 +1,5 @@
 const { I } = inject();
+const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
 
 module.exports = {
   fields: function (index) {
@@ -30,8 +31,6 @@ module.exports = {
           somethingElse: `#hearingDetails_${index}_hearingNeedsBooked-SOMETHING_ELSE`,
         },
         giveDetails: `#hearingDetails_${index}_hearingNeedsDetails`,
-        judgeTitle: `#hearingDetails_${index}_judgeTitle`,
-        judgeName: `#hearingDetails_${index}_judgeName`,
       },
     };
   },
@@ -57,8 +56,19 @@ module.exports = {
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.welsh);
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.somethingElse);
     I.fillField(this.fields(elementIndex).hearingBooking.giveDetails, hearingDetails.giveDetails);
-    I.fillField(this.fields(elementIndex).hearingBooking.judgeTitle, hearingDetails.judgeTitle);
-    I.fillField(this.fields(elementIndex).hearingBooking.judgeName, hearingDetails.lastName);
+    await this.enterJudgeAndLegalAdvisor(hearingDetails.judgeAndLegalAdvisor.judgeLastName,
+      hearingDetails.judgeAndLegalAdvisor.legalAdvisorName,
+      hearingDetails.judgeAndLegalAdvisor.judgeTitle,
+      hearingDetails.judgeAndLegalAdvisor.otherTitle
+    );
+  },
+
+  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, title, otherTitle) {
+    const elementIndex = await this.getActiveElementIndex();
+    const complexTypeAppender = `hearingDetails_${elementIndex}_`;
+    judgeAndLegalAdvisor.selectJudgeTitle(complexTypeAppender, title, otherTitle);
+    judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName, complexTypeAppender);
+    judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName, complexTypeAppender);
   },
 
   async getActiveElementIndex() {

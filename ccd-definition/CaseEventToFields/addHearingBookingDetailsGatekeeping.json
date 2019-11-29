@@ -5,7 +5,7 @@
     "CaseEventID": "hearingBookingDetailsGatekeeping",
     "CaseFieldID": "hearingDetails",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "COMPLEX",
     "PageID": 1,
     "ShowSummaryChangeOption": "Y",
     "PageDisplayOrder": 1,
