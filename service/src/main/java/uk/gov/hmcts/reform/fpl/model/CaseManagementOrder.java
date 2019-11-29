@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
@@ -21,4 +22,5 @@ public class CaseManagementOrder {
     private final Schedule schedule;
     private final List<Element<Recital>> recitals;
     private final CMOStatus cmoStatus;
+    private final DocumentReference orderDoc;
 }

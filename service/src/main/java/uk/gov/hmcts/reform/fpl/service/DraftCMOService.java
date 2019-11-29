@@ -68,6 +68,7 @@ public class DraftCMOService {
         HashMap<String, Object> data = new HashMap<>();
         HashMap<String, Object> reviewCaseManagementOrder = new HashMap<>();
 
+        // TODO: 29/11/2019 Include orderDoc
         reviewCaseManagementOrder.put("cmoStatus", caseManagementOrder.getCmoStatus());
 
         data.put("cmoHearingDateList", getHearingDateDynamicList(hearingDetails, caseManagementOrder));
@@ -85,6 +86,7 @@ public class DraftCMOService {
         CMOStatus cmoStatus = mapper.convertValue(reviewCaseManagementOrder.get("cmoStatus"), CMOStatus.class);
         Schedule schedule = mapper.convertValue(caseData.get("schedule"), Schedule.class);
         List<Element<Recital>> recitals = mapper.convertValue(caseData.get("recitals"), new TypeReference<>() {});
+        // TODO: 29/11/2019 Extract orderDoc
 
         return CaseManagementOrder.builder()
             .hearingDate(list.getValue().getLabel())
@@ -186,6 +188,10 @@ public class DraftCMOService {
         } else {
             removeExistingCustomDirections(data);
         }
+    }
+
+    public Map<String, Object> generateCMOTemplateData(Map<String, Object> caseData) {
+        return new HashMap<>();
     }
 
     private void removeExistingCustomDirections(Map<String, Object> caseData) {
