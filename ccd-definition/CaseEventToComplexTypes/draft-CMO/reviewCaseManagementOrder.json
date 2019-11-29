@@ -7,8 +7,7 @@
     "ListElementCode": "orderDoc",
     "EventElementLabel": "Check the order",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "READONLY",
-    "Comment": "Placeholder for the orderDoc, not implemented in this story"
+    "DisplayContext": "READONLY"
   },
   {
     "LiveFrom": "01/01/2017",
