@@ -32,6 +32,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "children1",
     "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "C"
+    "CRUD": "CRUD"
   }
 ]
