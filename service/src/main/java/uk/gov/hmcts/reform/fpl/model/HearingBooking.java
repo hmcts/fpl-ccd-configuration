@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.HasEndDateAfterStartDate;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.time.TimeNotMidnight;
@@ -27,8 +28,7 @@ public class HearingBooking {
     private final LocalDateTime endDate;
     private final List<String> hearingNeedsBooked;
     private final String hearingNeedsDetails;
-    private final String judgeTitle;
-    private final String judgeName;
+    private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
 
     public boolean hasDatesOnSameDay() {
         return this.startDate.toLocalDate().isEqual(this.endDate.toLocalDate());
