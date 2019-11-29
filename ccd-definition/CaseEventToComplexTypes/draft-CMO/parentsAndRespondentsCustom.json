@@ -1,0 +1,38 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ParentsAndRespondentsCustom",
+    "CaseEventID": "draftCMO",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "directionType",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ParentsAndRespondentsCustom",
+    "CaseEventID": "draftCMO",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "directionText",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ParentsAndRespondentsCustom",
+    "CaseEventID": "draftCMO",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "parentsAndRespondentsAssignee",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ParentsAndRespondentsCustom",
+    "CaseEventID": "draftCMO",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "dateToBeCompletedBy",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "OPTIONAL"
+  }
+]
