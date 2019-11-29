@@ -12,10 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
-
-import static java.util.Objects.isNull;
 
 @Api
 @RestController
@@ -23,28 +20,23 @@ import static java.util.Objects.isNull;
 public class DraftCMOController {
     private final ObjectMapper mapper;
     private final DraftCMOService draftCMOService;
-    private final DirectionHelperService directionHelperService;
 
     @Autowired
     public DraftCMOController(ObjectMapper mapper,
-                              DraftCMOService draftCMOService,
-                              DirectionHelperService directionHelperService) {
+                              DraftCMOService draftCMOService) {
         this.mapper = mapper;
         this.draftCMOService = draftCMOService;
-        this.directionHelperService = directionHelperService;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (!isNull(caseData.getCaseManagementOrder())) {
-            directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
-                .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
-        } else {
-            draftCMOService.removeExistingCustomDirections(caseDetails);
-        }
+        caseDetails.getData().put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));
+
+        draftCMOService.prepareCustomDirections(caseDetails);
+
+        setCustomDirectionDropdownLabels(caseDetails);
 
         caseDetails.getData().put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));
 
@@ -64,5 +56,17 @@ public class DraftCMOController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private void setCustomDirectionDropdownLabels(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if (caseData.getOthers() != null) {
+            caseDetails.getData().put("otherPartiesDropdownLabelCMO",
+                draftCMOService.createOtherPartiesAssigneeDropdownKey(caseData.getOthers()));
+        }
+
+        caseDetails.getData().put("respondentsDropdownLabelCMO",
+            draftCMOService.createRespondentAssigneeDropdownKey(caseData.getRespondents1()));
     }
 }
