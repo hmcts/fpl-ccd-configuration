@@ -187,7 +187,7 @@ const switchUserAndNavigateToCase = async (I, userDetails) => {
 };
 
 const skipToReview = (I) => {
-  const timeToClickContinue = 7;
+  const timeToClickContinue = 9;
   for (let i = 0; i < timeToClickContinue; i++) {
     I.click('Continue');
   }
