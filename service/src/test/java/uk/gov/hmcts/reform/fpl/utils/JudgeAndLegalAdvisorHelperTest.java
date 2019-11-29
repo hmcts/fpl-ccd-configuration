@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
@@ -72,4 +73,29 @@ class JudgeAndLegalAdvisorHelperTest {
 
         assertThat(magistrateName).isEqualTo("Steve Stevenson (JP)");
     }
+
+    @Test
+    void shouldReturnJusticeOfPeaceWhenMagistrateWithoutNameIsSelected() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(MAGISTRATES)
+            .build();
+
+        String magistrateName = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor);
+
+        assertThat(magistrateName).isEqualTo("Justice of the Peace");
+    }
+
+    @Test
+    private void shouldExtractOtherTitleDescriptionWhenOtherTitleSelected() {
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = JudgeAndLegalAdvisor.builder()
+            .judgeTitle(OTHER)
+            .otherTitle("His Excellency")
+            .judgeLastName("John Doe")
+            .build();
+
+        String magistrateName = JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(judgeAndLegalAdvisor);
+
+        assertThat(magistrateName).isEqualTo("His Excellency John Doe");
+    }
 }
+

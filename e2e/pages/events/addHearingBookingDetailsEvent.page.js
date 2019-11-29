@@ -56,13 +56,17 @@ module.exports = {
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.welsh);
     I.click(this.fields(elementIndex).hearingBooking.hearingNeedsBooked.somethingElse);
     I.fillField(this.fields(elementIndex).hearingBooking.giveDetails, hearingDetails.giveDetails);
-    await this.enterJudgeAndLegalAdvisor(hearingDetails.judgeAndLegalAdvisor.judgeLastName, hearingDetails.judgeAndLegalAdvisor.legalAdvisorName);
+    await this.enterJudgeAndLegalAdvisor(hearingDetails.judgeAndLegalAdvisor.judgeLastName,
+      hearingDetails.judgeAndLegalAdvisor.legalAdvisorName,
+      hearingDetails.judgeAndLegalAdvisor.judgeTitle,
+      hearingDetails.judgeAndLegalAdvisor.otherTitle
+    );
   },
 
-  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName) {
+  async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, title, otherTitle) {
     const elementIndex = await this.getActiveElementIndex();
     const complexTypeAppender = `hearingDetails_${elementIndex}_`;
-    judgeAndLegalAdvisor.selectJudgeTitle(complexTypeAppender);
+    judgeAndLegalAdvisor.selectJudgeTitle(complexTypeAppender, title, otherTitle);
     judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName, complexTypeAppender);
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName, complexTypeAppender);
   },
