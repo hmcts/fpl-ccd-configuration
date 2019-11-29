@@ -69,6 +69,7 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   await draftCaseManagementOrderEventPage.enterRecital('Recital 1', 'Recital 1 description');
   I.click('Continue');
   await draftCaseManagementOrderEventPage.enterSchedule(schedule);
+  I.click('Continue');
   draftCaseManagementOrderEventPage.markToReviewedBySelf();
   await I.completeEvent('Submit');
   assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview);
@@ -83,6 +84,7 @@ Scenario('Other parties cannot see the draft CMO when it is marked for self revi
   skipToReview(I);
   draftCaseManagementOrderEventPage.markToReviewedBySelf();
   await I.completeEvent('Submit');
+  assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview);
 
   for (let userDetails of allOtherPartyDetails) {
     await assertUserCannotSeeDraftOrders(I, userDetails);
@@ -96,8 +98,8 @@ Scenario('Other parties can see the draft CMO when it is marked for party review
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   skipToReview(I);
   draftCaseManagementOrderEventPage.markToBeReviewedByParties();
-  I.click('Continue');
-  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
+  await I.completeEvent('Submit');
+  assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.partiesReview);
 
   for (let otherPartyDetails of allOtherPartyDetails) {
     await assertUserCanSeeDraftOrdersAndCMO(I, otherPartyDetails, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.partiesReview);
@@ -105,6 +107,7 @@ Scenario('Other parties can see the draft CMO when it is marked for party review
 });
 
 const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeAnswerInTab(1, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
   I.seeAnswerInTab(1, 'Directions 1', 'Direction title', 'Mock title');
   I.seeAnswerInTab(4, 'Directions 1', 'Description', 'Mock description');
@@ -166,8 +169,8 @@ const switchUserAndNavigateToCase = async (I, userDetails) => {
 };
 
 const skipToReview = (I) => {
-  const timeToClickContinue = 9;
-  for (let i = 0; i < timeToClickContinue; i++) {
+  const timesToClickContinue = 9;
+  for (let i = 0; i < timesToClickContinue; i++) {
     I.click('Continue');
   }
 };
