@@ -309,7 +309,7 @@ class DraftCMOServiceTest {
             draftCMOService.prepareCaseDetails(data, caseManagementOrder);
 
             assertThat(data).doesNotContainKeys(keys);
-            assertThat(data).containsKeys("shareableCMO", "caseManagementOrder");
+            assertThat(data).containsKeys("sharedDraftCMO", "caseManagementOrder");
         }
 
         @Test
@@ -317,10 +317,10 @@ class DraftCMOServiceTest {
             final CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
                 .cmoStatus(SELF_REVIEW).build();
 
-            data.put("shareableCMO", caseManagementOrder);
+            data.put("sharedDraftCMO", caseManagementOrder);
 
             draftCMOService.prepareCaseDetails(data, caseManagementOrder);
-            assertThat(data).doesNotContainKeys(add(keys, "shareableCMO"));
+            assertThat(data).doesNotContainKeys(add(keys, "sharedDraftCMO"));
             assertThat(data).containsKey("caseManagementOrder");
         }
 
