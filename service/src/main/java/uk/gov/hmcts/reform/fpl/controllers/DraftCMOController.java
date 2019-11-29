@@ -12,42 +12,34 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 
 import java.util.Map;
-
-import static java.util.Objects.isNull;
 
 @Api
 @RestController
 @RequestMapping("/callback/draft-cmo")
 public class DraftCMOController {
-    private final DraftCMOService draftCMOService;
     private final ObjectMapper mapper;
-    private final DirectionHelperService directionHelperService;
+    private final DraftCMOService draftCMOService;
 
     @Autowired
     public DraftCMOController(ObjectMapper mapper,
-                              DraftCMOService draftCMOService,
-                              DirectionHelperService directionHelperService) {
+                              DraftCMOService draftCMOService) {
         this.mapper = mapper;
         this.draftCMOService = draftCMOService;
-        this.directionHelperService = directionHelperService;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
+
+        draftCMOService.prepareCustomDirections(caseDetails.getData());
+
+        setCustomDirectionDropdownLabels(caseDetails);
         Map<String, Object> data = caseDetails.getData();
         final CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        if (!isNull(caseData.getCaseManagementOrder())) {
-            directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
-                .forEach((key, value) -> data.put(key.getValue(), value));
-        } else {
-            draftCMOService.removeExistingCustomDirections(data);
-        }
 
         data.putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
@@ -69,5 +61,17 @@ public class DraftCMOController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
+    }
+
+    private void setCustomDirectionDropdownLabels(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if (caseData.getOthers() != null) {
+            caseDetails.getData().put("otherPartiesDropdownLabelCMO",
+                draftCMOService.createOtherPartiesAssigneeDropdownKey(caseData.getOthers()));
+        }
+
+        caseDetails.getData().put("respondentsDropdownLabelCMO",
+            draftCMOService.createRespondentAssigneeDropdownKey(caseData.getRespondents1()));
     }
 }

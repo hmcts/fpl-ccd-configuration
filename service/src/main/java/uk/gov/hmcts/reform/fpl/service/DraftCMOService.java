@@ -11,6 +11,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
@@ -28,11 +32,15 @@ import java.util.UUID;
 
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 
 @Service
 public class DraftCMOService {
@@ -41,7 +49,8 @@ public class DraftCMOService {
     private final DirectionHelperService directionHelperService;
 
     @Autowired
-    public DraftCMOService(DateFormatterService dateFormatterService, ObjectMapper mapper,
+    public DraftCMOService(DateFormatterService dateFormatterService,
+                           ObjectMapper mapper,
                            DirectionHelperService directionHelperService) {
         this.mapper = mapper;
         this.dateFormatterService = dateFormatterService;
@@ -80,7 +89,7 @@ public class DraftCMOService {
         return CaseManagementOrder.builder()
             .hearingDate(list.getValue().getLabel())
             .id(list.getValue().getCode())
-            .directions(combineAllDirectionsForCMO(mapper.convertValue(caseData, CaseData.class)))
+            .directions(combineAllDirectionsForCmo(mapper.convertValue(caseData, CaseData.class)))
             .schedule(schedule)
             .recitals(recitals)
             .cmoStatus(cmoStatus)
@@ -112,13 +121,6 @@ public class DraftCMOService {
         }
     }
 
-    public void removeExistingCustomDirections(Map<String, Object> caseData) {
-        caseData.remove("allPartiesCustom");
-        caseData.remove("localAuthorityDirectionsCustom");
-        caseData.remove("cafcassDirectionsCustom");
-        caseData.remove("courtDirectionsCustom");
-    }
-
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
         List<HearingDateDynamicElement> hearingDates = hearingDetails
             .stream()
@@ -138,6 +140,61 @@ public class DraftCMOService {
         }
 
         return hearingDatesDynamic;
+    }
+
+    public String createRespondentAssigneeDropdownKey(List<Element<Respondent>> respondents) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i < respondents.size(); i++) {
+            RespondentParty respondentParty = respondents.get(i).getValue().getParty();
+
+            String key = String.format("Respondent %d - %s", i + 1, getRespondentFullName(respondentParty));
+            stringBuilder.append(key).append("\n\n");
+        }
+
+        return stringBuilder.toString().stripTrailing();
+    }
+
+    public String createOtherPartiesAssigneeDropdownKey(Others others) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (isNotEmpty(others)) {
+            for (int i = 0; i < others.getAllOthers().size(); i++) {
+                Other other = others.getAllOthers().get(i);
+                String key;
+
+                if (i == 0) {
+                    key = String.format("Person 1 - %s", defaultIfNull(other.getName(), EMPTY_PLACEHOLDER));
+                } else {
+                    key = String.format("Other Person %d - %s", i,
+                        defaultIfNull(other.getName(), EMPTY_PLACEHOLDER));
+                }
+
+                stringBuilder.append(key).append("\n\n");
+            }
+        }
+
+        return stringBuilder.toString().stripTrailing();
+    }
+
+    public void prepareCustomDirections(Map<String, Object> data) {
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
+
+        if (!isNull(caseData.getCaseManagementOrder())) {
+            directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
+                .forEach((key, value) -> data.put(key.getValue(), value));
+        } else {
+            removeExistingCustomDirections(data);
+        }
+    }
+
+    private void removeExistingCustomDirections(Map<String, Object> caseData) {
+        caseData.remove("allPartiesCustom");
+        caseData.remove("localAuthorityDirectionsCustom");
+        caseData.remove("cafcassDirectionsCustom");
+        caseData.remove("courtDirectionsCustom");
+        caseData.remove("respondentDirectionsCustom");
+        caseData.remove("otherPartiesDirectionsCustom");
     }
 
     private void prePopulateHearingDateSelection(List<Element<HearingBooking>> hearingDetails,
@@ -160,12 +217,14 @@ public class DraftCMOService {
         hearingDatesDynamic.setValue(listElement);
     }
 
-    private String formatLocalDateToMediumStyle(LocalDate date) {
-        return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
+    private String getRespondentFullName(RespondentParty respondentParty) {
+        String firstName = defaultIfNull(respondentParty.getFirstName(), "");
+        String lastName = defaultIfNull(respondentParty.getLastName(), "");
+
+        return String.format("%s %s", firstName, lastName);
     }
 
-    // Temporary, to be replaced by directionHelperService.combineAllDirections once all directions have been added
-    private List<Element<Direction>> combineAllDirectionsForCMO(CaseData caseData) {
+    private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
         List<Element<Direction>> directions = new ArrayList<>();
 
         directions.addAll(directionHelperService.assignCustomDirections(caseData.getAllPartiesCustom(), ALL_PARTIES));
@@ -178,6 +237,16 @@ public class DraftCMOService {
 
         directions.addAll(directionHelperService.assignCustomDirections(caseData.getCourtDirectionsCustom(), COURT));
 
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getRespondentDirectionsCustom(),
+            PARENTS_AND_RESPONDENTS));
+
+        directions.addAll(directionHelperService.assignCustomDirections(caseData.getOtherPartiesDirectionsCustom(),
+            OTHERS));
+
         return directions;
+    }
+
+    private String formatLocalDateToMediumStyle(LocalDate date) {
+        return dateFormatterService.formatLocalDateToString(date, FormatStyle.MEDIUM);
     }
 }

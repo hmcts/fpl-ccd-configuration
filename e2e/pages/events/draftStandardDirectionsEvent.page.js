@@ -1,6 +1,6 @@
 const { I } = inject();
 const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
-const draftDirections = require('../../fragments/draftDirections');
+const directions = require('../../fragments/directions');
 
 module.exports = {
   staticFields: {
@@ -19,17 +19,17 @@ module.exports = {
   },
 
   async enterDatesForDirections(direction) {
-    await draftDirections.enterDate('allParties', direction);
+    await directions.enterDate('allParties', direction.dueDate);
     await I.retryUntilExists(() => I.click('Continue'), '#localAuthorityDirections');
-    await draftDirections.enterDate('localAuthorityDirections', direction);
+    await directions.enterDate('localAuthorityDirections', direction.dueDate);
     await I.retryUntilExists(() => I.click('Continue'), '#respondentDirections');
-    await draftDirections.enterDate('respondentDirections', direction);
+    await directions.enterDate('respondentDirections', direction.dueDate);
     await I.retryUntilExists(() => I.click('Continue'), '#cafcassDirections');
-    await draftDirections.enterDate('cafcassDirections', direction);
+    await directions.enterDate('cafcassDirections', direction.dueDate);
     await I.retryUntilExists(() => I.click('Continue'), '#otherPartiesDirections');
-    await draftDirections.enterDate('otherPartiesDirections', direction);
+    await directions.enterDate('otherPartiesDirections', direction.dueDate);
     await I.retryUntilExists(() => I.click('Continue'), '#courtDirections');
-    await draftDirections.enterDate('courtDirections', direction);
+    await directions.enterDate('courtDirections', direction.dueDate);
     await I.retryUntilExists(() => I.click('Continue'), '#standardDirectionOrder_orderStatus');
   },
 

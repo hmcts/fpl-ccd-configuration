@@ -64,11 +64,10 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   I.click('Continue');
   await draftCaseManagementOrderEventPage.enterDirection(directions[0]);
   I.click('Continue');
-  await draftCaseManagementOrderEventPage.enterSchedule(schedule);
-  I.click('Continue');
   await I.addAnotherElementToCollection();
   await draftCaseManagementOrderEventPage.enterRecital('Recital 1', 'Recital 1 description');
   I.click('Continue');
+  await draftCaseManagementOrderEventPage.enterSchedule(schedule);
   draftCaseManagementOrderEventPage.markToReviewedBySelf();
   await I.completeEvent('Submit');
   assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview);
@@ -114,7 +113,8 @@ Scenario('Other parties can see the draft CMO when it is marked for party review
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   skipToReview(I);
   draftCaseManagementOrderEventPage.markToBeReviewedByParties();
-  await I.completeEvent('Submit');
+  I.click('Continue');
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
 
   for (let otherPartyDetails of allOtherPartyDetails) {
     await assertUserCanSeeDraftOrdersAndCMO(I, otherPartyDetails, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.partiesReview);
@@ -126,7 +126,6 @@ Scenario('Other parties can see the draft CMO when it is marked for party review
 });
 
 const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
-  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeAnswerInTab(1, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
   I.seeAnswerInTab(1, 'Directions 1', 'Direction title', 'Mock title');
   I.seeAnswerInTab(4, 'Directions 1', 'Description', 'Mock description');
@@ -144,6 +143,17 @@ const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
   I.seeAnswerInTab(4, 'Directions 4', 'Description', 'Mock description');
   I.seeAnswerInTab(5, 'Directions 4', 'For', 'Court');
   I.seeAnswerInTab(6, 'Directions 4', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+  I.seeAnswerInTab(1, 'Directions 5', 'Direction title', 'Mock title');
+  I.seeAnswerInTab(4, 'Directions 5', 'Description', 'Mock description');
+  I.seeAnswerInTab(5, 'Directions 5', 'For', 'Parents and other respondents');
+  I.seeAnswerInTab(6, 'Directions 5', 'Assignee', 'Respondent 1');
+  I.seeAnswerInTab(7, 'Directions 5', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+  I.seeAnswerInTab(1, 'Directions 6', 'Direction title', 'Mock title');
+  I.seeAnswerInTab(4, 'Directions 6', 'Description', 'Mock description');
+  I.seeAnswerInTab(5, 'Directions 6', 'For', 'Other parties');
+  I.seeAnswerInTab(6, 'Directions 6', 'Assignee', 'Person 1');
+  I.seeAnswerInTab(7, 'Directions 6', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+  I.seeAnswerInTab(1, 'Recitals 1', 'Recital title', 'Recital 1');
   I.seeAnswerInTab(1, 'Schedule', 'Do you want to include a schedule?', 'Yes');
   I.seeAnswerInTab(2, 'Schedule', 'Allocation', 'The proceedings continue to be allocated to Paul Wilson');
   I.seeAnswerInTab(3, 'Schedule', 'Application', 'The local authority has applied for a care order');
@@ -161,19 +171,16 @@ const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
 
 const assertUserCannotSeeDraftOrders = async (I, userDetails) => {
   await switchUserAndNavigateToCase(I, userDetails);
-  // Assert that it can't be seen
   I.dontSee('Draft orders', '.tabs .tabs-list');
 };
 
 const assertUserCanSeeDraftOrdersAndCMO = async (I, userDetails, caseViewPage, cmoStatus) => {
   await switchUserAndNavigateToCase(I, userDetails);
-  // Assert that Draft orders can be seen
   I.see('Draft orders', '.tabs .tabs-list');
   assertCanSeeDraftCMO(I, caseViewPage, cmoStatus);
 };
 
 const switchUserAndNavigateToCase = async (I, userDetails) => {
-  // Sign out and login as admin and navigate to the case
   I.signOut();
   await I.signIn(userDetails.email, userDetails.password);
   await I.navigateToCaseDetails(caseId);
