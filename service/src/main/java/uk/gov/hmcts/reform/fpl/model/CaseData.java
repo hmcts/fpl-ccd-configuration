@@ -150,4 +150,5 @@ public class CaseData {
     }
 
     private final CaseManagementOrder caseManagementOrder;
+    private final Others others;
 }
