@@ -42,6 +42,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
 @ActiveProfiles("integration-test")
@@ -63,8 +65,11 @@ class DraftCMOControllerTest {
     private ObjectMapper mapper;
 
     @Test
-    void aboutToStartCallbackShouldPopulateHearingDatesListAndRemoveCustomDirections() throws Exception {
-        Map<String, Object> data = ImmutableMap.of("hearingDetails", hearingDetails);
+    void aboutToStartCallbackShouldPrepareCaseForCMO() throws Exception {
+        Map<String, Object> data = ImmutableMap.of(
+            "hearingDetails", hearingDetails,
+            "respondents1", createRespondents(),
+            "others", createOthers());
 
         List<String> expected = Arrays.asList(
             TODAYS_DATE.plusDays(5).format(dateTimeFormatter),
@@ -74,10 +79,26 @@ class DraftCMOControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
+
+        String parentsAndRespondentsKeyCmo =
+            mapper.convertValue(callbackResponse.getData().get("respondentsDropdownLabelCMO"), String.class);
+        String otherPartiesKeyCMO =
+            mapper.convertValue(callbackResponse.getData().get("otherPartiesDropdownLabelCMO"), String.class);
+
+        assertThat(parentsAndRespondentsKeyCmo).contains(
+            "Respondent 1 - Timothy Jones",
+            "Respondent 2 - Sarah Simpson");
+
+        assertThat(otherPartiesKeyCMO).contains(
+            "Person 1 - Kyle Stafford",
+            "Other Person 1 - Sarah Simpson");
+
         assertThat(callbackResponse.getData()).doesNotContainKey("allPartiesCustom");
         assertThat(callbackResponse.getData()).doesNotContainKey("localAuthorityDirectionsCustom");
         assertThat(callbackResponse.getData()).doesNotContainKey("cafcassDirectionsCustom");
         assertThat(callbackResponse.getData()).doesNotContainKey("courtDirectionsCustom");
+        assertThat(callbackResponse.getData()).doesNotContainKey("respondentDirectionsCustom");
+        assertThat(callbackResponse.getData()).doesNotContainKey("otherPartiesDirectionsCustom");
     }
 
     @Test

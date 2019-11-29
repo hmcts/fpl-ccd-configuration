@@ -47,7 +47,7 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 @Service
 public class CaseDataExtractionService {
 
-    private static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
+    public static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
     private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
