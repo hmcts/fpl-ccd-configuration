@@ -8,6 +8,10 @@
     "DisplayOrder": 1,
     "PostConditionState": "Open",
     "SecurityClassification": "Public",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-initiation/about-to-submit",
+    "RetriesTimeoutURLAboutToSubmitEvent": "1,2,3,4,5",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-initiation/submitted",
+    "RetriesTimeoutURLSubmittedEvent": "1,2,3,4,5",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
@@ -24,6 +28,8 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/enter-children/about-to-submit",
     "EndButtonLabel": "Save and continue"
   },
   {
