@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -14,16 +16,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {CommonCaseDataExtractionService.class, DateFormatterService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, HearingVenueLookUpService.class,
+    DateFormatterService.class})
 class CommonCaseDataExtractionServiceTest {
+    @Autowired
+    private HearingVenueLookUpService hearingVenueLookUpService;
+    private DateFormatterService dateFormatterService = new DateFormatterService();
 
-    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
+    private CommonCaseDataExtractionService commonCaseDataExtractionService;
     private HearingBooking hearingBooking;
 
-    @Autowired
-    CommonCaseDataExtractionServiceTest(
-        CommonCaseDataExtractionService commonCaseDataExtractionService) {
-        this.commonCaseDataExtractionService = commonCaseDataExtractionService;
+    @BeforeEach
+    void setup() {
+        this.commonCaseDataExtractionService = new CommonCaseDataExtractionService(
+            dateFormatterService, hearingVenueLookUpService);
     }
 
     @Test
