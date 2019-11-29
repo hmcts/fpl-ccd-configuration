@@ -116,11 +116,13 @@ public class DirectionHelperService {
         directions.forEach(direction -> responses.stream()
             .filter(response -> response.getDirectionId().equals(direction.getId()))
             .forEach(response -> {
-                direction.getValue().getResponses().removeIf(x ->
-                    responseExists(response, direction) && x.getValue().getAssignee().equals(response.getAssignee()));
+                final List<Element<DirectionResponse>> directionResponses = direction.getValue().getResponses();
+                directionResponses.removeIf(directionResponseElement ->
+                    responseExists(response, direction)
+                    && directionResponseElement.getValue().getAssignee().equals(response.getAssignee())
+                );
 
-                direction.getValue().getResponses()
-                    .add(Element.<DirectionResponse>builder()
+                directionResponses.add(Element.<DirectionResponse>builder()
                         .id(UUID.randomUUID())
                         .value(response)
                         .build());

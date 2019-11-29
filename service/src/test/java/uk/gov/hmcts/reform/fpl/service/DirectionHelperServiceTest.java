@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.assertj.core.util.Lists;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -1057,7 +1056,6 @@ class DirectionHelperServiceTest {
     @Nested
     class AddComplyOnBehalfResponsesToDirectionsInStandardDirectionOrder {
 
-        @Disabled
         @Test
         void shouldAddCafcassResponseWhenValidResponseMadeByCourt() {
             UUID directionId = randomUUID();
@@ -1076,6 +1074,8 @@ class DirectionHelperServiceTest {
                 .id(directionId)
                 .value(Direction.builder()
                     .response(DirectionResponse.builder()
+                        .directionId(directionId)
+                        .assignee(CAFCASS)
                         .complied("Yes")
                         .build())
                     .build())
@@ -1093,7 +1093,6 @@ class DirectionHelperServiceTest {
                 .isEqualTo(caseData.getCafcassDirectionsCustom().get(0).getValue().getResponse());
         }
 
-        @Disabled
         @Test
         void shouldAddResponseForOtherPartiesWhenValidResponseMadeByCourt() {
             UUID directionId = randomUUID();
