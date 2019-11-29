@@ -32,13 +32,14 @@ public class JudgeAndLegalAdvisorHelper {
             return "";
         }
 
-        if (judgeAndLegalAdvisor.getJudgeTitle() == MAGISTRATES) {
-            String magistrateFullName = judgeAndLegalAdvisor.getJudgeFullName();
-            return isBlank(magistrateFullName) ? "Justice of the Peace" : magistrateFullName + " (JP)";
-        } else if (judgeAndLegalAdvisor.getJudgeTitle() == OTHER) {
-            return judgeAndLegalAdvisor.getOtherTitle() + " " + judgeAndLegalAdvisor.getJudgeLastName();
-        } else {
-            return judgeAndLegalAdvisor.getJudgeTitle().getLabel() + " " + judgeAndLegalAdvisor.getJudgeLastName();
+        switch (judgeAndLegalAdvisor.getJudgeTitle()) {
+            case MAGISTRATES:
+                String magistrateFullName = judgeAndLegalAdvisor.getJudgeFullName();
+                return isBlank(magistrateFullName) ? "Justice of the Peace" : magistrateFullName + " (JP)";
+            case OTHER:
+                return judgeAndLegalAdvisor.getOtherTitle() + " " + judgeAndLegalAdvisor.getJudgeLastName();
+            default:
+                return judgeAndLegalAdvisor.getJudgeTitle().getLabel() + " " + judgeAndLegalAdvisor.getJudgeLastName();
         }
     }
 }
