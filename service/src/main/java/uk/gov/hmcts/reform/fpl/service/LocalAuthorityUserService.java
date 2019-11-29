@@ -26,7 +26,7 @@ public class LocalAuthorityUserService {
     private SystemUpdateUserConfiguration userConfig;
     private final AuthTokenGenerator authTokenGenerator;
     private final IdamClient client;
-    private final Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
+    private final Set<String> caseRoles = Set.of("[SOLICITOR]","[CREATOR]");
 
     @Autowired
     public LocalAuthorityUserService(CaseAccessApi caseAccessApi,
