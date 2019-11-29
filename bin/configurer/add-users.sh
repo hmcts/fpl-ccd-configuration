@@ -11,8 +11,6 @@ ${dir}/utils/idam-create-caseworker.sh "sam@hillingdon.gov.uk" "caseworker,casew
 ${dir}/utils/idam-create-caseworker.sh "siva@hillingdon.gov.uk" "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor" "(local-authority)"
 ${dir}/utils/idam-create-caseworker.sh "raghu@swindon.gov.uk" "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor" "(local-authority)"
 ${dir}/utils/idam-create-caseworker.sh "sam@swindon.gov.uk" "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor" "(local-authority)"
-${dir}/utils/idam-create-caseworker.sh "james@swindon.gov.uk" "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor" "(local-authority)"
-
 ${dir}/utils/idam-create-caseworker.sh "raghu@wiltshire.gov.uk" "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor" "(local-authority)"
 ${dir}/utils/idam-create-caseworker.sh "sam@wiltshire.gov.uk" "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor" "(local-authority)"
 ${dir}/utils/idam-create-caseworker.sh "hmcts-admin@example.com" "caseworker,caseworker-publiclaw,caseworker-publiclaw-courtadmin" "(hmcts-admin)"
