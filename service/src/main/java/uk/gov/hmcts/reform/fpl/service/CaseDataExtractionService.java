@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
+import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -35,11 +36,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang.StringUtils.defaultIfBlank;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 
 // Supports SDO case data. Tech debt ticket needed to refactor caseDataExtractionService and NoticeOfProceedingsService
@@ -64,12 +63,13 @@ public class CaseDataExtractionService {
     public Map<String, Object> getStandardOrderDirectionData(CaseData caseData) throws IOException {
         ImmutableMap.Builder data = ImmutableMap.<String, Object>builder();
 
-        if (isNotEmpty(caseData.getStandardDirectionOrder())) {
-            data.put("judgeAndLegalAdvisor", prepareJudgeAndLegalAdvisor(
-                caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor()));
-        } else {
-            data.put("judgeAndLegalAdvisor", prepareJudgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder().build()));
-        }
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = caseData.getStandardDirectionOrder() != null
+            ? caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor() : caseData.getJudgeAndLegalAdvisor();
+
+        data.put("judgeTitleAndName", defaultIfBlank(JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
+            judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
+        data.put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
+            judgeAndLegalAdvisor));
 
         data.put("courtName", caseData.getCaseLocalAuthority() != null
             ? hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName() : EMPTY_PLACEHOLDER);
@@ -98,47 +98,16 @@ public class CaseDataExtractionService {
         return data.build();
     }
 
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> prepareJudgeAndLegalAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        ImmutableMap.Builder map = ImmutableMap.<String, Object>builder();
-
-        if (isEmpty(judgeAndLegalAdvisor)) {
-            return ImmutableMap.of(
-                "judgeTitle", EMPTY_PLACEHOLDER,
-                "legalAdvisorName", EMPTY_PLACEHOLDER
-            );
-        }
-
-        String judgeTitle = EMPTY_PLACEHOLDER;
-
-        if (isNotEmpty(judgeAndLegalAdvisor.getJudgeTitle())) {
-            judgeTitle = defaultIfBlank(judgeAndLegalAdvisor.getJudgeTitle().getLabel(), EMPTY_PLACEHOLDER);
-        }
-
-        map.put("judgeTitle", judgeTitle);
-
-        map.put("legalAdvisorName", defaultIfBlank(judgeAndLegalAdvisor.getLegalAdvisorName(), EMPTY_PLACEHOLDER));
-
-        if (isNotBlank(judgeAndLegalAdvisor.getJudgeLastName())) {
-            map.put("judgeLastName", judgeAndLegalAdvisor.getJudgeLastName());
-        }
-
-        if (isNotBlank(judgeAndLegalAdvisor.getJudgeFullName())) {
-            map.put("judgeFullName", judgeAndLegalAdvisor.getJudgeFullName());
-        }
-
-        return map.build();
-    }
-
     private Map<String, Object> getHearingBookingData(CaseData caseData) {
         if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
-            return ImmutableMap.of(
-                "hearingDate", EMPTY_PLACEHOLDER,
-                "hearingVenue", EMPTY_PLACEHOLDER,
-                "preHearingAttendance", EMPTY_PLACEHOLDER,
-                "hearingTime", EMPTY_PLACEHOLDER,
-                "judgeName", EMPTY_PLACEHOLDER
-            );
+            return ImmutableMap.<String, Object>builder()
+                .put("hearingDate", EMPTY_PLACEHOLDER)
+                .put("hearingVenue", EMPTY_PLACEHOLDER)
+                .put("preHearingAttendance", EMPTY_PLACEHOLDER)
+                .put("hearingTime", EMPTY_PLACEHOLDER)
+                .put("hearingJudgeTitleAndName", EMPTY_PLACEHOLDER)
+                .put("hearingLegalAdvisorName", "")
+                .build();
         }
 
         HearingBooking prioritisedHearingBooking = hearingBookingService.getMostUrgentHearingBooking(caseData
@@ -146,17 +115,19 @@ public class CaseDataExtractionService {
 
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
 
-        return ImmutableMap.of(
-            "hearingDate", commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
+        return ImmutableMap.<String, Object>builder()
+            .put("hearingDate", commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
                 prioritisedHearingBooking)
-                .orElse(""),
-            "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
-            "preHearingAttendance", commonCaseDataExtractionService.extractPrehearingAttendance(
-                prioritisedHearingBooking),
-            "hearingTime", commonCaseDataExtractionService.getHearingTime(prioritisedHearingBooking),
-            "judgeName", prioritisedHearingBooking.getJudgeTitle() + " "
-                + prioritisedHearingBooking.getJudgeName()
-        );
+                .orElse(""))
+            .put("hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue))
+            .put("preHearingAttendance", commonCaseDataExtractionService.extractPrehearingAttendance(
+                prioritisedHearingBooking))
+            .put("hearingTime", commonCaseDataExtractionService.getHearingTime(prioritisedHearingBooking))
+            .put("hearingJudgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
+                prioritisedHearingBooking.getJudgeAndLegalAdvisor()))
+            .put("hearingLegalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
+                prioritisedHearingBooking.getJudgeAndLegalAdvisor()))
+            .build();
     }
 
     private String getOrderTypes(CaseData caseData) {

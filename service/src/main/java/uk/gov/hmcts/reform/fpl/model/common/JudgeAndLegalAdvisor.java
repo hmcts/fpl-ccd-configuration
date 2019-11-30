@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 @Builder
 public class JudgeAndLegalAdvisor {
     private final JudgeOrMagistrateTitle judgeTitle;
+    private final String otherTitle;
     private final String judgeLastName;
     private final String judgeFullName;
     private final String legalAdvisorName;
