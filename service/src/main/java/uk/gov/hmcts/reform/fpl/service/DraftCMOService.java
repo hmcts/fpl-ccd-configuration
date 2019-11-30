@@ -256,7 +256,7 @@ public class DraftCMOService {
         cmoTemplateData.putAll(getGroupedCMODirections(caseData));
 
         cmoTemplateData.put("draftbackground", String.format("image:base64:%1$s",
-            draftWatermarkGeneratorService.generateDraftWatermark()));
+            draftWatermarkGeneratorService.generateDraftWatermarkEncodedString()));
 
         // TODO: 30/11/2019 Include Schedules and Recitals
 
@@ -309,7 +309,7 @@ public class DraftCMOService {
             .filter(Objects::nonNull)
             .findFirst()
             .map(Respondent::getParty)
-            .map(RespondentParty::getFullName)
+            .map(RespondentParty::buildFullName)
             .orElse("");
     }
 

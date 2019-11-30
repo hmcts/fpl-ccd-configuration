@@ -10,8 +10,7 @@ import java.util.Base64;
 @Service
 @Slf4j
 public class DocmosisDraftWatermarkGeneratorService {
-    // TODO: 30/11/2019 TestMe!
-    String generateDraftWatermark() {
+    public String generateDraftWatermarkEncodedString() {
         InputStream is = getClass().getResourceAsStream("/assets/images/draft-watermark.png");
         byte[] fileContent = new byte[0];
         try {

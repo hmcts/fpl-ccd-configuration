@@ -93,7 +93,7 @@ public class CaseDataExtractionService {
         if (isNotEmpty(caseData.getStandardDirectionOrder())
             && caseData.getStandardDirectionOrder().getOrderStatus() != SEALED) {
             data.put("draftbackground", String.format("image:base64:%1$s",
-                draftWatermarkGeneratorService.generateDraftWatermark()));
+                draftWatermarkGeneratorService.generateDraftWatermarkEncodedString()));
         }
 
         return data.build();
