@@ -206,6 +206,7 @@ public class DraftCMOService {
 
     @SuppressWarnings("unchecked")
     public Map<String, Object> generateCMOTemplateData(Map<String, Object> caseDataMap) throws IOException {
+        // TODO: 30/11/2019 TestMe
         ImmutableMap.Builder cmoTemplateData = ImmutableMap.<String, Object>builder();
 
         DynamicList hearingDateList = mapper.convertValue(caseDataMap.get("cmoHearingDateList"), DynamicList.class);
@@ -218,7 +219,11 @@ public class DraftCMOService {
         cmoTemplateData.put("complianceDeadline", caseData.getDateSubmitted() != null
             ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted().plusWeeks(26),
             FormatStyle.LONG) : EMPTY_PLACEHOLDER);
-        cmoTemplateData.put("children", caseDataExtractionService.getChildrenDetails(caseData));
+
+        List<Map<String, String>> childrenInCase = caseDataExtractionService.getChildrenDetails(caseData);
+        cmoTemplateData.put("children", childrenInCase);
+        cmoTemplateData.put("numberOfChildren", childrenInCase.size());
+
         cmoTemplateData.put("courtName", defaultIfBlank(
             hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName(), EMPTY_PLACEHOLDER));
 
@@ -258,7 +263,12 @@ public class DraftCMOService {
         cmoTemplateData.put("draftbackground", String.format("image:base64:%1$s",
             draftWatermarkGeneratorService.generateDraftWatermarkEncodedString()));
 
-        // TODO: 30/11/2019 Include Schedules and Recitals
+        // TODO: 30/11/2019 Include Schedules and Recitals and below listed placeholder keys
+        /*
+            "schedulesProvided",
+            "caseManagementNumber"
+            "recitalsProvided"
+         */
 
         return cmoTemplateData.build();
     }
