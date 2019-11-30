@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -21,11 +22,14 @@ import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
@@ -40,7 +44,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-import static org.springframework.util.CollectionUtils.isEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultString;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -48,6 +52,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -62,6 +68,8 @@ public class DraftCMOService {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+    private final OrdersLookupService ordersLookupService;
+    private final DocmosisDraftWatermarkGeneratorService draftWatermarkGeneratorService;
 
     public Map<String, Object> extractIndividualCaseManagementOrderObjects(
         CaseManagementOrder caseManagementOrder,
@@ -197,12 +205,12 @@ public class DraftCMOService {
     }
 
     @SuppressWarnings("unchecked")
-    public Map<String, Object> generateCMOTemplateData(Map<String, Object> caseDataMap) {
+    public Map<String, Object> generateCMOTemplateData(Map<String, Object> caseDataMap) throws IOException {
         ImmutableMap.Builder cmoTemplateData = ImmutableMap.<String, Object>builder();
 
         DynamicList hearingDateList = mapper.convertValue(caseDataMap.get("cmoHearingDateList"), DynamicList.class);
-
         CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
         cmoTemplateData.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_PLACEHOLDER));
         cmoTemplateData.put("generationDate",
@@ -231,22 +239,70 @@ public class DraftCMOService {
                 localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode),
                 EMPTY_PLACEHOLDER));
 
-        // defaulting to EMPTY for now as we currently do not capture
+        // defaulting to EMPTY_PLACEHOLDER for now as we currently do not capture
         cmoTemplateData.put("localAuthoritySolicitorName", EMPTY_PLACEHOLDER);
         cmoTemplateData.put("localAuthoritySolicitorPhoneNumber", EMPTY_PLACEHOLDER);
 
         cmoTemplateData.put("respondentOneName", getFirstRespondentFullname(caseData));
-        /*
-         * we need hearingBooking, directions
-         */
 
         cmoTemplateData.putAll(getHearingBooking(caseData, hearingDateList));
 
-        return new HashMap<>();
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getJudgeAndLegalAdvisor(caseData, caseManagementOrder);
+        cmoTemplateData.put("judgeTitleAndName", defaultString(formatJudgeTitleAndName(
+            judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
+        cmoTemplateData.put("legalAdvisorName", defaultString(getLegalAdvisorName(
+            judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
+
+        cmoTemplateData.putAll(getGroupedCMODirections(caseData));
+
+        cmoTemplateData.put("draftbackground", String.format("image:base64:%1$s",
+            draftWatermarkGeneratorService.generateDraftWatermark()));
+
+        // TODO: 30/11/2019 Include Schedules and Recitals
+
+        return cmoTemplateData.build();
+    }
+
+    private JudgeAndLegalAdvisor getJudgeAndLegalAdvisor(final CaseData caseData,
+                                                         final CaseManagementOrder caseManagementOrder) {
+        return isNotEmpty(caseManagementOrder)
+            ? defaultIfNull(caseManagementOrder.getJudgeAndLegalAdvisor(), null) :
+            caseData.getJudgeAndLegalAdvisor();
+    }
+
+    private Map<String, List<Map<String, String>>> getGroupedCMODirections(CaseData caseData) throws IOException {
+        OrderDefinition caseManagementOrderDefinition = ordersLookupService.getDirectionOrder();
+
+        if (isNull(caseData.getCaseManagementOrder())) {
+            return ImmutableMap.of();
+        }
+
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
+
+        Map<DirectionAssignee, List<Element<Direction>>> groupedDirections =
+            directionHelperService.sortDirectionsByAssignee(directionHelperService.numberDirections(
+                caseManagementOrder.getDirections()));
+
+        ImmutableMap.Builder<String, List<Map<String, String>>> formattedDirections = ImmutableMap.builder();
+
+        groupedDirections.forEach((key, value) -> {
+            List<Map<String, String>> directionsList = value.stream()
+                .map(Element::getValue)
+                .filter(direction -> !"No".equals(direction.getDirectionNeeded()))
+                .map(direction -> ImmutableMap.of(
+                    "title", caseDataExtractionService.formatTitle(
+                        direction, caseManagementOrderDefinition.getDirections()),
+                    "body", defaultIfNull(direction.getDirectionText(), EMPTY_PLACEHOLDER)))
+                .collect(toList());
+
+            formattedDirections.put(key.getValue(), directionsList);
+        });
+
+        return formattedDirections.build();
     }
 
     private static String getFirstRespondentFullname(final CaseData caseData) {
-        return isEmpty(caseData.getRespondents1()) ? "" : caseData.getRespondents1()
+        return caseData.getRespondents1()
             .stream()
             .filter(Objects::nonNull)
             .map(Element::getValue)
@@ -258,7 +314,6 @@ public class DraftCMOService {
     }
 
     private Map<String, Object> getHearingBooking(final CaseData caseData, DynamicList hearingDateList) {
-
         HearingBooking hearingBooking = caseData.getHearingDetails()
             .stream()
             .filter(element -> element.getId().equals(hearingDateList.getValue().getCode()))
@@ -299,9 +354,8 @@ public class DraftCMOService {
     }
 
     private String getRespondentFullName(RespondentParty respondentParty) {
-        String firstName = defaultIfNull(respondentParty.getFirstName(), "");
-        String lastName = defaultIfNull(respondentParty.getLastName(), "");
-
+        String firstName = defaultString(respondentParty.getFirstName());
+        String lastName = defaultString(respondentParty.getLastName());
         return String.format("%s %s", firstName, lastName);
     }
 

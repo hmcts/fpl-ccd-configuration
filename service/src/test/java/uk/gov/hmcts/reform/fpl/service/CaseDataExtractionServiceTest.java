@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStanda
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, JsonOrdersLookupService.class,
-    HearingVenueLookUpService.class})
+    HearingVenueLookUpService.class, DocmosisDraftWatermarkGeneratorService.class})
 class CaseDataExtractionServiceTest {
     @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
 
@@ -47,6 +47,9 @@ class CaseDataExtractionServiceTest {
 
     @Autowired
     private HearingVenueLookUpService hearingVenueLookUpService;
+
+    @Autowired
+    private DocmosisDraftWatermarkGeneratorService draftWatermarkGeneratorService;
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
@@ -65,7 +68,7 @@ class CaseDataExtractionServiceTest {
         // required for DI
         this.caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
             hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService,
-            hearingVenueLookUpService, commonCaseDataExtraction);
+            hearingVenueLookUpService, commonCaseDataExtraction, draftWatermarkGeneratorService);
     }
 
     @Test

@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
+import java.io.IOException;
 import java.util.Map;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -69,7 +70,7 @@ public class DraftCMOController {
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
         @RequestBody CallbackRequest callbackRequest,
         @RequestHeader("authorization") String authorization,
-        @RequestHeader("userId") String userId) {
+        @RequestHeader("userId") String userId) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final Map<String, Object> data = caseDetails.getData();
 
