@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
@@ -25,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
@@ -47,8 +50,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, JsonOrdersLookupService.class,
-    HearingVenueLookUpService.class, DocmosisDocumentGeneratorService.class})
+@ContextConfiguration(classes = {
+    JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class,
+    DocmosisDocumentGeneratorService.class, RestTemplate.class, DocmosisConfiguration.class})
 class DraftCMOServiceTest {
     private final LocalDateTime date = LocalDateTime.now();
     private final String localAuthorityCode = "example";
@@ -226,19 +230,6 @@ class DraftCMOServiceTest {
         assertThat(data.get("reviewCaseManagementOrder")).extracting("cmoStatus").isNull();
     }
 
-
-    private DynamicList getDynamicList() {
-        DynamicList dynamicList = draftCMOService.buildDynamicListFromHearingDetails(createHearingBookings(date));
-
-        DynamicListElement listElement = DynamicListElement.builder()
-            .label(formatLocalDateToMediumStyle(5))
-            .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-            .build();
-
-        dynamicList.setValue(listElement);
-        return dynamicList;
-    }
-
     @Test
     void shouldMoveDirectionsToCaseDetailsWhenCMOExistsWithDirections() {
         Map<String, Object> caseData = new HashMap<>();
@@ -273,6 +264,18 @@ class DraftCMOServiceTest {
             "courtDirectionsCustom",
             "otherPartiesDirections",
             "respondentDirections");
+    }
+
+    private DynamicList getDynamicList() {
+        DynamicList dynamicList = draftCMOService.buildDynamicListFromHearingDetails(createHearingBookings(date));
+
+        DynamicListElement listElement = DynamicListElement.builder()
+            .label(formatLocalDateToMediumStyle(5))
+            .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+            .build();
+
+        dynamicList.setValue(listElement);
+        return dynamicList;
     }
 
     private List<Element<HearingBooking>> createHearingBookings(LocalDateTime now) {
@@ -349,6 +352,46 @@ class DraftCMOServiceTest {
             assertThat(data).doesNotContainKeys(add(keys, "sharedDraftCMO"));
             assertThat(data).containsKey("caseManagementOrder");
         }
+    }
 
+    @Nested
+    class GenerateTemplateData {
+        @Test
+        void shouldReturnEmptyMapValuesWhenCaseDataIsEmpty() throws IOException {
+            final Map<String, Object> templateData = draftCMOService.generateCMOTemplateData(ImmutableMap.of());
+
+            assertThat(templateData.get("judgeTitleAndName")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("legalAdvisorName")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("courtName")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("familyManCaseNumber")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("generationDate")).isEqualTo(dateFormatterService
+                .formatLocalDateToString(date.toLocalDate(), FormatStyle.LONG));
+            assertThat(templateData.get("complianceDeadline")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("children")).isEqualTo(ImmutableList.of());
+            assertThat(templateData.get("numberOfChildren")).isEqualTo(0);
+            assertThat(templateData.get("courtName")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("applicantName")).isEqualTo("");
+            assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
+            assertThat(templateData.get("respondentsProvided")).isEqualTo(false);
+            assertThat(templateData.get("localAuthoritySolicitorEmail")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("localAuthorityName")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("localAuthoritySolicitorName")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("localAuthoritySolicitorPhoneNumber")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("respondentOneName")).asString().isBlank();
+            assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("judgeName")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("judgeTitleAndName")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("legalAdvisorName")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("allParties")).isNull();
+            assertThat(templateData.get("localAuthorityDirections")).isNull();
+            assertThat(templateData.get("respondentDirections")).isNull();
+            assertThat(templateData.get("cafcassDirections")).isNull();
+            assertThat(templateData.get("otherPartiesDirections")).isNull();
+            assertThat(templateData.get("courtDirections")).isNull();
+
+        }
     }
 }
