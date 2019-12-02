@@ -100,10 +100,13 @@ public class DraftCMOService {
         DynamicList list = mapper.convertValue(caseData.get("cmoHearingDateList"), DynamicList.class);
         Map<String, Object> reviewCaseManagementOrder = mapper.convertValue(
             caseData.get("reviewCaseManagementOrder"), new TypeReference<>() {});
-        CMOStatus cmoStatus = mapper.convertValue(reviewCaseManagementOrder.get("cmoStatus"), CMOStatus.class);
+        CMOStatus cmoStatus = null;
+        if (reviewCaseManagementOrder != null) {
+            cmoStatus = mapper.convertValue(reviewCaseManagementOrder.get("cmoStatus"), CMOStatus.class);
+            // TODO: 29/11/2019 Extract orderDoc
+        }
         Schedule schedule = mapper.convertValue(caseData.get("schedule"), Schedule.class);
         List<Element<Recital>> recitals = mapper.convertValue(caseData.get("recitals"), new TypeReference<>() {});
-        // TODO: 29/11/2019 Extract orderDoc
 
         return CaseManagementOrder.builder()
             .hearingDate(list.getValue().getLabel())
@@ -216,7 +219,7 @@ public class DraftCMOService {
 
         DynamicList hearingDateList = mapper.convertValue(caseDataMap.get("cmoHearingDateList"), DynamicList.class);
         CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
-        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
+        CaseManagementOrder caseManagementOrder = prepareCMO(caseDataMap);
 
         cmoTemplateData.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_PLACEHOLDER));
         cmoTemplateData.put("generationDate",
@@ -263,16 +266,18 @@ public class DraftCMOService {
         cmoTemplateData.put("legalAdvisorName", defaultString(getLegalAdvisorName(
             judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
 
-        cmoTemplateData.putAll(getGroupedCMODirections(caseData));
+        cmoTemplateData.putAll(getGroupedCMODirections(caseManagementOrder));
 
         cmoTemplateData.put("draftbackground", String.format("image:base64:%1$s",
             docmosisDocumentGeneratorService.generateDraftWatermarkEncodedString()));
 
         List<Map<String, String>> recitals = buildRecitals(caseManagementOrder.getRecitals());
         cmoTemplateData.put("recitals", recitals);
-        cmoTemplateData.put("recitalsProvided", recitals.size());
+        cmoTemplateData.put("recitalsProvided", isNotEmpty(recitals));
 
-        cmoTemplateData.put("schedule", caseManagementOrder.getSchedule());
+        Map<String, String> scheduleMap = mapper.convertValue(caseManagementOrder.getSchedule(),
+            new TypeReference<>() {});
+        cmoTemplateData.putAll(scheduleMap);
         cmoTemplateData.put("scheduleProvided", isNotEmpty(caseManagementOrder.getSchedule()));
 
         //defaulting as 1 as we currently do not have impl for multiple CMos
@@ -288,14 +293,13 @@ public class DraftCMOService {
             caseData.getJudgeAndLegalAdvisor();
     }
 
-    private Map<String, List<Map<String, String>>> getGroupedCMODirections(CaseData caseData) throws IOException {
+    private Map<String, List<Map<String, String>>> getGroupedCMODirections(CaseManagementOrder caseManagementOrder)
+        throws IOException {
         OrderDefinition caseManagementOrderDefinition = ordersLookupService.getDirectionOrder();
 
-        if (isNull(caseData.getCaseManagementOrder())) {
+        if (isNull(caseManagementOrder)) {
             return ImmutableMap.of();
         }
-
-        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
         Map<DirectionAssignee, List<Element<Direction>>> groupedDirections =
             directionHelperService.sortDirectionsByAssignee(directionHelperService.numberDirections(
