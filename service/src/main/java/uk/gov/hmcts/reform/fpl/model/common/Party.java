@@ -25,6 +25,6 @@ public class Party {
     public final Telephone telephoneNumber;
 
     public String buildFullName() {
-        return String.format("%s %s", defaultString(firstName), defaultString(lastName));
+        return String.format("%s %s", defaultString(firstName), defaultString(lastName)).trim();
     }
 }

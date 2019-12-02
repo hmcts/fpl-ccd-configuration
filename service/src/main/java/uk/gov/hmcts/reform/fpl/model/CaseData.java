@@ -53,20 +53,12 @@ public class CaseData {
     @NotNull(message = "You need to add details to respondents")
     private final List<@NotNull(message = "You need to add details to respondents") Element<Respondent>> respondents1;
 
-    @Valid
-    private final Respondent getFirstRespondent() {
-        if (isEmpty(respondents1)) {
-            return Respondent.builder().build();
-        }
-
-        return respondents1.get(0).getValue();
-    }
-
     private final Proceeding proceeding;
 
     @NotNull(message = "You need to add details to solicitor")
     @Valid
     private final Solicitor solicitor;
+
     private final FactorsParenting factorsParenting;
     private final Allocation allocationProposal;
     private final Allocation allocationDecision;
@@ -137,6 +129,7 @@ public class CaseData {
     private final List<Element<HearingBooking>> hearingDetails;
 
     private LocalDate dateSubmitted;
+
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
@@ -150,5 +143,19 @@ public class CaseData {
     }
 
     private final CaseManagementOrder caseManagementOrder;
+
     private final Others others;
+
+    public String buildFirstRespondentFullName() {
+        Respondent respondent;
+        if (isEmpty(respondents1)) {
+            respondent = Respondent.builder()
+                .party(RespondentParty.builder().build())
+                .build();
+        } else {
+            respondent = respondents1.get(0).getValue();
+        }
+
+        return respondent.getParty().buildFullName();
+    }
 }
