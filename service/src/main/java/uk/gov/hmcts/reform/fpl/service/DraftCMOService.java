@@ -266,14 +266,15 @@ public class DraftCMOService {
         cmoTemplateData.put("draftbackground", String.format("image:base64:%1$s",
             docmosisDocumentGeneratorService.generateDraftWatermarkEncodedString()));
 
-        // TODO: 30/11/2019 Include Schedule and below listed placeholder keys
         List<Map<String, String>> recitals = buildRecitals(caseManagementOrder.getRecitals());
         cmoTemplateData.put("recitals", recitals);
         cmoTemplateData.put("recitalsProvided", recitals.size());
-        /*
-            "schedulesProvided",
-            "caseManagementNumber"
-         */
+
+        cmoTemplateData.put("schedule", caseManagementOrder.getSchedule());
+        cmoTemplateData.put("scheduleProvided", isNotEmpty(caseManagementOrder.getSchedule()));
+
+        //defaulting as 1 as we currently do not have impl for multiple CMos
+        cmoTemplateData.put("caseManagementNumber", 1);
 
         return cmoTemplateData.build();
     }
