@@ -278,12 +278,13 @@ public class DraftCMOService {
                 "localAuthorityName", EMPTY_PLACEHOLDER,
                 "localAuthoritySolicitorName", EMPTY_PLACEHOLDER,
                 "localAuthoritySolicitorPhoneNumber", EMPTY_PLACEHOLDER
-                );
+            );
         }
 
         // defaulting to EMPTY_PLACEHOLDER for now as we currently do not capture
-        return ImmutableMap.of("localAuthoritySolicitorEmail",
-            localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode)
+        return ImmutableMap.of(
+            "localAuthoritySolicitorEmail", localAuthorityEmailLookupConfiguration
+                .getLocalAuthority(localAuthorityCode)
                 .map(LocalAuthorityEmailLookupConfiguration.LocalAuthority::getEmail)
                 .orElse(""),
             "localAuthorityName", defaultIfBlank(

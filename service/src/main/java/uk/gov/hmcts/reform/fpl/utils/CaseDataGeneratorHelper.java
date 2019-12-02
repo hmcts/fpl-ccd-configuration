@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -23,6 +24,8 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.Recital;
+import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
@@ -376,5 +379,49 @@ public class CaseDataGeneratorHelper {
             Element.<Direction>builder()
                 .value(createCustomDirection(OTHERS))
                 .build());
+    }
+
+    public static CaseManagementOrder createCMO(UUID uuid, boolean includeSchedule) {
+        return CaseManagementOrder.builder()
+            .id(uuid)
+            .directions(createCmoDirections())
+            .schedule(createSchedule(includeSchedule))
+            .recitals(createRecitals())
+            .hearingDate("")
+            .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker", "Judy", null, HER_HONOUR_JUDGE))
+            .build();
+    }
+
+    public static List<Element<Recital>> createRecitals() {
+        return ImmutableList.of(
+            Element.<Recital>builder()
+                .value(Recital.builder()
+                    .title("A title")
+                    .description("A description")
+                    .build())
+                .build()
+        );
+    }
+
+    public static Schedule createSchedule(boolean includeSchedule) {
+        if (!includeSchedule) {
+            return Schedule.builder()
+                .includeSchedule("No")
+                .build();
+        }
+
+        return Schedule.builder()
+            .allocation("An allocation")
+            .alternativeCarers("Alternatives")
+            .application("An application")
+            .childrensCurrentArrangement("Current arrangement")
+            .includeSchedule("Yes")
+            .keyIssues("Key Issues")
+            .partiesPositions("Some positions")
+            .threshold("threshold")
+            .timetableForChildren("time goes by")
+            .timetableForProceedings("so slowly")
+            .todaysHearing("21/12/2050")
+            .build();
     }
 }
