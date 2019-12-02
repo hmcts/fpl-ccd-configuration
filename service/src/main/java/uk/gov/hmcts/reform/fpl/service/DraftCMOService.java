@@ -167,7 +167,7 @@ public class DraftCMOService {
         for (int i = 0; i < respondents.size(); i++) {
             RespondentParty respondentParty = respondents.get(i).getValue().getParty();
 
-            String key = String.format("Respondent %d - %s", i + 1, getRespondentFullName(respondentParty));
+            String key = String.format("Respondent %d - %s", i + 1, respondentParty.buildFullName());
             stringBuilder.append(key).append("\n\n");
         }
 
@@ -373,12 +373,6 @@ public class DraftCMOService {
             .build();
 
         hearingDatesDynamic.setValue(listElement);
-    }
-
-    private String getRespondentFullName(RespondentParty respondentParty) {
-        String firstName = defaultString(respondentParty.getFirstName());
-        String lastName = defaultString(respondentParty.getLastName());
-        return String.format("%s %s", firstName, lastName);
     }
 
     private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
