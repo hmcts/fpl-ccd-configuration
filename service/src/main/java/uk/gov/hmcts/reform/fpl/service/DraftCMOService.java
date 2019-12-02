@@ -258,11 +258,12 @@ public class DraftCMOService {
 
         List<Map<String, String>> recitals = buildRecitals(caseManagementOrder.getRecitals());
         cmoTemplateData.put("recitals", recitals);
-        cmoTemplateData.put("recitalsProvided", recitals.size());
+        cmoTemplateData.put("recitalsProvided", isNotEmpty(recitals));
 
+        final Schedule schedule = caseManagementOrder.getSchedule();
         // Have to provide something as ImmutableMap does not allow null values
-        cmoTemplateData.put("schedule", defaultIfNull(caseManagementOrder.getSchedule(), Schedule.builder().build()));
-        cmoTemplateData.put("scheduleProvided", (caseManagementOrder.getSchedule() != null));
+        cmoTemplateData.put("schedule", defaultIfNull(schedule, Schedule.builder().build()));
+        cmoTemplateData.put("scheduleProvided", schedule != null && "Yes".equals(schedule.getIncludeSchedule()));
 
         //defaulting as 1 as we currently do not have impl for multiple CMos
         cmoTemplateData.put("caseManagementNumber", 1);

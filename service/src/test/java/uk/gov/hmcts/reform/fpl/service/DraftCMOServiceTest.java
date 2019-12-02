@@ -391,7 +391,11 @@ class DraftCMOServiceTest {
             assertThat(templateData.get("cafcassDirections")).isNull();
             assertThat(templateData.get("otherPartiesDirections")).isNull();
             assertThat(templateData.get("courtDirections")).isNull();
-
+            assertThat(templateData.get("recitals")).isEqualTo(ImmutableList.of());
+            assertThat(templateData.get("recitalsProvided")).isEqualTo(false);
+            assertThat(templateData.get("schedule")).isEqualTo(Schedule.builder().build());
+            assertThat(templateData.get("scheduleProvided")).isEqualTo(false);
+            assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
         }
     }
 }
