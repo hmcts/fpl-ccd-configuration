@@ -55,7 +55,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
 @Service
@@ -67,7 +66,6 @@ public class DraftCMOService {
     private final DateFormatterService dateFormatterService;
     private final DirectionHelperService directionHelperService;
     private final CaseDataExtractionService caseDataExtractionService;
-    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
@@ -258,11 +256,14 @@ public class DraftCMOService {
 
         cmoTemplateData.put("respondentOneName", getFirstRespondentFullName(caseData));
 
-        cmoTemplateData.putAll(getHearingBooking(caseData, hearingDateList));
+        cmoTemplateData.putAll(getEmptyHearingBookingData());
 
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getJudgeAndLegalAdvisor(caseData, caseManagementOrder);
-        cmoTemplateData.put("judgeTitleAndName", defaultString(formatJudgeTitleAndName(
-            judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
+        HearingBooking hearingBooking = getHearingBooking(caseData, hearingDateList);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
+        //EMPTY_PLACEHOLDER given template definition
+        cmoTemplateData.put("judgeTitle", EMPTY_PLACEHOLDER);
+        cmoTemplateData.put("judgeName", defaultString(judgeAndLegalAdvisor.getJudgeLastName(),
+            EMPTY_PLACEHOLDER));
         cmoTemplateData.put("legalAdvisorName", defaultString(getLegalAdvisorName(
             judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
 
@@ -286,15 +287,8 @@ public class DraftCMOService {
         return cmoTemplateData.build();
     }
 
-    private JudgeAndLegalAdvisor getJudgeAndLegalAdvisor(final CaseData caseData,
-                                                         final CaseManagementOrder caseManagementOrder) {
-        return isNotEmpty(caseManagementOrder)
-            ? defaultIfNull(caseManagementOrder.getJudgeAndLegalAdvisor(), null) :
-            caseData.getJudgeAndLegalAdvisor();
-    }
-
-    private Map<String, List<Map<String, String>>> getGroupedCMODirections(CaseManagementOrder caseManagementOrder)
-        throws IOException {
+    private Map<String, List<Map<String, String>>> getGroupedCMODirections(
+        final CaseManagementOrder caseManagementOrder) throws IOException {
         OrderDefinition caseManagementOrderDefinition = ordersLookupService.getDirectionOrder();
 
         if (isNull(caseManagementOrder)) {
@@ -327,15 +321,23 @@ public class DraftCMOService {
         return caseData.buildFirstRespondentFullName();
     }
 
-    private Map<String, Object> getHearingBooking(final CaseData caseData, DynamicList hearingDateList) {
-        HearingBooking hearingBooking = caseData.getHearingDetails()
+    private HearingBooking getHearingBooking(final CaseData caseData, DynamicList hearingDateList) {
+        return caseData.getHearingDetails()
             .stream()
             .filter(element -> element.getId().equals(hearingDateList.getValue().getCode()))
             .findFirst()
             .map(Element::getValue)
-            .orElse(null);
+            .orElse(HearingBooking.builder().build());
+    }
 
-        return commonCaseDataExtractionService.getHearingBookingData(hearingBooking);
+    public Map<String, Object> getEmptyHearingBookingData() {
+        //passing in EMPTY_PLACEHOLDER following template definition
+        return ImmutableMap.of(
+            "hearingDate", EMPTY_PLACEHOLDER,
+            "hearingVenue", EMPTY_PLACEHOLDER,
+            "preHearingAttendance", EMPTY_PLACEHOLDER,
+            "hearingTime", EMPTY_PLACEHOLDER
+        );
     }
 
     private List<Map<String, String>> buildRecitals(final List<Element<Recital>> recitals) {

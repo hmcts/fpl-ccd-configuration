@@ -1,31 +1,21 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingVenue;
-import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
-import java.util.Map;
 import java.util.Optional;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @Service
 public class CommonCaseDataExtractionService {
     private final DateFormatterService dateFormatterService;
-    private final HearingVenueLookUpService hearingVenueLookUpService;
 
     @Autowired
-    public CommonCaseDataExtractionService(DateFormatterService dateFormatterService,
-                                           HearingVenueLookUpService hearingVenueLookUpService) {
+    public CommonCaseDataExtractionService(DateFormatterService dateFormatterService) {
         this.dateFormatterService = dateFormatterService;
-        this.hearingVenueLookUpService = hearingVenueLookUpService;
     }
 
     public String getHearingTime(HearingBooking hearingBooking) {
@@ -62,29 +52,6 @@ public class CommonCaseDataExtractionService {
         LocalDateTime time = calculatePrehearingAttendance(booking.getStartDate());
 
         return booking.hasDatesOnSameDay() ? formatTime(time) : formatDateTimeWithYear(time);
-    }
-
-    public Map<String, Object> getHearingBookingData(final HearingBooking hearingBooking) {
-        if (isEmpty(hearingBooking)) {
-            return ImmutableMap.of(
-                "hearingDate", EMPTY_PLACEHOLDER,
-                "hearingVenue", EMPTY_PLACEHOLDER,
-                "preHearingAttendance", EMPTY_PLACEHOLDER,
-                "hearingTime", EMPTY_PLACEHOLDER,
-                "judgeName", EMPTY_PLACEHOLDER
-            );
-        }
-
-        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearingBooking.getVenue());
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
-
-        return ImmutableMap.of(
-            "hearingDate", getHearingDateIfHearingsOnSameDay(hearingBooking).orElse(""),
-            "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
-            "preHearingAttendance", extractPrehearingAttendance(hearingBooking),
-            "hearingTime", getHearingTime(hearingBooking),
-            "judgeName", formatJudgeTitleAndName(judgeAndLegalAdvisor)
-        );
     }
 
     private LocalDateTime calculatePrehearingAttendance(LocalDateTime dateTime) {
