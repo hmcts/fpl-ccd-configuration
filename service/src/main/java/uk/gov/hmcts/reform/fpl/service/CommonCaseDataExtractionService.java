@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 
 @Service
 public class CommonCaseDataExtractionService {
@@ -83,8 +84,7 @@ public class CommonCaseDataExtractionService {
             "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
             "preHearingAttendance", extractPrehearingAttendance(hearingBooking),
             "hearingTime", getHearingTime(hearingBooking),
-            "judgeName", String.format("%s %s", judgeAndLegalAdvisor.getJudgeTitle(),
-                judgeAndLegalAdvisor.getJudgeFullName())
+            "judgeName", formatJudgeTitleAndName(judgeAndLegalAdvisor)
         );
     }
 
