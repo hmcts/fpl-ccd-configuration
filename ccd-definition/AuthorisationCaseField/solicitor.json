@@ -10,7 +10,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherCourtAdminDocuments",
-    "UserRole": "[SOLICITOR]",
+    "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRU"
   }
 ]
