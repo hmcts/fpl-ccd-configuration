@@ -30,7 +30,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CaseManagementOrderAction",
-    "ListElementCode": "judgeRequestedChange",
+    "ListElementCode": "changeRequestedByJudge",
     "FieldType": "TextArea",
     "ElementLabel": "What do they need to change?",
     "FieldShowCondition": "cmoActionType=\"JUDGE_REQUESTED_CHANGE\"",

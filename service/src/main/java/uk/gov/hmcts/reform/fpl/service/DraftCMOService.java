@@ -5,9 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrderAction;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
@@ -15,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
@@ -47,14 +51,20 @@ public class DraftCMOService {
     private final ObjectMapper mapper;
     private final DateFormatterService dateFormatterService;
     private final DirectionHelperService directionHelperService;
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+    private final UploadDocumentService uploadDocumentService;
 
     @Autowired
     public DraftCMOService(DateFormatterService dateFormatterService,
                            ObjectMapper mapper,
-                           DirectionHelperService directionHelperService) {
+                           DirectionHelperService directionHelperService,
+                           DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
+                           UploadDocumentService uploadDocumentService) {
         this.mapper = mapper;
         this.dateFormatterService = dateFormatterService;
         this.directionHelperService = directionHelperService;
+        this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
+        this.uploadDocumentService = uploadDocumentService;
     }
 
     public Map<String, Object> extractIndividualCaseManagementOrderObjects(
@@ -86,6 +96,8 @@ public class DraftCMOService {
         CMOStatus cmoStatus = mapper.convertValue(reviewCaseManagementOrder.get("cmoStatus"), CMOStatus.class);
         Schedule schedule = mapper.convertValue(caseData.get("schedule"), Schedule.class);
         List<Element<Recital>> recitals = mapper.convertValue(caseData.get("recitals"), new TypeReference<>() {});
+        CaseManagementOrderAction caseManagementOrderAction = mapper.convertValue(
+            caseData.get("caseManagementOrderAction"), CaseManagementOrderAction.class);
         // TODO: 29/11/2019 Extract orderDoc
 
         return CaseManagementOrder.builder()
@@ -95,6 +107,7 @@ public class DraftCMOService {
             .schedule(schedule)
             .recitals(recitals)
             .cmoStatus(cmoStatus)
+            .caseManagementOrderAction(caseManagementOrderAction)
             .build();
     }
 
@@ -192,6 +205,21 @@ public class DraftCMOService {
 
     public Map<String, Object> generateCMOTemplateData(Map<String, Object> caseData) {
         return new HashMap<>();
+    }
+
+    public Document getCMODocument(final String authorization, final String userId,
+                                   final Map<String, Object> caseData, final boolean draftCMOApprovedByJudge) {
+        Map<String, Object> cmoTemplateData = generateCMOTemplateData(caseData);
+        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
+            cmoTemplateData, DocmosisTemplates.CMO);
+
+        String docTitle = document.getDocumentTitle();
+
+        if (draftCMOApprovedByJudge && isNotEmpty(cmoTemplateData.get("draftbackground"))) {
+            docTitle = "draft-" + document.getDocumentTitle();
+        }
+
+        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), docTitle);
     }
 
     private void removeExistingCustomDirections(Map<String, Object> caseData) {

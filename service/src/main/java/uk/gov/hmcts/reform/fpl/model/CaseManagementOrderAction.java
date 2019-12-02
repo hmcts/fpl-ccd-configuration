@@ -10,8 +10,8 @@ import uk.gov.hmcts.reform.fpl.enums.CMONextHearingType;
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class CaseManagementOrderAction {
+public class CaseManagementOrderAction {
     private final CMOActionType cmoActionType;
     private final CMONextHearingType cmoNextHearingType;
-    private final String judgeRequestedChange;
+    private final String changeRequestedByJudge;
 }

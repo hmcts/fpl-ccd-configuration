@@ -33,7 +33,7 @@
     "ID": "CaseManagementOrderAction",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "caseManagementOrderAction",
-    "ListElementCode": "judgeRequestedChange",
+    "ListElementCode": "changeRequestedByJudge",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   }
