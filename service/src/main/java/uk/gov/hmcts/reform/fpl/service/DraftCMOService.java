@@ -204,6 +204,8 @@ public class DraftCMOService {
         }
     }
 
+    // REFACTOR: 02/12/2019 Refactor this with CaseDataExtractionService and NotifyOfProceedingService to try and
+    //  extract common elements to CommonCaseDataExtractionService (maybe an separate service for docmosis templates?)
     @SuppressWarnings("unchecked")
     public Map<String, Object> generateCMOTemplateData(Map<String, Object> caseDataMap) throws IOException {
         // TODO: 30/11/2019 TestMe
@@ -248,7 +250,7 @@ public class DraftCMOService {
         cmoTemplateData.put("localAuthoritySolicitorName", EMPTY_PLACEHOLDER);
         cmoTemplateData.put("localAuthoritySolicitorPhoneNumber", EMPTY_PLACEHOLDER);
 
-        cmoTemplateData.put("respondentOneName", getFirstRespondentFullname(caseData));
+        cmoTemplateData.put("respondentOneName", getFirstRespondentFullName(caseData));
 
         cmoTemplateData.putAll(getHearingBooking(caseData, hearingDateList));
 
@@ -311,16 +313,8 @@ public class DraftCMOService {
         return formattedDirections.build();
     }
 
-    private static String getFirstRespondentFullname(final CaseData caseData) {
-        return caseData.getRespondents1()
-            .stream()
-            .filter(Objects::nonNull)
-            .map(Element::getValue)
-            .filter(Objects::nonNull)
-            .findFirst()
-            .map(Respondent::getParty)
-            .map(RespondentParty::buildFullName)
-            .orElse("");
+    private String getFirstRespondentFullName(final CaseData caseData) {
+        return caseData.buildFirstRespondentFullName();
     }
 
     private Map<String, Object> getHearingBooking(final CaseData caseData, DynamicList hearingDateList) {
