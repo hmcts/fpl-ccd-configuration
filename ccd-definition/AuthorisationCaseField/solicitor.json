@@ -11,6 +11,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "otherCourtAdminDocuments",
     "UserRole": "caseworker-publiclaw-solicitor",
+    "Comment": "This should have [SOLICITOR] role but not implemented properly in ccd yet",
     "CRUD": "CRU"
   }
 ]
