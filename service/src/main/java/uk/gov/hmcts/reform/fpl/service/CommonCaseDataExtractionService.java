@@ -65,7 +65,6 @@ public class CommonCaseDataExtractionService {
     }
 
     public Map<String, Object> getHearingBookingData(final HearingBooking hearingBooking) {
-        // TODO: 29/11/2019 Test Me!
         if (isEmpty(hearingBooking)) {
             return ImmutableMap.of(
                 "hearingDate", EMPTY_PLACEHOLDER,
