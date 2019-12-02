@@ -56,7 +56,7 @@ public class CaseDataExtractionService {
     private final DirectionHelperService directionHelperService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
-    private final DocmosisDraftWatermarkGeneratorService draftWatermarkGeneratorService;
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
     // TODO
     // No need to pass in CaseData to each method. Refactor to only use required model
@@ -93,7 +93,7 @@ public class CaseDataExtractionService {
         if (isNotEmpty(caseData.getStandardDirectionOrder())
             && caseData.getStandardDirectionOrder().getOrderStatus() != SEALED) {
             data.put("draftbackground", String.format("image:base64:%1$s",
-                draftWatermarkGeneratorService.generateDraftWatermarkEncodedString()));
+                docmosisDocumentGeneratorService.generateDraftWatermarkEncodedString()));
         }
 
         return data.build();

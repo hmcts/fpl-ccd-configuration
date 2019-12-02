@@ -69,7 +69,7 @@ public class DraftCMOService {
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
-    private final DocmosisDraftWatermarkGeneratorService draftWatermarkGeneratorService;
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
     public Map<String, Object> extractIndividualCaseManagementOrderObjects(
         CaseManagementOrder caseManagementOrder,
@@ -261,7 +261,7 @@ public class DraftCMOService {
         cmoTemplateData.putAll(getGroupedCMODirections(caseData));
 
         cmoTemplateData.put("draftbackground", String.format("image:base64:%1$s",
-            draftWatermarkGeneratorService.generateDraftWatermarkEncodedString()));
+            docmosisDocumentGeneratorService.generateDraftWatermarkEncodedString()));
 
         // TODO: 30/11/2019 Include Schedules and Recitals and below listed placeholder keys
         /*

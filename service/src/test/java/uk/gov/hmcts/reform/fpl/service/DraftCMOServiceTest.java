@@ -48,7 +48,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassi
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, JsonOrdersLookupService.class,
-    HearingVenueLookUpService.class, DocmosisDraftWatermarkGeneratorService.class})
+    HearingVenueLookUpService.class, DocmosisDocumentGeneratorService.class})
 class DraftCMOServiceTest {
     private final LocalDateTime date = LocalDateTime.now();
     private final String localAuthorityCode = "example";
@@ -66,7 +66,7 @@ class DraftCMOServiceTest {
     private HearingVenueLookUpService hearingVenueLookUpService;
 
     @Autowired
-    private DocmosisDraftWatermarkGeneratorService draftWatermarkGeneratorService;
+    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
     private CaseManagementOrder caseManagementOrder;
     private List<Element<HearingBooking>> hearingDetails;
@@ -88,11 +88,11 @@ class DraftCMOServiceTest {
     void setUp() {
         CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
             hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService,
-            hearingVenueLookUpService, commonCaseDataExtraction, draftWatermarkGeneratorService);
+            hearingVenueLookUpService, commonCaseDataExtraction, docmosisDocumentGeneratorService);
         this.draftCMOService = new DraftCMOService(mapper, dateFormatterService, directionHelperService,
             caseDataExtractionService, commonCaseDataExtraction, hmctsCourtLookupConfiguration,
             localAuthorityEmailLookupConfiguration, localAuthorityNameLookupConfiguration, ordersLookupService,
-            draftWatermarkGeneratorService);
+            docmosisDocumentGeneratorService);
         hearingDetails = createHearingBookings(date);
     }
 
