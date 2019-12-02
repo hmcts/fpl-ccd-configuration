@@ -47,6 +47,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -61,8 +62,6 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOService {
-    private static final String CASE_LOCAL_AUTHORITY_PROPERTY_NAME = "caseLocalAuthority";
-
     private final ObjectMapper mapper;
     private final DateFormatterService dateFormatterService;
     private final DirectionHelperService directionHelperService;
@@ -216,7 +215,9 @@ public class DraftCMOService {
 
         DynamicList hearingDateList = mapper.convertValue(caseDataMap.get("cmoHearingDateList"), DynamicList.class);
         CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
-        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
+        String localAuthorityCode = caseData.getCaseLocalAuthority();
+        CaseManagementOrder caseManagementOrder = defaultIfNull(caseData.getCaseManagementOrder(),
+            CaseManagementOrder.builder().build());
 
         cmoTemplateData.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_PLACEHOLDER));
         cmoTemplateData.put("generationDate",
@@ -229,8 +230,7 @@ public class DraftCMOService {
         cmoTemplateData.put("children", childrenInCase);
         cmoTemplateData.put("numberOfChildren", childrenInCase.size());
 
-        cmoTemplateData.put("courtName", defaultIfBlank(
-            hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName(), EMPTY_PLACEHOLDER));
+        cmoTemplateData.put("courtName", getCourtName(localAuthorityCode));
 
         cmoTemplateData.put("applicantName", caseDataExtractionService.getFirstApplicantName(caseData));
 
@@ -239,28 +239,16 @@ public class DraftCMOService {
         cmoTemplateData.put("respondents", respondentsNameAndRelationship);
         cmoTemplateData.put("respondentsProvided", !respondentsNameAndRelationship.isEmpty());
 
-        String localAuthorityCode = (String) caseDataMap.get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
-        cmoTemplateData.put("localAuthoritySolicitorEmail", localAuthorityEmailLookupConfiguration
-            .getLocalAuthority(localAuthorityCode)
-            .map(LocalAuthorityEmailLookupConfiguration.LocalAuthority::getEmail)
-            .orElse(""));
-
-        cmoTemplateData.put("localAuthorityName", defaultIfBlank(
-                localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode),
-                EMPTY_PLACEHOLDER));
-
-        // defaulting to EMPTY_PLACEHOLDER for now as we currently do not capture
-        cmoTemplateData.put("localAuthoritySolicitorName", EMPTY_PLACEHOLDER);
-        cmoTemplateData.put("localAuthoritySolicitorPhoneNumber", EMPTY_PLACEHOLDER);
+        cmoTemplateData.putAll(getLocalAuthorityDetails(localAuthorityCode));
 
         cmoTemplateData.put("respondentOneName", getFirstRespondentFullName(caseData));
 
         cmoTemplateData.putAll(getHearingBooking(caseData, hearingDateList));
 
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = getJudgeAndLegalAdvisor(caseData, caseManagementOrder);
-        cmoTemplateData.put("judgeTitleAndName", defaultString(formatJudgeTitleAndName(
+        cmoTemplateData.put("judgeTitleAndName", defaultIfBlank(formatJudgeTitleAndName(
             judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
-        cmoTemplateData.put("legalAdvisorName", defaultString(getLegalAdvisorName(
+        cmoTemplateData.put("legalAdvisorName", defaultIfBlank(getLegalAdvisorName(
             judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
 
         cmoTemplateData.putAll(getGroupedCMODirections(caseData));
@@ -272,13 +260,44 @@ public class DraftCMOService {
         cmoTemplateData.put("recitals", recitals);
         cmoTemplateData.put("recitalsProvided", recitals.size());
 
-        cmoTemplateData.put("schedule", caseManagementOrder.getSchedule());
-        cmoTemplateData.put("scheduleProvided", isNotEmpty(caseManagementOrder.getSchedule()));
+        // Have to provide something as ImmutableMap does not allow null values
+        cmoTemplateData.put("schedule", defaultIfNull(caseManagementOrder.getSchedule(), Schedule.builder().build()));
+        cmoTemplateData.put("scheduleProvided", (caseManagementOrder.getSchedule() != null));
 
         //defaulting as 1 as we currently do not have impl for multiple CMos
         cmoTemplateData.put("caseManagementNumber", 1);
 
         return cmoTemplateData.build();
+    }
+
+    private Map<String, Object> getLocalAuthorityDetails(String localAuthorityCode) {
+        if (isBlank(localAuthorityCode)) {
+            return ImmutableMap.of(
+                "localAuthoritySolicitorEmail", EMPTY_PLACEHOLDER,
+                "localAuthorityName", EMPTY_PLACEHOLDER,
+                "localAuthoritySolicitorName", EMPTY_PLACEHOLDER,
+                "localAuthoritySolicitorPhoneNumber", EMPTY_PLACEHOLDER
+                );
+        }
+
+        // defaulting to EMPTY_PLACEHOLDER for now as we currently do not capture
+        return ImmutableMap.of("localAuthoritySolicitorEmail",
+            localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode)
+                .map(LocalAuthorityEmailLookupConfiguration.LocalAuthority::getEmail)
+                .orElse(""),
+            "localAuthorityName", defaultIfBlank(
+                localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode),
+                EMPTY_PLACEHOLDER),
+            "localAuthoritySolicitorName", EMPTY_PLACEHOLDER,
+            "localAuthoritySolicitorPhoneNumber", EMPTY_PLACEHOLDER);
+
+    }
+
+    private String getCourtName(String localAuthorityCode) {
+        if (isBlank(localAuthorityCode)) {
+            return EMPTY_PLACEHOLDER;
+        }
+        return defaultIfBlank(hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName(), EMPTY_PLACEHOLDER);
     }
 
     private JudgeAndLegalAdvisor getJudgeAndLegalAdvisor(final CaseData caseData,
@@ -324,12 +343,18 @@ public class DraftCMOService {
     }
 
     private Map<String, Object> getHearingBooking(final CaseData caseData, DynamicList hearingDateList) {
-        HearingBooking hearingBooking = caseData.getHearingDetails()
-            .stream()
-            .filter(element -> element.getId().equals(hearingDateList.getValue().getCode()))
-            .findFirst()
-            .map(Element::getValue)
-            .orElse(null);
+        HearingBooking hearingBooking;
+
+        if (caseData.getHearingDetails() == null) {
+            hearingBooking = null;
+        } else {
+            hearingBooking = caseData.getHearingDetails()
+                .stream()
+                .filter(element -> element.getId().equals(hearingDateList.getValue().getCode()))
+                .findFirst()
+                .map(Element::getValue)
+                .orElse(null);
+        }
 
         return commonCaseDataExtractionService.getHearingBookingData(hearingBooking);
     }
