@@ -38,13 +38,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -263,11 +266,13 @@ public class DraftCMOService {
         cmoTemplateData.put("draftbackground", String.format("image:base64:%1$s",
             docmosisDocumentGeneratorService.generateDraftWatermarkEncodedString()));
 
-        // TODO: 30/11/2019 Include Schedules and Recitals and below listed placeholder keys
+        // TODO: 30/11/2019 Include Schedule and below listed placeholder keys
+        List<Map<String, String>> recitals = buildRecitals(caseManagementOrder.getRecitals());
+        cmoTemplateData.put("recitals", recitals);
+        cmoTemplateData.put("recitalsProvided", recitals.size());
         /*
             "schedulesProvided",
             "caseManagementNumber"
-            "recitalsProvided"
          */
 
         return cmoTemplateData.build();
@@ -332,6 +337,18 @@ public class DraftCMOService {
             .orElse(null);
 
         return commonCaseDataExtractionService.getHearingBookingData(hearingBooking);
+    }
+
+    private List<Map<String, String>> buildRecitals(final List<Element<Recital>> recitals) {
+        if (isEmpty(recitals)) {
+            return emptyList();
+        }
+
+        return recitals.stream().filter(Objects::nonNull)
+            .map(Element::getValue)
+            .map(recital -> ImmutableMap.of("title", defaultString(recital.getTitle(), EMPTY_PLACEHOLDER),
+                "body", defaultString(recital.getDescription(), EMPTY_PLACEHOLDER)))
+            .collect(Collectors.toList());
     }
 
     private void removeExistingCustomDirections(Map<String, Object> caseData) {
