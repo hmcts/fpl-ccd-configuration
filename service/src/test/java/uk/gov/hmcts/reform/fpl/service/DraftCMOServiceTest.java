@@ -14,6 +14,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
@@ -33,9 +35,12 @@ import static org.apache.commons.lang3.ArrayUtils.add;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
 @ExtendWith(SpringExtension.class)
@@ -58,6 +63,7 @@ class DraftCMOServiceTest {
         this.dateFormatterService = dateFormatterService;
         this.mapper = mapper;
     }
+
 
     @BeforeEach
     void setUp() {
@@ -132,19 +138,36 @@ class DraftCMOServiceTest {
     }
 
     @Test
-    void shouldRemoveCustomDirectionsWhenPresentInCaseDetails() {
-        Map<String, Object> caseData = new HashMap<>();
+    void shouldFormatRespondentsIntoKeyWhenRespondentsArePresent() {
+        String respondentsKey = draftCMOService.createRespondentAssigneeDropdownKey(createRespondents());
 
-        Stream.of(DirectionAssignee.values()).forEach(direction ->
-            caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
-        );
+        assertThat(respondentsKey).contains(
+            "Respondent 1 - Timothy Jones",
+            "Respondent 2 - Sarah Simpson");
+    }
 
-        draftCMOService.removeExistingCustomDirections(caseData);
+    @Test
+    void shouldFormatOthersIntoKeyWhenOthersArePresent() {
+        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(createOthers());
 
-        assertThat(caseData).doesNotContainKey("allPartiesCustom");
-        assertThat(caseData).doesNotContainKey("localAuthorityDirectionsCustom");
-        assertThat(caseData).doesNotContainKey("cafcassDirectionsCustom");
-        assertThat(caseData).doesNotContainKey("courtDirectionsCustom");
+        assertThat(othersKey).contains(
+            "Person 1 - Kyle Stafford",
+            "Other Person 1 - Sarah Simpson");
+    }
+
+    @Test
+    void shouldIncludeEmptyStatePlaceholderWhenAnOtherDoesNotIncludeFullName() {
+        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(createFirstOtherWithoutAName());
+
+        assertThat(othersKey).contains(
+            "Person 1 - " + EMPTY_PLACEHOLDER,
+            "Other Person 1 - Peter Smith");
+    }
+
+    @Test
+    void shouldReturnEmptyStringIfOthersDoesNotExist() {
+        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(Others.builder().build());
+        assertThat(othersKey).isEqualTo("");
     }
 
     @Test
@@ -177,6 +200,7 @@ class DraftCMOServiceTest {
         assertThat(data.get("reviewCaseManagementOrder")).extracting("cmoStatus").isNull();
     }
 
+
     private DynamicList getDynamicList() {
         DynamicList dynamicList = draftCMOService.buildDynamicListFromHearingDetails(createHearingBookings(date));
 
@@ -187,6 +211,42 @@ class DraftCMOServiceTest {
 
         dynamicList.setValue(listElement);
         return dynamicList;
+    }
+
+    @Test
+    void shouldMoveDirectionsToCaseDetailsWhenCMOExistsWithDirections() {
+        Map<String, Object> caseData = new HashMap<>();
+
+        caseData.put("caseManagementOrder", CaseManagementOrder.builder()
+            .directions(createCmoDirections())
+            .build());
+
+        draftCMOService.prepareCustomDirections(caseData);
+
+        assertThat(caseData).containsKeys("allParties",
+            "localAuthorityDirections",
+            "cafcassDirections",
+            "courtDirections",
+            "otherPartiesDirections",
+            "respondentDirections");
+    }
+
+    @Test
+    void shouldRemoveCustomDirectionsWhenCMODoesNotExistOnCaseDetails() {
+        Map<String, Object> caseData = new HashMap<>();
+
+        Stream.of(DirectionAssignee.values()).forEach(direction ->
+            caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
+        );
+
+        draftCMOService.prepareCustomDirections(caseData);
+
+        assertThat(caseData).doesNotContainKeys("allPartiesCustom",
+            "localAuthorityDirectionsCustom",
+            "cafcassDirectionsCustom",
+            "courtDirectionsCustom",
+            "otherPartiesDirections",
+            "respondentDirections");
     }
 
     private List<Element<HearingBooking>> createHearingBookings(LocalDateTime now) {
@@ -207,6 +267,21 @@ class DraftCMOServiceTest {
 
     private String formatLocalDateToMediumStyle(int i) {
         return dateFormatterService.formatLocalDateToString(date.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
+    }
+
+    private Others createFirstOtherWithoutAName() {
+        return Others.builder()
+            .firstOther(Other.builder()
+                .DOB("02/05/1988")
+                .build())
+            .additionalOthers(ImmutableList.of(
+                Element.<Other>builder()
+                    .value(Other.builder()
+                        .name("Peter Smith")
+                        .DOB("02/05/1988")
+                        .build())
+                    .build()
+            )).build();
     }
 
     @Nested
@@ -234,7 +309,7 @@ class DraftCMOServiceTest {
             draftCMOService.prepareCaseDetails(data, caseManagementOrder);
 
             assertThat(data).doesNotContainKeys(keys);
-            assertThat(data).containsKeys("shareableCMO", "caseManagementOrder");
+            assertThat(data).containsKeys("sharedDraftCMO", "caseManagementOrder");
         }
 
         @Test
@@ -242,10 +317,10 @@ class DraftCMOServiceTest {
             final CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
                 .cmoStatus(SELF_REVIEW).build();
 
-            data.put("shareableCMO", caseManagementOrder);
+            data.put("sharedDraftCMO", caseManagementOrder);
 
             draftCMOService.prepareCaseDetails(data, caseManagementOrder);
-            assertThat(data).doesNotContainKeys(add(keys, "shareableCMO"));
+            assertThat(data).doesNotContainKeys(add(keys, "sharedDraftCMO"));
             assertThat(data).containsKey("caseManagementOrder");
         }
 

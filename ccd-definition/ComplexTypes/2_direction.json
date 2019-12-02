@@ -65,6 +65,28 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "Direction",
+    "ListElementCode": "parentsAndRespondentsAssignee",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ParentsAndRespondentsDirectionAssignee",
+    "ElementLabel": "Assignee",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionNeeded!=\"No\"",
+    "Comment": "This field is used for capturing parents and respondents assignee on CMO"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "otherPartiesAssignee",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "OtherPartiesDirectionAssignee",
+    "ElementLabel": "Assignee",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionNeeded!=\"No\"",
+    "Comment": "This field is used for capturing other persons assignee on CMO"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
     "ListElementCode": "dateToBeCompletedBy",
     "FieldType": "DateTime",
     "ElementLabel": "Due date and time",
