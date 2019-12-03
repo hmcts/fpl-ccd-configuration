@@ -13,7 +13,7 @@
     "ID": "DirectionResponse",
     "ListElementCode": "respondingOnBehalfOfRespondent",
     "FieldType": "FixedList",
-    "FieldTypeParameter": "Respondents",
+    "FieldTypeParameter": "ParentsAndRespondentsDirectionAssignee",
     "ElementLabel": "Complying on behalf of",
     "SecurityClassification": "Public"
   },
@@ -22,7 +22,7 @@
     "ID": "DirectionResponse",
     "ListElementCode": "respondingOnBehalfOfOthers",
     "FieldType": "FixedList",
-    "FieldTypeParameter": "Others",
+    "FieldTypeParameter": "OtherPartiesDirectionAssignee",
     "ElementLabel": "Complying on behalf of",
     "SecurityClassification": "Public"
   },
@@ -31,7 +31,7 @@
     "ID": "DirectionResponse",
     "ListElementCode": "respondingOnBehalfOfCafcass",
     "FieldType": "FixedList",
-    "FieldTypeParameter": "Cafcass",
+    "FieldTypeParameter": "CafcassDirectionAssignee",
     "ElementLabel": "Complying on behalf of",
     "SecurityClassification": "Public"
   },
