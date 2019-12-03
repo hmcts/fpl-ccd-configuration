@@ -33,19 +33,19 @@
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SN",
-    "ListElement": "Swindon County Council"
+    "ListElement": "Swindon Borough Council"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "SNW",
-    "ListElement": "Wiltshire County Council"
+    "ListElement": "Wiltshire Council"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
     "ListElementCode": "RCC",
-    "ListElement": "Reading City Council"
+    "ListElement": "Reading Borough Council"
   },
   {
     "LiveFrom": "01/01/2017",
