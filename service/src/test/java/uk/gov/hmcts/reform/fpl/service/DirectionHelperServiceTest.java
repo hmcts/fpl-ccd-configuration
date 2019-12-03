@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.assertj.core.util.Lists;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -298,7 +297,7 @@ class DirectionHelperServiceTest {
             service.addResponsesToDirections(ImmutableList.of(newResponse), directionWithOldResponse);
 
             assertThat(getResponses(directionWithOldResponse)).hasSize(1);
-            assertThat(getResponses(directionWithOldResponse).get(0).getValue().getComplied()).isEqualTo("Yes");
+            assertThat(compliedFieldHasBeenUpdatedToYes(directionWithOldResponse));
         }
 
         @Test
@@ -392,7 +391,61 @@ class DirectionHelperServiceTest {
             service.addResponsesToDirections(newResponses, directions);
 
             assertThat(getResponses(directions)).hasSize(2);
-            assertThat(directions.get(0).getValue().getResponses().get(0).getValue().getComplied()).isEqualTo("Yes");
+            assertThat(compliedFieldHasBeenUpdatedToYes(directions));
+        }
+
+        @Test
+        void shouldNotAddAnotherResponseWhenDifferentRespondingOnBehalfOfValue() {
+            List<Element<DirectionResponse>> responses = new ArrayList<>();
+            responses.add(Element.<DirectionResponse>builder()
+                .value(DirectionResponse.builder()
+                    .assignee(COURT)
+                    .respondingOnBehalfOf("CAFCASS")
+                    .complied("No")
+                    .directionId(uuid)
+                    .build())
+                .build());
+
+            List<Element<Direction>> directions = getDirectionsWithResponses(responses);
+
+            List<DirectionResponse> newResponses = ImmutableList.of(DirectionResponse.builder()
+                .assignee(COURT)
+                .respondingOnBehalfOf("OTHER")
+                .complied("No")
+                .directionId(uuid)
+                .build());
+
+            service.addResponsesToDirections(newResponses, directions);
+
+            assertThat(getResponses(directions)).hasSize(2);
+            assertThat(compliedFieldHasBeenUpdatedToYes(directions));
+        }
+
+        @Test
+        void shouldUpdateResponseWhenSameRespondingOnBehalfOfValue() {
+            List<Element<DirectionResponse>> responses = new ArrayList<>();
+            responses.add(Element.<DirectionResponse>builder()
+                .value(DirectionResponse.builder()
+                    .assignee(COURT)
+                    .respondingOnBehalfOf("CAFCASS")
+                    .complied("No")
+                    .directionId(uuid)
+                    .build())
+                .build());
+
+            List<Element<Direction>> directions = getDirectionsWithResponses(responses);
+
+            List<DirectionResponse> newResponses = ImmutableList.of(DirectionResponse.builder()
+                .assignee(COURT)
+                .respondingOnBehalfOf("CAFCASS")
+                .complied("Yes")
+                .directionId(uuid)
+                .build());
+
+            service.addResponsesToDirections(newResponses, directions);
+
+            assertThat(getResponses(directions)).hasSize(1);
+            assertThat(compliedFieldHasBeenUpdatedToYes(directions));
         }
 
         private List<Element<Direction>> getDirectionsWithResponses(List<Element<DirectionResponse>> responses) {
@@ -407,6 +460,10 @@ class DirectionHelperServiceTest {
 
         private List<Element<DirectionResponse>> getResponses(List<Element<Direction>> directionWithNoResponse) {
             return directionWithNoResponse.get(0).getValue().getResponses();
+        }
+
+        private boolean compliedFieldHasBeenUpdatedToYes(List<Element<Direction>> directions) {
+            return getResponses(directions).get(0).getValue().getComplied().equals("Yes");
         }
     }
 
@@ -1034,8 +1091,9 @@ class DirectionHelperServiceTest {
                 .build());
         }
 
+        // LOCAL_AUTHORITY would be added here if the functionality for complying on behalf of LA is implemented.
         @ParameterizedTest
-        @EnumSource(value = DirectionAssignee.class, names = {"LOCAL_AUTHORITY", "CAFCASS"})
+        @EnumSource(value = DirectionAssignee.class, names = {"CAFCASS"})
         void shouldPopulateDirectionsWhenSingleResponseDirections(DirectionAssignee assignee) {
             CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
             Map<DirectionAssignee, List<Element<Direction>>> directionsMap = new HashMap<>();
@@ -1086,15 +1144,20 @@ class DirectionHelperServiceTest {
                 .cafcassDirectionsCustom(directionWithResponse)
                 .build();
 
+            DirectionResponse expectedResponse = DirectionResponse.builder()
+                .directionId(directionId)
+                .assignee(COURT)
+                .respondingOnBehalfOf("CAFCASS")
+                .complied("Yes")
+                .build();
+
             service.addComplyOnBehalfResponsesToDirectionsInStandardDirectionsOrder(caseData);
 
             assertThat(
                 caseData.getStandardDirectionOrder().getDirections().get(0).getValue().getResponses().get(0).getValue())
-                .isEqualTo(caseData.getCafcassDirectionsCustom().get(0).getValue().getResponse());
+                .isEqualTo(expectedResponse);
         }
 
-        // TODO: 29/11/2019 Still not fixed
-        @Disabled
         @Test
         void shouldAddResponseForOtherPartiesWhenValidResponseMadeByCourt() {
             UUID directionId = randomUUID();
@@ -1103,15 +1166,14 @@ class DirectionHelperServiceTest {
             Direction.DirectionBuilder direction = Direction.builder();
             direction.assignee(OTHERS);
 
-            DirectionResponse response = DirectionResponse.builder()
+            DirectionResponse.DirectionResponseBuilder response = DirectionResponse.builder()
                 .complied("Yes")
-                .respondingOnBehalfOf("OTHERS_1")
-                .build();
+                .respondingOnBehalfOf("OTHERS_1");
 
             List<Element<DirectionResponse>> responses = new ArrayList<>();
             responses.add(Element.<DirectionResponse>builder()
                 .id(responseId)
-                .value(response)
+                .value(response.build())
                 .build());
 
             CaseData caseData = CaseData.builder()
@@ -1129,9 +1191,17 @@ class DirectionHelperServiceTest {
 
             service.addComplyOnBehalfResponsesToDirectionsInStandardDirectionsOrder(caseData);
 
+            List<Element<DirectionResponse>> expectedResponses = ImmutableList.of(Element.<DirectionResponse>builder()
+                .id(responseId)
+                .value(response
+                    .directionId(directionId)
+                    .assignee(COURT)
+                    .build())
+                .build());
+
             assertThat(
                 caseData.getStandardDirectionOrder().getDirections().get(0).getValue().getResponses())
-                .containsAll(caseData.getOtherPartiesDirectionsCustom().get(0).getValue().getResponses());
+                .containsAll(expectedResponses);
         }
     }
 

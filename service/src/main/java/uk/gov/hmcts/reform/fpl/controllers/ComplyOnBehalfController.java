@@ -16,15 +16,14 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Collections.emptyList;
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Api
 @RestController
@@ -33,19 +32,23 @@ public class ComplyOnBehalfController {
     private final ObjectMapper mapper;
     private final DirectionHelperService directionHelperService;
     private final RespondentService respondentService;
+    private final OthersService othersService;
 
     @Autowired
     public ComplyOnBehalfController(ObjectMapper mapper,
                                     DirectionHelperService directionHelperService,
-                                    RespondentService respondentService) {
+                                    RespondentService respondentService,
+                                    OthersService othersService) {
         this.mapper = mapper;
         this.directionHelperService = directionHelperService;
         this.respondentService = respondentService;
+        this.othersService = othersService;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
+
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
@@ -53,52 +56,12 @@ public class ComplyOnBehalfController {
 
         directionHelperService.addDirectionsToCaseDetails(caseDetails, sortedDirections);
 
-        String respondentsLabel =
-            respondentService.buildRespondentLabel(defaultIfNull(caseData.getRespondents1(), emptyList()));
-
-        String othersLabel = buildOthersLabel(defaultIfNull(caseData.getOthers(), Others.builder().build()));
-
-        caseDetails.getData().put("respondents_label", respondentsLabel);
-        caseDetails.getData().put("others_label", othersLabel);
+        caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
+        caseDetails.getData().put("others_label", getOthersLabel(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
-    }
-
-    private String buildOthersLabel(Others others) {
-        StringBuilder sb = new StringBuilder();
-
-        if (isNotEmpty(others.getFirstOther())) {
-            sb.append("Person 1")
-                .append(" ")
-                .append("-")
-                .append(" ")
-                .append(defaultIfNull(others.getFirstOther().getName(), "BLANK - Please complete"))
-                .append("\n");
-        }
-
-        if (isNotEmpty(others.getAdditionalOthers())) {
-            AtomicInteger i = new AtomicInteger(1);
-
-            others.getAdditionalOthers().forEach(other -> {
-                sb.append("Other person")
-                    .append(" ")
-                    .append(i)
-                    .append(" ")
-                    .append("-")
-                    .append(" ")
-                    .append(defaultIfNull(other.getValue().getName(), "BLANK - Please complete"))
-                    .append("\n");
-
-                i.incrementAndGet();
-            });
-
-        } else {
-            sb.append("No others on the case");
-        }
-
-        return sb.toString();
     }
 
     @PostMapping("about-to-submit")
@@ -113,5 +76,13 @@ public class ComplyOnBehalfController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    private String getRespondentsLabel(CaseData caseData) {
+        return respondentService.buildRespondentLabel(defaultIfNull(caseData.getRespondents1(), emptyList()));
+    }
+
+    private String getOthersLabel(CaseData caseData) {
+        return othersService.buildOthersLabel(defaultIfNull(caseData.getOthers(), Others.builder().build()));
     }
 }

@@ -116,23 +116,23 @@ public class DirectionHelperService {
         directions.forEach(direction -> responses.stream()
             .filter(response -> response.getDirectionId().equals(direction.getId()))
             .forEach(response -> {
-                final List<Element<DirectionResponse>> directionResponses = direction.getValue().getResponses();
-                directionResponses.removeIf(directionResponseElement ->
-                    responseExists(response, direction)
-                    && directionResponseElement.getValue().getAssignee().equals(response.getAssignee())
-                );
+                direction.getValue().getResponses().removeIf(element -> responseExists(response, element));
 
-                directionResponses.add(Element.<DirectionResponse>builder()
-                        .id(UUID.randomUUID())
-                        .value(response)
-                        .build());
+                direction.getValue().getResponses().add(Element.<DirectionResponse>builder()
+                    .id(UUID.randomUUID())
+                    .value(response)
+                    .build());
             }));
     }
 
-    private boolean responseExists(DirectionResponse response, Element<Direction> direction) {
-        return isNotEmpty(direction.getValue().getResponses()) && response.getDirectionId().equals(direction.getId())
-            && direction.getValue().getResponses().stream()
-            .anyMatch(directionResponse -> directionResponse.getValue().getAssignee().equals(response.getAssignee()));
+    private boolean responseExists(DirectionResponse response, Element<DirectionResponse> element) {
+        return isNotEmpty(element.getValue()) && element.getValue().getAssignee().equals(response.getAssignee())
+            && respondingOnBehalfIsEqual(response, element);
+    }
+
+    private boolean respondingOnBehalfIsEqual(DirectionResponse response, Element<DirectionResponse> element) {
+        return defaultIfNull(element.getValue().getRespondingOnBehalfOf(), "")
+            .equals(defaultIfNull(response.getRespondingOnBehalfOf(), ""));
     }
 
     /**
@@ -153,6 +153,7 @@ public class DirectionHelperService {
                     filterResponsesNotCompliedOnBehalfOfByTheCourt("RESPONDENT", directions);
 
                     caseDetails.getData().put(convertToCustomCollection(assignee), directions);
+
                     break;
 
                 case OTHERS:
@@ -161,17 +162,24 @@ public class DirectionHelperService {
                     filterResponsesNotCompliedOnBehalfOfByTheCourt("OTHER", directions);
 
                     caseDetails.getData().put(convertToCustomCollection(assignee), directions);
+
                     break;
 
                 case CAFCASS:
+                    // All responses for CAFCASS will be completed by the court.
+
                     directions.addAll(directionsMap.get(ALL_PARTIES));
 
-                    caseDetails.getData()
-                        .put(convertToCustomCollection(assignee), extractPartyResponse(assignee, directions));
+                    filterResponsesNotCompliedOnBehalfOfByTheCourt("CAFCASS", directions);
+
+                    List<Element<Direction>> cafcassDirections = extractPartyResponse(COURT, directions);
+
+                    caseDetails.getData().put(convertToCustomCollection(assignee), cafcassDirections);
 
                     break;
 
                 default:
+
                     break;
             }
         });
@@ -189,9 +197,9 @@ public class DirectionHelperService {
      */
     public void filterResponsesNotCompliedOnBehalfOfByTheCourt(String onBehalfOf, List<Element<Direction>> directions) {
         directions.forEach(directionElement -> directionElement.getValue().getResponses()
-            .removeIf(x -> COURT != x.getValue().getAssignee()
-                || isEmpty(x.getValue().getRespondingOnBehalfOf())
-                || !x.getValue().getRespondingOnBehalfOf().contains(onBehalfOf))
+            .removeIf(element -> COURT != element.getValue().getAssignee()
+                || isEmpty(element.getValue().getRespondingOnBehalfOf())
+                || !element.getValue().getRespondingOnBehalfOf().contains(onBehalfOf))
         );
     }
 
@@ -289,7 +297,9 @@ public class DirectionHelperService {
         customDirectionsMap.forEach((assignee, directions) -> {
             switch (assignee) {
                 case CAFCASS:
-                    List<DirectionResponse> responses = getResponses(ImmutableMap.of(assignee, directions));
+                    List<DirectionResponse> responses = getResponses(ImmutableMap.of(COURT, directions)).stream()
+                        .map(response -> response.toBuilder().respondingOnBehalfOf("CAFCASS").build())
+                        .collect(toList());
 
                     addResponsesToDirections(responses, caseData.getStandardDirectionOrder().getDirections());
 
@@ -297,21 +307,20 @@ public class DirectionHelperService {
 
                 case PARENTS_AND_RESPONDENTS:
                 case OTHERS:
-                    List<Element<DirectionResponse>> updatedResponses =
-                        addVariablesToListResponseDirections(directions);
+                    List<Element<DirectionResponse>> elements = addValuesToListResponseDirections(directions);
 
-                    addResponseElementsToDirections(updatedResponses,
-                        caseData.getStandardDirectionOrder().getDirections());
+                    addResponseElementsToDirections(elements, caseData.getStandardDirectionOrder().getDirections());
 
                     break;
 
                 default:
+
                     break;
             }
         });
     }
 
-    private List<Element<DirectionResponse>> addVariablesToListResponseDirections(List<Element<Direction>> directions) {
+    private List<Element<DirectionResponse>> addValuesToListResponseDirections(List<Element<Direction>> directions) {
         AtomicReference<UUID> id = new AtomicReference<>();
 
         return directions.stream()

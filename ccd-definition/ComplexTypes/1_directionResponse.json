@@ -29,6 +29,15 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionResponse",
+    "ListElementCode": "respondingOnBehalfOfCafcass",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "Cafcass",
+    "ElementLabel": "Complying on behalf of",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
     "ListElementCode": "directionId",
     "FieldType": "Text",
     "ElementLabel": "Direction ID",

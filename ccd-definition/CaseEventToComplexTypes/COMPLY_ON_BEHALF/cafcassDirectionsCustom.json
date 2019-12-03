@@ -34,18 +34,9 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_ON_BEHALF",
     "CaseFieldID": "cafcassDirectionsCustom",
-    "ListElementCode": "response.respondingOnBehalfOfRespondent",
-    "FieldDisplayOrder": 4,
-    "DisplayContext": "MANDATORY"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.complied",
     "EventElementLabel": "Have they complied with this direction?",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -54,7 +45,7 @@
     "CaseEventID": "COMPLY_ON_BEHALF",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.documentDetails",
-    "FieldDisplayOrder": 6,
+    "FieldDisplayOrder": 5,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -63,7 +54,7 @@
     "CaseEventID": "COMPLY_ON_BEHALF",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.file",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -73,7 +64,7 @@
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.cannotComplyTitle",
     "EventElementLabel": "### Parties need to comply with directions to keep proceedings on track. ###\n\nIf they can’t comply, you need to explain:\n\n• reasons why\n\n• impact on timetable and next hearing\n\n• proposed next actions",
-    "FieldDisplayOrder": 8,
+    "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -82,7 +73,7 @@
     "CaseEventID": "COMPLY_ON_BEHALF",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.cannotComplyReason",
-    "FieldDisplayOrder": 9,
+    "FieldDisplayOrder": 8,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -91,7 +82,7 @@
     "CaseEventID": "COMPLY_ON_BEHALF",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.c2Uploaded",
-    "FieldDisplayOrder": 10,
+    "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -100,7 +91,7 @@
     "CaseEventID": "COMPLY_ON_BEHALF",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.cannotComplyFile",
-    "FieldDisplayOrder": 11,
+    "FieldDisplayOrder": 10,
     "DisplayContext": "OPTIONAL"
   }
 ]
