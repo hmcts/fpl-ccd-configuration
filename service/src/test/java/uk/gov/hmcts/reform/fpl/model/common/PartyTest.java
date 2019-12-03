@@ -1,54 +1,60 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PartyTest {
 
-    private Party party;
+    // Using as an example of party as party doesn't have a builder and adding one introduces complications
+    private RespondentParty.RespondentPartyBuilder builder;
+
+    @BeforeEach
+    void setUp() {
+        builder = RespondentParty.builder();
+    }
 
     @Test
     void shouldReturnAnEmptyStringWhenFirstNameAndLastNameAreNull() {
-        party = pseudoPartyBuilder(null, null);
-
-        final String fullName = party.getFullName();
+        final String fullName = builder.build().getFullName();
 
         assertThat(fullName).isBlank();
     }
 
     @Test
     void shouldReturnAnFirstAndLastNameWhenBothArePopulated() {
-        party = pseudoPartyBuilder("Bob", "Ross");
+        builder.firstName("Bob").lastName("Ross");
 
-        final String fullName = party.getFullName();
+        final String fullName = builder.build().getFullName();
 
         assertThat(fullName).isEqualTo("Bob Ross");
     }
 
     @Test
     void shouldReturnLastNameOnlyWhenFirstNameIsNull() {
-        party = pseudoPartyBuilder(null, "Ross");
+        builder.lastName("Ross");
 
-        final String fullName = party.getFullName();
+        final String fullName = builder.build().getFullName();
 
         assertThat(fullName).isEqualTo("Ross");
     }
 
     @Test
     void shouldReturnLastNameOnlyWhenFirstNameIsBlank() {
-        party = pseudoPartyBuilder("", "Ross");
+        builder.firstName("").lastName("Ross");
 
-        final String fullName = party.getFullName();
+        final String fullName = builder.build().getFullName();
 
         assertThat(fullName).isEqualTo("Ross");
     }
 
     @Test
     void shouldReturnFirstNameOnlyWhenLastNameIsNull() {
-        party = pseudoPartyBuilder("Bob", null);
+        builder.firstName("Bob");
 
-        final String fullName = party.getFullName();
+        final String fullName = builder.build().getFullName();
 
         assertThat(fullName).isEqualTo("Bob");
     }
@@ -56,14 +62,10 @@ class PartyTest {
 
     @Test
     void shouldReturnFirstNameOnlyWhenLastNameIsBlank() {
-        party = pseudoPartyBuilder("Bob", "");
+        builder.firstName("Bob").lastName("");
 
-        final String fullName = party.getFullName();
+        final String fullName = builder.build().getFullName();
 
         assertThat(fullName).isEqualTo("Bob");
-    }
-
-    private Party pseudoPartyBuilder(String firstName, String lastName) {
-        return new Party("", null, firstName, lastName, "", null, null, null, null);
     }
 }
