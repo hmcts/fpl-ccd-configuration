@@ -10,13 +10,10 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.CaseManagementOrderAction;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
@@ -24,7 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
@@ -105,13 +102,10 @@ public class DraftCMOService {
         CMOStatus cmoStatus = null;
         if (reviewCaseManagementOrder != null) {
             cmoStatus = mapper.convertValue(reviewCaseManagementOrder.get("cmoStatus"), CMOStatus.class);
-            // TODO: 29/11/2019 Extract orderDoc
         }
         Schedule schedule = mapper.convertValue(caseData.get("schedule"), Schedule.class);
         List<Element<Recital>> recitals = mapper.convertValue(caseData.get("recitals"), new TypeReference<>() {});
-        CaseManagementOrderAction caseManagementOrderAction = mapper.convertValue(
-            caseData.get("caseManagementOrderAction"), CaseManagementOrderAction.class);
-        // TODO: 29/11/2019 Extract orderDoc
+        DocumentReference orderDoc = mapper.convertValue(caseData.get("orderDoc"), DocumentReference.class);
 
         return CaseManagementOrder.builder()
             .hearingDate(list.getValue().getLabel())
@@ -120,7 +114,7 @@ public class DraftCMOService {
             .schedule(schedule)
             .recitals(recitals)
             .cmoStatus(cmoStatus)
-            .caseManagementOrderAction(caseManagementOrderAction)
+            .orderDoc(orderDoc)
             .build();
     }
 
@@ -284,9 +278,8 @@ public class DraftCMOService {
         cmoTemplateData.put("recitals", recitals);
         cmoTemplateData.put("recitalsProvided", isNotEmpty(recitals));
 
-        Map<String, String> scheduleMap = mapper.convertValue(caseManagementOrder.getSchedule(),
-            new TypeReference<>() {});
-        cmoTemplateData.putAll(scheduleMap);
+        cmoTemplateData.putAll(buildSchedule(caseManagementOrder.getSchedule()));
+
         cmoTemplateData.put("scheduleProvided", isNotEmpty(caseManagementOrder.getSchedule()));
 
         //defaulting as 1 as we currently do not have impl for multiple CMos
@@ -348,6 +341,22 @@ public class DraftCMOService {
         );
     }
 
+    private Map<String, String> buildSchedule(final Schedule schedule) {
+        if (schedule == null) {
+            return ImmutableMap.of();
+        }
+        return Map.of("allocation", defaultString(schedule.getAllocation(), EMPTY_PLACEHOLDER),
+            "application", defaultString(schedule.getApplication(), EMPTY_PLACEHOLDER),
+            "todaysHearing", defaultString(schedule.getTodaysHearing(), EMPTY_PLACEHOLDER),
+            "childrensCurrentArrangement", defaultString(schedule.getChildrensCurrentArrangement(), EMPTY_PLACEHOLDER),
+            "timetableForProceedings", defaultString(schedule.getTimetableForProceedings(), EMPTY_PLACEHOLDER),
+            "timetableForChildren", defaultString(schedule.getTimetableForChildren(), EMPTY_PLACEHOLDER),
+            "alternativeCarers", defaultString(schedule.getAlternativeCarers(), EMPTY_PLACEHOLDER),
+            "threshold", defaultString(schedule.getThreshold(), EMPTY_PLACEHOLDER),
+            "keyIssues", defaultString(schedule.getKeyIssues(), EMPTY_PLACEHOLDER),
+            "partiesPositions", defaultString(schedule.getPartiesPositions(), EMPTY_PLACEHOLDER));
+    }
+
     private List<Map<String, String>> buildRecitals(final List<Element<Recital>> recitals) {
         if (isEmpty(recitals)) {
             return emptyList();
@@ -358,21 +367,6 @@ public class DraftCMOService {
             .map(recital -> ImmutableMap.of("title", defaultString(recital.getTitle(), EMPTY_PLACEHOLDER),
                 "body", defaultString(recital.getDescription(), EMPTY_PLACEHOLDER)))
             .collect(Collectors.toList());
-    }
-
-    public Document getCMODocument(final String authorization, final String userId,
-                                   final Map<String, Object> caseData, final boolean draftCMOApprovedByJudge) {
-        Map<String, Object> cmoTemplateData = generateCMOTemplateData(caseData);
-        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            cmoTemplateData, DocmosisTemplates.CMO);
-
-        String docTitle = document.getDocumentTitle();
-
-        if (draftCMOApprovedByJudge && isNotEmpty(cmoTemplateData.get("draftbackground"))) {
-            docTitle = "draft-" + document.getDocumentTitle();
-        }
-
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), docTitle);
     }
 
     private void removeExistingCustomDirections(Map<String, Object> caseData) {
