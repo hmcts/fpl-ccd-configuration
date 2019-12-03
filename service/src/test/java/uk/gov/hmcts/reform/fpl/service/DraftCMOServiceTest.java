@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -44,29 +47,52 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, DateFormatterService.class, DraftCMOService.class,
-    DirectionHelperService.class})
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, JsonOrdersLookupService.class,
+    HearingVenueLookUpService.class, DocmosisDocumentGeneratorService.class})
 class DraftCMOServiceTest {
     private final LocalDateTime date = LocalDateTime.now();
-    private final DraftCMOService draftCMOService;
-    private final DateFormatterService dateFormatterService;
-    private final ObjectMapper mapper;
+    private final String localAuthorityCode = "example";
+    private final String courtName = "Example Court";
+    private final String courtEmail = "example@court.com";
+    private final String config = String.format("%s=>%s:%s", localAuthorityCode, courtName, courtEmail);
+
+    @Autowired
+    private ObjectMapper mapper;
+
+    @Autowired
+    private OrdersLookupService ordersLookupService;
+
+    @Autowired
+    private HearingVenueLookUpService hearingVenueLookUpService;
+
+    @Autowired
+    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
     private CaseManagementOrder caseManagementOrder;
     private List<Element<HearingBooking>> hearingDetails;
 
-    @Autowired
-    DraftCMOServiceTest(DraftCMOService draftCMOService,
-                        DateFormatterService dateFormatterService,
-                        ObjectMapper mapper) {
-        this.draftCMOService = draftCMOService;
-        this.dateFormatterService = dateFormatterService;
-        this.mapper = mapper;
-    }
+    private DateFormatterService dateFormatterService = new DateFormatterService();
+    private HearingBookingService hearingBookingService = new HearingBookingService();
+    private DirectionHelperService directionHelperService = new DirectionHelperService();
+    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(config);
+    private CommonCaseDataExtractionService commonCaseDataExtraction = new CommonCaseDataExtractionService(
+        dateFormatterService, hearingVenueLookUpService);
+    private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration =
+        new LocalAuthorityEmailLookupConfiguration(config);
+    private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration =
+        new LocalAuthorityNameLookupConfiguration(config);
 
+    private DraftCMOService draftCMOService;
 
     @BeforeEach
     void setUp() {
+        CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
+            hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService,
+            hearingVenueLookUpService, commonCaseDataExtraction, docmosisDocumentGeneratorService);
+        this.draftCMOService = new DraftCMOService(mapper, dateFormatterService, directionHelperService,
+            caseDataExtractionService, commonCaseDataExtraction, hmctsCourtLookupConfiguration,
+            localAuthorityEmailLookupConfiguration, localAuthorityNameLookupConfiguration, ordersLookupService,
+            docmosisDocumentGeneratorService);
         hearingDetails = createHearingBookings(date);
     }
 

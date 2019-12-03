@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.RestTemplate;
+import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -32,8 +34,10 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStandardDirectionOrders;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, JsonOrdersLookupService.class,
-    HearingVenueLookUpService.class})
+@ContextConfiguration(classes = {
+    JacksonAutoConfiguration.class, JsonOrdersLookupService.class,
+    HearingVenueLookUpService.class, DocmosisDocumentGeneratorService.class, RestTemplate.class,
+    DocmosisConfiguration.class})
 class CaseDataExtractionServiceTest {
     @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
 
@@ -45,18 +49,21 @@ class CaseDataExtractionServiceTest {
     private static final LocalDateTime TODAYS_DATE_TIME = LocalDateTime.now();
     private static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
 
+    @Autowired
+    private HearingVenueLookUpService hearingVenueLookUpService;
+
+    @Autowired
+    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
     private DirectionHelperService directionHelperService = new DirectionHelperService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
     private CommonCaseDataExtractionService commonCaseDataExtraction = new CommonCaseDataExtractionService(
-        dateFormatterService);
+        dateFormatterService, hearingVenueLookUpService);
 
     @Autowired
     private OrdersLookupService ordersLookupService;
-
-    @Autowired
-    private HearingVenueLookUpService hearingVenueLookUpService;
 
     private CaseDataExtractionService caseDataExtractionService;
 
@@ -65,7 +72,7 @@ class CaseDataExtractionServiceTest {
         // required for DI
         this.caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
             hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService,
-            hearingVenueLookUpService, commonCaseDataExtraction);
+            hearingVenueLookUpService, commonCaseDataExtraction, docmosisDocumentGeneratorService);
     }
 
     @Test

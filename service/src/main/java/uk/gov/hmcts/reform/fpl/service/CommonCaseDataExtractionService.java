@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Optional;
 
+
 @Service
 public class CommonCaseDataExtractionService {
     private final DateFormatterService dateFormatterService;

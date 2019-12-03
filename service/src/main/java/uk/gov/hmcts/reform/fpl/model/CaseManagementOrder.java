@@ -6,6 +6,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 
@@ -24,4 +25,5 @@ public class CaseManagementOrder {
     private final CMOStatus cmoStatus;
     private final DocumentReference orderDoc;
     private final CaseManagementOrderAction caseManagementOrderAction;
+    private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
 }
