@@ -8,5 +8,7 @@ module.exports = [
       minute: '00',
       second: '00',
     },
+    title: 'Mock title',
+    description: 'Mock description',
   },
 ];

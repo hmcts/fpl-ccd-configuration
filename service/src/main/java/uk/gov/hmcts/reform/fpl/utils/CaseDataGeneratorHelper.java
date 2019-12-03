@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.RandomStringUtils;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Address;
@@ -13,6 +14,8 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
@@ -30,6 +33,11 @@ import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
@@ -49,8 +57,11 @@ public class CaseDataGeneratorHelper {
             .startDate(startDate)
             .venue("Venue")
             .endDate(endDate)
-            .judgeTitle("HHJ")
-            .judgeName("Judith Law")
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HER_HONOUR_JUDGE)
+                .judgeLastName("Law")
+                .legalAdvisorName("Peter Parker")
+                .build())
             .build();
     }
 
@@ -206,6 +217,45 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
+    public static Others createOthers() {
+        return Others.builder()
+            .firstOther(Other.builder()
+                .birthplace("Newry")
+                .childInformation("Child suffers from ADD")
+                .DOB("02/02/05")
+                .gender("Male")
+                .name("Kyle Stafford")
+                .telephone("02838882404")
+                .address(Address.builder()
+                    .addressLine1("1 Some street")
+                    .addressLine2("Some road")
+                    .postTown("some town")
+                    .postcode("BT66 7RR")
+                    .county("Some county")
+                    .country("UK")
+                    .build())
+                .build())
+            .additionalOthers(ImmutableList.of(
+                Element.<Other>builder()
+                    .value(Other.builder()
+                        .birthplace("Craigavon")
+                        .DOB("02/02/05")
+                        .gender("Female")
+                        .name("Sarah Simpson")
+                        .telephone("02838882404")
+                        .address(Address.builder()
+                            .addressLine1("1 Some street")
+                            .addressLine2("Some road")
+                            .postTown("some town")
+                            .postcode("BT66 7RR")
+                            .county("Some county")
+                            .country("UK")
+                            .build())
+                        .build())
+                    .build()
+            )).build();
+    }
+
     public static List<Element<C21Order>> createC21Orders() {
         return ImmutableList.of(
             Element.<C21Order>builder()
@@ -276,5 +326,55 @@ public class CaseDataGeneratorHelper {
             .judgeFullName(judgeFullName)
             .judgeTitle(judgeTitle)
             .build();
+    }
+
+    public static List<Element<Direction>> createElementCollection(Direction direction) {
+        return ImmutableList.of(
+            Element.<Direction>builder()
+                .value(direction)
+                .build()
+        );
+    }
+
+    public static Direction createDirection(DirectionAssignee assignee) {
+        return Direction.builder()
+            .directionText("Mock direction text")
+            .assignee(assignee)
+            .build();
+    }
+
+    public static Direction createCustomDirection(DirectionAssignee assignee) {
+        return Direction.builder()
+            .directionText("Mock direction text")
+            .assignee(assignee)
+            .readOnly("No")
+            .custom("Yes")
+            .build();
+    }
+
+    public static Direction createUnassignedDirection() {
+        return createDirection(null);
+    }
+
+    public static List<Element<Direction>> createCmoDirections() {
+        return ImmutableList.of(
+            Element.<Direction>builder()
+                .value(createCustomDirection(ALL_PARTIES))
+                .build(),
+            Element.<Direction>builder()
+                .value(createCustomDirection(LOCAL_AUTHORITY))
+                .build(),
+            Element.<Direction>builder()
+                .value(createCustomDirection(CAFCASS))
+                .build(),
+            Element.<Direction>builder()
+                .value(createCustomDirection(COURT))
+                .build(),
+            Element.<Direction>builder()
+                .value(createCustomDirection(PARENTS_AND_RESPONDENTS))
+                .build(),
+            Element.<Direction>builder()
+                .value(createCustomDirection(OTHERS))
+                .build());
     }
 }

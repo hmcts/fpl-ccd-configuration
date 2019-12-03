@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import uk.gov.hmcts.reform.fpl.config.utils.LookupConfigParser;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.emptyToNull;
@@ -21,10 +22,9 @@ public class LocalAuthorityEmailLookupConfiguration {
         ));
     }
 
-    public LocalAuthority getLocalAuthority(String localAuthorityCode) {
+    public Optional<LocalAuthority> getLocalAuthority(String localAuthorityCode) {
         checkNotNull(localAuthorityCode, "Local authority code cannot be null");
-
-        return checkNotNull(mapping.get(localAuthorityCode), "Local authority '" + localAuthorityCode + "' not found");
+        return Optional.ofNullable(mapping.get(localAuthorityCode));
     }
 
     public static class LocalAuthority {
