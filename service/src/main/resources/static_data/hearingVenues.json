@@ -103,7 +103,7 @@
     "hearingVenueId": 9,
     "venue": "Grimsby Magistrates and Family Court",
     "address": {
-      "AddressLine1": "Victoria Street",
+      "AddressLine1": "Grimsby Magistrates and Family Court, Victoria Street",
       "PostTown": "North East Lincolnshire",
       "PostCode": "DN31 1NH"
     }
@@ -112,7 +112,7 @@
     "hearingVenueId": 10,
     "venue": "Kingston-upon-Hull Combined Court Centre",
     "address": {
-      "AddressLine1": "Lowgate",
+      "AddressLine1": "Kingston-upon-Hull Combined Court Centre, Lowgate",
       "PostTown": "Kingston-upon-Hull",
       "PostCode": "HU1 2EZ"
     }
@@ -121,7 +121,7 @@
     "hearingVenueId": 10,
     "venue": "Kingston-upon-Hull Combined Court Centre",
     "address": {
-      "AddressLine1": "The Law Courts",
+      "AddressLine1": "Kingston-upon-Hull Combined Court Centre, The Law Courts",
       "AddressLine2": "Market Place",
       "PostTown": "Kingston-upon-Hull",
       "PostCode": "HU1 1RD"
@@ -361,7 +361,7 @@
     "hearingVenueId": 91,
     "venue": "Portsmouth Combined Court Centre",
     "address": {
-      "AddressLine1": "The Courts of Justice",
+      "AddressLine1": "Portsmouth Combined Court Centre, The Courts of Justice",
       "AddressLine2": "Winston Churchill Avenue",
       "PostTown": "Portsmouth",
       "PostCode": "PO1 2EB"
@@ -371,7 +371,7 @@
     "hearingVenueId": 91,
     "venue": "Portsmouth Magistrates Court",
     "address": {
-      "AddressLine1": "The Law Courts",
+      "AddressLine1": "Portsmouth Magistrates Court, The Law Courts",
       "AddressLine2": "Winston Churchill Avenue",
       "PostTown": "Portsmouth",
       "PostCode": "PO1 2DQ"
@@ -481,7 +481,7 @@
     "hearingVenueId": 93,
     "venue": "Reading County and Family Court",
     "address": {
-      "AddressLine1": "Hearing Centre",
+      "AddressLine1": "Reading County and Family Court, Hearing Centre",
       "AddressLine2": "160-163 Friar Street",
       "PostTown": "Reading",
       "PostCode": "RG1 1HE"
@@ -531,7 +531,7 @@
     "hearingVenueId": 51,
     "venue": "Reading Magistrates and Family Court",
     "address": {
-      "AddressLine1": "Castle Street",
+      "AddressLine1": "Reading Magistrates and Family Court, Castle Street",
       "PostTown": "Reading",
       "PostCode": "RG1 7TQ"
     }
@@ -600,7 +600,7 @@
     "hearingVenueId": 59,
     "venue": "Stoke-on-Trent Combined Court",
     "address": {
-      "AddressLine1": "Bethesda Street",
+      "AddressLine1": "Stoke-on-Trent Combined Court, Bethesda Street",
       "AddressLine2": "Hanley",
       "PostTown": "Stoke-on-Trent",
       "PostCode": "ST1 3BP"
@@ -830,7 +830,7 @@
     "hearingVenueId": 89,
     "venue": "Swindon Combined Court",
     "address": {
-      "AddressLine1": "The Law Courts",
+      "AddressLine1": "Swindon Combined Court, The Law Courts",
       "AddressLine2": "Islington Street",
       "PostTown": "Swindon",
       "PostCode": "SN1 2HG"
@@ -840,7 +840,7 @@
     "hearingVenueId": 94,
     "venue": "West London Family Court",
     "address": {
-      "AddressLine1": "Gloucester House",
+      "AddressLine1": "West London Family Court, Gloucester House",
       "AddressLine2": "4 Dukes Green Avenue",
       "PostTown": "Feltham",
       "PostCode": "TW14 0LR"
