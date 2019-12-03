@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import ccd.sdk.types.ComplexType;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -14,6 +15,7 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 
 @Service
+@ComplexType(label = "Children service label")
 public class ChildrenService {
 
     @SuppressWarnings("squid:S2583")
