@@ -61,11 +61,11 @@
   },
   {
     "hearingVenueId": 7,
-    "venue": "Cardiff, Swansea Civil Justice Centre",
+    "venue": "Swansea Civil Justice Centre",
     "address": {
-      "AddressLine1": "Family Court Cardiff, Caravella House",
-      "AddressLine2": "Swansea Civil Justice Centre",
-      "PostTown": "Quay Parade Swansea",
+      "AddressLine1": "Swansea Civil Justice Centre, Caravella House",
+      "AddressLine2": "Quay West",
+      "PostTown": "Quay Parade, Swansea",
       "PostCode": "SA1 1SP"
     }
   },
@@ -77,26 +77,6 @@
       "AddressLine2": "Doncaster Hearing Centre",
       "PostTown": "South Yorkshire",
       "PostCode": "DN1 3BT"
-    }
-  },
-  {
-    "hearingVenueId": 9,
-    "venue": "Great Grimsby, Grimsby Magistrates Court",
-    "address": {
-      "AddressLine1": "Family Court Great Grimsby, Victoria Street",
-      "AddressLine2": "Grimsby Magistrates Court",
-      "PostTown": "North East Lincolnshire",
-      "PostCode": "DN31 1NH"
-    }
-  },
-  {
-    "hearingVenueId": 10,
-    "venue": "Great Grimsby, Hull Combined Court Centre",
-    "address": {
-      "AddressLine1": "Family Court Great Grimsby, Lowgate",
-      "AddressLine2": "Hull Combined Court Centre",
-      "PostTown": "Kingston Upon Hull",
-      "PostCode": "HU1 2EZ"
     }
   },
   {
@@ -117,6 +97,34 @@
       "AddressLine2": "Sheffield Combined Court",
       "PostTown": "Sheffield",
       "PostCode": "S3 8PH"
+    }
+  },
+  {
+    "hearingVenueId": 9,
+    "venue": "Grimsby Magistrates and Family Court",
+    "address": {
+      "AddressLine1": "Victoria Street",
+      "PostTown": "North East Lincolnshire",
+      "PostCode": "DN31 1NH"
+    }
+  },
+  {
+    "hearingVenueId": 10,
+    "venue": "Kingston-upon-Hull Combined Court Centre",
+    "address": {
+      "AddressLine1": "Lowgate",
+      "PostTown": "Kingston-upon-Hull",
+      "PostCode": "HU1 2EZ"
+    }
+  },
+  {
+    "hearingVenueId": 10,
+    "venue": "Kingston-upon-Hull Combined Court Centre",
+    "address": {
+      "AddressLine1": "The Law Courts",
+      "AddressLine2": "Market Place",
+      "PostTown": "Kingston-upon-Hull",
+      "PostCode": "HU1 1RD"
     }
   },
   {
@@ -350,6 +358,26 @@
     }
   },
   {
+    "hearingVenueId": 91,
+    "venue": "Portsmouth Combined Court Centre",
+    "address": {
+      "AddressLine1": "The Courts of Justice",
+      "AddressLine2": "Winston Churchill Avenue",
+      "PostTown": "Portsmouth",
+      "PostCode": "PO1 2EB"
+    }
+  },
+  {
+    "hearingVenueId": 91,
+    "venue": "Portsmouth Magistrates Court",
+    "address": {
+      "AddressLine1": "The Law Courts",
+      "AddressLine2": "Winston Churchill Avenue",
+      "PostTown": "Portsmouth",
+      "PostCode": "PO1 2DQ"
+    }
+  },
+  {
     "hearingVenueId": 36,
     "venue": "Portsmouth, Aldershot Hearing Centre",
     "address": {
@@ -450,6 +478,16 @@
     }
   },
   {
+    "hearingVenueId": 93,
+    "venue": "Reading County and Family Court",
+    "address": {
+      "AddressLine1": "Hearing Centre",
+      "AddressLine2": "160-163 Friar Street",
+      "PostTown": "Reading",
+      "PostCode": "RG1 1HE"
+    }
+  },
+  {
     "hearingVenueId": 46,
     "venue": "Reading, Epsom Hearing Centre",
     "address": {
@@ -490,6 +528,15 @@
     }
   },
   {
+    "hearingVenueId": 51,
+    "venue": "Reading Magistrates and Family Court",
+    "address": {
+      "AddressLine1": "Castle Street",
+      "PostTown": "Reading",
+      "PostCode": "RG1 7TQ"
+    }
+  },
+  {
     "hearingVenueId": 50,
     "venue": "Reading, Oxford Hearing Centre",
     "address": {
@@ -497,16 +544,6 @@
       "AddressLine2": "Oxford Hearing Centre",
       "PostTown": "Oxford",
       "PostCode": "OX1 1TL"
-    }
-  },
-  {
-    "hearingVenueId": 51,
-    "venue": "Reading, Reading Magistrates Court",
-    "address": {
-      "AddressLine1": "Family Court Reading, And Family Hearing Centre",
-      "AddressLine2": "Reading Magistrates Court",
-      "PostTown": "Berkshire",
-      "PostCode": "RG1 7TQ"
     }
   },
   {
@@ -560,6 +597,16 @@
     }
   },
   {
+    "hearingVenueId": 59,
+    "venue": "Stoke-on-Trent Combined Court",
+    "address": {
+      "AddressLine1": "Bethesda Street",
+      "AddressLine2": "Hanley",
+      "PostTown": "Stoke-on-Trent",
+      "PostCode": "ST1 3BP"
+    }
+  },
+  {
     "hearingVenueId": 57,
     "venue": "Stoke On Trent, Birmingham Hearing Centre",
     "address": {
@@ -577,16 +624,6 @@
       "AddressLine2": "Derby Combined Court Centre",
       "PostTown": "Derby",
       "PostCode": "DE1 2XE"
-    }
-  },
-  {
-    "hearingVenueId": 59,
-    "venue": "Stoke On Trent, Family Court Centre, Hanley",
-    "address": {
-      "AddressLine1": "Family Court Stoke On Trent, Bethesda Street",
-      "AddressLine2": "Family Court Centre",
-      "PostTown": "Stoke On Trent",
-      "PostCode": "ST1 3BP"
     }
   },
   {
@@ -787,6 +824,26 @@
       "AddressLine2": "Swindon Magistrates Court",
       "PostTown": "Swindon",
       "PostCode": "SN1 2JB"
+    }
+  },
+  {
+    "hearingVenueId": 89,
+    "venue": "Swindon Combined Court",
+    "address": {
+      "AddressLine1": "The Law Courts",
+      "AddressLine2": "Islington Street",
+      "PostTown": "Swindon",
+      "PostCode": "SN1 2HG"
+    }
+  },
+  {
+    "hearingVenueId": 94,
+    "venue": "West London Family Court",
+    "address": {
+      "AddressLine1": "Gloucester House",
+      "AddressLine2": "4 Dukes Green Avenue",
+      "PostTown": "Feltham",
+      "PostCode": "TW14 0LR"
     }
   },
   {
