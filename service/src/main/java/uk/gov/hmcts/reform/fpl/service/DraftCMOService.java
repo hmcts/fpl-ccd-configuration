@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
 @Service
@@ -70,6 +72,7 @@ public class DraftCMOService {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
 
     public Map<String, Object> extractIndividualCaseManagementOrderObjects(
         CaseManagementOrder caseManagementOrder,
@@ -95,6 +98,15 @@ public class DraftCMOService {
 
     public CaseManagementOrder prepareCMO(Map<String, Object> caseData) {
         DynamicList list = mapper.convertValue(caseData.get("cmoHearingDateList"), DynamicList.class);
+
+        String hearingDate = null;
+        UUID id = null;
+
+        if (list != null) {
+            hearingDate = list.getValue().getLabel();
+            id = list.getValue().getCode();
+        }
+
         Map<String, Object> reviewCaseManagementOrder = mapper.convertValue(
             caseData.get("reviewCaseManagementOrder"), new TypeReference<>() {});
         CMOStatus cmoStatus = null;
@@ -106,8 +118,8 @@ public class DraftCMOService {
         List<Element<Recital>> recitals = mapper.convertValue(caseData.get("recitals"), new TypeReference<>() {});
 
         return CaseManagementOrder.builder()
-            .hearingDate(list.getValue().getLabel())
-            .id(list.getValue().getCode())
+            .hearingDate(hearingDate)
+            .id(id)
             .directions(combineAllDirectionsForCmo(mapper.convertValue(caseData, CaseData.class)))
             .schedule(schedule)
             .recitals(recitals)
@@ -167,7 +179,7 @@ public class DraftCMOService {
         for (int i = 0; i < respondents.size(); i++) {
             RespondentParty respondentParty = respondents.get(i).getValue().getParty();
 
-            String key = String.format("Respondent %d - %s", i + 1, respondentParty.buildFullName());
+            String key = String.format("Respondent %d - %s", i + 1, respondentParty.getFullName());
             stringBuilder.append(key).append("\n\n");
         }
 
@@ -244,15 +256,14 @@ public class DraftCMOService {
 
         cmoTemplateData.put("respondentOneName", getFirstRespondentFullName(caseData));
 
-        cmoTemplateData.putAll(getEmptyHearingBookingData());
+        // Populate with the next hearing booking, currently not captured
+        cmoTemplateData.putAll(commonCaseDataExtractionService.getHearingBookingData(null));
 
-        HearingBooking hearingBooking = getHearingBooking(caseData, hearingDateList);
+        HearingBooking hearingBooking = getHearingBooking(caseData.getHearingDetails(), hearingDateList);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
-        //EMPTY_PLACEHOLDER given template definition
-        cmoTemplateData.put("judgeTitle", EMPTY_PLACEHOLDER);
-        cmoTemplateData.put("judgeName", defaultString(judgeAndLegalAdvisor.getJudgeLastName(),
+        cmoTemplateData.put("judgeTitleAndName", defaultIfBlank(formatJudgeTitleAndName(judgeAndLegalAdvisor),
             EMPTY_PLACEHOLDER));
-        cmoTemplateData.put("legalAdvisorName", defaultString(getLegalAdvisorName(
+        cmoTemplateData.put("legalAdvisorName", defaultIfBlank(getLegalAdvisorName(
             judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
 
         cmoTemplateData.putAll(getGroupedCMODirections(caseManagementOrder));
@@ -267,13 +278,28 @@ public class DraftCMOService {
         final Schedule schedule = caseManagementOrder.getSchedule();
         Map<String, String> scheduleMap = mapper.convertValue(schedule,
             new TypeReference<>() {});
-        cmoTemplateData.putAll(scheduleMap);
+        cmoTemplateData.putAll(defaultIfNull(scheduleMap, getEmptyScheduleMap()));
         cmoTemplateData.put("scheduleProvided", schedule != null && "Yes".equals(schedule.getIncludeSchedule()));
 
         //defaulting as 1 as we currently do not have impl for multiple CMos
         cmoTemplateData.put("caseManagementNumber", 1);
 
         return cmoTemplateData.build();
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, String> getEmptyScheduleMap() {
+        final String[] scheduleKeys = {
+            "includeSchedule", "allocation", "application", "todaysHearing", "childrensCurrentArrangement",
+            "timetableForProceedings", "timetableForChildren", "alternativeCarers", "threshold", "keyIssues",
+            "partiesPositions"
+        };
+
+        ImmutableMap.Builder builder = ImmutableMap.<String, String>builder();
+
+        Arrays.stream(scheduleKeys).forEach(key -> builder.put(key, EMPTY_PLACEHOLDER));
+
+        return builder.build();
     }
 
     private Map<String, Object> getLocalAuthorityDetails(String localAuthorityCode) {
@@ -307,18 +333,11 @@ public class DraftCMOService {
         return defaultIfBlank(hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName(), EMPTY_PLACEHOLDER);
     }
 
-    private JudgeAndLegalAdvisor getJudgeAndLegalAdvisor(final CaseData caseData,
-                                                         final CaseManagementOrder caseManagementOrder) {
-        return isNotEmpty(caseManagementOrder)
-            ? defaultIfNull(caseManagementOrder.getJudgeAndLegalAdvisor(), null) :
-            caseData.getJudgeAndLegalAdvisor();
-    }
-
     private Map<String, List<Map<String, String>>> getGroupedCMODirections(
         final CaseManagementOrder caseManagementOrder) throws IOException {
         OrderDefinition caseManagementOrderDefinition = ordersLookupService.getDirectionOrder();
 
-        if (isNull(caseManagementOrder)) {
+        if (caseManagementOrder == null || isEmpty(caseManagementOrder.getDirections())) {
             return ImmutableMap.of();
         }
 
@@ -345,26 +364,22 @@ public class DraftCMOService {
     }
 
     private String getFirstRespondentFullName(final CaseData caseData) {
-        return caseData.buildFirstRespondentFullName();
+        final Respondent respondent = caseData.getFirstRespondent();
+
+        return respondent.getParty() != null ? respondent.getParty().getFullName() : "";
     }
 
-    private HearingBooking getHearingBooking(final CaseData caseData, DynamicList hearingDateList) {
-        return caseData.getHearingDetails()
-            .stream()
+    private HearingBooking getHearingBooking(final List<Element<HearingBooking>> hearingDetails,
+                                             final DynamicList hearingDateList) {
+        if (hearingDetails == null) {
+            return HearingBooking.builder().build();
+        }
+
+        return hearingDetails.stream()
             .filter(element -> element.getId().equals(hearingDateList.getValue().getCode()))
             .findFirst()
             .map(Element::getValue)
             .orElse(HearingBooking.builder().build());
-    }
-
-    public Map<String, Object> getEmptyHearingBookingData() {
-        //passing in EMPTY_PLACEHOLDER following template definition
-        return ImmutableMap.of(
-            "hearingDate", EMPTY_PLACEHOLDER,
-            "hearingVenue", EMPTY_PLACEHOLDER,
-            "preHearingAttendance", EMPTY_PLACEHOLDER,
-            "hearingTime", EMPTY_PLACEHOLDER
-        );
     }
 
     private List<Map<String, String>> buildRecitals(final List<Element<Recital>> recitals) {

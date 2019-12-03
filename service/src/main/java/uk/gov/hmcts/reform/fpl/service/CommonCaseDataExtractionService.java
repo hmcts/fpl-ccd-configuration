@@ -1,20 +1,29 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingVenue;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
+import java.util.Map;
 import java.util.Optional;
+
+import static org.springframework.util.StringUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 
 @Service
 public class CommonCaseDataExtractionService {
     private final DateFormatterService dateFormatterService;
+    private final HearingVenueLookUpService hearingVenueLookUpService;
 
     @Autowired
-    public CommonCaseDataExtractionService(DateFormatterService dateFormatterService) {
+    public CommonCaseDataExtractionService(DateFormatterService dateFormatterService,
+                                           HearingVenueLookUpService hearingVenueLookUpService) {
         this.dateFormatterService = dateFormatterService;
+        this.hearingVenueLookUpService = hearingVenueLookUpService;
     }
 
     public String getHearingTime(HearingBooking hearingBooking) {
@@ -45,6 +54,27 @@ public class CommonCaseDataExtractionService {
         }
 
         return Optional.ofNullable(hearingDate);
+    }
+
+    // NOTE: doesn't get anything to do with judge
+    public Map<String, Object> getHearingBookingData(final HearingBooking hearingBooking) {
+        if (isEmpty(hearingBooking)) {
+            return ImmutableMap.of(
+                "hearingDate", EMPTY_PLACEHOLDER,
+                "hearingVenue", EMPTY_PLACEHOLDER,
+                "preHearingAttendance", EMPTY_PLACEHOLDER,
+                "hearingTime", EMPTY_PLACEHOLDER
+            );
+        }
+
+        HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(hearingBooking.getVenue());
+
+        return ImmutableMap.of(
+            "hearingDate", getHearingDateIfHearingsOnSameDay(hearingBooking).orElse(""),
+            "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
+            "preHearingAttendance", extractPrehearingAttendance(hearingBooking),
+            "hearingTime", getHearingTime(hearingBooking)
+        );
     }
 
     public String extractPrehearingAttendance(HearingBooking booking) {

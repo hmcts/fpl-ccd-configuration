@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -35,6 +36,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
@@ -42,14 +44,22 @@ import static org.apache.commons.lang3.ArrayUtils.add;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.values;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCMO;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
 @ExtendWith(SpringExtension.class)
@@ -70,7 +80,7 @@ class DraftCMOServiceTest {
     private final ObjectMapper mapper;
     private final OrdersLookupService ordersLookupService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
-    private final CommonCaseDataExtractionService commonCaseDataExtraction;
+    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
@@ -90,7 +100,7 @@ class DraftCMOServiceTest {
     @Autowired
     public DraftCMOServiceTest(ObjectMapper mapper, OrdersLookupService ordersLookupService,
                                HearingVenueLookUpService hearingVenueLookUpService,
-                               CommonCaseDataExtractionService commonCaseDataExtraction,
+                               CommonCaseDataExtractionService commonCaseDataExtractionService,
                                DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
                                DateFormatterService dateFormatterService,
                                HearingBookingService hearingBookingService,
@@ -98,7 +108,7 @@ class DraftCMOServiceTest {
         this.mapper = mapper;
         this.ordersLookupService = ordersLookupService;
         this.hearingVenueLookUpService = hearingVenueLookUpService;
-        this.commonCaseDataExtraction = commonCaseDataExtraction;
+        this.commonCaseDataExtractionService = commonCaseDataExtractionService;
         this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
@@ -109,12 +119,12 @@ class DraftCMOServiceTest {
     void setUp() {
         CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
             hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService,
-            hearingVenueLookUpService, commonCaseDataExtraction, docmosisDocumentGeneratorService);
+            hearingVenueLookUpService, commonCaseDataExtractionService, docmosisDocumentGeneratorService);
 
         draftCMOService = new DraftCMOService(mapper, dateFormatterService, directionHelperService,
-            caseDataExtractionService, commonCaseDataExtraction, hmctsCourtLookupConfiguration,
-            localAuthorityEmailLookupConfiguration, localAuthorityNameLookupConfiguration, ordersLookupService,
-            docmosisDocumentGeneratorService);
+            caseDataExtractionService, hmctsCourtLookupConfiguration, localAuthorityEmailLookupConfiguration,
+            localAuthorityNameLookupConfiguration, ordersLookupService, docmosisDocumentGeneratorService,
+            commonCaseDataExtractionService);
 
         hearingDetails = createHearingBookings(NOW);
     }
@@ -169,7 +179,7 @@ class DraftCMOServiceTest {
     void shouldReturnCaseManagementOrderWhenProvidedCaseDetails() {
         Map<String, Object> caseData = new HashMap<>();
 
-        Stream.of(DirectionAssignee.values()).forEach(direction ->
+        Stream.of(values()).forEach(direction ->
             caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
         );
 
@@ -271,7 +281,7 @@ class DraftCMOServiceTest {
     void shouldRemoveCustomDirectionsWhenCMODoesNotExistOnCaseDetails() {
         Map<String, Object> caseData = new HashMap<>();
 
-        Stream.of(DirectionAssignee.values()).forEach(direction ->
+        Stream.of(values()).forEach(direction ->
             caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
         );
 
@@ -375,7 +385,11 @@ class DraftCMOServiceTest {
 
     @Nested
     class GenerateTemplateData {
-        private final LocalDateTime NOW = LocalDateTime.now();
+        private final String[] scheduleKeys = {
+            "includeSchedule", "allocation", "application", "todaysHearing", "childrensCurrentArrangement",
+            "timetableForProceedings", "timetableForChildren", "alternativeCarers", "threshold", "keyIssues",
+            "partiesPositions"
+        };
 
         @Test
         void shouldReturnEmptyMapValuesWhenCaseDataIsEmpty() throws IOException {
@@ -410,7 +424,7 @@ class DraftCMOServiceTest {
             assertThat(templateData.get("courtDirections")).isNull();
             assertThat(templateData.get("recitals")).isEqualTo(ImmutableList.of());
             assertThat(templateData.get("recitalsProvided")).isEqualTo(false);
-            assertThat(templateData.get("schedule")).isEqualTo(Schedule.builder().build());
+            Arrays.stream(scheduleKeys).forEach(key -> assertThat(templateData.get(key)).isEqualTo(EMPTY_PLACEHOLDER));
             assertThat(templateData.get("scheduleProvided")).isEqualTo(false);
             assertThat(templateData.get("draftbackground")).isNotNull();
             assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
@@ -418,6 +432,8 @@ class DraftCMOServiceTest {
 
         @Test
         void shouldReturnFullyPopulatedMapWhenCompleteCaseDetailsAreProvided() throws IOException {
+            final List<Element<Direction>> cmoDirections = createCmoDirections();
+
             final Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
                 .put("caseLocalAuthority", "example")
                 .put("familyManCaseNumber", "123")
@@ -431,7 +447,14 @@ class DraftCMOServiceTest {
                         .label(formatLocalDateToMediumStyle(5))
                         .build())
                     .build())
-                .put("caseManagementOrder", createCMO(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"), true))
+                .put("schedule", createSchedule(true))
+                .put("recitals", createRecitals())
+                .put("allPartiesCustom", getDirectionByAssignee(cmoDirections, ALL_PARTIES))
+                .put("localAuthorityDirectionsCustom", getDirectionByAssignee(cmoDirections, LOCAL_AUTHORITY))
+                .put("courtDirectionsCustom", getDirectionByAssignee(cmoDirections, COURT))
+                .put("cafcassDirectionsCustom", getDirectionByAssignee(cmoDirections, CAFCASS))
+                .put("otherPartiesDirectionsCustom", getDirectionByAssignee(cmoDirections, OTHERS))
+                .put("respondentDirectionsCustom", getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
                 .build();
 
             final Map<String, Object> templateData = draftCMOService.generateCMOTemplateData(caseData);
@@ -453,13 +476,12 @@ class DraftCMOServiceTest {
             assertThat(templateData.get("localAuthoritySolicitorName")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("localAuthoritySolicitorPhoneNumber")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("respondentOneName")).isEqualTo("Timothy Jones");
-            assertThat(templateData.get("hearingDate")).asString().isBlank();
-            assertThat(templateData.get("hearingVenue"))
-                .isEqualTo("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");
-            assertThat(templateData.get("preHearingAttendance")).isEqualTo(getExpectedPrehearingAttendance());
-            assertThat(templateData.get("hearingTime")).isEqualTo(getExpectedHearingTime());
-//            assertThat(templateData.get("judgeTitleAndName")).isEqualTo("Her Honour Judge Smith");
-//            assertThat(templateData.get("legalAdvisorName")).isEqualTo("Bob Ross");
+            assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("judgeTitleAndName")).isEqualTo("Her Honour Judge Law");
+            assertThat(templateData.get("legalAdvisorName")).isEqualTo("Peter Parker");
             assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirection(2));
             assertThat(templateData.get("localAuthorityDirections")).isEqualTo(getExpectedDirection(3));
             assertThat(templateData.get("cafcassDirections")).isEqualTo(getExpectedDirection(4));
@@ -468,20 +490,17 @@ class DraftCMOServiceTest {
             assertThat(templateData.get("otherPartiesDirections")).isEqualTo(getExpectedDirection(7));
             assertThat(templateData.get("recitals")).isEqualTo(getExpectedRecital());
             assertThat(templateData.get("recitalsProvided")).isEqualTo(true);
-//            assertThat(templateData).containsAllEntriesOf(getExpectedSchedule());
+            assertThat(templateData).containsAllEntriesOf(getExpectedSchedule());
             assertThat(templateData.get("scheduleProvided")).isEqualTo(true);
             assertThat(templateData.get("draftbackground")).isNotNull();
             assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
         }
 
-        private String getExpectedHearingTime() {
-            return String.format("%s - %s",
-                dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW, "d MMMM, h:mma"),
-                dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.plusDays(1), "d MMMM, h:mma"));
-        }
-
-        private String getExpectedPrehearingAttendance() {
-            return dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.minusHours(1), "d MMMM yyyy, h:mma");
+        private List<Element<Direction>> getDirectionByAssignee(List<Element<Direction>> list,
+                                                                DirectionAssignee assignee) {
+            return list.stream()
+                .filter(element -> element.getValue().getAssignee().equals(assignee))
+                .collect(Collectors.toList());
         }
 
         private Map<String, String> getExpectedSchedule() {
