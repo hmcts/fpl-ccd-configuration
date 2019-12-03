@@ -118,8 +118,8 @@
     }
   },
   {
-    "hearingVenueId": 10,
-    "venue": "Kingston-upon-Hull Combined Court Centre",
+    "hearingVenueId": 90,
+    "venue": "Kingston-upon-Hull Magistrates Court and Hearing Centre",
     "address": {
       "AddressLine1": "Kingston-upon-Hull Combined Court Centre, The Law Courts",
       "AddressLine2": "Market Place",
