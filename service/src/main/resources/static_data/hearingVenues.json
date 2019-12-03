@@ -1,5 +1,14 @@
 [
   {
+    "hearingVenueId": 95,
+    "venue": "Cardiff Civil and Family Justice Centre",
+    "address": {
+      "AddressLine1": "Cardiff Civil and Family Justice Centre, 2 Park Street",
+      "PostTown": "Cardiff",
+      "PostCode": "CF10 1ET"
+    }
+  },
+  {
     "hearingVenueId": 1,
     "venue": "Cardiff, Aberdare Hearing Centre",
     "address": {
