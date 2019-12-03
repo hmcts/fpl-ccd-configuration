@@ -421,7 +421,7 @@ public class CaseDataGeneratorHelper {
             .threshold("threshold")
             .timetableForChildren("time goes by")
             .timetableForProceedings("so slowly")
-            .todaysHearing("21/12/2050")
+            .todaysHearing("slowly")
             .build();
     }
 }

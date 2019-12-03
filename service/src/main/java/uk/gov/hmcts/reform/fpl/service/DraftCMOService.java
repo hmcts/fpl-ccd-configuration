@@ -281,7 +281,6 @@ public class DraftCMOService {
             );
         }
 
-        // defaulting to EMPTY_PLACEHOLDER for now as we currently do not capture
         return ImmutableMap.of(
             "localAuthoritySolicitorEmail", localAuthorityEmailLookupConfiguration
                 .getLocalAuthority(localAuthorityCode)
@@ -290,6 +289,7 @@ public class DraftCMOService {
             "localAuthorityName", defaultIfBlank(
                 localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode),
                 EMPTY_PLACEHOLDER),
+            // defaulting to EMPTY_PLACEHOLDER for now as we currently do not capture
             "localAuthoritySolicitorName", EMPTY_PLACEHOLDER,
             "localAuthoritySolicitorPhoneNumber", EMPTY_PLACEHOLDER);
 

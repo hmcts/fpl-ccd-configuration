@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
@@ -42,67 +43,85 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCMO;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class,
-    DocmosisDocumentGeneratorService.class, RestTemplate.class, DocmosisConfiguration.class})
+    DocmosisDocumentGeneratorService.class, RestTemplate.class, DocmosisConfiguration.class,
+    CommonCaseDataExtractionService.class, DateFormatterService.class, HearingBookingService.class,
+    DirectionHelperService.class
+})
 class DraftCMOServiceTest {
-    private final LocalDateTime date = LocalDateTime.now();
-    private final String localAuthorityCode = "example";
-    private final String courtName = "Example Court";
-    private final String courtEmail = "example@court.com";
-    private final String config = String.format("%s=>%s:%s", localAuthorityCode, courtName, courtEmail);
+    private static final String LOCAL_AUTHORITY_CODE = "example";
+    private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
+    private static final String COURT_NAME = "Test court";
+    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
+    private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
+    private static final LocalDateTime NOW = LocalDateTime.now();
 
-    @Autowired
-    private ObjectMapper mapper;
-
-    @Autowired
-    private OrdersLookupService ordersLookupService;
-
-    @Autowired
-    private HearingVenueLookUpService hearingVenueLookUpService;
-
-    @Autowired
-    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+    private final ObjectMapper mapper;
+    private final OrdersLookupService ordersLookupService;
+    private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final CommonCaseDataExtractionService commonCaseDataExtraction;
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+    private final DateFormatterService dateFormatterService;
+    private final HearingBookingService hearingBookingService;
+    private final DirectionHelperService directionHelperService;
+    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(
+        String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL_ADDRESS));
+    private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration =
+        new LocalAuthorityEmailLookupConfiguration(String.format("%s=>%s",
+            LOCAL_AUTHORITY_CODE, LOCAL_AUTHORITY_EMAIL_ADDRESS));
+    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration =
+        new LocalAuthorityNameLookupConfiguration(String.format("%s=>%s", LOCAL_AUTHORITY_CODE, LOCAL_AUTHORITY_NAME));
 
     private CaseManagementOrder caseManagementOrder;
     private List<Element<HearingBooking>> hearingDetails;
-
-    private DateFormatterService dateFormatterService = new DateFormatterService();
-    private HearingBookingService hearingBookingService = new HearingBookingService();
-    private DirectionHelperService directionHelperService = new DirectionHelperService();
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(config);
-    private CommonCaseDataExtractionService commonCaseDataExtraction = new CommonCaseDataExtractionService(
-        dateFormatterService, hearingVenueLookUpService);
-    private LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration =
-        new LocalAuthorityEmailLookupConfiguration(config);
-    private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration =
-        new LocalAuthorityNameLookupConfiguration(config);
-
     private DraftCMOService draftCMOService;
+
+    @Autowired
+    public DraftCMOServiceTest(ObjectMapper mapper, OrdersLookupService ordersLookupService,
+                               HearingVenueLookUpService hearingVenueLookUpService,
+                               CommonCaseDataExtractionService commonCaseDataExtraction,
+                               DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
+                               DateFormatterService dateFormatterService,
+                               HearingBookingService hearingBookingService,
+                               DirectionHelperService directionHelperService) {
+        this.mapper = mapper;
+        this.ordersLookupService = ordersLookupService;
+        this.hearingVenueLookUpService = hearingVenueLookUpService;
+        this.commonCaseDataExtraction = commonCaseDataExtraction;
+        this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
+        this.dateFormatterService = dateFormatterService;
+        this.hearingBookingService = hearingBookingService;
+        this.directionHelperService = directionHelperService;
+    }
 
     @BeforeEach
     void setUp() {
         CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
             hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService,
             hearingVenueLookUpService, commonCaseDataExtraction, docmosisDocumentGeneratorService);
-        this.draftCMOService = new DraftCMOService(mapper, dateFormatterService, directionHelperService,
+
+        draftCMOService = new DraftCMOService(mapper, dateFormatterService, directionHelperService,
             caseDataExtractionService, commonCaseDataExtraction, hmctsCourtLookupConfiguration,
             localAuthorityEmailLookupConfiguration, localAuthorityNameLookupConfiguration, ordersLookupService,
             docmosisDocumentGeneratorService);
-        hearingDetails = createHearingBookings(date);
+
+        hearingDetails = createHearingBookings(NOW);
     }
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCaseDetailsHasHearingDate() {
-        hearingDetails = createHearingBookings(date);
+        hearingDetails = createHearingBookings(NOW);
         caseManagementOrder = CaseManagementOrder.builder().build();
 
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
@@ -128,7 +147,7 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCmoHasPreviousSelectedValue() {
-        hearingDetails = createHearingBookings(date);
+        hearingDetails = createHearingBookings(NOW);
         caseManagementOrder = CaseManagementOrder.builder()
             .hearingDate(formatLocalDateToMediumStyle(2))
             .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
@@ -212,7 +231,7 @@ class DraftCMOServiceTest {
             .cmoStatus(SELF_REVIEW)
             .build();
 
-        hearingDetails = createHearingBookings(date);
+        hearingDetails = createHearingBookings(NOW);
 
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
@@ -267,7 +286,7 @@ class DraftCMOServiceTest {
     }
 
     private DynamicList getDynamicList() {
-        DynamicList dynamicList = draftCMOService.buildDynamicListFromHearingDetails(createHearingBookings(date));
+        DynamicList dynamicList = draftCMOService.buildDynamicListFromHearingDetails(createHearingBookings(NOW));
 
         DynamicListElement listElement = DynamicListElement.builder()
             .label(formatLocalDateToMediumStyle(5))
@@ -295,7 +314,7 @@ class DraftCMOServiceTest {
     }
 
     private String formatLocalDateToMediumStyle(int i) {
-        return dateFormatterService.formatLocalDateToString(date.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
+        return dateFormatterService.formatLocalDateToString(NOW.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
     }
 
     private Others createFirstOtherWithoutAName() {
@@ -356,20 +375,19 @@ class DraftCMOServiceTest {
 
     @Nested
     class GenerateTemplateData {
+        private final LocalDateTime NOW = LocalDateTime.now();
+
         @Test
         void shouldReturnEmptyMapValuesWhenCaseDataIsEmpty() throws IOException {
             final Map<String, Object> templateData = draftCMOService.generateCMOTemplateData(ImmutableMap.of());
 
-            assertThat(templateData.get("judgeTitleAndName")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("legalAdvisorName")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("courtName")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("familyManCaseNumber")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("generationDate")).isEqualTo(dateFormatterService
-                .formatLocalDateToString(date.toLocalDate(), FormatStyle.LONG));
+                .formatLocalDateToString(DraftCMOServiceTest.NOW.toLocalDate(), FormatStyle.LONG));
             assertThat(templateData.get("complianceDeadline")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("children")).isEqualTo(ImmutableList.of());
             assertThat(templateData.get("numberOfChildren")).isEqualTo(0);
-            assertThat(templateData.get("courtName")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("applicantName")).isEqualTo("");
             assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
             assertThat(templateData.get("respondentsProvided")).isEqualTo(false);
@@ -382,7 +400,6 @@ class DraftCMOServiceTest {
             assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("judgeName")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("judgeTitleAndName")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("legalAdvisorName")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("allParties")).isNull();
@@ -395,7 +412,140 @@ class DraftCMOServiceTest {
             assertThat(templateData.get("recitalsProvided")).isEqualTo(false);
             assertThat(templateData.get("schedule")).isEqualTo(Schedule.builder().build());
             assertThat(templateData.get("scheduleProvided")).isEqualTo(false);
+            assertThat(templateData.get("draftbackground")).isNotNull();
             assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
+        }
+
+        @Test
+        void shouldReturnFullyPopulatedMapWhenCompleteCaseDetailsAreProvided() throws IOException {
+            final Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
+                .put("caseLocalAuthority", "example")
+                .put("familyManCaseNumber", "123")
+                .put("children1", createPopulatedChildren())
+                .put("hearingDetails", createHearingBookings(NOW))
+                .put("dateSubmitted", LocalDate.now())
+                .put("respondents1", createRespondents())
+                .put("cmoHearingDateList", DynamicList.builder()
+                    .value(DynamicListElement.builder()
+                        .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                        .label(formatLocalDateToMediumStyle(5))
+                        .build())
+                    .build())
+                .put("caseManagementOrder", createCMO(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"), true))
+                .build();
+
+            final Map<String, Object> templateData = draftCMOService.generateCMOTemplateData(caseData);
+
+            assertThat(templateData.get("courtName")).isEqualTo(COURT_NAME);
+            assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
+            assertThat(templateData.get("generationDate")).isEqualTo(dateFormatterService
+                .formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG));
+            assertThat(templateData.get("complianceDeadline")).isEqualTo(dateFormatterService
+                .formatLocalDateToString(NOW.toLocalDate().plusWeeks(26), FormatStyle.LONG));
+            assertThat(templateData.get("children")).isEqualTo(getExpectedChildren());
+            assertThat(templateData.get("numberOfChildren")).isEqualTo(getExpectedChildren().size());
+            assertThat(templateData.get("applicantName")).isEqualTo("");
+            assertThat(templateData.get("respondents")).isEqualTo(getExpectedRespondents());
+            assertThat(templateData.get("respondentsProvided")).isEqualTo(true);
+            assertThat(templateData.get("localAuthoritySolicitorEmail"))
+                .isEqualTo(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+            assertThat(templateData.get("localAuthorityName")).isEqualTo(LOCAL_AUTHORITY_NAME);
+            assertThat(templateData.get("localAuthoritySolicitorName")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("localAuthoritySolicitorPhoneNumber")).isEqualTo(EMPTY_PLACEHOLDER);
+            assertThat(templateData.get("respondentOneName")).isEqualTo("Timothy Jones");
+            assertThat(templateData.get("hearingDate")).asString().isBlank();
+            assertThat(templateData.get("hearingVenue"))
+                .isEqualTo("Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW");
+            assertThat(templateData.get("preHearingAttendance")).isEqualTo(getExpectedPrehearingAttendance());
+            assertThat(templateData.get("hearingTime")).isEqualTo(getExpectedHearingTime());
+//            assertThat(templateData.get("judgeTitleAndName")).isEqualTo("Her Honour Judge Smith");
+//            assertThat(templateData.get("legalAdvisorName")).isEqualTo("Bob Ross");
+            assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirection(2));
+            assertThat(templateData.get("localAuthorityDirections")).isEqualTo(getExpectedDirection(3));
+            assertThat(templateData.get("cafcassDirections")).isEqualTo(getExpectedDirection(4));
+            assertThat(templateData.get("courtDirections")).isEqualTo(getExpectedDirection(5));
+            assertThat(templateData.get("respondentDirections")).isEqualTo(getExpectedDirection(6));
+            assertThat(templateData.get("otherPartiesDirections")).isEqualTo(getExpectedDirection(7));
+            assertThat(templateData.get("recitals")).isEqualTo(getExpectedRecital());
+            assertThat(templateData.get("recitalsProvided")).isEqualTo(true);
+//            assertThat(templateData).containsAllEntriesOf(getExpectedSchedule());
+            assertThat(templateData.get("scheduleProvided")).isEqualTo(true);
+            assertThat(templateData.get("draftbackground")).isNotNull();
+            assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
+        }
+
+        private String getExpectedHearingTime() {
+            return String.format("%s - %s",
+                dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW, "d MMMM, h:mma"),
+                dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.plusDays(1), "d MMMM, h:mma"));
+        }
+
+        private String getExpectedPrehearingAttendance() {
+            return dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.minusHours(1), "d MMMM yyyy, h:mma");
+        }
+
+        private Map<String, String> getExpectedSchedule() {
+            return ImmutableMap.<String, String>builder()
+                .put("allocation", "An allocation")
+                .put("alternativeCarers", "Alternatives")
+                .put("application", "An application")
+                .put("childrensCurrentArrangement", "Current arrangement")
+                .put("includeSchedule", "Yes")
+                .put("keyIssues", "Key Issues")
+                .put("partiesPositions", "Some positions")
+                .put("threshold", "threshold")
+                .put("timetableForChildren", "time goes by")
+                .put("timetableForProceedings", "so slowly")
+                .put("todaysHearing", "slowly")
+                .build();
+        }
+
+        private List<Map<String, String>> getExpectedRecital() {
+            return List.of(
+                Map.of(
+                    "title", "A title",
+                    "body", "A description"
+                )
+            );
+        }
+
+        private List<Map<String, String>> getExpectedChildren() {
+            return List.of(
+                Map.of(
+                    "name", "Bran Stark",
+                    "gender", "Male",
+                    "dateOfBirth", dateFormatterService.formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG)),
+                Map.of(
+                    "name", "Sansa Stark",
+                    "gender", EMPTY_PLACEHOLDER,
+                    "dateOfBirth", EMPTY_PLACEHOLDER),
+                Map.of(
+                    "name", "Jon Snow",
+                    "gender", EMPTY_PLACEHOLDER,
+                    "dateOfBirth", EMPTY_PLACEHOLDER)
+            );
+        }
+
+        private List<Map<String, String>> getExpectedRespondents() {
+            return List.of(
+                Map.of(
+                    "name", "Timothy Jones",
+                    "relationshipToChild", "Father"
+                ),
+                Map.of(
+                    "name", "Sarah Simpson",
+                    "relationshipToChild", "Mother"
+                )
+            );
+        }
+
+        private List<Map<String, String>> getExpectedDirection(int index) {
+            return List.of(
+                Map.of(
+                    "title", index + ". null by unknown",
+                    "body", "Mock direction text"
+                )
+            );
         }
     }
 }

@@ -70,8 +70,7 @@ public class CommonCaseDataExtractionService {
                 "hearingDate", EMPTY_PLACEHOLDER,
                 "hearingVenue", EMPTY_PLACEHOLDER,
                 "preHearingAttendance", EMPTY_PLACEHOLDER,
-                "hearingTime", EMPTY_PLACEHOLDER,
-                "judgeName", EMPTY_PLACEHOLDER
+                "hearingTime", EMPTY_PLACEHOLDER
             );
         }
 
