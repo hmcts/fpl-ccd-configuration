@@ -56,7 +56,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
-import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
 @Service
@@ -66,7 +65,6 @@ public class DraftCMOService {
     private final DateFormatterService dateFormatterService;
     private final DirectionHelperService directionHelperService;
     private final CaseDataExtractionService caseDataExtractionService;
-    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
@@ -99,10 +97,13 @@ public class DraftCMOService {
         DynamicList list = mapper.convertValue(caseData.get("cmoHearingDateList"), DynamicList.class);
         Map<String, Object> reviewCaseManagementOrder = mapper.convertValue(
             caseData.get("reviewCaseManagementOrder"), new TypeReference<>() {});
-        CMOStatus cmoStatus = mapper.convertValue(reviewCaseManagementOrder.get("cmoStatus"), CMOStatus.class);
+        CMOStatus cmoStatus = null;
+        if (reviewCaseManagementOrder != null) {
+            cmoStatus = mapper.convertValue(reviewCaseManagementOrder.get("cmoStatus"), CMOStatus.class);
+            // TODO: 29/11/2019 Extract orderDoc
+        }
         Schedule schedule = mapper.convertValue(caseData.get("schedule"), Schedule.class);
         List<Element<Recital>> recitals = mapper.convertValue(caseData.get("recitals"), new TypeReference<>() {});
-        // TODO: 29/11/2019 Extract orderDoc
 
         return CaseManagementOrder.builder()
             .hearingDate(list.getValue().getLabel())
@@ -216,7 +217,7 @@ public class DraftCMOService {
         DynamicList hearingDateList = mapper.convertValue(caseDataMap.get("cmoHearingDateList"), DynamicList.class);
         CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
         String localAuthorityCode = caseData.getCaseLocalAuthority();
-        CaseManagementOrder caseManagementOrder = defaultIfNull(caseData.getCaseManagementOrder(),
+        CaseManagementOrder caseManagementOrder = defaultIfNull(prepareCMO(caseDataMap),
             CaseManagementOrder.builder().build());
 
         cmoTemplateData.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_PLACEHOLDER));
@@ -243,15 +244,18 @@ public class DraftCMOService {
 
         cmoTemplateData.put("respondentOneName", getFirstRespondentFullName(caseData));
 
-        cmoTemplateData.putAll(getHearingBooking(caseData, hearingDateList));
+        cmoTemplateData.putAll(getEmptyHearingBookingData());
 
-        JudgeAndLegalAdvisor judgeAndLegalAdvisor = getJudgeAndLegalAdvisor(caseData, caseManagementOrder);
-        cmoTemplateData.put("judgeTitleAndName", defaultIfBlank(formatJudgeTitleAndName(
-            judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
-        cmoTemplateData.put("legalAdvisorName", defaultIfBlank(getLegalAdvisorName(
+        HearingBooking hearingBooking = getHearingBooking(caseData, hearingDateList);
+        JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
+        //EMPTY_PLACEHOLDER given template definition
+        cmoTemplateData.put("judgeTitle", EMPTY_PLACEHOLDER);
+        cmoTemplateData.put("judgeName", defaultString(judgeAndLegalAdvisor.getJudgeLastName(),
+            EMPTY_PLACEHOLDER));
+        cmoTemplateData.put("legalAdvisorName", defaultString(getLegalAdvisorName(
             judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
 
-        cmoTemplateData.putAll(getGroupedCMODirections(caseData));
+        cmoTemplateData.putAll(getGroupedCMODirections(caseManagementOrder));
 
         cmoTemplateData.put("draftbackground", String.format("image:base64:%1$s",
             docmosisDocumentGeneratorService.generateDraftWatermarkEncodedString()));
@@ -261,8 +265,9 @@ public class DraftCMOService {
         cmoTemplateData.put("recitalsProvided", isNotEmpty(recitals));
 
         final Schedule schedule = caseManagementOrder.getSchedule();
-        // Have to provide something as ImmutableMap does not allow null values
-        cmoTemplateData.put("schedule", defaultIfNull(schedule, Schedule.builder().build()));
+        Map<String, String> scheduleMap = mapper.convertValue(schedule,
+            new TypeReference<>() {});
+        cmoTemplateData.putAll(scheduleMap);
         cmoTemplateData.put("scheduleProvided", schedule != null && "Yes".equals(schedule.getIncludeSchedule()));
 
         //defaulting as 1 as we currently do not have impl for multiple CMos
@@ -309,14 +314,13 @@ public class DraftCMOService {
             caseData.getJudgeAndLegalAdvisor();
     }
 
-    private Map<String, List<Map<String, String>>> getGroupedCMODirections(CaseData caseData) throws IOException {
+    private Map<String, List<Map<String, String>>> getGroupedCMODirections(
+        final CaseManagementOrder caseManagementOrder) throws IOException {
         OrderDefinition caseManagementOrderDefinition = ordersLookupService.getDirectionOrder();
 
-        if (isNull(caseData.getCaseManagementOrder())) {
+        if (isNull(caseManagementOrder)) {
             return ImmutableMap.of();
         }
-
-        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
         Map<DirectionAssignee, List<Element<Direction>>> groupedDirections =
             directionHelperService.sortDirectionsByAssignee(directionHelperService.numberDirections(
@@ -344,21 +348,23 @@ public class DraftCMOService {
         return caseData.buildFirstRespondentFullName();
     }
 
-    private Map<String, Object> getHearingBooking(final CaseData caseData, DynamicList hearingDateList) {
-        HearingBooking hearingBooking;
+    private HearingBooking getHearingBooking(final CaseData caseData, DynamicList hearingDateList) {
+        return caseData.getHearingDetails()
+            .stream()
+            .filter(element -> element.getId().equals(hearingDateList.getValue().getCode()))
+            .findFirst()
+            .map(Element::getValue)
+            .orElse(HearingBooking.builder().build());
+    }
 
-        if (caseData.getHearingDetails() == null) {
-            hearingBooking = null;
-        } else {
-            hearingBooking = caseData.getHearingDetails()
-                .stream()
-                .filter(element -> element.getId().equals(hearingDateList.getValue().getCode()))
-                .findFirst()
-                .map(Element::getValue)
-                .orElse(null);
-        }
-
-        return commonCaseDataExtractionService.getHearingBookingData(hearingBooking);
+    public Map<String, Object> getEmptyHearingBookingData() {
+        //passing in EMPTY_PLACEHOLDER following template definition
+        return ImmutableMap.of(
+            "hearingDate", EMPTY_PLACEHOLDER,
+            "hearingVenue", EMPTY_PLACEHOLDER,
+            "preHearingAttendance", EMPTY_PLACEHOLDER,
+            "hearingTime", EMPTY_PLACEHOLDER
+        );
     }
 
     private List<Map<String, String>> buildRecitals(final List<Element<Recital>> recitals) {
