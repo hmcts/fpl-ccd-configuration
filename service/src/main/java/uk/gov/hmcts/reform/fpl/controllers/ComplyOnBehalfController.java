@@ -48,7 +48,6 @@ public class ComplyOnBehalfController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
-
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =

@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
@@ -94,27 +93,23 @@ public class RespondentService {
         StringBuilder sb = new StringBuilder();
 
         if (isNotEmpty(respondents)) {
-            AtomicInteger i = new AtomicInteger(1);
+            for (int i = 0; i < respondents.size(); i++) {
+                RespondentParty respondentParty = respondents.get(i).getValue().getParty();
 
-            respondents.forEach(respondent -> {
-                sb.append("Respondent")
-                    .append(" ")
-                    .append(i)
-                    .append(" ")
-                    .append("-")
-                    .append(" ")
-                    .append(defaultIfNull(respondent.getValue().getParty().firstName, ""))
-                    .append(" ")
-                    .append(defaultIfNull(respondent.getValue().getParty().lastName, ""))
+                sb.append(String.format("Respondent %d - %s", i + 1, getRespondentFullName(respondentParty)))
                     .append("\n");
-
-                i.incrementAndGet();
-            });
-
+            }
         } else {
             sb.append("No respondents on the case");
         }
 
         return sb.toString();
+    }
+
+    private String getRespondentFullName(RespondentParty respondentParty) {
+        String firstName = defaultIfNull(respondentParty.getFirstName(), "");
+        String lastName = defaultIfNull(respondentParty.getLastName(), "");
+
+        return String.format("%s %s", firstName, lastName);
     }
 }

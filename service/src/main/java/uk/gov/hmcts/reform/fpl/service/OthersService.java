@@ -1,45 +1,29 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Service
 public class OthersService {
-    private static String EMPTY_PLACEHOLDER = "BLANK - Please complete";
 
     public String buildOthersLabel(Others others) {
         StringBuilder sb = new StringBuilder();
 
         if (otherExists(others)) {
             if (isNotEmpty(others.getFirstOther())) {
-                sb.append("Person 1")
-                    .append(" ")
-                    .append("-")
-                    .append(" ")
-                    .append(defaultIfNull(others.getFirstOther().getName(), EMPTY_PLACEHOLDER))
-                    .append("\n");
+                sb.append(String.format("Person 1 - %s", getName(others.getFirstOther()))).append("\n");
             }
 
             if (isNotEmpty(others.getAdditionalOthers())) {
-                AtomicInteger i = new AtomicInteger(1);
+                for (int i = 0; i < others.getAdditionalOthers().size(); i++) {
+                    Other other = others.getAdditionalOthers().get(i).getValue();
 
-                others.getAdditionalOthers().forEach(other -> {
-                    sb.append("Other person")
-                        .append(" ")
-                        .append(i)
-                        .append(" ")
-                        .append("-")
-                        .append(" ")
-                        .append(defaultIfNull(other.getValue().getName(), EMPTY_PLACEHOLDER))
-                        .append("\n");
-
-                    i.incrementAndGet();
-                });
+                    sb.append(String.format("Other person %d - %s", i + 1, getName(other))).append("\n");
+                }
             }
 
         } else {
@@ -47,6 +31,10 @@ public class OthersService {
         }
 
         return sb.toString();
+    }
+
+    private String getName(Other other) {
+        return defaultIfNull(other.getName(), "BLANK - Please complete");
     }
 
     private boolean otherExists(Others others) {
