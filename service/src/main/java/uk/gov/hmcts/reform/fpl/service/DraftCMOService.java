@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -56,13 +58,12 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOService {
-    private static final String CASE_LOCAL_AUTHORITY_PROPERTY_NAME = "caseLocalAuthority";
-
     private final ObjectMapper mapper;
     private final DateFormatterService dateFormatterService;
     private final DirectionHelperService directionHelperService;
@@ -72,6 +73,7 @@ public class DraftCMOService {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
 
     public Map<String, Object> extractIndividualCaseManagementOrderObjects(
         CaseManagementOrder caseManagementOrder,
@@ -97,6 +99,15 @@ public class DraftCMOService {
 
     public CaseManagementOrder prepareCMO(Map<String, Object> caseData) {
         DynamicList list = mapper.convertValue(caseData.get("cmoHearingDateList"), DynamicList.class);
+
+        String hearingDate = null;
+        UUID id = null;
+
+        if (list != null) {
+            hearingDate = list.getValue().getLabel();
+            id = list.getValue().getCode();
+        }
+
         Map<String, Object> reviewCaseManagementOrder = mapper.convertValue(
             caseData.get("reviewCaseManagementOrder"), new TypeReference<>() {});
         CMOStatus cmoStatus = null;
@@ -108,8 +119,8 @@ public class DraftCMOService {
         DocumentReference orderDoc = mapper.convertValue(caseData.get("orderDoc"), DocumentReference.class);
 
         return CaseManagementOrder.builder()
-            .hearingDate(list.getValue().getLabel())
-            .id(list.getValue().getCode())
+            .hearingDate(hearingDate)
+            .id(id)
             .directions(combineAllDirectionsForCmo(mapper.convertValue(caseData, CaseData.class)))
             .schedule(schedule)
             .recitals(recitals)
@@ -170,7 +181,7 @@ public class DraftCMOService {
         for (int i = 0; i < respondents.size(); i++) {
             RespondentParty respondentParty = respondents.get(i).getValue().getParty();
 
-            String key = String.format("Respondent %d - %s", i + 1, getRespondentFullName(respondentParty));
+            String key = String.format("Respondent %d - %s", i + 1, respondentParty.getFullName());
             stringBuilder.append(key).append("\n\n");
         }
 
@@ -219,7 +230,9 @@ public class DraftCMOService {
 
         DynamicList hearingDateList = mapper.convertValue(caseDataMap.get("cmoHearingDateList"), DynamicList.class);
         CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
-        CaseManagementOrder caseManagementOrder = prepareCMO(caseDataMap);
+        String localAuthorityCode = caseData.getCaseLocalAuthority();
+        CaseManagementOrder caseManagementOrder = defaultIfNull(prepareCMO(caseDataMap),
+            CaseManagementOrder.builder().build());
 
         cmoTemplateData.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_PLACEHOLDER));
         cmoTemplateData.put("generationDate",
@@ -232,8 +245,7 @@ public class DraftCMOService {
         cmoTemplateData.put("children", childrenInCase);
         cmoTemplateData.put("numberOfChildren", childrenInCase.size());
 
-        cmoTemplateData.put("courtName", defaultIfBlank(
-            hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getName(), EMPTY_PLACEHOLDER));
+        cmoTemplateData.put("courtName", getCourtName(localAuthorityCode));
 
         cmoTemplateData.put("applicantName", caseDataExtractionService.getFirstApplicantName(caseData));
 
@@ -242,31 +254,18 @@ public class DraftCMOService {
         cmoTemplateData.put("respondents", respondentsNameAndRelationship);
         cmoTemplateData.put("respondentsProvided", !respondentsNameAndRelationship.isEmpty());
 
-        String localAuthorityCode = (String) caseDataMap.get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
-        cmoTemplateData.put("localAuthoritySolicitorEmail", localAuthorityEmailLookupConfiguration
-            .getLocalAuthority(localAuthorityCode)
-            .map(LocalAuthorityEmailLookupConfiguration.LocalAuthority::getEmail)
-            .orElse(""));
-
-        cmoTemplateData.put("localAuthorityName", defaultIfBlank(
-                localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode),
-                EMPTY_PLACEHOLDER));
-
-        // defaulting to EMPTY_PLACEHOLDER for now as we currently do not capture
-        cmoTemplateData.put("localAuthoritySolicitorName", EMPTY_PLACEHOLDER);
-        cmoTemplateData.put("localAuthoritySolicitorPhoneNumber", EMPTY_PLACEHOLDER);
+        cmoTemplateData.putAll(getLocalAuthorityDetails(localAuthorityCode));
 
         cmoTemplateData.put("respondentOneName", getFirstRespondentFullName(caseData));
 
-        cmoTemplateData.putAll(getEmptyHearingBookingData());
+        // Populate with the next hearing booking, currently not captured
+        cmoTemplateData.putAll(commonCaseDataExtractionService.getHearingBookingData(null));
 
-        HearingBooking hearingBooking = getHearingBooking(caseData, hearingDateList);
+        HearingBooking hearingBooking = getHearingBooking(caseData.getHearingDetails(), hearingDateList);
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
-        //EMPTY_PLACEHOLDER given template definition
-        cmoTemplateData.put("judgeTitle", EMPTY_PLACEHOLDER);
-        cmoTemplateData.put("judgeName", defaultString(judgeAndLegalAdvisor.getJudgeLastName(),
+        cmoTemplateData.put("judgeTitleAndName", defaultIfBlank(formatJudgeTitleAndName(judgeAndLegalAdvisor),
             EMPTY_PLACEHOLDER));
-        cmoTemplateData.put("legalAdvisorName", defaultString(getLegalAdvisorName(
+        cmoTemplateData.put("legalAdvisorName", defaultIfBlank(getLegalAdvisorName(
             judgeAndLegalAdvisor), EMPTY_PLACEHOLDER));
 
         cmoTemplateData.putAll(getGroupedCMODirections(caseManagementOrder));
@@ -278,9 +277,11 @@ public class DraftCMOService {
         cmoTemplateData.put("recitals", recitals);
         cmoTemplateData.put("recitalsProvided", isNotEmpty(recitals));
 
-        cmoTemplateData.putAll(buildSchedule(caseManagementOrder.getSchedule()));
-
-        cmoTemplateData.put("scheduleProvided", isNotEmpty(caseManagementOrder.getSchedule()));
+        final Schedule schedule = caseManagementOrder.getSchedule();
+        Map<String, String> scheduleMap = mapper.convertValue(schedule,
+            new TypeReference<>() {});
+        cmoTemplateData.putAll(defaultIfNull(scheduleMap, getEmptyScheduleMap()));
+        cmoTemplateData.put("scheduleProvided", schedule != null && "Yes".equals(schedule.getIncludeSchedule()));
 
         //defaulting as 1 as we currently do not have impl for multiple CMos
         cmoTemplateData.put("caseManagementNumber", 1);
@@ -288,11 +289,57 @@ public class DraftCMOService {
         return cmoTemplateData.build();
     }
 
+    @SuppressWarnings("unchecked")
+    private Map<String, String> getEmptyScheduleMap() {
+        final String[] scheduleKeys = {
+            "includeSchedule", "allocation", "application", "todaysHearing", "childrensCurrentArrangement",
+            "timetableForProceedings", "timetableForChildren", "alternativeCarers", "threshold", "keyIssues",
+            "partiesPositions"
+        };
+
+        ImmutableMap.Builder builder = ImmutableMap.<String, String>builder();
+
+        Arrays.stream(scheduleKeys).forEach(key -> builder.put(key, EMPTY_PLACEHOLDER));
+
+        return builder.build();
+    }
+
+    private Map<String, Object> getLocalAuthorityDetails(String localAuthorityCode) {
+        if (isBlank(localAuthorityCode)) {
+            return ImmutableMap.of(
+                "localAuthoritySolicitorEmail", EMPTY_PLACEHOLDER,
+                "localAuthorityName", EMPTY_PLACEHOLDER,
+                "localAuthoritySolicitorName", EMPTY_PLACEHOLDER,
+                "localAuthoritySolicitorPhoneNumber", EMPTY_PLACEHOLDER
+            );
+        }
+
+        return ImmutableMap.of(
+            "localAuthoritySolicitorEmail", localAuthorityEmailLookupConfiguration
+                .getLocalAuthority(localAuthorityCode)
+                .map(LocalAuthorityEmailLookupConfiguration.LocalAuthority::getEmail)
+                .orElse(""),
+            "localAuthorityName", defaultIfBlank(
+                localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode),
+                EMPTY_PLACEHOLDER),
+            // defaulting to EMPTY_PLACEHOLDER for now as we currently do not capture
+            "localAuthoritySolicitorName", EMPTY_PLACEHOLDER,
+            "localAuthoritySolicitorPhoneNumber", EMPTY_PLACEHOLDER);
+
+    }
+
+    private String getCourtName(String localAuthorityCode) {
+        if (isBlank(localAuthorityCode)) {
+            return EMPTY_PLACEHOLDER;
+        }
+        return defaultIfBlank(hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName(), EMPTY_PLACEHOLDER);
+    }
+
     private Map<String, List<Map<String, String>>> getGroupedCMODirections(
         final CaseManagementOrder caseManagementOrder) throws IOException {
         OrderDefinition caseManagementOrderDefinition = ordersLookupService.getDirectionOrder();
 
-        if (isNull(caseManagementOrder)) {
+        if (caseManagementOrder == null || isEmpty(caseManagementOrder.getDirections())) {
             return ImmutableMap.of();
         }
 
@@ -319,42 +366,22 @@ public class DraftCMOService {
     }
 
     private String getFirstRespondentFullName(final CaseData caseData) {
-        return caseData.buildFirstRespondentFullName();
+        final Respondent respondent = caseData.getFirstRespondent();
+
+        return respondent.getParty() != null ? respondent.getParty().getFullName() : "";
     }
 
-    private HearingBooking getHearingBooking(final CaseData caseData, DynamicList hearingDateList) {
-        return caseData.getHearingDetails()
-            .stream()
+    private HearingBooking getHearingBooking(final List<Element<HearingBooking>> hearingDetails,
+                                             final DynamicList hearingDateList) {
+        if (hearingDetails == null) {
+            return HearingBooking.builder().build();
+        }
+
+        return hearingDetails.stream()
             .filter(element -> element.getId().equals(hearingDateList.getValue().getCode()))
             .findFirst()
             .map(Element::getValue)
             .orElse(HearingBooking.builder().build());
-    }
-
-    public Map<String, Object> getEmptyHearingBookingData() {
-        //passing in EMPTY_PLACEHOLDER following template definition
-        return ImmutableMap.of(
-            "hearingDate", EMPTY_PLACEHOLDER,
-            "hearingVenue", EMPTY_PLACEHOLDER,
-            "preHearingAttendance", EMPTY_PLACEHOLDER,
-            "hearingTime", EMPTY_PLACEHOLDER
-        );
-    }
-
-    private Map<String, String> buildSchedule(final Schedule schedule) {
-        if (schedule == null) {
-            return ImmutableMap.of();
-        }
-        return Map.of("allocation", defaultString(schedule.getAllocation(), EMPTY_PLACEHOLDER),
-            "application", defaultString(schedule.getApplication(), EMPTY_PLACEHOLDER),
-            "todaysHearing", defaultString(schedule.getTodaysHearing(), EMPTY_PLACEHOLDER),
-            "childrensCurrentArrangement", defaultString(schedule.getChildrensCurrentArrangement(), EMPTY_PLACEHOLDER),
-            "timetableForProceedings", defaultString(schedule.getTimetableForProceedings(), EMPTY_PLACEHOLDER),
-            "timetableForChildren", defaultString(schedule.getTimetableForChildren(), EMPTY_PLACEHOLDER),
-            "alternativeCarers", defaultString(schedule.getAlternativeCarers(), EMPTY_PLACEHOLDER),
-            "threshold", defaultString(schedule.getThreshold(), EMPTY_PLACEHOLDER),
-            "keyIssues", defaultString(schedule.getKeyIssues(), EMPTY_PLACEHOLDER),
-            "partiesPositions", defaultString(schedule.getPartiesPositions(), EMPTY_PLACEHOLDER));
     }
 
     private List<Map<String, String>> buildRecitals(final List<Element<Recital>> recitals) {
@@ -396,12 +423,6 @@ public class DraftCMOService {
             .build();
 
         hearingDatesDynamic.setValue(listElement);
-    }
-
-    private String getRespondentFullName(RespondentParty respondentParty) {
-        String firstName = defaultString(respondentParty.getFirstName());
-        String lastName = defaultString(respondentParty.getLastName());
-        return String.format("%s %s", firstName, lastName);
     }
 
     private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
