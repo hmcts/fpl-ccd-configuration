@@ -40,6 +40,17 @@ public class ComplyWithDirectionsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        /*
+        Here we could use CMO state? Or Case state? What flag is there to differentiate SDO/CMO
+
+        if (CMO state == ready to comply) {
+         Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
+            directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections());
+        } else {
+            SDO stuff
+        }
+         */
+
         Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
             directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections());
 
@@ -64,6 +75,17 @@ public class ComplyWithDirectionsController {
             directionHelperService.collectDirectionsToMap(caseData);
 
         List<DirectionResponse> responses = directionHelperService.getResponses(directionsMap);
+
+        /*
+        if (flag from aboutToStart) {
+            directionHelperService.addResponsesToDirections(
+                responses, caseData.getCaseManagementOrder().getDirections());
+
+            caseDetails.getData().put("caseManagementOrder, caseData.getCaseManagementOrder());
+        } else {
+            SDO stuff
+        }
+         */
 
         directionHelperService.addResponsesToDirections(
             responses, caseData.getStandardDirectionOrder().getDirections());
