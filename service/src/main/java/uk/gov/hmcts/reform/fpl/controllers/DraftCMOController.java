@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.io.IOException;
@@ -38,16 +39,19 @@ public class DraftCMOController {
     private final DraftCMOService draftCMOService;
     private final DocmosisDocumentGeneratorService docmosisService;
     private final UploadDocumentService uploadDocumentService;
+    private final HearingBookingService hearingBookingService;
 
     @Autowired
     public DraftCMOController(ObjectMapper mapper,
                               DraftCMOService draftCMOService,
                               DocmosisDocumentGeneratorService docmosisService,
+                              HearingBookingService hearingBookingService,
                               UploadDocumentService uploadDocumentService) {
         this.mapper = mapper;
         this.draftCMOService = draftCMOService;
         this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
+        this.hearingBookingService = hearingBookingService;
     }
 
     @PostMapping("/about-to-start")
@@ -127,16 +131,13 @@ public class DraftCMOController {
 
         UUID nextHearingId = caseData.getCaseManagementOrder().getCaseManagementOrderAction().getId();
 
-        HearingBooking selectedHearing = caseData.getHearingDetails().stream()
-            .filter(hearingBookingElement -> hearingBookingElement.getId().equals(nextHearingId))
-            .map(Element::getValue)
-            .findFirst()
-            .orElse(null);
+        HearingBooking hearingBooking =
+            hearingBookingService.getHearingBookingByUUID(caseData.getHearingDetails(), nextHearingId);
 
-        String formattedLabel = String.format("The next hearing date is on %s at %s", selectedHearing.getStartDate(),
-            selectedHearing.getStartDate());
+        String formattedLabel = String.format("The next hearing date is on %s at %s", hearingBooking.getStartDate(),
+            hearingBooking.getStartDate());
 
-        caseDetails.getData().put("nextHearing", formattedLabel);
+        caseDetails.getData().put("nextHearingDateLabelCMO", formattedLabel);
     }
 
 

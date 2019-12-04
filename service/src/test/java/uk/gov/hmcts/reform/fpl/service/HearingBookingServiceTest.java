@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
@@ -55,18 +56,36 @@ class HearingBookingServiceTest {
         assertThat(sortedHearingBooking.getStartDate()).isEqualTo(TODAYS_DATE);
     }
 
+    @Test
+    void shouldGetHearingBookingWhenKeyMatchesHearingBookingElementUUID() {
+        List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+        HearingBooking hearingBooking =
+            service.getHearingBookingByUUID(hearingBookings, fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2603"));
+
+        assertThat(hearingBooking.getStartDate()).isEqualTo(TODAYS_DATE);
+    }
+
+    @Test
+    void shouldNotReturnHearingBookingWhenKeyDoesNotMatchHearingBookingElementUUID() {
+        List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+        HearingBooking hearingBooking =
+            service.getHearingBookingByUUID(hearingBookings, fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2606"));
+
+        assertThat(hearingBooking).isEqualTo(null);
+    }
+
     private List<Element<HearingBooking>> createHearingBookings() {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
-                .id(UUID.randomUUID())
+                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2601"))
                 .value(createHearingBooking(TODAYS_DATE.plusDays(5), TODAYS_DATE.plusDays(6)))
                 .build(),
             Element.<HearingBooking>builder()
-                .id(UUID.randomUUID())
+                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2602"))
                 .value(createHearingBooking(TODAYS_DATE.plusDays(2), TODAYS_DATE.plusDays(3)))
                 .build(),
             Element.<HearingBooking>builder()
-                .id(UUID.randomUUID())
+                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2603"))
                 .value(createHearingBooking(TODAYS_DATE, TODAYS_DATE.plusDays(1)))
                 .build()
         );

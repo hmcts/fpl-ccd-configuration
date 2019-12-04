@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Comparator.comparing;
 
@@ -35,5 +36,15 @@ public class HearingBookingService {
             .map(Element::getValue)
             .min(comparing(HearingBooking::getStartDate))
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
+    }
+
+    public HearingBooking getHearingBookingByUUID(List<Element<HearingBooking>> hearingBookings, UUID elementId) {
+        return hearingBookings.stream()
+            .filter(hearingBookingElement -> hearingBookingElement.getId().equals(elementId))
+            .map(Element::getValue)
+            .findFirst()
+            // TODO
+            // Should this return null
+            .orElse(null);
     }
 }
