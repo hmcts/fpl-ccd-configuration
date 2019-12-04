@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
@@ -89,8 +90,8 @@ public class DraftCMOService {
         HashMap<String, Object> data = new HashMap<>();
         HashMap<String, Object> reviewCaseManagementOrder = new HashMap<>();
 
-        // TODO: 29/11/2019 Include orderDoc
         reviewCaseManagementOrder.put("cmoStatus", caseManagementOrder.getCmoStatus());
+        reviewCaseManagementOrder.put("orderDoc", caseManagementOrder.getOrderDoc());
 
         data.put("cmoHearingDateList", getHearingDateDynamicList(hearingDetails, caseManagementOrder));
         data.put("schedule", caseManagementOrder.getSchedule());
@@ -114,10 +115,13 @@ public class DraftCMOService {
         Map<String, Object> reviewCaseManagementOrder = mapper.convertValue(
             caseData.get("reviewCaseManagementOrder"), new TypeReference<>() {});
         CMOStatus cmoStatus = null;
+        DocumentReference orderDoc = null;
+
         if (reviewCaseManagementOrder != null) {
             cmoStatus = mapper.convertValue(reviewCaseManagementOrder.get("cmoStatus"), CMOStatus.class);
-            // TODO: 29/11/2019 Extract orderDoc
+            orderDoc = mapper.convertValue(reviewCaseManagementOrder.get("orderDoc"), DocumentReference.class);
         }
+
         Schedule schedule = mapper.convertValue(caseData.get("schedule"), Schedule.class);
         List<Element<Recital>> recitals = mapper.convertValue(caseData.get("recitals"), new TypeReference<>() {});
 
@@ -128,6 +132,7 @@ public class DraftCMOService {
             .schedule(schedule)
             .recitals(recitals)
             .cmoStatus(cmoStatus)
+            .orderDoc(orderDoc)
             .build();
     }
 
@@ -227,7 +232,6 @@ public class DraftCMOService {
     //  extract common elements to CommonCaseDataExtractionService (maybe an separate service for docmosis templates?)
     @SuppressWarnings("unchecked")
     public Map<String, Object> generateCMOTemplateData(Map<String, Object> caseDataMap) throws IOException {
-        // TODO: 30/11/2019 TestMe
         ImmutableMap.Builder cmoTemplateData = ImmutableMap.<String, Object>builder();
 
         DynamicList hearingDateList = mapper.convertValue(caseDataMap.get("cmoHearingDateList"), DynamicList.class);

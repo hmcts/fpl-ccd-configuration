@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
@@ -229,6 +230,7 @@ class DraftCMOServiceTest {
                 .build()))
             .schedule(Schedule.builder().build())
             .cmoStatus(SELF_REVIEW)
+            .orderDoc(DocumentReference.builder().build())
             .build();
 
         hearingDetails = createHearingBookings(NOW);
@@ -247,6 +249,7 @@ class DraftCMOServiceTest {
         assertThat(data.get("schedule")).isNull();
         assertThat(data.get("recitals")).isNull();
         assertThat(data.get("reviewCaseManagementOrder")).extracting("cmoStatus").isNull();
+        assertThat(data.get("reviewCaseManagementOrder")).extracting("orderDoc").isNull();
     }
 
     @Test
