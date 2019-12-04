@@ -3,8 +3,16 @@ package uk.gov.hmcts.reform.fpl.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 
 import java.util.UUID;
 
@@ -13,12 +21,13 @@ import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 
-class DirectionResponseTest {
-    private static final ObjectMapper mapper = new ObjectMapper();
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 
-    static {
-        mapper.findAndRegisterModules();
-    }
+class DirectionResponseTest {
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @Test
     void shouldSerialiseRespondingOnBehalfOfToCorrectStringValueWhenRespondentValue() throws JsonProcessingException {
