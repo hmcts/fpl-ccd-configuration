@@ -13,9 +13,11 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 
 @Slf4j
@@ -59,24 +61,24 @@ public class CaseManageOrderActionService {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseManagementOrder updatedDraftCaseManagementOrder = draftCMOService.prepareCMO(caseDetails.getData());
 
-        CaseData updatedCaseData = caseData.toBuilder()
-            .caseManagementOrder(updatedDraftCaseManagementOrder)
-            .build();
-
-        boolean judgeApprovedDraftCMO = false;
-        try {
-            cmoDocumentTemplateData = draftCMOService.generateCMOTemplateData(caseDetails.getData());
-            judgeApprovedDraftCMO = hasJudgeApprovedDraftCMO(updatedCaseData.getCaseManagementOrder());
-        } catch (IOException e) {
-            log.error("Unable to generate CMO template data.", e);
-        }
-
-        Document updatedDocument = getDocument(authorization, userId, cmoDocumentTemplateData, judgeApprovedDraftCMO);
         CaseManagementOrderAction caseManagementOrderAction =
             updatedDraftCaseManagementOrder.getCaseManagementOrderAction();
 
+        DynamicList list = objectMapper.convertValue(caseDetails.getData().get("cmoHearingDateList"),
+            DynamicList.class);
+
+        String hearingDate = null;
+        UUID id = null;
+
+        if (list != null) {
+
+            hearingDate = list.getValue().getLabel();
+            id = list.getValue().getCode();
+        }
+
         return caseManagementOrderAction.toBuilder()
-            .orderDoc(buildCMODocumentReference(updatedDocument))
+            .id(id)
+            .nextHearingDate(hearingDate)
             .build();
     }
 

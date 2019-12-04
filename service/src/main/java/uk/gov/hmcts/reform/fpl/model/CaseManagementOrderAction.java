@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.fpl.enums.CMOActionType;
 import uk.gov.hmcts.reform.fpl.enums.CMONextHearingType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
+import java.util.UUID;
 
 @Data
 @Builder(toBuilder = true)
@@ -16,4 +17,6 @@ public class CaseManagementOrderAction {
     private final CMOActionType cmoActionType;
     private final CMONextHearingType cmoNextHearingType;
     private final String changeRequestedByJudge;
+    private final UUID id;
+    private final String nextHearingDate;
 }

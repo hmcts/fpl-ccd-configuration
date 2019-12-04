@@ -16,14 +16,17 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -54,9 +57,11 @@ public class DraftCMOController {
         draftCMOService.prepareCustomDirections(caseDetails.getData());
 
         setCustomDirectionDropdownLabels(caseDetails);
+
+        setNextHearingDateLabel(caseDetails);
+
         Map<String, Object> data = caseDetails.getData();
         final CaseData caseData = mapper.convertValue(data, CaseData.class);
-
 
         data.putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
@@ -116,6 +121,24 @@ public class DraftCMOController {
         caseDetails.getData().put("respondentsDropdownLabelCMO",
             draftCMOService.createRespondentAssigneeDropdownKey(caseData.getRespondents1()));
     }
+
+    private void setNextHearingDateLabel(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        UUID nextHearingId = caseData.getCaseManagementOrder().getCaseManagementOrderAction().getId();
+
+        HearingBooking selectedHearing = caseData.getHearingDetails().stream()
+            .filter(hearingBookingElement -> hearingBookingElement.getId().equals(nextHearingId))
+            .map(Element::getValue)
+            .findFirst()
+            .orElse(null);
+
+        String formattedLabel = String.format("The next hearing date is on %s at %s", selectedHearing.getStartDate(),
+            selectedHearing.getStartDate());
+
+        caseDetails.getData().put("nextHearing", formattedLabel);
+    }
+
 
     private Document getDocument(String authorization, String userId, Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.CMO);
