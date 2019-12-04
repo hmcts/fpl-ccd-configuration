@@ -10,12 +10,14 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.CMOActionType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrderAction;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
@@ -121,6 +123,8 @@ public class DraftCMOService {
         Schedule schedule = mapper.convertValue(caseData.get("schedule"), Schedule.class);
         List<Element<Recital>> recitals = mapper.convertValue(caseData.get("recitals"), new TypeReference<>() {});
         DocumentReference orderDoc = mapper.convertValue(caseData.get("orderDoc"), DocumentReference.class);
+        CaseManagementOrderAction caseManagementOrderAction = mapper.convertValue(
+            caseData.get("caseManagementOrderAction"), CaseManagementOrderAction.class);
 
         return CaseManagementOrder.builder()
             .hearingDate(hearingDate)
@@ -130,12 +134,12 @@ public class DraftCMOService {
             .recitals(recitals)
             .cmoStatus(cmoStatus)
             .orderDoc(orderDoc)
+            .caseManagementOrderAction(caseManagementOrderAction)
             .build();
     }
 
     public void prepareCaseDetails(Map<String, Object> caseData, CaseManagementOrder caseManagementOrder) {
         final ImmutableSet<String> keysToRemove = ImmutableSet.of(
-            "cmoHearingDateList",
             "schedule",
             "reviewCaseManagementOrder",
             "recitals");
@@ -272,8 +276,12 @@ public class DraftCMOService {
 
         cmoTemplateData.putAll(getGroupedCMODirections(caseManagementOrder));
 
-        cmoTemplateData.put("draftbackground", String.format("image:base64:%1$s",
-            docmosisDocumentGeneratorService.generateDraftWatermarkEncodedString()));
+        CaseManagementOrderAction caseManagementOrderAction = caseManagementOrder.getCaseManagementOrderAction();
+        if (caseManagementOrderAction == null || !CMOActionType.SEND_TO_ALL_PARTIES.equals(
+            caseManagementOrderAction.getCmoActionType())) {
+            cmoTemplateData.put("draftbackground", String.format("image:base64:%1$s",
+                docmosisDocumentGeneratorService.generateDraftWatermarkEncodedString()));
+        }
 
         List<Map<String, String>> recitals = buildRecitals(caseManagementOrder.getRecitals());
         cmoTemplateData.put("recitals", recitals);
