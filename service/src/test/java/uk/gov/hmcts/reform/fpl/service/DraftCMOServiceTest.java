@@ -16,9 +16,7 @@ import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -29,14 +27,12 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
@@ -44,22 +40,16 @@ import static org.apache.commons.lang3.ArrayUtils.add;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
-import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.values;
+import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_PERSON_1;
+import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataMapForDraftCMODocmosisGeneration;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
 @ExtendWith(SpringExtension.class)
@@ -193,7 +183,7 @@ class DraftCMOServiceTest {
             fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"),
             formatLocalDateToMediumStyle(5));
 
-        assertThat(caseManagementOrder.getDirections()).isEqualTo(createCmoDirections());
+        assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
     }
 
     @Test
@@ -307,22 +297,6 @@ class DraftCMOServiceTest {
         return dynamicList;
     }
 
-    private List<Element<HearingBooking>> createHearingBookings(LocalDateTime now) {
-        return ImmutableList.of(
-            Element.<HearingBooking>builder()
-                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-                .value(createHearingBooking(now.plusDays(5), now.plusDays(6)))
-                .build(),
-            Element.<HearingBooking>builder()
-                .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
-                .value(createHearingBooking(now.plusDays(2), now.plusDays(3)))
-                .build(),
-            Element.<HearingBooking>builder()
-                .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
-                .value(createHearingBooking(now, now.plusDays(1)))
-                .build());
-    }
-
     private String formatLocalDateToMediumStyle(int i) {
         return dateFormatterService.formatLocalDateToString(NOW.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
     }
@@ -404,12 +378,7 @@ class DraftCMOServiceTest {
             assertThat(templateData.get("numberOfChildren")).isEqualTo(0);
             assertThat(templateData.get("applicantName")).isEqualTo("");
             assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
-            assertThat(templateData.get("respondentsProvided")).isEqualTo(false);
-            assertThat(templateData.get("localAuthoritySolicitorEmail")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("localAuthorityName")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("localAuthoritySolicitorName")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("localAuthoritySolicitorPhoneNumber")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("respondentOneName")).asString().isBlank();
+            assertThat(templateData.get("representatives")).isEqualTo(getEmptyRepresentativeList());
             assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
@@ -432,30 +401,7 @@ class DraftCMOServiceTest {
 
         @Test
         void shouldReturnFullyPopulatedMapWhenCompleteCaseDetailsAreProvided() throws IOException {
-            final List<Element<Direction>> cmoDirections = createCmoDirections();
-
-            final Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
-                .put("caseLocalAuthority", "example")
-                .put("familyManCaseNumber", "123")
-                .put("children1", createPopulatedChildren())
-                .put("hearingDetails", createHearingBookings(NOW))
-                .put("dateSubmitted", LocalDate.now())
-                .put("respondents1", createRespondents())
-                .put("cmoHearingDateList", DynamicList.builder()
-                    .value(DynamicListElement.builder()
-                        .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
-                        .label(formatLocalDateToMediumStyle(5))
-                        .build())
-                    .build())
-                .put("schedule", createSchedule(true))
-                .put("recitals", createRecitals())
-                .put("allPartiesCustom", getDirectionByAssignee(cmoDirections, ALL_PARTIES))
-                .put("localAuthorityDirectionsCustom", getDirectionByAssignee(cmoDirections, LOCAL_AUTHORITY))
-                .put("courtDirectionsCustom", getDirectionByAssignee(cmoDirections, COURT))
-                .put("cafcassDirectionsCustom", getDirectionByAssignee(cmoDirections, CAFCASS))
-                .put("otherPartiesDirectionsCustom", getDirectionByAssignee(cmoDirections, OTHERS))
-                .put("respondentDirectionsCustom", getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
-                .build();
+            final Map<String, Object> caseData = buildCaseDataMapForDraftCMODocmosisGeneration(NOW);
 
             final Map<String, Object> templateData = draftCMOService.generateCMOTemplateData(caseData);
 
@@ -469,13 +415,6 @@ class DraftCMOServiceTest {
             assertThat(templateData.get("numberOfChildren")).isEqualTo(getExpectedChildren().size());
             assertThat(templateData.get("applicantName")).isEqualTo("");
             assertThat(templateData.get("respondents")).isEqualTo(getExpectedRespondents());
-            assertThat(templateData.get("respondentsProvided")).isEqualTo(true);
-            assertThat(templateData.get("localAuthoritySolicitorEmail"))
-                .isEqualTo(LOCAL_AUTHORITY_EMAIL_ADDRESS);
-            assertThat(templateData.get("localAuthorityName")).isEqualTo(LOCAL_AUTHORITY_NAME);
-            assertThat(templateData.get("localAuthoritySolicitorName")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("localAuthoritySolicitorPhoneNumber")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("respondentOneName")).isEqualTo("Timothy Jones");
             assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
@@ -484,10 +423,12 @@ class DraftCMOServiceTest {
             assertThat(templateData.get("legalAdvisorName")).isEqualTo("Peter Parker");
             assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirection(2));
             assertThat(templateData.get("localAuthorityDirections")).isEqualTo(getExpectedDirection(3));
-            assertThat(templateData.get("cafcassDirections")).isEqualTo(getExpectedDirection(4));
-            assertThat(templateData.get("courtDirections")).isEqualTo(getExpectedDirection(5));
-            assertThat(templateData.get("respondentDirections")).isEqualTo(getExpectedDirection(6));
-            assertThat(templateData.get("otherPartiesDirections")).isEqualTo(getExpectedDirection(7));
+            assertThat(templateData.get("respondentDirections")).isEqualTo(
+                getExpectedDirectionWithHeader(4, RESPONDENT_1.getLabel()));
+            assertThat(templateData.get("cafcassDirections")).isEqualTo(getExpectedDirection(5));
+            assertThat(templateData.get("otherPartiesDirections")).isEqualTo(
+                getExpectedDirectionWithHeader(6, OTHER_PERSON_1.getLabel()));
+            assertThat(templateData.get("courtDirections")).isEqualTo(getExpectedDirection(7));
             assertThat(templateData.get("recitals")).isEqualTo(getExpectedRecital());
             assertThat(templateData.get("recitalsProvided")).isEqualTo(true);
             assertThat(templateData).containsAllEntriesOf(getExpectedSchedule());
@@ -496,11 +437,15 @@ class DraftCMOServiceTest {
             assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
         }
 
-        private List<Element<Direction>> getDirectionByAssignee(List<Element<Direction>> list,
-                                                                DirectionAssignee assignee) {
-            return list.stream()
-                .filter(element -> element.getValue().getAssignee().equals(assignee))
-                .collect(Collectors.toList());
+        private List<Map<String, String>> getEmptyRepresentativeList() {
+            return ImmutableList.of(
+                ImmutableMap.of(
+                    "respondentName", EMPTY_PLACEHOLDER,
+                    "representativeName", EMPTY_PLACEHOLDER,
+                    "representativeEmail", EMPTY_PLACEHOLDER,
+                    "representativePhoneNumber", EMPTY_PLACEHOLDER
+                )
+            );
         }
 
         private Map<String, String> getExpectedSchedule() {
@@ -563,6 +508,20 @@ class DraftCMOServiceTest {
                 Map.of(
                     "title", index + ". null by unknown",
                     "body", "Mock direction text"
+                )
+            );
+        }
+
+        private List<Map<String, Object>> getExpectedDirectionWithHeader(int index, String header) {
+            return List.of(
+                Map.of(
+                    "header", "For " + header,
+                    "directions", List.of(
+                        Map.of(
+                            "title", index + ". null by unknown",
+                            "body", "Mock direction text"
+                        )
+                    )
                 )
             );
         }

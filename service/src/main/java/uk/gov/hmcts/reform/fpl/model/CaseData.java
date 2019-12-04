@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +25,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Data
 @Builder(toBuilder = true)
@@ -146,9 +144,4 @@ public class CaseData {
     private final CaseManagementOrder caseManagementOrder;
 
     private final Others others;
-
-    @JsonIgnore
-    public Respondent getFirstRespondent() {
-        return isEmpty(respondents1) ? Respondent.builder().build() : respondents1.get(0).getValue();
-    }
 }
