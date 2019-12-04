@@ -11,20 +11,29 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrderAction;
 import uk.gov.hmcts.reform.fpl.service.CaseManageOrderActionService;
+import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
+
+import java.util.Map;
 
 @Api
 @RestController
 @RequestMapping("/callback/action-cmo")
 public class ActionCMOController {
+    private final DraftCMOService draftCMOService;
     private final CaseManageOrderActionService caseManageOrderActionService;
 
-    public ActionCMOController(CaseManageOrderActionService caseManageOrderActionService) {
+    public ActionCMOController(DraftCMOService draftCMOService,
+                               CaseManageOrderActionService caseManageOrderActionService) {
+        this.draftCMOService = draftCMOService;
         this.caseManageOrderActionService = caseManageOrderActionService;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        Map<String, Object> caseData = caseDetails.getData();
+
+        draftCMOService.prepareCMO(caseData);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -56,6 +65,7 @@ public class ActionCMOController {
             caseManageOrderActionService.getCaseManagementOrderActioned(authorization, userId, caseDetails);
 
         caseDetails.getData().put("caseManagementOrderAction", caseManagementOrderAction);
+        caseDetails.getData().remove("caseManagementOrder");
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();

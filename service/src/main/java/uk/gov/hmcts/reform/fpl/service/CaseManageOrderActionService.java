@@ -41,7 +41,7 @@ public class CaseManageOrderActionService {
         Map<String, Object> caseData = caseDetails.getData();
         CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData);
 
-        Document orderDoc = prepareUpdatedDraftCMODocumentForAction(authorization, userId, caseDetails);
+        Document orderDoc = getUpdatedDraftCMODocumentForAction(authorization, userId, caseDetails, false);
         DocumentReference orderDocumentReference = buildCMODocumentReference(orderDoc);
 
         final String caseManageActionKey = "caseManagementOrderAction";
@@ -55,7 +55,6 @@ public class CaseManageOrderActionService {
     public CaseManagementOrderAction getCaseManagementOrderActioned(final String authorization,
                                                                     final String userId,
                                                                     final CaseDetails caseDetails) {
-        Map<String, Object> cmoDocumentTemplateData = null;
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseManagementOrder updatedDraftCaseManagementOrder = draftCMOService.prepareCMO(caseDetails.getData());
 
@@ -63,15 +62,10 @@ public class CaseManageOrderActionService {
             .caseManagementOrder(updatedDraftCaseManagementOrder)
             .build();
 
-        boolean judgeApprovedDraftCMO = false;
-        try {
-            cmoDocumentTemplateData = draftCMOService.generateCMOTemplateData(caseDetails.getData());
-            judgeApprovedDraftCMO = hasJudgeApprovedDraftCMO(updatedCaseData.getCaseManagementOrder());
-        } catch (IOException e) {
-            log.error("Unable to generate CMO template data.", e);
-        }
+        boolean judgeApprovedDraftCMO = hasJudgeApprovedDraftCMO(updatedCaseData.getCaseManagementOrder());
 
-        Document updatedDocument = getDocument(authorization, userId, cmoDocumentTemplateData, judgeApprovedDraftCMO);
+        Document updatedDocument = getUpdatedDraftCMODocumentForAction(authorization, userId, caseDetails,
+            judgeApprovedDraftCMO);
         CaseManagementOrderAction caseManagementOrderAction =
             updatedDraftCaseManagementOrder.getCaseManagementOrderAction();
 
@@ -88,16 +82,17 @@ public class CaseManageOrderActionService {
             .build();
     }
 
-    private Document prepareUpdatedDraftCMODocumentForAction(final String authorization, final String userId,
-                                                             final CaseDetails caseDetails) {
+    private Document getUpdatedDraftCMODocumentForAction(final String authorization, final String userId,
+                                                             final CaseDetails caseDetails,
+                                                             boolean draftCMOApprovedByJudge) {
         Map<String, Object> cmoDocumentTemplateData = null;
         try {
             cmoDocumentTemplateData = draftCMOService.generateCMOTemplateData(caseDetails.getData());
-        } catch (IOException e) {
-            log.error("Unable to generate CMO template data.", e);
+        } catch (IOException exception) {
+            log.error("Unable to generate CMO template data.", exception);
         }
 
-        return getDocument(authorization, userId, cmoDocumentTemplateData, false);
+        return getDocument(authorization, userId, cmoDocumentTemplateData, draftCMOApprovedByJudge);
     }
 
     private Document getDocument(final String authorization, final String userId,
