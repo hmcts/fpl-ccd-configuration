@@ -4,7 +4,9 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.util.Optional;
 
+import static org.apache.commons.lang.StringUtils.isBlank;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.MAGISTRATES;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.OTHER;
 
 public class JudgeAndLegalAdvisorHelper {
 
@@ -25,10 +27,19 @@ public class JudgeAndLegalAdvisorHelper {
     }
 
     private static String mapJudgeOrAdvisor(JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        if (judgeAndLegalAdvisor.getJudgeTitle() == MAGISTRATES) {
-            return judgeAndLegalAdvisor.getJudgeFullName() + " (JP)";
-        } else {
-            return judgeAndLegalAdvisor.getJudgeTitle().getLabel() + " " + judgeAndLegalAdvisor.getJudgeLastName();
+        if (isBlank(judgeAndLegalAdvisor.getJudgeLastName())
+            && judgeAndLegalAdvisor.getJudgeTitle() != MAGISTRATES) {
+            return "";
+        }
+
+        switch (judgeAndLegalAdvisor.getJudgeTitle()) {
+            case MAGISTRATES:
+                String magistrateFullName = judgeAndLegalAdvisor.getJudgeFullName();
+                return isBlank(magistrateFullName) ? "Justice of the Peace" : magistrateFullName + " (JP)";
+            case OTHER:
+                return judgeAndLegalAdvisor.getOtherTitle() + " " + judgeAndLegalAdvisor.getJudgeLastName();
+            default:
+                return judgeAndLegalAdvisor.getJudgeTitle().getLabel() + " " + judgeAndLegalAdvisor.getJudgeLastName();
         }
     }
 }

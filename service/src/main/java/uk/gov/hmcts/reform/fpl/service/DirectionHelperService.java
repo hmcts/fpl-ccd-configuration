@@ -55,9 +55,9 @@ public class DirectionHelperService {
 
         directions.addAll(assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(), LOCAL_AUTHORITY));
 
-        directions.addAll(caseData.getParentsAndRespondentsDirections());
+        directions.addAll(caseData.getRespondentDirections());
 
-        directions.addAll(assignCustomDirections(caseData.getParentsAndRespondentsCustom(), PARENTS_AND_RESPONDENTS));
+        directions.addAll(assignCustomDirections(caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS));
 
         directions.addAll(caseData.getCafcassDirections());
 
@@ -137,14 +137,15 @@ public class DirectionHelperService {
      * @param directions a list of directions.
      * @return a list of directions with the correct response associated.
      */
-    public List<Element<Direction>> extractPartyResponse(String assignee, List<Element<Direction>> directions) {
+    public List<Element<Direction>> extractPartyResponse(DirectionAssignee assignee,
+                                                         List<Element<Direction>> directions) {
         return directions.stream()
             .map(element -> Element.<Direction>builder()
                 .id(element.getId())
                 .value(element.getValue().toBuilder()
                     .response(element.getValue().getResponses().stream()
                         .filter(response -> response.getValue().getDirectionId().equals(element.getId()))
-                        .filter(response -> response.getValue().getAssignee().getValue().equals(assignee))
+                        .filter(response -> response.getValue().getAssignee().equals(assignee))
                         .map(Element::getValue)
                         .findFirst()
                         .orElse(null))
@@ -164,13 +165,13 @@ public class DirectionHelperService {
      * @param directions  a list of directions.
      * @param caseDetails the caseDetails to be updated.
      */
-    public void addAssigneeDirectionKeyValuePairsToCaseData(String assignee,
+    public void addAssigneeDirectionKeyValuePairsToCaseData(DirectionAssignee assignee,
                                                             List<Element<Direction>> directions,
                                                             CaseDetails caseDetails) {
-        if (assignee.equals(COURT.getValue())) {
-            caseDetails.getData().put(assignee.concat("Custom"), extractPartyResponse(assignee, directions));
+        if (assignee.equals(COURT)) {
+            caseDetails.getData().put(assignee.getValue().concat("Custom"), extractPartyResponse(assignee, directions));
         } else {
-            caseDetails.getData().put(assignee, extractPartyResponse(assignee, directions));
+            caseDetails.getData().put(assignee.getValue(), extractPartyResponse(assignee, directions));
         }
     }
 
@@ -190,7 +191,7 @@ public class DirectionHelperService {
             LOCAL_AUTHORITY, defaultIfNull(caseData.getLocalAuthorityDirections(), emptyList()),
             CAFCASS, defaultIfNull(caseData.getCafcassDirections(), emptyList()),
             COURT, defaultIfNull(caseData.getCourtDirectionsCustom(), emptyList()),
-            PARENTS_AND_RESPONDENTS, defaultIfNull(caseData.getParentsAndRespondentsDirections(), emptyList()),
+            PARENTS_AND_RESPONDENTS, defaultIfNull(caseData.getRespondentDirections(), emptyList()),
             OTHERS, defaultIfNull(caseData.getOtherPartiesDirections(), emptyList()));
     }
 
@@ -237,9 +238,10 @@ public class DirectionHelperService {
      * @param directions a list of directions with various assignees.
      * @return Map of role name, list of directions.
      */
-    public Map<String, List<Element<Direction>>> sortDirectionsByAssignee(List<Element<Direction>> directions) {
+    public Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(
+        List<Element<Direction>> directions) {
         return directions.stream()
-            .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee().getValue()));
+            .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee()));
     }
 
     /**
@@ -312,12 +314,15 @@ public class DirectionHelperService {
             .build();
     }
 
-    private String booleanToYesOrNo(boolean value) {
-        return value ? "Yes" : "No";
-    }
-
-    private List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
-                                                            DirectionAssignee assignee) {
+    /**
+     * Iterates over a list of directions and sets properties assignee, custom and readOnly.
+     *
+     * @param directions  a list of directions.
+     * @param assignee    the assignee of the directions to be returned.
+     * @return A list of custom directions.
+     */
+    public List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,
+                                                           DirectionAssignee assignee) {
         if (!isNull(directions)) {
             return directions.stream()
                 .map(element -> Element.<Direction>builder()
@@ -332,5 +337,9 @@ public class DirectionHelperService {
         } else {
             return emptyList();
         }
+    }
+
+    private String booleanToYesOrNo(boolean value) {
+        return value ? "Yes" : "No";
     }
 }

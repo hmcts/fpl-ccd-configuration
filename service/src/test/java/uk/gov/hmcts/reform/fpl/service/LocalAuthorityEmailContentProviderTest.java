@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentP
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -65,8 +67,7 @@ class LocalAuthorityEmailContentProviderTest {
         Map<String, Object> expectedMap = standardDirectionTemplateParameters();
 
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(new LocalAuthorityEmailLookupConfiguration
-                .LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+            .willReturn(Optional.of(new LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS)));
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Test local authority");
@@ -79,8 +80,7 @@ class LocalAuthorityEmailContentProviderTest {
     @Test
     void shouldReturnExpectedMapWithNullSDODetails() {
         given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-            .willReturn(new LocalAuthorityEmailLookupConfiguration
-                .LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS));
+            .willReturn(Optional.of(new LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS)));
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Test local authority");

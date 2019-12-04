@@ -31,16 +31,19 @@ public class NoticeOfProceedingsService {
     private HearingBookingService hearingBookingService;
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private HearingVenueLookUpService hearingVenueLookUpService;
+    private CommonCaseDataExtractionService commonCaseDataExtractionService;
 
     @Autowired
     public NoticeOfProceedingsService(DateFormatterService dateFormatterService,
                                       HearingBookingService hearingBookingService,
                                       HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                      HearingVenueLookUpService hearingVenueLookUpService) {
+                                      HearingVenueLookUpService hearingVenueLookUpService,
+                                      CommonCaseDataExtractionService commonCaseDataExtractionService) {
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.hearingVenueLookUpService = hearingVenueLookUpService;
+        this.commonCaseDataExtractionService = commonCaseDataExtractionService;
     }
 
     public List<Element<DocumentBundle>> getRemovedDocumentBundles(CaseData caseData,
@@ -89,11 +92,13 @@ public class NoticeOfProceedingsService {
         HearingVenue hearingVenue = hearingVenueLookUpService.getHearingVenue(prioritisedHearingBooking.getVenue());
 
         return ImmutableMap.of(
-            "hearingDate", dateFormatterService.formatLocalDateToString(prioritisedHearingBooking.getDate(),
-                FormatStyle.LONG),
+            "hearingDate", commonCaseDataExtractionService.getHearingDateIfHearingsOnSameDay(
+                prioritisedHearingBooking)
+                .orElse(""),
             "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
-            "preHearingAttendance", prioritisedHearingBooking.getPreHearingAttendance(),
-            "hearingTime", prioritisedHearingBooking.getTime()
+            "preHearingAttendance", commonCaseDataExtractionService.extractPrehearingAttendance(
+                prioritisedHearingBooking),
+            "hearingTime", commonCaseDataExtractionService.getHearingTime(prioritisedHearingBooking)
         );
     }
 

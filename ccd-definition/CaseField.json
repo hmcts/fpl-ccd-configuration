@@ -424,7 +424,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "hearingDate",
-    "Label": "The next hearing is on ${hearingDetails.date} at ${hearingDetails.time}.",
+    "Label": "The next hearing is on ${hearingDetails.startDate}.",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   },
@@ -477,6 +477,15 @@
     "ID": "standardDirectionOrder",
     "Label": "Standard directions order",
     "FieldType": "StandardDirectionOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "allPartiesPrecedentLabelCMO",
+    "Label": "Add completed directions from the precedent library or your own template.",
+    "FieldType": "Label",
+    "FieldTypeParameter": "Direction",
     "SecurityClassification": "Public"
   },
   {
@@ -536,7 +545,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "parentsAndRespondentsDirections",
+    "ID": "respondentDirections",
     "Label": "Parents and respondents directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
@@ -545,7 +554,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "parentsAndRespondentsCustom",
+    "ID": "respondentDirectionsCustom",
     "Label": "Add directions",
     "FieldType": "Collection",
     "FieldTypeParameter": "Direction",
@@ -641,6 +650,38 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "allPartiesLabelCMO",
+    "Label": "## For all parties",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "localAuthorityDirectionsLabelCMO",
+    "Label": "## For the local authority",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cafcassDirectionsLabelCMO",
+    "Label": "## For Cafcass",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "courtDirectionsLabelCMO",
+    "Label": "## For the court",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "schedule",
     "Label": "Schedule",
     "FieldType": "Schedule",
@@ -669,6 +710,38 @@
     "Label": "Recitals",
     "FieldType": "Collection",
     "FieldTypeParameter": "Recitals",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondentsDirectionLabelCMO",
+    "Label": "## For the parents or respondents",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "respondentsDropdownLabelCMO",
+    "Label": " ",
+    "FieldType": "TextArea",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherPartiesDirectionLabelCMO",
+    "Label": "## For other parties",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "otherPartiesDropdownLabelCMO",
+    "Label": " ",
+    "FieldType": "TextArea",
     "SecurityClassification": "Public"
   }
 ]
