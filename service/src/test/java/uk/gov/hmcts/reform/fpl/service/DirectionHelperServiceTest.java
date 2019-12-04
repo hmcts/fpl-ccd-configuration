@@ -35,6 +35,7 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -297,7 +298,7 @@ class DirectionHelperServiceTest {
             service.addResponsesToDirections(ImmutableList.of(newResponse), directionWithOldResponse);
 
             assertThat(getResponses(directionWithOldResponse)).hasSize(1);
-            assertThat(compliedFieldHasBeenUpdatedToYes(directionWithOldResponse));
+            assertTrue(compliedFieldHasBeenUpdatedToYes(directionWithOldResponse));
         }
 
         @Test
@@ -391,11 +392,11 @@ class DirectionHelperServiceTest {
             service.addResponsesToDirections(newResponses, directions);
 
             assertThat(getResponses(directions)).hasSize(2);
-            assertThat(compliedFieldHasBeenUpdatedToYes(directions));
+            assertTrue(compliedFieldHasBeenUpdatedToYes(directions));
         }
 
         @Test
-        void shouldNotAddAnotherResponseWhenDifferentRespondingOnBehalfOfValue() {
+        void shouldAddAnotherResponseWhenDifferentRespondingOnBehalfOfValue() {
             List<Element<DirectionResponse>> responses = new ArrayList<>();
             responses.add(Element.<DirectionResponse>builder()
                 .value(DirectionResponse.builder()
@@ -418,7 +419,6 @@ class DirectionHelperServiceTest {
             service.addResponsesToDirections(newResponses, directions);
 
             assertThat(getResponses(directions)).hasSize(2);
-            assertThat(compliedFieldHasBeenUpdatedToYes(directions));
         }
 
         @Test
@@ -445,7 +445,7 @@ class DirectionHelperServiceTest {
             service.addResponsesToDirections(newResponses, directions);
 
             assertThat(getResponses(directions)).hasSize(1);
-            assertThat(compliedFieldHasBeenUpdatedToYes(directions));
+            assertTrue(compliedFieldHasBeenUpdatedToYes(directions));
         }
 
         private List<Element<Direction>> getDirectionsWithResponses(List<Element<DirectionResponse>> responses) {
