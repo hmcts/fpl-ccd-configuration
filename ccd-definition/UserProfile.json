@@ -36,34 +36,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "UserIDAMId": "sam@swindon.gov.uk",
-    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
-    "WorkBasketDefaultState": "Open"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "UserIDAMId": "raghu@swindon.gov.uk",
-    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
-    "WorkBasketDefaultState": "Open"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "UserIDAMId": "sam@wiltshire.gov.uk",
-    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
-    "WorkBasketDefaultState": "Open"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "UserIDAMId": "raghu@wiltshire.gov.uk",
-    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
-    "WorkBasketDefaultState": "Open"
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "UserIDAMId": "hmcts-admin@example.com",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
