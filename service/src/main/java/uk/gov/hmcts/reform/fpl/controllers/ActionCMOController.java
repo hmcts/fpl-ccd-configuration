@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrderAction;
 import uk.gov.hmcts.reform.fpl.service.CaseManageOrderActionService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
@@ -21,6 +23,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/callback/action-cmo")
 public class ActionCMOController {
+    private static final String CASE_MANAGEMENT_ACTION_KEY = "caseManagementOrderAction";
+
     private final DraftCMOService draftCMOService;
     private final CaseManageOrderActionService caseManageOrderActionService;
     private final ObjectMapper mapper;
@@ -56,7 +60,12 @@ public class ActionCMOController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        caseManageOrderActionService.prepareUpdatedDraftCMOForAction(authorization, userId, caseDetails);
+        CaseManagementOrder caseManagementOrder =
+            caseManageOrderActionService.prepareUpdatedDraftCaseManagementOrderForAction(authorization, userId,
+                caseDetails);
+
+        caseDetails.getData().put(CASE_MANAGEMENT_ACTION_KEY, ImmutableMap.of("orderDoc",
+            caseManagementOrder.getOrderDoc()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -73,7 +82,7 @@ public class ActionCMOController {
         CaseManagementOrderAction caseManagementOrderAction =
             caseManageOrderActionService.getCaseManagementOrderActioned(authorization, userId, caseDetails);
 
-        caseDetails.getData().put("caseManagementOrderAction", caseManagementOrderAction);
+        caseDetails.getData().put(CASE_MANAGEMENT_ACTION_KEY, caseManagementOrderAction);
         caseDetails.getData().remove("caseManagementOrder");
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

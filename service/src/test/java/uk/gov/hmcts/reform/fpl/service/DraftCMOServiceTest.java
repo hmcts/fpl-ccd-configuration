@@ -320,7 +320,6 @@ class DraftCMOServiceTest {
     @Nested
     class PrepareCaseDetailsTest {
         private final String[] keys = {
-            "cmoHearingDateList",
             "recitals",
             "schedule",
             "reviewCaseManagementOrder"};
