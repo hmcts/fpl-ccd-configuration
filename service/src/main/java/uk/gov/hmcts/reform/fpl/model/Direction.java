@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDateTime;
@@ -20,6 +22,8 @@ public class Direction {
     private String directionText;
     private final String status;
     private DirectionAssignee assignee;
+    private ParentsAndRespondentsDirectionAssignee parentsAndRespondentsAssignee;
+    private OtherPartiesDirectionAssignee otherPartiesAssignee;
     private String readOnly;
     private String directionRemovable;
     private String directionNeeded;

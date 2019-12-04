@@ -5,15 +5,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.interfaces.C21CaseOrderGroup;
-import uk.gov.hmcts.reform.fpl.interfaces.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.validation.groups.C21CaseOrderGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 
 import java.util.List;
 import java.util.UUID;
-
 import javax.validation.Validation;
 
 import static org.assertj.core.api.Assertions.assertThat;

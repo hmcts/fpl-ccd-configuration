@@ -7,7 +7,7 @@ let caseId;
 
 Feature('Local authority manages case after SDO is issued');
 
-Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage, draftStandardDirectionsEventPage) => {
+Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNumberEventPage, sendCaseToGatekeeperEventPage, addHearingBookingDetailsEventPage, draftStandardDirectionsEventPage) => {
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
@@ -21,9 +21,12 @@ Before(async (I, caseViewPage, submitApplicationEventPage, sendCaseToGatekeeperE
 
     I.signOut();
 
-    //hmcts login and send to gatekeeper
+    //hmcts login, add case number and send to gatekeeper
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
     await I.navigateToCaseDetails(caseId);
+    caseViewPage.goToNewActions(config.administrationActions.addFamilyManCaseNumber);
+    enterFamilyManCaseNumberEventPage.enterCaseID();
+    await I.completeEvent('Save and continue');
     caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
     sendCaseToGatekeeperEventPage.enterEmail();
     await I.completeEvent('Save and continue');
@@ -59,13 +62,42 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await draftCaseManagementOrderEventPage.associateHearingDate('1 Jan 2050');
   I.click('Continue');
-  await draftCaseManagementOrderEventPage.enterSchedule(schedule);
+  await draftCaseManagementOrderEventPage.enterDirection(directions[0]);
   I.click('Continue');
   await I.addAnotherElementToCollection();
   await draftCaseManagementOrderEventPage.enterRecital('Recital 1', 'Recital 1 description');
+  I.click('Continue');
+  await draftCaseManagementOrderEventPage.enterSchedule(schedule);
   await I.completeEvent('Submit');
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.seeAnswerInTab(1, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
+  I.seeAnswerInTab(1, 'Directions 1', 'Direction title', 'Mock title');
+  I.seeAnswerInTab(4, 'Directions 1', 'Description', 'Mock description');
+  I.seeAnswerInTab(5, 'Directions 1', 'For', 'All parties');
+  I.seeAnswerInTab(6, 'Directions 1', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+  I.seeAnswerInTab(1, 'Directions 2', 'Direction title', 'Mock title');
+  I.seeAnswerInTab(4, 'Directions 2', 'Description', 'Mock description');
+  I.seeAnswerInTab(5, 'Directions 2', 'For', 'Local Authority');
+  I.seeAnswerInTab(6, 'Directions 2', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+  I.seeAnswerInTab(1, 'Directions 3', 'Direction title', 'Mock title');
+  I.seeAnswerInTab(4, 'Directions 3', 'Description', 'Mock description');
+  I.seeAnswerInTab(5, 'Directions 3', 'For', 'Cafcass');
+  I.seeAnswerInTab(6, 'Directions 3', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+  I.seeAnswerInTab(1, 'Directions 4', 'Direction title', 'Mock title');
+  I.seeAnswerInTab(4, 'Directions 4', 'Description', 'Mock description');
+  I.seeAnswerInTab(5, 'Directions 4', 'For', 'Court');
+  I.seeAnswerInTab(6, 'Directions 4', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+  I.seeAnswerInTab(1, 'Directions 5', 'Direction title', 'Mock title');
+  I.seeAnswerInTab(4, 'Directions 5', 'Description', 'Mock description');
+  I.seeAnswerInTab(5, 'Directions 5', 'For', 'Parents and other respondents');
+  I.seeAnswerInTab(6, 'Directions 5', 'Assignee', 'Respondent 1');
+  I.seeAnswerInTab(7, 'Directions 5', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+  I.seeAnswerInTab(1, 'Directions 6', 'Direction title', 'Mock title');
+  I.seeAnswerInTab(4, 'Directions 6', 'Description', 'Mock description');
+  I.seeAnswerInTab(5, 'Directions 6', 'For', 'Other parties');
+  I.seeAnswerInTab(6, 'Directions 6', 'Assignee', 'Person 1');
+  I.seeAnswerInTab(7, 'Directions 6', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+  I.seeAnswerInTab(1, 'Recitals 1', 'Recital title', 'Recital 1');
   I.seeAnswerInTab(1, 'Schedule', 'Do you want to include a schedule?', 'Yes');
   I.seeAnswerInTab(2, 'Schedule', 'Allocation', 'The proceedings continue to be allocated to Paul Wilson');
   I.seeAnswerInTab(3, 'Schedule', 'Application', 'The local authority has applied for a care order');
@@ -77,7 +109,6 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   I.seeAnswerInTab(9, 'Schedule', 'Threshold', 'The S.31 threshold for the making of orders is in dispute');
   I.seeAnswerInTab(10, 'Schedule', 'Key issues', 'Are there any other family or friends capable of caring in the children');
   I.seeAnswerInTab(11, 'Schedule', 'Parties\' positions', 'The mother agrees section 20');
-  I.seeAnswerInTab(1, 'Recitals 1', 'Recital title', 'Recital 1');
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await draftCaseManagementOrderEventPage.validatePreviousSelectedHearingDate('1 Jan 2050');
 });

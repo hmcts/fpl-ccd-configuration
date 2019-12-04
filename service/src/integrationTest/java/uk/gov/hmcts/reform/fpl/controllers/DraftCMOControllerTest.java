@@ -14,28 +14,37 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftCMOController.class)
@@ -44,38 +53,57 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 class DraftCMOControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-
+    private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
+    private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
+        FormatStyle.MEDIUM).localizedBy(Locale.UK);
     @Autowired
     private DraftCMOService draftCMOService;
-
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper mapper;
 
-    private final LocalDate date = LocalDate.now();
-    private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(date);
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
-        FormatStyle.MEDIUM).localizedBy(Locale.UK);
-
     @Test
-    void aboutToStartCallbackShouldPopulateHearingDatesList() throws Exception {
-        Map<String, Object> data = ImmutableMap.of("hearingDetails", hearingDetails);
+    void aboutToStartCallbackShouldPrepareCaseForCMO() throws Exception {
+        Map<String, Object> data = ImmutableMap.of(
+            "hearingDetails", hearingDetails,
+            "respondents1", createRespondents(),
+            "others", createOthers());
 
         List<String> expected = Arrays.asList(
-            date.plusDays(5).format(dateTimeFormatter),
-            date.plusDays(2).format(dateTimeFormatter),
-            date.format(dateTimeFormatter));
+            TODAYS_DATE.plusDays(5).format(dateTimeFormatter),
+            TODAYS_DATE.plusDays(2).format(dateTimeFormatter),
+            TODAYS_DATE.format(dateTimeFormatter));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
+
+        String parentsAndRespondentsKeyCmo =
+            mapper.convertValue(callbackResponse.getData().get("respondentsDropdownLabelCMO"), String.class);
+        String otherPartiesKeyCMO =
+            mapper.convertValue(callbackResponse.getData().get("otherPartiesDropdownLabelCMO"), String.class);
+
+        assertThat(parentsAndRespondentsKeyCmo).contains(
+            "Respondent 1 - Timothy Jones",
+            "Respondent 2 - Sarah Simpson");
+
+        assertThat(otherPartiesKeyCMO).contains(
+            "Person 1 - Kyle Stafford",
+            "Other Person 1 - Sarah Simpson");
+
+        assertThat(callbackResponse.getData()).doesNotContainKey("allPartiesCustom");
+        assertThat(callbackResponse.getData()).doesNotContainKey("localAuthorityDirectionsCustom");
+        assertThat(callbackResponse.getData()).doesNotContainKey("cafcassDirectionsCustom");
+        assertThat(callbackResponse.getData()).doesNotContainKey("courtDirectionsCustom");
+        assertThat(callbackResponse.getData()).doesNotContainKey("respondentDirectionsCustom");
+        assertThat(callbackResponse.getData()).doesNotContainKey("otherPartiesDirectionsCustom");
     }
 
     @Test
-    void aboutToSubmitShouldPopulateHiddenHearingDateField() throws Exception {
-        List<Element<HearingBooking>> hearingDetails = createHearingBookings(date);
+    void aboutToSubmitShouldPopulateHiddenHearingDateFieldAndCustomDirections() throws Exception {
+        List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
 
         DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
 
@@ -83,19 +111,27 @@ class DraftCMOControllerTest {
             .setValue(
                 DynamicListElement.builder()
                     .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-                    .label(date.plusDays(5).toString())
+                    .label(TODAYS_DATE.plusDays(5).toString())
                     .build());
 
-        Map<String, Object> data = ImmutableMap.of("cmoHearingDateList", dynamicHearingDates);
+        Map<String, Object> data = new HashMap<>();
+
+        Stream.of(DirectionAssignee.values()).forEach(direction ->
+            data.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
+        );
+
+        data.put("cmoHearingDateList", dynamicHearingDates);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
 
         assertThat(callbackResponse.getData()).doesNotContainKey("cmoHearingDateList");
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
-        assertThat(caseData.getCaseManagementOrder()).extracting("id", "hearingDate")
-            .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), date.plusDays(5).toString());
+        assertThat(caseManagementOrder.getDirections()).isEqualTo(createCmoDirections());
+        assertThat(caseManagementOrder).extracting("id", "hearingDate")
+            .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), TODAYS_DATE.plusDays(5).toString());
     }
 
     private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {
@@ -134,19 +170,19 @@ class DraftCMOControllerTest {
             .andReturn();
     }
 
-    private List<Element<HearingBooking>> createHearingBookings(LocalDate date) {
+    private List<Element<HearingBooking>> createHearingBookings(LocalDateTime date) {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
                 .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-                .value(createHearingBooking(date.plusDays(5)))
+                .value(createHearingBooking(date.plusDays(5), date.plusDays(6)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(date.plusDays(2)))
+                .value(createHearingBooking(date.plusDays(2), date.plusDays(3)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(date))
+                .value(createHearingBooking(date, date.plusDays(1)))
                 .build()
         );
     }

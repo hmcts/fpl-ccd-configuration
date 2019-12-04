@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
@@ -77,9 +78,9 @@ public class DraftOrdersController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (!isNull(caseData.getStandardDirectionOrder())) {
-            Map<String, List<Element<Direction>>> directions = sortDirectionsByAssignee(caseData);
+            Map<DirectionAssignee, List<Element<Direction>>> directions = sortDirectionsByAssignee(caseData);
 
-            directions.forEach((key, value) -> caseDetails.getData().put(key, value));
+            directions.forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
 
             caseDetails.getData()
                 .put("judgeAndLegalAdvisor", caseData.getStandardDirectionOrder().getJudgeAndLegalAdvisor());
@@ -90,7 +91,7 @@ public class DraftOrdersController {
             .build();
     }
 
-    private Map<String, List<Element<Direction>>> sortDirectionsByAssignee(CaseData caseData) {
+    private Map<DirectionAssignee, List<Element<Direction>>> sortDirectionsByAssignee(CaseData caseData) {
         List<Element<Direction>> nonCustomDirections = directionHelperService
             .removeCustomDirections(caseData.getStandardDirectionOrder().getDirections());
 
@@ -210,9 +211,7 @@ public class DraftOrdersController {
             .collect(Collectors.toList());
     }
 
-    private Document getDocument(@RequestHeader("authorization") String authorization,
-                                 @RequestHeader("user-id") String userId,
-                                 Map<String, Object> templateData) {
+    private Document getDocument(String authorization, String userId, Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.SDO);
 
         String docTitle = document.getDocumentTitle();
