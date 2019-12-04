@@ -4,16 +4,16 @@ import lombok.Getter;
 
 @Getter
 public enum OtherPartiesDirectionAssignee {
-    PERSON_1("Person 1"),
-    OTHER_PERSON_1("Other Person 1"),
-    OTHER_PERSON_2("Other Person 2"),
-    OTHER_PERSON_3("Other Person 3"),
-    OTHER_PERSON_4("Other Person 4"),
-    OTHER_PERSON_5("Other Person 5"),
-    OTHER_PERSON_6("Other Person 6"),
-    OTHER_PERSON_7("Other Person 7"),
-    OTHER_PERSON_8("Other Person 8"),
-    OTHER_PERSON_9("Other Person 9");
+    OTHER_1("Person 1"),
+    OTHER_2("Other person 1"),
+    OTHER_3("Other person 2"),
+    OTHER_4("Other person 3"),
+    OTHER_5("Other person 4"),
+    OTHER_6("Other person 5"),
+    OTHER_7("Other person 6"),
+    OTHER_8("Other person 7"),
+    OTHER_9("Other person 8"),
+    OTHER_10("Other person 9");
 
     private final String label;
 
