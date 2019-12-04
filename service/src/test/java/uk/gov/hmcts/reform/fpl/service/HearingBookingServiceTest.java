@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,12 +65,12 @@ class HearingBookingServiceTest {
     }
 
     @Test
-    void shouldNotReturnHearingBookingWhenKeyDoesNotMatchHearingBookingElementUUID() {
+    void shouldReturnEmptyHearingBookingWhenKeyDoesNotMatchHearingBookingElementUUID() {
         List<Element<HearingBooking>> hearingBookings = createHearingBookings();
         HearingBooking hearingBooking =
             service.getHearingBookingByUUID(hearingBookings, fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2606"));
 
-        assertThat(hearingBooking).isEqualTo(null);
+        assertThat(hearingBooking).isEqualTo(HearingBooking.builder().build());
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {

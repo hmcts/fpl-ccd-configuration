@@ -47,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PL
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataMapForDraftCMODocmosisGeneration;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
@@ -435,6 +436,13 @@ class DraftCMOServiceTest {
             assertThat(templateData.get("scheduleProvided")).isEqualTo(true);
             assertThat(templateData.get("draftbackground")).isNotNull();
             assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
+        }
+
+        @Test
+        void shouldFormatNextHearingBookingLabelWhenProvidedHearingBooking() {
+            LocalDateTime date = LocalDateTime.of(2018, 2, 12, 9, 30);
+            String label = draftCMOService.formatHearingBookingLabel(createHearingBooking(date, date));
+            assertThat(label).isEqualTo(label).isEqualTo("The next hearing date is on 12 February at 9:30am");
         }
 
         private List<Map<String, String>> getEmptyRepresentativeList() {

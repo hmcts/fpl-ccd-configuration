@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
@@ -129,15 +128,19 @@ public class DraftCMOController {
     private void setNextHearingDateLabel(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        UUID nextHearingId = caseData.getCaseManagementOrder().getCaseManagementOrderAction().getId();
+        String nextHearingLabel = "";
 
-        HearingBooking hearingBooking =
-            hearingBookingService.getHearingBookingByUUID(caseData.getHearingDetails(), nextHearingId);
+        if (caseData.getCaseManagementOrder() != null
+            && caseData.getCaseManagementOrder().getCaseManagementOrderAction() != null) {
+            UUID nextHearingId = caseData.getCaseManagementOrder().getCaseManagementOrderAction().getId();
 
-        String formattedLabel = String.format("The next hearing date is on %s at %s", hearingBooking.getStartDate(),
-            hearingBooking.getStartDate());
+            HearingBooking hearingBooking =
+                hearingBookingService.getHearingBookingByUUID(caseData.getHearingDetails(), nextHearingId);
 
-        caseDetails.getData().put("nextHearingDateLabelCMO", formattedLabel);
+            nextHearingLabel = draftCMOService.formatHearingBookingLabel(hearingBooking);
+        }
+
+        caseDetails.getData().put("nextHearingDateLabelCMO", nextHearingLabel);
     }
 
 

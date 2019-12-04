@@ -43,8 +43,6 @@ public class HearingBookingService {
             .filter(hearingBookingElement -> hearingBookingElement.getId().equals(elementId))
             .map(Element::getValue)
             .findFirst()
-            // TODO
-            // Should this return null
-            .orElse(null);
+            .orElse(HearingBooking.builder().build());
     }
 }
