@@ -41,11 +41,13 @@ variable "jenkins_AAD_objectId" {
 }
 
 variable "idam_api_url" {
-  type = "string"
+  type    = "string"
+  default = ""
 }
 
 variable "ccd_ui_base_url" {
-  type = "string"
+  type    = "string"
+  default = ""
 }
 
 variable "managed_identity_object_id" {
@@ -73,15 +75,17 @@ variable "docmosis_vault" {
 }
 
 variable "idam_client_id" {
-  type = "string"
+  type    = "string"
+  default = ""
 }
 
 variable "idam_client_redirect_uri" {
-  type = "string"
+  type    = "string"
+  default = ""
 }
 
 variable "security_enabled" {
-  type = "string"
+  type    = "string"
   default = "false"
 }
 
