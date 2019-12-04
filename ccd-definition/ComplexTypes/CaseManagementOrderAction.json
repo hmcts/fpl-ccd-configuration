@@ -34,5 +34,23 @@
     "ElementLabel": "What do they need to change?",
     "FieldShowCondition": "cmoActionType=\"JUDGE_REQUESTED_CHANGE\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrderAction",
+    "ListElementCode": "nextHearingDate",
+    "FieldType": "Text",
+    "ElementLabel": "Which hearing is this order for?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrderAction",
+    "ListElementCode": "id",
+    "FieldType": "Text",
+    "ElementLabel": "id",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "nextHearingDate=\"DO_NOT_SHOW\"",
+    "Comment": "Id has been used here to uniquely identify selected date in case management order"
   }
 ]

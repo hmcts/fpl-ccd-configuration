@@ -415,6 +415,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "nextHearingDate",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "allPartiesPrecedentLabelCMO",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
