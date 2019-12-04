@@ -152,41 +152,28 @@ public class DirectionHelperService {
 
                     filterResponsesNotCompliedOnBehalfOfByTheCourt("RESPONDENT", directions);
 
-                    caseDetails.getData().put(convertToCustomCollection(assignee), directions);
+                    caseDetails.getData().put(assignee.toCustomDirectionField(), directions);
 
                     break;
-
                 case OTHERS:
                     directions.addAll(directionsMap.get(ALL_PARTIES));
 
                     filterResponsesNotCompliedOnBehalfOfByTheCourt("OTHER", directions);
 
-                    caseDetails.getData().put(convertToCustomCollection(assignee), directions);
+                    caseDetails.getData().put(assignee.toCustomDirectionField(), directions);
 
                     break;
-
                 case CAFCASS:
-                    // All responses for CAFCASS will be completed by the court.
-
                     directions.addAll(directionsMap.get(ALL_PARTIES));
 
-                    filterResponsesNotCompliedOnBehalfOfByTheCourt("CAFCASS", directions);
-
+                    // All responses for CAFCASS will be completed by the court.
                     List<Element<Direction>> cafcassDirections = extractPartyResponse(COURT, directions);
 
-                    caseDetails.getData().put(convertToCustomCollection(assignee), cafcassDirections);
-
-                    break;
-
-                default:
+                    caseDetails.getData().put(assignee.toCustomDirectionField(), cafcassDirections);
 
                     break;
             }
         });
-    }
-
-    private String convertToCustomCollection(DirectionAssignee assignee) {
-        return assignee.getValue().concat("Custom");
     }
 
     /**
@@ -304,16 +291,11 @@ public class DirectionHelperService {
                     addResponsesToDirections(responses, caseData.getStandardDirectionOrder().getDirections());
 
                     break;
-
                 case PARENTS_AND_RESPONDENTS:
                 case OTHERS:
                     List<Element<DirectionResponse>> elements = addValuesToListResponseDirections(directions);
 
                     addResponseElementsToDirections(elements, caseData.getStandardDirectionOrder().getDirections());
-
-                    break;
-
-                default:
 
                     break;
             }
@@ -330,14 +312,19 @@ public class DirectionHelperService {
                 return directionElement.getValue().getResponses();
             })
             .flatMap(List::stream)
-            .map(element -> Element.<DirectionResponse>builder()
-                .id(element.getId())
-                .value(element.getValue().toBuilder()
-                    .assignee(COURT)
-                    .directionId(id.get())
-                    .build())
-                .build())
+            .map(element -> addCourtAssigneeAndDirectionId(id, element))
             .collect(toList());
+    }
+
+    private Element<DirectionResponse> addCourtAssigneeAndDirectionId(AtomicReference<UUID> id,
+                                                                      Element<DirectionResponse> element) {
+        return Element.<DirectionResponse>builder()
+            .id(element.getId())
+            .value(element.getValue().toBuilder()
+                .assignee(COURT)
+                .directionId(id.get())
+                .build())
+            .build();
     }
 
     /**
@@ -478,8 +465,8 @@ public class DirectionHelperService {
     /**
      * Iterates over a list of directions and sets properties assignee, custom and readOnly.
      *
-     * @param directions  a list of directions.
-     * @param assignee    the assignee of the directions to be returned.
+     * @param directions a list of directions.
+     * @param assignee   the assignee of the directions to be returned.
      * @return A list of custom directions.
      */
     public List<Element<Direction>> assignCustomDirections(List<Element<Direction>> directions,

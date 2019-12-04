@@ -2,8 +2,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "respondentDirectionsCustom",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "directionType",
     "EventElementLabel": " ",
     "FieldDisplayOrder": 1,
@@ -12,8 +12,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "respondentDirectionsCustom",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "directionNeeded",
     "FieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
@@ -22,8 +22,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "respondentDirectionsCustom",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "dateToBeCompletedBy",
     "EventElementLabel": "Deadline",
     "FieldDisplayOrder": 3,
@@ -32,17 +32,17 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "respondentDirectionsCustom",
-    "ListElementCode": "responses.respondingOnBehalfOfRespondent",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
+    "ListElementCode": "responses.respondingOnBehalfOfOthers",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "respondentDirectionsCustom",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.complied",
     "EventElementLabel": "Have they complied with this direction?",
     "FieldDisplayOrder": 5,
@@ -51,8 +51,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "respondentDirectionsCustom",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.documentDetails",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
@@ -60,8 +60,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "respondentDirectionsCustom",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.file",
     "FieldDisplayOrder": 7,
     "DisplayContext": "OPTIONAL"
@@ -69,8 +69,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "respondentDirectionsCustom",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.cannotComplyTitle",
     "EventElementLabel": "### Parties need to comply with directions to keep proceedings on track. ###\n\nIf they can’t comply, you need to explain:\n\n• reasons why\n\n• impact on timetable and next hearing\n\n• proposed next actions",
     "FieldDisplayOrder": 8,
@@ -79,8 +79,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "respondentDirectionsCustom",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.cannotComplyReason",
     "FieldDisplayOrder": 9,
     "DisplayContext": "MANDATORY"
@@ -88,8 +88,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "respondentDirectionsCustom",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.c2Uploaded",
     "FieldDisplayOrder": 10,
     "DisplayContext": "OPTIONAL"
@@ -97,8 +97,8 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
-    "CaseFieldID": "respondentDirectionsCustom",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.cannotComplyFile",
     "FieldDisplayOrder": 11,
     "DisplayContext": "OPTIONAL"

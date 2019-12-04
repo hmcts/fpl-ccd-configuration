@@ -145,11 +145,10 @@ public class CaseData {
     private final C21Order c21Order;
     private final List<Element<C21Order>> c21Orders;
 
-    private final Others others;
-
     public List<Element<C21Order>> getC21Orders() {
         return defaultIfNull(c21Orders, new ArrayList<>());
     }
 
     private final CaseManagementOrder caseManagementOrder;
+    private final Others others;
 }

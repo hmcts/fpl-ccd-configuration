@@ -5,7 +5,6 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Service
 public class OthersService {
@@ -14,18 +13,17 @@ public class OthersService {
         StringBuilder sb = new StringBuilder();
 
         if (otherExists(others)) {
-            if (isNotEmpty(others.getFirstOther())) {
+            if (others.getFirstOther() != null) {
                 sb.append(String.format("Person 1 - %s", getName(others.getFirstOther()))).append("\n");
             }
 
-            if (isNotEmpty(others.getAdditionalOthers())) {
+            if (others.getAdditionalOthers() != null) {
                 for (int i = 0; i < others.getAdditionalOthers().size(); i++) {
                     Other other = others.getAdditionalOthers().get(i).getValue();
 
                     sb.append(String.format("Other person %d - %s", i + 1, getName(other))).append("\n");
                 }
             }
-
         } else {
             sb.append("No others on the case");
         }
@@ -38,7 +36,7 @@ public class OthersService {
     }
 
     private boolean otherExists(Others others) {
-        return isNotEmpty(others) && isNotEmpty(others.getFirstOther())
-            || isNotEmpty(others) && isNotEmpty(others.getAdditionalOthers());
+        return others != null && (others.getFirstOther() != null || others.getAdditionalOthers() != null);
     }
+
 }

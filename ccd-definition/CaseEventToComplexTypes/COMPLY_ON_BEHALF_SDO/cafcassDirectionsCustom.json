@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "directionType",
     "EventElementLabel": " ",
@@ -12,7 +12,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "directionNeeded",
     "FieldDisplayOrder": 2,
@@ -22,7 +22,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "dateToBeCompletedBy",
     "EventElementLabel": "Deadline",
@@ -32,7 +32,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.complied",
     "EventElementLabel": "Have they complied with this direction?",
@@ -42,7 +42,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.documentDetails",
     "FieldDisplayOrder": 5,
@@ -51,7 +51,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.file",
     "FieldDisplayOrder": 6,
@@ -60,7 +60,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.cannotComplyTitle",
     "EventElementLabel": "### Parties need to comply with directions to keep proceedings on track. ###\n\nIf they can’t comply, you need to explain:\n\n• reasons why\n\n• impact on timetable and next hearing\n\n• proposed next actions",
@@ -70,7 +70,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.cannotComplyReason",
     "FieldDisplayOrder": 8,
@@ -79,7 +79,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.c2Uploaded",
     "FieldDisplayOrder": 9,
@@ -88,7 +88,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_ON_BEHALF",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
     "CaseFieldID": "cafcassDirectionsCustom",
     "ListElementCode": "response.cannotComplyFile",
     "FieldDisplayOrder": 10,

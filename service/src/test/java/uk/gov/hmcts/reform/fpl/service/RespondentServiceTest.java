@@ -228,7 +228,24 @@ class RespondentServiceTest {
 
         @Test
         void shouldBuildExpectedLabelWhenManyElementsInList() {
-            List<Element<Respondent>> respondents = ImmutableList.of(Element.<Respondent>builder()
+            List<Element<Respondent>> respondents = getRespondents();
+
+            String result = service.buildRespondentLabel(respondents);
+
+            assertThat(result).isEqualTo("Respondent 1 - James Daniels\nRespondent 2 - Bob Martyn\n");
+        }
+
+        @Test
+        void shouldBuildExpectedLabelWhenEmptyList() {
+            List<Element<Respondent>> respondents = emptyList();
+
+            String result = service.buildRespondentLabel(respondents);
+
+            assertThat(result).isEqualTo("No respondents on the case");
+        }
+
+        private List<Element<Respondent>> getRespondents() {
+            return ImmutableList.of(Element.<Respondent>builder()
                     .value(Respondent.builder()
                         .party(RespondentParty.builder()
                             .firstName("James")
@@ -244,19 +261,6 @@ class RespondentServiceTest {
                             .build())
                         .build())
                     .build());
-
-            String result = service.buildRespondentLabel(respondents);
-
-            assertThat(result).isEqualTo("Respondent 1 - James Daniels\nRespondent 2 - Bob Martyn\n");
-        }
-
-        @Test
-        void shouldBuildExpectedLabelWhenEmptyList() {
-            List<Element<Respondent>> respondents = emptyList();
-
-            String result = service.buildRespondentLabel(respondents);
-
-            assertThat(result).isEqualTo("No respondents on the case");
         }
     }
 }

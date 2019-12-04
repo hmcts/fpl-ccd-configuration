@@ -960,11 +960,11 @@ class DirectionHelperServiceTest {
             assertThat(directions.get(0).getValue().getResponses()).isEqualTo(responses);
         }
 
-        private List<Element<DirectionResponse>> createResponses(DirectionAssignee localAuthority, String onBehalfOf) {
+        private List<Element<DirectionResponse>> createResponses(DirectionAssignee assignee, String onBehalfOf) {
             List<Element<DirectionResponse>> responses = new ArrayList<>();
             responses.add(Element.<DirectionResponse>builder()
                 .value(DirectionResponse.builder()
-                    .assignee(localAuthority)
+                    .assignee(assignee)
                     .respondingOnBehalfOf(onBehalfOf)
                     .build())
                 .build());
@@ -1117,27 +1117,8 @@ class DirectionHelperServiceTest {
         @Test
         void shouldAddCafcassResponseWhenValidResponseMadeByCourt() {
             UUID directionId = randomUUID();
-
-            Order sdo = Order.builder()
-                .directions(ImmutableList.of(Element.<Direction>builder()
-                    .id(directionId)
-                    .value(Direction.builder()
-                        .directionType("example direction")
-                        .assignee(CAFCASS)
-                        .build())
-                    .build()))
-                .build();
-
-            List<Element<Direction>> directionWithResponse = ImmutableList.of(Element.<Direction>builder()
-                .id(directionId)
-                .value(Direction.builder()
-                    .response(DirectionResponse.builder()
-                        .directionId(directionId)
-                        .assignee(CAFCASS)
-                        .complied("Yes")
-                        .build())
-                    .build())
-                .build());
+            Order sdo = orderWithCafcassDirection(directionId);
+            List<Element<Direction>> directionWithResponse = directionWithCafcassResponse(directionId);
 
             CaseData caseData = CaseData.builder()
                 .standardDirectionOrder(sdo)
@@ -1153,30 +1134,64 @@ class DirectionHelperServiceTest {
 
             service.addComplyOnBehalfResponsesToDirectionsInStandardDirectionsOrder(caseData);
 
-            assertThat(
-                caseData.getStandardDirectionOrder().getDirections().get(0).getValue().getResponses().get(0).getValue())
-                .isEqualTo(expectedResponse);
+            assertThat(getResponses(caseData).get(0).getValue()).isEqualTo(expectedResponse);
         }
 
         @Test
         void shouldAddResponseForOtherPartiesWhenValidResponseMadeByCourt() {
             UUID directionId = randomUUID();
             UUID responseId = randomUUID();
-
-            Direction.DirectionBuilder direction = Direction.builder();
-            direction.assignee(OTHERS);
+            Direction.DirectionBuilder direction = Direction.builder().assignee(OTHERS);
 
             DirectionResponse.DirectionResponseBuilder response = DirectionResponse.builder()
                 .complied("Yes")
                 .respondingOnBehalfOf("OTHERS_1");
 
-            List<Element<DirectionResponse>> responses = new ArrayList<>();
-            responses.add(Element.<DirectionResponse>builder()
+            CaseData caseData = prepareCaseData(directionId, direction, createResponses(responseId, response));
+
+            List<Element<DirectionResponse>> expectedResponses = ImmutableList.of(Element.<DirectionResponse>builder()
                 .id(responseId)
-                .value(response.build())
+                .value(response
+                    .directionId(directionId)
+                    .assignee(COURT)
+                    .build())
                 .build());
 
-            CaseData caseData = CaseData.builder()
+            service.addComplyOnBehalfResponsesToDirectionsInStandardDirectionsOrder(caseData);
+
+            assertThat(getResponses(caseData)).containsAll(expectedResponses);
+        }
+
+        private List<Element<Direction>> directionWithCafcassResponse(UUID directionId) {
+            return ImmutableList.of(Element.<Direction>builder()
+                .id(directionId)
+                .value(Direction.builder()
+                    .response(DirectionResponse.builder()
+                        .directionId(directionId)
+                        .assignee(CAFCASS)
+                        .complied("Yes")
+                        .build())
+                    .build())
+                .build());
+        }
+
+        private Order orderWithCafcassDirection(UUID directionId) {
+            return Order.builder()
+                .directions(ImmutableList.of(Element.<Direction>builder()
+                    .id(directionId)
+                    .value(Direction.builder()
+                        .directionType("example direction")
+                        .assignee(CAFCASS)
+                        .build())
+                    .build()))
+                .build();
+        }
+
+
+        private CaseData prepareCaseData(UUID directionId,
+                                         Direction.DirectionBuilder direction,
+                                         List<Element<DirectionResponse>> responses) {
+            return CaseData.builder()
                 .standardDirectionOrder(Order.builder()
                     .directions(ImmutableList.of(Element.<Direction>builder()
                         .id(directionId)
@@ -1188,20 +1203,21 @@ class DirectionHelperServiceTest {
                     .value(direction.responses(responses).build())
                     .build()))
                 .build();
+        }
 
-            service.addComplyOnBehalfResponsesToDirectionsInStandardDirectionsOrder(caseData);
-
-            List<Element<DirectionResponse>> expectedResponses = ImmutableList.of(Element.<DirectionResponse>builder()
+        private List<Element<DirectionResponse>> createResponses(UUID responseId,
+                                                                 DirectionResponse.DirectionResponseBuilder response) {
+            List<Element<DirectionResponse>> responses = new ArrayList<>();
+            responses.add(Element.<DirectionResponse>builder()
                 .id(responseId)
-                .value(response
-                    .directionId(directionId)
-                    .assignee(COURT)
-                    .build())
+                .value(response.build())
                 .build());
 
-            assertThat(
-                caseData.getStandardDirectionOrder().getDirections().get(0).getValue().getResponses())
-                .containsAll(expectedResponses);
+            return responses;
+        }
+
+        private List<Element<DirectionResponse>> getResponses(CaseData caseData) {
+            return caseData.getStandardDirectionOrder().getDirections().get(0).getValue().getResponses();
         }
     }
 

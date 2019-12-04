@@ -27,44 +27,42 @@ public class DirectionResponse {
 
     @JsonGetter("respondingOnBehalfOfRespondent")
     private String getRespondingOnBehalfOfRespondent() {
-        if (respondingOnBehalfOf != null && respondingOnBehalfOf.contains("RESPONDENT")) {
-            return respondingOnBehalfOf;
-        }
-        return null;
+        return getValueIfContainsOrNull("RESPONDENT");
     }
 
     @JsonGetter("respondingOnBehalfOfOthers")
     private String getRespondingOnBehalfOfOthers() {
-        if (respondingOnBehalfOf != null && respondingOnBehalfOf.contains("OTHER")) {
-            return respondingOnBehalfOf;
-        }
-        return null;
+        return getValueIfContainsOrNull("OTHER");
     }
 
     @JsonGetter("respondingOnBehalfOfCafcass")
     private String getRespondingOnBehalfOfCafcass() {
-        if (respondingOnBehalfOf != null && respondingOnBehalfOf.contains("CAFCASS")) {
+        return getValueIfContainsOrNull("CAFCASS");
+    }
+
+    @JsonSetter("respondingOnBehalfOfRespondent")
+    private void setRespondingOnBehalfOfRespondent(String value) {
+        setValueIfNotNull(value);
+    }
+
+    @JsonSetter("respondingOnBehalfOfOthers")
+    private void setRespondingOnBehalfOfOthers(String value) {
+        setValueIfNotNull(value);
+    }
+
+    @JsonSetter("respondingOnBehalfOfCafcass")
+    private void setRespondingOnBehalfOfCafcass(String value) {
+        setValueIfNotNull(value);
+    }
+
+    private String getValueIfContainsOrNull(String value) {
+        if (respondingOnBehalfOf != null && respondingOnBehalfOf.contains(value)) {
             return respondingOnBehalfOf;
         }
         return null;
     }
 
-    @JsonSetter("respondingOnBehalfOfRespondent")
-    private void setRespondingOnBehalfOfRespondent(String value) {
-        if (value != null) {
-            respondingOnBehalfOf = value;
-        }
-    }
-
-    @JsonSetter("respondingOnBehalfOfOthers")
-    private void setRespondingOnBehalfOfOthers(String value) {
-        if (value != null) {
-            respondingOnBehalfOf = value;
-        }
-    }
-
-    @JsonSetter("respondingOnBehalfOfCafcass")
-    private void setRespondingOnBehalfOfCafcass(String value) {
+    private void setValueIfNotNull(String value) {
         if (value != null) {
             respondingOnBehalfOf = value;
         }
