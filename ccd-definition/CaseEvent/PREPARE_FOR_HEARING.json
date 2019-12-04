@@ -176,6 +176,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "COMPLY_LOCAL_AUTHORITY_CMO",
+    "Name": "Comply with directions (CMO)",
+    "Description": "Allows Local Authority user access to comply with their directions as well as ones for all parties",
+    "DisplayOrder": 12,
+    "PreConditionState(s)": "PREPARE_FOR_HEARING",
+    "PostConditionState": "PREPARE_FOR_HEARING",
+    "SecurityClassification": "Public",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-submit",
+    "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "COMPLY_CAFCASS",
     "Name": "Comply with directions",
     "Description": "Allows Cafcass user access to comply with their directions as well as ones for all parties",

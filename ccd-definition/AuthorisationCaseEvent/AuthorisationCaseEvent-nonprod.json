@@ -9,6 +9,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_LOCAL_AUTHORITY_CMO",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "COMPLY_CAFCASS",
     "UserRole": "caseworker-publiclaw-cafcass",
     "CRUD": "CRU"

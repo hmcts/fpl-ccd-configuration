@@ -39,20 +39,15 @@ public class ComplyWithDirectionsController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        Map<DirectionAssignee, List<Element<Direction>>> sortedDirections;
 
-        /*
-        Here we could use CMO state? Or Case state? What flag is there to differentiate SDO/CMO
-
-        if (CMO state == ready to comply) {
-         Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
-            directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections());
+        if (callbackrequest.getEventId().equals("COMPLY_LOCAL_AUTHORITY")) {
+            sortedDirections =
+                directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections());
         } else {
-            SDO stuff
+            sortedDirections =
+                directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections());
         }
-         */
-
-        Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
-            directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections());
 
         sortedDirections.forEach((assignee, directions) -> {
             if (!assignee.equals(ALL_PARTIES)) {
@@ -76,21 +71,17 @@ public class ComplyWithDirectionsController {
 
         List<DirectionResponse> responses = directionHelperService.getResponses(directionsMap);
 
-        /*
-        if (flag from aboutToStart) {
+        if (callbackrequest.getEventId().equals("COMPLY_LOCAL_AUTHORITY")) {
+            directionHelperService.addResponsesToDirections(
+                responses, caseData.getStandardDirectionOrder().getDirections());
+
+            caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
+        } else {
             directionHelperService.addResponsesToDirections(
                 responses, caseData.getCaseManagementOrder().getDirections());
 
-            caseDetails.getData().put("caseManagementOrder, caseData.getCaseManagementOrder());
-        } else {
-            SDO stuff
+            caseDetails.getData().put("caseManagementOrder", caseData.getCaseManagementOrder());
         }
-         */
-
-        directionHelperService.addResponsesToDirections(
-            responses, caseData.getStandardDirectionOrder().getDirections());
-
-        caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
