@@ -43,6 +43,7 @@ import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
@@ -125,11 +126,13 @@ class DraftCMOControllerTest {
 
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         given(documentGeneratorService.generateDraftWatermarkEncodedString()).willReturn("");
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-case-management-order.pdf"))
-            .willReturn(document);
+        given(uploadDocumentService.uploadPDF(any(),any(), any(), any())).willReturn(document);
 
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(ImmutableMap.of(), "mid-event");
+
+        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-case-management-order.pdf");
+
         final Map<String, Object> responseCaseData = callbackResponse.getData();
 
         assertThat(responseCaseData).containsKey("reviewCaseManagementOrder");
