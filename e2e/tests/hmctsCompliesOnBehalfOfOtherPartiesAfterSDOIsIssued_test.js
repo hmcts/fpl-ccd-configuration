@@ -1,5 +1,4 @@
 const config = require('../config.js');
-const response = require('../fixtures/response');
 const directions = require('../fixtures/directions');
 
 let caseId;
@@ -45,16 +44,17 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
   }
 });
 
-Scenario('local authority complies with directions', async (I, caseViewPage, complyWithDirectionsEventPage) => {
-  await I.signIn(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+Scenario('hmcts admin complies with directions on behalf of other parties', async (I, caseViewPage, complyOnBehalfOfOthersEventPage) => {
+  await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   await I.navigateToCaseDetails(caseId);
-  caseViewPage.goToNewActions(config.applicationActions.complyWithDirections);
-  await complyWithDirectionsEventPage.canComplyWithDirection('localAuthorityDirections', 0, response, config.testFile);
+  caseViewPage.goToNewActions(config.applicationActions.complyOnBehalfOf);
+  await complyOnBehalfOfOthersEventPage.addNewResponseOnBehalfOf('respondentDirectionsCustom', 'Respondent 1', 'Yes');
+  await I.retryUntilExists(() => I.click('Continue'), '#otherPartiesDirectionsCustom');
+  await I.retryUntilExists(() => I.click('Continue'), '#cafcassDirectionsCustom');
   await I.completeEvent('Save and continue');
-  await I.seeEventSubmissionConfirmation(config.applicationActions.complyWithDirections);
+  await I.seeEventSubmissionConfirmation(config.applicationActions.complyOnBehalfOf);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeAnswerInTab(1, 'Compliance 1', 'Party', 'Local Authority');
+  I.seeAnswerInTab(1, 'Compliance 1', 'Party', 'Court');
+  I.seeAnswerInTab(2, 'Compliance 1', 'Complying on behalf of', 'Respondent 1');
   I.seeAnswerInTab(4, 'Compliance 1', 'Has this direction been complied with?', 'Yes');
-  I.seeAnswerInTab(5, 'Compliance 1', 'Give details', response.complied.yes.documentDetails);
-  I.seeAnswerInTab(6, 'Compliance 1', 'Upload file', 'mockFile.txt');
 });
