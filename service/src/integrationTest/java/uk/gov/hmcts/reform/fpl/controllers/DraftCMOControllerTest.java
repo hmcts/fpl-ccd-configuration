@@ -2,11 +2,11 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -14,15 +14,19 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,35 +41,44 @@ import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataMapForDraftCMODocmosisGeneration;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftCMOController.class)
 @OverrideAutoConfiguration(enabled = true)
 @SuppressWarnings("unchecked")
 class DraftCMOControllerTest {
-    // TODO: 03/12/2019 Test mid-event
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
+
     private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
+
     @Autowired
     private DraftCMOService draftCMOService;
     @Autowired
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper mapper;
+
+    @MockBean
+    private DocmosisDocumentGeneratorService documentGeneratorService;
+    @MockBean
+    private UploadDocumentService uploadDocumentService;
+
 
     @Test
     void aboutToStartCallbackShouldPrepareCaseForCMO() throws Exception {
@@ -104,12 +117,31 @@ class DraftCMOControllerTest {
         assertThat(callbackResponse.getData()).doesNotContainKey("otherPartiesDirectionsCustom");
     }
 
-    @Disabled
     @Test
-    void midEventShouldGenerateADocument() throws Exception {
-        final Map<String, Object> caseData = buildCaseDataMapForDraftCMODocmosisGeneration(TODAYS_DATE);
+    void midEventShouldGenerateDraftCaseManagementOrderDocument() throws Exception {
+        byte[] pdf = {1, 2, 3, 4, 5};
+        final Document document = document();
+        final DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", pdf);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(caseData, "mid-event");
+        given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(documentGeneratorService.generateDraftWatermarkEncodedString()).willReturn("");
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-case-management-order.pdf"))
+            .willReturn(document);
+
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(ImmutableMap.of(), "mid-event");
+        final Map<String, Object> responseCaseData = callbackResponse.getData();
+
+        assertThat(responseCaseData).containsKey("reviewCaseManagementOrder");
+
+        Map<String, Object> review = (Map<String, Object>) responseCaseData.get("reviewCaseManagementOrder");
+
+        assertThat(review).containsEntry(
+            "orderDoc", ImmutableMap.builder()
+                .put("document_binary_url", document().links.binary.href)
+                .put("document_filename", document().originalDocumentName)
+                .put("document_url", document().links.self.href)
+                .build());
     }
 
     @Test

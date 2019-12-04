@@ -78,10 +78,12 @@ public class DraftCMOController {
 
         Document document = getDocument(authorization, userId, cmoTemplateData);
 
+        // QUESTION: 04/12/2019 Why originalDocumentName? Why not "draft-case-management-order.pdf" or the
+        //  alternative for sdo
         final DocumentReference reference = DocumentReference.builder()
             .url(document.links.self.href)
             .binaryUrl(document.links.binary.href)
-            .filename("draft-case-management-order.pdf")
+            .filename(document.originalDocumentName)
             .build();
 
         data.put("reviewCaseManagementOrder", ImmutableMap.of("orderDoc", reference));
