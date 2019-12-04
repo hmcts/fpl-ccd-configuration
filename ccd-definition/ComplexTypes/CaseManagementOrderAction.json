@@ -5,8 +5,7 @@
     "ListElementCode": "orderDoc",
     "FieldType": "Document",
     "ElementLabel": "File",
-    "SecurityClassification": "Public",
-    "Comment": "Placeholder for the orderDoc, not implemented in this story"
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",

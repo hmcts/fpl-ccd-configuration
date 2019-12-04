@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.enums.CMOActionType;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
@@ -34,23 +36,33 @@ public class CaseManageOrderActionService {
         this.uploadDocumentService = uploadDocumentService;
     }
 
-    public CaseManagementOrder prepareActionedCMO(final String authorization, final String userId,
-                                                  final CaseDetails caseDetails) {
+    public void prepareUpdatedDraftCMOForAction(final String authorization, final String userId,
+                                                final CaseDetails caseDetails) {
+        Map<String, Object> caseData = caseDetails.getData();
+        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData);
+
+        Document orderDoc = prepareUpdatedDraftCMODocumentForAction(authorization, userId, caseDetails);
+        DocumentReference orderDocumentReference = buildCMODocumentReference(orderDoc);
+
+        final String caseManageActionKey = "caseManagementOrderAction";
+        if (caseManagementOrder.getCaseManagementOrderAction() != null) {
+            caseDetails.getData().put(caseManageActionKey, caseManagementOrder.getCaseManagementOrderAction());
+        } else {
+            caseDetails.getData().put(caseManageActionKey, ImmutableMap.of("orderDoc", orderDocumentReference));
+        }
+    }
+
+    public CaseManagementOrderAction getCaseManagementOrderActioned(final String authorization,
+                                                                    final String userId,
+                                                                    final CaseDetails caseDetails) {
+        Map<String, Object> cmoDocumentTemplateData = null;
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseManagementOrder updatedDraftCaseManagementOrder = caseData.getCaseManagementOrder();
+        CaseManagementOrder updatedDraftCaseManagementOrder = draftCMOService.prepareCMO(caseDetails.getData());
+
         CaseData updatedCaseData = caseData.toBuilder()
             .caseManagementOrder(updatedDraftCaseManagementOrder)
             .build();
 
-        return getActionedCMOWithDocumentIncluded(
-            authorization, userId, caseDetails, updatedCaseData);
-    }
-
-    private CaseManagementOrder getActionedCMOWithDocumentIncluded(final String authorization,
-                                                                  final String userId,
-                                                                  final CaseDetails caseDetails,
-                                                                  final CaseData updatedCaseData) {
-        Map<String, Object> cmoDocumentTemplateData = null;
         boolean judgeApprovedDraftCMO = false;
         try {
             cmoDocumentTemplateData = draftCMOService.generateCMOTemplateData(caseDetails.getData());
@@ -59,27 +71,13 @@ public class CaseManageOrderActionService {
             log.error("Unable to generate CMO template data.", e);
         }
 
-        Document updatedDocument = getActionedCMODocument(authorization, userId,
-            cmoDocumentTemplateData, judgeApprovedDraftCMO);
-        return updatedCaseData.getCaseManagementOrder().toBuilder()
+        Document updatedDocument = getDocument(authorization, userId, cmoDocumentTemplateData, judgeApprovedDraftCMO);
+        CaseManagementOrderAction caseManagementOrderAction =
+            updatedDraftCaseManagementOrder.getCaseManagementOrderAction();
+
+        return caseManagementOrderAction.toBuilder()
             .orderDoc(buildCMODocumentReference(updatedDocument))
             .build();
-    }
-
-    private Document getActionedCMODocument(final String authorization, final String userId,
-                                           final Map<String, Object> cmoDocumentTemplateData,
-                                           final boolean judgeApprovedDraftCMO) {
-        final DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            cmoDocumentTemplateData, DocmosisTemplates.CMO);
-        final String docTitle = (judgeApprovedDraftCMO
-            ? document.getDocumentTitle() : "draft-" + document.getDocumentTitle());
-
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), docTitle);
-    }
-
-    private boolean hasJudgeApprovedDraftCMO(final CaseManagementOrder caseManagementOrder) {
-        return CMOActionType.SEND_TO_ALL_PARTIES.equals(
-            caseManagementOrder.getCaseManagementOrderAction().getCmoActionType());
     }
 
     private DocumentReference buildCMODocumentReference(final Document updatedDocument) {
@@ -88,5 +86,33 @@ public class CaseManageOrderActionService {
             .binaryUrl(updatedDocument.links.binary.href)
             .filename(updatedDocument.originalDocumentName)
             .build();
+    }
+
+    private Document prepareUpdatedDraftCMODocumentForAction(final String authorization, final String userId,
+                                                             final CaseDetails caseDetails) {
+        Map<String, Object> cmoDocumentTemplateData = null;
+        try {
+            cmoDocumentTemplateData = draftCMOService.generateCMOTemplateData(caseDetails.getData());
+        } catch (IOException e) {
+            log.error("Unable to generate CMO template data.", e);
+        }
+
+        return getDocument(authorization, userId, cmoDocumentTemplateData, false);
+    }
+
+    private Document getDocument(final String authorization, final String userId,
+                                 final Map<String, Object> cmoDocumentTemplateData,
+                                 final boolean judgeApprovedDraftCMO) {
+        final DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
+            cmoDocumentTemplateData, DocmosisTemplates.CMO);
+        final String documentTitle = (judgeApprovedDraftCMO
+            ? document.getDocumentTitle() : "draft-" + document.getDocumentTitle());
+
+        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), documentTitle);
+    }
+
+    private boolean hasJudgeApprovedDraftCMO(final CaseManagementOrder caseManagementOrder) {
+        return CMOActionType.SEND_TO_ALL_PARTIES.equals(
+            caseManagementOrder.getCaseManagementOrderAction().getCmoActionType());
     }
 }

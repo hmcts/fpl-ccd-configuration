@@ -771,26 +771,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseManagementOrderActionSchedule",
-    "Label": "Schedule",
-    "FieldType": "Schedule",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "cmoActionTypeLabel",
     "Label": "### Is this ready to be sent to parties?",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseManagementOrderActionRecitals",
-    "Label": "Recitals",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Recitals",
     "SecurityClassification": "Public"
   }
 ]
