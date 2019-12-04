@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -36,20 +35,18 @@ public class CaseManageOrderActionService {
         this.uploadDocumentService = uploadDocumentService;
     }
 
-    public void prepareUpdatedDraftCMOForAction(final String authorization, final String userId,
-                                                final CaseDetails caseDetails) {
+    public CaseManagementOrder prepareUpdatedDraftCaseManagementOrderForAction(final String authorization,
+                                                                               final String userId,
+                                                                               final CaseDetails caseDetails) {
         Map<String, Object> caseData = caseDetails.getData();
         CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData);
 
         Document orderDoc = getUpdatedDraftCMODocumentForAction(authorization, userId, caseDetails, false);
         DocumentReference orderDocumentReference = buildCMODocumentReference(orderDoc);
 
-        final String caseManageActionKey = "caseManagementOrderAction";
-        if (caseManagementOrder.getCaseManagementOrderAction() != null) {
-            caseDetails.getData().put(caseManageActionKey, caseManagementOrder.getCaseManagementOrderAction());
-        } else {
-            caseDetails.getData().put(caseManageActionKey, ImmutableMap.of("orderDoc", orderDocumentReference));
-        }
+        return caseManagementOrder.toBuilder()
+            .orderDoc(orderDocumentReference)
+            .build();
     }
 
     public CaseManagementOrderAction getCaseManagementOrderActioned(final String authorization,
