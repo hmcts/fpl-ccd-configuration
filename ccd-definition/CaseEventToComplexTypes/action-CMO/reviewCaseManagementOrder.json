@@ -1,0 +1,22 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "reviewCaseManagementOrder",
+    "ListElementCode": "orderDoc",
+    "EventElementLabel": "Check the order",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "reviewCaseManagementOrder",
+    "ListElementCode": "cmoStatus",
+    "EventElementLabel": "Is this ready to be sent to the judge?",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  }
+]

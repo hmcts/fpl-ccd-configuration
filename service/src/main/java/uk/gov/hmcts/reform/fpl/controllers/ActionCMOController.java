@@ -21,15 +21,15 @@ import java.util.Map;
 @RestController
 @RequestMapping("/callback/action-cmo")
 public class ActionCMOController {
-    private final CaseManageOrderActionService caseManageOrderActionService;
     private final DraftCMOService draftCMOService;
+    private final CaseManageOrderActionService caseManageOrderActionService;
     private final ObjectMapper mapper;
 
     public ActionCMOController(CaseManageOrderActionService caseManageOrderActionService,
                                DraftCMOService draftCMOService,
                                ObjectMapper mapper) {
-        this.caseManageOrderActionService = caseManageOrderActionService;
         this.draftCMOService = draftCMOService;
+        this.caseManageOrderActionService = caseManageOrderActionService;
         this.mapper = mapper;
     }
 
@@ -41,6 +41,8 @@ public class ActionCMOController {
 
         data.put("cmoHearingDateList",
             draftCMOService.buildDynamicListFromHearingDetails(caseData.getHearingDetails()));
+
+        draftCMOService.prepareCMO(data);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -72,6 +74,7 @@ public class ActionCMOController {
             caseManageOrderActionService.getCaseManagementOrderActioned(authorization, userId, caseDetails);
 
         caseDetails.getData().put("caseManagementOrderAction", caseManagementOrderAction);
+        caseDetails.getData().remove("caseManagementOrder");
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
