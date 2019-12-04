@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -41,9 +40,10 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataMapForDraftCMODocmosisGeneration;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
@@ -53,6 +53,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassi
 @OverrideAutoConfiguration(enabled = true)
 @SuppressWarnings("unchecked")
 class DraftCMOControllerTest {
+    // TODO: 03/12/2019 Test mid-event
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
@@ -103,6 +104,14 @@ class DraftCMOControllerTest {
         assertThat(callbackResponse.getData()).doesNotContainKey("otherPartiesDirectionsCustom");
     }
 
+    @Disabled
+    @Test
+    void midEventShouldGenerateADocument() throws Exception {
+        final Map<String, Object> caseData = buildCaseDataMapForDraftCMODocmosisGeneration(TODAYS_DATE);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(caseData, "mid-event");
+    }
+
     @Test
     void aboutToSubmitShouldPopulateCaseManagementOrder() throws Exception {
         List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
@@ -129,7 +138,7 @@ class DraftCMOControllerTest {
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
-        assertThat(caseManagementOrder.getDirections()).isEqualTo(createCmoDirections());
+        assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
         assertThat(caseManagementOrder).extracting("id", "hearingDate")
             .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), TODAYS_DATE.plusDays(5).toString());
         assertThat(caseManagementOrder.getCmoStatus()).isEqualTo(SELF_REVIEW);
@@ -169,22 +178,5 @@ class DraftCMOControllerTest {
                 .content(mapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andReturn();
-    }
-
-    private List<Element<HearingBooking>> createHearingBookings(LocalDateTime date) {
-        return ImmutableList.of(
-            Element.<HearingBooking>builder()
-                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-                .value(createHearingBooking(date.plusDays(5), date.plusDays(6)))
-                .build(),
-            Element.<HearingBooking>builder()
-                .id(UUID.randomUUID())
-                .value(createHearingBooking(date.plusDays(2), date.plusDays(3)))
-                .build(),
-            Element.<HearingBooking>builder()
-                .id(UUID.randomUUID())
-                .value(createHearingBooking(date, date.plusDays(1)))
-                .build()
-        );
     }
 }
