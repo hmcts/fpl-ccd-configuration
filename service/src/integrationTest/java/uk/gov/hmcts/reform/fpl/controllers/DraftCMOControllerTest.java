@@ -18,10 +18,12 @@ import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrderAction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 
 import java.time.LocalDateTime;
@@ -32,6 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -66,6 +69,8 @@ class DraftCMOControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private ObjectMapper mapper;
+    @Autowired
+    private DateFormatterService dateFormatterService;
 
     @Test
     void aboutToStartCallbackShouldPrepareCaseForCMO() throws Exception {
@@ -102,6 +107,24 @@ class DraftCMOControllerTest {
         assertThat(callbackResponse.getData()).doesNotContainKey("courtDirectionsCustom");
         assertThat(callbackResponse.getData()).doesNotContainKey("respondentDirectionsCustom");
         assertThat(callbackResponse.getData()).doesNotContainKey("otherPartiesDirectionsCustom");
+        assertThat(callbackResponse.getData().get("nextHearingDateLabelCMO")).isEqualTo("");
+    }
+
+    @Test
+    void aboutToStartShouldAppendHearingStartDateWhenCmoHasBeenActioned() throws Exception {
+        Map<String, Object> data = ImmutableMap.of(
+            "hearingDetails", hearingDetails,
+            "respondents1", createRespondents(),
+            "others", createOthers(),
+            "caseManagementOrder", buildActionedCmo(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31")));
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
+
+        String date = dateFormatterService.formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "d MMMM");
+        String time = dateFormatterService.formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "h:mma");
+        String expectedLabel = String.format("The next hearing date is on %s at %s", date, time);
+
+        assertThat(callbackResponse.getData().get("nextHearingDateLabelCMO")).isEqualTo(expectedLabel);
     }
 
     @Disabled
@@ -153,6 +176,15 @@ class DraftCMOControllerTest {
         return listItemMap.stream()
             .map(element -> mapper.convertValue(element, DynamicListElement.class))
             .map(DynamicListElement::getLabel).collect(Collectors.toList());
+    }
+
+    private CaseManagementOrder buildActionedCmo(UUID hearingId) {
+        return CaseManagementOrder.builder()
+            .directions(createCmoDirections())
+            .caseManagementOrderAction(CaseManagementOrderAction.builder()
+                .id(hearingId)
+                .build())
+            .build();
     }
 
     private AboutToStartOrSubmitCallbackResponse getResponse(

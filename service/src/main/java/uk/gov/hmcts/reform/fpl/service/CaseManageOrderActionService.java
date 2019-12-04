@@ -13,12 +13,9 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
-
 
 @Slf4j
 @Service
