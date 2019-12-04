@@ -4,21 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-<<<<<<< HEAD
-=======
-import org.mockito.InjectMocks;
->>>>>>> 3d7aa4ade9a6c0deda2d2f7c3f20f53e9381af59
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-<<<<<<< HEAD
-=======
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
->>>>>>> 3d7aa4ade9a6c0deda2d2f7c3f20f53e9381af59
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
-import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 
 import java.util.UUID;
 
