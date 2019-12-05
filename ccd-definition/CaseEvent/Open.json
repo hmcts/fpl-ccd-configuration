@@ -10,7 +10,11 @@
     "SecurityClassification": "Public",
     "ShowSummary": "N",
     "ShowEventNotes": "N",
-    "EndButtonLabel": "Save and continue"
+    "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-initiation/about-to-submit",
+    "RetriesTimeoutURLAboutToSubmitEvent": "1,2,3,4,5",
+    "CallBackURLSubmittedEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/case-initiation/submitted",
+    "RetriesTimeoutURLSubmittedEvent": "1,2,3,4,5"
   },
   {
     "LiveFrom": "01/01/2017",
