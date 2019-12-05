@@ -340,17 +340,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
-    "TabID": "DocumentsTaSolicitor",
-    "TabLabel": "Documents",
-    "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkCarePlan_document",
-    "TabFieldDisplayOrder": 5,
-    "FieldShowCondition": "[STATE] != \"Open\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
     "TabID": "DocumentsTabSolicitor",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
@@ -741,6 +730,7 @@
     "Channel": "CaseWorker",
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
+    "UserRole": "[LASOLICITOR]",
     "TabDisplayOrder": 7,
     "CaseFieldID": "caseIDReference",
     "TabFieldDisplayOrder": 1
