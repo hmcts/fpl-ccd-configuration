@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseAccessApi;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.SystemUpdateUserConfiguration;
 import uk.gov.hmcts.reform.fpl.exceptions.NoAssociatedUsersException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
@@ -22,7 +21,7 @@ public class LocalAuthorityUserService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final CaseAccessApi caseAccessApi;
     private final CaseUserApi caseUserApi;
-    private final LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration;
+    private final OrganisationService organisationService;
     private SystemUpdateUserConfiguration userConfig;
     private final AuthTokenGenerator authTokenGenerator;
     private final IdamClient client;
@@ -30,21 +29,21 @@ public class LocalAuthorityUserService {
 
     @Autowired
     public LocalAuthorityUserService(CaseAccessApi caseAccessApi,
-                                     LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration,
+                                     OrganisationService organisationService,
                                      AuthTokenGenerator authTokenGenerator,
                                      CaseUserApi caseUserApi,
                                      IdamClient idamClient,
                                      SystemUpdateUserConfiguration userConfig) {
         this.caseAccessApi = caseAccessApi;
-        this.localAuthorityUserLookupConfiguration = localAuthorityUserLookupConfiguration;
+        this.organisationService = organisationService;
         this.authTokenGenerator = authTokenGenerator;
         this.caseUserApi = caseUserApi;
         this.client = idamClient;
         this.userConfig = userConfig;
     }
 
-    public void grantUserAccessWithCaseRole(String caseId, String caseLocalAuthority) {
-        findUserIds(caseLocalAuthority).stream()
+    public void grantUserAccessWithCaseRole(String authorization, String caseId, String caseLocalAuthority) {
+        findUserIds(authorization, caseLocalAuthority).stream()
             .forEach(userId -> {
                 try {
                     String authentication = client.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
@@ -59,8 +58,8 @@ public class LocalAuthorityUserService {
             });
     }
 
-    private List<String> findUserIds(String localAuthorityCode) {
-        List<String> userIds = localAuthorityUserLookupConfiguration.getUserIds(localAuthorityCode);
+    private List<String> findUserIds(String authorization, String localAuthorityCode) {
+        List<String> userIds = organisationService.getUserIds(authorization, localAuthorityCode);
 
         if (userIds.isEmpty()) {
             throw new NoAssociatedUsersException("No users found for the local authority '" + localAuthorityCode + "'");
