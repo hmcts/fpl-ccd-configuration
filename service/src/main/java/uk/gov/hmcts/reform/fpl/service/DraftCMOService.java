@@ -140,6 +140,7 @@ public class DraftCMOService {
 
     public void prepareCaseDetails(Map<String, Object> caseData, CaseManagementOrder caseManagementOrder) {
         final ImmutableSet<String> keysToRemove = ImmutableSet.of(
+            "cmoHearingDateList",
             "schedule",
             "reviewCaseManagementOrder",
             "recitals");
