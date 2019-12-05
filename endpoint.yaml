@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Endpoints
+metadata:
+  labels:
+    app.kubernetes.io/instance: fpl-case-service-pr-558-java
+    app.kubernetes.io/managed-by: Tiller
+    app.kubernetes.io/name: fpl-case-service-pr-558-java
+    helm.sh/chart: java-2.13.0
+  name: fpl-case-service-pr-558-java
+  namespace: family-public-law
+subsets:
+- addresses:
+  - ip: 10.97.24.109
+  ports:
+  - name: http
+    port: 4000
+    protocol: TCP
