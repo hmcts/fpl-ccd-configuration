@@ -10,6 +10,10 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.Recital;
+import uk.gov.hmcts.reform.fpl.model.common.Schedule;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.configuration.ReviewCaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.validation.groups.C21CaseOrderGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
@@ -139,6 +143,12 @@ public class CaseData {
         return defaultIfNull(c21Orders, new ArrayList<>());
     }
 
+    // Objects related to CMO flow
     private final CaseManagementOrder caseManagementOrder;
+    private final DynamicList cmoHearingDateList;
+    private final Schedule schedule;
+    private final List<Element<Recital>> recitals;
+    private final ReviewCaseManagementOrder reviewCaseManagementOrder;
+
     private final Others others;
 }

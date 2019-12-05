@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -35,16 +36,19 @@ public class DraftCMOController {
     private final DraftCMOService draftCMOService;
     private final DocmosisDocumentGeneratorService docmosisService;
     private final UploadDocumentService uploadDocumentService;
+    private final CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService;
 
     @Autowired
     public DraftCMOController(ObjectMapper mapper,
                               DraftCMOService draftCMOService,
                               DocmosisDocumentGeneratorService docmosisService,
-                              UploadDocumentService uploadDocumentService) {
+                              UploadDocumentService uploadDocumentService,
+                              CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService) {
         this.mapper = mapper;
         this.draftCMOService = draftCMOService;
         this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
+        this.docmosisTemplateDataGenerationService = docmosisTemplateDataGenerationService;
     }
 
     @PostMapping("/about-to-start")
@@ -56,7 +60,6 @@ public class DraftCMOController {
         setCustomDirectionDropdownLabels(caseDetails);
         Map<String, Object> data = caseDetails.getData();
         final CaseData caseData = mapper.convertValue(data, CaseData.class);
-
 
         data.putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
@@ -73,8 +76,9 @@ public class DraftCMOController {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final Map<String, Object> data = caseDetails.getData();
+        final CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        final Map<String, Object> cmoTemplateData = draftCMOService.generateCMOTemplateData(data);
+        final Map<String, Object> cmoTemplateData = docmosisTemplateDataGenerationService.getTemplateData(caseData);
 
         Document document = getDocument(authorization, userId, cmoTemplateData);
 
@@ -95,8 +99,9 @@ public class DraftCMOController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final Map<String, Object> data = caseDetails.getData();
+        final CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(data);
+        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData);
 
         draftCMOService.prepareCaseDetails(data, caseManagementOrder);
 

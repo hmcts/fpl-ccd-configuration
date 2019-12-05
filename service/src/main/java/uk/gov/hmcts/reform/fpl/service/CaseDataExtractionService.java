@@ -41,6 +41,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
 
 // Supports SDO case data. Tech debt ticket needed to refactor caseDataExtractionService and NoticeOfProceedingsService
 @Slf4j
@@ -56,7 +57,6 @@ public class CaseDataExtractionService {
     private final DirectionHelperService directionHelperService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
-    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
     // TODO
     // No need to pass in CaseData to each method. Refactor to only use required model
@@ -92,8 +92,7 @@ public class CaseDataExtractionService {
 
         if (isNotEmpty(caseData.getStandardDirectionOrder())
             && caseData.getStandardDirectionOrder().getOrderStatus() != SEALED) {
-            data.put("draftbackground", String.format("image:base64:%1$s",
-                docmosisDocumentGeneratorService.generateDraftWatermarkEncodedString()));
+            data.put("draftbackground", String.format("image:base64:%1$s", generateDraftWatermarkEncodedString()));
         }
 
         return data.build();

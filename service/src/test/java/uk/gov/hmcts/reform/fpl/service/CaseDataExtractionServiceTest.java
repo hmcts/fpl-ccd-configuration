@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
@@ -35,9 +34,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStanda
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, JsonOrdersLookupService.class,
-    HearingVenueLookUpService.class, DocmosisDocumentGeneratorService.class, RestTemplate.class,
-    DocmosisConfiguration.class})
+    JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class,
+    DocmosisConfiguration.class
+})
 class CaseDataExtractionServiceTest {
     @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
 
@@ -51,9 +50,6 @@ class CaseDataExtractionServiceTest {
 
     @Autowired
     private HearingVenueLookUpService hearingVenueLookUpService;
-
-    @Autowired
-    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
@@ -72,7 +68,7 @@ class CaseDataExtractionServiceTest {
         // required for DI
         this.caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
             hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService,
-            hearingVenueLookUpService, commonCaseDataExtraction, docmosisDocumentGeneratorService);
+            hearingVenueLookUpService, commonCaseDataExtraction);
     }
 
     @Test

@@ -122,7 +122,6 @@ class DraftCMOControllerTest {
         final DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", pdf);
 
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-        given(documentGeneratorService.generateDraftWatermarkEncodedString()).willReturn("");
         given(uploadDocumentService.uploadPDF(any(),any(), any(), any())).willReturn(document);
 
 
