@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import uk.gov.hmcts.reform.fpl.enums.FinalOrderType;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
@@ -144,6 +145,7 @@ public class CaseData {
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final C21Order c21Order;
     private final List<Element<C21Order>> c21Orders;
+    private final OrderTypeAndDocument orderTypeAndDocument;
 
     public List<Element<C21Order>> getC21Orders() {
         return defaultIfNull(c21Orders, new ArrayList<>());

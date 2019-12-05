@@ -83,7 +83,9 @@ public class C21OrderController {
 
         Document c21Document = getDocument(authorization, userId, caseData);
 
-        caseDetails.getData().put("c21Order", service.addDocumentToC21(caseData.getC21Order(), c21Document));
+        //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
+        caseDetails.getData().put("orderTypeAndDocument",
+            service.updateTypeAndDocument(caseData.getOrderTypeAndDocument(), c21Document));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -98,10 +100,13 @@ public class C21OrderController {
 
         List<Element<C21Order>> c21Orders = caseData.getC21Orders();
 
-        c21Orders.add(service.addCustomValuesToC21Order(caseData.getC21Order(), caseData.getJudgeAndLegalAdvisor()));
+        //Builds an order with all necessary values and adds it to list of orders
+        c21Orders.add(service.addCustomValuesToC21Order(caseData.getC21Order(), caseData.getOrderTypeAndDocument(),
+            caseData.getJudgeAndLegalAdvisor()));
 
         caseDetails.getData().put("c21Orders", c21Orders);
         caseDetails.getData().remove("c21Order");
+        caseDetails.getData().remove("orderTypeAndDocument");
         caseDetails.getData().remove("judgeAndLegalAdvisor");
 
         return AboutToStartOrSubmitCallbackResponse.builder()

@@ -743,5 +743,13 @@
     "Label": " ",
     "FieldType": "TextArea",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderTypeAndDocument",
+    "Label": "Type of order",
+    "FieldType": "OrderTypeAndDocument",
+    "SecurityClassification": "Public"
   }
 ]

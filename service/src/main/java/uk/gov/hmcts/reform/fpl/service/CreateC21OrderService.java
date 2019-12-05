@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -24,24 +26,37 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static uk.gov.hmcts.reform.fpl.enums.FinalOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.FinalOrderType.CARE_ORDER;
 
 @Slf4j
 @Service
 public class CreateC21OrderService {
     private final DateFormatterService dateFormatterService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final Time time;
 
     public CreateC21OrderService(DateFormatterService dateFormatterService,
                                  HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
+                                 LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                                  Time time) {
         this.dateFormatterService = dateFormatterService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
+        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.time = time;
     }
 
-    public C21Order addDocumentToC21(C21Order c21Order, Document document) {
-        return c21Order.toBuilder()
+    public C21Order addTypeAndDocumentToOrder(C21Order c21Order, OrderTypeAndDocument typeAndDocument) {
+        C21Order c21 = defaultIfNull(c21Order, C21Order.builder().build());
+        return c21.toBuilder()
+            .type(typeAndDocument.getFinalOrderType())
+            .document(typeAndDocument.getDocument())
+            .build();
+    }
+
+    public OrderTypeAndDocument updateTypeAndDocument(OrderTypeAndDocument typeAndDocument, Document document) {
+        return typeAndDocument.toBuilder()
             .document(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
@@ -58,11 +73,27 @@ public class CreateC21OrderService {
      * @param judgeAndLegalAdvisor the judge and legal advisor for the order.
      * @return Element containing randomUUID and a fully populated C21Order.
      */
-    public Element<C21Order> addCustomValuesToC21Order(C21Order c21Order, JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+    public Element<C21Order> addCustomValuesToC21Order(C21Order c21Order,
+                                                       OrderTypeAndDocument typeAndDocument,
+                                                       JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        C21Order c21 = defaultIfNull(c21Order, C21Order.builder().build());
+        C21Order.C21OrderBuilder orderBuilder = C21Order.builder();
+
+        //Scalable for future types of orders which may have additional fields
+        switch (typeAndDocument.getFinalOrderType()) {
+            case BLANK_ORDER:
+                orderBuilder.orderTitle(defaultIfBlank(c21.getOrderTitle(), "Order"));
+                break;
+            case CARE_ORDER:
+                orderBuilder.orderTitle(null);
+                break;
+        }
+
         return Element.<C21Order>builder()
             .id(randomUUID())
-            .value(c21Order.toBuilder()
-                .orderTitle(defaultIfBlank(c21Order.getOrderTitle(), "Order"))
+            .value(orderBuilder
+                .type(typeAndDocument.getFinalOrderType())
+                .document(typeAndDocument.getDocument())
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
                     "h:mma, d MMMM yyyy"))
@@ -71,11 +102,30 @@ public class CreateC21OrderService {
     }
 
     public Map<String, Object> getC21OrderTemplateData(CaseData caseData) {
-        return ImmutableMap.<String, Object>builder()
+        ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
+
+        switch (caseData.getOrderTypeAndDocument().getFinalOrderType()) {
+            case BLANK_ORDER:
+                orderTemplateBuilder
+                    .put("orderType", BLANK_ORDER)
+                    .put("orderTitle", defaultIfNull(caseData.getC21Order().getOrderTitle(), "Order"))
+                    .put("childrenAct", "Section 31 Children Act 1989")
+                    .put("orderDetails", caseData.getC21Order().getOrderDetails());
+
+                break;
+            case CARE_ORDER:
+                orderTemplateBuilder
+                    .put("orderType", CARE_ORDER)
+                    .put("orderTitle", "Care Order")
+                    .put("childrenAct", "Children Act 1989")
+                    .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),
+                        caseData.getCaseLocalAuthority()));
+                break;
+        }
+
+        orderTemplateBuilder
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
-            .put("orderTitle", defaultIfNull(caseData.getC21Order().getOrderTitle(), "Order"))
-            .put("orderDetails", caseData.getC21Order().getOrderDetails())
             .put("todaysDate", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
             .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
                 caseData.getJudgeAndLegalAdvisor()))
@@ -83,10 +133,21 @@ public class CreateC21OrderService {
                 caseData.getJudgeAndLegalAdvisor()))
             .put("children", getChildrenDetails(caseData))
             .build();
+
+        return orderTemplateBuilder.build();
     }
 
-    private String getCourtName(String courtName) {
-        return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
+    private String getCourtName(String caseLocalAuthority) {
+        return hmctsCourtLookupConfiguration.getCourt(caseLocalAuthority).getName();
+    }
+
+    private String getLocalAuthorityName(String caseLocalAuthority) {
+        return localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
+    }
+
+    private String careOrderDetails(int numOfChildren, String caseLocalAuthority) {
+        return "It is ordered that the " + (numOfChildren == 1 ? "child is " :
+            "children are ") + "placed in the care of " + getLocalAuthorityName(caseLocalAuthority) + ".";
     }
 
     private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
