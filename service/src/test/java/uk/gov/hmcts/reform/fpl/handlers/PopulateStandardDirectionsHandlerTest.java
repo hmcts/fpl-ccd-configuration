@@ -101,7 +101,7 @@ class PopulateStandardDirectionsHandlerTest {
                 .token(TOKEN)
                 .build());
 
-        given(ordersLookupService.getDirectionOrder()).willReturn(OrderDefinition.builder()
+        given(ordersLookupService.getStandardDirectionOrder()).willReturn(OrderDefinition.builder()
             .directions(ImmutableList.of(
                 DirectionConfiguration.builder()
                     .assignee(LOCAL_AUTHORITY)
@@ -142,7 +142,7 @@ class PopulateStandardDirectionsHandlerTest {
                 .token(TOKEN)
                 .build());
 
-        given(ordersLookupService.getDirectionOrder()).willReturn(OrderDefinition.builder()
+        given(ordersLookupService.getStandardDirectionOrder()).willReturn(OrderDefinition.builder()
             .directions(ImmutableList.of(
                 DirectionConfiguration.builder()
                     .assignee(LOCAL_AUTHORITY)
@@ -183,7 +183,7 @@ class PopulateStandardDirectionsHandlerTest {
                 .token(TOKEN)
                 .build());
 
-        given(ordersLookupService.getDirectionOrder()).willReturn(OrderDefinition.builder()
+        given(ordersLookupService.getStandardDirectionOrder()).willReturn(OrderDefinition.builder()
             .directions(ImmutableList.of(
                 DirectionConfiguration.builder()
                     .assignee(LOCAL_AUTHORITY)

@@ -103,7 +103,7 @@ public class PopulateStandardDirectionsHandler {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        OrderDefinition standardDirectionOrder = ordersLookupService.getDirectionOrder();
+        OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
 
         List<Element<Direction>> directions = standardDirectionOrder.getDirections()
             .stream()

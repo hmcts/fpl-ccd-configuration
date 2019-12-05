@@ -65,7 +65,7 @@ class JsonOrdersLookUpServiceTest {
                     .build()))
             .build();
 
-        OrderDefinition orderDefinition = jsonOrdersLookupService.getDirectionOrder();
+        OrderDefinition orderDefinition = jsonOrdersLookupService.getStandardDirectionOrder();
 
         assertThat(orderDefinition).isEqualToComparingFieldByField(expectedOrderDefinition);
     }

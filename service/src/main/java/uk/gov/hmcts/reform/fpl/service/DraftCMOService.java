@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -72,7 +71,6 @@ public class DraftCMOService {
     private final DirectionHelperService directionHelperService;
     private final CaseDataExtractionService caseDataExtractionService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final OrdersLookupService ordersLookupService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
 
@@ -375,8 +373,6 @@ public class DraftCMOService {
     private Map<String, Object> getGroupedCMODirections(
         final CaseManagementOrder caseManagementOrder) throws IOException {
 
-        OrderDefinition caseManagementOrderDefinition = ordersLookupService.getDirectionOrder();
-
         if (caseManagementOrder == null || isEmpty(caseManagementOrder.getDirections())) {
             return ImmutableMap.of();
         }
@@ -398,14 +394,12 @@ public class DraftCMOService {
             .collect(groupingBy(directionElement -> directionElement.getValue().getOtherPartiesAssignee()));
 
         formattedDirections.put(PARENTS_AND_RESPONDENTS.getValue(),
-            getFormattedParentsAndRespondentsDirections(caseManagementOrderDefinition, groupedParentsAndRespondents));
+            getFormattedParentsAndRespondentsDirections(groupedParentsAndRespondents));
 
-        formattedDirections.put(OTHERS.getValue(), getFormattedOtherPartiesDirections(
-            caseManagementOrderDefinition, groupedOtherParties));
+        formattedDirections.put(OTHERS.getValue(), getFormattedOtherPartiesDirections(groupedOtherParties));
 
         groupedDirections.forEach((key, value) -> {
-            List<Map<String, String>> directionsList = buildFormattedDirectionList(
-                caseManagementOrderDefinition, value);
+            List<Map<String, String>> directionsList = buildFormattedDirectionList(value);
             formattedDirections.put(key.getValue(), directionsList);
         });
 
@@ -413,7 +407,6 @@ public class DraftCMOService {
     }
 
     private List<Map<String, Object>> getFormattedOtherPartiesDirections(
-        OrderDefinition caseManagementOrderDefinition,
         Map<OtherPartiesDirectionAssignee, List<Element<Direction>>> groupedOtherParties) {
 
         List<Map<String, Object>> directionsToRespondents = new ArrayList<>();
@@ -421,7 +414,7 @@ public class DraftCMOService {
             Map<String, Object> directionForRespondent = new HashMap<>();
             directionForRespondent.put("header", "For " + key.getLabel());
             List<Map<String, String>> directionsList = buildFormattedDirectionList(
-                caseManagementOrderDefinition, value);
+                value);
             directionForRespondent.put("directions", directionsList);
             directionsToRespondents.add(directionForRespondent);
         });
@@ -431,7 +424,6 @@ public class DraftCMOService {
 
 
     private List<Map<String, Object>> getFormattedParentsAndRespondentsDirections(
-        OrderDefinition caseManagementOrderDefinition,
         Map<ParentsAndRespondentsDirectionAssignee, List<Element<Direction>>> groupedParentsAndRespondents) {
 
         List<Map<String, Object>> directionsToRespondents = new ArrayList<>();
@@ -439,7 +431,7 @@ public class DraftCMOService {
             Map<String, Object> directionForRespondent = new HashMap<>();
             directionForRespondent.put("header", "For " + key.getLabel());
             List<Map<String, String>> directionsList = buildFormattedDirectionList(
-                caseManagementOrderDefinition, value);
+                value);
             directionForRespondent.put("directions", directionsList);
             directionsToRespondents.add(directionForRespondent);
         });
@@ -447,16 +439,23 @@ public class DraftCMOService {
         return directionsToRespondents;
     }
 
-    private List<Map<String, String>> buildFormattedDirectionList(OrderDefinition caseManagementOrderDefinition,
-                                                                  List<Element<Direction>> directions) {
+    private List<Map<String, String>> buildFormattedDirectionList(List<Element<Direction>> directions) {
         return directions.stream()
             .map(Element::getValue)
             .filter(direction -> !"No".equals(direction.getDirectionNeeded()))
             .map(direction -> ImmutableMap.of(
-                "title", caseDataExtractionService.formatTitle(
-                    direction, caseManagementOrderDefinition.getDirections()),
+                "title", formatTitle(direction),
                 "body", defaultIfNull(direction.getDirectionText(), EMPTY_PLACEHOLDER)))
             .collect(toList());
+    }
+
+    private String formatTitle(Direction direction) {
+        return String.format("%s by %s",
+            direction.getDirectionType(),
+            direction.getDateToBeCompletedBy() != null
+                ? dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                    direction.getDateToBeCompletedBy(), "h:mma, d MMMM yyyy")
+                : "unknown");
     }
 
     private HearingBooking getHearingBooking(final List<Element<HearingBooking>> hearingDetails,
