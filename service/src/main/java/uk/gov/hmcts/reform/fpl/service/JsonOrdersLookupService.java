@@ -18,7 +18,7 @@ public class JsonOrdersLookupService implements OrdersLookupService {
         this.objectMapper = objectMapper;
     }
 
-    public OrderDefinition getDirectionOrder() throws IOException {
+    public OrderDefinition getStandardDirectionOrder() throws IOException {
         String content = readString("ordersConfig.json");
 
         return this.objectMapper.readValue(content, OrderDefinition.class);

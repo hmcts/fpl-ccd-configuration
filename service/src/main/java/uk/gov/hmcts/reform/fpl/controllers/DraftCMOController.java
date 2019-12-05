@@ -81,7 +81,7 @@ public class DraftCMOController {
         final DocumentReference reference = DocumentReference.builder()
             .url(document.links.self.href)
             .binaryUrl(document.links.binary.href)
-            .filename("draft-case-management-order.pdf")
+            .filename(document.originalDocumentName)
             .build();
 
         data.put("reviewCaseManagementOrder", ImmutableMap.of("orderDoc", reference));

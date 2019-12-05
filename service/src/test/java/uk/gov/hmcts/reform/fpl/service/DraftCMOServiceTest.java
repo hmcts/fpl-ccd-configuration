@@ -14,12 +14,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
@@ -63,8 +62,6 @@ class DraftCMOServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
     private static final String COURT_NAME = "Test court";
-    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "FamilyPublicLaw+sa@gmail.com";
-    private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final LocalDateTime NOW = LocalDateTime.now();
 
     private final ObjectMapper mapper;
@@ -77,11 +74,6 @@ class DraftCMOServiceTest {
     private final DirectionHelperService directionHelperService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(
         String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL_ADDRESS));
-    private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration =
-        new LocalAuthorityEmailLookupConfiguration(String.format("%s=>%s",
-            LOCAL_AUTHORITY_CODE, LOCAL_AUTHORITY_EMAIL_ADDRESS));
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration =
-        new LocalAuthorityNameLookupConfiguration(String.format("%s=>%s", LOCAL_AUTHORITY_CODE, LOCAL_AUTHORITY_NAME));
 
     private CaseManagementOrder caseManagementOrder;
     private List<Element<HearingBooking>> hearingDetails;
@@ -112,9 +104,8 @@ class DraftCMOServiceTest {
             hearingVenueLookUpService, commonCaseDataExtractionService, docmosisDocumentGeneratorService);
 
         draftCMOService = new DraftCMOService(mapper, dateFormatterService, directionHelperService,
-            caseDataExtractionService, hmctsCourtLookupConfiguration, localAuthorityEmailLookupConfiguration,
-            localAuthorityNameLookupConfiguration, ordersLookupService, docmosisDocumentGeneratorService,
-            commonCaseDataExtractionService);
+            caseDataExtractionService, hmctsCourtLookupConfiguration,
+            docmosisDocumentGeneratorService, commonCaseDataExtractionService);
 
         hearingDetails = createHearingBookings(NOW);
     }
@@ -229,6 +220,7 @@ class DraftCMOServiceTest {
                 .build()))
             .schedule(Schedule.builder().build())
             .cmoStatus(SELF_REVIEW)
+            .orderDoc(DocumentReference.builder().build())
             .build();
 
         hearingDetails = createHearingBookings(NOW);
@@ -247,6 +239,7 @@ class DraftCMOServiceTest {
         assertThat(data.get("schedule")).isNull();
         assertThat(data.get("recitals")).isNull();
         assertThat(data.get("reviewCaseManagementOrder")).extracting("cmoStatus").isNull();
+        assertThat(data.get("reviewCaseManagementOrder")).extracting("orderDoc").isNull();
     }
 
     @Test
@@ -413,8 +406,9 @@ class DraftCMOServiceTest {
                 .formatLocalDateToString(NOW.toLocalDate().plusWeeks(26), FormatStyle.LONG));
             assertThat(templateData.get("children")).isEqualTo(getExpectedChildren());
             assertThat(templateData.get("numberOfChildren")).isEqualTo(getExpectedChildren().size());
-            assertThat(templateData.get("applicantName")).isEqualTo("");
+            assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
             assertThat(templateData.get("respondents")).isEqualTo(getExpectedRespondents());
+            assertThat(templateData.get("representatives")).isEqualTo(getExpectedRepresentatives());
             assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
             assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
@@ -437,9 +431,32 @@ class DraftCMOServiceTest {
             assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
         }
 
+        private List<Map<String, String>> getExpectedRepresentatives() {
+            return List.of(
+                Map.of(
+                    "respondentName", "Bran Stark",
+                    "representativeEmail", "bruce-wayne@notbatman.com",
+                    "representativeName", "Bruce Wayne",
+                    "representativePhoneNumber", "07700900304"
+                ),
+                Map.of(
+                    "respondentName", "Timothy Jones",
+                    "representativeName", "BLANK - please complete",
+                    "representativeEmail", "BLANK - please complete",
+                    "representativePhoneNumber", "BLANK - please complete"
+                ),
+                Map.of(
+                    "respondentName", "Sarah Simpson",
+                    "representativeName", "BLANK - please complete",
+                    "representativeEmail", "BLANK - please complete",
+                    "representativePhoneNumber", "BLANK - please complete"
+                )
+            );
+        }
+
         private List<Map<String, String>> getEmptyRepresentativeList() {
-            return ImmutableList.of(
-                ImmutableMap.of(
+            return List.of(
+                Map.of(
                     "respondentName", EMPTY_PLACEHOLDER,
                     "representativeName", EMPTY_PLACEHOLDER,
                     "representativeEmail", EMPTY_PLACEHOLDER,
