@@ -11,7 +11,6 @@ import java.time.format.FormatStyle;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.springframework.util.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 
 @Service
@@ -58,7 +57,7 @@ public class CommonCaseDataExtractionService {
 
     // NOTE: doesn't get anything to do with judge
     public Map<String, Object> getHearingBookingData(final HearingBooking hearingBooking) {
-        if (isEmpty(hearingBooking)) {
+        if (hearingBooking == null) {
             return ImmutableMap.of(
                 "hearingDate", EMPTY_PLACEHOLDER,
                 "hearingVenue", EMPTY_PLACEHOLDER,

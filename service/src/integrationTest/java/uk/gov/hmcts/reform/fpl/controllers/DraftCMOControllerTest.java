@@ -63,11 +63,9 @@ class DraftCMOControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
-
     private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
-
     @Autowired
     private DraftCMOService draftCMOService;
     @Autowired
@@ -79,7 +77,6 @@ class DraftCMOControllerTest {
     private DocmosisDocumentGeneratorService documentGeneratorService;
     @MockBean
     private UploadDocumentService uploadDocumentService;
-
 
     @Test
     void aboutToStartCallbackShouldPrepareCaseForCMO() throws Exception {
