@@ -318,7 +318,11 @@ class DraftCMOServiceTest {
 
     @Nested
     class PrepareCaseDetailsTest {
-        private final String[] key = {"reviewCaseManagementOrder"};
+        private final String[] keys = {
+            "cmoHearingDateList",
+            "recitals",
+            "schedule",
+            "reviewCaseManagementOrder"};
 
         private HashMap<String, Object> data; // Tries to use an ImmutableMap unless specified
 
@@ -332,11 +336,11 @@ class DraftCMOServiceTest {
             final CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
                 .cmoStatus(PARTIES_REVIEW).build();
 
-            Arrays.stream(key).forEach(key -> data.put(key, ""));
+            Arrays.stream(keys).forEach(key -> data.put(key, ""));
 
             draftCMOService.prepareCaseDetails(data, caseManagementOrder);
 
-            assertThat(data).doesNotContainKeys(key);
+            assertThat(data).doesNotContainKeys(keys);
             assertThat(data).containsKeys("sharedDraftCMO", "caseManagementOrder");
         }
 
@@ -348,7 +352,7 @@ class DraftCMOServiceTest {
             data.put("sharedDraftCMO", caseManagementOrder);
 
             draftCMOService.prepareCaseDetails(data, caseManagementOrder);
-            assertThat(data).doesNotContainKeys(add(key, "sharedDraftCMO"));
+            assertThat(data).doesNotContainKeys(add(keys, "sharedDraftCMO"));
             assertThat(data).containsKey("caseManagementOrder");
         }
     }
