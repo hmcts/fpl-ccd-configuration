@@ -473,12 +473,15 @@
           }
         }
       ],
+      "orderTypeAndDocument": {
+        "finalOrderType": "BLANK_ORDER"
+      },
       "judgeAndLegalAdvisor": {
         "judgeTitle": "HER_HONOUR_JUDGE",
         "judgeLastName": "Judy",
         "legalAdvisorName": "Peter Parker"
       },
-      "c21Order": {
+      "finalOrder": {
         "orderTitle": "Example Order",
         "orderDetails": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit"
       },

@@ -15,11 +15,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.model.C21Order;
+import uk.gov.hmcts.reform.fpl.model.FinalOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
-import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.FinalOrderEmailContentProvider;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,10 +39,10 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createJudgeA
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, C21OrderEmailContentProvider.class,
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class, FinalOrderEmailContentProvider.class,
     HearingBookingService.class, LocalAuthorityNameLookupConfiguration.class, DateFormatterService.class,
     CafcassLookupConfiguration.class})
-class C21OrderEmailContentProviderTest {
+class FinalOrderEmailContentProviderTest {
     private final LocalDate today = LocalDate.now();
     private final DateFormatterService dateFormatterService = new DateFormatterService();
     private final HearingBookingService hearingBookingService = new HearingBookingService();
@@ -60,7 +60,7 @@ class C21OrderEmailContentProviderTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private C21OrderEmailContentProvider c21OrderEmailContentProvider;
+    private FinalOrderEmailContentProvider finalOrderEmailContentProvider;
 
     private String familyManCaseNumber;
     private UUID documentId;
@@ -68,7 +68,7 @@ class C21OrderEmailContentProviderTest {
 
     @BeforeEach
     void setup() {
-        this.c21OrderEmailContentProvider = new C21OrderEmailContentProvider("",
+        this.finalOrderEmailContentProvider = new FinalOrderEmailContentProvider("",
             objectMapper, hearingBookingService, localAuthorityNameLookupConfiguration, dateFormatterService,
             cafcassLookupConfiguration);
 
@@ -84,29 +84,12 @@ class C21OrderEmailContentProviderTest {
     }
 
     @Test
-    void shouldReturnExactC21CafcassNotificationParametersWithUploadedDocumentUrl() {
-        final String documentUrl = "http://dm-store:8080/documents/" + documentId + "/binary";
-        CaseDetails caseDetails = createCaseDetailsWithSingleC21Element();
-
-        Map<String, Object> returnedCafcassParameters =
-            c21OrderEmailContentProvider.buildC21OrderNotificationParametersForCafcass(
-                caseDetails, LOCAL_AUTHORITY_CODE, documentUrl);
-
-        assertThat(returnedCafcassParameters)
-            .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
-                "linkToDocument", "reference", "caseUrl")
-            .containsExactly(subjectLine, "Example Cafcass",
-                (subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(today, FormatStyle.MEDIUM)),
-                documentUrl, "167888", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/167888");
-    }
-
-    @Test
     void shouldReturnExactC21LocalAuthorityNotificationParametersWithUploadedDocumentUrl() {
         final String documentUrl = "http://dm-store:8080/documents/" + documentId + "/binary";
         CaseDetails caseDetails = createCaseDetailsWithSingleC21Element();
 
         Map<String, Object> returnedLocalAuthorityParameters =
-            c21OrderEmailContentProvider.buildC21OrderNotificationParametersForLocalAuthority(
+            finalOrderEmailContentProvider.buildFinalOrderNotificationParametersForLocalAuthority(
                 caseDetails, LOCAL_AUTHORITY_CODE, documentUrl);
 
         assertThat(returnedLocalAuthorityParameters)
@@ -122,9 +105,9 @@ class C21OrderEmailContentProviderTest {
         return CaseDetails.builder()
             .id(167888L)
             .data(ImmutableMap.of("hearingDetails", createHearingBookings(now, now.plusDays(1)),
-                "c21Orders", ImmutableList.of(
-                    Element.<C21Order>builder()
-                        .value(C21Order.builder()
+                "finalOrders", ImmutableList.of(
+                    Element.<FinalOrder>builder()
+                        .value(FinalOrder.builder()
                             .orderTitle("Example Order")
                             .orderDetails(
                                 "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")

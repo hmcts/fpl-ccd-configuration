@@ -1,0 +1,15 @@
+{
+  "case_details": {
+    "case_data": {
+      "orderTypeAndDocument": {
+        "finalOrderType": "CARE_ORDER"
+      },
+      "judgeAndLegalAdvisor": {
+        "judgeTitle": "HER_HONOUR_JUDGE",
+        "judgeLastName": "Judy",
+        "legalAdvisorName": "Peter Parker"
+      },
+      "familyManCaseNumber": "12345L"
+    }
+  }
+}

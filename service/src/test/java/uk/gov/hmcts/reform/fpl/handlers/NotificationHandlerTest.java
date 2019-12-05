@@ -15,14 +15,14 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
+import uk.gov.hmcts.reform.fpl.events.FinalOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.FinalOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C21_ORDER_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FINAL_ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
@@ -104,7 +104,7 @@ class NotificationHandlerTest {
     private C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
 
     @Mock
-    private C21OrderEmailContentProvider c21OrderEmailContentProvider;
+    private FinalOrderEmailContentProvider finalOrderEmailContentProvider;
 
     @Mock
     private DateFormatterService dateFormatterService;
@@ -167,13 +167,9 @@ class NotificationHandlerTest {
             given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
                 .willReturn(c2Parameters);
 
-            given(c21OrderEmailContentProvider.buildC21OrderNotificationParametersForLocalAuthority(
+            given(finalOrderEmailContentProvider.buildFinalOrderNotificationParametersForLocalAuthority(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, mostRecentUploadedDocumentUrl))
                 .willReturn(c21LocalAuthorityParameters);
-
-            given(c21OrderEmailContentProvider.buildC21OrderNotificationParametersForCafcass(
-                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, mostRecentUploadedDocumentUrl))
-                .willReturn(c21CafcassParameters);
         }
 
         @Test
@@ -203,16 +199,16 @@ class NotificationHandlerTest {
         }
 
         @Test
-        void shouldNotifyPartiesOnC21OrderSubmission() throws IOException, NotificationClientException {
-            notificationHandler.sendNotificationForC21Order(new C21OrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
+        void shouldNotifyPartiesOnFinalOrderSubmission() throws IOException, NotificationClientException {
+            notificationHandler.sendNotificationForFinalOrder(new FinalOrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
                 mostRecentUploadedDocumentUrl));
 
             verify(notificationClient, times(1)).sendEmail(
-                eq(C21_ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(FINAL_ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 eq(c21LocalAuthorityParameters), eq("12345"));
 
             verify(notificationClient, times(1)).sendEmail(
-                eq(C21_ORDER_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
+                eq(FINAL_ORDER_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
                 eq(c21CafcassParameters), eq("12345"));
         }
     }

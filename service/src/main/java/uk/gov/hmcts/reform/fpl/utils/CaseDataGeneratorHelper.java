@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
-import uk.gov.hmcts.reform.fpl.model.C21Order;
+import uk.gov.hmcts.reform.fpl.model.FinalOrder;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -256,10 +256,10 @@ public class CaseDataGeneratorHelper {
             )).build();
     }
 
-    public static List<Element<C21Order>> createC21Orders() {
+    public static List<Element<FinalOrder>> createFinalOrders() {
         return ImmutableList.of(
-            Element.<C21Order>builder()
-                .value(C21Order.builder()
+            Element.<FinalOrder>builder()
+                .value(FinalOrder.builder()
                     .orderTitle("Example Order")
                     .orderDetails(
                         "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
@@ -269,9 +269,9 @@ public class CaseDataGeneratorHelper {
                         "Judy", null, HER_HONOUR_JUDGE))
                     .build())
                 .build(),
-            Element.<C21Order>builder()
+            Element.<FinalOrder>builder()
                 .id(UUID.randomUUID())
-                .value(C21Order.builder()
+                .value(FinalOrder.builder()
                     .orderTitle("Winter is here")
                     .orderDetails("Westeros")
                     .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
@@ -281,9 +281,9 @@ public class CaseDataGeneratorHelper {
                     .document(createDocumentReference(randomUUID().toString()))
                     .build())
                 .build(),
-            Element.<C21Order>builder()
+            Element.<FinalOrder>builder()
                 .id(UUID.randomUUID())
-                .value(C21Order.builder()
+                .value(FinalOrder.builder()
                     .orderTitle("Black Sails")
                     .orderDetails("Long John Silver")
                     .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(

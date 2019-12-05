@@ -1,16 +1,16 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C21Order",
+    "ID": "FinalOrder",
     "ListElementCode": "type",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "FinalOrderType",
-    "ElementLabel": "Which type of order are you making?",
+    "ElementLabel": "Type of order",
     "SecurityClassification": "Public"
   },
 {
     "LiveFrom": "01/01/2017",
-    "ID": "C21Order",
+    "ID": "FinalOrder",
     "ListElementCode": "orderTitle",
     "FieldType": "Text",
     "ElementLabel": "Order title",
@@ -19,7 +19,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C21Order",
+    "ID": "FinalOrder",
     "ListElementCode": "orderDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Order details",
@@ -29,7 +29,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C21Order",
+    "ID": "FinalOrder",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "Order document",
@@ -39,7 +39,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C21Order",
+    "ID": "FinalOrder",
     "ListElementCode": "orderDate",
     "FieldType": "Text",
     "ElementLabel": "Date and time of upload",
@@ -47,7 +47,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C21Order",
+    "ID": "FinalOrder",
     "ListElementCode": "judgeAndLegalAdvisor",
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and legal advisor",

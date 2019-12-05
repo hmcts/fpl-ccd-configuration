@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.FinalOrder;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -31,28 +31,20 @@ import static uk.gov.hmcts.reform.fpl.enums.FinalOrderType.CARE_ORDER;
 
 @Slf4j
 @Service
-public class CreateC21OrderService {
+public class FinalOrderService {
     private final DateFormatterService dateFormatterService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final Time time;
 
-    public CreateC21OrderService(DateFormatterService dateFormatterService,
-                                 HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                 LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
-                                 Time time) {
+    public FinalOrderService(DateFormatterService dateFormatterService,
+                             HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
+                             LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
+                             Time time) {
         this.dateFormatterService = dateFormatterService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.time = time;
-    }
-
-    public C21Order addTypeAndDocumentToOrder(C21Order c21Order, OrderTypeAndDocument typeAndDocument) {
-        C21Order c21 = defaultIfNull(c21Order, C21Order.builder().build());
-        return c21.toBuilder()
-            .type(typeAndDocument.getFinalOrderType())
-            .document(typeAndDocument.getDocument())
-            .build();
     }
 
     public OrderTypeAndDocument updateTypeAndDocument(OrderTypeAndDocument typeAndDocument, Document document) {
@@ -66,30 +58,34 @@ public class CreateC21OrderService {
     }
 
     /**
-     * Method to format title of order, add {@link JudgeAndLegalAdvisor} object and a formatted order date.
+     * Method to populate the final order based on type of order selected
+     * Currently adds/formats only the order title based on the type (may be more fields in future orders)
+     * Always adds order type, document, {@link JudgeAndLegalAdvisor} object and a formatted order date.
      *
-     * @param c21Order             this value will contain fixed details and document values as well as customisable
+     * @param finalOrder           this value will contain fixed details and document values as well as customisable
      *                             values.
+     * @param typeAndDocument      the type of the order and the order document.
      * @param judgeAndLegalAdvisor the judge and legal advisor for the order.
-     * @return Element containing randomUUID and a fully populated C21Order.
+     * @return Element containing randomUUID and a fully populated FinalOrder.
      */
-    public Element<C21Order> addCustomValuesToC21Order(C21Order c21Order,
-                                                       OrderTypeAndDocument typeAndDocument,
-                                                       JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        C21Order c21 = defaultIfNull(c21Order, C21Order.builder().build());
-        C21Order.C21OrderBuilder orderBuilder = C21Order.builder();
+    public Element<FinalOrder> addCustomValuesToFinalOrder(FinalOrder finalOrder,
+                                                           OrderTypeAndDocument typeAndDocument,
+                                                           JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        FinalOrder order = defaultIfNull(finalOrder, FinalOrder.builder().build());
+        FinalOrder.FinalOrderBuilder orderBuilder = FinalOrder.builder();
 
         //Scalable for future types of orders which may have additional fields
         switch (typeAndDocument.getFinalOrderType()) {
             case BLANK_ORDER:
-                orderBuilder.orderTitle(defaultIfBlank(c21.getOrderTitle(), "Order"));
+                orderBuilder.orderTitle(defaultIfBlank(order.getOrderTitle(), "Order"));
+                orderBuilder.orderDetails(order.getOrderDetails());
                 break;
             case CARE_ORDER:
                 orderBuilder.orderTitle(null);
                 break;
         }
 
-        return Element.<C21Order>builder()
+        return Element.<FinalOrder>builder()
             .id(randomUUID())
             .value(orderBuilder
                 .type(typeAndDocument.getFinalOrderType())
@@ -101,18 +97,18 @@ public class CreateC21OrderService {
             .build();
     }
 
-    public Map<String, Object> getC21OrderTemplateData(CaseData caseData) {
+    public Map<String, Object> getFinalOrderTemplateData(CaseData caseData) {
         ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
 
         switch (caseData.getOrderTypeAndDocument().getFinalOrderType()) {
             case BLANK_ORDER:
                 orderTemplateBuilder
                     .put("orderType", BLANK_ORDER)
-                    .put("orderTitle", defaultIfNull(caseData.getC21Order().getOrderTitle(), "Order"))
+                    .put("orderTitle", defaultIfNull(caseData.getFinalOrder().getOrderTitle(), "Order"))
                     .put("childrenAct", "Section 31 Children Act 1989")
-                    .put("orderDetails", caseData.getC21Order().getOrderDetails());
-
+                    .put("orderDetails", caseData.getFinalOrder().getOrderDetails());
                 break;
+
             case CARE_ORDER:
                 orderTemplateBuilder
                     .put("orderType", CARE_ORDER)
@@ -162,12 +158,16 @@ public class CreateC21OrderService {
             .collect(toList());
     }
 
-    public String mostRecentUploadedC21DocumentUrl(final List<Element<C21Order>> c21Orders) {
-        return getLast(c21Orders.stream()
+    public String mostRecentUploadedOrderDocumentUrl(final List<Element<FinalOrder>> finalOrders) {
+        return getLast(finalOrders.stream()
             .filter(Objects::nonNull)
             .map(Element::getValue)
             .filter(Objects::nonNull)
             .collect(toList()))
             .getDocument().getBinaryUrl();
+    }
+
+    public String generateDocumentFileName(OrderTypeAndDocument orderTypeAndDocument) {
+        return orderTypeAndDocument.getFinalOrderType().getType() + ".pdf";
     }
 }

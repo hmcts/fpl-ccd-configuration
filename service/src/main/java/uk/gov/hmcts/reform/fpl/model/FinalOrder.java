@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 @Data
 @Builder(toBuilder = true)
-public class C21Order {
+public class FinalOrder {
     private final FinalOrderType type;
     private final String orderTitle;
     private final String orderDetails;
