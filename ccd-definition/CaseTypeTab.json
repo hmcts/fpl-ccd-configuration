@@ -7,7 +7,9 @@
     "TabLabel": "History",
     "TabDisplayOrder": 1,
     "CaseFieldID": "caseHistory",
-    "TabFieldDisplayOrder": 1
+    "TabFieldDisplayOrder": 1,
+    "UserRole": "[SOLICITOR]",
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -30,7 +32,8 @@
     "TabDisplayOrder": 2,
     "CaseFieldID": "hearingDetails",
     "TabFieldDisplayOrder": 1,
-    "FieldShowCondition": "[STATE] != \"Submitted\""
+    "UserRole": "[SOLICITOR]",
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -41,7 +44,7 @@
     "TabDisplayOrder": 2,
     "CaseFieldID": "hearing",
     "TabFieldDisplayOrder": 2,
-    "FieldShowCondition": "[STATE] != \"Submitted\""
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -52,6 +55,7 @@
     "TabDisplayOrder": 3,
     "CaseFieldID": "standardDirectionOrder",
     "TabFieldDisplayOrder": 1,
+    "UserRole": "[SOLICITOR]",
     "TabShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\""
   },
   {
@@ -62,7 +66,9 @@
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
     "CaseFieldID": "caseManagementOrder",
-    "TabFieldDisplayOrder": 1
+    "TabFieldDisplayOrder": 1,
+    "UserRole": "[SOLICITOR]",
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -72,7 +78,8 @@
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
     "CaseFieldID": "schedule",
-    "TabFieldDisplayOrder": 2
+    "TabFieldDisplayOrder": 2,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -82,7 +89,8 @@
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
     "CaseFieldID": "recitals",
-    "TabFieldDisplayOrder": 3
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -93,6 +101,7 @@
     "TabDisplayOrder": 4,
     "CaseFieldID": "standardDirectionOrder",
     "TabFieldDisplayOrder": 1,
+    "UserRole": "[SOLICITOR]",
     "FieldShowCondition": "standardDirectionOrder.orderStatus=\"SEALED\""
   },
   {
@@ -103,7 +112,8 @@
     "TabLabel": "Orders",
     "TabDisplayOrder": 4,
     "CaseFieldID": "orders",
-    "TabFieldDisplayOrder": 2
+    "TabFieldDisplayOrder": 2,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -113,7 +123,8 @@
     "TabLabel": "Orders",
     "TabDisplayOrder": 4,
     "CaseFieldID": "c21Orders",
-    "TabFieldDisplayOrder": 3
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -123,7 +134,9 @@
     "TabLabel": "People in the case",
     "TabDisplayOrder": 5,
     "CaseFieldID": "children1",
-    "TabFieldDisplayOrder": 1
+    "TabFieldDisplayOrder": 1,
+    "UserRole": "[SOLICITOR]",
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -133,7 +146,8 @@
     "TabLabel": "People in the case",
     "TabDisplayOrder": 5,
     "CaseFieldID": "respondents1",
-    "TabFieldDisplayOrder": 2
+    "TabFieldDisplayOrder": 2,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -143,7 +157,8 @@
     "TabLabel": "People in the case",
     "TabDisplayOrder": 5,
     "CaseFieldID": "applicants",
-    "TabFieldDisplayOrder": 3
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -153,7 +168,8 @@
     "TabLabel": "People in the case",
     "TabDisplayOrder": 5,
     "CaseFieldID": "solicitor",
-    "TabFieldDisplayOrder": 4
+    "TabFieldDisplayOrder": 4,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -163,7 +179,8 @@
     "TabLabel": "People in the case",
     "TabDisplayOrder": 5,
     "CaseFieldID": "others",
-    "TabFieldDisplayOrder": 5
+    "TabFieldDisplayOrder": 5,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -173,7 +190,9 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 6,
     "CaseFieldID": "statementOfService",
-    "TabFieldDisplayOrder": 1
+    "TabFieldDisplayOrder": 1,
+    "UserRole": "[SOLICITOR]",
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -183,7 +202,8 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 6,
     "CaseFieldID": "caseIDReference",
-    "TabFieldDisplayOrder": 2
+    "TabFieldDisplayOrder": 2,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -193,7 +213,8 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 6,
     "CaseFieldID": "groundsForEPO",
-    "TabFieldDisplayOrder": 3
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -203,7 +224,8 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 6,
     "CaseFieldID": "grounds",
-    "TabFieldDisplayOrder": 4
+    "TabFieldDisplayOrder": 4,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -213,7 +235,8 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 6,
     "CaseFieldID": "risks",
-    "TabFieldDisplayOrder": 5
+    "TabFieldDisplayOrder": 5,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -223,7 +246,8 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 6,
     "CaseFieldID": "factorsParenting",
-    "TabFieldDisplayOrder": 6
+    "TabFieldDisplayOrder": 6,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -233,7 +257,8 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 6,
     "CaseFieldID": "internationalElement",
-    "TabFieldDisplayOrder": 7
+    "TabFieldDisplayOrder": 7,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -243,7 +268,8 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 6,
     "CaseFieldID": "proceeding",
-    "TabFieldDisplayOrder": 8
+    "TabFieldDisplayOrder": 8,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -253,7 +279,8 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 6,
     "CaseFieldID": "allocationDecision",
-    "TabFieldDisplayOrder": 9
+    "TabFieldDisplayOrder": 9,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -263,7 +290,8 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 6,
     "CaseFieldID": "allocationProposal",
-    "TabFieldDisplayOrder": 10
+    "TabFieldDisplayOrder": 10,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -273,7 +301,8 @@
     "TabLabel": "Legal basis",
     "TabDisplayOrder": 6,
     "CaseFieldID": "hearingPreferences",
-    "TabFieldDisplayOrder": 11
+    "TabFieldDisplayOrder": 11,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -283,7 +312,9 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "caseIDReference",
-    "TabFieldDisplayOrder": 1
+    "TabFieldDisplayOrder": 1,
+    "UserRole": "[SOLICITOR]",
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -293,7 +324,8 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "documents_socialWorkChronology_document",
-    "TabFieldDisplayOrder": 2
+    "TabFieldDisplayOrder": 2,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -303,7 +335,8 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "documents_socialWorkStatement_document",
-    "TabFieldDisplayOrder": 3
+    "TabFieldDisplayOrder": 3,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -313,7 +346,8 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "documents_socialWorkAssessment_document",
-    "TabFieldDisplayOrder": 4
+    "TabFieldDisplayOrder": 4,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -323,7 +357,8 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "documents_socialWorkCarePlan_document",
-    "TabFieldDisplayOrder": 5
+    "TabFieldDisplayOrder": 5,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -333,7 +368,8 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "standardDirectionsDocument",
-    "TabFieldDisplayOrder": 6
+    "TabFieldDisplayOrder": 6,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -343,7 +379,8 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "otherCourtAdminDocuments",
-    "TabFieldDisplayOrder": 7
+    "TabFieldDisplayOrder": 7,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -353,7 +390,8 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
-    "TabFieldDisplayOrder": 8
+    "TabFieldDisplayOrder": 8,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -363,7 +401,8 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "documents_threshold_document",
-    "TabFieldDisplayOrder": 9
+    "TabFieldDisplayOrder": 9,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -373,7 +412,8 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "documents_checklist_document",
-    "TabFieldDisplayOrder": 10
+    "TabFieldDisplayOrder": 10,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -383,7 +423,8 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "courtBundle",
-    "TabFieldDisplayOrder": 11
+    "TabFieldDisplayOrder": 11,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -393,7 +434,8 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "documents_socialWorkOther",
-    "TabFieldDisplayOrder": 12
+    "TabFieldDisplayOrder": 12,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -403,7 +445,8 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "submittedForm",
-    "TabFieldDisplayOrder": 13
+    "TabFieldDisplayOrder": 13,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -413,7 +456,8 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "noticeOfProceedingsBundle",
-    "TabFieldDisplayOrder": 14
+    "TabFieldDisplayOrder": 14,
+    "FieldShowCondition": "[STATE] != \"Open\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -423,6 +467,7 @@
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
     "CaseFieldID": "c2DocumentBundle",
-    "TabFieldDisplayOrder": 15
+    "TabFieldDisplayOrder": 15,
+    "FieldShowCondition": "[STATE] != \"Open\""
   }
 ]
