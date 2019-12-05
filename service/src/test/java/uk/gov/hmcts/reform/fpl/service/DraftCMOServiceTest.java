@@ -219,7 +219,7 @@ class DraftCMOServiceTest {
                 .value(Recital.builder().build())
                 .build()))
             .schedule(Schedule.builder().build())
-            .cmoStatus(SELF_REVIEW)
+            .status(SELF_REVIEW)
             .orderDoc(DocumentReference.builder().build())
             .build();
 
@@ -327,7 +327,7 @@ class DraftCMOServiceTest {
         @Test
         void shouldRemoveAllRelatedEntriesInCaseDetailsThatAreNotCMOObjectsWhenCMOStatusIsPartyReview() {
             final CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
-                .cmoStatus(PARTIES_REVIEW).build();
+                .status(PARTIES_REVIEW).build();
 
             Arrays.stream(keys).forEach(key -> data.put(key, ""));
 
@@ -340,7 +340,7 @@ class DraftCMOServiceTest {
         @Test
         void shouldRemoveAllRelatedEntriesInCaseDetailsApartFromCaseManagementOrderWhenCMOStatusIsSelfReview() {
             final CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
-                .cmoStatus(SELF_REVIEW).build();
+                .status(SELF_REVIEW).build();
 
             data.put("sharedDraftCMO", caseManagementOrder);
 

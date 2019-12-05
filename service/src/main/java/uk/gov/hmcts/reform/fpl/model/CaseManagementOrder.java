@@ -12,16 +12,17 @@ import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import java.util.List;
 import java.util.UUID;
 
+//TODO: extend Order class
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CaseManagementOrder {
+    private final DocumentReference orderDoc;
     private final String hearingDate;
     private final UUID id;
     private final List<Element<Direction>> directions;
     private final Schedule schedule;
     private final List<Element<Recital>> recitals;
-    private final CMOStatus cmoStatus;
-    private final DocumentReference orderDoc;
-    private final CaseManagementOrderAction caseManagementOrderAction;
+    private final CMOStatus status;
+    private final OrderAction action;
 }

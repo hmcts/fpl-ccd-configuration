@@ -475,7 +475,7 @@ public class CaseDataGeneratorHelper {
 
     public static CaseManagementOrder createDraftCaseManagementOrder() {
         return CaseManagementOrder.builder()
-            .cmoStatus(CMOStatus.SEND_TO_JUDGE)
+            .status(CMOStatus.SEND_TO_JUDGE)
             .schedule(createSchedule(true))
             .recitals(createRecitals())
             .directions(createCmoDirections())

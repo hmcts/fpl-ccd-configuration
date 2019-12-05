@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -10,21 +9,20 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
 import java.util.Map;
 
-@Slf4j
 @Service
-public class CaseManageOrderActionService {
+public class ActionCmoService {
     private final ObjectMapper objectMapper;
     private final DraftCMOService draftCMOService;
 
-    public CaseManageOrderActionService(ObjectMapper objectMapper, DraftCMOService draftCMOService) {
+    //TODO: this should all exist in one CaseManagementOrderService
+    public ActionCmoService(ObjectMapper objectMapper, DraftCMOService draftCMOService) {
         this.objectMapper = objectMapper;
         this.draftCMOService = draftCMOService;
     }
 
-    public CaseManagementOrder addDocumentToCaseManagementOrder(final CaseManagementOrder caseManagementOrder,
-                                                                final Document documentToAdd) {
-        return caseManagementOrder.toBuilder()
-            .orderDoc(buildCMODocumentReference(documentToAdd))
+    public CaseManagementOrder addDocument(CaseManagementOrder caseManagementOrder, Document document) {
+        return CaseManagementOrder.builder()
+            .orderDoc(buildDocumentReference(document))
             .build();
     }
 
@@ -34,11 +32,10 @@ public class CaseManageOrderActionService {
         caseDataMap.putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
 
-        return objectMapper.convertValue(
-            caseDataMap.get("caseManagementOrder"), CaseManagementOrder.class);
+        return objectMapper.convertValue(caseDataMap.get("caseManagementOrder"), CaseManagementOrder.class);
     }
 
-    private DocumentReference buildCMODocumentReference(final Document updatedDocument) {
+    private DocumentReference buildDocumentReference(final Document updatedDocument) {
         return DocumentReference.builder()
             .url(updatedDocument.links.self.href)
             .binaryUrl(updatedDocument.links.binary.href)

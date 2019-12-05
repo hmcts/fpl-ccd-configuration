@@ -232,9 +232,9 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "caseManagementOrderAction",
+    "CaseFieldID": "orderAction",
     "DisplayContext": "COMPLEX",
-    "PageID": "caseManagementOrderActionDocumentReview",
+    "PageID": "OrderActionDocumentReview",
     "PageLabel": " ",
     "PageDisplayOrder": 9,
     "PageColumnNumber": 1

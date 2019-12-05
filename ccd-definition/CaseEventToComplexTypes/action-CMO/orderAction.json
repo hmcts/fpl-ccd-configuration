@@ -1,9 +1,9 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CaseManagementOrderAction",
+    "ID": "OrderAction",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "caseManagementOrderAction",
+    "CaseFieldID": "orderAction",
     "ListElementCode": "orderDoc",
     "EventElementLabel": "Check the order",
     "FieldDisplayOrder": 1,
@@ -11,28 +11,28 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CaseManagementOrderAction",
+    "ID": "OrderAction",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "caseManagementOrderAction",
-    "ListElementCode": "cmoActionType",
+    "CaseFieldID": "orderAction",
+    "ListElementCode": "type",
     "EventElementLabel": "Is this ready to be sent to parties?",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CaseManagementOrderAction",
+    "ID": "OrderAction",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "caseManagementOrderAction",
-    "ListElementCode": "cmoNextHearingType",
+    "CaseFieldID": "orderAction",
+    "ListElementCode": "nextHearingType",
     "FieldDisplayOrder": 3,
     "DisplayContext": "MANDATORY"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CaseManagementOrderAction",
+    "ID": "OrderAction",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "caseManagementOrderAction",
+    "CaseFieldID": "orderAction",
     "ListElementCode": "changeRequestedByJudge",
     "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"

@@ -173,7 +173,7 @@ class DraftCMOControllerTest {
         assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
         assertThat(caseManagementOrder).extracting("id", "hearingDate")
             .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), TODAYS_DATE.plusDays(5).toString());
-        assertThat(caseManagementOrder.getCmoStatus()).isEqualTo(SELF_REVIEW);
+        assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
     }
 
     private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {

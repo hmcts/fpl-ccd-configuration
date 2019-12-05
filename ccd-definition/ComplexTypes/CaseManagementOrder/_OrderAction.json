@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CaseManagementOrderAction",
+    "ID": "OrderAction",
     "ListElementCode": "orderDoc",
     "FieldType": "Document",
     "ElementLabel": "File",
@@ -9,8 +9,8 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CaseManagementOrderAction",
-    "ListElementCode": "cmoActionType",
+    "ID": "OrderAction",
+    "ListElementCode": "type",
     "FieldType": "FixedRadioList",
     "ElementLabel": "Is this ready to be sent to parties?",
     "FieldTypeParameter": "CMOActionType",
@@ -18,21 +18,21 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CaseManagementOrderAction",
-    "ListElementCode": "cmoNextHearingType",
+    "ID": "OrderAction",
+    "ListElementCode": "nextHearingType",
     "FieldType": "FixedRadioList",
     "ElementLabel": "What is the next hearing?",
-    "FieldShowCondition": "cmoActionType=\"SEND_TO_ALL_PARTIES\"",
+    "FieldShowCondition": "type=\"SEND_TO_ALL_PARTIES\"",
     "FieldTypeParameter": "CMONextHearingType",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CaseManagementOrderAction",
+    "ID": "OrderAction",
     "ListElementCode": "changeRequestedByJudge",
     "FieldType": "TextArea",
     "ElementLabel": "What do they need to change?",
-    "FieldShowCondition": "cmoActionType=\"JUDGE_REQUESTED_CHANGE\"",
+    "FieldShowCondition": "type=\"JUDGE_REQUESTED_CHANGE\"",
     "SecurityClassification": "Public"
   }
 ]

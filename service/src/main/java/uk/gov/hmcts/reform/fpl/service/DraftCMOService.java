@@ -8,17 +8,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.enums.CMOActionType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.Type;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.CaseManagementOrderAction;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
+import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -87,7 +87,7 @@ public class DraftCMOService {
         HashMap<String, Object> data = new HashMap<>();
         HashMap<String, Object> reviewCaseManagementOrder = new HashMap<>();
 
-        reviewCaseManagementOrder.put("cmoStatus", caseManagementOrder.getCmoStatus());
+        reviewCaseManagementOrder.put("cmoStatus", caseManagementOrder.getStatus());
         reviewCaseManagementOrder.put("orderDoc", caseManagementOrder.getOrderDoc());
 
         data.put("cmoHearingDateList", getHearingDateDynamicList(hearingDetails, caseManagementOrder));
@@ -110,7 +110,8 @@ public class DraftCMOService {
         }
 
         Map<String, Object> reviewCaseManagementOrder = mapper.convertValue(
-            caseData.get("reviewCaseManagementOrder"), new TypeReference<>() {});
+            caseData.get("reviewCaseManagementOrder"), new TypeReference<>() {
+            });
         CMOStatus cmoStatus = null;
         DocumentReference orderDoc = null;
 
@@ -120,7 +121,8 @@ public class DraftCMOService {
         }
 
         Schedule schedule = mapper.convertValue(caseData.get("schedule"), Schedule.class);
-        List<Element<Recital>> recitals = mapper.convertValue(caseData.get("recitals"), new TypeReference<>() {});
+        List<Element<Recital>> recitals = mapper.convertValue(caseData.get("recitals"), new TypeReference<>() {
+        });
 
         return CaseManagementOrder.builder()
             .hearingDate(hearingDate)
@@ -128,7 +130,7 @@ public class DraftCMOService {
             .directions(combineAllDirectionsForCmo(mapper.convertValue(caseData, CaseData.class)))
             .schedule(schedule)
             .recitals(recitals)
-            .cmoStatus(cmoStatus)
+            .status(cmoStatus)
             .orderDoc(orderDoc)
             .build();
     }
@@ -144,7 +146,7 @@ public class DraftCMOService {
 
         caseData.put("caseManagementOrder", caseManagementOrder);
 
-        switch (caseManagementOrder.getCmoStatus()) {
+        switch (caseManagementOrder.getStatus()) {
             case SEND_TO_JUDGE:
                 // Does the same as PARTIES_REVIEW for now but in the future this will change
             case PARTIES_REVIEW:
@@ -234,7 +236,7 @@ public class DraftCMOService {
         DynamicList hearingDateList = mapper.convertValue(caseDataMap.get("cmoHearingDateList"), DynamicList.class);
         CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
         String localAuthorityCode = caseData.getCaseLocalAuthority();
-        CaseManagementOrder caseManagementOrder = defaultIfNull(prepareCMO(caseDataMap),
+            CaseManagementOrder caseManagementOrder = defaultIfNull(prepareCMO(caseDataMap),
             CaseManagementOrder.builder().build());
 
         cmoTemplateData.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_PLACEHOLDER));
@@ -273,9 +275,9 @@ public class DraftCMOService {
 
         cmoTemplateData.putAll(getGroupedCMODirections(caseManagementOrder));
 
-        CaseManagementOrderAction caseManagementOrderAction = caseManagementOrder.getCaseManagementOrderAction();
-        if (caseManagementOrderAction == null || !CMOActionType.SEND_TO_ALL_PARTIES.equals(
-            caseManagementOrderAction.getCmoActionType())) {
+        OrderAction action = caseManagementOrder.getAction();
+        if (action == null || !Type.SEND_TO_ALL_PARTIES.equals(
+            action.getType())) {
             cmoTemplateData.put("draftbackground", String.format("image:base64:%1$s",
                 docmosisDocumentGeneratorService.generateDraftWatermarkEncodedString()));
         }
@@ -319,7 +321,8 @@ public class DraftCMOService {
 
     private Map<String, Object> getSchedule(CaseManagementOrder caseManagementOrder) {
         final Schedule schedule = caseManagementOrder.getSchedule();
-        Map<String, Object> scheduleMap = mapper.convertValue(schedule, new TypeReference<>() {});
+        Map<String, Object> scheduleMap = mapper.convertValue(schedule, new TypeReference<>() {
+        });
         Map<String, Object> result;
 
         if ((schedule == null) || schedule.getIncludeSchedule().equals("No")) {
