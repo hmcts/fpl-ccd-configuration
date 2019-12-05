@@ -49,12 +49,13 @@ public class ActionCMOController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> caseData = caseDetails.getData();
+        Map<String, Object> caseDataMap = caseDetails.getData();
 
         draftCMOService.prepareCustomDirections(caseDetails.getData());
 
-        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData);
-        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_KEY, caseManagementOrder);
+        CaseManagementOrder caseManagementOrderToBeActioned =
+            caseManageOrderActionService.getCaseManagementOrderForAction(caseDataMap);
+        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_KEY, caseManagementOrderToBeActioned);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -67,11 +68,12 @@ public class ActionCMOController {
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> caseData = caseDetails.getData();
+        Map<String, Object> caseDataMap = caseDetails.getData();
 
-        CaseManagementOrder caseManagementOrderToBeActioned = draftCMOService.prepareCMO(caseData);
+        CaseManagementOrder caseManagementOrderToBeActioned =
+            caseManageOrderActionService.getCaseManagementOrderForAction(caseDataMap);
 
-        Document updatedDraftCMODocument = getDocument(authorization, userId, caseData, false);
+        Document updatedDraftCMODocument = getDocument(authorization, userId, caseDataMap, false);
         CaseManagementOrder updatedDraftCaseManagementOrderWithDocument =
             caseManageOrderActionService.addDocumentToCaseManagementOrder(caseManagementOrderToBeActioned,
                 updatedDraftCMODocument);
@@ -91,7 +93,8 @@ public class ActionCMOController {
         @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        CaseManagementOrder updatedDraftCaseManagementOrder = draftCMOService.prepareCMO(caseDetails.getData());
+        CaseManagementOrder updatedDraftCaseManagementOrder =
+            caseManageOrderActionService.getCaseManagementOrderForAction(caseDetails.getData());
 
         boolean judgeApprovedDraftCMO = hasJudgeApprovedDraftCMO(updatedDraftCaseManagementOrder);
         Document actionedCaseManageOrderDocument = getDocument(authorization, userId, caseDetails.getData(),
