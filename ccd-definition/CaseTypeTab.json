@@ -66,17 +66,6 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "Channel": "CaseWorker",
-    "TabID": "DraftOrdersTab",
-    "TabLabel": "Draft orders",
-    "TabDisplayOrder": 3,
-    "CaseFieldID": "caseManagementOrderAction",
-    "TabFieldDisplayOrder": 2,
-    "FieldShowCondition": "caseManagementOrderAction.cmoActionType!=\"SEND_TO_ALL_PARTIES\""
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
     "TabDisplayOrder": 4,
@@ -103,6 +92,17 @@
     "TabDisplayOrder": 4,
     "CaseFieldID": "c21Orders",
     "TabFieldDisplayOrder": 3
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "OrdersTab",
+    "TabLabel": "Orders",
+    "TabDisplayOrder": 4,
+    "CaseFieldID": "caseManagementOrderAction",
+    "TabFieldDisplayOrder": 4,
+    "FieldShowCondition": "caseManagementOrderAction.cmoActionType!=\"SEND_TO_ALL_PARTIES\""
   },
   {
     "LiveFrom": "01/01/2017",
