@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
@@ -26,7 +25,6 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
@@ -60,8 +58,6 @@ public class DraftCMOController {
         draftCMOService.prepareCustomDirections(caseDetails.getData());
 
         setCustomDirectionDropdownLabels(caseDetails);
-
-        setNextHearingDateLabel(caseDetails);
 
         Map<String, Object> data = caseDetails.getData();
         final CaseData caseData = mapper.convertValue(data, CaseData.class);
@@ -125,25 +121,6 @@ public class DraftCMOController {
             draftCMOService.createRespondentAssigneeDropdownKey(caseData.getRespondents1()));
     }
 
-    private void setNextHearingDateLabel(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        String nextHearingLabel = "";
-
-        if (caseData.getCaseManagementOrder() != null
-            && caseData.getCaseManagementOrder().getCaseManagementOrderAction() != null) {
-            UUID nextHearingId = caseData.getCaseManagementOrder().getCaseManagementOrderAction().getId();
-
-            HearingBooking hearingBooking =
-                hearingBookingService.getHearingBookingByUUID(caseData.getHearingDetails(), nextHearingId);
-
-            nextHearingLabel = draftCMOService.formatHearingBookingLabel(hearingBooking);
-        }
-
-        caseDetails.getData().put("nextHearingDateLabelCMO", nextHearingLabel);
-    }
-
-
     private Document getDocument(String authorization, String userId, Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.CMO);
 
@@ -155,5 +132,4 @@ public class DraftCMOController {
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), docTitle);
     }
-
 }

@@ -434,13 +434,6 @@ class DraftCMOServiceTest {
             assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
         }
 
-        @Test
-        void shouldFormatNextHearingBookingLabelWhenProvidedHearingBooking() {
-            LocalDateTime date = LocalDateTime.of(2018, 2, 12, 9, 30);
-            String label = draftCMOService.formatHearingBookingLabel(createHearingBooking(date, date));
-            assertThat(label).isEqualTo(label).isEqualTo("The next hearing date is on 12 February at 9:30am");
-        }
-
         private List<Map<String, String>> getEmptyRepresentativeList() {
             return ImmutableList.of(
                 ImmutableMap.of(

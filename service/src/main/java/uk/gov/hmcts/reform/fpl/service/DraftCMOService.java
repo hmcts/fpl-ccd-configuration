@@ -36,7 +36,6 @@ import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -294,15 +293,6 @@ public class DraftCMOService {
         cmoTemplateData.put("caseManagementNumber", 1);
 
         return cmoTemplateData.build();
-    }
-
-    public String formatHearingBookingLabel(HearingBooking hearingBooking) {
-        LocalDateTime startDate = hearingBooking.getStartDate();
-
-        String date = dateFormatterService.formatLocalDateTimeBaseUsingFormat(startDate, "d MMMM");
-        String time = dateFormatterService.formatLocalDateTimeBaseUsingFormat(startDate, "h:mma");
-
-        return String.format("The next hearing date is on %s at %s", date, time);
     }
 
     private List<Map<String, Object>> getRepresentatives(List<Element<Respondent>> respondents1,

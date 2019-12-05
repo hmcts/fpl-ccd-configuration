@@ -1,4 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,15 +13,20 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.CMOActionType;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrderAction;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.service.CaseManageOrderActionService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import java.io.IOException;
 import java.util.Map;
+import java.util.UUID;
+
 @Api
 @RestController
 @RequestMapping("/callback/action-cmo")
@@ -31,15 +37,23 @@ public class ActionCMOController {
     private final CaseManageOrderActionService caseManageOrderActionService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
+    private final HearingBookingService hearingBookingService;
+    private final ObjectMapper mapper;
+
     public ActionCMOController(DraftCMOService draftCMOService,
                                CaseManageOrderActionService caseManageOrderActionService,
                                DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
+                               ObjectMapper mapper,
+                               HearingBookingService hearingBookingService,
                                UploadDocumentService uploadDocumentService) {
         this.draftCMOService = draftCMOService;
         this.caseManageOrderActionService = caseManageOrderActionService;
         this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
+        this.mapper = mapper;
+        this.hearingBookingService = hearingBookingService;
     }
+
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
@@ -86,6 +100,9 @@ public class ActionCMOController {
             updatedCaseManagementOrderWithDocument.getCaseManagementOrderAction();
         prepareCaseDetailsForSubmission(caseDetails, caseManagementOrderAction, updatedCaseManagementOrderWithDocument,
             judgeApprovedDraftCMO);
+
+        setNextHearingDateLabel(caseDetails);
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
@@ -114,5 +131,23 @@ public class ActionCMOController {
     private boolean hasJudgeApprovedDraftCMO(final CaseManagementOrder caseManagementOrder) {
         return CMOActionType.SEND_TO_ALL_PARTIES.equals(
             caseManagementOrder.getCaseManagementOrderAction().getCmoActionType());
+    }
+
+    private void setNextHearingDateLabel(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        String nextHearingLabel = "";
+
+        if (caseData.getCaseManagementOrder() != null
+            && caseData.getCaseManagementOrder().getCaseManagementOrderAction() != null) {
+            UUID nextHearingId = caseData.getCaseManagementOrder().getCaseManagementOrderAction().getId();
+
+            HearingBooking hearingBooking =
+                hearingBookingService.getHearingBookingByUUID(caseData.getHearingDetails(), nextHearingId);
+
+            nextHearingLabel = caseManageOrderActionService.formatHearingBookingLabel(hearingBooking);
+        }
+
+        caseDetails.getData().put("nextHearingDateLabelCMO", nextHearingLabel);
     }
 }

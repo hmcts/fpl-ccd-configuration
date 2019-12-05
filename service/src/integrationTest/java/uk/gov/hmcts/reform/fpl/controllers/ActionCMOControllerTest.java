@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
@@ -15,13 +16,27 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrderAction;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.CaseManageOrderActionService;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDraftCaseManagementOrder;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCMOController.class)
@@ -29,6 +44,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDraftC
 public class ActionCMOControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
+    private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
+    private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
 
     @Autowired
     private DraftCMOService draftCMOService;
@@ -41,6 +58,9 @@ public class ActionCMOControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private DateFormatterService dateFormatterService;
 
     @Test
     void aboutToStartShouldReturnDraftCaseManagementOrderForAction() throws Exception {
@@ -59,6 +79,46 @@ public class ActionCMOControllerTest {
 
         assertThat(convertedCasData).isNotNull();
         // TODO: 04/12/2019 add more assert and include tests for other endpoints
+    }
+
+    @Test
+    void aboutToStartShouldAppendHearingStartDateWhenCmoHasBeenActioned() throws Exception {
+        Map<String, Object> data = ImmutableMap.of(
+            "hearingDetails", hearingDetails,
+            "respondents1", createRespondents(),
+            "others", createOthers(),
+            "caseManagementOrder", buildActionedCmo(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31")));
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
+
+        String date = dateFormatterService.formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "d MMMM");
+        String time = dateFormatterService.formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "h:mma");
+        String expectedLabel = String.format("The next hearing date is on %s at %s", date, time);
+
+        AssertionsForClassTypes.assertThat(callbackResponse.getData().get("nextHearingDateLabelCMO")).isEqualTo(expectedLabel);
+    }
+
+    private CaseManagementOrder buildActionedCmo(UUID hearingId) {
+        return CaseManagementOrder.builder()
+            .directions(createCmoDirections())
+            .caseManagementOrderAction(CaseManagementOrderAction.builder()
+                .id(hearingId)
+                .build())
+            .build();
+    }
+
+    private AboutToStartOrSubmitCallbackResponse getResponse(
+        final Map<String, Object> data, final String endpoint) throws Exception {
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(data)
+                .build())
+            .build();
+
+        MvcResult response = makeRequest(request, endpoint);
+
+        return objectMapper.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 
     private MvcResult makeRequest(final CallbackRequest request, final String endpoint) throws Exception {
