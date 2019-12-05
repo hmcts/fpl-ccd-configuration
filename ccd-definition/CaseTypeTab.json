@@ -18,6 +18,7 @@
     "TabDisplayOrder": 2,
     "CaseFieldID": "[STATE]",
     "TabFieldDisplayOrder": 1,
+    "UserRole": "[SOLICITOR]",
     "TabShowCondition": "hearingDetails = \"DO_NOT_SHOW\""
   },
   {
