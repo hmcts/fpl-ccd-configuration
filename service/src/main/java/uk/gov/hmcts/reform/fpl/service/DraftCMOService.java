@@ -172,7 +172,7 @@ public class DraftCMOService {
         return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);
     }
 
-    private DynamicList getHearingDateDynamicList(List<Element<HearingBooking>> hearingDetails,
+    public DynamicList getHearingDateDynamicList(List<Element<HearingBooking>> hearingDetails,
                                                   CaseManagementOrder caseManagementOrder) {
         DynamicList hearingDatesDynamic = buildDynamicListFromHearingDetails(hearingDetails);
 

@@ -61,10 +61,14 @@ public class ActionCMOController {
         draftCMOService.prepareCustomDirections(caseDetails.getData());
         CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData);
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_KEY, caseManagementOrder);
+
+        populateHearingDynamicList(caseData);
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
     }
+
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
         @RequestHeader(value = "authorization") String authorization,
@@ -149,5 +153,12 @@ public class ActionCMOController {
         }
 
         caseDetails.getData().put("nextHearingDateLabelCMO", nextHearingLabel);
+    }
+
+    private void populateHearingDynamicList(Map<String, Object> caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails, CaseData.class);
+
+        caseDetails.put("actionCmoHearingDateList",
+            draftCMOService.getHearingDateDynamicList(caseData.getHearingDetails(), null));
     }
 }

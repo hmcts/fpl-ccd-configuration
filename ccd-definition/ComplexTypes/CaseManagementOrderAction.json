@@ -40,7 +40,7 @@
     "ID": "CaseManagementOrderAction",
     "ListElementCode": "nextHearingDate",
     "FieldType": "Text",
-    "ElementLabel": "Which hearing is this order for?",
+    "ElementLabel": "Which hearing is next?",
     "SecurityClassification": "Public"
   },
   {
