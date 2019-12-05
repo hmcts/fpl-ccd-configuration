@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
@@ -23,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -73,8 +72,6 @@ public class DraftCMOService {
     private final DirectionHelperService directionHelperService;
     private final CaseDataExtractionService caseDataExtractionService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
-    private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final OrdersLookupService ordersLookupService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
@@ -253,14 +250,16 @@ public class DraftCMOService {
 
         cmoTemplateData.put("courtName", getCourtName(localAuthorityCode));
 
-        cmoTemplateData.put("applicantName", caseDataExtractionService.getFirstApplicantName(caseData));
+        final String applicantName = caseDataExtractionService.getFirstApplicantName(caseData);
+        cmoTemplateData.put("applicantName", applicantName);
 
         List<Map<String, String>> respondentsNameAndRelationship = caseDataExtractionService
             .getRespondentsNameAndRelationship(caseData);
 
         cmoTemplateData.put("respondents", respondentsNameAndRelationship);
 
-        cmoTemplateData.put("representatives", getRepresentatives(caseData.getRespondents1(), localAuthorityCode));
+        cmoTemplateData.put("representatives",
+            getRepresentatives(caseData.getRespondents1(), applicantName, caseData.getSolicitor()));
 
         // Populate with the next hearing booking, currently not captured
         cmoTemplateData.putAll(commonCaseDataExtractionService.getHearingBookingData(null));
@@ -290,10 +289,11 @@ public class DraftCMOService {
     }
 
     private List<Map<String, Object>> getRepresentatives(List<Element<Respondent>> respondents1,
-                                                         String localAuthorityCode) {
+                                                         String applicantName,
+                                                         Solicitor solicitor) {
         List<Map<String, Object>> representatives = new ArrayList<>();
 
-        representatives.add(getLocalAuthorityDetails(localAuthorityCode));
+        representatives.add(getApplicantDetails(applicantName, solicitor));
 
         if (!isEmpty(respondents1)) {
             respondents1.stream()
@@ -328,7 +328,6 @@ public class DraftCMOService {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     private Map<String, Object> getEmptyScheduleMap() {
         final String[] scheduleKeys = {
             "includeSchedule", "allocation", "application", "todaysHearing", "childrensCurrentArrangement",
@@ -343,26 +342,26 @@ public class DraftCMOService {
         return scheduleMap;
     }
 
-    private Map<String, Object> getLocalAuthorityDetails(String localAuthorityCode) {
-        if (isBlank(localAuthorityCode)) {
-            return ImmutableMap.of(
-                "respondentName", EMPTY_PLACEHOLDER,
+    private Map<String, Object> getApplicantDetails(String applicantName,
+                                                    Solicitor solicitor) {
+        Map<String, Object> applicantDetails = new HashMap<>();
+
+        applicantDetails.put("respondentName", defaultIfBlank(applicantName, EMPTY_PLACEHOLDER));
+
+        if (solicitor == null) {
+            applicantDetails.putAll(ImmutableMap.of(
                 "representativeName", EMPTY_PLACEHOLDER,
                 "representativeEmail", EMPTY_PLACEHOLDER,
                 "representativePhoneNumber", EMPTY_PLACEHOLDER
-            );
+            ));
+        } else {
+            String phoneNumber = defaultIfBlank(solicitor.getTelephone(), solicitor.getMobile());
+            applicantDetails.put("representativeName", defaultIfBlank(solicitor.getName(), EMPTY_PLACEHOLDER));
+            applicantDetails.put("representativeEmail", defaultIfBlank(solicitor.getEmail(), EMPTY_PLACEHOLDER));
+            applicantDetails.put("representativePhoneNumber", defaultIfBlank(phoneNumber, EMPTY_PLACEHOLDER));
         }
 
-        return ImmutableMap.of(
-            "respondentName", defaultIfBlank(
-                localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode),
-                EMPTY_PLACEHOLDER),
-            "representativeName", EMPTY_PLACEHOLDER,
-            "representativeEmail", localAuthorityEmailLookupConfiguration.getLocalAuthority(localAuthorityCode)
-                    .map(LocalAuthorityEmailLookupConfiguration.LocalAuthority::getEmail)
-                    .orElse(EMPTY_PLACEHOLDER),
-            // defaulting to EMPTY_PLACEHOLDER for now as we currently do not capture
-            "representativePhoneNumber", EMPTY_PLACEHOLDER);
+        return applicantDetails;
 
     }
 

@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -446,6 +447,8 @@ public class CaseDataGeneratorHelper {
         return ImmutableMap.<String, Object>builder()
             .put("caseLocalAuthority", "example")
             .put("familyManCaseNumber", "123")
+            .put("applicants", createPopulatedApplicants())
+            .put("solicitor", createSolicitor())
             .put("children1", createPopulatedChildren())
             .put("hearingDetails", createHearingBookings(localDateTime))
             .put("dateSubmitted", LocalDate.now())
@@ -465,6 +468,14 @@ public class CaseDataGeneratorHelper {
             .put("cafcassDirectionsCustom", getDirectionByAssignee(cmoDirections, CAFCASS))
             .put("otherPartiesDirectionsCustom", getDirectionByAssignee(cmoDirections, OTHERS))
             .put("respondentDirectionsCustom", getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
+            .build();
+    }
+
+    private static Solicitor createSolicitor() {
+        return Solicitor.builder()
+            .name("Bruce Wayne")
+            .email("bruce-wayne@notbatman.com")
+            .mobile("07700900304")
             .build();
     }
 
