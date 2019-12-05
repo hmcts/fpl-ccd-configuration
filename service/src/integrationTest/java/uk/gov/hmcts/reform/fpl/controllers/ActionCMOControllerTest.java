@@ -75,7 +75,7 @@ public class ActionCMOControllerTest {
     @Test
     void aboutToStartShouldReturnDraftCaseManagementOrderForAction() throws Exception {
         CaseManagementOrder caseManagementOrder = createDraftCaseManagementOrder();
-        
+
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of(
