@@ -616,20 +616,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "c21Orders",
-    "Label": "C21 order",
+    "ID": "generatedOrders",
+    "Label": "C21 Order",
     "FieldType": "Collection",
-    "FieldTypeParameter": "C21Order",
+    "FieldTypeParameter": "GeneratedOrder",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "c21Order",
+    "ID": "order",
     "Label": "Create an order",
-    "FieldType": "C21Order",
+    "FieldType": "GeneratedOrder",
     "SecurityClassification": "Public",
-    "Comment": "Event is single order centric: c21Order added to Collection of orders above (displayed in orders tab) then deleted from case data so that event can be used to create a new order"
+    "Comment": "Event is single order centric: order added to Collection of generatedOrders above (displayed in orders tab) then deleted from case data so that event can be used to create a new order"
   },
   {
     "LiveFrom": "01/01/2017",

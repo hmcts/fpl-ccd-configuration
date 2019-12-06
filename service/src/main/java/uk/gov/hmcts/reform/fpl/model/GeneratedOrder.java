@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 @Data
 @Builder(toBuilder = true)
-public class C21Order {
+public class GeneratedOrder {
     private final String orderTitle;
     private final String orderDetails;
     private final DocumentReference document;
