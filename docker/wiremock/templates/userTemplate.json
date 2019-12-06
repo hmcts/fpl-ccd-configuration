@@ -1,0 +1,14 @@
+{
+  "userIdentifier": "",
+  "firstName": "",
+  "lastName": "(local-authority)",
+  "email": "",
+  "roles": [
+    "caseworker",
+    "caseworker-publiclaw",
+    "caseworker-publiclaw-solicitor"
+  ],
+  "idamStatus": "ACTIVE",
+  "idamStatusCode": "0",
+  "idamMessage": ""
+}
