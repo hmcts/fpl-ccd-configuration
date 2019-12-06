@@ -40,6 +40,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 
 // Supports SDO case data. Tech debt ticket needed to refactor caseDataExtractionService and NoticeOfProceedingsService
@@ -193,7 +194,14 @@ public class CaseDataExtractionService {
                     "body", defaultIfNull(direction.getDirectionText(), EMPTY_PLACEHOLDER)))
                 .collect(toList());
 
-            formattedDirections.put(key.getValue(), directionsList);
+            //TODO: temp refactoring to deal with PARENTS_AND_RESPONDENTS value change. SDO Template to be updated in
+            // future. Ticket in backlog: FPLA-1061.
+            if (key == PARENTS_AND_RESPONDENTS) {
+                formattedDirections.put("parentsAndRespondentsDirections", directionsList);
+
+            } else {
+                formattedDirections.put(key.getValue(), directionsList);
+            }
         });
 
         return formattedDirections.build();
