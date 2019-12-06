@@ -26,6 +26,8 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,8 +35,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDraftCaseManagementOrder;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
@@ -48,8 +50,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 class ActionCMOControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-    private static final String CMO_ACTION_KEY = "orderAction";
-    private static final String CMO_KEY = "caseManagementOrder";
     private static final byte[] pdf = {1, 2, 3, 4, 5};
 
     @Autowired
@@ -77,7 +77,10 @@ class ActionCMOControllerTest {
 
     @Test
     void aboutToStartShouldReturnCaseManagementOrder() throws Exception {
-        CallbackRequest request = buildCallbackRequest(createDraftCaseManagementOrder());
+        Map<String, Object> data = new HashMap<>();
+        data.put("caseManagementOrder", createDraftCaseManagementOrder());
+
+        CallbackRequest request = buildCallbackRequest(data);
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-start");
         CaseData caseData = objectMapper.convertValue(response.getData(), CaseData.class);
@@ -87,13 +90,17 @@ class ActionCMOControllerTest {
 
     @Test
     void midEventShouldReturnDocumentReferenceForAction() throws Exception {
-        CallbackRequest request = buildCallbackRequest(createDraftCaseManagementOrder());
+        Map<String, Object> data = new HashMap<>();
+        data.put("caseManagementOrder", createDraftCaseManagementOrder());
+        data.put("hearingDetails", createHearingBookings(LocalDateTime.now()));
+
+        CallbackRequest request = buildCallbackRequest(data);
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "mid-event");
 
         verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-case-management-order.pdf");
 
-        assertThat(response.getData().get(CMO_ACTION_KEY)).extracting("orderDoc")
+        assertThat(response.getData().get("orderAction")).extracting("orderDoc")
             .isEqualTo(ImmutableMap.of(
                 "document_binary_url", document.links.binary.href,
                 "document_filename", document.originalDocumentName,
@@ -102,10 +109,15 @@ class ActionCMOControllerTest {
 
     @Test
     void aboutToSubmitShouldReturnCaseManagementOrderWithActionAndSchedule() throws Exception {
-        CaseManagementOrder caseManagementOrder = getCaseManagementOrder(getOrderAction());
+        CaseManagementOrder caseManagementOrder = getCaseManagementOrder(OrderAction.builder().build());
+
+        Map<String, Object> data = ImmutableMap.of(
+            "caseManagementOrder", caseManagementOrder,
+            "orderAction", getOrderAction(),
+            "hearingDetails", createHearingBookings(LocalDateTime.now()));
 
         AboutToStartOrSubmitCallbackResponse response =
-            makeRequest(buildCallbackRequest(caseManagementOrder), "about-to-submit");
+            makeRequest(buildCallbackRequest(data), "about-to-submit");
 
         CaseData caseData = objectMapper.convertValue(response.getData(), CaseData.class);
 
@@ -114,11 +126,10 @@ class ActionCMOControllerTest {
         assertThat(caseData.getCaseManagementOrder().getSchedule()).isEqualTo(createSchedule(true));
     }
 
-    private CallbackRequest buildCallbackRequest(CaseManagementOrder caseManagementOrder) {
+    private CallbackRequest buildCallbackRequest(Map<String, Object> data) {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of(CMO_KEY, caseManagementOrder,
-                    "hearingDetails", createHearingBookings(LocalDateTime.now())))
+                .data(data)
                 .build())
             .build();
     }

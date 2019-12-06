@@ -89,7 +89,10 @@ public class ActionCMOController {
         @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseManagementOrder order = caseData.getCaseManagementOrder();
+
+        CaseManagementOrder order = caseData.getCaseManagementOrder().toBuilder()
+            .action(caseData.getOrderAction())
+            .build();
 
         caseDetails.getData()
             .putAll(actionCmoService.extractMapFieldsFromCaseManagementOrder(order, caseData.getHearingDetails()));
@@ -118,6 +121,6 @@ public class ActionCMOController {
     }
 
     private boolean hasJudgeApproved(CaseManagementOrder caseManagementOrder) {
-        return caseManagementOrder.getAction().getType().equals(SEND_TO_ALL_PARTIES);
+        return SEND_TO_ALL_PARTIES.equals(caseManagementOrder.getAction().getType());
     }
 }
