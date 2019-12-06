@@ -283,34 +283,35 @@ class DraftCMOServiceTest {
             "schedule"};
 
         private HashMap<String, Object> data; // Tries to use an ImmutableMap unless specified
+        private CaseManagementOrder.CaseManagementOrderBuilder caseManagementOrderBuilder;
 
         @BeforeEach
         void setUp() {
             data = new HashMap<>();
+            caseManagementOrderBuilder = CaseManagementOrder.builder();
         }
 
         @Test
-        void shouldRemoveAllRelatedEntriesInCaseDetailsThatAreNotCMOObjectsWhenCMOStatusIsPartyReview() {
-            final CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
-                .cmoStatus(PARTIES_REVIEW).build();
+        void shouldRemoveAllRelatedEntriesInCaseDetailsApartFromWhenCMOStatusIsPartyReview() {
+            caseManagementOrderBuilder.cmoStatus(PARTIES_REVIEW);
 
             Arrays.stream(keys).forEach(key -> data.put(key, ""));
 
-            draftCMOService.prepareCaseDetails(data, caseManagementOrder);
+            draftCMOService.prepareCaseDetails(data, caseManagementOrderBuilder.build());
 
             assertThat(data).doesNotContainKeys(keys);
-            assertThat(data).containsKeys("sharedDraftCMO", "caseManagementOrder");
+            assertThat(data).containsKeys("sharedDraftCMODocument", "caseManagementOrder");
         }
 
         @Test
         void shouldRemoveAllRelatedEntriesInCaseDetailsApartFromCaseManagementOrderWhenCMOStatusIsSelfReview() {
-            final CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
-                .cmoStatus(SELF_REVIEW).build();
+            caseManagementOrder = caseManagementOrderBuilder.cmoStatus(SELF_REVIEW).build();
 
-            data.put("sharedDraftCMO", caseManagementOrder);
+            data.put("sharedDraftCMODocument", caseManagementOrder.getOrderDoc());
 
             draftCMOService.prepareCaseDetails(data, caseManagementOrder);
-            assertThat(data).doesNotContainKeys(add(keys, "sharedDraftCMO"));
+
+            assertThat(data).doesNotContainKeys(add(keys, "sharedDraftCMODocument"));
             assertThat(data).containsKey("caseManagementOrder");
         }
     }

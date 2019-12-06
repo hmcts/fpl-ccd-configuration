@@ -93,10 +93,10 @@ public class DraftCMOService {
             case SEND_TO_JUDGE:
                 // Does the same as PARTIES_REVIEW for now but in the future this will change
             case PARTIES_REVIEW:
-                caseData.put("sharedDraftCMO", caseManagementOrder);
+                caseData.put("sharedDraftCMODocument", caseManagementOrder.getOrderDoc());
                 break;
             case SELF_REVIEW:
-                caseData.remove("sharedDraftCMO");
+                caseData.remove("sharedDraftCMODocument");
                 break;
             default:
                 break;
