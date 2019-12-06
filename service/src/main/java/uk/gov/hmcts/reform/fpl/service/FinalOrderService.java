@@ -59,18 +59,17 @@ public class FinalOrderService {
 
     /**
      * Method to populate the final order based on type of order selected
-     * Currently adds/formats only the order title based on the type (may be more fields in future orders)
+     * Currently adds/formats the order title and details based on the type (may be more fields in future orders)
      * Always adds order type, document, {@link JudgeAndLegalAdvisor} object and a formatted order date.
      *
-     * @param finalOrder           this value will contain fixed details and document values as well as customisable
-     *                             values.
-     * @param typeAndDocument      the type of the order and the order document.
+     * @param typeAndDocument      the type of the order and the order document (document only shown in check answers).
+     * @param finalOrder           currently the title and details for a C21 order are passed in this parameter.
      * @param judgeAndLegalAdvisor the judge and legal advisor for the order.
-     * @return Element containing randomUUID and a fully populated FinalOrder.
+     * @return Element containing randomUUID and a fully populated order.
      */
-    public Element<FinalOrder> addCustomValuesToFinalOrder(FinalOrder finalOrder,
-                                                           OrderTypeAndDocument typeAndDocument,
-                                                           JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+    public Element<FinalOrder> buildCompleteFinalOrder(FinalOrder finalOrder,
+                                                       OrderTypeAndDocument typeAndDocument,
+                                                       JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
         FinalOrder order = defaultIfNull(finalOrder, FinalOrder.builder().build());
         FinalOrder.FinalOrderBuilder orderBuilder = FinalOrder.builder();
 
@@ -134,6 +133,19 @@ public class FinalOrderService {
         return orderTemplateBuilder.build();
     }
 
+    public String generateDocumentFileName(OrderTypeAndDocument orderTypeAndDocument) {
+        return orderTypeAndDocument.getFinalOrderType().getType() + ".pdf";
+    }
+
+    public String mostRecentUploadedOrderDocumentUrl(final List<Element<FinalOrder>> finalOrders) {
+        return getLast(finalOrders.stream()
+            .filter(Objects::nonNull)
+            .map(Element::getValue)
+            .filter(Objects::nonNull)
+            .collect(toList()))
+            .getDocument().getBinaryUrl();
+    }
+
     private String getCourtName(String caseLocalAuthority) {
         return hmctsCourtLookupConfiguration.getCourt(caseLocalAuthority).getName();
     }
@@ -157,18 +169,5 @@ public class FinalOrderService {
                 "dateOfBirth", child.getDateOfBirth() != null ? dateFormatterService
                     .formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG) : ""))
             .collect(toList());
-    }
-
-    public String mostRecentUploadedOrderDocumentUrl(final List<Element<FinalOrder>> finalOrders) {
-        return getLast(finalOrders.stream()
-            .filter(Objects::nonNull)
-            .map(Element::getValue)
-            .filter(Objects::nonNull)
-            .collect(toList()))
-            .getDocument().getBinaryUrl();
-    }
-
-    public String generateDocumentFileName(OrderTypeAndDocument orderTypeAndDocument) {
-        return orderTypeAndDocument.getFinalOrderType().getType() + ".pdf";
     }
 }

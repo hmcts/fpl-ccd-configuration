@@ -100,14 +100,13 @@ public class FinalOrderController {
 
         List<Element<FinalOrder>> finalOrders = caseData.getFinalOrders();
 
-        //Builds an order with custom values and adds it to list of orders
-        finalOrders.add(
-            service.addCustomValuesToFinalOrder(caseData.getFinalOrder(), caseData.getOrderTypeAndDocument(),
-                caseData.getJudgeAndLegalAdvisor()));
+        //Builds an order with custom values based on order type and adds it to list of orders
+        finalOrders.add(service.buildCompleteFinalOrder(caseData.getFinalOrder(), caseData.getOrderTypeAndDocument(),
+            caseData.getJudgeAndLegalAdvisor()));
 
         caseDetails.getData().put("finalOrders", finalOrders);
-        caseDetails.getData().remove("finalOrder");
         caseDetails.getData().remove("orderTypeAndDocument");
+        caseDetails.getData().remove("finalOrder");
         caseDetails.getData().remove("judgeAndLegalAdvisor");
 
         return AboutToStartOrSubmitCallbackResponse.builder()

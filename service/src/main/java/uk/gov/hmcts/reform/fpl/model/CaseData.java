@@ -141,9 +141,9 @@ public class CaseData {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
+    private final OrderTypeAndDocument orderTypeAndDocument;
     private final FinalOrder finalOrder;
     private final List<Element<FinalOrder>> finalOrders;
-    private final OrderTypeAndDocument orderTypeAndDocument;
 
     public List<Element<FinalOrder>> getFinalOrders() {
         return defaultIfNull(finalOrders, new ArrayList<>());

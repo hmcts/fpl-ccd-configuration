@@ -81,7 +81,7 @@ class FinalOrderServiceTest {
             .orderDetails("Some details")
             .build();
 
-        Element<FinalOrder> returnedElement = service.addCustomValuesToFinalOrder(finalOrder,
+        Element<FinalOrder> returnedElement = service.buildCompleteFinalOrder(finalOrder,
             OrderTypeAndDocument.builder()
                 .finalOrderType(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
@@ -101,7 +101,7 @@ class FinalOrderServiceTest {
             .orderDetails("Some details")
             .build();
 
-        Element<FinalOrder> returnedElement = service.addCustomValuesToFinalOrder(finalOrder,
+        Element<FinalOrder> returnedElement = service.buildCompleteFinalOrder(finalOrder,
             OrderTypeAndDocument.builder()
                 .finalOrderType(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
@@ -121,7 +121,7 @@ class FinalOrderServiceTest {
             .orderDetails("Some details")
             .build();
 
-        Element<FinalOrder> returnedElement = service.addCustomValuesToFinalOrder(finalOrder,
+        Element<FinalOrder> returnedElement = service.buildCompleteFinalOrder(finalOrder,
             OrderTypeAndDocument.builder()
                 .finalOrderType(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
@@ -141,7 +141,7 @@ class FinalOrderServiceTest {
             .orderDetails("Some details")
             .build();
 
-        Element<FinalOrder> returnedElement = service.addCustomValuesToFinalOrder(finalOrder,
+        Element<FinalOrder> returnedElement = service.buildCompleteFinalOrder(finalOrder,
             OrderTypeAndDocument.builder()
                 .finalOrderType(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
@@ -161,7 +161,7 @@ class FinalOrderServiceTest {
             .orderDetails("Some details")
             .build();
 
-        Element<FinalOrder> returnedElement = service.addCustomValuesToFinalOrder(finalOrder,
+        Element<FinalOrder> returnedElement = service.buildCompleteFinalOrder(finalOrder,
             OrderTypeAndDocument.builder()
                 .finalOrderType(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
@@ -206,9 +206,18 @@ class FinalOrderServiceTest {
     }
 
     @Test
+    void shouldGenerateCorrectFileNameWhenGivenOrderType() {
+        OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
+            .finalOrderType(CARE_ORDER)
+            .document(DocumentReference.builder().build()).build();
+
+        assertThat(service.generateDocumentFileName(typeAndDocument)).isEqualTo(CARE_ORDER.getType() + ".pdf");
+    }
+
+    @Test
     void shouldReturnMostRecentUploadedOrderDocumentUrl() {
-        final String expectedMostRecentUploadedOrderDocumentUrl = "http://dm-store:8080/documents/79ec80ec-7be6-493b"
-            + "-b4e6-f002f05b7079/binary";
+        final String expectedMostRecentUploadedOrderDocumentUrl =
+            "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
         final String returnedMostRecentUploadedOrderDocumentUrl = service.mostRecentUploadedOrderDocumentUrl(
             createFinalOrders());
 
