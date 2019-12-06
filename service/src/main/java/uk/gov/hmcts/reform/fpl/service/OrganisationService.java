@@ -18,7 +18,7 @@ public class OrganisationService {
     }
 
 
-    public List<String>  getUserIds(String authorization, String localAuthorityCode) {
-        return null;
+    public List<String> findUserIdsInSameOrganisation(String authorization, String localAuthorityCode) {
+        return localAuthorityUserLookupConfiguration.getUserIds(localAuthorityCode);
     }
 }

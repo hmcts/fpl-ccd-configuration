@@ -59,7 +59,7 @@ public class LocalAuthorityUserService {
     }
 
     private List<String> findUserIds(String authorization, String localAuthorityCode) {
-        List<String> userIds = organisationService.getUserIds(authorization, localAuthorityCode);
+        List<String> userIds = organisationService.findUserIdsInSameOrganisation(authorization, localAuthorityCode);
 
         if (userIds.isEmpty()) {
             throw new NoAssociatedUsersException("No users found for the local authority '" + localAuthorityCode + "'");

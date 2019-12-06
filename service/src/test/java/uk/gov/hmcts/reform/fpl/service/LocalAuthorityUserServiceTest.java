@@ -71,7 +71,7 @@ class LocalAuthorityUserServiceTest {
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
-        given(organisationService.getUserIds(USER_AUTH_TOKEN, LOCAL_AUTHORITY)).willReturn(
+        given(organisationService.findUserIdsInSameOrganisation(USER_AUTH_TOKEN, LOCAL_AUTHORITY)).willReturn(
             ImmutableList.<String>builder()
                 .add(USER_IDS)
                 .build()
@@ -87,7 +87,7 @@ class LocalAuthorityUserServiceTest {
 
     @Test
     void shouldThrowCustomExceptionWhenValidLocalAuthorityHasNoUsers() throws IllegalArgumentException {
-        given(organisationService.getUserIds(USER_AUTH_TOKEN, LOCAL_AUTHORITY)).willReturn(
+        given(organisationService.findUserIdsInSameOrganisation(USER_AUTH_TOKEN, LOCAL_AUTHORITY)).willReturn(
             ImmutableList.<String>builder().build()
         );
 
