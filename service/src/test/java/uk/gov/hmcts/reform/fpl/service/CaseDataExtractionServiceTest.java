@@ -9,9 +9,12 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.io.IOException;
@@ -24,6 +27,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -93,6 +98,36 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("cafcassDirections")).isNull();
         assertThat(templateData.get("otherPartiesDirections")).isNull();
         assertThat(templateData.get("courtDirections")).isNull();
+    }
+
+    //TODO: improve test to assertThat directions are equal to expected.
+    // This will prevent the issue of FPLA-1061 happening again. A part of FPLA-1061.
+    @Test
+    void shouldMapDirectionsForDraftSDOWhenAllAssignees() throws IOException {
+        Map<String, Object> templateData = caseDataExtractionService
+            .getStandardOrderDirectionData(CaseData.builder()
+                .standardDirectionOrder(Order.builder()
+                    .directions(getDirections())
+                    .build())
+                .build());
+
+        assertThat(templateData.get("allParties")).isNotNull();
+        assertThat(templateData.get("localAuthorityDirections")).isNotNull();
+        assertThat(templateData.get("parentsAndRespondentsDirections")).isNotNull();
+        assertThat(templateData.get("cafcassDirections")).isNotNull();
+        assertThat(templateData.get("otherPartiesDirections")).isNotNull();
+        assertThat(templateData.get("courtDirections")).isNotNull();
+    }
+
+    private List<Element<Direction>> getDirections() {
+        return Stream.of(DirectionAssignee.values())
+            .map(assignee -> Element.<Direction>builder()
+                .value(Direction.builder()
+                    .directionType("Direction")
+                    .assignee(assignee)
+                    .build())
+                .build())
+            .collect(Collectors.toList());
     }
 
     @Test
