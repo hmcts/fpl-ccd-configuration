@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -34,8 +33,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStanda
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class,
-    DocmosisConfiguration.class
+    JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class
 })
 class CaseDataExtractionServiceTest {
     @SuppressWarnings({"membername", "AbbreviationAsWordInName"})

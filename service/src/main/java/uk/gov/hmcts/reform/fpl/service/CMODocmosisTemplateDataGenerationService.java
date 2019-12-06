@@ -256,7 +256,6 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         return directionsToRespondents;
     }
 
-
     private List<Map<String, Object>> getFormattedParentsAndRespondentsDirections(
         Map<ParentsAndRespondentsDirectionAssignee, List<Element<Direction>>> groupedParentsAndRespondents) {
 
