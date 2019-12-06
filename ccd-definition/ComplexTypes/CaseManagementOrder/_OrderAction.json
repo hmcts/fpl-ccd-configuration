@@ -37,7 +37,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CaseManagementOrderAction",
+    "ID": "OrderAction",
     "ListElementCode": "nextHearingDate",
     "FieldType": "Text",
     "ElementLabel": "Which hearing is next?",
@@ -45,7 +45,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CaseManagementOrderAction",
+    "ID": "OrderAction",
     "ListElementCode": "nextHearingId",
     "FieldType": "Text",
     "ElementLabel": "nextHearingId",
