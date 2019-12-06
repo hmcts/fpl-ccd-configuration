@@ -1,11 +1,10 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -16,18 +15,18 @@ import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.Recital;
-import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
@@ -43,19 +42,11 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPON
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOService {
     private final ObjectMapper mapper;
     private final DateFormatterService dateFormatterService;
     private final DirectionHelperService directionHelperService;
-
-    @Autowired
-    public DraftCMOService(DateFormatterService dateFormatterService,
-                           ObjectMapper mapper,
-                           DirectionHelperService directionHelperService) {
-        this.mapper = mapper;
-        this.dateFormatterService = dateFormatterService;
-        this.directionHelperService = directionHelperService;
-    }
 
     public Map<String, Object> extractIndividualCaseManagementOrderObjects(
         CaseManagementOrder caseManagementOrder,
@@ -65,36 +56,26 @@ public class DraftCMOService {
             caseManagementOrder = CaseManagementOrder.builder().build();
         }
 
-        HashMap<String, Object> data = new HashMap<>();
-        HashMap<String, Object> reviewCaseManagementOrder = new HashMap<>();
-
-        // TODO: 29/11/2019 Include orderDoc
-        reviewCaseManagementOrder.put("cmoStatus", caseManagementOrder.getCmoStatus());
-
+        Map<String, Object> data = new HashMap<>();
         data.put("cmoHearingDateList", getHearingDateDynamicList(hearingDetails, caseManagementOrder));
         data.put("schedule", caseManagementOrder.getSchedule());
         data.put("recitals", caseManagementOrder.getRecitals());
-        data.put("reviewCaseManagementOrder", reviewCaseManagementOrder);
 
         return data;
     }
 
-    public CaseManagementOrder prepareCMO(Map<String, Object> caseData) {
-        DynamicList list = mapper.convertValue(caseData.get("cmoHearingDateList"), DynamicList.class);
-        Map<String, Object> reviewCaseManagementOrder = mapper.convertValue(
-            caseData.get("reviewCaseManagementOrder"), new TypeReference<>() {});
-        CMOStatus cmoStatus = mapper.convertValue(reviewCaseManagementOrder.get("cmoStatus"), CMOStatus.class);
-        Schedule schedule = mapper.convertValue(caseData.get("schedule"), Schedule.class);
-        List<Element<Recital>> recitals = mapper.convertValue(caseData.get("recitals"), new TypeReference<>() {});
-        // TODO: 29/11/2019 Extract orderDoc
+    public CaseManagementOrder prepareCMO(CaseData caseData) {
+        Optional<CaseManagementOrder> oldCMO = Optional.ofNullable(caseData.getCaseManagementOrder());
+        Optional<DynamicList> cmoHearingDateList = Optional.ofNullable(caseData.getCmoHearingDateList());
 
         return CaseManagementOrder.builder()
-            .hearingDate(list.getValue().getLabel())
-            .id(list.getValue().getCode())
-            .directions(combineAllDirectionsForCmo(mapper.convertValue(caseData, CaseData.class)))
-            .schedule(schedule)
-            .recitals(recitals)
-            .cmoStatus(cmoStatus)
+            .hearingDate(cmoHearingDateList.map(DynamicList::getValueLabel).orElse(null))
+            .id(cmoHearingDateList.map(DynamicList::getValueCode).orElse(null))
+            .directions(combineAllDirectionsForCmo(caseData))
+            .schedule(caseData.getSchedule())
+            .recitals(caseData.getRecitals())
+            .cmoStatus(oldCMO.map(CaseManagementOrder::getCmoStatus).orElse(null))
+            .orderDoc(oldCMO.map(CaseManagementOrder::getOrderDoc).orElse(null))
             .build();
     }
 
@@ -102,7 +83,6 @@ public class DraftCMOService {
         final ImmutableSet<String> keysToRemove = ImmutableSet.of(
             "cmoHearingDateList",
             "schedule",
-            "reviewCaseManagementOrder",
             "recitals");
 
         keysToRemove.forEach(caseData::remove);
@@ -150,7 +130,7 @@ public class DraftCMOService {
         for (int i = 0; i < respondents.size(); i++) {
             RespondentParty respondentParty = respondents.get(i).getValue().getParty();
 
-            String key = String.format("Respondent %d - %s", i + 1, getRespondentFullName(respondentParty));
+            String key = String.format("Respondent %d - %s", i + 1, respondentParty.getFullName());
             stringBuilder.append(key).append("\n\n");
         }
 
@@ -190,9 +170,6 @@ public class DraftCMOService {
         }
     }
 
-    public Map<String, Object> generateCMOTemplateData(Map<String, Object> caseData) {
-        return new HashMap<>();
-    }
 
     private void removeExistingCustomDirections(Map<String, Object> caseData) {
         caseData.remove("allPartiesCustom");
@@ -223,13 +200,6 @@ public class DraftCMOService {
         hearingDatesDynamic.setValue(listElement);
     }
 
-    private String getRespondentFullName(RespondentParty respondentParty) {
-        String firstName = defaultIfNull(respondentParty.getFirstName(), "");
-        String lastName = defaultIfNull(respondentParty.getLastName(), "");
-
-        return String.format("%s %s", firstName, lastName);
-    }
-
     private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {
         List<Element<Direction>> directions = new ArrayList<>();
 
@@ -238,16 +208,32 @@ public class DraftCMOService {
         directions.addAll(directionHelperService.assignCustomDirections(caseData.getLocalAuthorityDirectionsCustom(),
             LOCAL_AUTHORITY));
 
+        directions.addAll(orderByParentsAndRespondentAssignee(directionHelperService.assignCustomDirections(
+            caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS)));
+
         directions.addAll(directionHelperService.assignCustomDirections(caseData.getCafcassDirectionsCustom(),
             CAFCASS));
 
+        directions.addAll(orderByOtherPartiesAssignee(directionHelperService.assignCustomDirections(
+            caseData.getOtherPartiesDirectionsCustom(), OTHERS)));
+
         directions.addAll(directionHelperService.assignCustomDirections(caseData.getCourtDirectionsCustom(), COURT));
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getRespondentDirectionsCustom(),
-            PARENTS_AND_RESPONDENTS));
+        return directions;
+    }
 
-        directions.addAll(directionHelperService.assignCustomDirections(caseData.getOtherPartiesDirectionsCustom(),
-            OTHERS));
+    private List<Element<Direction>> orderByParentsAndRespondentAssignee(List<Element<Direction>> directions) {
+        directions.sort(Comparator.comparingInt(direction -> direction.getValue()
+            .getParentsAndRespondentsAssignee()
+            .ordinal()));
+
+        return directions;
+    }
+
+    private List<Element<Direction>> orderByOtherPartiesAssignee(List<Element<Direction>> directions) {
+        directions.sort(Comparator.comparingInt(direction -> direction.getValue()
+            .getOtherPartiesAssignee()
+            .ordinal()));
 
         return directions;
     }

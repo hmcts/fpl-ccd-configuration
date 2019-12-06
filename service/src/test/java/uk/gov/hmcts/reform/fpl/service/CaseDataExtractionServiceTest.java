@@ -32,8 +32,9 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStandardDirectionOrders;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {JacksonAutoConfiguration.class, JsonOrdersLookupService.class,
-    HearingVenueLookUpService.class})
+@ContextConfiguration(classes = {
+    JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class
+})
 class CaseDataExtractionServiceTest {
     @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
 
@@ -45,18 +46,18 @@ class CaseDataExtractionServiceTest {
     private static final LocalDateTime TODAYS_DATE_TIME = LocalDateTime.now();
     private static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
 
+    @Autowired
+    private HearingVenueLookUpService hearingVenueLookUpService;
+
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
     private DirectionHelperService directionHelperService = new DirectionHelperService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
     private CommonCaseDataExtractionService commonCaseDataExtraction = new CommonCaseDataExtractionService(
-        dateFormatterService);
+        dateFormatterService, hearingVenueLookUpService);
 
     @Autowired
     private OrdersLookupService ordersLookupService;
-
-    @Autowired
-    private HearingVenueLookUpService hearingVenueLookUpService;
 
     private CaseDataExtractionService caseDataExtractionService;
 

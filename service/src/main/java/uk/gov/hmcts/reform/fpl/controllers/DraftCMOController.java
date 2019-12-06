@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,12 +17,15 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
+import java.io.IOException;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Api
@@ -34,16 +36,19 @@ public class DraftCMOController {
     private final DraftCMOService draftCMOService;
     private final DocmosisDocumentGeneratorService docmosisService;
     private final UploadDocumentService uploadDocumentService;
+    private final CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService;
 
     @Autowired
     public DraftCMOController(ObjectMapper mapper,
                               DraftCMOService draftCMOService,
                               DocmosisDocumentGeneratorService docmosisService,
-                              UploadDocumentService uploadDocumentService) {
+                              UploadDocumentService uploadDocumentService,
+                              CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService) {
         this.mapper = mapper;
         this.draftCMOService = draftCMOService;
         this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
+        this.docmosisTemplateDataGenerationService = docmosisTemplateDataGenerationService;
     }
 
     @PostMapping("/about-to-start")
@@ -56,7 +61,6 @@ public class DraftCMOController {
         Map<String, Object> data = caseDetails.getData();
         final CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-
         data.putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
 
@@ -67,23 +71,31 @@ public class DraftCMOController {
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
-        @RequestBody CallbackRequest callbackRequest,
-        @RequestHeader("authorization") String authorization,
-        @RequestHeader("userId") String userId) {
+        @RequestHeader("authorization") String authorization, @RequestHeader("user-id") String userId,
+        @RequestBody CallbackRequest callbackRequest) throws IOException {
+
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final Map<String, Object> data = caseDetails.getData();
+        final CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        final Map<String, Object> cmoTemplateData = draftCMOService.generateCMOTemplateData(data);
+        final Map<String, Object> cmoTemplateData = docmosisTemplateDataGenerationService.getTemplateData(caseData);
 
         Document document = getDocument(authorization, userId, cmoTemplateData);
 
         final DocumentReference reference = DocumentReference.builder()
             .url(document.links.self.href)
             .binaryUrl(document.links.binary.href)
-            .filename("draft-case-management-order.pdf")
+            .filename(document.originalDocumentName)
             .build();
 
-        data.put("reviewCaseManagementOrder", ImmutableMap.of("orderDoc", reference));
+
+        final CaseManagementOrder oldCMO = defaultIfNull(
+            caseData.getCaseManagementOrder(), CaseManagementOrder.builder().build());
+        final CaseManagementOrder updatedCMO = oldCMO.toBuilder()
+            .orderDoc(reference)
+            .build();
+
+        data.put("caseManagementOrder", updatedCMO);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -94,8 +106,9 @@ public class DraftCMOController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final Map<String, Object> data = caseDetails.getData();
+        final CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(data);
+        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData);
 
         draftCMOService.prepareCaseDetails(data, caseManagementOrder);
 
