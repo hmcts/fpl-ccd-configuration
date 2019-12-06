@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.io.IOException;
 
@@ -18,11 +20,15 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, JsonOrdersLookupService.class, DraftCMOService.class, DateFormatterService.class,
+    JacksonAutoConfiguration.class, JsonOrdersLookupService.class, LookupTestConfig.class,
+    JsonOrdersLookupService.class,
+    DateFormatterService.class,
     DirectionHelperService.class, DocmosisConfiguration.class,
+    RestTemplate.class,
     CaseDataExtractionService.class, DocmosisDocumentGeneratorService.class, CommonCaseDataExtractionService.class,
-    HearingBookingService.class, OrdersLookupService.class,
-    HearingVenueLookUpService.class
+    HearingBookingService.class,
+    HearingVenueLookUpService.class,
+    DraftCMOService.class
 })
 class ActionCmoServiceTest {
     private final ObjectMapper mapper;
