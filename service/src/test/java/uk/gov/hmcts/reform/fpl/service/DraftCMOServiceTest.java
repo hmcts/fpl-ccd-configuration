@@ -47,7 +47,6 @@ import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PL
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataMapForDraftCMODocmosisGeneration;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
@@ -115,7 +114,7 @@ class DraftCMOServiceTest {
         draftCMOService = new DraftCMOService(mapper, dateFormatterService, directionHelperService,
             caseDataExtractionService, hmctsCourtLookupConfiguration, localAuthorityEmailLookupConfiguration,
             localAuthorityNameLookupConfiguration, ordersLookupService, docmosisDocumentGeneratorService,
-            commonCaseDataExtractionService);
+            commonCaseDataExtractionService, hearingVenueLookUpService);
 
         hearingDetails = createHearingBookings(NOW);
     }

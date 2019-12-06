@@ -6,7 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 
 import java.io.IOException;
@@ -27,6 +29,13 @@ public class HearingVenueLookUpService {
     public HearingVenueLookUpService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         populateHearingVenueMappings();
+    }
+
+    public HearingDateDynamicElement getHearingDynamicElement(DynamicList list) {
+        return HearingDateDynamicElement.builder()
+            .date(list.getValue().getLabel())
+            .id(list.getValue().getCode())
+            .build();
     }
 
     private void populateHearingVenueMappings() {

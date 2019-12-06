@@ -15,6 +15,6 @@ public class CaseManagementOrderAction {
     private final CMOActionType cmoActionType;
     private final CMONextHearingType cmoNextHearingType;
     private final String changeRequestedByJudge;
-    private final UUID id;
+    private final UUID nextHearingId;
     private final String nextHearingDate;
 }

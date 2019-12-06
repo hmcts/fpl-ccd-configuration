@@ -46,9 +46,9 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CaseManagementOrderAction",
-    "ListElementCode": "id",
+    "ListElementCode": "nextHearingId",
     "FieldType": "Text",
-    "ElementLabel": "id",
+    "ElementLabel": "nextHearingId",
     "SecurityClassification": "Public",
     "FieldShowCondition": "nextHearingDate=\"DO_NOT_SHOW\"",
     "Comment": "Id has been used here to uniquely identify selected date in case management order"

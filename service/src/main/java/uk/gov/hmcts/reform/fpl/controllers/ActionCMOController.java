@@ -58,8 +58,11 @@ public class ActionCMOController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> caseData = caseDetails.getData();
+
         draftCMOService.prepareCustomDirections(caseDetails.getData());
+
         CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData);
+
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_KEY, caseManagementOrder);
 
         populateHearingDynamicList(caseData);
@@ -76,17 +79,23 @@ public class ActionCMOController {
         @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> caseData = caseDetails.getData();
+
         CaseManagementOrder caseManagementOrderToBeActioned = draftCMOService.prepareCMO(caseData);
+
         Document updatedDraftCMODocument = getDocument(authorization, userId, caseData, false);
+
         CaseManagementOrder updatedDraftCaseManagementOrderWithDocument =
             caseManageOrderActionService.addDocumentToCaseManagementOrder(caseManagementOrderToBeActioned,
                 updatedDraftCMODocument);
+
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_ACTION_KEY, ImmutableMap.of("orderDoc",
             updatedDraftCaseManagementOrderWithDocument.getOrderDoc()));
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
     }
+
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestHeader(value = "authorization") String authorization,
@@ -94,14 +103,19 @@ public class ActionCMOController {
         @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseManagementOrder updatedDraftCaseManagementOrder = draftCMOService.prepareCMO(caseDetails.getData());
+
         boolean judgeApprovedDraftCMO = hasJudgeApprovedDraftCMO(updatedDraftCaseManagementOrder);
+
         Document actionedCaseManageOrderDocument = getDocument(authorization, userId, caseDetails.getData(),
             judgeApprovedDraftCMO);
+
         CaseManagementOrder updatedCaseManagementOrderWithDocument =
             caseManageOrderActionService.addDocumentToCaseManagementOrder(updatedDraftCaseManagementOrder,
                 actionedCaseManageOrderDocument);
+
         CaseManagementOrderAction caseManagementOrderAction =
             updatedCaseManagementOrderWithDocument.getCaseManagementOrderAction();
+
         prepareCaseDetailsForSubmission(caseDetails, caseManagementOrderAction, updatedCaseManagementOrderWithDocument,
             judgeApprovedDraftCMO);
 
@@ -111,6 +125,7 @@ public class ActionCMOController {
             .data(caseDetails.getData())
             .build();
     }
+
     private void prepareCaseDetailsForSubmission(final CaseDetails caseDetails,
                                                  final CaseManagementOrderAction caseManagementOrderAction,
                                                  final CaseManagementOrder updatedDraftCaseManagementOrder,
@@ -122,6 +137,7 @@ public class ActionCMOController {
             caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_KEY);
         }
     }
+
     private Document getDocument(final String authorization, final String userId,
                                  final Map<String, Object> caseData,
                                  final boolean judgeApprovedDraftCMO) throws IOException {
@@ -132,6 +148,7 @@ public class ActionCMOController {
             ? document.getDocumentTitle() : "draft-" + document.getDocumentTitle());
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), documentTitle);
     }
+
     private boolean hasJudgeApprovedDraftCMO(final CaseManagementOrder caseManagementOrder) {
         return CMOActionType.SEND_TO_ALL_PARTIES.equals(
             caseManagementOrder.getCaseManagementOrderAction().getCmoActionType());
@@ -144,7 +161,7 @@ public class ActionCMOController {
 
         if (caseData.getCaseManagementOrder() != null
             && caseData.getCaseManagementOrder().getCaseManagementOrderAction() != null) {
-            UUID nextHearingId = caseData.getCaseManagementOrder().getCaseManagementOrderAction().getId();
+            UUID nextHearingId = caseData.getCaseManagementOrder().getCaseManagementOrderAction().getNextHearingId();
 
             HearingBooking hearingBooking =
                 hearingBookingService.getHearingBookingByUUID(caseData.getHearingDetails(), nextHearingId);
@@ -152,13 +169,13 @@ public class ActionCMOController {
             nextHearingLabel = caseManageOrderActionService.formatHearingBookingLabel(hearingBooking);
         }
 
-        caseDetails.getData().put("nextHearingDateLabelCMO", nextHearingLabel);
+        caseDetails.getData().put("nextHearingDateLabel", nextHearingLabel);
     }
 
     private void populateHearingDynamicList(Map<String, Object> caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails, CaseData.class);
 
-        caseDetails.put("actionCmoHearingDateList",
+        caseDetails.put("nextHearingDateList",
             draftCMOService.getHearingDateDynamicList(caseData.getHearingDetails(), null));
     }
 }

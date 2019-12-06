@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.io.IOException;
@@ -36,19 +35,16 @@ public class DraftCMOController {
     private final DraftCMOService draftCMOService;
     private final DocmosisDocumentGeneratorService docmosisService;
     private final UploadDocumentService uploadDocumentService;
-    private final HearingBookingService hearingBookingService;
 
     @Autowired
     public DraftCMOController(ObjectMapper mapper,
                               DraftCMOService draftCMOService,
                               DocmosisDocumentGeneratorService docmosisService,
-                              HearingBookingService hearingBookingService,
                               UploadDocumentService uploadDocumentService) {
         this.mapper = mapper;
         this.draftCMOService = draftCMOService;
         this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
-        this.hearingBookingService = hearingBookingService;
     }
 
     @PostMapping("/about-to-start")

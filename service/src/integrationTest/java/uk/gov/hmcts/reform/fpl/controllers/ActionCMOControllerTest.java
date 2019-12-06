@@ -115,12 +115,12 @@ public class ActionCMOControllerTest {
         String time = dateFormatterService.formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "h:mma");
         String expectedLabel = String.format("The next hearing date is on %s at %s", date, time);
 
-        AssertionsForClassTypes.assertThat(callbackResponse.getData().get("nextHearingDateLabelCMO")).isEqualTo(expectedLabel);
+        AssertionsForClassTypes.assertThat(callbackResponse.getData().get("nextHearingDateLabel")).isEqualTo(expectedLabel);
     }
 
     private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {
         Map<String, Object> cmoHearingResponse = objectMapper.convertValue(
-            callbackResponse.getData().get("actionCmoHearingDateList"), Map.class);
+            callbackResponse.getData().get("nextHearingDateList"), Map.class);
 
         List<Map<String, Object>> listItemMap = objectMapper.convertValue(cmoHearingResponse.get("list_items"), List.class);
 

@@ -80,6 +80,7 @@ public class DraftCMOService {
     private final OrdersLookupService ordersLookupService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
+    private final HearingVenueLookUpService hearingVenueLookUpService;
 
     public Map<String, Object> extractIndividualCaseManagementOrderObjects(
         CaseManagementOrder caseManagementOrder,
@@ -105,30 +106,26 @@ public class DraftCMOService {
 
     public CaseManagementOrder prepareCMO(Map<String, Object> caseData) {
         DynamicList list = mapper.convertValue(caseData.get("cmoHearingDateList"), DynamicList.class);
-
-        String hearingDate = null;
-        UUID id = null;
-
-        if (list != null) {
-            hearingDate = list.getValue().getLabel();
-            id = list.getValue().getCode();
-        }
+        HearingDateDynamicElement hearingDateDynamicElement = hearingVenueLookUpService.getHearingDynamicElement(list);
 
         Map<String, Object> reviewCaseManagementOrder = mapper.convertValue(
             caseData.get("reviewCaseManagementOrder"), new TypeReference<>() {});
+
         CMOStatus cmoStatus = null;
         if (reviewCaseManagementOrder != null) {
             cmoStatus = mapper.convertValue(reviewCaseManagementOrder.get("cmoStatus"), CMOStatus.class);
         }
+
         Schedule schedule = mapper.convertValue(caseData.get("schedule"), Schedule.class);
         List<Element<Recital>> recitals = mapper.convertValue(caseData.get("recitals"), new TypeReference<>() {});
         DocumentReference orderDoc = mapper.convertValue(caseData.get("orderDoc"), DocumentReference.class);
+
         CaseManagementOrderAction caseManagementOrderAction = mapper.convertValue(
             caseData.get("caseManagementOrderAction"), CaseManagementOrderAction.class);
 
         return CaseManagementOrder.builder()
-            .hearingDate(hearingDate)
-            .id(id)
+            .hearingDate(hearingDateDynamicElement.getDate())
+            .id(hearingDateDynamicElement.getId())
             .directions(combineAllDirectionsForCmo(mapper.convertValue(caseData, CaseData.class)))
             .schedule(schedule)
             .recitals(recitals)
@@ -166,8 +163,10 @@ public class DraftCMOService {
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
         List<HearingDateDynamicElement> hearingDates = hearingDetails
             .stream()
-            .map(element -> new HearingDateDynamicElement(
-                formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()), element.getId()))
+            .map(element -> HearingDateDynamicElement.builder()
+                .id(element.getId())
+                .date(formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()))
+                .build())
             .collect(toList());
 
         return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);
