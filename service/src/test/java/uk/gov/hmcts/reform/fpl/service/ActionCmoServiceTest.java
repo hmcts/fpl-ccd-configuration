@@ -18,8 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -28,6 +26,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingDynmaicList;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
@@ -173,15 +172,5 @@ class ActionCmoServiceTest {
 
         assertThat(orderAction.getNextHearingId()).isEqualTo(UUID.fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
         assertThat(orderAction.getNextHearingDate()).isEqualTo("15th Dec 2019");
-    }
-
-    private DynamicList createHearingBookingDynmaicList() {
-        return DynamicList.builder()
-            .value(DynamicListElement.builder()
-                .code(UUID.fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
-                .label("15th Dec 2019")
-                .build())
-            .listItems(List.of(DynamicListElement.builder().code(UUID.randomUUID()).label("test").build()))
-            .build();
     }
 }
