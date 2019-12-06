@@ -149,7 +149,7 @@ public class CaseDataExtractionService {
     }
 
     private Map<String, List<Map<String, String>>> getGroupedDirections(CaseData caseData) throws IOException {
-        OrderDefinition standardDirectionOrder = ordersLookupService.getDirectionOrder();
+        OrderDefinition standardDirectionOrder = ordersLookupService.getStandardDirectionOrder();
 
         if (caseData.getStandardDirectionOrder() == null) {
             return ImmutableMap.of();

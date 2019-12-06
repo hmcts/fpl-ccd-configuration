@@ -57,7 +57,6 @@ public class CaseData {
     @NotNull(message = "You need to add details to solicitor")
     @Valid
     private final Solicitor solicitor;
-
     private final FactorsParenting factorsParenting;
     private final Allocation allocationProposal;
     private final Allocation allocationDecision;
@@ -128,7 +127,6 @@ public class CaseData {
     private final List<Element<HearingBooking>> hearingDetails;
 
     private LocalDate dateSubmitted;
-
     private final List<Element<DocumentBundle>> noticeOfProceedingsBundle;
     private final List<Element<Recipients>> statementOfService;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
@@ -142,6 +140,5 @@ public class CaseData {
     }
 
     private final CaseManagementOrder caseManagementOrder;
-
     private final Others others;
 }

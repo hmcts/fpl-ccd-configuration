@@ -53,7 +53,7 @@ class DocmosisDocumentGeneratorServiceTest {
     }
 
     @Test
-    void shouldGenerateEncodedStringWhengenerateDraftWatermarkCalled() {
+    void shouldGenerateEncodedStringWhenGenerateDraftWatermarkCalled() {
         String encodedImgString = createServiceInstance().generateDraftWatermarkEncodedString();
         assertThat(encodedImgString).isNotEqualTo("");
     }

@@ -2,11 +2,11 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -14,16 +14,20 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
+import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
+import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -38,23 +42,25 @@ import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataMapForDraftCMODocmosisGeneration;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
+import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftCMOController.class)
 @OverrideAutoConfiguration(enabled = true)
 @SuppressWarnings("unchecked")
 class DraftCMOControllerTest {
-    // TODO: 03/12/2019 Test mid-event
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
@@ -69,6 +75,11 @@ class DraftCMOControllerTest {
     private ObjectMapper mapper;
     @Autowired
     private DateFormatterService dateFormatterService;
+
+    @MockBean
+    private DocmosisDocumentGeneratorService documentGeneratorService;
+    @MockBean
+    private UploadDocumentService uploadDocumentService;
 
     @Test
     void aboutToStartCallbackShouldPrepareCaseForCMO() throws Exception {
@@ -108,12 +119,33 @@ class DraftCMOControllerTest {
         assertThat(callbackResponse.getData().get("nextHearingDateLabel")).isEqualTo("");
     }
 
-    @Disabled
     @Test
-    void midEventShouldGenerateADocument() throws Exception {
-        final Map<String, Object> caseData = buildCaseDataMapForDraftCMODocmosisGeneration(TODAYS_DATE);
+    void midEventShouldGenerateDraftCaseManagementOrderDocument() throws Exception {
+        byte[] pdf = {1, 2, 3, 4, 5};
+        final Document document = document();
+        final DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", pdf);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(caseData, "mid-event");
+        given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(documentGeneratorService.generateDraftWatermarkEncodedString()).willReturn("");
+        given(uploadDocumentService.uploadPDF(any(),any(), any(), any())).willReturn(document);
+
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(ImmutableMap.of(), "mid-event");
+
+        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-case-management-order.pdf");
+
+        final Map<String, Object> responseCaseData = callbackResponse.getData();
+
+        assertThat(responseCaseData).containsKey("reviewCaseManagementOrder");
+
+        Map<String, Object> review = (Map<String, Object>) responseCaseData.get("reviewCaseManagementOrder");
+
+        assertThat(review).containsEntry(
+            "orderDoc", ImmutableMap.builder()
+                .put("document_binary_url", document().links.binary.href)
+                .put("document_filename", document().originalDocumentName)
+                .put("document_url", document().links.self.href)
+                .build());
     }
 
     @Test
@@ -145,7 +177,7 @@ class DraftCMOControllerTest {
         assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
         assertThat(caseManagementOrder).extracting("id", "hearingDate")
             .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), TODAYS_DATE.plusDays(5).toString());
-        assertThat(caseManagementOrder.getCmoStatus()).isEqualTo(SELF_REVIEW);
+        assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
     }
 
     private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {

@@ -54,7 +54,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CaseManagementOrder",
-    "ListElementCode": "cmoStatus",
+    "ListElementCode": "status",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "CMOStatus",
     "ElementLabel": "Is this ready to be sent to the judge?",

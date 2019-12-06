@@ -100,9 +100,9 @@
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "caseManagementOrderAction",
+    "CaseFieldID": "orderAction",
     "TabFieldDisplayOrder": 4,
-    "FieldShowCondition": "caseManagementOrderAction.cmoActionType!=\"SEND_TO_ALL_PARTIES\""
+    "FieldShowCondition": "orderAction.type!=\"SEND_TO_ALL_PARTIES\""
   },
   {
     "LiveFrom": "01/01/2017",

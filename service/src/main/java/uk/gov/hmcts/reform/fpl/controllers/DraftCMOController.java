@@ -68,9 +68,9 @@ public class DraftCMOController {
 
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(
-        @RequestHeader(value = "authorization") String authorization,
-        @RequestHeader(value = "user-id") String userId,
+        @RequestHeader("authorization") String authorization, @RequestHeader("user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) throws IOException {
+
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final Map<String, Object> data = caseDetails.getData();
 
@@ -81,7 +81,7 @@ public class DraftCMOController {
         final DocumentReference reference = DocumentReference.builder()
             .url(document.links.self.href)
             .binaryUrl(document.links.binary.href)
-            .filename("draft-case-management-order.pdf")
+            .filename(document.originalDocumentName)
             .build();
 
         data.put("reviewCaseManagementOrder", ImmutableMap.of("orderDoc", reference));

@@ -205,7 +205,7 @@ public class DraftOrdersController {
 
     private List<Element<Direction>> getConfigDirectionsWithHiddenValues() throws IOException {
         // constructDirectionForCCD requires LocalDateTime, but this value is not used in what is returned
-        return ordersLookupService.getDirectionOrder().getDirections()
+        return ordersLookupService.getStandardDirectionOrder().getDirections()
             .stream()
             .map(direction -> directionHelperService.constructDirectionForCCD(direction, LocalDateTime.now()))
             .collect(Collectors.toList());

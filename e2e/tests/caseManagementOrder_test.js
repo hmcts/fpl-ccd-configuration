@@ -62,26 +62,24 @@ Before(async (I, caseViewPage, submitApplicationEventPage, enterFamilyManCaseNum
 Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await draftCaseManagementOrderEventPage.associateHearingDate('1 Jan 2050');
-  I.click('Continue');
+  await I.retryUntilExists(() => I.click('Continue'), '#allPartiesLabelCMO');
   await draftCaseManagementOrderEventPage.enterDirection(directions[0]);
-  I.click('Continue');
+  await I.retryUntilExists(() => I.click('Continue'), '#orderBasisLabel');
   await I.addAnotherElementToCollection();
   await draftCaseManagementOrderEventPage.enterRecital('Recital 1', 'Recital 1 description');
-  I.click('Continue');
+  await I.retryUntilExists(() => I.click('Continue'), '#schedule_schedule');
   await draftCaseManagementOrderEventPage.enterSchedule(schedule);
-  I.click('Continue');
-  draftCaseManagementOrderEventPage.markToReviewedBySelf();
+  await I.retryUntilExists(() => I.click('Continue'), '#reviewCaseManagementOrder_cmoStatus');
+  await draftCaseManagementOrderEventPage.markToReviewedBySelf();
   await I.completeEvent('Submit');
   assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview);
-  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  await draftCaseManagementOrderEventPage.validatePreviousSelectedHearingDate('1 Jan 2050');
 });
 
 // This scenario relies on running after 'local authority creates CMO'
 Scenario('Other parties cannot see the draft CMO when it is marked for self review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   // Ensure the selection is self review
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  skipToReview(I);
+  await skipToReview(I);
   draftCaseManagementOrderEventPage.markToReviewedBySelf();
   await I.completeEvent('Submit');
   assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview);
@@ -96,7 +94,7 @@ Scenario('Other parties cannot see the draft CMO when it is marked for self revi
 Scenario('Other parties can see the draft CMO when it is marked for party review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   // Ensure the selection is party review
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  skipToReview(I);
+  await skipToReview(I);
   draftCaseManagementOrderEventPage.markToBeReviewedByParties();
   await I.completeEvent('Submit');
   assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.partiesReview);
@@ -108,7 +106,8 @@ Scenario('Other parties can see the draft CMO when it is marked for party review
 
 const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
-  I.seeAnswerInTab(1, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
+  I.see('draft-case_management_order.pdf');
+  I.seeAnswerInTab(2, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
   I.seeAnswerInTab(1, 'Directions 1', 'Direction title', 'Mock title');
   I.seeAnswerInTab(4, 'Directions 1', 'Description', 'Mock description');
   I.seeAnswerInTab(5, 'Directions 1', 'For', 'All parties');
@@ -119,22 +118,22 @@ const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
   I.seeAnswerInTab(6, 'Directions 2', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
   I.seeAnswerInTab(1, 'Directions 3', 'Direction title', 'Mock title');
   I.seeAnswerInTab(4, 'Directions 3', 'Description', 'Mock description');
-  I.seeAnswerInTab(5, 'Directions 3', 'For', 'Cafcass');
-  I.seeAnswerInTab(6, 'Directions 3', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+  I.seeAnswerInTab(5, 'Directions 3', 'For', 'Parents and other respondents');
+  I.seeAnswerInTab(6, 'Directions 3', 'Assignee', 'Respondent 1');
+  I.seeAnswerInTab(7, 'Directions 3', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
   I.seeAnswerInTab(1, 'Directions 4', 'Direction title', 'Mock title');
   I.seeAnswerInTab(4, 'Directions 4', 'Description', 'Mock description');
-  I.seeAnswerInTab(5, 'Directions 4', 'For', 'Court');
+  I.seeAnswerInTab(5, 'Directions 4', 'For', 'Cafcass');
   I.seeAnswerInTab(6, 'Directions 4', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
   I.seeAnswerInTab(1, 'Directions 5', 'Direction title', 'Mock title');
   I.seeAnswerInTab(4, 'Directions 5', 'Description', 'Mock description');
-  I.seeAnswerInTab(5, 'Directions 5', 'For', 'Parents and other respondents');
-  I.seeAnswerInTab(6, 'Directions 5', 'Assignee', 'Respondent 1');
+  I.seeAnswerInTab(5, 'Directions 5', 'For', 'Other parties');
+  I.seeAnswerInTab(6, 'Directions 5', 'Assignee', 'Person 1');
   I.seeAnswerInTab(7, 'Directions 5', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
   I.seeAnswerInTab(1, 'Directions 6', 'Direction title', 'Mock title');
   I.seeAnswerInTab(4, 'Directions 6', 'Description', 'Mock description');
-  I.seeAnswerInTab(5, 'Directions 6', 'For', 'Other parties');
-  I.seeAnswerInTab(6, 'Directions 6', 'Assignee', 'Person 1');
-  I.seeAnswerInTab(7, 'Directions 6', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
+  I.seeAnswerInTab(5, 'Directions 6', 'For', 'Court');
+  I.seeAnswerInTab(6, 'Directions 6', 'Due date and time', '1 Jan 2050, 12:00:00 PM');
   I.seeAnswerInTab(1, 'Recitals 1', 'Recital title', 'Recital 1');
   I.seeAnswerInTab(1, 'Schedule', 'Do you want to include a schedule?', 'Yes');
   I.seeAnswerInTab(2, 'Schedule', 'Allocation', 'The proceedings continue to be allocated to Paul Wilson');
@@ -147,8 +146,7 @@ const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
   I.seeAnswerInTab(9, 'Schedule', 'Threshold', 'The S.31 threshold for the making of orders is in dispute');
   I.seeAnswerInTab(10, 'Schedule', 'Key issues', 'Are there any other family or friends capable of caring in the children');
   I.seeAnswerInTab(11, 'Schedule', 'Parties\' positions', 'The mother agrees section 20');
-  I.seeAnswerInTab(1, 'Recitals 1', 'Recital title', 'Recital 1');
-  I.seeAnswerInTab(6, 'Case management order', 'Is this ready to be sent to the judge?', cmoStatus);
+  I.seeAnswerInTab(7, 'Case management order', 'Is this ready to be sent to the judge?', cmoStatus);
 };
 
 const assertUserCannotSeeDraftOrders = async (I, userDetails) => {
@@ -168,10 +166,15 @@ const switchUserAndNavigateToCase = async (I, userDetails) => {
   await I.navigateToCaseDetails(caseId);
 };
 
-const skipToReview = (I) => {
-  const timesToClickContinue = 9;
-  for (let i = 0; i < timesToClickContinue; i++) {
-    I.click('Continue');
+const skipToReview = async (I) => {
+  const ids = [
+    '#allPartiesLabelCMO', '#localAuthorityDirectionsLabelCMO', '#respondentsDirectionLabelCMO',
+    '#cafcassDirectionsLabelCMO', '#otherPartiesDirectionLabelCMO','#courtDirectionsLabelCMO', '#orderBasisLabel',
+    '#schedule_schedule', '#reviewCaseManagementOrder_cmoStatus',
+  ];
+
+  for (let id of ids) {
+    await I.retryUntilExists(() => I.click('Continue'), id);
   }
 };
 
