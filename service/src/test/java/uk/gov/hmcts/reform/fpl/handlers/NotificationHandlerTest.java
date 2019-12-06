@@ -15,20 +15,10 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
-import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
-import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
-import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
-import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.events.*;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
-import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
+import uk.gov.hmcts.reform.fpl.service.email.content.*;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 import uk.gov.service.notify.NotificationClient;
@@ -49,12 +39,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C21_ORDER_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.*;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
@@ -117,6 +102,9 @@ class NotificationHandlerTest {
 
     @Mock
     private InboxLookupService inboxLookupService;
+
+    @Mock
+    private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
     @InjectMocks
     private NotificationHandler notificationHandler;
@@ -214,6 +202,38 @@ class NotificationHandlerTest {
             verify(notificationClient, times(1)).sendEmail(
                 eq(C21_ORDER_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
                 eq(c21CafcassParameters), eq("12345"));
+        }
+    }
+
+    @Nested
+    class CaseManagementOrderNotificationTests {
+        final String subjectLine = "Lastname, SACCCCCCCC5676576567";
+        final Map<String, Object> cmoOrderIssuedNotificationParameters = ImmutableMap.<String, Object>builder()
+            .put("localAuthorityOrRepresentative", LOCAL_AUTHORITY_NAME)
+            .put("hearingDetailsCallout", subjectLine)
+            .put("reference", "12345")
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .build();
+
+        @BeforeEach
+        void setup() throws IOException {
+            given(inboxLookupService.getNotificationRecipientEmail(callbackRequest().getCaseDetails(),
+                LOCAL_AUTHORITY_CODE))
+                .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+
+            given(caseManagementOrderEmailContentProvider.buildCMOOrderIssuedNotificationParametersForLocalAuthority(
+                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE))
+                .willReturn(cmoOrderIssuedNotificationParameters);
+        }
+
+        @Test
+        void shouldNotifyLocalAuthorityOfCaseManagementOrderIssued() throws Exception {
+            notificationHandler.notifyLocalAuthorityOfIssuedAndServedCaseManagementOrder(
+                new CMOOrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+
+            verify(notificationClient, times(1)).sendEmail(
+                eq(CMO_ORDER_ISSUED_NOTIFICATION), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(cmoOrderIssuedNotificationParameters), eq("12345"));
         }
     }
 

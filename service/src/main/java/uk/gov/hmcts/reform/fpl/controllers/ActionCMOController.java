@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.events.CMOOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -35,17 +37,20 @@ public class ActionCMOController {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final ObjectMapper mapper;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     public ActionCMOController(DraftCMOService draftCMOService,
                                ActionCmoService actionCmoService,
                                DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
                                UploadDocumentService uploadDocumentService,
-                               ObjectMapper mapper) {
+                               ObjectMapper mapper,
+                               ApplicationEventPublisher applicationEventPublisher) {
         this.draftCMOService = draftCMOService;
         this.actionCmoService = actionCmoService;
         this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
         this.mapper = mapper;
+        this.applicationEventPublisher = applicationEventPublisher;
     }
 
     @PostMapping("/about-to-start")
@@ -106,6 +111,13 @@ public class ActionCMOController {
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
+    }
+
+    @PostMapping("/submitted")
+    public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
+                                     @RequestHeader(value = "user-id") String userId,
+                                     @RequestBody CallbackRequest callbackRequest) {
+        applicationEventPublisher.publishEvent(new CMOOrderEvent(callbackRequest, authorization, userId));
     }
 
     private Document getDocument(String authorization, String userId, Map<String, Object> caseData, boolean approved)

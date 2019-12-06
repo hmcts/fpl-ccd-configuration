@@ -7,16 +7,22 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.*;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 
 class EmailNotificationHelperTest {
+    private final LocalDateTime DATE_IN_TEN_MONTHS = LocalDateTime.now().plusMonths(10);
 
     @Test
     void subjectLineShouldBeEmptyWhenNoRespondentOrCaseNumberEmpty() {
-        String subjectLine = EmailNotificationHelper.buildSubjectLine(CaseData.builder().build());
+        String subjectLine = buildSubjectLine(CaseData.builder().build());
         assertThat(subjectLine).isEmpty();
     }
 
@@ -24,22 +30,22 @@ class EmailNotificationHelperTest {
     void subjectLineShouldMatchWhenRespondentAndCaseNumberGiven() {
         CaseData caseData = CaseData.builder()
             .familyManCaseNumber("FamilyManCaseNumber")
-            .respondents1(CaseDataGeneratorHelper.createRespondents())
+            .respondents1(createRespondents())
             .build();
 
         String expectedSubjectLine = "Jones, FamilyManCaseNumber";
-        String subjectLine = EmailNotificationHelper.buildSubjectLine(caseData);
+        String subjectLine = buildSubjectLine(caseData);
         assertThat(subjectLine).isEqualTo(expectedSubjectLine);
     }
 
     @Test
     void subjectLineShouldNotBeEmptyWhenOnlyRespondentGiven() {
         CaseData caseData = CaseData.builder()
-            .respondents1(CaseDataGeneratorHelper.createRespondents())
+            .respondents1(createRespondents())
             .build();
 
         String expectedSubjectLine = "Jones";
-        String subjectLine = EmailNotificationHelper.buildSubjectLine(caseData);
+        String subjectLine = buildSubjectLine(caseData);
         assertThat(subjectLine).isEqualTo(expectedSubjectLine);
     }
 
@@ -84,7 +90,37 @@ class EmailNotificationHelperTest {
             .build();
 
         String expectedSubjectLine = "FamilyManCaseNumber-With-Empty-Lastname";
-        String subjectLine = EmailNotificationHelper.buildSubjectLine(caseData);
+        String subjectLine = buildSubjectLine(caseData);
         assertThat(subjectLine).isEqualTo(expectedSubjectLine);
+    }
+
+    @Test
+    void subjectLineShouldReturnFirstNameFamilyManCaseNumberWithHearingDateSuffixed() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(createRespondents())
+            .hearingDetails(createHearingBookings(DATE_IN_TEN_MONTHS))
+            .familyManCaseNumber("FamilyManCaseNumber")
+            .build();
+
+        String expectedSubjectLineWithHearingDateSuffix = "Jones, FamilyManCaseNumber, hearing 6 Oct 2020";
+        String subjectLine = buildSubjectLine(caseData);
+        String subjectLineWithHearingDateSuffix = buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
+            caseData.getHearingDetails());
+        assertThat(subjectLineWithHearingDateSuffix).isEqualTo(expectedSubjectLineWithHearingDateSuffix);
+    }
+
+    @Test
+    void subjectLineShouldReturnFirstNameFamilyManCaseNumberWithNoHearingDateSuffixed() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(createRespondents())
+            .hearingDetails(null)
+            .familyManCaseNumber("FamilyManCaseNumber")
+            .build();
+
+        String expectedSubjectLineWithHearingDateSuffix = "Jones, FamilyManCaseNumber";
+        String subjectLine = buildSubjectLine(caseData);
+        String subjectLineWithHearingDateSuffix = buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
+            caseData.getHearingDetails());
+        assertThat(subjectLineWithHearingDateSuffix).isEqualTo(expectedSubjectLineWithHearingDateSuffix);
     }
 }

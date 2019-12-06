@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.CMOOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvide
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
+import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
@@ -33,6 +35,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C21_ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
@@ -58,6 +61,7 @@ public class NotificationHandler {
     private final NotificationClient notificationClient;
     private final IdamApi idamApi;
     private final InboxLookupService inboxLookupService;
+    private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
     @EventListener
     public void sendNotificationToHmctsAdmin(SubmittedCaseEvent event) {
@@ -141,6 +145,17 @@ public class NotificationHandler {
         String reference = Long.toString(caseDetails.getId());
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
         sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, reference);
+    }
+
+    @EventListener
+    public void notifyLocalAuthorityOfIssuedAndServedCaseManagementOrder(CMOOrderEvent cmoOrderEvent) {
+        CaseDetails caseDetails = cmoOrderEvent.getCallbackRequest().getCaseDetails();
+        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+        Map<String, Object> parameters = caseManagementOrderEmailContentProvider
+            .buildCMOOrderIssuedNotificationParametersForLocalAuthority(caseDetails, localAuthorityCode);
+        String reference = Long.toString(caseDetails.getId());
+        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
+        sendNotification(CMO_ORDER_ISSUED_NOTIFICATION, email, parameters, reference);
     }
 
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
