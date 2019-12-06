@@ -145,7 +145,10 @@ class FinalOrderControllerTest {
 
             FinalOrder expectedC21Order = FinalOrder.builder()
                 .type(BLANK_ORDER)
-                //TODO - add document + add it to finalOrderTypeAndDocument in callback-request.json?
+                .document(DocumentReference.builder()
+                    .url("some url")
+                    .binaryUrl("some binary url")
+                    .filename("file.pdf").build())
                 .orderTitle("Example Order")
                 .orderDetails("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
                 .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
@@ -169,7 +172,10 @@ class FinalOrderControllerTest {
 
             FinalOrder expectedCareOrder = FinalOrder.builder()
                 .type(CARE_ORDER)
-                //TODO - add document + add it to finalOrderTypeAndDocument in care-order.json?
+                .document(DocumentReference.builder()
+                    .url("some url")
+                    .binaryUrl("some binary url")
+                    .filename("file.pdf").build())
                 .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
                     FixedTimeConfiguration.NOW, "h:mma, d MMMM yyyy"))
                 .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
