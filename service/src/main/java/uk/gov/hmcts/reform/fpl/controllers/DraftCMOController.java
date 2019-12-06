@@ -88,9 +88,9 @@ public class DraftCMOController {
             .filename(document.originalDocumentName)
             .build();
 
-
         final CaseManagementOrder oldCMO = defaultIfNull(
             caseData.getCaseManagementOrder(), CaseManagementOrder.builder().build());
+
         final CaseManagementOrder updatedCMO = oldCMO.toBuilder()
             .orderDoc(reference)
             .build();
@@ -106,11 +106,12 @@ public class DraftCMOController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final Map<String, Object> data = caseDetails.getData();
-        final CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData);
 
-        draftCMOService.prepareCaseDetails(data, caseManagementOrder);
+        draftCMOService.removeTransientObjectsFromCaseData(data);
+        draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)

@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
-import static org.apache.commons.lang3.ArrayUtils.add;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
@@ -292,27 +291,44 @@ class DraftCMOServiceTest {
         }
 
         @Test
-        void shouldRemoveAllRelatedEntriesInCaseDetailsApartFromWhenCMOStatusIsPartyReview() {
-            caseManagementOrderBuilder.cmoStatus(PARTIES_REVIEW);
-
+        void shouldRemoveScheduleAndRecitalsAndHearingDateListFromCaseData() {
             Arrays.stream(keys).forEach(key -> data.put(key, ""));
 
-            draftCMOService.prepareCaseDetails(data, caseManagementOrderBuilder.build());
+            draftCMOService.removeTransientObjectsFromCaseData(data);
 
             assertThat(data).doesNotContainKeys(keys);
-            assertThat(data).containsKeys("sharedDraftCMODocument", "caseManagementOrder");
         }
 
         @Test
-        void shouldRemoveAllRelatedEntriesInCaseDetailsApartFromCaseManagementOrderWhenCMOStatusIsSelfReview() {
+        void shouldOnlyPopulateCaseManagementOrderWhenCMOStatusIsSelfReview() {
             caseManagementOrder = caseManagementOrderBuilder.cmoStatus(SELF_REVIEW).build();
 
-            data.put("sharedDraftCMODocument", caseManagementOrder.getOrderDoc());
+            draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
 
-            draftCMOService.prepareCaseDetails(data, caseManagementOrder);
+            assertThat(data.get("caseManagementOrder")).isEqualTo(caseManagementOrder);
+        }
 
-            assertThat(data).doesNotContainKeys(add(keys, "sharedDraftCMODocument"));
-            assertThat(data).containsKey("caseManagementOrder");
+        @Test
+        void shouldMakeSharedDraftCMODocumentNullWhenCMOStatusIsSelfReview() {
+            caseManagementOrder = caseManagementOrderBuilder.cmoStatus(SELF_REVIEW).build();
+            data.put("sharedDraftCMODocument", DocumentReference.builder().build());
+
+            draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
+
+            assertThat(data.get("sharedDraftCMODocument")).isNull();
+        }
+
+        @Test
+        void shouldPopulateSharedDraftCMODocumentWhenCMOStatusIsPartyReview() {
+            DocumentReference documentReference = DocumentReference.builder().build();
+            caseManagementOrder = caseManagementOrderBuilder
+                .cmoStatus(PARTIES_REVIEW)
+                .orderDoc(documentReference)
+                .build();
+
+            draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
+
+            assertThat(data.get("sharedDraftCMODocument")).isEqualTo(documentReference);
         }
     }
 }

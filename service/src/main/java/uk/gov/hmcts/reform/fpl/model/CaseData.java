@@ -7,6 +7,7 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -147,6 +148,7 @@ public class CaseData {
     private final DynamicList cmoHearingDateList;
     private final Schedule schedule;
     private final List<Element<Recital>> recitals;
+    private final DocumentReference sharedDraftCMODocument;
 
     private final Others others;
 }

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
@@ -79,19 +79,18 @@ public class DraftCMOService {
             .build();
     }
 
-    public void prepareCaseDetails(Map<String, Object> caseData, CaseManagementOrder caseManagementOrder) {
-        final ImmutableSet<String> keysToRemove = ImmutableSet.of(
+    public void removeTransientObjectsFromCaseData(Map<String, Object> caseData) {
+        final Set<String> keysToRemove = Set.of(
             "cmoHearingDateList",
             "schedule",
             "recitals");
 
         keysToRemove.forEach(caseData::remove);
+    }
 
-        caseData.put("caseManagementOrder", caseManagementOrder);
-
+    public void populateCaseDataWithCMO(Map<String, Object> caseData, CaseManagementOrder caseManagementOrder) {
         switch (caseManagementOrder.getCmoStatus()) {
             case SEND_TO_JUDGE:
-                // Does the same as PARTIES_REVIEW for now but in the future this will change
             case PARTIES_REVIEW:
                 caseData.put("sharedDraftCMODocument", caseManagementOrder.getOrderDoc());
                 break;
@@ -101,6 +100,8 @@ public class DraftCMOService {
             default:
                 break;
         }
+
+        caseData.put("caseManagementOrder", caseManagementOrder);
     }
 
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
