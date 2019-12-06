@@ -51,6 +51,6 @@
     "ElementLabel": "nextHearingId",
     "SecurityClassification": "Public",
     "FieldShowCondition": "nextHearingDate=\"DO_NOT_SHOW\"",
-    "Comment": "Id has been used here to uniquely identify selected date in case management order"
+    "Comment": "nextHearingId uniquely identifies selected date in action CMO"
   }
 ]
