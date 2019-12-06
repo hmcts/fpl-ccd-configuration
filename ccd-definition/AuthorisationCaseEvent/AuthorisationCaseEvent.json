@@ -695,28 +695,28 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadDocumentsSolicitor",
+    "CaseEventID": "limitedUploadDocuments",
     "UserRole": "[SOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadDocumentsSolicitor",
+    "CaseEventID": "limitedUploadDocuments",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadDocumentsSolicitorGatekeeping",
+    "CaseEventID": "limitedUploadDocumentsGatekeeping",
     "UserRole": "[SOLICITOR]",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadDocumentsSolicitorGatekeeping",
+    "CaseEventID": "limitedUploadDocumentsGatekeeping",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
   },
@@ -744,7 +744,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "uploadDocumentsSolicitor-PREPARE_FOR_HEARING",
+    "CaseEventID": "limitedUploadDocuments-PREPARE_FOR_HEARING",
     "UserRole": "[SOLICITOR]",
     "CRUD": "CRU"
   }
