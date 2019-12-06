@@ -10,4 +10,13 @@ module.exports = [
       legalAdvisorName: 'Peter Parker',
     },
   },
+  {
+    orderType: 'Care order',
+    orderDoc: 'Care order.pdf',
+    judgeAndLegalAdvisor: {
+      judgeTitle: 'Her Honour Judge',
+      judgeLastName: 'Judy',
+      legalAdvisorName: 'Fred Frederickson',
+    },
+  },
 ];

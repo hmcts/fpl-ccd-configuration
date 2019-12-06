@@ -27,19 +27,23 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.enums.FinalOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.FinalOrderType.CARE_ORDER;
 
 @Slf4j
 @Service
 public class FinalOrderService {
     private final DateFormatterService dateFormatterService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final Time time;
 
     public FinalOrderService(DateFormatterService dateFormatterService,
                              HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
+                             LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                              Time time) {
         this.dateFormatterService = dateFormatterService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
+        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.time = time;
     }
 
@@ -75,6 +79,9 @@ public class FinalOrderService {
                 orderBuilder.orderTitle(defaultIfBlank(order.getOrderTitle(), "Order"));
                 orderBuilder.orderDetails(order.getOrderDetails());
                 break;
+            case CARE_ORDER:
+                orderBuilder.orderTitle(null);
+                break;
             default:
         }
 
@@ -100,6 +107,14 @@ public class FinalOrderService {
                     .put("orderTitle", defaultIfNull(caseData.getFinalOrder().getOrderTitle(), "Order"))
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails", caseData.getFinalOrder().getOrderDetails());
+                break;
+            case CARE_ORDER:
+                orderTemplateBuilder
+                    .put("orderType", CARE_ORDER)
+                    .put("orderTitle", "Care Order")
+                    .put("childrenAct", "Children Act 1989")
+                    .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),
+                        caseData.getCaseLocalAuthority()));
                 break;
             default:
         }
@@ -133,6 +148,15 @@ public class FinalOrderService {
 
     private String getCourtName(String caseLocalAuthority) {
         return hmctsCourtLookupConfiguration.getCourt(caseLocalAuthority).getName();
+    }
+
+    private String getLocalAuthorityName(String caseLocalAuthority) {
+        return localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
+    }
+
+    private String careOrderDetails(int numOfChildren, String caseLocalAuthority) {
+        return "It is ordered that the " + (numOfChildren == 1 ? "child is " :
+            "children are ") + "placed in the care of " + getLocalAuthorityName(caseLocalAuthority) + ".";
     }
 
     private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
