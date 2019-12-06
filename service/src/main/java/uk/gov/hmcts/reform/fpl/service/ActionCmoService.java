@@ -1,26 +1,25 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
 public class ActionCmoService {
-    private final ObjectMapper objectMapper;
     private final DraftCMOService draftCMOService;
 
     private static final String CMO_ACTION_KEY = "orderAction";
     private static final String CMO_KEY = "caseManagementOrder";
 
     //TODO: this should all exist in one CaseManagementOrderService
-    public ActionCmoService(ObjectMapper objectMapper, DraftCMOService draftCMOService) {
-        this.objectMapper = objectMapper;
+    public ActionCmoService(DraftCMOService draftCMOService) {
         this.draftCMOService = draftCMOService;
     }
 
@@ -28,15 +27,6 @@ public class ActionCmoService {
         return caseManagementOrder.toBuilder()
             .orderDoc(buildDocumentReference(document))
             .build();
-    }
-
-    public CaseManagementOrder getCaseManagementOrder(Map<String, Object> caseDataMap) {
-        CaseData caseData = objectMapper.convertValue(caseDataMap, CaseData.class);
-
-        caseDataMap.putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
-            caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
-
-        return objectMapper.convertValue(caseDataMap.get("caseManagementOrder"), CaseManagementOrder.class);
     }
 
     public void prepareCaseDetailsForSubmission(CaseDetails caseDetails, CaseManagementOrder order, boolean approved) {
@@ -49,11 +39,16 @@ public class ActionCmoService {
         }
     }
 
-    private DocumentReference buildDocumentReference(final Document updatedDocument) {
+    public Map<String, Object> extractMapFieldsFromCaseManagementOrder(CaseManagementOrder order,
+                                                                       List<Element<HearingBooking>> hearingDetails) {
+        return draftCMOService.extractIndividualCaseManagementOrderObjects(order, hearingDetails);
+    }
+
+    private DocumentReference buildDocumentReference(final Document document) {
         return DocumentReference.builder()
-            .url(updatedDocument.links.self.href)
-            .binaryUrl(updatedDocument.links.binary.href)
-            .filename(updatedDocument.originalDocumentName)
+            .url(document.links.self.href)
+            .binaryUrl(document.links.binary.href)
+            .filename(document.originalDocumentName)
             .build();
     }
 }
