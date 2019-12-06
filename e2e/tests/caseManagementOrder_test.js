@@ -69,7 +69,7 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   await draftCaseManagementOrderEventPage.enterRecital('Recital 1', 'Recital 1 description');
   await I.retryUntilExists(() => I.click('Continue'), '#schedule_schedule');
   await draftCaseManagementOrderEventPage.enterSchedule(schedule);
-  await I.retryUntilExists(() => I.click('Continue'), '#reviewCaseManagementOrder_cmoStatus');
+  await I.retryUntilExists(() => I.click('Continue'), '#caseManagementOrder_cmoStatus');
   await draftCaseManagementOrderEventPage.markToReviewedBySelf();
   await I.completeEvent('Submit');
   assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview);
@@ -170,7 +170,7 @@ const skipToReview = async (I) => {
   const ids = [
     '#allPartiesLabelCMO', '#localAuthorityDirectionsLabelCMO', '#respondentsDirectionLabelCMO',
     '#cafcassDirectionsLabelCMO', '#otherPartiesDirectionLabelCMO','#courtDirectionsLabelCMO', '#orderBasisLabel',
-    '#schedule_schedule', '#reviewCaseManagementOrder_cmoStatus',
+    '#schedule_schedule', '#caseManagementOrder_cmoStatus',
   ];
 
   for (let id of ids) {

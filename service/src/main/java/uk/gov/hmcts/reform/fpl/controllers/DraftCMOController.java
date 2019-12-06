@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Api
@@ -88,7 +88,14 @@ public class DraftCMOController {
             .filename(document.originalDocumentName)
             .build();
 
-        data.put("reviewCaseManagementOrder", ImmutableMap.of("orderDoc", reference));
+
+        final CaseManagementOrder oldCMO = defaultIfNull(
+            caseData.getCaseManagementOrder(), CaseManagementOrder.builder().build());
+        final CaseManagementOrder updatedCMO = oldCMO.toBuilder()
+            .orderDoc(reference)
+            .build();
+
+        data.put("caseManagementOrder", updatedCMO);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)

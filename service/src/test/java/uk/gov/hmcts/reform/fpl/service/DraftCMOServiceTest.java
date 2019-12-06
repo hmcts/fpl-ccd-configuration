@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -128,7 +127,6 @@ class DraftCMOServiceTest {
         );
 
         caseData.put("cmoHearingDateList", getDynamicList());
-        caseData.put("reviewCaseManagementOrder", ImmutableMap.of());
 
         CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(
             mapper.convertValue(caseData, CaseData.class));
@@ -192,18 +190,22 @@ class DraftCMOServiceTest {
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
 
-        assertThat(data).containsKeys("cmoHearingDateList", "schedule", "recitals", "reviewCaseManagementOrder");
+        assertThat(data).containsKeys("cmoHearingDateList", "schedule", "recitals");
     }
 
     @Test
     void shouldReturnAMapWithEmptyRepopulatedEntriesWhenCaseManagementOrderIsNull() {
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
-            null, hearingDetails);
+            null, List.of());
 
+        DynamicList emptyDynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder().label("").build())
+            .listItems(List.of())
+            .build();
+
+        assertThat(data.get("cmoHearingDateList")).isEqualTo(emptyDynamicList);
         assertThat(data.get("schedule")).isNull();
         assertThat(data.get("recitals")).isNull();
-        assertThat(data.get("reviewCaseManagementOrder")).extracting("cmoStatus").isNull();
-        assertThat(data.get("reviewCaseManagementOrder")).extracting("orderDoc").isNull();
     }
 
     @Test
@@ -278,8 +280,7 @@ class DraftCMOServiceTest {
         private final String[] keys = {
             "cmoHearingDateList",
             "recitals",
-            "schedule",
-            "reviewCaseManagementOrder"};
+            "schedule"};
 
         private HashMap<String, Object> data; // Tries to use an ImmutableMap unless specified
 

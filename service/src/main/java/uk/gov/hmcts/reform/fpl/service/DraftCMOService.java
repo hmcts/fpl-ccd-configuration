@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.model.configuration.ReviewCaseManagementOrder;
 
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
@@ -57,24 +56,17 @@ public class DraftCMOService {
             caseManagementOrder = CaseManagementOrder.builder().build();
         }
 
-        HashMap<String, Object> data = new HashMap<>();
-        HashMap<String, Object> reviewCaseManagementOrder = new HashMap<>();
-
-        reviewCaseManagementOrder.put("cmoStatus", caseManagementOrder.getCmoStatus());
-        reviewCaseManagementOrder.put("orderDoc", caseManagementOrder.getOrderDoc());
-
+        Map<String, Object> data = new HashMap<>();
         data.put("cmoHearingDateList", getHearingDateDynamicList(hearingDetails, caseManagementOrder));
         data.put("schedule", caseManagementOrder.getSchedule());
         data.put("recitals", caseManagementOrder.getRecitals());
-        data.put("reviewCaseManagementOrder", reviewCaseManagementOrder);
 
         return data;
     }
 
     public CaseManagementOrder prepareCMO(CaseData caseData) {
+        Optional<CaseManagementOrder> oldCMO = Optional.ofNullable(caseData.getCaseManagementOrder());
         Optional<DynamicList> cmoHearingDateList = Optional.ofNullable(caseData.getCmoHearingDateList());
-        Optional<ReviewCaseManagementOrder> optionalReview = Optional.ofNullable(
-            caseData.getReviewCaseManagementOrder());
 
         return CaseManagementOrder.builder()
             .hearingDate(cmoHearingDateList.map(DynamicList::getValueLabel).orElse(null))
@@ -82,8 +74,8 @@ public class DraftCMOService {
             .directions(combineAllDirectionsForCmo(caseData))
             .schedule(caseData.getSchedule())
             .recitals(caseData.getRecitals())
-            .cmoStatus(optionalReview.map(ReviewCaseManagementOrder::getCmoStatus).orElse(null))
-            .orderDoc(optionalReview.map(ReviewCaseManagementOrder::getOrderDoc).orElse(null))
+            .cmoStatus(oldCMO.map(CaseManagementOrder::getCmoStatus).orElse(null))
+            .orderDoc(oldCMO.map(CaseManagementOrder::getOrderDoc).orElse(null))
             .build();
     }
 
@@ -91,7 +83,6 @@ public class DraftCMOService {
         final ImmutableSet<String> keysToRemove = ImmutableSet.of(
             "cmoHearingDateList",
             "schedule",
-            "reviewCaseManagementOrder",
             "recitals");
 
         keysToRemove.forEach(caseData::remove);
