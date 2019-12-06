@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.fpl.enums.Type.SEND_TO_ALL_PARTIES;
 @RestController
 @RequestMapping("/callback/action-cmo")
 public class ActionCMOController {
-    private static final String CMO_ACTION_KEY = "caseManagementOrderAction";
+    private static final String CMO_ACTION_KEY = "orderAction";
     private static final String CMO_KEY = "caseManagementOrder";
 
     private final DraftCMOService draftCMOService;
@@ -53,9 +53,9 @@ public class ActionCMOController {
 
         draftCMOService.prepareCustomDirections(caseDetails.getData());
 
-        CaseManagementOrder orderForAction = actionCmoService.getCaseManagementOrderForAction(caseDataMap);
+        CaseManagementOrder order = actionCmoService.getCaseManagementOrder(caseDataMap);
 
-        caseDetails.getData().put(CMO_KEY, orderForAction);
+        caseDetails.getData().put(CMO_KEY, order);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -69,11 +69,11 @@ public class ActionCMOController {
         @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        CaseManagementOrder orderForAction = actionCmoService.getCaseManagementOrderForAction(caseDetails.getData());
+        CaseManagementOrder order = actionCmoService.getCaseManagementOrder(caseDetails.getData());
 
         Document document = getDocument(authorization, userId, caseDetails.getData(), false);
 
-        CaseManagementOrder orderWithDocument = actionCmoService.addDocument(orderForAction, document);
+        CaseManagementOrder orderWithDocument = actionCmoService.addDocument(order, document);
 
         caseDetails.getData()
             .put(CMO_ACTION_KEY, ImmutableMap.of("orderDoc", orderWithDocument.getOrderDoc()));
@@ -90,28 +90,17 @@ public class ActionCMOController {
         @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        CaseManagementOrder order = actionCmoService.getCaseManagementOrderForAction(caseDetails.getData());
+        CaseManagementOrder order = actionCmoService.getCaseManagementOrder(caseDetails.getData());
 
-        Document actionedCaseManageOrderDocument =
-            getDocument(authorization, userId, caseDetails.getData(), hasJudgeApproved(order));
+        Document document = getDocument(authorization, userId, caseDetails.getData(), hasJudgeApproved(order));
 
-        CaseManagementOrder orderWithDocument = actionCmoService.addDocument(order, actionedCaseManageOrderDocument);
+        CaseManagementOrder orderWithDocument = actionCmoService.addDocument(order, document);
 
-        prepareCaseDetailsForSubmission(caseDetails, orderWithDocument, hasJudgeApproved(order));
+        actionCmoService.prepareCaseDetailsForSubmission(caseDetails, orderWithDocument, hasJudgeApproved(order));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
-    }
-
-    private void prepareCaseDetailsForSubmission(CaseDetails caseDetails, CaseManagementOrder order, boolean approved) {
-        caseDetails.getData().put(CMO_ACTION_KEY, order.getAction());
-
-        if (approved) {
-            caseDetails.getData().put(CMO_KEY, order);
-        } else {
-            caseDetails.getData().remove(CMO_KEY);
-        }
     }
 
     private Document getDocument(String authorization, String userId, Map<String, Object> caseData, boolean approved)
@@ -126,7 +115,7 @@ public class ActionCMOController {
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), documentTitle);
     }
 
-    private boolean hasJudgeApproved(final CaseManagementOrder caseManagementOrder) {
+    private boolean hasJudgeApproved(CaseManagementOrder caseManagementOrder) {
         return caseManagementOrder.getAction().getType().equals(SEND_TO_ALL_PARTIES);
     }
 }

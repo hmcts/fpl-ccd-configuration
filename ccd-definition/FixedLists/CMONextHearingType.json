@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CMONextHearingType",
-    "ListElementCode": "FURTHER_CASE_MANAGEMENT",
+    "ListElementCode": "FURTHER_CASE_MGMT_HEARING",
     "ListElement": "Further case management hearing",
     "DisplayOrder": 1
   },

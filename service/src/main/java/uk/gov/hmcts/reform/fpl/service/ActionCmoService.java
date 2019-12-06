@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
@@ -14,6 +15,9 @@ public class ActionCmoService {
     private final ObjectMapper objectMapper;
     private final DraftCMOService draftCMOService;
 
+    private static final String CMO_ACTION_KEY = "orderAction";
+    private static final String CMO_KEY = "caseManagementOrder";
+
     //TODO: this should all exist in one CaseManagementOrderService
     public ActionCmoService(ObjectMapper objectMapper, DraftCMOService draftCMOService) {
         this.objectMapper = objectMapper;
@@ -21,18 +25,28 @@ public class ActionCmoService {
     }
 
     public CaseManagementOrder addDocument(CaseManagementOrder caseManagementOrder, Document document) {
-        return CaseManagementOrder.builder()
+        return caseManagementOrder.toBuilder()
             .orderDoc(buildDocumentReference(document))
             .build();
     }
 
-    public CaseManagementOrder getCaseManagementOrderForAction(Map<String, Object> caseDataMap) {
+    public CaseManagementOrder getCaseManagementOrder(Map<String, Object> caseDataMap) {
         CaseData caseData = objectMapper.convertValue(caseDataMap, CaseData.class);
 
         caseDataMap.putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
 
         return objectMapper.convertValue(caseDataMap.get("caseManagementOrder"), CaseManagementOrder.class);
+    }
+
+    public void prepareCaseDetailsForSubmission(CaseDetails caseDetails, CaseManagementOrder order, boolean approved) {
+        caseDetails.getData().put(CMO_ACTION_KEY, order.getAction());
+
+        if (approved) {
+            caseDetails.getData().put(CMO_KEY, order);
+        } else {
+            caseDetails.getData().remove(CMO_KEY);
+        }
     }
 
     private DocumentReference buildDocumentReference(final Document updatedDocument) {

@@ -77,8 +77,7 @@ public class DraftCMOService {
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
 
     public Map<String, Object> extractIndividualCaseManagementOrderObjects(
-        CaseManagementOrder caseManagementOrder,
-        List<Element<HearingBooking>> hearingDetails) {
+        CaseManagementOrder caseManagementOrder, List<Element<HearingBooking>> hearingDetails) {
 
         if (isNull(caseManagementOrder)) {
             caseManagementOrder = CaseManagementOrder.builder().build();
@@ -236,7 +235,7 @@ public class DraftCMOService {
         DynamicList hearingDateList = mapper.convertValue(caseDataMap.get("cmoHearingDateList"), DynamicList.class);
         CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
         String localAuthorityCode = caseData.getCaseLocalAuthority();
-            CaseManagementOrder caseManagementOrder = defaultIfNull(prepareCMO(caseDataMap),
+        CaseManagementOrder caseManagementOrder = defaultIfNull(prepareCMO(caseDataMap),
             CaseManagementOrder.builder().build());
 
         cmoTemplateData.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_PLACEHOLDER));
