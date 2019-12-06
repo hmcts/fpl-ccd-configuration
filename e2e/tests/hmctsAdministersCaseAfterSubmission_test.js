@@ -144,9 +144,9 @@ Scenario('HMCTS admin creates C21 order for the case', async (I, caseViewPage, c
 
   I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeAnswerInTab(1, 'C21 Order 1', 'Order title', orders[0].orderTitle);
-  I.seeAnswerInTab(3, 'C21 Order 1', 'Order document', orders[0].orderDoc);
-  I.seeAnswerInTab(4, 'C21 Order 1', 'Date and time of upload', dateFormat(now, 'd mmmm yyyy'));
+  I.seeAnswerInTab(1, 'C21 order 1', 'Order title', orders[0].orderTitle);
+  I.seeAnswerInTab(3, 'C21 order 1', 'Order document', orders[0].orderDoc);
+  I.seeAnswerInTab(4, 'C21 order 1', 'Date and time of upload', dateFormat(now, 'd mmmm yyyy'));
   I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', orders[0].judgeAndLegalAdvisor.judgeTitle);
   I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', orders[0].judgeAndLegalAdvisor.judgeLastName);
   I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name', orders[0].judgeAndLegalAdvisor.legalAdvisorName);
