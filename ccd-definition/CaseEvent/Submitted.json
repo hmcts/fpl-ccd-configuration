@@ -226,7 +226,7 @@
     "ID": "limitedUploadDocuments",
     "Name": "Documents",
     "Description": "Upload documents",
-    "DisplayOrder": 1,
+    "DisplayOrder": 15,
     "PreConditionState(s)": "Submitted",
     "PostConditionState": "Submitted",
     "SecurityClassification": "Public",
