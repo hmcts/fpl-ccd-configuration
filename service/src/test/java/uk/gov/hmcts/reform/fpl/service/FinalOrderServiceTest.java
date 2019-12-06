@@ -206,7 +206,17 @@ class FinalOrderServiceTest {
     }
 
     @Test
-    void shouldGenerateCorrectFileNameWhenGivenOrderType() {
+    void shouldGenerateCorrectFileNameWhenGivenC21OrderType() {
+        OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
+            .finalOrderType(BLANK_ORDER)
+            .document(DocumentReference.builder().build()).build();
+
+        assertThat(service.generateDocumentFileName(typeAndDocument)).isEqualTo(
+            BLANK_ORDER.getType().replaceAll("[()]", "") + ".pdf");
+    }
+
+    @Test
+    void shouldGenerateCorrectFileNameWhenGivenCareOrderType() {
         OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
             .finalOrderType(CARE_ORDER)
             .document(DocumentReference.builder().build()).build();

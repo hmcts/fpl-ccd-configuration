@@ -134,7 +134,7 @@ public class FinalOrderService {
     }
 
     public String generateDocumentFileName(OrderTypeAndDocument orderTypeAndDocument) {
-        return orderTypeAndDocument.getFinalOrderType().getType() + ".pdf";
+        return orderTypeAndDocument.getFinalOrderType().getType().replaceAll("[()]", "") + ".pdf";
     }
 
     public String mostRecentUploadedOrderDocumentUrl(final List<Element<FinalOrder>> finalOrders) {
