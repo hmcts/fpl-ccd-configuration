@@ -8,9 +8,9 @@ public enum NextHearingType {
     ISSUES_RESOLUTION_HEARING("Issues resolution hearing"),
     FINAL_HEARING("Final hearing");
 
-    private final String nextHearingStatusValue;
+    private final String value;
 
-    NextHearingType(String nextHearingStatusValue) {
-        this.nextHearingStatusValue = nextHearingStatusValue;
+    NextHearingType(String value) {
+        this.value = value;
     }
 }

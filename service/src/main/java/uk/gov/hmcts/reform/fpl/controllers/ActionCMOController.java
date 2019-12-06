@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import java.io.IOException;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.enums.Type.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 
 @Api
 @RestController
