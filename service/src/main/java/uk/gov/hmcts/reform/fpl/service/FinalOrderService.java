@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.FinalOrder;
@@ -93,6 +92,7 @@ public class FinalOrderService {
     public Map<String, Object> getFinalOrderTemplateData(CaseData caseData) {
         ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
 
+        //Scalable for future order types
         switch (caseData.getOrderTypeAndDocument().getFinalOrderType()) {
             case BLANK_ORDER:
                 orderTemplateBuilder
@@ -119,7 +119,7 @@ public class FinalOrderService {
     }
 
     public String generateDocumentFileName(OrderTypeAndDocument orderTypeAndDocument) {
-        return orderTypeAndDocument.getFinalOrderType().getType() + ".pdf";
+        return orderTypeAndDocument.getFinalOrderType().getType().replaceAll("[()]", "") + ".pdf";
     }
 
     public String mostRecentUploadedOrderDocumentUrl(final List<Element<FinalOrder>> finalOrders) {

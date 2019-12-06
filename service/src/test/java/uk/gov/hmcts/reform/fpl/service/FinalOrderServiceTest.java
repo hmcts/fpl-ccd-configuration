@@ -27,7 +27,6 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.FinalOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.FinalOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createFinalOrders;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -193,8 +192,8 @@ class FinalOrderServiceTest {
             .finalOrderType(BLANK_ORDER)
             .document(DocumentReference.builder().build()).build();
 
-        assertThat(service.generateDocumentFileName(typeAndDocument)).isEqualTo(
-            CARE_ORDER.getType().replaceAll("[()]", "") + ".pdf");
+        assertThat(service.generateDocumentFileName(typeAndDocument)).isEqualTo(BLANK_ORDER.getType().replaceAll(
+            "[()]", "") + ".pdf");
     }
 
     @Test
@@ -218,6 +217,7 @@ class FinalOrderServiceTest {
     private Map<String, Object> expectedData(String date, FinalOrderType orderType) {
         ImmutableMap.Builder expectedMap = ImmutableMap.<String, Object>builder();
 
+        //Scalable for future order types
         switch (orderType) {
             case BLANK_ORDER:
                 expectedMap
@@ -247,6 +247,7 @@ class FinalOrderServiceTest {
     private CaseData populatedCaseData(FinalOrderType orderType, LocalDate localDate) {
         CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder();
 
+        //Scalable for future order types
         switch (orderType) {
             case BLANK_ORDER:
                 caseDataBuilder
