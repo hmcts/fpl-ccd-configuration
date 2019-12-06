@@ -17,6 +17,9 @@ idam:
   s2s-auth:
     microservice: fpl_case_service
 
+fpl:
+  local_authority_codes_forbidden_case_submission:
+
 ---
 
 spring:
@@ -57,6 +60,7 @@ ccd:
       url: http://fake-url
 
 fpl:
+  local_authority_codes_forbidden_case_submission: FPLA
   local_authority_email_to_code:
     mapping: 'example.gov.uk=>example'
   local_authority_code_to_name:
