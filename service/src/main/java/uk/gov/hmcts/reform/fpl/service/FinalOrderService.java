@@ -83,6 +83,7 @@ public class FinalOrderService {
             case CARE_ORDER:
                 orderBuilder.orderTitle(null);
                 break;
+            default:
         }
 
         return Element.<FinalOrder>builder()
@@ -108,7 +109,6 @@ public class FinalOrderService {
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails", caseData.getFinalOrder().getOrderDetails());
                 break;
-
             case CARE_ORDER:
                 orderTemplateBuilder
                     .put("orderType", CARE_ORDER)
@@ -117,6 +117,7 @@ public class FinalOrderService {
                     .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),
                         caseData.getCaseLocalAuthority()));
                 break;
+            default:
         }
 
         orderTemplateBuilder

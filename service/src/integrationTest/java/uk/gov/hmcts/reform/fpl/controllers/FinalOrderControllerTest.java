@@ -196,7 +196,7 @@ class FinalOrderControllerTest {
     @Test
     void shouldTriggerOrderNotificationEventWhenSubmitted() throws Exception {
         String expectedCaseReference = "19898989";
-        makeSubmittedRequest(buildCallbackRequest());
+        makeSubmittedRequest(buildCallbackRequestForEmail());
 
         verify(notificationClient, times(1)).sendEmail(
             eq(FINAL_ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
@@ -230,7 +230,7 @@ class FinalOrderControllerTest {
             .andReturn();
     }
 
-    private CallbackRequest buildCallbackRequest() {
+    private CallbackRequest buildCallbackRequestForEmail() {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(19898989L)

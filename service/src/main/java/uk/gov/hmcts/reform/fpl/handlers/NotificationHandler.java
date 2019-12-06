@@ -155,7 +155,7 @@ public class NotificationHandler {
     private void sendOrderNotificationForLocalAuthority(final CaseDetails caseDetails, final String localAuthorityCode,
                                                         final String mostRecentUploadedDocumentUrl) {
         Map<String, Object> localAuthorityParameters =
-            finalOrderEmailContentProvider.buildFinalOrderNotificationParametersForLocalAuthority(
+            finalOrderEmailContentProvider.buildFinalOrderNotificationParameters(
                 caseDetails, localAuthorityCode, mostRecentUploadedDocumentUrl);
         String localAuthorityEmail = localAuthorityEmailLookupConfiguration
             .getLocalAuthority(localAuthorityCode)

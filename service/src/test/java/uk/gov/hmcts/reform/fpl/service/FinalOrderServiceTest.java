@@ -207,8 +207,8 @@ class FinalOrderServiceTest {
 
     @Test
     void shouldReturnMostRecentUploadedOrderDocumentUrl() {
-        final String expectedMostRecentUploadedOrderDocumentUrl = "http://dm-store:8080/documents/79ec80ec-7be6-493b" +
-            "-b4e6-f002f05b7079/binary";
+        final String expectedMostRecentUploadedOrderDocumentUrl = "http://dm-store:8080/documents/79ec80ec-7be6-493b"
+            + "-b4e6-f002f05b7079/binary";
         final String returnedMostRecentUploadedOrderDocumentUrl = service.mostRecentUploadedOrderDocumentUrl(
             createFinalOrders());
 
@@ -234,7 +234,6 @@ class FinalOrderServiceTest {
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails", "Example details");
                 break;
-
             case CARE_ORDER:
                 expectedMap
                     .put("orderType", CARE_ORDER)
@@ -243,6 +242,7 @@ class FinalOrderServiceTest {
                     .put("orderDetails",
                         "It is ordered that the child is placed in the care of Example Local Authority.");
                 break;
+            default:
         }
 
         expectedMap
@@ -282,6 +282,7 @@ class FinalOrderServiceTest {
                         .document(DocumentReference.builder().build())
                         .build());
                 break;
+            default:
         }
 
         caseDataBuilder

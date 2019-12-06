@@ -15,17 +15,17 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration.Court;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.events.FinalOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.FinalOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
-import uk.gov.hmcts.reform.fpl.service.email.content.FinalOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
+import uk.gov.hmcts.reform.fpl.service.email.content.FinalOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
@@ -49,9 +49,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FINAL_ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FINAL_ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
@@ -123,19 +123,14 @@ class NotificationHandlerTest {
 
     @Nested
     class C2UploadedNotificationChecks {
-        final String mostRecentUploadedDocumentUrl = "http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
+        final String mostRecentUploadedDocumentUrl = "http://fake-document-gateway/documents/79ec80ec-7be6-493b-b4e6"
+            + "-f002f05b7079/binary";
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
         final Map<String, Object> c2Parameters = ImmutableMap.<String, Object>builder()
             .put("subjectLine", subjectLine)
             .put("hearingDetailsCallout", subjectLine)
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
-
-        final Map<String, Object> c21CafcassParameters = ImmutableMap.<String, Object>builder()
-            .putAll(c2Parameters)
-            .put("localAuthorityOrCafcass", CAFCASS_NAME)
-            .put("linkToDocument", mostRecentUploadedDocumentUrl)
             .build();
 
         final Map<String, Object> c21LocalAuthorityParameters = ImmutableMap.<String, Object>builder()
@@ -167,7 +162,7 @@ class NotificationHandlerTest {
             given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
                 .willReturn(c2Parameters);
 
-            given(finalOrderEmailContentProvider.buildFinalOrderNotificationParametersForLocalAuthority(
+            given(finalOrderEmailContentProvider.buildFinalOrderNotificationParameters(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, mostRecentUploadedDocumentUrl))
                 .willReturn(c21LocalAuthorityParameters);
         }
@@ -177,7 +172,8 @@ class NotificationHandlerTest {
             given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
                 UserInfo.builder().sub("hmcts-admin@test.com").roles(HMCTS_ADMIN.getRoles()).build());
 
-            notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+            notificationHandler.sendNotificationForC2Upload(
+                new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
             verify(notificationClient, never())
                 .sendEmail(eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-admin@test.com"),
@@ -192,7 +188,8 @@ class NotificationHandlerTest {
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Court(COURT_NAME, "hmcts-non-admin@test.com"));
 
-            notificationHandler.sendNotificationForC2Upload(new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+            notificationHandler.sendNotificationForC2Upload(
+                new C2UploadedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
             verify(notificationClient, times(1)).sendEmail(
                 eq(C2_UPLOAD_NOTIFICATION_TEMPLATE), eq("hmcts-non-admin@test.com"), eq(c2Parameters), eq("12345"));
@@ -200,16 +197,13 @@ class NotificationHandlerTest {
 
         @Test
         void shouldNotifyPartiesOnFinalOrderSubmission() throws IOException, NotificationClientException {
-            notificationHandler.sendNotificationForFinalOrder(new FinalOrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
-                mostRecentUploadedDocumentUrl));
+            notificationHandler.sendNotificationForFinalOrder(
+                new FinalOrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
+                    mostRecentUploadedDocumentUrl));
 
             verify(notificationClient, times(1)).sendEmail(
                 eq(FINAL_ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 eq(c21LocalAuthorityParameters), eq("12345"));
-
-            verify(notificationClient, times(1)).sendEmail(
-                eq(FINAL_ORDER_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
-                eq(c21CafcassParameters), eq("12345"));
         }
     }
 
@@ -241,7 +235,8 @@ class NotificationHandlerTest {
         given(hmctsEmailContentProvider.buildHmctsSubmissionNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
-        notificationHandler.sendNotificationToHmctsAdmin(new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+        notificationHandler.sendNotificationToHmctsAdmin(
+            new SubmittedCaseEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
             eq(HMCTS_COURT_SUBMISSION_TEMPLATE), eq(COURT_EMAIL_ADDRESS),
@@ -305,7 +300,8 @@ class NotificationHandlerTest {
         given(gatekeeperEmailContentProvider.buildGatekeeperNotification(callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
-        notificationHandler.sendNotificationToGatekeeper(new NotifyGatekeeperEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+        notificationHandler.sendNotificationToGatekeeper(
+            new NotifyGatekeeperEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
             eq(GATEKEEPER_SUBMISSION_TEMPLATE), eq(GATEKEEPER_EMAIL_ADDRESS),
@@ -322,13 +318,16 @@ class NotificationHandlerTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        given(cafcassEmailContentProviderSDOIssued.buildCafcassStandardDirectionOrderIssuedNotification(callbackRequest().getCaseDetails(),
+        given(cafcassEmailContentProviderSDOIssued.buildCafcassStandardDirectionOrderIssuedNotification(
+            callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
-        notificationHandler.notifyCafcassOfIssuedStandardDirectionsOrder(new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+        notificationHandler.notifyCafcassOfIssuedStandardDirectionsOrder(
+            new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
+            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS), eq(expectedParameters),
+            eq("12345"));
     }
 
     @Test
@@ -341,23 +340,27 @@ class NotificationHandlerTest {
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(callbackRequest().getCaseDetails(),
+        given(localAuthorityEmailContentProvider.buildLocalAuthorityStandardDirectionOrderIssuedNotification(
+            callbackRequest().getCaseDetails(),
             LOCAL_AUTHORITY_CODE)).willReturn(expectedParameters);
 
-        given(inboxLookupService.getNotificationRecipientEmail(callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE))
+        given(
+            inboxLookupService.getNotificationRecipientEmail(callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE))
             .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-        notificationHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+        notificationHandler.notifyLocalAuthorityOfIssuedStandardDirectionsOrder(
+            new StandardDirectionsOrderIssuedEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS), eq(expectedParameters), eq("12345"));
+            eq(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS), eq(expectedParameters),
+            eq("12345"));
     }
 
     private Map<String, Object> getStandardDirectionTemplateParameters() {
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", "6789")
             .put("leadRespondentsName", "Moley")
-            .put("hearingDate","21 October 2020")
+            .put("hearingDate", "21 October 2020")
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();

@@ -10,11 +10,10 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.validation.groups.FinalOrderGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.NotifyGatekeeperGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.ValidateCaseNumberGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 
 import java.time.LocalDate;
@@ -121,7 +120,7 @@ public class CaseData {
     @Valid
     private final List<@NotNull(message = "You need to add details to children") Element<Child>> children1;
     @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,
-        FinalOrderGroup.class, NotifyGatekeeperGroup.class})
+        ValidateCaseNumberGroup.class})
     private final String familyManCaseNumber;
     private final NoticeOfProceedings noticeOfProceedings;
 

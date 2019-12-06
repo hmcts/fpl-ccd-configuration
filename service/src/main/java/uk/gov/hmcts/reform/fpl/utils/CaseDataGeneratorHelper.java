@@ -8,10 +8,10 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
-import uk.gov.hmcts.reform.fpl.model.FinalOrder;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.FinalOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -39,6 +39,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
+import static uk.gov.hmcts.reform.fpl.enums.FinalOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.FinalOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
@@ -260,6 +262,7 @@ public class CaseDataGeneratorHelper {
         return ImmutableList.of(
             Element.<FinalOrder>builder()
                 .value(FinalOrder.builder()
+                    .type(BLANK_ORDER)
                     .orderTitle("Example Order")
                     .orderDetails(
                         "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
@@ -272,8 +275,7 @@ public class CaseDataGeneratorHelper {
             Element.<FinalOrder>builder()
                 .id(UUID.randomUUID())
                 .value(FinalOrder.builder()
-                    .orderTitle("Winter is here")
-                    .orderDetails("Westeros")
+                    .type(CARE_ORDER)
                     .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
                         LocalDateTime.now().plusDays(59), FORMAT_STYLE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Baratheon",

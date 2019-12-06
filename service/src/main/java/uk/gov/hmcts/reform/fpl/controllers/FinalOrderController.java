@@ -16,15 +16,15 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.GatewayConfiguration;
 import uk.gov.hmcts.reform.fpl.events.FinalOrderEvent;
-import uk.gov.hmcts.reform.fpl.model.FinalOrder;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.FinalOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.FinalOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.FinalOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
-import uk.gov.hmcts.reform.fpl.validation.groups.FinalOrderGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.ValidateCaseNumberGroup;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -69,7 +69,7 @@ public class FinalOrderController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(validateGroupService.validateGroup(caseData, FinalOrderGroup.class))
+            .errors(validateGroupService.validateGroup(caseData, ValidateCaseNumberGroup.class))
             .build();
     }
 
@@ -101,8 +101,9 @@ public class FinalOrderController {
         List<Element<FinalOrder>> finalOrders = caseData.getFinalOrders();
 
         //Builds an order with custom values and adds it to list of orders
-        finalOrders.add(service.addCustomValuesToFinalOrder(caseData.getFinalOrder(), caseData.getOrderTypeAndDocument(),
-            caseData.getJudgeAndLegalAdvisor()));
+        finalOrders.add(
+            service.addCustomValuesToFinalOrder(caseData.getFinalOrder(), caseData.getOrderTypeAndDocument(),
+                caseData.getJudgeAndLegalAdvisor()));
 
         caseDetails.getData().put("finalOrders", finalOrders);
         caseDetails.getData().remove("finalOrder");

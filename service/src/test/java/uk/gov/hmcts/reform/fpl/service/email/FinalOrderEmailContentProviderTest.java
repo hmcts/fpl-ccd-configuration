@@ -13,7 +13,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.FinalOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -32,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.FinalOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDocumentReference;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
@@ -40,19 +40,13 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, FinalOrderEmailContentProvider.class,
-    HearingBookingService.class, LocalAuthorityNameLookupConfiguration.class, DateFormatterService.class,
-    CafcassLookupConfiguration.class})
+    HearingBookingService.class, LocalAuthorityNameLookupConfiguration.class, DateFormatterService.class})
 class FinalOrderEmailContentProviderTest {
     private final LocalDate today = LocalDate.now();
     private final DateFormatterService dateFormatterService = new DateFormatterService();
     private final HearingBookingService hearingBookingService = new HearingBookingService();
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String CAFCASS_EMAIL = "FamilyPublicLaw+cafcass@gmail.com";
-    private static final String CAFCASS_NAME = "Example Cafcass";
-
-    @MockBean
-    private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @MockBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
@@ -69,14 +63,10 @@ class FinalOrderEmailContentProviderTest {
     @BeforeEach
     void setup() {
         this.finalOrderEmailContentProvider = new FinalOrderEmailContentProvider("",
-            objectMapper, hearingBookingService, localAuthorityNameLookupConfiguration, dateFormatterService,
-            cafcassLookupConfiguration);
+            objectMapper, hearingBookingService, localAuthorityNameLookupConfiguration, dateFormatterService);
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
-
-        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
-            .willReturn((new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL)));
 
         familyManCaseNumber = RandomStringUtils.randomAlphabetic(8);
         documentId = randomUUID();
@@ -84,12 +74,12 @@ class FinalOrderEmailContentProviderTest {
     }
 
     @Test
-    void shouldReturnExactC21LocalAuthorityNotificationParametersWithUploadedDocumentUrl() {
+    void shouldReturnExactLocalAuthorityNotificationParametersWithUploadedDocumentUrl() {
         final String documentUrl = "http://dm-store:8080/documents/" + documentId + "/binary";
-        CaseDetails caseDetails = createCaseDetailsWithSingleC21Element();
+        CaseDetails caseDetails = createCaseDetailsWithSingleFinalOrderElement();
 
         Map<String, Object> returnedLocalAuthorityParameters =
-            finalOrderEmailContentProvider.buildFinalOrderNotificationParametersForLocalAuthority(
+            finalOrderEmailContentProvider.buildFinalOrderNotificationParameters(
                 caseDetails, LOCAL_AUTHORITY_CODE, documentUrl);
 
         assertThat(returnedLocalAuthorityParameters)
@@ -100,7 +90,7 @@ class FinalOrderEmailContentProviderTest {
                 documentUrl, "167888", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/167888");
     }
 
-    private CaseDetails createCaseDetailsWithSingleC21Element() {
+    private CaseDetails createCaseDetailsWithSingleFinalOrderElement() {
         final LocalDateTime now = LocalDateTime.now();
         return CaseDetails.builder()
             .id(167888L)
@@ -108,6 +98,7 @@ class FinalOrderEmailContentProviderTest {
                 "finalOrders", ImmutableList.of(
                     Element.<FinalOrder>builder()
                         .value(FinalOrder.builder()
+                            .type(BLANK_ORDER)
                             .orderTitle("Example Order")
                             .orderDetails(
                                 "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
