@@ -105,7 +105,7 @@ class DraftCMOControllerTest {
 
         assertThat(otherPartiesKeyCMO).contains(
             "Person 1 - Kyle Stafford",
-            "Other Person 1 - Sarah Simpson");
+            "Other person 1 - Sarah Simpson");
 
         assertThat(callbackResponse.getData()).doesNotContainKey("allPartiesCustom");
         assertThat(callbackResponse.getData()).doesNotContainKey("localAuthorityDirectionsCustom");

@@ -154,7 +154,7 @@ class DraftCMOServiceTest {
 
         assertThat(othersKey).contains(
             "Person 1 - Kyle Stafford",
-            "Other Person 1 - Sarah Simpson");
+            "Other person 1 - Sarah Simpson");
     }
 
     @Test
@@ -163,7 +163,7 @@ class DraftCMOServiceTest {
 
         assertThat(othersKey).contains(
             "Person 1 - " + EMPTY_PLACEHOLDER,
-            "Other Person 1 - Peter Smith");
+            "Other person 1 - Peter Smith");
     }
 
     @Test

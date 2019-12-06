@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_PERSON_1;
+import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataMapForDraftCMODocmosisGeneration;
@@ -151,7 +151,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
             getExpectedDirectionWithHeader(4, RESPONDENT_1.getLabel()));
         assertThat(templateData.get("cafcassDirections")).isEqualTo(getExpectedDirection(5));
         assertThat(templateData.get("otherPartiesDirections")).isEqualTo(
-            getExpectedDirectionWithHeader(6, OTHER_PERSON_1.getLabel()));
+            getExpectedDirectionWithHeader(6, OTHER_1.getLabel()));
         assertThat(templateData.get("courtDirections")).isEqualTo(getExpectedDirection(7));
         assertThat(templateData.get("recitals")).isEqualTo(getExpectedRecital());
         assertThat(templateData.get("recitalsProvided")).isEqualTo(true);

@@ -51,7 +51,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_PERSON_1;
+import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 
 public class CaseDataGeneratorHelper {
@@ -492,7 +492,7 @@ public class CaseDataGeneratorHelper {
                     prepared = Element.<Direction>builder()
                         .id(elementId)
                         .value(direction.toBuilder()
-                            .otherPartiesAssignee(OTHER_PERSON_1)
+                            .otherPartiesAssignee(OTHER_1)
                             .build())
                         .build();
                 }

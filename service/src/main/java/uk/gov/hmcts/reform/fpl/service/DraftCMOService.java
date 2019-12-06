@@ -148,7 +148,7 @@ public class DraftCMOService {
                 if (i == 0) {
                     key = String.format("Person 1 - %s", defaultIfNull(other.getName(), EMPTY_PLACEHOLDER));
                 } else {
-                    key = String.format("Other Person %d - %s", i,
+                    key = String.format("Other person %d - %s", i,
                         defaultIfNull(other.getName(), EMPTY_PLACEHOLDER));
                 }
 
