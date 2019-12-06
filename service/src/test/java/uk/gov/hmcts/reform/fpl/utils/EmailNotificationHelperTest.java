@@ -12,13 +12,12 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.*;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLine;
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 
 class EmailNotificationHelperTest {
-    private final LocalDateTime DATE_IN_TEN_MONTHS = LocalDateTime.now().plusMonths(10);
 
     @Test
     void subjectLineShouldBeEmptyWhenNoRespondentOrCaseNumberEmpty() {
@@ -98,7 +97,7 @@ class EmailNotificationHelperTest {
     void subjectLineShouldReturnFirstNameFamilyManCaseNumberWithHearingDateSuffixed() {
         CaseData caseData = CaseData.builder()
             .respondents1(createRespondents())
-            .hearingDetails(createHearingBookings(DATE_IN_TEN_MONTHS))
+            .hearingDetails(createHearingBookings(LocalDateTime.now().plusMonths(10)))
             .familyManCaseNumber("FamilyManCaseNumber")
             .build();
 
