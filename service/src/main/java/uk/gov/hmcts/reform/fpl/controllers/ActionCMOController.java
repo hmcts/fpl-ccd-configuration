@@ -17,16 +17,17 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.ActionCmoService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
-import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.io.IOException;
 
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.Type.SEND_TO_ALL_PARTIES;
 
@@ -34,40 +35,39 @@ import static uk.gov.hmcts.reform.fpl.enums.Type.SEND_TO_ALL_PARTIES;
 @RestController
 @RequestMapping("/callback/action-cmo")
 public class ActionCMOController {
-    private static final String CMO_ACTION_KEY = "caseManagementOrderAction";
+    private static final String CMO_ACTION_KEY = "orderAction";
     private static final String CMO_KEY = "caseManagementOrder";
 
     private final DraftCMOService draftCMOService;
     private final ActionCmoService actionCmoService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
-    private final HearingBookingService hearingBookingService;
     private final ObjectMapper mapper;
 
     public ActionCMOController(DraftCMOService draftCMOService,
                                ActionCmoService actionCmoService,
                                DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
                                ObjectMapper mapper,
-                               HearingBookingService hearingBookingService,
                                UploadDocumentService uploadDocumentService) {
         this.draftCMOService = draftCMOService;
         this.actionCmoService = actionCmoService;
         this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
         this.mapper = mapper;
-        this.hearingBookingService = hearingBookingService;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         Map<String, Object> caseDataMap = caseDetails.getData();
+        CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
 
         draftCMOService.prepareCustomDirections(caseDetails.getData());
 
         CaseManagementOrder orderForAction = actionCmoService.getCaseManagementOrderForAction(caseDataMap);
 
         caseDetails.getData().put(CMO_KEY, orderForAction);
+        caseDetails.getData().put("nextHearingDateList", getHearingDynamicList(caseData.getHearingDetails()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -101,6 +101,7 @@ public class ActionCMOController {
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         CaseManagementOrder order = actionCmoService.getCaseManagementOrderForAction(caseDetails.getData());
 
@@ -109,9 +110,16 @@ public class ActionCMOController {
 
         CaseManagementOrder orderWithDocument = actionCmoService.addDocument(order, actionedCaseManageOrderDocument);
 
-        prepareCaseDetailsForSubmission(caseDetails, orderWithDocument, hasJudgeApproved(order));
+        CaseManagementOrder orderWithNextHearingDate =
+            actionCmoService.appendNextHearingDateToCMO(caseData.getNextHearingDateList(), orderWithDocument);
 
-        setNextHearingDateLabel(caseDetails);
+        prepareCaseDetailsForSubmission(caseDetails, orderWithNextHearingDate, hasJudgeApproved(order));
+
+        String nextHearingDate =
+            actionCmoService.createNextHearingDateLabel(caseData.getCaseManagementOrder(),
+                caseData.getHearingDetails());
+
+        caseDetails.getData().put("nextHearingDateLabel", nextHearingDate);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -144,21 +152,7 @@ public class ActionCMOController {
         return caseManagementOrder.getAction().getType().equals(SEND_TO_ALL_PARTIES);
     }
 
-    private void setNextHearingDateLabel(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        String nextHearingLabel = "";
-
-        if (caseData.getCaseManagementOrder() != null
-            && caseData.getCaseManagementOrder().getAction() != null) {
-            UUID nextHearingId = caseData.getCaseManagementOrder().getAction().getNextHearingId();
-
-            HearingBooking hearingBooking =
-                hearingBookingService.getHearingBookingByUUID(caseData.getHearingDetails(), nextHearingId);
-
-            nextHearingLabel = actionCmoService.formatHearingBookingLabel(hearingBooking);
-        }
-
-        caseDetails.getData().put("nextHearingDateLabel", nextHearingLabel);
+    private DynamicList getHearingDynamicList(List<Element<HearingBooking>> hearingBookings) {
+        return draftCMOService.getHearingDateDynamicList(hearingBookings, null);
     }
 }

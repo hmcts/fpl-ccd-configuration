@@ -105,8 +105,8 @@ public class DraftCMOService {
         HearingDateDynamicElement hearingDateDynamicElement = hearingVenueLookUpService.getHearingDynamicElement(list);
 
         Map<String, Object> reviewCaseManagementOrder = mapper.convertValue(
-            caseData.get("reviewCaseManagementOrder"), new TypeReference<>() {
-            });
+            caseData.get("reviewCaseManagementOrder"), new TypeReference<>() {});
+
         CMOStatus cmoStatus = null;
         DocumentReference orderDoc = null;
 
@@ -167,7 +167,7 @@ public class DraftCMOService {
         return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);
     }
 
-    private DynamicList getHearingDateDynamicList(List<Element<HearingBooking>> hearingDetails,
+    public DynamicList getHearingDateDynamicList(List<Element<HearingBooking>> hearingDetails,
                                                   CaseManagementOrder caseManagementOrder) {
         DynamicList hearingDatesDynamic = buildDynamicListFromHearingDetails(hearingDetails);
 
