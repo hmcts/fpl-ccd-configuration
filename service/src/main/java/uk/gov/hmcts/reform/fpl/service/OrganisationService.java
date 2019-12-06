@@ -12,7 +12,6 @@ public class OrganisationService {
 
 
     @Autowired
-
     public OrganisationService(LocalAuthorityUserLookupConfiguration localAuthorityUserLookupConfiguration) {
         this.localAuthorityUserLookupConfiguration = localAuthorityUserLookupConfiguration;
     }

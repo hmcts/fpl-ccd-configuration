@@ -16,7 +16,8 @@ class OrganisationServiceTest {
     private LocalAuthorityUserLookupConfiguration laUserLookupConfig;
     private OrganisationService organisationService;
 
-    private static final String AUTH_TOKEN = "1";
+    private static final String NA_USER_ID = "40";
+    private static final String SW_USER_ID = "1";
 
     @BeforeEach
     void setup() {
@@ -26,10 +27,18 @@ class OrganisationServiceTest {
 
     @Test
     public void shouldReturnUsersFromLocalAuthorityMappingWhenTheyExist() {
-        List<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation(AUTH_TOKEN, "SA");
+        List<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation(SW_USER_ID, "SA");
 
         assertThat(usersIdsWithinSaLa)
-            .containsExactlyInAnyOrder("1","2","3");
+            .containsExactlyInAnyOrder("1","2","3","40");
+    }
+
+    @Test
+    public void shouldReturnUserIdentifierWhenTheUserOrganisationCannotBeFound() {
+        List<String> naUserIds = organisationService.findUserIdsInSameOrganisation(NA_USER_ID, "NA");
+
+        assertThat(naUserIds)
+            .containsExactly(USER_ID);
     }
 
 }
