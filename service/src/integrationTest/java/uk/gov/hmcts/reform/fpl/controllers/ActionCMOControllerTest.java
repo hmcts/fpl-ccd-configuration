@@ -205,13 +205,4 @@ class ActionCMOControllerTest {
             .directions(createCmoDirections())
             .build();
     }
-
-    private CaseManagementOrder buildActionedCmo(UUID nextHearingId) {
-        return CaseManagementOrder.builder()
-            .directions(createCmoDirections())
-            .action(OrderAction.builder()
-                .nextHearingId(nextHearingId)
-                .build())
-            .build();
-    }
 }
