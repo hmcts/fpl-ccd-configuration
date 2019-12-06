@@ -47,13 +47,11 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.FINAL_ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.FinalOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.FinalOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createFinalOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
-import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.careOrderRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -161,31 +159,6 @@ class FinalOrderControllerTest {
                 .build();
 
             aboutToSubmitAssertions(caseData, expectedC21Order);
-        }
-
-        @Test
-        void aboutToSubmitShouldUpdateCaseDataAccordinglyWhenCareOrderIsSelected() throws Exception {
-            AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(careOrderRequest(),
-                "about-to-submit");
-
-            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-            FinalOrder expectedCareOrder = FinalOrder.builder()
-                .type(CARE_ORDER)
-                .document(DocumentReference.builder()
-                    .url("some url")
-                    .binaryUrl("some binary url")
-                    .filename("file.pdf").build())
-                .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
-                    FixedTimeConfiguration.NOW, "h:mma, d MMMM yyyy"))
-                .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                    .judgeTitle(HER_HONOUR_JUDGE)
-                    .judgeLastName("Judy")
-                    .legalAdvisorName("Peter Parker")
-                    .build())
-                .build();
-
-            aboutToSubmitAssertions(caseData, expectedCareOrder);
         }
 
         private void aboutToSubmitAssertions(CaseData caseData, FinalOrder expectedOrder) {

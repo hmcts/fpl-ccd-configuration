@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.FinalOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -36,12 +35,10 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @ExtendWith(SpringExtension.class)
 class FinalOrderServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String COURT_NAME = "Example Court";
     private static final String COURT_EMAIL = "example@court.com";
     private static final String COURT_CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME,
         COURT_EMAIL);
-    private static final String LA_NAME_CONFIG = String.format("%s=>%s", LOCAL_AUTHORITY_CODE, LOCAL_AUTHORITY_NAME);
     private static final LocalDateTime NOW = LocalDateTime.now();
 
     private final Time time = () -> NOW;
@@ -49,15 +46,12 @@ class FinalOrderServiceTest {
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(
         COURT_CONFIG);
-    private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration =
-        new LocalAuthorityNameLookupConfiguration(LA_NAME_CONFIG);
 
     private FinalOrderService service;
 
     @BeforeEach
     void setup() {
-        this.service = new FinalOrderService(dateFormatterService, hmctsCourtLookupConfiguration,
-            localAuthorityNameLookupConfiguration, time);
+        this.service = new FinalOrderService(dateFormatterService, hmctsCourtLookupConfiguration, time);
     }
 
     @Test
@@ -194,24 +188,13 @@ class FinalOrderServiceTest {
     }
 
     @Test
-    void shouldCreateExpectedMapForCareOrderWhenGivenPopulatedCaseData() {
-        LocalDate localDate = LocalDate.now();
-        String date = dateFormatterService.formatLocalDateToString(localDate, FormatStyle.LONG);
-        CaseData caseData = populatedCaseData(CARE_ORDER, localDate);
-
-        Map<String, Object> expectedMap = expectedData(date, CARE_ORDER);
-        Map<String, Object> templateData = service.getFinalOrderTemplateData(caseData);
-
-        assertThat(templateData).isEqualTo(expectedMap);
-    }
-
-    @Test
     void shouldGenerateCorrectFileNameWhenGivenOrderType() {
         OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
-            .finalOrderType(CARE_ORDER)
+            .finalOrderType(BLANK_ORDER)
             .document(DocumentReference.builder().build()).build();
 
-        assertThat(service.generateDocumentFileName(typeAndDocument)).isEqualTo(CARE_ORDER.getType() + ".pdf");
+        assertThat(service.generateDocumentFileName(typeAndDocument)).isEqualTo(
+            CARE_ORDER.getType().replaceAll("[()]", "") + ".pdf");
     }
 
     @Test
@@ -242,14 +225,6 @@ class FinalOrderServiceTest {
                     .put("orderTitle", "Example Title")
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails", "Example details");
-                break;
-            case CARE_ORDER:
-                expectedMap
-                    .put("orderType", CARE_ORDER)
-                    .put("orderTitle", "Care Order")
-                    .put("childrenAct", "Children Act 1989")
-                    .put("orderDetails",
-                        "It is ordered that the child is placed in the care of Example Local Authority.");
                 break;
             default:
         }
@@ -282,13 +257,6 @@ class FinalOrderServiceTest {
                     .finalOrder(FinalOrder.builder()
                         .orderTitle("Example Title")
                         .orderDetails("Example details")
-                        .build());
-                break;
-            case CARE_ORDER:
-                caseDataBuilder
-                    .orderTypeAndDocument(OrderTypeAndDocument.builder()
-                        .finalOrderType(CARE_ORDER)
-                        .document(DocumentReference.builder().build())
                         .build());
                 break;
             default:
