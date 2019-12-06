@@ -35,7 +35,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C21_ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
@@ -155,7 +155,7 @@ public class NotificationHandler {
             .buildCMOOrderIssuedNotificationParametersForLocalAuthority(caseDetails, localAuthorityCode);
         String reference = Long.toString(caseDetails.getId());
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
-        sendNotification(CMO_ORDER_ISSUED_NOTIFICATION, email, parameters, reference);
+        sendNotification(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, email, parameters, reference);
     }
 
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
