@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -83,6 +84,47 @@ class ComplyOnBehalfControllerTest {
 
         assertThat(actualResponses(caseData.getOtherPartiesDirectionsCustom(), OTHERS))
             .isEqualTo(expectedResponses("OTHER_1"))
+            .hasSize(1);
+
+        assertThat(response.getData().get("respondents_label")).isEqualTo("Respondent 1 - John Doe\n");
+        assertThat(response.getData().get("others_label")).isEqualTo("Person 1 - John Smith\n");
+    }
+
+    @Test
+    void aboutToStartCallbackShouldAddAllPartiesDirectionWithPartyResponseToCorrectMap() throws Exception {
+        List<Element<Direction>> directions = new ArrayList<>();
+        directions.add(Element.<Direction>builder()
+            .id(DIRECTION_ID)
+            .value(Direction.builder()
+                .assignee(ALL_PARTIES)
+                .responses(responses(PARENTS_AND_RESPONDENTS))
+                .build())
+            .build());
+        directions.add(Element.<Direction>builder()
+            .id(randomUUID())
+            .value(Direction.builder()
+                .assignee(PARENTS_AND_RESPONDENTS)
+                .responses(responses(PARENTS_AND_RESPONDENTS))
+                .build())
+            .build());
+
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of(
+                    "standardDirectionOrder", Order.builder().directions(directions).build(),
+                    "others", firstOther(),
+                    "respondents1", respondents()
+                ))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-start");
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        System.out.println("caseData = " + caseData.getRespondentDirectionsCustom());
+
+        assertThat(actualResponses(caseData.getRespondentDirectionsCustom(), ALL_PARTIES))
+            .isEqualTo(responses(PARENTS_AND_RESPONDENTS))
             .hasSize(1);
 
         assertThat(response.getData().get("respondents_label")).isEqualTo("Respondent 1 - John Doe\n");

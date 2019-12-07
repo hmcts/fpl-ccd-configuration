@@ -1109,6 +1109,48 @@ class DirectionHelperServiceTest {
                 .data(ImmutableMap.of(assignee.getValue().concat("Custom"), expectedDirections))
                 .build());
         }
+
+        @Test
+        void shouldPersistResponsesWhenAllPartiesDirectionHasBeenRespondedWith() {
+            CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+
+            Map<DirectionAssignee, List<Element<Direction>>> directionsMap = new HashMap<>();
+            directionsMap.put(PARENTS_AND_RESPONDENTS, buildDirections(PARENTS_AND_RESPONDENTS));
+            directionsMap.put(ALL_PARTIES, allPartyDirections());
+
+            service.addDirectionsToCaseDetails(caseDetails, directionsMap);
+
+            List<Element<Direction>> expectedDirections = new ArrayList<>();
+            expectedDirections.addAll(buildDirections(PARENTS_AND_RESPONDENTS));
+            expectedDirections.addAll(allPartyDirections());
+
+            assertThat(caseDetails).isEqualTo(CaseDetails.builder()
+                .data(ImmutableMap.of(PARENTS_AND_RESPONDENTS.getValue().concat("Custom"), expectedDirections))
+                .build());
+        }
+
+        private List<Element<Direction>> allPartyDirections() {
+            List<Element<DirectionResponse>> responses = responsesForRespondent();
+
+            return buildDirections(ALL_PARTIES).stream()
+                .map(element -> element.getValue().toBuilder()
+                    .responses(responses)
+                    .build())
+                .map(direction -> Element.<Direction>builder().value(direction).build())
+                .collect(toList());
+        }
+
+        private List<Element<DirectionResponse>> responsesForRespondent() {
+            List<Element<DirectionResponse>> responses = new ArrayList<>();
+            responses.add(Element.<DirectionResponse>builder()
+                .value(DirectionResponse.builder()
+                    .assignee(COURT)
+                    .respondingOnBehalfOf("RESPONDENT_1")
+                    .complied("Yes")
+                    .build())
+                .build());
+            return responses;
+        }
     }
 
     @Nested

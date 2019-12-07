@@ -148,6 +148,9 @@ public class DirectionHelperService {
         directionsMap.forEach((assignee, directions) -> {
             switch (assignee) {
                 case PARENTS_AND_RESPONDENTS:
+                    //TODO: in here directions appear to be populated as expected. CaseDetails are updated
+                    // with the correct values. However these values (responses) are lost in caseDetails in controller.
+
                     directions.addAll(directionsMap.get(ALL_PARTIES));
 
                     filterResponsesNotCompliedOnBehalfOfByTheCourt("RESPONDENT", directions);
@@ -184,10 +187,12 @@ public class DirectionHelperService {
      */
     public void filterResponsesNotCompliedOnBehalfOfByTheCourt(String onBehalfOf, List<Element<Direction>> directions) {
         directions.forEach(directionElement -> directionElement.getValue().getResponses()
-            .removeIf(element -> COURT != element.getValue().getAssignee()
-                || isEmpty(element.getValue().getRespondingOnBehalfOf())
-                || !element.getValue().getRespondingOnBehalfOf().contains(onBehalfOf))
-        );
+            .removeIf(element -> notCompliedWithByCourt(onBehalfOf, element)));
+    }
+
+    private boolean notCompliedWithByCourt(String onBehalfOf, Element<DirectionResponse> element) {
+        return COURT != element.getValue().getAssignee() || isEmpty(element.getValue().getRespondingOnBehalfOf())
+            || !element.getValue().getRespondingOnBehalfOf().contains(onBehalfOf);
     }
 
     /**
