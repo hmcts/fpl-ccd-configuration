@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -24,24 +26,29 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 
 @Slf4j
 @Service
 public class GeneratedOrderService {
     private final DateFormatterService dateFormatterService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
+    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final Time time;
 
     public GeneratedOrderService(DateFormatterService dateFormatterService,
                                  HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
+                                 LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration,
                                  Time time) {
         this.dateFormatterService = dateFormatterService;
         this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
+        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.time = time;
     }
 
-    public GeneratedOrder addDocumentToOrder(GeneratedOrder order, Document document) {
-        return order.toBuilder()
+    public OrderTypeAndDocument updateTypeAndDocument(OrderTypeAndDocument typeAndDocument, Document document) {
+        return typeAndDocument.toBuilder()
             .document(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
@@ -51,19 +58,39 @@ public class GeneratedOrderService {
     }
 
     /**
-     * Method to format title of order, add {@link JudgeAndLegalAdvisor} object and a formatted order date.
+     * Method to populate the order based on type of order selected
+     * Currently adds/formats the order title and details based on the type (may be more fields in future orders)
+     * Always adds order type, document, {@link JudgeAndLegalAdvisor} object and a formatted order date.
      *
+     * @param typeAndDocument      the type of the order and the order document (document only shown in check answers)
      * @param order                this value will contain fixed details and document values as well as customisable
      *                             values.
      * @param judgeAndLegalAdvisor the judge and legal advisor for the order.
      * @return Element containing randomUUID and a fully populated order.
      */
-    public Element<GeneratedOrder> addCustomValuesToOrder(GeneratedOrder order,
-                                                          JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+    public Element<GeneratedOrder> buildCompleteOrder(OrderTypeAndDocument typeAndDocument,
+                                                      GeneratedOrder order,
+                                                      JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        GeneratedOrder generatedOrder = defaultIfNull(order, GeneratedOrder.builder().build());
+        GeneratedOrder.GeneratedOrderBuilder orderBuilder = GeneratedOrder.builder();
+
+        //Scalable for future types of orders which may have additional fields
+        switch (typeAndDocument.getOrderType()) {
+            case BLANK_ORDER:
+                orderBuilder.orderTitle(defaultIfBlank(generatedOrder.getOrderTitle(), "Order"));
+                orderBuilder.orderDetails(generatedOrder.getOrderDetails());
+                break;
+            case CARE_ORDER:
+                orderBuilder.orderTitle(null);
+                break;
+            default:
+        }
+
         return Element.<GeneratedOrder>builder()
             .id(randomUUID())
-            .value(order.toBuilder()
-                .orderTitle(defaultIfBlank(order.getOrderTitle(), "Order"))
+            .value(orderBuilder
+                .type(typeAndDocument.getOrderType())
+                .document(typeAndDocument.getDocument())
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
                     "h:mma, d MMMM yyyy"))
@@ -72,11 +99,30 @@ public class GeneratedOrderService {
     }
 
     public Map<String, Object> getOrderTemplateData(CaseData caseData) {
-        return ImmutableMap.<String, Object>builder()
+        ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
+
+        //Scalable for future order types
+        switch (caseData.getOrderTypeAndDocument().getOrderType()) {
+            case BLANK_ORDER:
+                orderTemplateBuilder
+                    .put("orderType", BLANK_ORDER)
+                    .put("orderTitle", defaultIfNull(caseData.getOrder().getOrderTitle(), "Order"))
+                    .put("childrenAct", "Section 31 Children Act 1989")
+                    .put("orderDetails", caseData.getOrder().getOrderDetails());
+                break;
+            case CARE_ORDER:
+                orderTemplateBuilder
+                    .put("orderType", CARE_ORDER)
+                    .put("orderTitle", "Care Order")
+                    .put("childrenAct", "Children Act 1989")
+                    .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),
+                        caseData.getCaseLocalAuthority()));
+                break;
+            default:
+        }
+        orderTemplateBuilder
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
-            .put("orderTitle", defaultIfNull(caseData.getOrder().getOrderTitle(), "Order"))
-            .put("orderDetails", caseData.getOrder().getOrderDetails())
             .put("todaysDate", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
             .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
                 caseData.getJudgeAndLegalAdvisor()))
@@ -84,10 +130,21 @@ public class GeneratedOrderService {
                 caseData.getJudgeAndLegalAdvisor()))
             .put("children", getChildrenDetails(caseData))
             .build();
+
+        return orderTemplateBuilder.build();
     }
 
     private String getCourtName(String courtName) {
         return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
+    }
+
+    private String getLocalAuthorityName(String caseLocalAuthority) {
+        return localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
+    }
+
+    private String careOrderDetails(int numOfChildren, String caseLocalAuthority) {
+        return "It is ordered that the " + (numOfChildren == 1 ? "child is " :
+            "children are ") + "placed in the care of " + getLocalAuthorityName(caseLocalAuthority) + ".";
     }
 
     private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
@@ -102,6 +159,10 @@ public class GeneratedOrderService {
             .collect(toList());
     }
 
+    public String generateDocumentFileName(OrderTypeAndDocument orderTypeAndDocument) {
+        return orderTypeAndDocument.getOrderType().getType().replaceAll("[()]", "") + ".pdf";
+    }
+
     public String mostRecentUploadedOrderDocumentUrl(final List<Element<GeneratedOrder>> orders) {
         return getLast(orders.stream()
             .filter(Objects::nonNull)
@@ -110,4 +171,5 @@ public class GeneratedOrderService {
             .collect(toList()))
             .getDocument().getBinaryUrl();
     }
+
 }

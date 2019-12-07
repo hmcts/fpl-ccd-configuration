@@ -134,22 +134,39 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
   I.seeAnswerInTab(4, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
-Scenario('HMCTS admin creates C21 order for the case', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);
+  await createOrderEventPage.selectOrderType(orders[0].orderType);
+  await I.retryUntilExists(() => I.click('Continue'), '#order_orderTitle');
   await createOrderEventPage.enterC21OrderDetails();
   await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
   await createOrderEventPage.enterJudgeAndLegalAdvisor(orders[0].judgeAndLegalAdvisor.judgeLastName, orders[0].judgeAndLegalAdvisor.legalAdvisorName);
   await I.completeEvent('Save and continue');
-  const now = new Date();
+  const c21OrderTime = new Date();
 
   I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
-  I.seeAnswerInTab(1, 'C21 order 1', 'Order title', orders[0].orderTitle);
-  I.seeAnswerInTab(3, 'C21 order 1', 'Order document', orders[0].orderDoc);
-  I.seeAnswerInTab(4, 'C21 order 1', 'Date and time of upload', dateFormat(now, 'd mmmm yyyy'));
-  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', orders[0].judgeAndLegalAdvisor.judgeTitle);
-  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', orders[0].judgeAndLegalAdvisor.judgeLastName);
-  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name', orders[0].judgeAndLegalAdvisor.legalAdvisorName);
+  I.seeAnswerInTab(1, 'Order 1', 'Type of order', orders[0].orderType);
+  I.seeAnswerInTab(2, 'Order 1', 'Order document', orders[0].orderDoc);
+  I.seeAnswerInTab(3, 'Order 1', 'Date and time of upload', dateFormat(c21OrderTime, 'd mmmm yyyy'));
+  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', orders[1].judgeAndLegalAdvisor.judgeTitle);
+  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', orders[1].judgeAndLegalAdvisor.judgeLastName);
+  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name',  orders[1].judgeAndLegalAdvisor.legalAdvisorName);
+
+  await caseViewPage.goToNewActions(config.administrationActions.createOrder);
+  await createOrderEventPage.selectOrderType(orders[1].orderType);
+  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
+  await createOrderEventPage.enterJudgeAndLegalAdvisor('Judy', 'Fred Frederickson');
+  await I.completeEvent('Save and continue');
+  const careOrderTime = new Date();
+  I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  I.seeAnswerInTab(1, 'Order 2', 'Type of order', orders[1].orderType);
+  I.seeAnswerInTab(2, 'Order 2', 'Order document', orders[1].orderDoc);
+  I.seeAnswerInTab(3, 'Order 2', 'Date and time of upload', dateFormat(careOrderTime, 'd mmmm yyyy'));
+  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', orders[1].judgeAndLegalAdvisor.judgeTitle);
+  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', orders[1].judgeAndLegalAdvisor.judgeLastName);
+  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name',  orders[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
 Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {

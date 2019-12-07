@@ -30,7 +30,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 
 @Slf4j
 @Api
@@ -83,7 +83,9 @@ public class GeneratedOrderController {
 
         Document orderDoc = getDocument(authorization, userId, caseData);
 
-        caseDetails.getData().put("order", service.addDocumentToOrder(caseData.getOrder(), orderDoc));
+        //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
+        caseDetails.getData().put("orderTypeAndDocument", service.updateTypeAndDocument(
+            caseData.getOrderTypeAndDocument(), orderDoc));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -98,9 +100,12 @@ public class GeneratedOrderController {
 
         List<Element<GeneratedOrder>> orders = caseData.getGeneratedOrders();
 
-        orders.add(service.addCustomValuesToOrder(caseData.getOrder(), caseData.getJudgeAndLegalAdvisor()));
+        //Builds an order with custom values based on order type and adds it to list of orders
+        orders.add(service.buildCompleteOrder(caseData.getOrderTypeAndDocument(), caseData.getOrder(),
+            caseData.getJudgeAndLegalAdvisor()));
 
         caseDetails.getData().put("generatedOrders", orders);
+        caseDetails.getData().remove("orderTypeAndDocument");
         caseDetails.getData().remove("order");
         caseDetails.getData().remove("judgeAndLegalAdvisor");
 
@@ -125,10 +130,10 @@ public class GeneratedOrderController {
                                  String userId,
                                  CaseData caseData) {
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            service.getOrderTemplateData(caseData), C21);
+            service.getOrderTemplateData(caseData), ORDER);
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-            C21.getDocumentTitle());
+            service.generateDocumentFileName(caseData.getOrderTypeAndDocument()));
     }
 
     private String concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(

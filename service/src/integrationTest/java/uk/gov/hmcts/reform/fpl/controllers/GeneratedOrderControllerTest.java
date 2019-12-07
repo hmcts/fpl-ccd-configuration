@@ -43,12 +43,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.careOrderRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -105,17 +108,17 @@ class GeneratedOrderControllerTest {
     void midEventShouldGenerateOrderDocument() throws Exception {
         byte[] pdf = {1, 2, 3, 4, 5};
         Document document = document();
-        DocmosisDocument docmosisDocument = new DocmosisDocument(C21.getDocumentTitle(), pdf);
+        DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
 
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, C21.getDocumentTitle()))
+        given(uploadDocumentService.uploadPDF(eq(USER_ID), eq(AUTH_TOKEN), eq(pdf), any()))
             .willReturn(document);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "mid-event");
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(caseData.getOrder().getDocument()).isEqualTo(DocumentReference.builder()
+        assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(DocumentReference.builder()
             .binaryUrl(document.links.binary.href)
             .filename(document.originalDocumentName)
             .url(document.links.self.href)
@@ -123,12 +126,17 @@ class GeneratedOrderControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldUpdateCaseData() throws Exception {
+    void aboutToSubmitShouldUpdateCaseDataAccordinglyWhenC21IsSelected() throws Exception {
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "about-to-submit");
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        GeneratedOrder expectedOrder = GeneratedOrder.builder()
+        GeneratedOrder expectedC21Order = GeneratedOrder.builder()
+            .type(BLANK_ORDER)
+            .document(DocumentReference.builder()
+                .url("some url")
+                .binaryUrl("some binary url")
+                .filename("file.pdf").build())
             .orderTitle("Example Order")
             .orderDetails("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
             .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
@@ -139,12 +147,30 @@ class GeneratedOrderControllerTest {
                 .legalAdvisorName("Peter Parker")
                 .build())
             .build();
+        aboutToSubmitAssertions(caseData, expectedC21Order);
+    }
 
-        List<Element<GeneratedOrder>> orders = caseData.getGeneratedOrders();
+    @Test
+    void aboutToSubmitShouldUpdateCaseDataAccordinglyWhenCareOrderIsSelected() throws Exception {
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(careOrderRequest(), "about-to-submit");
 
-        assertThat(caseData.getOrder()).isEqualTo(null);
-        assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(null);
-        assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        GeneratedOrder expectedCareOrder = GeneratedOrder.builder()
+            .type(CARE_ORDER)
+            .document(DocumentReference.builder()
+                .url("some url")
+                .binaryUrl("some binary url")
+                .filename("file.pdf").build())
+            .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                FixedTimeConfiguration.NOW, "h:mma, d MMMM yyyy"))
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HER_HONOUR_JUDGE)
+                .judgeLastName("Judy")
+                .legalAdvisorName("Peter Parker")
+                .build())
+            .build();
+        aboutToSubmitAssertions(caseData, expectedCareOrder);
     }
 
     @Test
@@ -159,6 +185,15 @@ class GeneratedOrderControllerTest {
         verify(notificationClient, times(1)).sendEmail(
             eq(ORDER_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
             eq(expectedOrderCafcassParameters()), eq(expectedCaseReference));
+    }
+
+    private void aboutToSubmitAssertions(CaseData caseData, GeneratedOrder expectedOrder) {
+
+        List<Element<GeneratedOrder>> orders = caseData.getGeneratedOrders();
+        assertThat(caseData.getOrderTypeAndDocument()).isEqualTo(null);
+        assertThat(caseData.getOrder()).isEqualTo(null);
+        assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(null);
+        assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request, String endpoint)

@@ -473,6 +473,14 @@
           }
         }
       ],
+      "orderTypeAndDocument": {
+        "orderType": "BLANK_ORDER",
+        "document": {
+          "document_url": "some url",
+          "document_binary_url": "some binary url",
+          "document_filename": "file.pdf"
+        }
+      },
       "judgeAndLegalAdvisor": {
         "judgeTitle": "HER_HONOUR_JUDGE",
         "judgeLastName": "Judy",
