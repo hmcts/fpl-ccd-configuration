@@ -71,7 +71,7 @@ class LocalAuthorityUserServiceTest {
 
         given(authTokenGenerator.generate()).willReturn(SERVICE_AUTH_TOKEN);
 
-        given(organisationService.findUserIdsInSameOrganisation(USER_ID, LOCAL_AUTHORITY)).willReturn(
+        given(organisationService.findUserIdsInSameOrganisation(AUTH_TOKEN, USER_ID, LOCAL_AUTHORITY)).willReturn(
             ImmutableList.<String>builder()
                 .add(USER_IDS)
                 .build()
@@ -80,19 +80,19 @@ class LocalAuthorityUserServiceTest {
 
     @Test
     void shouldMakeCallToUpdateCaseRoleEndpointWhenUsersWithinLocalAuthority() {
-        localAuthorityUserService.grantUserAccessWithCaseRole(USER_ID, CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
 
         verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(1);
     }
 
     @Test
     void shouldThrowCustomExceptionWhenValidLocalAuthorityHasNoUsers() throws IllegalArgumentException {
-        given(organisationService.findUserIdsInSameOrganisation(USER_ID, LOCAL_AUTHORITY)).willReturn(
+        given(organisationService.findUserIdsInSameOrganisation(AUTH_TOKEN, USER_ID, LOCAL_AUTHORITY)).willReturn(
             ImmutableList.<String>builder().build()
         );
 
         assertThatThrownBy(() ->
-            localAuthorityUserService.grantUserAccessWithCaseRole(USER_ID, CASE_ID, LOCAL_AUTHORITY))
+            localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY))
             .isInstanceOf(NoAssociatedUsersException.class)
             .hasMessage("No users found for the local authority 'example'");
     }
@@ -100,7 +100,7 @@ class LocalAuthorityUserServiceTest {
     @Test
     void shouldThrowCustomExceptionWhenInValidLocalAuthorityHasNoUsers() throws IllegalArgumentException {
         assertThatThrownBy(() ->
-            localAuthorityUserService.grantUserAccessWithCaseRole(USER_ID, CASE_ID, INVALID_LOCAL_AUTHORITY))
+            localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, INVALID_LOCAL_AUTHORITY))
             .isInstanceOf(NoAssociatedUsersException.class)
             .hasMessage("No users found for the local authority '" + INVALID_LOCAL_AUTHORITY + "'");
     }
@@ -110,15 +110,15 @@ class LocalAuthorityUserServiceTest {
         willThrow(new RetryableException(500, "Some error", null, null)).given(caseUserApi).updateCaseRolesForUser(
             eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq("1"), refEq(new CaseUser("1",caseRoles)));
 
-        localAuthorityUserService.grantUserAccessWithCaseRole(USER_ID, CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
 
         verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(1);
     }
 
     @Test
     void shouldUpdateCaseRolesWhenRolesAreAlreadyAssignedToUser() {
-        localAuthorityUserService.grantUserAccessWithCaseRole(USER_ID, CASE_ID, LOCAL_AUTHORITY);
-        localAuthorityUserService.grantUserAccessWithCaseRole(USER_ID, CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
+        localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
 
         verifyUpdateCaseRolesWasCalledThisManyTimesForEachUser(2);
     }

@@ -42,8 +42,8 @@ public class LocalAuthorityUserService {
         this.userConfig = userConfig;
     }
 
-    public void grantUserAccessWithCaseRole(String userId, String caseId, String caseLocalAuthority) {
-        findUserIds(userId, caseLocalAuthority).stream()
+    public void grantUserAccessWithCaseRole(String authorisation, String userId, String caseId, String caseLocalAuthority) {
+        findUserIds(authorisation, userId, caseLocalAuthority).stream()
             .forEach(id -> {
                 try {
                     String authentication = client.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
@@ -58,8 +58,8 @@ public class LocalAuthorityUserService {
             });
     }
 
-    private List<String> findUserIds(String userId, String localAuthorityCode) {
-        List<String> userIds = organisationService.findUserIdsInSameOrganisation(userId, localAuthorityCode);
+    private List<String> findUserIds(String authorisation, String userId, String localAuthorityCode) {
+        List<String> userIds = organisationService.findUserIdsInSameOrganisation(authorisation, userId, localAuthorityCode);
 
         if (userIds.isEmpty()) {
             throw new NoAssociatedUsersException("No users found for the local authority '" + localAuthorityCode + "'");

@@ -47,13 +47,14 @@ public class CaseInitiationController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestHeader(value = "user-id") String userId,
+    public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorisation,
+        @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         String caseId = Long.toString(caseDetails.getId());
         String caseLocalAuthority = (String) caseDetails.getData()
             .get("caseLocalAuthority");
 
-        localAuthorityUserService.grantUserAccessWithCaseRole(userId, caseId, caseLocalAuthority);
+        localAuthorityUserService.grantUserAccessWithCaseRole(authorisation, userId, caseId, caseLocalAuthority);
     }
 }
