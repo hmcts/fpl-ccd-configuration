@@ -50,6 +50,9 @@ public class LocalAuthorityUserService {
                     caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), caseId, id,
                         new CaseUser(id, caseRoles));
 
+                    caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), "1575834784345691", id,
+                        new CaseUser(id, Set.of()));
+
                     logger.info("Added case roles {} to user {}", caseRoles, id);
                 } catch (Exception exception) {
                     logger.warn("Error adding case roles {} to user {}",

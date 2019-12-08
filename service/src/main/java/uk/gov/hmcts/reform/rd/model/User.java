@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.rd.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class User {
-    private final String userIdentifier;
+    private String userIdentifier;
 }
