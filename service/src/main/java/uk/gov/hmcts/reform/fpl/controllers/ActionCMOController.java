@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
-import uk.gov.hmcts.reform.fpl.events.CMOOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.CMOEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
@@ -117,7 +117,7 @@ public class ActionCMOController {
     public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
                                      @RequestHeader(value = "user-id") String userId,
                                      @RequestBody CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(new CMOOrderEvent(callbackRequest, authorization, userId));
+        applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId));
     }
 
     private Document getDocument(String authorization, String userId, Map<String, Object> caseData, boolean approved)

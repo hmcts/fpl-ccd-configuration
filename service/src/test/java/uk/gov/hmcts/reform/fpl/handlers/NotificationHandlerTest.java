@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.Loc
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
-import uk.gov.hmcts.reform.fpl.events.CMOOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.CMOEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
@@ -247,7 +247,7 @@ class NotificationHandlerTest {
         @Test
         void shouldNotifyLocalAuthorityOfCaseManagementOrderIssued() throws Exception {
             notificationHandler.notifyLocalAuthorityOfIssuedAndServedCaseManagementOrder(
-                new CMOOrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+                new CMOEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
             verify(notificationClient, times(1)).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),

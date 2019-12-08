@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
-import uk.gov.hmcts.reform.fpl.events.CMOOrderEvent;
+import uk.gov.hmcts.reform.fpl.events.CMOEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
@@ -148,8 +148,8 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void notifyLocalAuthorityOfIssuedAndServedCaseManagementOrder(CMOOrderEvent cmoOrderEvent) {
-        CaseDetails caseDetails = cmoOrderEvent.getCallbackRequest().getCaseDetails();
+    public void notifyLocalAuthorityOfIssuedAndServedCaseManagementOrder(CMOEvent cmoEvent) {
+        CaseDetails caseDetails = cmoEvent.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
         Map<String, Object> parameters = caseManagementOrderEmailContentProvider
             .buildCMOOrderIssuedNotificationParametersForLocalAuthority(caseDetails, localAuthorityCode);
