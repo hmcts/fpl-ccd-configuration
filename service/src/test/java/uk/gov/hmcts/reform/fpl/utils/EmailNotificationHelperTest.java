@@ -120,10 +120,10 @@ class EmailNotificationHelperTest {
             .familyManCaseNumber("FamilyManCaseNumber")
             .build();
 
-        String expectedSubjectLineWithHearingDateSuffix = "Jones, FamilyManCaseNumber";
+        String expectedSubjectLineWithNoHearingDateSuffix = "Jones, FamilyManCaseNumber";
         String subjectLine = buildSubjectLine(caseData);
         String subjectLineWithHearingDateSuffix = buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
             caseData.getHearingDetails());
-        assertThat(subjectLineWithHearingDateSuffix).isEqualTo(expectedSubjectLineWithHearingDateSuffix);
+        assertThat(subjectLineWithHearingDateSuffix).isEqualTo(expectedSubjectLineWithNoHearingDateSuffix);
     }
 }
