@@ -152,7 +152,7 @@ public class NotificationHandler {
         CaseDetails caseDetails = cmoEvent.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
         Map<String, Object> parameters = caseManagementOrderEmailContentProvider
-            .buildCMOOrderIssuedNotificationParametersForLocalAuthority(caseDetails, localAuthorityCode);
+            .buildCMOIssuedNotificationParametersForLocalAuthority(caseDetails, localAuthorityCode);
         String reference = Long.toString(caseDetails.getId());
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
         sendNotification(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, email, parameters, reference);

@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,6 +19,7 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 
 class EmailNotificationHelperTest {
+    private final DateFormatterService dateFormatterService = new DateFormatterService();
 
     @Test
     void subjectLineShouldBeEmptyWhenNoRespondentOrCaseNumberEmpty() {
@@ -95,13 +97,15 @@ class EmailNotificationHelperTest {
 
     @Test
     void subjectLineShouldReturnFirstNameFamilyManCaseNumberWithHearingDateSuffixed() {
+        final LocalDateTime dateInTenMonths = LocalDateTime.now().plusMonths(10);
         CaseData caseData = CaseData.builder()
             .respondents1(createRespondents())
-            .hearingDetails(createHearingBookings(LocalDateTime.now().plusMonths(10)))
+            .hearingDetails(createHearingBookings(dateInTenMonths))
             .familyManCaseNumber("FamilyManCaseNumber")
             .build();
 
-        String expectedSubjectLineWithHearingDateSuffix = "Jones, FamilyManCaseNumber, hearing 6 Oct 2020";
+        String expectedSubjectLineWithHearingDateSuffix = "Jones, FamilyManCaseNumber, hearing "
+            + dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateInTenMonths, "d MMM yyyy");
         String subjectLine = buildSubjectLine(caseData);
         String subjectLineWithHearingDateSuffix = buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
             caseData.getHearingDetails());
@@ -109,7 +113,7 @@ class EmailNotificationHelperTest {
     }
 
     @Test
-    void subjectLineShouldReturnFirstNameFamilyManCaseNumberWithNoHearingDateSuffixed() {
+    void subjectLineShouldReturnFirstNameFamilyManCaseNumberOnlWhenNullHearingDetailsGiven() {
         CaseData caseData = CaseData.builder()
             .respondents1(createRespondents())
             .hearingDetails(null)

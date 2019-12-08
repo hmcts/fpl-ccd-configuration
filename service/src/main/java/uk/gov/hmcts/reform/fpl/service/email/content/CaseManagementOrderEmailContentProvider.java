@@ -33,11 +33,12 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         this.objectMapper = objectMapper;
     }
 
-    public Map<String, Object> buildCMOOrderIssuedNotificationParametersForLocalAuthority(final CaseDetails caseDetails,
-                                                                                    final String localAuthorityCode) {
+    public Map<String, Object> buildCMOIssuedNotificationParametersForLocalAuthority(final CaseDetails caseDetails,
+                                                                                     final String localAuthorityCode) {
         return ImmutableMap.<String, Object>builder()
             .putAll(commonCMONotificationParameters(caseDetails))
-            .put("localAuthorityOrRepresentative", localAuthorityNameLookupConfiguration.getLocalAuthorityName(
+            .put("localAuthorityNameOrRepresentativeFullName",
+                localAuthorityNameLookupConfiguration.getLocalAuthorityName(
                 localAuthorityCode))
             .build();
     }

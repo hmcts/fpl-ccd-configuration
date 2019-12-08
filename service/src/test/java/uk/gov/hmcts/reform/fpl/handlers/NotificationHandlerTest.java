@@ -227,7 +227,7 @@ class NotificationHandlerTest {
     class CaseManagementOrderNotificationTests {
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
         final Map<String, Object> cmoOrderIssuedNotificationParameters = ImmutableMap.<String, Object>builder()
-            .put("localAuthorityOrRepresentative", LOCAL_AUTHORITY_NAME)
+            .put("localAuthorityNameOrRepresentativeFullName", LOCAL_AUTHORITY_NAME)
             .put("hearingDetailsCallout", subjectLine)
             .put("reference", "12345")
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
@@ -239,7 +239,7 @@ class NotificationHandlerTest {
                 LOCAL_AUTHORITY_CODE))
                 .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
-            given(caseManagementOrderEmailContentProvider.buildCMOOrderIssuedNotificationParametersForLocalAuthority(
+            given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParametersForLocalAuthority(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE))
                 .willReturn(cmoOrderIssuedNotificationParameters);
         }
