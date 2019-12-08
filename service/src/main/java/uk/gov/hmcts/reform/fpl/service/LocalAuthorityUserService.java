@@ -42,24 +42,24 @@ public class LocalAuthorityUserService {
         this.userConfig = userConfig;
     }
 
-    public void grantUserAccessWithCaseRole(String authorization, String caseId, String caseLocalAuthority) {
-        findUserIds(authorization, caseLocalAuthority).stream()
-            .forEach(userId -> {
+    public void grantUserAccessWithCaseRole(String userId, String caseId, String caseLocalAuthority) {
+        findUserIds(userId, caseLocalAuthority).stream()
+            .forEach(id -> {
                 try {
                     String authentication = client.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
-                    caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), caseId, userId,
-                        new CaseUser(userId, caseRoles));
+                    caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), caseId, id,
+                        new CaseUser(id, caseRoles));
 
-                    logger.info("Added case roles {} to user {}", caseRoles, userId);
+                    logger.info("Added case roles {} to user {}", caseRoles, id);
                 } catch (Exception exception) {
                     logger.warn("Error adding case roles {} to user {}",
-                        caseRoles, userId, exception);
+                        caseRoles, id, exception);
                 }
             });
     }
 
-    private List<String> findUserIds(String authorization, String localAuthorityCode) {
-        List<String> userIds = organisationService.findUserIdsInSameOrganisation(authorization, localAuthorityCode);
+    private List<String> findUserIds(String userId, String localAuthorityCode) {
+        List<String> userIds = organisationService.findUserIdsInSameOrganisation(userId, localAuthorityCode);
 
         if (userIds.isEmpty()) {
             throw new NoAssociatedUsersException("No users found for the local authority '" + localAuthorityCode + "'");

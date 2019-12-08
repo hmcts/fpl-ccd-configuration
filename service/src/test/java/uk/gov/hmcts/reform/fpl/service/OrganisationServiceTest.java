@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -14,6 +13,8 @@ class OrganisationServiceTest {
 
     @MockBean
     private LocalAuthorityUserLookupConfiguration laUserLookupConfig;
+    @MockBean
+    private OrganisationApi organisationApi;
     private OrganisationService organisationService;
 
     private static final String NA_USER_ID = "40";
@@ -26,19 +27,24 @@ class OrganisationServiceTest {
     }
 
     @Test
-    public void shouldReturnUsersFromLocalAuthorityMappingWhenTheyExist() {
+    void shouldReturnUsersFromLocalAuthorityMappingWhenTheyExist() {
         List<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation(SW_USER_ID, "SA");
 
         assertThat(usersIdsWithinSaLa)
-            .containsExactlyInAnyOrder("1","2","3","40");
+            .containsExactlyInAnyOrder("1","2","3");
     }
 
     @Test
-    public void shouldReturnUserIdentifierWhenTheUserOrganisationCannotBeFound() {
+    void shouldReturnUserIdentifierWhenTheUserOrganisationCannotBeFound() {
         List<String> naUserIds = organisationService.findUserIdsInSameOrganisation(NA_USER_ID, "NA");
 
         assertThat(naUserIds)
-            .containsExactly(USER_ID);
+            .containsExactly(NA_USER_ID);
+    }
+
+    @Test
+    void shouldReturnUsersFromOrganisationIfExistsInRefData() {
+
     }
 
 }
