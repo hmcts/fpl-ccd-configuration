@@ -113,7 +113,7 @@ class EmailNotificationHelperTest {
     }
 
     @Test
-    void subjectLineShouldReturnFirstNameFamilyManCaseNumberOnlWhenNullHearingDetailsGiven() {
+    void subjectLineShouldReturnFirstNameFamilyManCaseNumberOnlyWhenNullHearingDetailsGiven() {
         CaseData caseData = CaseData.builder()
             .respondents1(createRespondents())
             .hearingDetails(null)
