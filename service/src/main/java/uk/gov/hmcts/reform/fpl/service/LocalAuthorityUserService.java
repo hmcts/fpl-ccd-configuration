@@ -47,21 +47,9 @@ public class LocalAuthorityUserService {
         findUserIds(caseLocalAuthority).stream()
             .forEach(userId -> {
                 try {
-                    if(userId.equals("365465")){
-
-                        System.out.println("adding SOLICITOR role to damian" + userId);
-                        Set<String> caseRoles = Set.of("[SOLICITOR]","[CREATOR]");
-
-                        String authentication = client.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
-                        caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), caseId, userId,
-                            new CaseUser(userId, caseRoles));
-                    }
-                    else
-                    {
-                        String authentication = client.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
-                        caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), caseId, userId,
-                            new CaseUser(userId, caseRoles));
-                    }
+                    String authentication = client.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
+                    caseUserApi.updateCaseRolesForUser(authentication, authTokenGenerator.generate(), caseId, userId,
+                        new CaseUser(userId, caseRoles));
 
                     logger.info("Added case roles {} to user {}", caseRoles, userId);
                 } catch (Exception exception) {
