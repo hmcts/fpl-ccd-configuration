@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingDynmaicList;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
@@ -134,11 +135,8 @@ class ActionCmoServiceTest {
     void shouldFormatNextHearingBookingLabelWhenCMOOrderActionContainsMatchingUUID() {
         List<Element<HearingBooking>> hearingBookings = createHearingBookings(MOCK_DATE);
 
-        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
-            .action(OrderAction.builder()
-                .nextHearingId(UUID.fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
-                .build())
-            .build();
+        CaseManagementOrder caseManagementOrder =
+            createCMOWithNextHearing(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"));
 
         String label = actionCmoService.createNextHearingDateLabel(caseManagementOrder, hearingBookings);
 
@@ -154,7 +152,7 @@ class ActionCmoServiceTest {
 
         OrderAction orderAction = updatedCaseManagementOrder.getAction();
 
-        assertThat(orderAction.getNextHearingId()).isEqualTo(UUID.fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
+        assertThat(orderAction.getNextHearingId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
         assertThat(orderAction.getNextHearingDate()).isEqualTo("15th Dec 2019");
     }
 
@@ -168,5 +166,13 @@ class ActionCmoServiceTest {
             caseManagementOrder);
 
         assertThat(updatedCaseManagementOrder.getHearingDate()).isEqualTo("Test date");
+    }
+
+    private CaseManagementOrder createCMOWithNextHearing(UUID hearingID) {
+        return CaseManagementOrder.builder()
+            .action(OrderAction.builder()
+                .nextHearingId(hearingID)
+                .build())
+            .build();
     }
 }
