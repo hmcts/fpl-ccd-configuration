@@ -79,7 +79,7 @@ class DraftCMOServiceTest {
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
 
-        DynamicList hearingList = mapper.convertValue(data.get("cmoHearingDateList"), DynamicList.class);
+        DynamicList hearingList = (DynamicList) data.get("cmoHearingDateList");
 
         assertThat(hearingList.getListItems())
             .containsAll(Arrays.asList(
@@ -100,10 +100,7 @@ class DraftCMOServiceTest {
     @Test
     void shouldReturnHearingDateDynamicListWhenCmoHasPreviousSelectedValue() {
         hearingDetails = createHearingBookings(NOW);
-        caseManagementOrder = CaseManagementOrder.builder()
-            .hearingDate(formatLocalDateToMediumStyle(2))
-            .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
-            .build();
+        caseManagementOrder = createCaseManagementOrder();
 
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
@@ -173,16 +170,7 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldReturnAMapWithAllIndividualCMOEntriesPopulated() {
-        caseManagementOrder = CaseManagementOrder.builder()
-            .hearingDate(formatLocalDateToMediumStyle(2))
-            .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
-            .recitals(List.of(Element.<Recital>builder()
-                .value(Recital.builder().build())
-                .build()))
-            .schedule(Schedule.builder().build())
-            .cmoStatus(SELF_REVIEW)
-            .orderDoc(DocumentReference.builder().build())
-            .build();
+        caseManagementOrder = createCaseManagementOrder();
 
         hearingDetails = createHearingBookings(NOW);
 
@@ -255,6 +243,19 @@ class DraftCMOServiceTest {
         return dynamicList;
     }
 
+    private CaseManagementOrder createCaseManagementOrder() {
+        return CaseManagementOrder.builder()
+            .hearingDate(formatLocalDateToMediumStyle(2))
+            .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+            .recitals(List.of(Element.<Recital>builder()
+                .value(Recital.builder().build())
+                .build()))
+            .schedule(Schedule.builder().build())
+            .cmoStatus(SELF_REVIEW)
+            .orderDoc(DocumentReference.builder().build())
+            .build();
+    }
+
     private String formatLocalDateToMediumStyle(int i) {
         return dateFormatterService.formatLocalDateToString(NOW.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
     }
@@ -282,16 +283,11 @@ class DraftCMOServiceTest {
             "schedule"};
 
         private HashMap<String, Object> data; // Tries to use an ImmutableMap unless specified
-        private CaseManagementOrder.CaseManagementOrderBuilder caseManagementOrderBuilder;
-
-        @BeforeEach
-        void setUp() {
-            data = new HashMap<>();
-            caseManagementOrderBuilder = CaseManagementOrder.builder();
-        }
 
         @Test
         void shouldRemoveScheduleAndRecitalsAndHearingDateListFromCaseData() {
+            data = new HashMap<>();
+
             Arrays.stream(keys).forEach(key -> data.put(key, ""));
 
             draftCMOService.removeTransientObjectsFromCaseData(data);
@@ -301,7 +297,9 @@ class DraftCMOServiceTest {
 
         @Test
         void shouldOnlyPopulateCaseManagementOrderWhenCMOStatusIsSelfReview() {
-            caseManagementOrder = caseManagementOrderBuilder.cmoStatus(SELF_REVIEW).build();
+            data = new HashMap<>();
+
+            caseManagementOrder = CaseManagementOrder.builder().cmoStatus(SELF_REVIEW).build();
 
             draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
 
@@ -310,7 +308,9 @@ class DraftCMOServiceTest {
 
         @Test
         void shouldMakeSharedDraftCMODocumentNullWhenCMOStatusIsSelfReview() {
-            caseManagementOrder = caseManagementOrderBuilder.cmoStatus(SELF_REVIEW).build();
+            data = new HashMap<>();
+
+            caseManagementOrder = CaseManagementOrder.builder().cmoStatus(SELF_REVIEW).build();
             data.put("sharedDraftCMODocument", DocumentReference.builder().build());
 
             draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
@@ -320,8 +320,10 @@ class DraftCMOServiceTest {
 
         @Test
         void shouldPopulateSharedDraftCMODocumentWhenCMOStatusIsPartyReview() {
+            data = new HashMap<>();
+
             DocumentReference documentReference = DocumentReference.builder().build();
-            caseManagementOrder = caseManagementOrderBuilder
+            caseManagementOrder = CaseManagementOrder.builder()
                 .cmoStatus(PARTIES_REVIEW)
                 .orderDoc(documentReference)
                 .build();

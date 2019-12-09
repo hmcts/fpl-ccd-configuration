@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -68,44 +67,37 @@ class HearingBookingServiceTest {
 
     @Nested
     class GetHearingBooking {
-        private DynamicList dynamicList;
-        private List<Element<HearingBooking>> hearingDetails;
-
-        @BeforeEach
-        void setUp() {
-            dynamicList = createDynamicList();
-            hearingDetails = createHearingBookings();
-        }
 
         @Test
         void shouldReturnAEmptyHearingBookingWhenHearingDetailsIsNull() {
-            final HearingBooking hearingBooking = service.getHearingBooking(null, dynamicList);
+            final HearingBooking hearingBooking = service.getHearingBooking(null, createDynamicList());
             assertThat(hearingBooking).isEqualTo(HearingBooking.builder().build());
         }
 
         @Test
         void shouldReturnAEmptyHearingBookingWhenTheDynamicListIsNull() {
-            final HearingBooking hearingBooking = service.getHearingBooking(hearingDetails, null);
+            final HearingBooking hearingBooking = service.getHearingBooking(createHearingBookings(), null);
             assertThat(hearingBooking).isEqualTo(HearingBooking.builder().build());
         }
 
         @Test
         void shouldReturnAEmptyHearingBookingWhenTheDynamicListValuesCodeIsNull() {
-            dynamicList = DynamicList.builder().build();
-            final HearingBooking hearingBooking = service.getHearingBooking(hearingDetails, dynamicList);
+            DynamicList dynamicList = DynamicList.builder().build();
+            final HearingBooking hearingBooking = service.getHearingBooking(createHearingBookings(), dynamicList);
             assertThat(hearingBooking).isEqualTo(HearingBooking.builder().build());
         }
 
         @Test
         void shouldReturnAEmptyHearingBookingWhenHearingDetailsIsEmpty() {
-            final HearingBooking hearingBooking = service.getHearingBooking(List.of(), dynamicList);
+            final HearingBooking hearingBooking = service.getHearingBooking(List.of(), createDynamicList());
             assertThat(hearingBooking).isEqualTo(HearingBooking.builder().build());
         }
 
         @Test
         void shouldReturnTheFirstHearingBookingWhenTheDynamicListValueCodeMatches() {
-            final HearingBooking hearingBooking = service.getHearingBooking(hearingDetails, dynamicList);
-            assertThat(hearingBooking).isEqualTo(hearingDetails.get(0).getValue());
+            final List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+            final HearingBooking hearingBooking = service.getHearingBooking(hearingBookings, createDynamicList());
+            assertThat(hearingBooking).isEqualTo(hearingBookings.get(0).getValue());
         }
 
         private DynamicList createDynamicList() {
