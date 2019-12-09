@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.Type;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -55,6 +54,7 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -275,8 +275,8 @@ public class DraftCMOService {
         cmoTemplateData.putAll(getGroupedCMODirections(caseManagementOrder));
 
         OrderAction action = caseManagementOrder.getAction();
-        if (action == null || !Type.SEND_TO_ALL_PARTIES.equals(
-            action.getType())) {
+
+        if (action == null || !SEND_TO_ALL_PARTIES.equals(action.getType())) {
             cmoTemplateData.put("draftbackground", String.format("image:base64:%1$s",
                 docmosisDocumentGeneratorService.generateDraftWatermarkEncodedString()));
         }
