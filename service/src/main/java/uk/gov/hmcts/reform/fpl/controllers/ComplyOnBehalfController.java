@@ -53,7 +53,6 @@ public class ComplyOnBehalfController {
         Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
             directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections());
 
-        //TODO: responses for all parties directions is not added as expected
         directionHelperService.addDirectionsToCaseDetails(caseDetails, sortedDirections);
 
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));

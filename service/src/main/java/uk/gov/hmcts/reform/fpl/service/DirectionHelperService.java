@@ -146,12 +146,11 @@ public class DirectionHelperService {
     public void addDirectionsToCaseDetails(CaseDetails caseDetails,
                                            Map<DirectionAssignee, List<Element<Direction>>> directionsMap) {
         directionsMap.forEach((assignee, directions) -> {
+            final List<Element<Direction>> clone = getClone(directionsMap.get(ALL_PARTIES));
+
             switch (assignee) {
                 case PARENTS_AND_RESPONDENTS:
-                    //TODO: in here directions appear to be populated as expected. CaseDetails are updated
-                    // with the correct values. However these values (responses) are lost in caseDetails in controller.
-
-                    directions.addAll(directionsMap.get(ALL_PARTIES));
+                    directions.addAll(clone);
 
                     filterResponsesNotCompliedOnBehalfOfByTheCourt("RESPONDENT", directions);
 
@@ -159,7 +158,7 @@ public class DirectionHelperService {
 
                     break;
                 case OTHERS:
-                    directions.addAll(directionsMap.get(ALL_PARTIES));
+                    directions.addAll(clone);
 
                     filterResponsesNotCompliedOnBehalfOfByTheCourt("OTHER", directions);
 
@@ -167,9 +166,8 @@ public class DirectionHelperService {
 
                     break;
                 case CAFCASS:
-                    directions.addAll(directionsMap.get(ALL_PARTIES));
+                    directions.addAll(clone);
 
-                    // All responses for CAFCASS will be completed by the court.
                     List<Element<Direction>> cafcassDirections = extractPartyResponse(COURT, directions);
 
                     caseDetails.getData().put(assignee.toCustomDirectionField(), cafcassDirections);
@@ -177,6 +175,16 @@ public class DirectionHelperService {
                     break;
             }
         });
+    }
+
+    private List<Element<Direction>> getClone(List<Element<Direction>> elements) {
+
+        return elements.stream()
+            .map(directionElement -> Element.<Direction>builder()
+                .id(directionElement.getId())
+                .value(directionElement.getValue().deepCopy())
+                .build())
+            .collect(toList());
     }
 
     /**

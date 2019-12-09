@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -35,5 +37,19 @@ public class Direction {
             responses = new ArrayList<>();
         }
         return responses;
+    }
+
+    public Direction deepCopy() {
+        List<Element<DirectionResponse>> responsesCopy = responses.stream()
+            .map(responseElement -> Element.<DirectionResponse>builder()
+                .id(responseElement.getId())
+                .value(responseElement.getValue().toBuilder().build())
+                .build())
+            .collect(toList());
+
+        return this.toBuilder()
+            .response(response.toBuilder().build())
+            .responses(responsesCopy)
+            .build();
     }
 }
