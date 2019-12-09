@@ -1,0 +1,16 @@
+[
+  {
+    "email": "damian@swansea.gov.uk",
+    "roles": [
+      "caseworker",
+      "caseworker-publiclaw",
+      "caseworker-publiclaw-solicitor"
+    ],
+    "lastName": "(local-authority)",
+    "userIdentifier": "",
+    "firstName": "damian@swansea.gov.uk",
+    "idamStatus": "ACTIVE",
+    "idamStatusCode": "0",
+    "idamMessage": ""
+  }
+]
