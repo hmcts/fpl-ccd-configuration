@@ -125,7 +125,7 @@ class ActionCmoServiceTest {
     }
 
     @Test
-    void shouldReturnEmptyStringWhenCMOActionIsNotPresent() {
+    void shouldReturnEmptyStringWhenOrderActionIsNotPresentOnCMO() {
         List<Element<HearingBooking>> hearingBookings = createHearingBookings(MOCK_DATE);
         CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder().build();
 
@@ -135,7 +135,7 @@ class ActionCmoServiceTest {
     }
 
     @Test
-    void shouldFormatNextHearingBookingLabelWhenCMOActionContainsMatchingUUID() {
+    void shouldFormatNextHearingBookingLabelWhenCMOOrderActionContainsMatchingUUID() {
         List<Element<HearingBooking>> hearingBookings = createHearingBookings(MOCK_DATE);
 
         CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
@@ -150,19 +150,7 @@ class ActionCmoServiceTest {
     }
 
     @Test
-    void shouldPreserveCMOWhenHearingDateListIsNull() {
-        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
-            .hearingDate("Test date")
-            .build();
-
-        CaseManagementOrder updatedCaseManagementOrder = actionCmoService.appendNextHearingDateToCMO(null,
-            caseManagementOrder);
-
-        assertThat(updatedCaseManagementOrder.getHearingDate()).isEqualTo("Test date");
-    }
-
-    @Test
-    void shouldSetCMONextHearingDateWhenProvidedHearingDateList() {
+    void shouldSetOrderActionNextHearingDateWhenProvidedNextHearingDateList() {
         CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder().build();
 
         CaseManagementOrder updatedCaseManagementOrder =
@@ -172,5 +160,17 @@ class ActionCmoServiceTest {
 
         assertThat(orderAction.getNextHearingId()).isEqualTo(UUID.fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
         assertThat(orderAction.getNextHearingDate()).isEqualTo("15th Dec 2019");
+    }
+
+    @Test
+    void shouldPreserveCMOWhenNextHearingDateListIsNotProvided() {
+        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
+            .hearingDate("Test date")
+            .build();
+
+        CaseManagementOrder updatedCaseManagementOrder = actionCmoService.appendNextHearingDateToCMO(null,
+            caseManagementOrder);
+
+        assertThat(updatedCaseManagementOrder.getHearingDate()).isEqualTo("Test date");
     }
 }

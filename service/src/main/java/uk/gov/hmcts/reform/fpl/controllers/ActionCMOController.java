@@ -113,10 +113,10 @@ public class ActionCMOController {
 
         actionCmoService.prepareCaseDetailsForSubmission(caseDetails, orderWithNextHearing, hasJudgeApproved(order));
 
-        String nextHearingDate =
+        String nextHearingDateLabel =
             actionCmoService.createNextHearingDateLabel(orderWithNextHearing, caseData.getHearingDetails());
 
-        caseDetails.getData().put("nextHearingDateLabel", nextHearingDate);
+        caseDetails.getData().put("nextHearingDateLabel", nextHearingDateLabel);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
