@@ -53,11 +53,8 @@ class ActionCmoServiceTest {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(
         String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL_ADDRESS));
 
-    private CaseManagementOrder caseManagementOrder;
-    private List<Element<HearingBooking>> hearingDetails;
     private DraftCMOService draftCMOService;
     private ActionCmoService actionCmoService;
-    private CaseDataExtractionService caseDataExtractionService;
 
     @Autowired
     public ActionCmoServiceTest(ObjectMapper mapper, OrdersLookupService ordersLookupService,
@@ -85,10 +82,9 @@ class ActionCmoServiceTest {
 
         draftCMOService = new DraftCMOService(mapper, dateFormatterService, directionHelperService,
             caseDataExtractionService, hmctsCourtLookupConfiguration,
-            docmosisDocumentGeneratorService, commonCaseDataExtractionService, hearingVenueLookUpService);
+            docmosisDocumentGeneratorService, commonCaseDataExtractionService, hearingBookingService);
 
-        actionCmoService = new ActionCmoService(mapper, draftCMOService, dateFormatterService,
-            hearingVenueLookUpService, hearingBookingService);
+        actionCmoService = new ActionCmoService(mapper, draftCMOService, dateFormatterService, hearingBookingService);
     }
 
     @Test

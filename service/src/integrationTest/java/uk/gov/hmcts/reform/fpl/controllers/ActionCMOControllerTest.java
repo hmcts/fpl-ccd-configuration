@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.UUID.fromString;
@@ -62,6 +63,7 @@ class ActionCMOControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final byte[] pdf = {1, 2, 3, 4, 5};
+    private static final UUID NEXT_HEARING_ID = fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31");
     private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
     private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
@@ -191,7 +193,7 @@ class ActionCMOControllerTest {
         return OrderAction.builder()
             .type(SEND_TO_ALL_PARTIES)
             .nextHearingType(ISSUES_RESOLUTION_HEARING)
-            .nextHearingId(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+            .nextHearingId(NEXT_HEARING_ID)
             .build();
     }
 

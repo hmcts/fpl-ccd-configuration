@@ -75,7 +75,7 @@ public class DraftCMOService {
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
-    private final HearingVenueLookUpService hearingVenueLookUpService;
+    private final HearingBookingService hearingBookingService;
 
     public Map<String, Object> extractIndividualCaseManagementOrderObjects(
         CaseManagementOrder caseManagementOrder, List<Element<HearingBooking>> hearingDetails) {
@@ -101,7 +101,7 @@ public class DraftCMOService {
     public CaseManagementOrder prepareCMO(Map<String, Object> caseData) {
         DynamicList list = mapper.convertValue(caseData.get("cmoHearingDateList"), DynamicList.class);
 
-        HearingDateDynamicElement hearingDateDynamicElement = hearingVenueLookUpService.getHearingDynamicElement(list);
+        HearingDateDynamicElement hearingDateDynamicElement = hearingBookingService.getHearingDynamicElement(list);
 
         Map<String, Object> reviewCaseManagementOrder = mapper.convertValue(
             caseData.get("reviewCaseManagementOrder"), new TypeReference<>() {});

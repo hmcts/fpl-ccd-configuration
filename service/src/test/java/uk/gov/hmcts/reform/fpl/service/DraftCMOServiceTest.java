@@ -105,7 +105,7 @@ class DraftCMOServiceTest {
 
         draftCMOService = new DraftCMOService(mapper, dateFormatterService, directionHelperService,
             caseDataExtractionService, hmctsCourtLookupConfiguration,
-            docmosisDocumentGeneratorService, commonCaseDataExtractionService, hearingVenueLookUpService);
+            docmosisDocumentGeneratorService, commonCaseDataExtractionService, hearingBookingService);
 
         hearingDetails = createHearingBookings(NOW);
     }

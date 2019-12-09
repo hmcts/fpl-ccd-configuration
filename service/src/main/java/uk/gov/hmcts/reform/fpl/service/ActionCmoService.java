@@ -25,7 +25,6 @@ public class ActionCmoService {
     private final ObjectMapper objectMapper;
     private final DraftCMOService draftCMOService;
     private final DateFormatterService dateFormatterService;
-    private final HearingVenueLookUpService hearingVenueLookUpService;
     private final HearingBookingService hearingBookingService;
 
     private static final String CMO_ACTION_KEY = "orderAction";
@@ -36,12 +35,10 @@ public class ActionCmoService {
     public ActionCmoService(ObjectMapper objectMapper,
                             DraftCMOService draftCMOService,
                             DateFormatterService dateFormatterService,
-                            HearingVenueLookUpService hearingVenueLookUpService,
                             HearingBookingService hearingBookingService)  {
         this.objectMapper = objectMapper;
         this.draftCMOService = draftCMOService;
         this.dateFormatterService = dateFormatterService;
-        this.hearingVenueLookUpService = hearingVenueLookUpService;
         this.hearingBookingService = hearingBookingService;
     }
 
@@ -79,8 +76,7 @@ public class ActionCmoService {
         CaseManagementOrder.CaseManagementOrderBuilder builder = order.toBuilder();
 
         if (list != null) {
-            HearingDateDynamicElement hearingDateDynamicElement =
-                hearingVenueLookUpService.getHearingDynamicElement(list);
+            HearingDateDynamicElement hearingDateDynamicElement = hearingBookingService.getHearingDynamicElement(list);
 
             builder
                 .action(OrderAction.builder()

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.util.List;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingDynmaicList;
 
 @ExtendWith(SpringExtension.class)
 class HearingBookingServiceTest {
@@ -71,6 +73,15 @@ class HearingBookingServiceTest {
             service.getHearingBookingByUUID(hearingBookings, fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2606"));
 
         assertThat(hearingBooking).isEqualTo(HearingBooking.builder().build());
+    }
+
+    @Test
+    void shouldGetDynamicHearingBookingElementFromDynamicList() {
+        HearingDateDynamicElement dateDynamicElement =
+            service.getHearingDynamicElement(createHearingBookingDynmaicList());
+
+        assertThat(dateDynamicElement.getId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
+        assertThat(dateDynamicElement.getDate()).isEqualTo("15th Dec 2019");
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {
