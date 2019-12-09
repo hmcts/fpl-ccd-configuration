@@ -154,8 +154,8 @@ public class NotificationHandler {
         Map<String, Object> notificationParameters = caseManagementOrderEmailContentProvider
             .buildCMOIssuedNotificationParametersForLocalAuthority(caseDetails, localAuthorityCode);
         String caseReference = Long.toString(caseDetails.getId());
-        String sharedEmail = getLocalAuthoritySharedEmail(localAuthorityCode);
-        sendNotification(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, sharedEmail, notificationParameters, caseReference);
+        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
+        sendNotification(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE, email, notificationParameters, caseReference);
     }
 
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
@@ -188,12 +188,5 @@ public class NotificationHandler {
             .orElseThrow(() -> new NullPointerException("Local authority '" + localAuthorityCode + "' not found"));
         sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, localAuthorityEmail, localAuthorityParameters,
             Long.toString(caseDetails.getId()));
-    }
-
-    private String getLocalAuthoritySharedEmail(final String localAuthorityCode) {
-        return localAuthorityEmailLookupConfiguration
-            .getLocalAuthority(localAuthorityCode)
-            .map(LocalAuthorityEmailLookupConfiguration.LocalAuthority::getEmail)
-            .orElseThrow(() -> new NullPointerException("Local authority '" + localAuthorityCode + "' not found"));
     }
 }

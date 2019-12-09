@@ -44,7 +44,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -231,6 +230,10 @@ class NotificationHandlerTest {
 
         @BeforeEach
         void setup() throws IOException {
+            given(inboxLookupService.getNotificationRecipientEmail(callbackRequest().getCaseDetails(),
+                LOCAL_AUTHORITY_CODE))
+                .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+
             given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParametersForLocalAuthority(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE))
                 .willReturn(cmoOrderIssuedNotificationParameters);
@@ -238,24 +241,12 @@ class NotificationHandlerTest {
 
         @Test
         void shouldNotifyLocalAuthorityOfCMOIssued() throws Exception {
-            given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-                .willReturn(Optional.of(new LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS)));
-
             notificationHandler.notifyLocalAuthorityOfIssuedCaseManagementOrder(
                 new CMOEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 
             verify(notificationClient, times(1)).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 eq(cmoOrderIssuedNotificationParameters), eq("12345"));
-        }
-
-        @Test
-        void shouldThrowNullPointerExceptionOnAttemptToNotifyLocalAuthorityOfCMOIssued() throws Exception {
-            given(inboxLookupService.getNotificationRecipientEmail(callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE))
-                .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
-
-            assertThrows(NullPointerException.class, () -> notificationHandler.notifyLocalAuthorityOfIssuedCaseManagementOrder(
-                new CMOEvent(callbackRequest(), AUTH_TOKEN, USER_ID)));
         }
 
         private ImmutableMap<String, Object> getCMOIssuedNotificationParameters() {
