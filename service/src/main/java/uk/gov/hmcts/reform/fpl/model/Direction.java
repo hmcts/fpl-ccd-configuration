@@ -40,15 +40,21 @@ public class Direction {
     }
 
     public Direction deepCopy() {
-        List<Element<DirectionResponse>> responsesCopy = responses.stream()
+        List<Element<DirectionResponse>> responsesCopy = getResponses().stream()
             .map(responseElement -> Element.<DirectionResponse>builder()
                 .id(responseElement.getId())
                 .value(responseElement.getValue().toBuilder().build())
                 .build())
             .collect(toList());
 
+        DirectionResponse responseCopy = null;
+
+        if (response != null) {
+            responseCopy = response.toBuilder().build();
+        }
+
         return this.toBuilder()
-            .response(response.toBuilder().build())
+            .response(responseCopy)
             .responses(responsesCopy)
             .build();
     }
