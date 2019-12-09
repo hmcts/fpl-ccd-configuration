@@ -36,7 +36,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     public Map<String, Object> buildCMOIssuedNotificationParametersForLocalAuthority(final CaseDetails caseDetails,
                                                                                      final String localAuthorityCode) {
         return ImmutableMap.<String, Object>builder()
-            .putAll(commonCMONotificationParameters(caseDetails))
+            .putAll(buildCommonCMONotificationParameters(caseDetails))
             .put("localAuthorityNameOrRepresentativeFullName",
                 localAuthorityNameLookupConfiguration.getLocalAuthorityName(
                 localAuthorityCode))
@@ -45,9 +45,10 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
     // TODO: 06/12/2019 include method to build parameters for representatives once 911 completed
 
-    private Map<String, String> commonCMONotificationParameters(final CaseDetails caseDetails) {
+    private Map<String, String> buildCommonCMONotificationParameters(final CaseDetails caseDetails) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         final String subjectLine = buildSubjectLine(caseData);
+
         return ImmutableMap.of(
             "hearingDetailsCallout", buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
                 caseData.getHearingDetails()),

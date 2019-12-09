@@ -37,16 +37,21 @@ public class EmailNotificationHelper {
 
     public static String buildSubjectLineWithHearingBookingDateSuffix(final String subjectLine,
                                                                       final List<Element<HearingBooking>>
-                                                                          hearingDetails) {
+                                                                          hearingBookings) {
         String hearingDate = "";
-        if (isNotEmpty(hearingDetails)) {
-            hearingDate = " hearing " + dateFormatterService.formatLocalDateToString(
-                hearingBookingService.getMostUrgentHearingBooking(
-                    hearingDetails).getStartDate().toLocalDate(), FormatStyle.MEDIUM);
+        if (isNotEmpty(hearingBookings)) {
+            hearingDate = buildSubjectLineSuffixText(hearingBookings);
         }
+
         return Stream.of(subjectLine, hearingDate)
             .filter(StringUtils::isNotBlank)
             .collect(joining(","));
+    }
+
+    private static String buildSubjectLineSuffixText(final List<Element<HearingBooking>> hearingBookings) {
+        return " hearing " + dateFormatterService.formatLocalDateToString(
+            hearingBookingService.getMostUrgentHearingBooking(
+                hearingBookings).getStartDate().toLocalDate(), FormatStyle.MEDIUM);
     }
 
     private static String getFirstRespondentLastName(final CaseData caseData) {
