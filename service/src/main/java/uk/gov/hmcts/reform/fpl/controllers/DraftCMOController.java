@@ -70,10 +70,11 @@ public class DraftCMOController {
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
-        @RequestHeader("authorization") String authorization,
-        @RequestHeader("userId") String userId,
-        @RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestHeader("authorization") String authorization,
+                                                               @RequestHeader("user-id") String userId,
+                                                               @RequestBody CallbackRequest callbackRequest)
+        throws IOException {
+
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final Map<String, Object> data = caseDetails.getData();
         final CaseData caseData = mapper.convertValue(data, CaseData.class);

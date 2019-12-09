@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.service.ActionCmoService;
+import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -35,17 +36,20 @@ public class ActionCMOController {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final ObjectMapper mapper;
+    private final CMODocmosisTemplateDataGenerationService cmoDocmosisTemplateDataGenerationService;
 
     public ActionCMOController(DraftCMOService draftCMOService,
                                ActionCmoService actionCmoService,
                                DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
                                UploadDocumentService uploadDocumentService,
-                               ObjectMapper mapper) {
+                               ObjectMapper mapper,
+                               CMODocmosisTemplateDataGenerationService cmoDocmosisTemplateDataGenerationService) {
         this.draftCMOService = draftCMOService;
         this.actionCmoService = actionCmoService;
         this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
         this.mapper = mapper;
+        this.cmoDocmosisTemplateDataGenerationService = cmoDocmosisTemplateDataGenerationService;
     }
 
     @PostMapping("/about-to-start")
@@ -71,7 +75,7 @@ public class ActionCMOController {
         caseDetails.getData()
             .putAll(actionCmoService.extractMapFieldsFromCaseManagementOrder(order, caseData.getHearingDetails()));
 
-        Document document = getDocument(authorization, userId, caseDetails.getData(), false);
+        Document document = getDocument(authorization, userId, caseData, false);
 
         CaseManagementOrder orderWithDocument = actionCmoService.addDocument(order, document);
 
@@ -97,7 +101,7 @@ public class ActionCMOController {
         caseDetails.getData()
             .putAll(actionCmoService.extractMapFieldsFromCaseManagementOrder(order, caseData.getHearingDetails()));
 
-        Document document = getDocument(authorization, userId, caseDetails.getData(), hasJudgeApproved(order));
+        Document document = getDocument(authorization, userId, caseData, hasJudgeApproved(order));
 
         CaseManagementOrder orderWithDocument = actionCmoService.addDocument(order, document);
 
@@ -108,9 +112,9 @@ public class ActionCMOController {
             .build();
     }
 
-    private Document getDocument(String authorization, String userId, Map<String, Object> caseData, boolean approved)
+    private Document getDocument(String authorization, String userId, CaseData data, boolean approved)
         throws IOException {
-        Map<String, Object> cmoDocumentTemplateData = draftCMOService.generateCMOTemplateData(caseData);
+        Map<String, Object> cmoDocumentTemplateData = cmoDocmosisTemplateDataGenerationService.getTemplateData(data);
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
             cmoDocumentTemplateData, DocmosisTemplates.CMO);
