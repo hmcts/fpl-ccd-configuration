@@ -85,7 +85,7 @@ class ActionCmoServiceTest {
             caseDataExtractionService, hmctsCourtLookupConfiguration,
             docmosisDocumentGeneratorService, commonCaseDataExtractionService, hearingBookingService);
 
-        actionCmoService = new ActionCmoService(mapper, draftCMOService, dateFormatterService, hearingBookingService);
+        actionCmoService = new ActionCmoService(draftCMOService, dateFormatterService, hearingBookingService);
     }
 
     @Test

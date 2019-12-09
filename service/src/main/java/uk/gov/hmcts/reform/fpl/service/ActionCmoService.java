@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
@@ -22,7 +20,6 @@ import java.util.UUID;
 
 @Service
 public class ActionCmoService {
-    private final ObjectMapper objectMapper;
     private final DraftCMOService draftCMOService;
     private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
@@ -32,11 +29,9 @@ public class ActionCmoService {
 
     //TODO: this should all exist in one CaseManagementOrderService
     @Autowired
-    public ActionCmoService(ObjectMapper objectMapper,
-                            DraftCMOService draftCMOService,
+    public ActionCmoService(DraftCMOService draftCMOService,
                             DateFormatterService dateFormatterService,
                             HearingBookingService hearingBookingService)  {
-        this.objectMapper = objectMapper;
         this.draftCMOService = draftCMOService;
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
@@ -46,15 +41,6 @@ public class ActionCmoService {
         return caseManagementOrder.toBuilder()
             .orderDoc(buildDocumentReference(document))
             .build();
-    }
-
-    public CaseManagementOrder getCaseManagementOrder(Map<String, Object> caseDataMap) {
-        CaseData caseData = objectMapper.convertValue(caseDataMap, CaseData.class);
-
-        caseDataMap.putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
-            caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
-
-        return objectMapper.convertValue(caseDataMap.get("caseManagementOrder"), CaseManagementOrder.class);
     }
 
     public void prepareCaseDetailsForSubmission(CaseDetails caseDetails, CaseManagementOrder order, boolean approved) {
