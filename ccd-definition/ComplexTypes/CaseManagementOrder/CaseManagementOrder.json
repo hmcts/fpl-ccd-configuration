@@ -59,5 +59,13 @@
     "FieldTypeParameter": "CMOStatus",
     "ElementLabel": "Is this ready to be sent to the judge?",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "ListElementCode": "action",
+    "FieldType": "OrderAction",
+    "ElementLabel": " ",
+    "SecurityClassification": "Public"
   }
 ]

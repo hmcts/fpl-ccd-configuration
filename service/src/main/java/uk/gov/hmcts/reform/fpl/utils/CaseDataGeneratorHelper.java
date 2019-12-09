@@ -482,6 +482,16 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
+    public static DynamicList createHearingBookingDynmaicList() {
+        return DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                .label("15th Dec 2019")
+                .build())
+            .listItems(List.of(DynamicListElement.builder().code(UUID.randomUUID()).label("test").build()))
+            .build();
+    }
+
     private static Solicitor createSolicitor() {
         return Solicitor.builder()
             .name("Bruce Wayne")

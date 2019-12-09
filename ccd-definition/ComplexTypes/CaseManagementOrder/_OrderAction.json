@@ -37,7 +37,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CaseManagementOrderAction",
+    "ID": "OrderAction",
     "ListElementCode": "nextHearingDate",
     "FieldType": "Text",
     "ElementLabel": "Which hearing is next?",
@@ -45,12 +45,12 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "CaseManagementOrderAction",
+    "ID": "OrderAction",
     "ListElementCode": "nextHearingId",
     "FieldType": "Text",
     "ElementLabel": "nextHearingId",
     "SecurityClassification": "Public",
     "FieldShowCondition": "nextHearingDate=\"DO_NOT_SHOW\"",
-    "Comment": "Id has been used here to uniquely identify selected date in case management order"
+    "Comment": "nextHearingId uniquely identifies selected date in action CMO"
   }
 ]
