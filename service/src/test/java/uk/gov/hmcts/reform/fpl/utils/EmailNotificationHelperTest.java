@@ -96,7 +96,7 @@ class EmailNotificationHelperTest {
     }
 
     @Test
-    void subjectLineShouldReturnRespondentsFirstNameFamilyManCaseNumberWithHearingDateSuffixed() {
+    void subjectLineShouldBeSuffixedWithHearingDate() {
         final LocalDateTime dateInTenMonths = LocalDateTime.now().plusMonths(10);
         CaseData caseData = CaseData.builder()
             .respondents1(createRespondents())
@@ -113,7 +113,7 @@ class EmailNotificationHelperTest {
     }
 
     @Test
-    void subjectSuffixShouldNotContainHearingDetailsWhenHearingDetailsNotProvided() {
+    void subjectLineSuffixShouldNotContainHearingDateWhenHearingBookingsNotProvided() {
         CaseData caseData = CaseData.builder()
             .respondents1(createRespondents())
             .hearingDetails(null)
