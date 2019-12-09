@@ -193,7 +193,7 @@ class GeneratedOrderControllerTest {
             .caseDetails(CaseDetails.builder()
                 .id(19898989L)
                 .data(ImmutableMap.of(
-                    "generatedOrders", createOrders(),
+                    "orderCollection", createOrders(),
                     "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
                     "respondents1", createRespondents(),
                     "caseLocalAuthority", LOCAL_AUTHORITY_CODE,

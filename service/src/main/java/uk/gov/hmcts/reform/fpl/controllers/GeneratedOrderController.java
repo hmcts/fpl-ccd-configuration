@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
-import uk.gov.hmcts.reform.fpl.validation.groups.ValidateCaseNumberGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -69,7 +69,7 @@ public class GeneratedOrderController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(validateGroupService.validateGroup(caseData, ValidateCaseNumberGroup.class))
+            .errors(validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class))
             .build();
     }
 
@@ -100,7 +100,7 @@ public class GeneratedOrderController {
 
         orders.add(service.addCustomValuesToOrder(caseData.getOrder(), caseData.getJudgeAndLegalAdvisor()));
 
-        caseDetails.getData().put("generatedOrders", orders);
+        caseDetails.getData().put("orderCollection", orders);
         caseDetails.getData().remove("order");
         caseDetails.getData().remove("judgeAndLegalAdvisor");
 
