@@ -74,6 +74,12 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "AuthorityFixedList",
+    "ListElementCode": "CDF",
+    "ListElement": "Cardiff Council"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
     "ListElementCode": "FPLA",
     "ListElement": "FPLA team"
   }
