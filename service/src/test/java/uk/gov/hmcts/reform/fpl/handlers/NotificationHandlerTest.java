@@ -226,12 +226,7 @@ class NotificationHandlerTest {
     @Nested
     class CaseManagementOrderNotificationTests {
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
-        final Map<String, Object> cmoOrderIssuedNotificationParameters = ImmutableMap.<String, Object>builder()
-            .put("localAuthorityNameOrRepresentativeFullName", LOCAL_AUTHORITY_NAME)
-            .put("hearingDetailsCallout", subjectLine)
-            .put("reference", "12345")
-            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
-            .build();
+        final Map<String, Object> cmoOrderIssuedNotificationParameters = getCMOIssuedNotificationParameters();
 
         @BeforeEach
         void setup() throws IOException {
@@ -252,6 +247,15 @@ class NotificationHandlerTest {
             verify(notificationClient, times(1)).sendEmail(
                 eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 eq(cmoOrderIssuedNotificationParameters), eq("12345"));
+        }
+
+        private ImmutableMap<String, Object> getCMOIssuedNotificationParameters() {
+            return ImmutableMap.<String, Object>builder()
+                .put("localAuthorityNameOrRepresentativeFullName", LOCAL_AUTHORITY_NAME)
+                .put("hearingDetailsCallout", subjectLine)
+                .put("reference", "12345")
+                .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+                .build();
         }
     }
 
