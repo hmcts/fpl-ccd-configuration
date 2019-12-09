@@ -53,8 +53,7 @@ public class GeneratedOrderService {
     /**
      * Method to format title of order, add {@link JudgeAndLegalAdvisor} object and a formatted order date.
      *
-     * @param order                this value will contain fixed details and document values as well as customisable
-     *                             values.
+     * @param order                this value will contain order title and order details
      * @param judgeAndLegalAdvisor the judge and legal advisor for the order.
      * @return Element containing randomUUID and a fully populated order.
      */
