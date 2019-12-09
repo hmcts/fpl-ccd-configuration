@@ -53,7 +53,8 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
             "hearingDetailsCallout", buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
                 caseData.getHearingDetails()),
             "reference", String.valueOf(caseDetails.getId()),
-            "caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId()
+            "caseUrl", String.format("%1$s/case/%2$s/%3$s/%4$s",
+                uiBaseUrl, JURISDICTION, CASE_TYPE, caseDetails.getId())
         );
     }
 }
