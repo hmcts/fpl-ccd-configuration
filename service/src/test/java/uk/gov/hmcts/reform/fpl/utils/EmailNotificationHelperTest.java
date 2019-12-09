@@ -104,12 +104,12 @@ class EmailNotificationHelperTest {
             .familyManCaseNumber("FamilyManCaseNumber")
             .build();
 
-        String expectedSubjectLineWithHearingDateSuffix = "Jones, FamilyManCaseNumber, hearing "
+        String expectedSubjectLine = "Jones, FamilyManCaseNumber, hearing "
             + dateFormatterService.formatLocalDateTimeBaseUsingFormat(dateInTenMonths, "d MMM yyyy");
         String subjectLine = buildSubjectLine(caseData);
-        String subjectLineWithHearingDateSuffix = buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
+        String returnedSubjectLine = buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
             caseData.getHearingDetails());
-        assertThat(subjectLineWithHearingDateSuffix).isEqualTo(expectedSubjectLineWithHearingDateSuffix);
+        assertThat(returnedSubjectLine).isEqualTo(expectedSubjectLine);
     }
 
     @Test
@@ -120,10 +120,10 @@ class EmailNotificationHelperTest {
             .familyManCaseNumber("FamilyManCaseNumber")
             .build();
 
-        String expectedSubjectLineWithNoHearingDateSuffix = "Jones, FamilyManCaseNumber";
+        String expectedSubjectLine = "Jones, FamilyManCaseNumber";
         String subjectLine = buildSubjectLine(caseData);
-        String subjectLineWithHearingDateSuffix = buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
+        String returnedSubjectLine = buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
             caseData.getHearingDetails());
-        assertThat(subjectLineWithHearingDateSuffix).isEqualTo(expectedSubjectLineWithNoHearingDateSuffix);
+        assertThat(returnedSubjectLine).isEqualTo(expectedSubjectLine);
     }
 }
