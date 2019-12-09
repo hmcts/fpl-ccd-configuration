@@ -146,7 +146,7 @@ class ActionCmoServiceTest {
 
         String label = actionCmoService.createNextHearingDateLabel(caseManagementOrder, hearingBookings);
 
-        assertThat(label).isEqualTo(label).isEqualTo("The next hearing date is on 12 February at 9:30am");
+        assertThat(label).isEqualTo("The next hearing date is on 12 February at 9:30am");
     }
 
     @Test
