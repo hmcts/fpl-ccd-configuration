@@ -148,7 +148,7 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void notifyLocalAuthorityOfIssuedAndServedCaseManagementOrder(CMOEvent event) {
+    public void notifyLocalAuthorityOfIssuedCaseManagementOrder(CMOEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
         Map<String, Object> notificationParameters = caseManagementOrderEmailContentProvider
