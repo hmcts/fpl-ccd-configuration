@@ -180,10 +180,6 @@ class GeneratedOrderControllerTest {
         verify(notificationClient, times(1)).sendEmail(
             eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             eq(expectedOrderLocalAuthorityParameters()), eq(expectedCaseReference));
-
-        verify(notificationClient, times(1)).sendEmail(
-            eq(ORDER_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
-            eq(expectedOrderCafcassParameters()), eq(expectedCaseReference));
     }
 
     private void aboutToSubmitAssertions(CaseData caseData, GeneratedOrder expectedOrder) {
@@ -247,13 +243,6 @@ class GeneratedOrderControllerTest {
                 dateIn3Months.toLocalDate(), FormatStyle.MEDIUM))
             .put("reference", "19898989")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/19898989")
-            .build();
-    }
-
-    private Map<String, Object> expectedOrderCafcassParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .putAll(commonNotificationParameters())
-            .put("localAuthorityOrCafcass", CAFCASS_NAME)
             .build();
     }
 
