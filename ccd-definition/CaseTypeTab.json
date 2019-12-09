@@ -48,19 +48,8 @@
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
     "CaseFieldID": "caseManagementOrder",
+    "TabShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\" OR caseManagementOrder!=\"\"",
     "TabFieldDisplayOrder": 2
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "Channel": "CaseWorker",
-    "TabID": "DraftOrdersTab",
-    "TabLabel": "Draft orders",
-    "TabDisplayOrder": 3,
-    "CaseFieldID": "sharedDraftCMO",
-    "TabFieldDisplayOrder": 2,
-    "TabShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\" OR caseManagementOrder!=\"\" OR sharedDraftCMO!=\"\"",
-    "Comment": "The TabFieldDisplayOrder has been left as 2 as caseManagementOrder is only viewable by LA role which can't view this"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -271,7 +260,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "caseIDReference",
+    "CaseFieldID": "sharedDraftCMODocument",
     "TabFieldDisplayOrder": 1
   },
   {
@@ -281,7 +270,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkChronology_document",
+    "CaseFieldID": "caseIDReference",
     "TabFieldDisplayOrder": 2
   },
   {
@@ -291,7 +280,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkStatement_document",
+    "CaseFieldID": "documents_socialWorkChronology_document",
     "TabFieldDisplayOrder": 3
   },
   {
@@ -301,7 +290,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkAssessment_document",
+    "CaseFieldID": "documents_socialWorkStatement_document",
     "TabFieldDisplayOrder": 4
   },
   {
@@ -311,7 +300,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkCarePlan_document",
+    "CaseFieldID": "documents_socialWorkAssessment_document",
     "TabFieldDisplayOrder": 5
   },
   {
@@ -321,7 +310,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "standardDirectionsDocument",
+    "CaseFieldID": "documents_socialWorkCarePlan_document",
     "TabFieldDisplayOrder": 6
   },
   {
@@ -331,7 +320,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "otherCourtAdminDocuments",
+    "CaseFieldID": "standardDirectionsDocument",
     "TabFieldDisplayOrder": 7
   },
   {
@@ -341,7 +330,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
+    "CaseFieldID": "otherCourtAdminDocuments",
     "TabFieldDisplayOrder": 8
   },
   {
@@ -351,7 +340,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_threshold_document",
+    "CaseFieldID": "documents_socialWorkEvidenceTemplate_document",
     "TabFieldDisplayOrder": 9
   },
   {
@@ -361,7 +350,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_checklist_document",
+    "CaseFieldID": "documents_threshold_document",
     "TabFieldDisplayOrder": 10
   },
   {
@@ -371,7 +360,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "courtBundle",
+    "CaseFieldID": "documents_checklist_document",
     "TabFieldDisplayOrder": 11
   },
   {
@@ -381,7 +370,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "documents_socialWorkOther",
+    "CaseFieldID": "courtBundle",
     "TabFieldDisplayOrder": 12
   },
   {
@@ -391,7 +380,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "submittedForm",
+    "CaseFieldID": "documents_socialWorkOther",
     "TabFieldDisplayOrder": 13
   },
   {
@@ -401,7 +390,7 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "noticeOfProceedingsBundle",
+    "CaseFieldID": "submittedForm",
     "TabFieldDisplayOrder": 14
   },
   {
@@ -411,7 +400,17 @@
     "TabID": "DocumentsTab",
     "TabLabel": "Documents",
     "TabDisplayOrder": 7,
-    "CaseFieldID": "c2DocumentBundle",
+    "CaseFieldID": "noticeOfProceedingsBundle",
     "TabFieldDisplayOrder": 15
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "Channel": "CaseWorker",
+    "TabID": "DocumentsTab",
+    "TabLabel": "Documents",
+    "TabDisplayOrder": 7,
+    "CaseFieldID": "c2DocumentBundle",
+    "TabFieldDisplayOrder": 16
   }
 ]

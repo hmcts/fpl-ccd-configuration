@@ -15,12 +15,12 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -105,7 +105,7 @@ class DraftCMOControllerTest {
 
         assertThat(otherPartiesKeyCMO).contains(
             "Person 1 - Kyle Stafford",
-            "Other Person 1 - Sarah Simpson");
+            "Other person 1 - Sarah Simpson");
 
         assertThat(callbackResponse.getData()).doesNotContainKey("allPartiesCustom");
         assertThat(callbackResponse.getData()).doesNotContainKey("localAuthorityDirectionsCustom");
@@ -122,9 +122,7 @@ class DraftCMOControllerTest {
         final DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", pdf);
 
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-        given(documentGeneratorService.generateDraftWatermarkEncodedString()).willReturn("");
-        given(uploadDocumentService.uploadPDF(any(),any(), any(), any())).willReturn(document);
-
+        given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(ImmutableMap.of(), "mid-event");
 
@@ -132,15 +130,16 @@ class DraftCMOControllerTest {
 
         final Map<String, Object> responseCaseData = callbackResponse.getData();
 
-        assertThat(responseCaseData).containsKey("reviewCaseManagementOrder");
+        assertThat(responseCaseData).containsKey("caseManagementOrder");
 
-        Map<String, Object> review = (Map<String, Object>) responseCaseData.get("reviewCaseManagementOrder");
+        final CaseManagementOrder caseManagementOrder = mapper.convertValue(responseCaseData.get(
+            "caseManagementOrder"), CaseManagementOrder.class);
 
-        assertThat(review).containsEntry(
-            "orderDoc", ImmutableMap.builder()
-                .put("document_binary_url", document().links.binary.href)
-                .put("document_filename", document().originalDocumentName)
-                .put("document_url", document().links.self.href)
+        assertThat(caseManagementOrder.getOrderDoc()).isEqualTo(
+            DocumentReference.builder()
+                .binaryUrl(document().links.binary.href)
+                .filename(document().originalDocumentName)
+                .url(document().links.self.href)
                 .build());
     }
 
@@ -162,9 +161,7 @@ class DraftCMOControllerTest {
         );
 
         data.put("cmoHearingDateList", dynamicHearingDates);
-        data.put("reviewCaseManagementOrder", ImmutableMap.of(
-            "cmoStatus", CMOStatus.SELF_REVIEW)
-        );
+        data.put("caseManagementOrder", CaseManagementOrder.builder().status(SELF_REVIEW).build());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
