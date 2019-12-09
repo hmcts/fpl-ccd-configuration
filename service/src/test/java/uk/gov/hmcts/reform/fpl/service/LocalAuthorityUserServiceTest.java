@@ -39,7 +39,7 @@ class LocalAuthorityUserServiceTest {
     private static final String[] USER_IDS = {"1", "2", "3"};
     private static final String LOCAL_AUTHORITY = "example";
     private static final String INVALID_LOCAL_AUTHORITY = "invalid local authority";
-    private static final Set<String> caseRoles = Set.of("[LASOLICITOR]","[CREATOR]");
+    private static final Set<String> caseRoles = Set.of("[LASOLICITOR]", "[CREATOR]");
 
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
@@ -64,8 +64,8 @@ class LocalAuthorityUserServiceTest {
     @BeforeEach
     void setup() {
         this.localAuthorityUserService = new LocalAuthorityUserService(
-            caseAccessApi,organisationService,
-            authTokenGenerator,caseUserApi,client,userConfig);
+            caseAccessApi, organisationService,
+            authTokenGenerator, caseUserApi, client, userConfig);
 
         given(client.authenticateUser(userConfig.getUserName(), userConfig.getPassword())).willReturn(AUTH_TOKEN);
 
@@ -100,7 +100,8 @@ class LocalAuthorityUserServiceTest {
     @Test
     void shouldThrowCustomExceptionWhenInValidLocalAuthorityHasNoUsers() throws IllegalArgumentException {
         assertThatThrownBy(() ->
-            localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, INVALID_LOCAL_AUTHORITY))
+            localAuthorityUserService
+                .grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, INVALID_LOCAL_AUTHORITY))
             .isInstanceOf(NoAssociatedUsersException.class)
             .hasMessage("No users found for the local authority '" + INVALID_LOCAL_AUTHORITY + "'");
     }
@@ -108,7 +109,7 @@ class LocalAuthorityUserServiceTest {
     @Test
     void shouldNotThrowExceptionWhenCallToUpdateCaseRoleEndpointFailsForOneUser() {
         willThrow(new RetryableException(500, "Some error", null, null)).given(caseUserApi).updateCaseRolesForUser(
-            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq("1"), refEq(new CaseUser("1",caseRoles)));
+            eq(AUTH_TOKEN), eq(SERVICE_AUTH_TOKEN), eq(CASE_ID), eq("1"), refEq(new CaseUser("1", caseRoles)));
 
         localAuthorityUserService.grantUserAccessWithCaseRole(AUTH_TOKEN, USER_ID, CASE_ID, LOCAL_AUTHORITY);
 

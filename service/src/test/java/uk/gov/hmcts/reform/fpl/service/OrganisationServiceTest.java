@@ -35,24 +35,31 @@ class OrganisationServiceTest {
 
     @BeforeEach
     void setup() {
-        LocalAuthorityUserLookupConfiguration laUserLookupConfig = new LocalAuthorityUserLookupConfiguration("SA=>1,2,3");
+        LocalAuthorityUserLookupConfiguration laUserLookupConfig =
+            new LocalAuthorityUserLookupConfiguration("SA=>1,2,3");
         organisationService = new OrganisationService(laUserLookupConfig, organisationApi, authTokenGenerator);
         when(authTokenGenerator.generate()).thenReturn(SERVICE_AUTH_TOKEN_ID);
     }
 
     @Test
     void shouldReturnUsersFromLocalAuthorityMappingWhenTheyExist() {
-        when(organisationApi.findUsersByOrganisation(any(), any(), any())).thenThrow(new FeignException.NotFound("No organisation", new byte[]{}));
-        List<String> usersIdsWithinSaLa = organisationService.findUserIdsInSameOrganisation(AUTH_TOKEN_ID, SW_USER_ID, "SA");
+        when(organisationApi.findUsersByOrganisation(any(), any(), any()))
+            .thenThrow(new FeignException.NotFound("No organisation", new byte[]{}));
+
+        List<String> usersIdsWithinSaLa = organisationService
+            .findUserIdsInSameOrganisation(AUTH_TOKEN_ID, SW_USER_ID, "SA");
 
         assertThat(usersIdsWithinSaLa)
-            .containsExactlyInAnyOrder("1","2","3");
+            .containsExactlyInAnyOrder("1", "2", "3");
     }
 
     @Test
     void shouldReturnUserIdentifierWhenTheUserOrganisationCannotBeFound() {
-        when(organisationApi.findUsersByOrganisation(any(), any(), any())).thenThrow(new FeignException.NotFound("No organisation", new byte[]{}));
-        List<String> naUserIds = organisationService.findUserIdsInSameOrganisation(AUTH_TOKEN_ID, NA_USER_ID, "NA");
+        when(organisationApi.findUsersByOrganisation(any(), any(), any()))
+            .thenThrow(new FeignException.NotFound("No organisation", new byte[]{}));
+
+        List<String> naUserIds = organisationService
+            .findUserIdsInSameOrganisation(AUTH_TOKEN_ID, NA_USER_ID, "NA");
 
         assertThat(naUserIds)
             .containsExactly(NA_USER_ID);
@@ -60,11 +67,13 @@ class OrganisationServiceTest {
 
     @Test
     void shouldReturnUsersFromOrganisationIfExistsInRefData() {
-        List<User> usersInNaOrganisation = List.of(new User(NA_USER_ID), new User("41"));
+        List<User> usersInNaOrganisation = List.of(User.builder().userIdentifier(NA_USER_ID).build(),
+            User.builder().userIdentifier("41").build());
         when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE))
-           .thenReturn(usersInNaOrganisation);
+            .thenReturn(usersInNaOrganisation);
 
-        List<String> naUserIds = organisationService.findUserIdsInSameOrganisation(AUTH_TOKEN_ID, NA_USER_ID, "NA");
+        List<String> naUserIds = organisationService
+            .findUserIdsInSameOrganisation(AUTH_TOKEN_ID, NA_USER_ID, "NA");
 
         assertThat(naUserIds)
             .containsExactly(NA_USER_ID, "41");

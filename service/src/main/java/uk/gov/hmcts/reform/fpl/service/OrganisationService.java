@@ -36,12 +36,15 @@ public class OrganisationService {
             return localAuthorityUserLookupConfiguration.getUserIds(localAuthorityCode);
         } catch (UnknownLocalAuthorityCodeException ex) {
             try {
-                return organisationApi.findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE)
+                return organisationApi
+                    .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE)
                     .stream()
                     .map(User::getUserIdentifier)
                     .collect(Collectors.toList());
             } catch (Exception e) {
-                log.warn("Can't find LocalAuthority for code: " + localAuthorityCode + " in app config. The PRD endpoint call threw an exception.", e);
+                log.warn("Can't find LocalAuthority for code: "
+                    + localAuthorityCode
+                    + " in app config. The PRD endpoint call threw an exception.", e);
                 return ImmutableList.of(userId);
             }
         }
