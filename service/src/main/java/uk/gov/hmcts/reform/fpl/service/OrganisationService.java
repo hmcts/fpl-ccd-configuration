@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Status;
 import uk.gov.hmcts.reform.rd.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,21 +34,28 @@ public class OrganisationService {
 
 
     public List<String> findUserIdsInSameOrganisation(String authorisation, String userId, String localAuthorityCode) {
+        List<String> userIds = new ArrayList<>();
+
         try {
-            return localAuthorityUserLookupConfiguration.getUserIds(localAuthorityCode);
+            userIds.addAll(localAuthorityUserLookupConfiguration.getUserIds(localAuthorityCode));
         } catch (UnknownLocalAuthorityCodeException ex) {
             try {
-                return organisationApi
+                organisationApi
                     .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE)
                     .stream()
                     .map(User::getUserIdentifier)
-                    .collect(Collectors.toList());
+                    .forEach(userIds::add);
             } catch (Exception e) {
                 log.warn("Can't find LocalAuthority for code: "
                     + localAuthorityCode
                     + " in app config. The PRD endpoint call threw an exception.", e);
-                return ImmutableList.of(userId);
             }
         }
+
+        if (!userIds.contains(userId)) {
+            userIds.add(userId);
+        }
+
+        return userIds;
     }
 }

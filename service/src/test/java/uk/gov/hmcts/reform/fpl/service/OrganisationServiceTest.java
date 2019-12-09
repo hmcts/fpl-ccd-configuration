@@ -54,6 +54,22 @@ class OrganisationServiceTest {
     }
 
     @Test
+    void shouldReturnUsersIncludingCallerIdFromLocalAuthorityMappingEvenIfCallerIdIsNotPartOfIt() {
+        //this test scenario covers situation when the user ID was not added to the config
+        //it has to be handled or the user won't be able to access the case at all
+
+        when(organisationApi.findUsersByOrganisation(any(), any(), any()))
+            .thenThrow(new FeignException.NotFound("No organisation", new byte[]{}));
+
+        List<String> usersIdsWithinSaLa = organisationService
+            .findUserIdsInSameOrganisation(AUTH_TOKEN_ID, "4", "SA");
+
+        assertThat(usersIdsWithinSaLa)
+            .containsExactlyInAnyOrder("1", "2", "3", "4");
+    }
+
+
+    @Test
     void shouldReturnUserIdentifierWhenTheUserOrganisationCannotBeFound() {
         when(organisationApi.findUsersByOrganisation(any(), any(), any()))
             .thenThrow(new FeignException.NotFound("No organisation", new byte[]{}));
@@ -78,5 +94,6 @@ class OrganisationServiceTest {
         assertThat(naUserIds)
             .containsExactly(NA_USER_ID, "41");
     }
+
 
 }
