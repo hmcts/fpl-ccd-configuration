@@ -240,7 +240,7 @@ class NotificationHandlerTest {
         }
 
         @Test
-        void shouldNotifyLocalAuthorityOfCaseManagementOrderIssued() throws Exception {
+        void shouldNotifyLocalAuthorityOfCMOIssued() throws Exception {
             notificationHandler.notifyLocalAuthorityOfIssuedCaseManagementOrder(
                 new CMOEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
 

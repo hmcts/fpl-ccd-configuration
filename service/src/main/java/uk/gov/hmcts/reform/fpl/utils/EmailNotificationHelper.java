@@ -38,17 +38,17 @@ public class EmailNotificationHelper {
     public static String buildSubjectLineWithHearingBookingDateSuffix(final String subjectLine,
                                                                       final List<Element<HearingBooking>>
                                                                           hearingBookings) {
-        String hearingDate = "";
+        String hearingDateText = "";
         if (isNotEmpty(hearingBookings)) {
-            hearingDate = buildSubjectLineSuffixText(hearingBookings);
+            hearingDateText = buildHearingDateText(hearingBookings);
         }
 
-        return Stream.of(subjectLine, hearingDate)
+        return Stream.of(subjectLine, hearingDateText)
             .filter(StringUtils::isNotBlank)
             .collect(joining(","));
     }
 
-    private static String buildSubjectLineSuffixText(final List<Element<HearingBooking>> hearingBookings) {
+    private static String buildHearingDateText(final List<Element<HearingBooking>> hearingBookings) {
         return " hearing " + dateFormatterService.formatLocalDateToString(
             hearingBookingService.getMostUrgentHearingBooking(
                 hearingBookings).getStartDate().toLocalDate(), FormatStyle.MEDIUM);
