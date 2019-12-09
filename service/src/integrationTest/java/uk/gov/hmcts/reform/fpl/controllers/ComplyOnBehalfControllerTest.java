@@ -90,23 +90,10 @@ class ComplyOnBehalfControllerTest {
         assertThat(response.getData().get("others_label")).isEqualTo("Person 1 - John Smith\n");
     }
 
+    //Test to check persistence of responses issue.
     @Test
     void aboutToStartCallbackShouldAddAllPartiesDirectionWithPartyResponseToCorrectMap() throws Exception {
-        List<Element<Direction>> directions = new ArrayList<>();
-        directions.add(Element.<Direction>builder()
-            .id(DIRECTION_ID)
-            .value(Direction.builder()
-                .assignee(ALL_PARTIES)
-                .responses(responses(PARENTS_AND_RESPONDENTS))
-                .build())
-            .build());
-        directions.add(Element.<Direction>builder()
-            .id(randomUUID())
-            .value(Direction.builder()
-                .assignee(PARENTS_AND_RESPONDENTS)
-                .responses(responses(PARENTS_AND_RESPONDENTS))
-                .build())
-            .build());
+        List<Element<Direction>> directions = getDirectionForRespondentsAllPartiesAndOthers();
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -121,14 +108,36 @@ class ComplyOnBehalfControllerTest {
         AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-start");
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        System.out.println("caseData = " + caseData.getRespondentDirectionsCustom());
-
         assertThat(actualResponses(caseData.getRespondentDirectionsCustom(), ALL_PARTIES))
             .isEqualTo(responses(PARENTS_AND_RESPONDENTS))
             .hasSize(1);
 
         assertThat(response.getData().get("respondents_label")).isEqualTo("Respondent 1 - John Doe\n");
         assertThat(response.getData().get("others_label")).isEqualTo("Person 1 - John Smith\n");
+    }
+
+    private List<Element<Direction>> getDirectionForRespondentsAllPartiesAndOthers() {
+        List<Element<Direction>> directions = new ArrayList<>();
+        directions.add(Element.<Direction>builder()
+            .id(DIRECTION_ID)
+            .value(Direction.builder()
+                .assignee(ALL_PARTIES)
+                .responses(responses(PARENTS_AND_RESPONDENTS))
+                .build())
+            .build());
+        directions.add(Element.<Direction>builder()
+            .id(randomUUID())
+            .value(Direction.builder()
+                .assignee(PARENTS_AND_RESPONDENTS)
+                .build())
+            .build());
+        directions.add(Element.<Direction>builder()
+            .id(randomUUID())
+            .value(Direction.builder()
+                .assignee(OTHERS)
+                .build())
+            .build());
+        return directions;
     }
 
     @Test

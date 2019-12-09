@@ -178,7 +178,6 @@ public class DirectionHelperService {
     }
 
     private List<Element<Direction>> getClone(List<Element<Direction>> elements) {
-
         return elements.stream()
             .map(directionElement -> Element.<Direction>builder()
                 .id(directionElement.getId())

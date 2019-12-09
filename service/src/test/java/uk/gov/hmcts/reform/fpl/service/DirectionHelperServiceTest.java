@@ -1060,17 +1060,31 @@ class DirectionHelperServiceTest {
     @Nested
     class AddDirectionsToCaseDetails {
 
-        @ParameterizedTest
-        @EnumSource(value = DirectionAssignee.class, names = {"ALL_PARTIES", "COURT"})
-        void shouldDoNothingWhenForDirectionsDoNotNeedToBePopulatedForAssignee(DirectionAssignee assignee) {
+        @Test
+        void shouldDoNothingWhenDirectionsDoNotNeedToBePopulatedForAllParties() {
             CaseDetails caseDetails = CaseDetails.builder().build();
             Map<DirectionAssignee, List<Element<Direction>>> directionsMap = new HashMap<>();
-            directionsMap.put(assignee, buildDirections(assignee));
+            directionsMap.put(ALL_PARTIES, buildDirections(ALL_PARTIES));
 
             service.addDirectionsToCaseDetails(caseDetails, directionsMap);
 
             assertThat(caseDetails).isEqualTo(CaseDetails.builder().build());
-            assertThat(directionsMap).isEqualTo(ImmutableMap.of(assignee, buildDirections(assignee)));
+            assertThat(directionsMap).isEqualTo(ImmutableMap.of(ALL_PARTIES, buildDirections(ALL_PARTIES)));
+        }
+
+        @Test
+        void shouldDoNothingWhenDirectionsDoNotNeedToBePopulatedForCourt() {
+            CaseDetails caseDetails = CaseDetails.builder().build();
+            Map<DirectionAssignee, List<Element<Direction>>> directionsMap = new HashMap<>();
+            directionsMap.put(COURT, buildDirections(COURT));
+            directionsMap.put(ALL_PARTIES, buildDirections(ALL_PARTIES));
+
+            service.addDirectionsToCaseDetails(caseDetails, directionsMap);
+
+            assertThat(caseDetails).isEqualTo(CaseDetails.builder().build());
+            assertThat(directionsMap).isEqualTo(ImmutableMap.of(
+                ALL_PARTIES, buildDirections(ALL_PARTIES),
+                COURT, buildDirections(COURT)));
         }
 
         @ParameterizedTest
