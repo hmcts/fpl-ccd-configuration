@@ -102,7 +102,7 @@
     "TabDisplayOrder": 4,
     "CaseFieldID": "orderAction",
     "TabFieldDisplayOrder": 4,
-    "FieldShowCondition": "orderAction.type!=\"SEND_TO_ALL_PARTIES\""
+    "FieldShowCondition": "orderAction.type=\"SEND_TO_ALL_PARTIES\""
   },
   {
     "LiveFrom": "01/01/2017",
