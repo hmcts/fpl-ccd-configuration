@@ -31,7 +31,7 @@ public class ActionCmoService {
     @Autowired
     public ActionCmoService(DraftCMOService draftCMOService,
                             DateFormatterService dateFormatterService,
-                            HearingBookingService hearingBookingService)  {
+                            HearingBookingService hearingBookingService) {
         this.draftCMOService = draftCMOService;
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
