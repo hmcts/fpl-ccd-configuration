@@ -116,7 +116,6 @@ class DraftCMOControllerTest {
         assertThat(callbackResponse.getData()).doesNotContainKey("courtDirectionsCustom");
         assertThat(callbackResponse.getData()).doesNotContainKey("respondentDirectionsCustom");
         assertThat(callbackResponse.getData()).doesNotContainKey("otherPartiesDirectionsCustom");
-        assertThat(callbackResponse.getData().get("nextHearingDateLabel")).isEqualTo("");
     }
 
     @Test
