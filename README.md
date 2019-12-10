@@ -37,15 +37,13 @@ e.g. [direnv](https://direnv.net).
 
 The values can be found on [Confluence](https://tools.hmcts.net/confluence/x/eQP3P).
 
-Run the final script each time new LA users are added in order to fix access segregation locally
-
 ```bash
 $ ./bin/configurer/add-services.sh
 $ ./bin/configurer/add-roles.sh
 $ ./bin/configurer/add-users.sh
-$ ./bin/configurer/utils/generate-local-user-mappings.sh
-
 ```
+
+Users are defined in `bin/configurer/users.json`. Run the final script each time new LA users are added in order to fix access segregation locally.
 
 Load CCD definition:
 
