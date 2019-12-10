@@ -60,8 +60,6 @@ class GeneratedOrderControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String CAFCASS_EMAIL_ADDRESS = "cafcass@cafcass.com";
-    private static final String CAFCASS_NAME = "cafcass";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
@@ -110,7 +108,7 @@ class GeneratedOrderControllerTest {
         DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
 
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(eq(USER_ID), eq(AUTH_TOKEN), eq(pdf), any()))
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "blank_order_c21.pdf"))
             .willReturn(document);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "mid-event");
@@ -130,7 +128,32 @@ class GeneratedOrderControllerTest {
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        GeneratedOrder expectedC21Order = GeneratedOrder.builder()
+        GeneratedOrder expectedC21Order = buildExpectedC21Order();
+        aboutToSubmitAssertions(caseData, expectedC21Order);
+    }
+
+    @Test
+    void aboutToSubmitShouldUpdateCaseDataAccordinglyWhenCareOrderIsSelected() throws Exception {
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(careOrderRequest(), "about-to-submit");
+
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        GeneratedOrder expectedCareOrder = buildExpectedCareOrder();
+        aboutToSubmitAssertions(caseData, expectedCareOrder);
+    }
+
+    @Test
+    void shouldTriggerOrderEventWhenSubmitted() throws Exception {
+        String expectedCaseReference = "19898989";
+        makeSubmittedRequest(buildCallbackRequest());
+
+        verify(notificationClient, times(1)).sendEmail(
+            eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(expectedOrderLocalAuthorityParameters()), eq(expectedCaseReference));
+    }
+
+    private GeneratedOrder buildExpectedC21Order() {
+        return GeneratedOrder.builder()
             .type(BLANK_ORDER)
             .document(DocumentReference.builder()
                 .url("some url")
@@ -146,16 +169,10 @@ class GeneratedOrderControllerTest {
                 .legalAdvisorName("Peter Parker")
                 .build())
             .build();
-        aboutToSubmitAssertions(caseData, expectedC21Order);
     }
 
-    @Test
-    void aboutToSubmitShouldUpdateCaseDataAccordinglyWhenCareOrderIsSelected() throws Exception {
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(careOrderRequest(), "about-to-submit");
-
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-        GeneratedOrder expectedCareOrder = GeneratedOrder.builder()
+    private GeneratedOrder buildExpectedCareOrder() {
+        return GeneratedOrder.builder()
             .type(CARE_ORDER)
             .document(DocumentReference.builder()
                 .url("some url")
@@ -169,17 +186,6 @@ class GeneratedOrderControllerTest {
                 .legalAdvisorName("Peter Parker")
                 .build())
             .build();
-        aboutToSubmitAssertions(caseData, expectedCareOrder);
-    }
-
-    @Test
-    void shouldTriggerOrderEventWhenSubmitted() throws Exception {
-        String expectedCaseReference = "19898989";
-        makeSubmittedRequest(buildCallbackRequest());
-
-        verify(notificationClient, times(1)).sendEmail(
-            eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(expectedOrderLocalAuthorityParameters()), eq(expectedCaseReference));
     }
 
     private void aboutToSubmitAssertions(CaseData caseData, GeneratedOrder expectedOrder) {

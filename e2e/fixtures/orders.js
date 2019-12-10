@@ -1,9 +1,10 @@
 module.exports = [
   {
-    orderType: 'Blank order (C21)',
+    type: 'Blank order (C21)',
     orderTitle: 'Example Order Title',
     orderDetails: 'Example order details here - Lorem ipsum dolor sit amet...',
-    orderDoc: 'blank_order_c21.pdf',
+    document: 'blank_order_c21.pdf',
+    //future work: extract judgeAndLegalAdvisor to separate fixture
     judgeAndLegalAdvisor: {
       judgeTitle: 'Her Honour Judge',
       judgeLastName: 'Sotomayer',
@@ -11,8 +12,8 @@ module.exports = [
     },
   },
   {
-    orderType: 'Care order',
-    orderDoc: 'care_order.pdf',
+    type: 'Care order',
+    document: 'care_order.pdf',
     judgeAndLegalAdvisor: {
       judgeTitle: 'Her Honour Judge',
       judgeLastName: 'Judy',

@@ -81,11 +81,11 @@ public class GeneratedOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Document orderDoc = getDocument(authorization, userId, caseData);
+        Document document = getDocument(authorization, userId, caseData);
 
         //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
-        caseDetails.getData().put("orderTypeAndDocument", service.updateTypeAndDocument(
-            caseData.getOrderTypeAndDocument(), orderDoc));
+        caseDetails.getData().put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
+            caseData.getOrderTypeAndDocument(), document));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -119,7 +119,7 @@ public class GeneratedOrderController {
                                      @RequestHeader(value = "user-id") String userId,
                                      @RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-        String mostRecentUploadedDocumentUrl = service.mostRecentUploadedOrderDocumentUrl(
+        String mostRecentUploadedDocumentUrl = service.getMostRecentUploadedOrderDocumentUrl(
             caseData.getOrderCollection());
 
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest, authorization, userId,
@@ -133,7 +133,7 @@ public class GeneratedOrderController {
             service.getOrderTemplateData(caseData), ORDER);
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-            service.generateDocumentFileName(caseData.getOrderTypeAndDocument().getOrderType().getType()));
+            service.generateDocumentFileName(caseData.getOrderTypeAndDocument().getType().getLabel()));
     }
 
     private String concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(

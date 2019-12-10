@@ -2,7 +2,7 @@
   "case_details": {
     "case_data": {
       "orderTypeAndDocument": {
-        "orderType": "CARE_ORDER",
+        "type": "CARE_ORDER",
         "document": {
           "document_url": "some url",
           "document_binary_url": "some binary url",

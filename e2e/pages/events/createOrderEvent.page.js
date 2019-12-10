@@ -6,12 +6,12 @@ module.exports = {
   fields: {
     orderTitle: '#order_orderTitle',
     orderDetails: '#order_orderDetails',
-    orderTypeList: 'orderTypeAndDocument_orderType',
+    orderTypeList: '#orderTypeAndDocument_type',
   },
 
-  selectOrderType(orderType) {
-    within('#' + this.fields.orderTypeList, () => {
-      I.click(locate('label').withText(orderType));
+  selectType(type) {
+    within(this.fields.orderTypeList, () => {
+      I.click(locate('label').withText(type));
     });
   },
 

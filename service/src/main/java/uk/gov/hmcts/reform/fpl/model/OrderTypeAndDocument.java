@@ -9,6 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 @Builder(toBuilder = true)
 //1st page of create an order event: user selects type, document is hidden until check answers page
 public class OrderTypeAndDocument {
-    private final GeneratedOrderType orderType;
+    private final GeneratedOrderType type;
     private final DocumentReference document;
 }

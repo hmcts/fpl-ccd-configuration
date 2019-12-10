@@ -4,7 +4,7 @@
     "ID": "OrderTypeAndDocumentComplexType",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "orderTypeAndDocument",
-    "ListElementCode": "orderType",
+    "ListElementCode": "type",
     "EventElementLabel": "Type of order",
     "FieldDisplayOrder": 1,
     "DisplayContext": "MANDATORY"
@@ -59,7 +59,7 @@
     "ListElementCode": "judgeTitle",
     "EventElementLabel": "Judge or magistrate's title",
     "FieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",

@@ -47,7 +47,7 @@ public class GeneratedOrderService {
         this.time = time;
     }
 
-    public OrderTypeAndDocument updateTypeAndDocument(OrderTypeAndDocument typeAndDocument, Document document) {
+    public OrderTypeAndDocument buildOrderTypeAndDocument(OrderTypeAndDocument typeAndDocument, Document document) {
         return typeAndDocument.toBuilder()
             .document(DocumentReference.builder()
                 .url(document.links.self.href)
@@ -75,7 +75,7 @@ public class GeneratedOrderService {
         GeneratedOrder.GeneratedOrderBuilder orderBuilder = GeneratedOrder.builder();
 
         //Scalable for future types of orders which may have additional fields
-        switch (typeAndDocument.getOrderType()) {
+        switch (typeAndDocument.getType()) {
             case BLANK_ORDER:
                 orderBuilder.orderTitle(defaultIfBlank(generatedOrder.getOrderTitle(), "Order"));
                 orderBuilder.orderDetails(generatedOrder.getOrderDetails());
@@ -89,7 +89,7 @@ public class GeneratedOrderService {
         return Element.<GeneratedOrder>builder()
             .id(randomUUID())
             .value(orderBuilder
-                .type(typeAndDocument.getOrderType())
+                .type(typeAndDocument.getType())
                 .document(typeAndDocument.getDocument())
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
@@ -102,17 +102,17 @@ public class GeneratedOrderService {
         ImmutableMap.Builder<String, Object> orderTemplateBuilder = new ImmutableMap.Builder<>();
 
         //Scalable for future order types
-        switch (caseData.getOrderTypeAndDocument().getOrderType()) {
+        switch (caseData.getOrderTypeAndDocument().getType()) {
             case BLANK_ORDER:
                 orderTemplateBuilder
-                    .put("orderType", BLANK_ORDER)
+                    .put("type", BLANK_ORDER)
                     .put("orderTitle", defaultIfNull(caseData.getOrder().getOrderTitle(), "Order"))
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails", caseData.getOrder().getOrderDetails());
                 break;
             case CARE_ORDER:
                 orderTemplateBuilder
-                    .put("orderType", CARE_ORDER)
+                    .put("type", CARE_ORDER)
                     .put("orderTitle", "Care Order")
                     .put("childrenAct", "Children Act 1989")
                     .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),
@@ -138,7 +138,7 @@ public class GeneratedOrderService {
         return type.toLowerCase().replaceAll("[()]", "").replaceAll("[ ]", "_") + ".pdf";
     }
 
-    public String mostRecentUploadedOrderDocumentUrl(final List<Element<GeneratedOrder>> orders) {
+    public String getMostRecentUploadedOrderDocumentUrl(final List<Element<GeneratedOrder>> orders) {
         return getLast(orders.stream()
             .filter(Objects::nonNull)
             .map(Element::getValue)
@@ -156,8 +156,9 @@ public class GeneratedOrderService {
     }
 
     private String careOrderDetails(int numOfChildren, String caseLocalAuthority) {
-        return "It is ordered that the " + (numOfChildren == 1 ? "child is " :
-            "children are ") + "placed in the care of " + getLocalAuthorityName(caseLocalAuthority) + ".";
+        String childOrChildren = (numOfChildren == 1 ? "child is " : "children are ");
+        return "It is ordered that the " + childOrChildren + "placed in the care of " + getLocalAuthorityName(
+            caseLocalAuthority) + ".";
     }
 
     private List<Map<String, String>> getChildrenDetails(CaseData caseData) {

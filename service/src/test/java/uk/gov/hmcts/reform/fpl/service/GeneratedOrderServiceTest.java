@@ -65,8 +65,8 @@ class GeneratedOrderServiceTest {
     void shouldAddDocumentToOrderTypeAndDocumentObjectWhenDocumentExists() throws IOException {
         Document document = document();
 
-        OrderTypeAndDocument returnedTypeAndDoc = service.updateTypeAndDocument(OrderTypeAndDocument.builder()
-            .orderType(BLANK_ORDER).build(), document);
+        OrderTypeAndDocument returnedTypeAndDoc = service.buildOrderTypeAndDocument(OrderTypeAndDocument.builder()
+            .type(BLANK_ORDER).build(), document);
 
         assertThat(returnedTypeAndDoc.getDocument()).isEqualTo(DocumentReference.builder()
             .binaryUrl(document.links.binary.href)
@@ -84,7 +84,7 @@ class GeneratedOrderServiceTest {
             .build();
 
         Element<GeneratedOrder> returnedElement = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                .orderType(BLANK_ORDER)
+                .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
             order, JudgeAndLegalAdvisor.builder().build());
@@ -102,7 +102,7 @@ class GeneratedOrderServiceTest {
             .build();
 
         Element<GeneratedOrder> returnedElement = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                .orderType(BLANK_ORDER)
+                .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
             order, JudgeAndLegalAdvisor.builder().build());
@@ -120,7 +120,7 @@ class GeneratedOrderServiceTest {
             .build();
 
         Element<GeneratedOrder> returnedElement = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                .orderType(BLANK_ORDER)
+                .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
             order, JudgeAndLegalAdvisor.builder().build());
@@ -138,7 +138,7 @@ class GeneratedOrderServiceTest {
             .build();
 
         Element<GeneratedOrder> returnedElement = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                .orderType(BLANK_ORDER)
+                .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
             order, JudgeAndLegalAdvisor.builder().build());
@@ -150,7 +150,7 @@ class GeneratedOrderServiceTest {
     @Test
     void shouldReturnExpectedOrderWhenJudgeAndLegalAdvisorFullyPopulated() {
         Element<GeneratedOrder> returnedElement = service.buildCompleteOrder(OrderTypeAndDocument.builder()
-                .orderType(CARE_ORDER)
+                .type(CARE_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
             GeneratedOrder.builder().build(), JudgeAndLegalAdvisor.builder()
@@ -171,21 +171,21 @@ class GeneratedOrderServiceTest {
     @Test
     void shouldGenerateCorrectFileNameWhenGivenC21OrderType() {
         OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
-            .orderType(BLANK_ORDER)
+            .type(BLANK_ORDER)
             .document(DocumentReference.builder().build()).build();
 
-        assertThat(service.generateDocumentFileName(typeAndDocument.getOrderType().getType())).isEqualTo(
-            formatTypeToFileName(BLANK_ORDER.getType()));
+        assertThat(service.generateDocumentFileName(typeAndDocument.getType().getLabel())).isEqualTo(
+            formatTypeToFileName(BLANK_ORDER.getLabel()));
     }
 
     @Test
     void shouldGenerateCorrectFileNameWhenGivenCareOrderType() {
         OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
-            .orderType(CARE_ORDER)
+            .type(CARE_ORDER)
             .document(DocumentReference.builder().build()).build();
 
-        assertThat(service.generateDocumentFileName(typeAndDocument.getOrderType().getType())).isEqualTo(
-            formatTypeToFileName(CARE_ORDER.getType()));
+        assertThat(service.generateDocumentFileName(typeAndDocument.getType().getLabel())).isEqualTo(
+            formatTypeToFileName(CARE_ORDER.getLabel()));
     }
 
     @Nested
@@ -199,9 +199,9 @@ class GeneratedOrderServiceTest {
 
         @Test
         void shouldCreateExpectedMapForC21OrderWhenGivenPopulatedCaseData() {
-            CaseData caseData = populatedCaseData(BLANK_ORDER, localDate);
+            CaseData caseData = createPopulatedCaseData(BLANK_ORDER, localDate);
 
-            Map<String, Object> expectedMap = expectedData(date, BLANK_ORDER);
+            Map<String, Object> expectedMap = createExpectedOrderData(date, BLANK_ORDER);
             Map<String, Object> templateData = service.getOrderTemplateData(caseData);
 
             assertThat(templateData).isEqualTo(expectedMap);
@@ -209,9 +209,9 @@ class GeneratedOrderServiceTest {
 
         @Test
         void shouldCreateExpectedMapForCareOrderWhenGivenPopulatedCaseData() {
-            CaseData caseData = populatedCaseData(CARE_ORDER, localDate);
+            CaseData caseData = createPopulatedCaseData(CARE_ORDER, localDate);
 
-            Map<String, Object> expectedMap = expectedData(date, CARE_ORDER);
+            Map<String, Object> expectedMap = createExpectedOrderData(date, CARE_ORDER);
             Map<String, Object> templateData = service.getOrderTemplateData(caseData);
 
             assertThat(templateData).isEqualTo(expectedMap);
@@ -222,7 +222,7 @@ class GeneratedOrderServiceTest {
     void shouldReturnMostRecentUploadedOrderDocumentUrl() {
         final String expectedMostRecentUploadedOrderDocumentUrl =
             "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
-        final String returnedMostRecentUploadedOrderDocumentUrl = service.mostRecentUploadedOrderDocumentUrl(
+        final String returnedMostRecentUploadedOrderDocumentUrl = service.getMostRecentUploadedOrderDocumentUrl(
             createOrders());
 
         assertThat(expectedMostRecentUploadedOrderDocumentUrl).isEqualTo(
@@ -238,20 +238,20 @@ class GeneratedOrderServiceTest {
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, Object> expectedData(String date, GeneratedOrderType orderType) {
+    private Map<String, Object> createExpectedOrderData(String date, GeneratedOrderType type) {
         ImmutableMap.Builder expectedMap = ImmutableMap.<String, Object>builder();
 
-        switch (orderType) {
+        switch (type) {
             case BLANK_ORDER:
                 expectedMap
-                    .put("orderType", BLANK_ORDER)
+                    .put("type", BLANK_ORDER)
                     .put("orderTitle", "Example Title")
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails", "Example details");
                 break;
             case CARE_ORDER:
                 expectedMap
-                    .put("orderType", CARE_ORDER)
+                    .put("type", CARE_ORDER)
                     .put("orderTitle", "Care Order")
                     .put("childrenAct", "Children Act 1989")
                     .put("orderDetails",
@@ -275,14 +275,14 @@ class GeneratedOrderServiceTest {
         return expectedMap.build();
     }
 
-    private CaseData populatedCaseData(GeneratedOrderType orderType, LocalDate localDate) {
+    private CaseData createPopulatedCaseData(GeneratedOrderType type, LocalDate localDate) {
         CaseData.CaseDataBuilder caseDataBuilder = CaseData.builder();
 
-        switch (orderType) {
+        switch (type) {
             case BLANK_ORDER:
                 caseDataBuilder
                     .orderTypeAndDocument(OrderTypeAndDocument.builder()
-                        .orderType(BLANK_ORDER)
+                        .type(BLANK_ORDER)
                         .document(DocumentReference.builder().build())
                         .build())
                     .order(GeneratedOrder.builder()
@@ -293,7 +293,7 @@ class GeneratedOrderServiceTest {
             case CARE_ORDER:
                 caseDataBuilder
                     .orderTypeAndDocument(OrderTypeAndDocument.builder()
-                        .orderType(CARE_ORDER)
+                        .type(CARE_ORDER)
                         .document(DocumentReference.builder().build())
                         .build());
                 break;

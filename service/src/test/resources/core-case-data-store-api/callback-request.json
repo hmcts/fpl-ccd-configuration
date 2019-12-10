@@ -474,7 +474,7 @@
         }
       ],
       "orderTypeAndDocument": {
-        "orderType": "BLANK_ORDER",
+        "type": "BLANK_ORDER",
         "document": {
           "document_url": "some url",
           "document_binary_url": "some binary url",

@@ -7,9 +7,9 @@ public enum GeneratedOrderType {
     BLANK_ORDER("Blank order (C21)"),
     CARE_ORDER("Care order");
 
-    private final String type;
+    private final String label;
 
-    GeneratedOrderType(String type) {
-        this.type = type;
+    GeneratedOrderType(String label) {
+        this.label = label;
     }
 }
