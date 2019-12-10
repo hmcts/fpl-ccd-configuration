@@ -212,5 +212,14 @@
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-start",
     "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-with-directions/about-to-submit",
     "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "internal-change:CMO_PROGRESSION",
+    "Name": "-",
+    "PreConditionState(s)": "PREPARE_FOR_HEARING",
+    "PostConditionState": "PREPARE_FOR_HEARING",
+    "SecurityClassification": "Public"
   }
 ]
