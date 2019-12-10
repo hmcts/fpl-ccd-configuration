@@ -152,23 +152,12 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void notifyLocalAuthorityOfIssuedCaseManagementOrder(CMOEvent event) {
-        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
-        Map<String, Object> notificationParameters = caseManagementOrderEmailContentProvider
-            .buildCMOIssuedNotificationParametersForLocalAuthority(caseDetails, localAuthorityCode);
-        String caseReference = Long.toString(caseDetails.getId());
-        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
-        sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, email, notificationParameters, caseReference);
-    }
-
-    @EventListener
-    public void sendNotificationForCMOOrder(final CMOIssuedEvent event) {
+    public void sendNotificationsForIssuedCaseManagementOrder(CMOEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
 
-        sendCMONotificationForRespondents(caseDetails, localAuthorityCode, event.getDocumentUrl());
-        sendCMONotificationForCafcass(caseDetails, localAuthorityCode, event.getDocumentUrl());
+        sendCMONotificationForLocalAuthority(caseDetails, localAuthorityCode);
+        // TODO: 10/12/2019 FPLA-27 will add document related notifications
     }
 
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
@@ -200,6 +189,14 @@ public class NotificationHandler {
             .map(LocalAuthorityEmailLookupConfiguration.LocalAuthority::getEmail)
             .orElseThrow(() -> new NullPointerException("Local authority '" + localAuthorityCode + "' not found"));
         sendNotification(C21_ORDER_NOTIFICATION_TEMPLATE, localAuthorityEmail, localAuthorityParameters,
+            Long.toString(caseDetails.getId()));
+    }
+
+    private void sendCMONotificationForLocalAuthority(final CaseDetails caseDetails, final String localAuthorityCode) {
+        Map<String, Object> localAuthorityNotificationParameters = caseManagementOrderEmailContentProvider
+            .buildCMOIssuedNotificationParametersForLocalAuthority(caseDetails, localAuthorityCode);
+        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
+        sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, email, localAuthorityNotificationParameters,
             Long.toString(caseDetails.getId()));
     }
 
