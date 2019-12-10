@@ -12,21 +12,25 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
+import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.io.IOException;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
 
 @Api
 @RestController
@@ -37,42 +41,49 @@ public class DraftCMOController {
     private final DocmosisDocumentGeneratorService docmosisService;
     private final UploadDocumentService uploadDocumentService;
     private final CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService;
+    private final RespondentService respondentService;
+    private final OthersService othersService;
 
     @Autowired
     public DraftCMOController(ObjectMapper mapper,
                               DraftCMOService draftCMOService,
                               DocmosisDocumentGeneratorService docmosisService,
                               UploadDocumentService uploadDocumentService,
-                              CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService) {
+                              CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService,
+                              RespondentService respondentService,
+                              OthersService othersService) {
         this.mapper = mapper;
         this.draftCMOService = draftCMOService;
         this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
         this.docmosisTemplateDataGenerationService = docmosisTemplateDataGenerationService;
+        this.respondentService = respondentService;
+        this.othersService = othersService;
     }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        draftCMOService.prepareCustomDirections(caseDetails.getData());
+        draftCMOService.prepareCustomDirections(caseDetails);
 
-        setCustomDirectionDropdownLabels(caseDetails);
-        Map<String, Object> data = caseDetails.getData();
-        final CaseData caseData = mapper.convertValue(data, CaseData.class);
-
-        data.putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
+        caseDetails.getData().putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
 
+        caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
+        caseDetails.getData().put("others_label", getOthersLabel(caseData));
+
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
+            .data(caseDetails.getData())
             .build();
     }
 
     @PostMapping("/mid-event")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(
-        @RequestHeader("authorization") String authorization, @RequestHeader("user-id") String userId,
-        @RequestBody CallbackRequest callbackRequest) throws IOException {
+    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestHeader("authorization") String authorization,
+                                                               @RequestHeader("user-id") String userId,
+                                                               @RequestBody CallbackRequest callbackRequest)
+        throws IOException {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         final Map<String, Object> data = caseDetails.getData();
@@ -118,20 +129,16 @@ public class DraftCMOController {
             .build();
     }
 
-    private void setCustomDirectionDropdownLabels(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+    private String getRespondentsLabel(CaseData caseData) {
+        return respondentService.buildRespondentLabel(defaultIfNull(caseData.getRespondents1(), emptyList()));
+    }
 
-        if (caseData.getOthers() != null) {
-            caseDetails.getData().put("otherPartiesDropdownLabelCMO",
-                draftCMOService.createOtherPartiesAssigneeDropdownKey(caseData.getOthers()));
-        }
-
-        caseDetails.getData().put("respondentsDropdownLabelCMO",
-            draftCMOService.createRespondentAssigneeDropdownKey(caseData.getRespondents1()));
+    private String getOthersLabel(CaseData caseData) {
+        return othersService.buildOthersLabel(defaultIfNull(caseData.getOthers(), Others.builder().build()));
     }
 
     private Document getDocument(String authorization, String userId, Map<String, Object> templateData) {
-        DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, DocmosisTemplates.CMO);
+        DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, CMO);
 
         String docTitle = document.getDocumentTitle();
 

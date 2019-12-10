@@ -150,7 +150,7 @@ const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
 };
 
 const assertCanSeeDraftCMODocument = (I, caseViewPage) => {
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.see('draft-case_management_order.pdf');
 };
 
@@ -161,7 +161,6 @@ const assertUserCannotSeeDraftOrdersTab = async (I, userDetails) => {
 
 const assertUserCanSeeDraftCMODocument = async (I, userDetails, caseViewPage) => {
   await switchUserAndNavigateToCase(I, userDetails);
-  I.dontSee('Draft orders', '.tabs .tabs-list');
   assertCanSeeDraftCMODocument(I, caseViewPage);
 };
 

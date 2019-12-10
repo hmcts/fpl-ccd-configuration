@@ -149,7 +149,8 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         if (isScheduleIncluded(schedule)) {
             scheduleMap.putAll(getEmptyScheduleMap());
         } else {
-            scheduleMap.putAll(mapper.convertValue(schedule, new TypeReference<>() {}));
+            scheduleMap.putAll(mapper.convertValue(schedule, new TypeReference<>() {
+            }));
             scheduleMap.put("scheduleProvided", true);
         }
 
@@ -206,33 +207,31 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
     }
 
     private Map<String, Object> getGroupedCMODirections(final CaseManagementOrder caseManagementOrder) {
-
         if (caseManagementOrder == null || isEmpty(caseManagementOrder.getDirections())) {
             return ImmutableMap.of();
         }
 
-        Map<DirectionAssignee, List<Element<Direction>>> groupedDirections =
+        Map<DirectionAssignee, List<Element<Direction>>> directions =
             directionHelperService.sortDirectionsByAssignee(directionHelperService.numberDirections(
                 caseManagementOrder.getDirections()));
 
-        List<Element<Direction>> parentsAndRespondents = groupedDirections.remove(PARENTS_AND_RESPONDENTS);
-        List<Element<Direction>> otherParties = groupedDirections.remove(OTHERS);
+        List<Element<Direction>> respondents = defaultIfNull(directions.remove(PARENTS_AND_RESPONDENTS), emptyList());
+        List<Element<Direction>> otherParties = defaultIfNull(directions.remove(OTHERS), emptyList());
         ImmutableMap.Builder<String, Object> formattedDirections = ImmutableMap.builder();
 
-        final Map<ParentsAndRespondentsDirectionAssignee, List<Element<Direction>>> groupedParentsAndRespondents =
-            parentsAndRespondents.stream()
-                .collect(groupingBy(directionElement -> directionElement.getValue()
-                    .getParentsAndRespondentsAssignee()));
+        final Map<ParentsAndRespondentsDirectionAssignee, List<Element<Direction>>> respondentDirections =
+            respondents.stream()
+                .collect(groupingBy(element -> element.getValue().getParentsAndRespondentsAssignee()));
 
-        final Map<OtherPartiesDirectionAssignee, List<Element<Direction>>> groupedOtherParties = otherParties.stream()
-            .collect(groupingBy(directionElement -> directionElement.getValue().getOtherPartiesAssignee()));
+        final Map<OtherPartiesDirectionAssignee, List<Element<Direction>>> otherPartyDirections = otherParties.stream()
+            .collect(groupingBy(element -> element.getValue().getOtherPartiesAssignee()));
 
         formattedDirections.put(PARENTS_AND_RESPONDENTS.getValue(),
-            getFormattedParentsAndRespondentsDirections(groupedParentsAndRespondents));
+            getFormattedParentsAndRespondentsDirections(respondentDirections));
 
-        formattedDirections.put(OTHERS.getValue(), getFormattedOtherPartiesDirections(groupedOtherParties));
+        formattedDirections.put(OTHERS.getValue(), getFormattedOtherPartiesDirections(otherPartyDirections));
 
-        groupedDirections.forEach((key, value) -> {
+        directions.forEach((key, value) -> {
             List<Map<String, String>> directionsList = buildFormattedDirectionList(value);
             formattedDirections.put(key.getValue(), directionsList);
         });
@@ -243,17 +242,17 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
     private List<Map<String, Object>> getFormattedOtherPartiesDirections(
         Map<OtherPartiesDirectionAssignee, List<Element<Direction>>> groupedOtherParties) {
 
-        List<Map<String, Object>> directionsToRespondents = new ArrayList<>();
+        List<Map<String, Object>> directionsToOthers = new ArrayList<>();
         groupedOtherParties.forEach((key, value) -> {
-            Map<String, Object> directionForRespondent = new HashMap<>();
-            directionForRespondent.put("header", "For " + key.getLabel());
+            Map<String, Object> directionForOthers = new HashMap<>();
+            directionForOthers.put("header", "For " + key.getLabel());
             List<Map<String, String>> directionsList = buildFormattedDirectionList(
                 value);
-            directionForRespondent.put("directions", directionsList);
-            directionsToRespondents.add(directionForRespondent);
+            directionForOthers.put("directions", directionsList);
+            directionsToOthers.add(directionForOthers);
         });
 
-        return directionsToRespondents;
+        return directionsToOthers;
     }
 
     private List<Map<String, Object>> getFormattedParentsAndRespondentsDirections(

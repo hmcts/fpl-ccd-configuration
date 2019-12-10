@@ -58,7 +58,7 @@
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
     "CaseFieldID": "caseManagementOrder",
-    "TabShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\" OR caseManagementOrder!=\"\" OR shardDraftCMODocument!=\"\"",
+    "TabShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\"",
     "TabFieldDisplayOrder": 3
   },
   {
@@ -89,7 +89,7 @@
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "c21Orders",
+    "CaseFieldID": "orderCollection",
     "TabFieldDisplayOrder": 3
   },
   {
