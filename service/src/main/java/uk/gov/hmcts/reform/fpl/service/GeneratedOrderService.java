@@ -5,9 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -27,12 +27,12 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 
 @Slf4j
 @Service
-public class CreateC21OrderService {
+public class GeneratedOrderService {
     private final DateFormatterService dateFormatterService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
     private final Time time;
 
-    public CreateC21OrderService(DateFormatterService dateFormatterService,
+    public GeneratedOrderService(DateFormatterService dateFormatterService,
                                  HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
                                  Time time) {
         this.dateFormatterService = dateFormatterService;
@@ -40,8 +40,8 @@ public class CreateC21OrderService {
         this.time = time;
     }
 
-    public C21Order addDocumentToC21(C21Order c21Order, Document document) {
-        return c21Order.toBuilder()
+    public GeneratedOrder addDocumentToOrder(GeneratedOrder order, Document document) {
+        return order.toBuilder()
             .document(DocumentReference.builder()
                 .url(document.links.self.href)
                 .binaryUrl(document.links.binary.href)
@@ -53,16 +53,16 @@ public class CreateC21OrderService {
     /**
      * Method to format title of order, add {@link JudgeAndLegalAdvisor} object and a formatted order date.
      *
-     * @param c21Order             this value will contain fixed details and document values as well as customisable
-     *                             values.
+     * @param order                this value will contain order title and order details
      * @param judgeAndLegalAdvisor the judge and legal advisor for the order.
-     * @return Element containing randomUUID and a fully populated C21Order.
+     * @return Element containing randomUUID and a fully populated order.
      */
-    public Element<C21Order> addCustomValuesToC21Order(C21Order c21Order, JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
-        return Element.<C21Order>builder()
+    public Element<GeneratedOrder> addCustomValuesToOrder(GeneratedOrder order,
+                                                          JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        return Element.<GeneratedOrder>builder()
             .id(randomUUID())
-            .value(c21Order.toBuilder()
-                .orderTitle(defaultIfBlank(c21Order.getOrderTitle(), "Order"))
+            .value(order.toBuilder()
+                .orderTitle(defaultIfBlank(order.getOrderTitle(), "Order"))
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
                     "h:mma, d MMMM yyyy"))
@@ -70,12 +70,12 @@ public class CreateC21OrderService {
             .build();
     }
 
-    public Map<String, Object> getC21OrderTemplateData(CaseData caseData) {
+    public Map<String, Object> getOrderTemplateData(CaseData caseData) {
         return ImmutableMap.<String, Object>builder()
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
-            .put("orderTitle", defaultIfNull(caseData.getC21Order().getOrderTitle(), "Order"))
-            .put("orderDetails", caseData.getC21Order().getOrderDetails())
+            .put("orderTitle", defaultIfNull(caseData.getOrder().getOrderTitle(), "Order"))
+            .put("orderDetails", caseData.getOrder().getOrderDetails())
             .put("todaysDate", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
             .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
                 caseData.getJudgeAndLegalAdvisor()))
@@ -101,8 +101,8 @@ public class CreateC21OrderService {
             .collect(toList());
     }
 
-    public String mostRecentUploadedC21DocumentUrl(final List<Element<C21Order>> c21Orders) {
-        return getLast(c21Orders.stream()
+    public String mostRecentUploadedOrderDocumentUrl(final List<Element<GeneratedOrder>> orders) {
+        return getLast(orders.stream()
             .filter(Objects::nonNull)
             .map(Element::getValue)
             .filter(Objects::nonNull)
