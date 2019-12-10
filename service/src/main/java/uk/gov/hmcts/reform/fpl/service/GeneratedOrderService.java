@@ -134,6 +134,19 @@ public class GeneratedOrderService {
         return orderTemplateBuilder.build();
     }
 
+    public String generateDocumentFileName(OrderTypeAndDocument orderTypeAndDocument) {
+        return formatTypeToFileName(orderTypeAndDocument.getOrderType().getType());
+    }
+
+    public String mostRecentUploadedOrderDocumentUrl(final List<Element<GeneratedOrder>> orders) {
+        return getLast(orders.stream()
+            .filter(Objects::nonNull)
+            .map(Element::getValue)
+            .filter(Objects::nonNull)
+            .collect(toList()))
+            .getDocument().getBinaryUrl();
+    }
+
     private String getCourtName(String courtName) {
         return hmctsCourtLookupConfiguration.getCourt(courtName).getName();
     }
@@ -159,17 +172,8 @@ public class GeneratedOrderService {
             .collect(toList());
     }
 
-    public String generateDocumentFileName(OrderTypeAndDocument orderTypeAndDocument) {
-        return orderTypeAndDocument.getOrderType().getType().replaceAll("[()]", "") + ".pdf";
-    }
-
-    public String mostRecentUploadedOrderDocumentUrl(final List<Element<GeneratedOrder>> orders) {
-        return getLast(orders.stream()
-            .filter(Objects::nonNull)
-            .map(Element::getValue)
-            .filter(Objects::nonNull)
-            .collect(toList()))
-            .getDocument().getBinaryUrl();
+    private String formatTypeToFileName(String type) {
+        return type.toLowerCase().replaceAll("[()]", "").replaceAll("[ ]", "_") + ".pdf";
     }
 
 }

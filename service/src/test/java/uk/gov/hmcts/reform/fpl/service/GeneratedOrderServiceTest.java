@@ -174,8 +174,8 @@ class GeneratedOrderServiceTest {
             .orderType(BLANK_ORDER)
             .document(DocumentReference.builder().build()).build();
 
-        assertThat(service.generateDocumentFileName(typeAndDocument)).isEqualTo(
-            BLANK_ORDER.getType().replaceAll("[()]", "") + ".pdf");
+        assertThat(service.generateDocumentFileName(typeAndDocument)).isEqualTo(formatTypeToFileName(
+            BLANK_ORDER.getType()));
     }
 
     @Test
@@ -184,9 +184,9 @@ class GeneratedOrderServiceTest {
             .orderType(CARE_ORDER)
             .document(DocumentReference.builder().build()).build();
 
-        assertThat(service.generateDocumentFileName(typeAndDocument)).isEqualTo(CARE_ORDER.getType() + ".pdf");
+        assertThat(service.generateDocumentFileName(typeAndDocument)).isEqualTo(formatTypeToFileName(
+            CARE_ORDER.getType()));
     }
-
 
     @Nested
     class TemplateDataTests {
@@ -321,5 +321,9 @@ class GeneratedOrderServiceTest {
             .build();
 
         return caseDataBuilder.build();
+    }
+
+    private String formatTypeToFileName(String type) {
+        return type.toLowerCase().replaceAll("[()]", "").replaceAll("[ ]", "_") + ".pdf";
     }
 }
