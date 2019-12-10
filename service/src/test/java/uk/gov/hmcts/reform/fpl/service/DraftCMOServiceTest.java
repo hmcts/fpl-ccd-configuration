@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -11,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -25,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Arrays;
@@ -35,15 +31,11 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
-import static org.apache.commons.lang3.ArrayUtils.add;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.values;
-import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_PERSON_1;
-import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataMapForDraftCMODocmosisGeneration;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
@@ -53,60 +45,29 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassi
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class,
-    DocmosisDocumentGeneratorService.class, RestTemplate.class, DocmosisConfiguration.class,
-    CommonCaseDataExtractionService.class, DateFormatterService.class, HearingBookingService.class,
-    DirectionHelperService.class
+    JacksonAutoConfiguration.class, DateFormatterService.class, DirectionHelperService.class, DraftCMOService.class
 })
 class DraftCMOServiceTest {
-    private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
-    private static final String COURT_NAME = "Test court";
     private static final LocalDateTime NOW = LocalDateTime.now();
 
     private final ObjectMapper mapper;
-    private final OrdersLookupService ordersLookupService;
-    private final HearingVenueLookUpService hearingVenueLookUpService;
-    private final CommonCaseDataExtractionService commonCaseDataExtractionService;
-    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final DateFormatterService dateFormatterService;
-    private final HearingBookingService hearingBookingService;
-    private final DirectionHelperService directionHelperService;
-    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(
-        String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL_ADDRESS));
+    private final DraftCMOService draftCMOService;
 
     private CaseManagementOrder caseManagementOrder;
     private List<Element<HearingBooking>> hearingDetails;
-    private DraftCMOService draftCMOService;
 
     @Autowired
-    public DraftCMOServiceTest(ObjectMapper mapper, OrdersLookupService ordersLookupService,
-                               HearingVenueLookUpService hearingVenueLookUpService,
-                               CommonCaseDataExtractionService commonCaseDataExtractionService,
-                               DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
-                               DateFormatterService dateFormatterService,
-                               HearingBookingService hearingBookingService,
-                               DirectionHelperService directionHelperService) {
+    DraftCMOServiceTest(ObjectMapper mapper,
+                        DateFormatterService dateFormatterService,
+                        DraftCMOService draftCMOService) {
         this.mapper = mapper;
-        this.ordersLookupService = ordersLookupService;
-        this.hearingVenueLookUpService = hearingVenueLookUpService;
-        this.commonCaseDataExtractionService = commonCaseDataExtractionService;
-        this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
         this.dateFormatterService = dateFormatterService;
-        this.hearingBookingService = hearingBookingService;
-        this.directionHelperService = directionHelperService;
+        this.draftCMOService = draftCMOService;
     }
 
     @BeforeEach
     void setUp() {
-        CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
-            hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService,
-            hearingVenueLookUpService, commonCaseDataExtractionService, docmosisDocumentGeneratorService);
-
-        draftCMOService = new DraftCMOService(mapper, dateFormatterService, directionHelperService,
-            caseDataExtractionService, hmctsCourtLookupConfiguration,
-            docmosisDocumentGeneratorService, commonCaseDataExtractionService, hearingBookingService);
-
         hearingDetails = createHearingBookings(NOW);
     }
 
@@ -118,7 +79,7 @@ class DraftCMOServiceTest {
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
 
-        DynamicList hearingList = mapper.convertValue(data.get("cmoHearingDateList"), DynamicList.class);
+        DynamicList hearingList = (DynamicList) data.get("cmoHearingDateList");
 
         assertThat(hearingList.getListItems())
             .containsAll(Arrays.asList(
@@ -139,10 +100,7 @@ class DraftCMOServiceTest {
     @Test
     void shouldReturnHearingDateDynamicListWhenCmoHasPreviousSelectedValue() {
         hearingDetails = createHearingBookings(NOW);
-        caseManagementOrder = CaseManagementOrder.builder()
-            .hearingDate(formatLocalDateToMediumStyle(2))
-            .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
-            .build();
+        caseManagementOrder = createCaseManagementOrder();
 
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
@@ -165,9 +123,9 @@ class DraftCMOServiceTest {
         );
 
         caseData.put("cmoHearingDateList", getDynamicList());
-        caseData.put("reviewCaseManagementOrder", ImmutableMap.of());
 
-        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData);
+        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(
+            mapper.convertValue(caseData, CaseData.class));
 
         assertThat(caseManagementOrder).isNotNull()
             .extracting("id", "hearingDate").containsExactly(
@@ -192,7 +150,7 @@ class DraftCMOServiceTest {
 
         assertThat(othersKey).contains(
             "Person 1 - Kyle Stafford",
-            "Other Person 1 - Sarah Simpson");
+            "Other person 1 - Sarah Simpson");
     }
 
     @Test
@@ -201,7 +159,7 @@ class DraftCMOServiceTest {
 
         assertThat(othersKey).contains(
             "Person 1 - " + EMPTY_PLACEHOLDER,
-            "Other Person 1 - Peter Smith");
+            "Other person 1 - Peter Smith");
     }
 
     @Test
@@ -212,34 +170,29 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldReturnAMapWithAllIndividualCMOEntriesPopulated() {
-        caseManagementOrder = CaseManagementOrder.builder()
-            .hearingDate(formatLocalDateToMediumStyle(2))
-            .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
-            .recitals(List.of(Element.<Recital>builder()
-                .value(Recital.builder().build())
-                .build()))
-            .schedule(Schedule.builder().build())
-            .status(SELF_REVIEW)
-            .orderDoc(DocumentReference.builder().build())
-            .build();
+        caseManagementOrder = createCaseManagementOrder();
 
         hearingDetails = createHearingBookings(NOW);
 
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
 
-        assertThat(data).containsKeys("cmoHearingDateList", "schedule", "recitals", "reviewCaseManagementOrder");
+        assertThat(data).containsKeys("cmoHearingDateList", "schedule", "recitals");
     }
 
     @Test
     void shouldReturnAMapWithEmptyRepopulatedEntriesWhenCaseManagementOrderIsNull() {
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
-            null, hearingDetails);
+            null, List.of());
 
+        DynamicList emptyDynamicList = DynamicList.builder()
+            .value(DynamicListElement.builder().label("").build())
+            .listItems(List.of())
+            .build();
+
+        assertThat(data.get("cmoHearingDateList")).isEqualTo(emptyDynamicList);
         assertThat(data.get("schedule")).isNull();
         assertThat(data.get("recitals")).isNull();
-        assertThat(data.get("reviewCaseManagementOrder")).extracting("cmoStatus").isNull();
-        assertThat(data.get("reviewCaseManagementOrder")).extracting("orderDoc").isNull();
     }
 
     @Test
@@ -290,6 +243,19 @@ class DraftCMOServiceTest {
         return dynamicList;
     }
 
+    private CaseManagementOrder createCaseManagementOrder() {
+        return CaseManagementOrder.builder()
+            .hearingDate(formatLocalDateToMediumStyle(2))
+            .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+            .recitals(List.of(Element.<Recital>builder()
+                .value(Recital.builder().build())
+                .build()))
+            .schedule(Schedule.builder().build())
+            .status(SELF_REVIEW)
+            .orderDoc(DocumentReference.builder().build())
+            .build();
+    }
+
     private String formatLocalDateToMediumStyle(int i) {
         return dateFormatterService.formatLocalDateToString(NOW.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
     }
@@ -314,233 +280,57 @@ class DraftCMOServiceTest {
         private final String[] keys = {
             "cmoHearingDateList",
             "recitals",
-            "schedule",
-            "reviewCaseManagementOrder"};
+            "schedule"};
 
         private HashMap<String, Object> data; // Tries to use an ImmutableMap unless specified
 
-        @BeforeEach
-        void setUp() {
-            data = new HashMap<>();
-        }
-
         @Test
-        void shouldRemoveAllRelatedEntriesInCaseDetailsThatAreNotCMOObjectsWhenCMOStatusIsPartyReview() {
-            final CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
-                .status(PARTIES_REVIEW).build();
+        void shouldRemoveScheduleAndRecitalsAndHearingDateListFromCaseData() {
+            data = new HashMap<>();
 
             Arrays.stream(keys).forEach(key -> data.put(key, ""));
 
-            draftCMOService.prepareCaseDetails(data, caseManagementOrder);
+            draftCMOService.removeTransientObjectsFromCaseData(data);
 
             assertThat(data).doesNotContainKeys(keys);
-            assertThat(data).containsKeys("sharedDraftCMO", "caseManagementOrder");
         }
 
         @Test
-        void shouldRemoveAllRelatedEntriesInCaseDetailsApartFromCaseManagementOrderWhenCMOStatusIsSelfReview() {
-            final CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
-                .status(SELF_REVIEW).build();
+        void shouldOnlyPopulateCaseManagementOrderWhenCMOStatusIsSelfReview() {
+            data = new HashMap<>();
 
-            data.put("sharedDraftCMO", caseManagementOrder);
+            caseManagementOrder = CaseManagementOrder.builder().status(SELF_REVIEW).build();
 
-            draftCMOService.prepareCaseDetails(data, caseManagementOrder);
-            assertThat(data).doesNotContainKeys(add(keys, "sharedDraftCMO"));
-            assertThat(data).containsKey("caseManagementOrder");
-        }
-    }
+            draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
 
-    @Nested
-    class GenerateTemplateData {
-        private final String[] scheduleKeys = {
-            "includeSchedule", "allocation", "application", "todaysHearing", "childrensCurrentArrangement",
-            "timetableForProceedings", "timetableForChildren", "alternativeCarers", "threshold", "keyIssues",
-            "partiesPositions"
-        };
-
-        @Test
-        void shouldReturnEmptyMapValuesWhenCaseDataIsEmpty() throws IOException {
-            final Map<String, Object> templateData = draftCMOService.generateCMOTemplateData(ImmutableMap.of());
-
-            assertThat(templateData.get("courtName")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("familyManCaseNumber")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("generationDate")).isEqualTo(dateFormatterService
-                .formatLocalDateToString(DraftCMOServiceTest.NOW.toLocalDate(), FormatStyle.LONG));
-            assertThat(templateData.get("complianceDeadline")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("children")).isEqualTo(ImmutableList.of());
-            assertThat(templateData.get("numberOfChildren")).isEqualTo(0);
-            assertThat(templateData.get("applicantName")).isEqualTo("");
-            assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
-            assertThat(templateData.get("representatives")).isEqualTo(getEmptyRepresentativeList());
-            assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("judgeTitleAndName")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("legalAdvisorName")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("allParties")).isNull();
-            assertThat(templateData.get("localAuthorityDirections")).isNull();
-            assertThat(templateData.get("respondentDirections")).isNull();
-            assertThat(templateData.get("cafcassDirections")).isNull();
-            assertThat(templateData.get("otherPartiesDirections")).isNull();
-            assertThat(templateData.get("courtDirections")).isNull();
-            assertThat(templateData.get("recitals")).isEqualTo(ImmutableList.of());
-            assertThat(templateData.get("recitalsProvided")).isEqualTo(false);
-            Arrays.stream(scheduleKeys).forEach(key -> assertThat(templateData.get(key)).isEqualTo(EMPTY_PLACEHOLDER));
-            assertThat(templateData.get("scheduleProvided")).isEqualTo(false);
-            assertThat(templateData.get("draftbackground")).isNotNull();
-            assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
+            assertThat(data.get("caseManagementOrder")).isEqualTo(caseManagementOrder);
         }
 
         @Test
-        void shouldReturnFullyPopulatedMapWhenCompleteCaseDetailsAreProvided() throws IOException {
-            final Map<String, Object> caseData = buildCaseDataMapForDraftCMODocmosisGeneration(NOW);
+        void shouldMakeSharedDraftCMODocumentNullWhenCMOStatusIsSelfReview() {
+            data = new HashMap<>();
 
-            final Map<String, Object> templateData = draftCMOService.generateCMOTemplateData(caseData);
+            caseManagementOrder = CaseManagementOrder.builder().status(SELF_REVIEW).build();
+            data.put("sharedDraftCMODocument", DocumentReference.builder().build());
 
-            assertThat(templateData.get("courtName")).isEqualTo(COURT_NAME);
-            assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
-            assertThat(templateData.get("generationDate")).isEqualTo(dateFormatterService
-                .formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG));
-            assertThat(templateData.get("complianceDeadline")).isEqualTo(dateFormatterService
-                .formatLocalDateToString(NOW.toLocalDate().plusWeeks(26), FormatStyle.LONG));
-            assertThat(templateData.get("children")).isEqualTo(getExpectedChildren());
-            assertThat(templateData.get("numberOfChildren")).isEqualTo(getExpectedChildren().size());
-            assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
-            assertThat(templateData.get("respondents")).isEqualTo(getExpectedRespondents());
-            assertThat(templateData.get("representatives")).isEqualTo(getExpectedRepresentatives());
-            assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
-            assertThat(templateData.get("judgeTitleAndName")).isEqualTo("Her Honour Judge Law");
-            assertThat(templateData.get("legalAdvisorName")).isEqualTo("Peter Parker");
-            assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirection(2));
-            assertThat(templateData.get("localAuthorityDirections")).isEqualTo(getExpectedDirection(3));
-            assertThat(templateData.get("respondentDirections")).isEqualTo(
-                getExpectedDirectionWithHeader(4, RESPONDENT_1.getLabel()));
-            assertThat(templateData.get("cafcassDirections")).isEqualTo(getExpectedDirection(5));
-            assertThat(templateData.get("otherPartiesDirections")).isEqualTo(
-                getExpectedDirectionWithHeader(6, OTHER_PERSON_1.getLabel()));
-            assertThat(templateData.get("courtDirections")).isEqualTo(getExpectedDirection(7));
-            assertThat(templateData.get("recitals")).isEqualTo(getExpectedRecital());
-            assertThat(templateData.get("recitalsProvided")).isEqualTo(true);
-            assertThat(templateData).containsAllEntriesOf(getExpectedSchedule());
-            assertThat(templateData.get("scheduleProvided")).isEqualTo(true);
-            assertThat(templateData.get("draftbackground")).isNotNull();
-            assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
+            draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
+
+            assertThat(data.get("sharedDraftCMODocument")).isNull();
         }
 
-        private List<Map<String, String>> getExpectedRepresentatives() {
-            return List.of(
-                Map.of(
-                    "respondentName", "Bran Stark",
-                    "representativeEmail", "bruce-wayne@notbatman.com",
-                    "representativeName", "Bruce Wayne",
-                    "representativePhoneNumber", "07700900304"
-                ),
-                Map.of(
-                    "respondentName", "Timothy Jones",
-                    "representativeName", "BLANK - please complete",
-                    "representativeEmail", "BLANK - please complete",
-                    "representativePhoneNumber", "BLANK - please complete"
-                ),
-                Map.of(
-                    "respondentName", "Sarah Simpson",
-                    "representativeName", "BLANK - please complete",
-                    "representativeEmail", "BLANK - please complete",
-                    "representativePhoneNumber", "BLANK - please complete"
-                )
-            );
-        }
+        @Test
+        void shouldPopulateSharedDraftCMODocumentWhenCMOStatusIsPartyReview() {
+            data = new HashMap<>();
 
-        private List<Map<String, String>> getEmptyRepresentativeList() {
-            return List.of(
-                Map.of(
-                    "respondentName", EMPTY_PLACEHOLDER,
-                    "representativeName", EMPTY_PLACEHOLDER,
-                    "representativeEmail", EMPTY_PLACEHOLDER,
-                    "representativePhoneNumber", EMPTY_PLACEHOLDER
-                )
-            );
-        }
-
-        private Map<String, String> getExpectedSchedule() {
-            return ImmutableMap.<String, String>builder()
-                .put("allocation", "An allocation")
-                .put("alternativeCarers", "Alternatives")
-                .put("application", "An application")
-                .put("childrensCurrentArrangement", "Current arrangement")
-                .put("includeSchedule", "Yes")
-                .put("keyIssues", "Key Issues")
-                .put("partiesPositions", "Some positions")
-                .put("threshold", "threshold")
-                .put("timetableForChildren", "time goes by")
-                .put("timetableForProceedings", "so slowly")
-                .put("todaysHearing", "slowly")
+            DocumentReference documentReference = DocumentReference.builder().build();
+            caseManagementOrder = CaseManagementOrder.builder()
+                .status(PARTIES_REVIEW)
+                .orderDoc(documentReference)
                 .build();
-        }
 
-        private List<Map<String, String>> getExpectedRecital() {
-            return List.of(
-                Map.of(
-                    "title", "A title",
-                    "body", "A description"
-                )
-            );
-        }
+            draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
 
-        private List<Map<String, String>> getExpectedChildren() {
-            return List.of(
-                Map.of(
-                    "name", "Bran Stark",
-                    "gender", "Male",
-                    "dateOfBirth", dateFormatterService.formatLocalDateToString(NOW.toLocalDate(), FormatStyle.LONG)),
-                Map.of(
-                    "name", "Sansa Stark",
-                    "gender", EMPTY_PLACEHOLDER,
-                    "dateOfBirth", EMPTY_PLACEHOLDER),
-                Map.of(
-                    "name", "Jon Snow",
-                    "gender", EMPTY_PLACEHOLDER,
-                    "dateOfBirth", EMPTY_PLACEHOLDER)
-            );
-        }
-
-        private List<Map<String, String>> getExpectedRespondents() {
-            return List.of(
-                Map.of(
-                    "name", "Timothy Jones",
-                    "relationshipToChild", "Father"
-                ),
-                Map.of(
-                    "name", "Sarah Simpson",
-                    "relationshipToChild", "Mother"
-                )
-            );
-        }
-
-        private List<Map<String, String>> getExpectedDirection(int index) {
-            return List.of(
-                Map.of(
-                    "title", index + ". null by unknown",
-                    "body", "Mock direction text"
-                )
-            );
-        }
-
-        private List<Map<String, Object>> getExpectedDirectionWithHeader(int index, String header) {
-            return List.of(
-                Map.of(
-                    "header", "For " + header,
-                    "directions", List.of(
-                        Map.of(
-                            "title", index + ". null by unknown",
-                            "body", "Mock direction text"
-                        )
-                    )
-                )
-            );
+            assertThat(data.get("sharedDraftCMODocument")).isEqualTo(documentReference);
         }
     }
 }

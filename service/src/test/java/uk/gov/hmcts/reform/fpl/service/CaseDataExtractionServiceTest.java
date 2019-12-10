@@ -8,12 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.io.IOException;
@@ -26,6 +27,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
@@ -35,9 +38,8 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createStanda
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, JsonOrdersLookupService.class,
-    HearingVenueLookUpService.class, DocmosisDocumentGeneratorService.class, RestTemplate.class,
-    DocmosisConfiguration.class})
+    JacksonAutoConfiguration.class, JsonOrdersLookupService.class, HearingVenueLookUpService.class
+})
 class CaseDataExtractionServiceTest {
     @SuppressWarnings({"membername", "AbbreviationAsWordInName"})
 
@@ -51,9 +53,6 @@ class CaseDataExtractionServiceTest {
 
     @Autowired
     private HearingVenueLookUpService hearingVenueLookUpService;
-
-    @Autowired
-    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
@@ -72,7 +71,7 @@ class CaseDataExtractionServiceTest {
         // required for DI
         this.caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
             hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService,
-            hearingVenueLookUpService, commonCaseDataExtraction, docmosisDocumentGeneratorService);
+            hearingVenueLookUpService, commonCaseDataExtraction);
     }
 
     @Test
@@ -100,6 +99,36 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("cafcassDirections")).isNull();
         assertThat(templateData.get("otherPartiesDirections")).isNull();
         assertThat(templateData.get("courtDirections")).isNull();
+    }
+
+    //TODO: improve test to assertThat directions are equal to expected.
+    // This will prevent the issue of FPLA-1061 happening again. A part of FPLA-1061.
+    @Test
+    void shouldMapDirectionsForDraftSDOWhenAllAssignees() throws IOException {
+        Map<String, Object> templateData = caseDataExtractionService
+            .getStandardOrderDirectionData(CaseData.builder()
+                .standardDirectionOrder(Order.builder()
+                    .directions(getDirections())
+                    .build())
+                .build());
+
+        assertThat(templateData.get("allParties")).isNotNull();
+        assertThat(templateData.get("localAuthorityDirections")).isNotNull();
+        assertThat(templateData.get("parentsAndRespondentsDirections")).isNotNull();
+        assertThat(templateData.get("cafcassDirections")).isNotNull();
+        assertThat(templateData.get("otherPartiesDirections")).isNotNull();
+        assertThat(templateData.get("courtDirections")).isNotNull();
+    }
+
+    private List<Element<Direction>> getDirections() {
+        return Stream.of(DirectionAssignee.values())
+            .map(assignee -> Element.<Direction>builder()
+                .value(Direction.builder()
+                    .directionType("Direction")
+                    .assignee(assignee)
+                    .build())
+                .build())
+            .collect(Collectors.toList());
     }
 
     @Test

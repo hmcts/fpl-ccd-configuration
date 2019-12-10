@@ -40,6 +40,19 @@ public class HearingBookingService {
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
     }
 
+    public HearingBooking getHearingBooking(final List<Element<HearingBooking>> hearingDetails,
+                                            final DynamicList hearingDateList) {
+        if (hearingDetails == null || hearingDateList == null || hearingDateList.getValue() == null) {
+            return HearingBooking.builder().build();
+        }
+
+        return hearingDetails.stream()
+            .filter(element -> element.getId().equals(hearingDateList.getValue().getCode()))
+            .findFirst()
+            .map(Element::getValue)
+            .orElse(HearingBooking.builder().build());
+    }
+
     public HearingBooking getHearingBookingByUUID(List<Element<HearingBooking>> hearingBookings, UUID elementId) {
         return hearingBookings.stream()
             .filter(hearingBookingElement -> hearingBookingElement.getId().equals(elementId))

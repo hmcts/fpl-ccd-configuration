@@ -257,10 +257,10 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "draftCMO",
-    "CaseFieldID": "reviewCaseManagementOrder",
+    "CaseFieldID": "caseManagementOrder",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
-    "PageID": "caseManagementOrderDocumentReview",
+    "PageID": "documentReview",
     "PageLabel": " ",
     "PageDisplayOrder": 10,
     "PageColumnNumber": 1

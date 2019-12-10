@@ -7,9 +7,12 @@ import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.Recital;
+import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.validation.groups.C21CaseOrderGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
@@ -21,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -143,6 +145,11 @@ public class CaseData {
 
     private final CaseManagementOrder caseManagementOrder;
     private final OrderAction orderAction;
+    private final DynamicList cmoHearingDateList;
+    private final Schedule schedule;
+    private final List<Element<Recital>> recitals;
+    private final DocumentReference sharedDraftCMODocument;
+
     private final Others others;
     private final DynamicList nextHearingDateList;
 }
