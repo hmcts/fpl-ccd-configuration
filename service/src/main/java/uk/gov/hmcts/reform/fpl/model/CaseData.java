@@ -143,6 +143,9 @@ public class CaseData {
         return defaultIfNull(c21Orders, new ArrayList<>());
     }
 
+    // Judges CMO object
+    private final CaseManagementOrder cmoToAction;
+    // LA CMO object
     private final CaseManagementOrder caseManagementOrder;
     private final OrderAction orderAction;
     private final DynamicList cmoHearingDateList;

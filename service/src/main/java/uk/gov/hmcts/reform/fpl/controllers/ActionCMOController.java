@@ -29,8 +29,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
-
 @Api
 @RestController
 @RequestMapping("/callback/action-cmo")
@@ -59,7 +57,10 @@ public class ActionCMOController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        final CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        caseDetails.getData().putAll(actionCmoService.extractMapFieldsFromCaseManagementOrder(
+            caseData.getCmoToAction(), caseData.getHearingDetails()));
 
         draftCMOService.prepareCustomDirections(caseDetails.getData());
 
@@ -75,12 +76,10 @@ public class ActionCMOController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) throws IOException {
+
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseManagementOrder order = caseData.getCaseManagementOrder();
-
-        caseDetails.getData()
-            .putAll(actionCmoService.extractMapFieldsFromCaseManagementOrder(order, caseData.getHearingDetails()));
+        CaseManagementOrder order = caseData.getCmoToAction();
 
         Document document = getDocument(authorization, userId, caseData, false);
 
@@ -101,21 +100,20 @@ public class ActionCMOController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        CaseManagementOrder order = caseData.getCaseManagementOrder().toBuilder()
+        CaseManagementOrder order = caseData.getCmoToAction().toBuilder()
             .action(caseData.getOrderAction())
             .build();
 
         caseDetails.getData()
             .putAll(actionCmoService.extractMapFieldsFromCaseManagementOrder(order, caseData.getHearingDetails()));
 
-        Document document = getDocument(authorization, userId, caseData, hasJudgeApproved(order));
+        Document document = getDocument(authorization, userId, caseData, order.isApprovedByJudge());
 
+        // TODO: 10/12/2019 check me
         CaseManagementOrder orderWithDocument = actionCmoService.addDocument(order, document);
 
         CaseManagementOrder orderWithNextHearing =
             actionCmoService.appendNextHearingDateToCMO(caseData.getNextHearingDateList(), orderWithDocument);
-
-        actionCmoService.prepareCaseDetailsForSubmission(caseDetails, orderWithNextHearing, hasJudgeApproved(order));
 
         String nextHearingDateLabel =
             actionCmoService.createNextHearingDateLabel(orderWithNextHearing, caseData.getHearingDetails());
@@ -129,7 +127,8 @@ public class ActionCMOController {
 
     private Document getDocument(String authorization, String userId, CaseData data, boolean approved)
         throws IOException {
-        Map<String, Object> cmoDocumentTemplateData = cmoDocmosisTemplateDataGenerationService.getTemplateData(data);
+        Map<String, Object> cmoDocumentTemplateData = cmoDocmosisTemplateDataGenerationService.getTemplateData(data,
+            approved);
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
             cmoDocumentTemplateData, DocmosisTemplates.CMO);
@@ -137,10 +136,6 @@ public class ActionCMOController {
         String documentTitle = (approved ? document.getDocumentTitle() : "draft-" + document.getDocumentTitle());
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), documentTitle);
-    }
-
-    private boolean hasJudgeApproved(CaseManagementOrder caseManagementOrder) {
-        return SEND_TO_ALL_PARTIES.equals(caseManagementOrder.getAction().getType());
     }
 
     private DynamicList getHearingDynamicList(List<Element<HearingBooking>> hearingBookings) {

@@ -3,7 +3,7 @@
     "LiveFrom": "01/01/2017",
     "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "reviewCaseManagementOrder",
+    "CaseFieldID": "cmoToAction",
     "ListElementCode": "orderDoc",
     "EventElementLabel": "Check the order",
     "FieldDisplayOrder": 1,
@@ -13,10 +13,10 @@
     "LiveFrom": "01/01/2017",
     "ID": "ReviewCaseManagementOrder",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "reviewCaseManagementOrder",
-    "ListElementCode": "status",
-    "EventElementLabel": "Is this ready to be sent to the judge?",
-    "FieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY"
+    "CaseFieldID": "cmoToAction",
+    "ListElementCode": "hearingDate",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "orderDoc=\"DO_NOT_SHOW\""
   }
 ]

@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.io.IOException;
 import java.util.Map;
@@ -37,18 +38,21 @@ public class DraftCMOController {
     private final DocmosisDocumentGeneratorService docmosisService;
     private final UploadDocumentService uploadDocumentService;
     private final CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService;
+    private final CoreCaseDataService coreCaseDataService;
 
     @Autowired
     public DraftCMOController(ObjectMapper mapper,
                               DraftCMOService draftCMOService,
                               DocmosisDocumentGeneratorService docmosisService,
                               UploadDocumentService uploadDocumentService,
-                              CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService) {
+                              CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService,
+                              CoreCaseDataService coreCaseDataService) {
         this.mapper = mapper;
         this.draftCMOService = draftCMOService;
         this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
         this.docmosisTemplateDataGenerationService = docmosisTemplateDataGenerationService;
+        this.coreCaseDataService = coreCaseDataService;
     }
 
     @PostMapping("/about-to-start")
@@ -80,7 +84,7 @@ public class DraftCMOController {
         final Map<String, Object> data = caseDetails.getData();
         final CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        final Map<String, Object> cmoTemplateData = docmosisTemplateDataGenerationService.getTemplateData(caseData);
+        Map<String, Object> cmoTemplateData = docmosisTemplateDataGenerationService.getTemplateData(caseData, true);
 
         Document document = getDocument(authorization, userId, cmoTemplateData);
 
@@ -113,12 +117,25 @@ public class DraftCMOController {
         CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData);
 
         draftCMOService.removeTransientObjectsFromCaseData(data);
-        draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
+
+        data.put("caseManagementOrder", caseManagementOrder);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
     }
+
+    // TODO: 10/12/2019 Update integration tests
+    @PostMapping("/submitted")
+    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+        coreCaseDataService.triggerEvent(
+            callbackRequest.getCaseDetails().getJurisdiction(),
+            callbackRequest.getCaseDetails().getCaseTypeId(),
+            callbackRequest.getCaseDetails().getId(),
+            "internal-change:CMO_PROGRESSION"
+        );
+    }
+
 
     private void setCustomDirectionDropdownLabels(CaseDetails caseDetails) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);

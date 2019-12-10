@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
@@ -18,14 +17,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+
 @Service
 public class ActionCmoService {
     private final DraftCMOService draftCMOService;
     private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
 
-    private static final String CMO_ACTION_KEY = "orderAction";
-    private static final String CMO_KEY = "caseManagementOrder";
+    private static final String LA_CMO_KEY = "caseManagementOrder";
+    private static final String JUDGE_CMO_KEY = "cmoToAction";
 
     //TODO: this should all exist in one CaseManagementOrderService
     @Autowired
@@ -39,17 +40,22 @@ public class ActionCmoService {
 
     public CaseManagementOrder addDocument(CaseManagementOrder caseManagementOrder, Document document) {
         return caseManagementOrder.toBuilder()
-            .orderDoc(buildDocumentReference(document))
+            .orderDoc(buildFromDocument(document))
             .build();
     }
 
-    public void prepareCaseDetailsForSubmission(CaseDetails caseDetails, CaseManagementOrder order, boolean approved) {
-        caseDetails.getData().put(CMO_ACTION_KEY, order.getAction());
-
-        if (approved) {
-            caseDetails.getData().put(CMO_KEY, order);
-        } else {
-            caseDetails.getData().remove(CMO_KEY);
+    // REFACTOR: 10/12/2019 Method name
+    public void progressCMOToAction(CaseDetails caseDetails, CaseManagementOrder order, boolean approved) {
+        switch (order.getAction().getType()) {
+            case SEND_TO_ALL_PARTIES:
+                caseDetails.getData().put("sharedDraftCMODocument", order.getOrderDoc());
+                break;
+            case JUDGE_REQUESTED_CHANGE:
+                caseDetails.getData().put(LA_CMO_KEY, order);
+                caseDetails.getData().remove(JUDGE_CMO_KEY);
+                break;
+            case SELF_REVIEW:
+                break;
         }
     }
 
@@ -89,14 +95,6 @@ public class ActionCmoService {
         }
 
         return nextHearingLabel;
-    }
-
-    private DocumentReference buildDocumentReference(final Document updatedDocument) {
-        return DocumentReference.builder()
-            .url(updatedDocument.links.self.href)
-            .binaryUrl(updatedDocument.links.binary.href)
-            .filename(updatedDocument.originalDocumentName)
-            .build();
     }
 
     private String formatHearingBookingLabel(HearingBooking hearingBooking) {

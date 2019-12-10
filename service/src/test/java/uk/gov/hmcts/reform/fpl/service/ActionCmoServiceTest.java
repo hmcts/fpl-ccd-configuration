@@ -77,7 +77,7 @@ class ActionCmoServiceTest {
     void shouldAddOrderActionToCaseDataAndCaseManagementOrderWhenApproved() {
         CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
 
-        service.prepareCaseDetailsForSubmission(caseDetails, CaseManagementOrder.builder().build(), true);
+        service.progressCMOToAction(caseDetails, CaseManagementOrder.builder().build(), true);
 
         assertThat(caseDetails.getData()).containsOnlyKeys("orderAction", "caseManagementOrder");
     }
@@ -86,7 +86,7 @@ class ActionCmoServiceTest {
     void shouldAddOrderActionToCaseDataButNotCaseManagementOrderWhenNotApproved() {
         CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
 
-        service.prepareCaseDetailsForSubmission(caseDetails, CaseManagementOrder.builder().build(), false);
+        service.progressCMOToAction(caseDetails, CaseManagementOrder.builder().build(), false);
 
         assertThat(caseDetails.getData()).containsOnlyKeys("orderAction");
     }
