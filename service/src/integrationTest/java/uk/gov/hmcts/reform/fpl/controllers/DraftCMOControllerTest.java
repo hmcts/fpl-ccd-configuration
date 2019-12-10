@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -75,6 +76,9 @@ class DraftCMOControllerTest {
     private ObjectMapper mapper;
     @Autowired
     private DateFormatterService dateFormatterService;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
@@ -174,6 +178,15 @@ class DraftCMOControllerTest {
         assertThat(caseManagementOrder).extracting("id", "hearingDate")
             .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), TODAYS_DATE.plusDays(5).toString());
         assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
+    }
+
+    @Test
+    void submittedShouldTriggerCMOProgressionEvent() throws Exception {
+        Map<String, Object> data = new HashMap<>();
+        long caseId = 1L;
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "submitted");
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
     }
 
     private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {
