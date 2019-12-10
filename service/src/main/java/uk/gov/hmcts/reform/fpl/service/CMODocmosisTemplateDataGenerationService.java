@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -21,6 +23,8 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -32,12 +36,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -90,7 +98,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         cmoTemplateData.put("respondents", respondentsNameAndRelationship);
 
         cmoTemplateData.put("representatives",
-            getRepresentatives(caseData.getRespondents1(), applicantName, caseData.getSolicitor()));
+            getRepresentatives(caseData, applicantName, caseData.getSolicitor()));
 
         // Populate with the next hearing booking, currently not captured
         cmoTemplateData.putAll(commonCaseDataExtractionService.getHearingBookingData(null));
@@ -130,29 +138,52 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         return null;
     }
 
-    private List<Map<String, Object>> getRepresentatives(List<Element<Respondent>> respondents1,
+    private List<Map<String, Object>> getRepresentatives(CaseData caseData,
                                                          String applicantName,
                                                          Solicitor solicitor) {
-        List<Map<String, Object>> representatives = new ArrayList<>();
 
-        representatives.add(getApplicantDetails(applicantName, solicitor));
+        List<Map<String, Object>> representativesInfo = new ArrayList<>();
+        List<Element<Representative>> representatives = caseData.getRepresentatives();
+        List<Respondent> respondents = ElementUtils.unwrap(caseData.getRespondents1());
+        List<Other> others = caseDataExtractionService.getOthers(caseData);
 
-        if (!isEmpty(respondents1)) {
-            respondents1.stream()
-                .map(Element::getValue)
-                .forEach(respondent -> representatives.add(getRepresentative(respondent)));
-        }
+        representativesInfo.add(getApplicantDetails(applicantName, solicitor));
 
-        return representatives;
+        respondents.stream()
+            .forEach(respondent -> representativesInfo.add(ImmutableMap.of(
+                "name", defaultIfNull(respondent.getParty().getFullName(), EMPTY),
+                "representedBy", getRepresentativesInfo(respondent, representatives))
+            ));
+
+        others.stream()
+            .forEach(other -> representativesInfo.add(ImmutableMap.of(
+                "name", defaultIfNull(other.getName(), EMPTY),
+                "representedBy", getRepresentativesInfo(other, representatives))));
+
+        return representativesInfo;
     }
 
-    private Map<String, Object> getRepresentative(Respondent respondent) {
-        // Currently don't capture respondents representatives apart from solicitor so just return empty placeholders
+    private List<Map<String, Object>> getRepresentativesInfo(Representable representable, List<Element<Representative>> representatives) {
+        return representable.getRepresentedBy().stream()
+            .map(representativeId -> findRepresentative(representatives, representativeId.getValue()))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .map(this::buildRepresentativeInfo)
+            .collect(Collectors.toList());
+    }
+
+    private Optional<Representative> findRepresentative(List<Element<Representative>> representatives, UUID id) {
+        return representatives.stream()
+            .filter(representative -> representative.getId().equals(id))
+            .findFirst()
+            .map(Element::getValue);
+    }
+
+    private Map<String, Object> buildRepresentativeInfo(Representative representative) {
         return ImmutableMap.of(
-            "respondentName", respondent.getParty().getFullName(),
-            "representativeName", EMPTY_PLACEHOLDER,
-            "representativeEmail", EMPTY_PLACEHOLDER,
-            "representativePhoneNumber", EMPTY_PLACEHOLDER
+            "representativeName", representative.getFullName(),
+            "representativeEmail", defaultIfNull(representative.getEmail(), EMPTY),
+            "representativePhoneNumber", defaultIfNull(representative.getTelephoneNumber(), EMPTY)
         );
     }
 
@@ -163,7 +194,8 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         if (isScheduleIncluded(schedule)) {
             scheduleMap.putAll(getEmptyScheduleMap());
         } else {
-            scheduleMap.putAll(mapper.convertValue(schedule, new TypeReference<>() {}));
+            scheduleMap.putAll(mapper.convertValue(schedule, new TypeReference<>() {
+            }));
             scheduleMap.put("scheduleProvided", true);
         }
 
@@ -193,19 +225,21 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
     private Map<String, Object> getApplicantDetails(String applicantName, Solicitor solicitor) {
         Map<String, Object> applicantDetails = new HashMap<>();
 
-        applicantDetails.put("respondentName", defaultIfBlank(applicantName, EMPTY_PLACEHOLDER));
+        applicantDetails.put("name", defaultIfBlank(applicantName, EMPTY_PLACEHOLDER));
 
         if (solicitor == null) {
-            applicantDetails.putAll(ImmutableMap.of(
+            applicantDetails.put("representedBy", ImmutableMap.of(
                 "representativeName", EMPTY_PLACEHOLDER,
                 "representativeEmail", EMPTY_PLACEHOLDER,
                 "representativePhoneNumber", EMPTY_PLACEHOLDER
             ));
         } else {
             String phoneNumber = defaultIfBlank(solicitor.getTelephone(), solicitor.getMobile());
-            applicantDetails.put("representativeName", defaultIfBlank(solicitor.getName(), EMPTY_PLACEHOLDER));
-            applicantDetails.put("representativeEmail", defaultIfBlank(solicitor.getEmail(), EMPTY_PLACEHOLDER));
-            applicantDetails.put("representativePhoneNumber", defaultIfBlank(phoneNumber, EMPTY_PLACEHOLDER));
+            applicantDetails.put("representedBy", ImmutableMap.of(
+                "representativeName", defaultIfBlank(solicitor.getName(), EMPTY_PLACEHOLDER),
+                "representativeEmail", defaultIfBlank(solicitor.getEmail(), EMPTY_PLACEHOLDER),
+                "representativePhoneNumber", defaultIfBlank(phoneNumber, EMPTY_PLACEHOLDER)
+            ));
         }
 
         return applicantDetails;

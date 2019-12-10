@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.rd.model.Status;
 import uk.gov.hmcts.reform.rd.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
@@ -55,5 +57,14 @@ public class OrganisationService {
             .stream()
             .map(User::getUserIdentifier)
             .collect(toList());
+    }
+
+    public Optional<String> findUserByEmail(String authorisation, String email) {
+        try {
+            return Optional.of(organisationApi.findUsersByEmail(authorisation, authTokenGenerator.generate(), email)
+                .getUserIdentifier());
+        } catch (FeignException.NotFound notFoundException) {
+            return Optional.empty();
+        }
     }
 }

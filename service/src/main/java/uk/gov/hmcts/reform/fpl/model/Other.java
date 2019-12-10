@@ -3,11 +3,14 @@ package uk.gov.hmcts.reform.fpl.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 
 @Data
 @Builder
 @AllArgsConstructor
-public class Other {
+@EqualsAndHashCode(callSuper=true)
+public class Other extends Representable {
     @SuppressWarnings("membername")
     private final String DOB;
     private final String name;

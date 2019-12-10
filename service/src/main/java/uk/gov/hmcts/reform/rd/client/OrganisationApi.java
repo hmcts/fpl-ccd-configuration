@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.fpl.config.FeignConfiguration;
 import uk.gov.hmcts.reform.rd.model.Status;
+import uk.gov.hmcts.reform.rd.model.User;
 import uk.gov.hmcts.reform.rd.model.Users;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -18,5 +19,12 @@ public interface OrganisationApi {
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @RequestParam(value = "status") Status status
+    );
+
+    @GetMapping("/refdata/external/v1/organisations/users")
+    User findUsersByEmail(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
+        @RequestParam(value = "email") final String email
     );
 }
