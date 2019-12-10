@@ -12,7 +12,6 @@ Family public law's implementation of the CCD template
 - [Docker](https://www.docker.com)
 - [realpath-osx](https://github.com/harto/realpath-osx) (Mac OS only)
 
-
 Run command:
 ```
 git submodule init

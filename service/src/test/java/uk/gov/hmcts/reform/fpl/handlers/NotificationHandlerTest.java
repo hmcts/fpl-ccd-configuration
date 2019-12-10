@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.Loc
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.CMOEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvide
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
+import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
@@ -52,6 +54,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C21_ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
@@ -117,6 +120,9 @@ class NotificationHandlerTest {
 
     @Mock
     private InboxLookupService inboxLookupService;
+
+    @Mock
+    private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
     @InjectMocks
     private NotificationHandler notificationHandler;
@@ -214,6 +220,42 @@ class NotificationHandlerTest {
             verify(notificationClient, times(1)).sendEmail(
                 eq(C21_ORDER_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
                 eq(c21CafcassParameters), eq("12345"));
+        }
+    }
+
+    @Nested
+    class CaseManagementOrderNotificationTests {
+        final String subjectLine = "Lastname, SACCCCCCCC5676576567";
+        final Map<String, Object> cmoOrderIssuedNotificationParameters = getCMOIssuedNotificationParameters();
+
+        @BeforeEach
+        void setup() throws IOException {
+            given(inboxLookupService.getNotificationRecipientEmail(callbackRequest().getCaseDetails(),
+                LOCAL_AUTHORITY_CODE))
+                .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+
+            given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParametersForLocalAuthority(
+                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE))
+                .willReturn(cmoOrderIssuedNotificationParameters);
+        }
+
+        @Test
+        void shouldNotifyLocalAuthorityOfCMOIssued() throws Exception {
+            notificationHandler.notifyLocalAuthorityOfIssuedCaseManagementOrder(
+                new CMOEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+
+            verify(notificationClient, times(1)).sendEmail(
+                eq(CMO_ORDER_ISSUED_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(cmoOrderIssuedNotificationParameters), eq("12345"));
+        }
+
+        private ImmutableMap<String, Object> getCMOIssuedNotificationParameters() {
+            return ImmutableMap.<String, Object>builder()
+                .put("localAuthorityNameOrRepresentativeFullName", LOCAL_AUTHORITY_NAME)
+                .put("subjectLineWithHearingDate", subjectLine)
+                .put("reference", "12345")
+                .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+                .build();
         }
     }
 

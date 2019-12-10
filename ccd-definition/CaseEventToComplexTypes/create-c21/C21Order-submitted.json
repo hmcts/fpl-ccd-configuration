@@ -69,7 +69,7 @@
     "ListElementCode": "judgeFullName",
     "EventElementLabel": "Full name",
     "FieldDisplayOrder": 3,
-    "DisplayContext": "MANDATORY"
+    "DisplayContext": "OPTIONAL"
   },
   {
     "LiveFrom": "01/01/2017",

@@ -15,12 +15,24 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "allPartiesCustom",
+    "CaseFieldID": "allPartiesPrecedentLabelCMO",
     "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "allPartiesDirections",
+    "PageLabel": " ",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "allPartiesCustom",
+    "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
     "PageID": "allPartiesDirections",
     "PageLabel": " ",
-    "PageDisplayOrder": 2,
+    "PageDisplayOrder": 1,
     "PageColumnNumber": 1
   },
   {
@@ -32,7 +44,7 @@
     "DisplayContext": "READONLY",
     "PageID": "localAuthorityDirections",
     "PageLabel": " ",
-    "PageDisplayOrder": 3,
+    "PageDisplayOrder": 2,
     "PageColumnNumber": 1
   },
   {
@@ -43,6 +55,42 @@
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "COMPLEX",
     "PageID": "localAuthorityDirections",
+    "PageLabel": " ",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "respondentsDirectionLabelCMO",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": 2,
+    "PageLabel": " ",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "respondentsDropdownLabelCMO",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": 2,
+    "PageLabel": " ",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "COMPLEX",
+    "PageID": 2,
     "PageLabel": " ",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1
@@ -75,12 +123,48 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "actionCMO",
+    "CaseFieldID": "otherPartiesDirectionLabelCMO",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": 3,
+    "PageLabel": " ",
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "otherPartiesDropdownLabelCMO",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": 3,
+    "PageLabel": " ",
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "COMPLEX",
+    "PageID": 3,
+    "PageLabel": " ",
+    "PageDisplayOrder": 5,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "actionCMO",
     "CaseFieldID": "courtDirectionsLabelCMO",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "courtDirections",
     "PageLabel": " ",
-    "PageDisplayOrder": 5,
+    "PageDisplayOrder": 6,
     "PageColumnNumber": 1
   },
   {
@@ -92,7 +176,7 @@
     "DisplayContext": "COMPLEX",
     "PageID": "courtDirections",
     "PageLabel": " ",
-    "PageDisplayOrder": 5,
+    "PageDisplayOrder": 6,
     "PageColumnNumber": 1
   },
   {
@@ -102,9 +186,9 @@
     "CaseFieldID": "orderBasisLabel",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": "recitals",
+    "PageID": 5,
     "PageLabel": " ",
-    "PageDisplayOrder": 6,
+    "PageDisplayOrder": 7,
     "PageColumnNumber": 1
   },
   {
@@ -114,19 +198,7 @@
     "CaseFieldID": "addRecitalLabel",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
-    "PageID": "recitals",
-    "PageLabel": " ",
-    "PageDisplayOrder": 6,
-    "PageColumnNumber": 1
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "actionCMO",
-    "CaseFieldID": "caseManagementOrderActionSchedule",
-    "PageFieldDisplayOrder": 1,
-    "DisplayContext": "MANDATORY",
-    "PageID": 1,
+    "PageID": 5,
     "PageLabel": " ",
     "PageDisplayOrder": 7,
     "PageColumnNumber": 1
@@ -135,10 +207,10 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "caseManagementOrderActionRecitals",
+    "CaseFieldID": "recitals",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL",
-    "PageID": "recitals",
+    "PageID": 5,
     "PageLabel": " ",
     "PageDisplayOrder": 7,
     "PageColumnNumber": 1
@@ -147,11 +219,24 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "caseManagementOrderAction",
-    "DisplayContext": "COMPLEX",
-    "PageID": "caseManagementOrderActionDocumentReview",
+    "CaseFieldID": "schedule",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY",
+    "PageID": "schedule",
     "PageLabel": " ",
     "PageDisplayOrder": 8,
+    "PageColumnNumber": 1,
+    "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/action-cmo/mid-event"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "orderAction",
+    "DisplayContext": "COMPLEX",
+    "PageID": "OrderActionDocumentReview",
+    "PageLabel": " ",
+    "PageDisplayOrder": 9,
     "PageColumnNumber": 1
   }
 ]

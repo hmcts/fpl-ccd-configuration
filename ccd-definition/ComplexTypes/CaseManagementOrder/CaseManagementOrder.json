@@ -2,6 +2,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CaseManagementOrder",
+    "ListElementCode": "orderDoc",
+    "FieldType": "Document",
+    "ElementLabel": "File",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
     "ListElementCode": "hearingDate",
     "FieldType": "Text",
     "ElementLabel": "Which hearing is this order for?",
@@ -46,19 +54,18 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CaseManagementOrder",
-    "ListElementCode": "orderDoc",
-    "FieldType": "Document",
-    "ElementLabel": "File",
-    "SecurityClassification": "Public",
-    "Comment": "Placeholder for the orderDoc, not implemented in this story"
+    "ListElementCode": "status",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "CMOStatus",
+    "ElementLabel": "Is this ready to be sent to the judge?",
+    "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "CaseManagementOrder",
-    "ListElementCode": "cmoStatus",
-    "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "CMOStatus",
-    "ElementLabel": "Is this ready to be sent to the judge?",
+    "ListElementCode": "action",
+    "FieldType": "OrderAction",
+    "ElementLabel": " ",
     "SecurityClassification": "Public"
   }
 ]

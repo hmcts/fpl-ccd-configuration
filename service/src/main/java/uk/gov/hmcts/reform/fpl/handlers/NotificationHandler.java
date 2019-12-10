@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.CMOEvent;
 import uk.gov.hmcts.reform.fpl.events.CMOIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvi
 import uk.gov.hmcts.reform.fpl.service.email.content.CMOEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
+import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.LocalAuthorityEmailContentProvider;
@@ -35,7 +37,8 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C21_ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CASE_MANAGEMENT_ORDER_ISSUED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
@@ -62,6 +65,7 @@ public class NotificationHandler {
     private final NotificationClient notificationClient;
     private final IdamApi idamApi;
     private final InboxLookupService inboxLookupService;
+    private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
 
     @EventListener
     public void sendNotificationToHmctsAdmin(SubmittedCaseEvent event) {
@@ -148,6 +152,17 @@ public class NotificationHandler {
     }
 
     @EventListener
+    public void notifyLocalAuthorityOfIssuedCaseManagementOrder(CMOEvent event) {
+        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
+        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+        Map<String, Object> notificationParameters = caseManagementOrderEmailContentProvider
+            .buildCMOIssuedNotificationParametersForLocalAuthority(caseDetails, localAuthorityCode);
+        String caseReference = Long.toString(caseDetails.getId());
+        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
+        sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, email, notificationParameters, caseReference);
+    }
+
+    @EventListener
     public void sendNotificationForCMOOrder(final CMOIssuedEvent event) {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
@@ -197,7 +212,7 @@ public class NotificationHandler {
         //Todo: get the cafcass/Cafcass Cymru email from FPLA-911 based on cafcass name above
         //inboxLookupService.getNotificationRecipientEmail(caseDetails, cafcassName);
         String cafcassEmail = "respondantEmail@test.com";
-        sendNotification(CASE_MANAGEMENT_ORDER_ISSUED_TEMPLATE, cafcassEmail, cafcassParameters,
+        sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters,
             Long.toString(caseDetails.getId()));
     }
 
@@ -208,7 +223,7 @@ public class NotificationHandler {
                 caseDetails, localAuthorityCode, documentUrl);
         //Todo: get the list of all the respondants emails FPLA-911 to send notification
         String respondantEmail = "respondantEmail@test.com";
-        sendNotification(CASE_MANAGEMENT_ORDER_ISSUED_TEMPLATE, respondantEmail, localAuthorityParameters,
+        sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, respondantEmail, localAuthorityParameters,
             Long.toString(caseDetails.getId()));
     }
 }
