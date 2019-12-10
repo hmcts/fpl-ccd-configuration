@@ -667,28 +667,28 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "createC21Order",
+    "CaseEventID": "createOrder",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "createC21OrderGatekeeping",
+    "CaseEventID": "createOrderGatekeeping",
     "UserRole": "caseworker-publiclaw-courtadmin",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "createC21Order",
+    "CaseEventID": "createOrder",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "createC21OrderGatekeeping",
+    "CaseEventID": "createOrderGatekeeping",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "CRU"
   },

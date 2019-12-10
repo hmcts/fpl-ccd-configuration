@@ -15,16 +15,16 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.GatewayConfiguration;
-import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
-import uk.gov.hmcts.reform.fpl.model.C21Order;
+import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.CreateC21OrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
-import uk.gov.hmcts.reform.fpl.validation.groups.C21CaseOrderGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -36,9 +36,9 @@ import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
 @Api
 @RequestMapping("/callback/create-order")
 @RestController
-public class C21OrderController {
+public class GeneratedOrderController {
     private final ObjectMapper mapper;
-    private final CreateC21OrderService service;
+    private final GeneratedOrderService service;
     private final ValidateGroupService validateGroupService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
@@ -46,13 +46,13 @@ public class C21OrderController {
     private final GatewayConfiguration gatewayConfiguration;
 
     @Autowired
-    public C21OrderController(ObjectMapper mapper,
-                              CreateC21OrderService service,
-                              ValidateGroupService validateGroupService,
-                              DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
-                              UploadDocumentService uploadDocumentService,
-                              ApplicationEventPublisher applicationEventPublisher,
-                              GatewayConfiguration gatewayConfiguration) {
+    public GeneratedOrderController(ObjectMapper mapper,
+                                    GeneratedOrderService service,
+                                    ValidateGroupService validateGroupService,
+                                    DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
+                                    UploadDocumentService uploadDocumentService,
+                                    ApplicationEventPublisher applicationEventPublisher,
+                                    GatewayConfiguration gatewayConfiguration) {
         this.mapper = mapper;
         this.service = service;
         this.validateGroupService = validateGroupService;
@@ -69,7 +69,7 @@ public class C21OrderController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(validateGroupService.validateGroup(caseData, C21CaseOrderGroup.class))
+            .errors(validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class))
             .build();
     }
 
@@ -81,9 +81,9 @@ public class C21OrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Document c21Document = getDocument(authorization, userId, caseData);
+        Document orderDoc = getDocument(authorization, userId, caseData);
 
-        caseDetails.getData().put("c21Order", service.addDocumentToC21(caseData.getC21Order(), c21Document));
+        caseDetails.getData().put("order", service.addDocumentToOrder(caseData.getOrder(), orderDoc));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -96,12 +96,12 @@ public class C21OrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<C21Order>> c21Orders = caseData.getC21Orders();
+        List<Element<GeneratedOrder>> orders = caseData.getGeneratedOrders();
 
-        c21Orders.add(service.addCustomValuesToC21Order(caseData.getC21Order(), caseData.getJudgeAndLegalAdvisor()));
+        orders.add(service.addCustomValuesToOrder(caseData.getOrder(), caseData.getJudgeAndLegalAdvisor()));
 
-        caseDetails.getData().put("c21Orders", c21Orders);
-        caseDetails.getData().remove("c21Order");
+        caseDetails.getData().put("orderCollection", orders);
+        caseDetails.getData().remove("order");
         caseDetails.getData().remove("judgeAndLegalAdvisor");
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -114,31 +114,32 @@ public class C21OrderController {
                                      @RequestHeader(value = "user-id") String userId,
                                      @RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-        String mostRecentUploadedDocumentUrl = service.mostRecentUploadedC21DocumentUrl(caseData.getC21Orders());
+        String mostRecentUploadedDocumentUrl = service.mostRecentUploadedOrderDocumentUrl(
+            caseData.getGeneratedOrders());
 
-        applicationEventPublisher.publishEvent(new C21OrderEvent(callbackRequest, authorization, userId,
-            concatGatewayConfigurationUrlAndMostRecentUploadedC21DocumentPath(mostRecentUploadedDocumentUrl)));
+        applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest, authorization, userId,
+            concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(mostRecentUploadedDocumentUrl)));
     }
 
     private Document getDocument(String authorization,
                                  String userId,
                                  CaseData caseData) {
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            service.getC21OrderTemplateData(caseData), C21);
+            service.getOrderTemplateData(caseData), C21);
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
             C21.getDocumentTitle());
     }
 
-    private String concatGatewayConfigurationUrlAndMostRecentUploadedC21DocumentPath(
-        final String mostRecentUploadedC21DocumentUrl) {
+    private String concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
+        final String mostRecentUploadedOrderDocumentUrl) {
         final String gatewayUrl = gatewayConfiguration.getUrl();
 
         try {
-            URI uri = new URI(mostRecentUploadedC21DocumentUrl);
+            URI uri = new URI(mostRecentUploadedOrderDocumentUrl);
             return gatewayUrl + uri.getPath();
         } catch (URISyntaxException e) {
-            log.error(mostRecentUploadedC21DocumentUrl + " url incorrect.", e);
+            log.error(mostRecentUploadedOrderDocumentUrl + " url incorrect.", e);
         }
         return "";
     }

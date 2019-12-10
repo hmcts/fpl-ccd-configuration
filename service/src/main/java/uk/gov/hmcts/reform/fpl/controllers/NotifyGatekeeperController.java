@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.PopulateStandardDirectionsEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
-import uk.gov.hmcts.reform.fpl.validation.groups.NotifyGatekeeperGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
 @Api
 @RestController
@@ -43,7 +43,7 @@ public class NotifyGatekeeperController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(validateGroupService.validateGroup(caseData, NotifyGatekeeperGroup.class))
+            .errors(validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class))
             .build();
     }
 
