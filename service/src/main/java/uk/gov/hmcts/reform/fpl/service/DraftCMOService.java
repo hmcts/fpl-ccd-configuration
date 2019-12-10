@@ -9,10 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -27,7 +23,6 @@ import java.util.UUID;
 
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -35,7 +30,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 
 @Service
 public class DraftCMOService {
@@ -67,41 +61,6 @@ public class DraftCMOService {
         }
 
         return hearingDatesDynamic;
-    }
-
-    public String createRespondentAssigneeDropdownKey(List<Element<Respondent>> respondents) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        for (int i = 0; i < respondents.size(); i++) {
-            RespondentParty respondentParty = respondents.get(i).getValue().getParty();
-
-            String key = String.format("Respondent %d - %s", i + 1, getRespondentFullName(respondentParty));
-            stringBuilder.append(key).append("\n\n");
-        }
-
-        return stringBuilder.toString().stripTrailing();
-    }
-
-    public String createOtherPartiesAssigneeDropdownKey(Others others) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        if (isNotEmpty(others)) {
-            for (int i = 0; i < others.getAllOthers().size(); i++) {
-                Other other = others.getAllOthers().get(i);
-                String key;
-
-                if (i == 0) {
-                    key = String.format("Person 1 - %s", defaultIfNull(other.getName(), EMPTY_PLACEHOLDER));
-                } else {
-                    key = String.format("Other person %d - %s", i,
-                        defaultIfNull(other.getName(), EMPTY_PLACEHOLDER));
-                }
-
-                stringBuilder.append(key).append("\n\n");
-            }
-        }
-
-        return stringBuilder.toString().stripTrailing();
     }
 
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
@@ -163,13 +122,6 @@ public class DraftCMOService {
             .build();
 
         hearingDatesDynamic.setValue(listElement);
-    }
-
-    private String getRespondentFullName(RespondentParty respondentParty) {
-        String firstName = defaultIfNull(respondentParty.getFirstName(), "");
-        String lastName = defaultIfNull(respondentParty.getLastName(), "");
-
-        return String.format("%s %s", firstName, lastName);
     }
 
     private List<Element<Direction>> combineAllDirectionsForCmo(CaseData caseData) {

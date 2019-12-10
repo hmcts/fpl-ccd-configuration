@@ -56,6 +56,7 @@ module.exports = {
     deleteApplication: 'Delete an application',
     draftCaseManagementOrder: 'Draft CMO',
     complyWithDirections: 'Comply with directions',
+    complyOnBehalfOf: 'Comply on behalf of others',
   },
   administrationActions: {
     addFamilyManCaseNumber: 'Add case number',
