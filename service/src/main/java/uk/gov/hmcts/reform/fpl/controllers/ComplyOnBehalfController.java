@@ -10,32 +10,37 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.Others;
-import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
+
+import java.util.List;
+import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Api
 @RestController
-@RequestMapping("/callback/draft-cmo")
-public class DraftCMOController {
+@RequestMapping("/callback/comply-on-behalf")
+public class ComplyOnBehalfController {
     private final ObjectMapper mapper;
-    private final DraftCMOService draftCMOService;
+    private final DirectionHelperService directionHelperService;
     private final RespondentService respondentService;
     private final OthersService othersService;
 
     @Autowired
-    public DraftCMOController(ObjectMapper mapper,
-                              DraftCMOService draftCMOService,
-                              RespondentService respondentService,
-                              OthersService othersService) {
+    public ComplyOnBehalfController(ObjectMapper mapper,
+                                    DirectionHelperService directionHelperService,
+                                    RespondentService respondentService,
+                                    OthersService othersService) {
         this.mapper = mapper;
-        this.draftCMOService = draftCMOService;
+        this.directionHelperService = directionHelperService;
         this.respondentService = respondentService;
         this.othersService = othersService;
     }
@@ -45,9 +50,11 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        draftCMOService.prepareCustomDirections(caseDetails);
+        Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
+            directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections());
 
-        caseDetails.getData().put("cmoHearingDateList", draftCMOService.getHearingDateDynamicList(caseDetails));
+        directionHelperService.addDirectionsToCaseDetails(caseDetails, sortedDirections);
+
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
         caseDetails.getData().put("others_label", getOthersLabel(caseData));
 
@@ -56,13 +63,14 @@ public class DraftCMOController {
             .build();
     }
 
-    @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseDetails);
+    @PostMapping("about-to-submit")
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackrequest) {
+        CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().remove("cmoHearingDateList");
-        caseDetails.getData().put("caseManagementOrder", caseManagementOrder);
+        directionHelperService.addComplyOnBehalfResponsesToDirectionsInStandardDirectionsOrder(caseData);
+
+        caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

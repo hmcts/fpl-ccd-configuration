@@ -55,11 +55,8 @@ module.exports = {
 
   enterRecipientsAddress: function (elementIndex, recipients) {
     within(this.fields(elementIndex).recipients.address, () => {
-      if (elementIndex === 0) {
-        postcodeLookup.lookupPostcode(recipients.address);
-      } else {
-        postcodeLookup.enterAddressManually(recipients.address);
-      }
+      //XXX removed postcode lookup due to instability
+      postcodeLookup.enterAddressManually(recipients.address);
     });
   },
 };

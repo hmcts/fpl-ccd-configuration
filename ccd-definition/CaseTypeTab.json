@@ -98,7 +98,7 @@
     "TabID": "OrdersTab",
     "TabLabel": "Orders",
     "TabDisplayOrder": 4,
-    "CaseFieldID": "c21Orders",
+    "CaseFieldID": "orderCollection",
     "TabFieldDisplayOrder": 3
   },
   {

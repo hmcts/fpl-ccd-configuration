@@ -1,0 +1,65 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "respondents_label",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "Respondents directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "COMPLEX",
+    "PageID": "Respondents directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1,
+    "CaseEventFieldLabel": "For the respondent"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "others_label",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "Other party directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "COMPLEX",
+    "PageID": "Other party directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "CaseEventFieldLabel": "For other parties"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "COMPLY_ON_BEHALF_SDO",
+    "CaseFieldID": "cafcassDirectionsCustom",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "COMPLEX",
+    "PageID": "Cafcass directions",
+    "PageLabel": " ",
+    "PageDisplayOrder": 3,
+    "PageColumnNumber": 1,
+    "CaseEventFieldLabel": "For cafcass"
+  }
+]
