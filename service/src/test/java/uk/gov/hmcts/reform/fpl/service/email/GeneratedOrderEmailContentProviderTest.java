@@ -94,7 +94,7 @@ class GeneratedOrderEmailContentProviderTest {
         return CaseDetails.builder()
             .id(167888L)
             .data(ImmutableMap.of("hearingDetails", createHearingBookings(now, now.plusDays(1)),
-                "generatedOrders", ImmutableList.of(
+                "orderCollection", ImmutableList.of(
                     Element.<GeneratedOrder>builder()
                         .value(GeneratedOrder.builder()
                             .orderTitle("Example Order")

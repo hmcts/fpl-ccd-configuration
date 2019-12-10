@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.GeneratedOrderService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ValidateGroupService;
-import uk.gov.hmcts.reform.fpl.validation.groups.ValidateCaseNumberGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -69,7 +69,7 @@ public class GeneratedOrderController {
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(validateGroupService.validateGroup(caseData, ValidateCaseNumberGroup.class))
+            .errors(validateGroupService.validateGroup(caseData, ValidateFamilyManCaseNumberGroup.class))
             .build();
     }
 
@@ -98,13 +98,13 @@ public class GeneratedOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<GeneratedOrder>> orders = caseData.getGeneratedOrders();
+        List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
 
         //Builds an order with custom values based on order type and adds it to list of orders
         orders.add(service.buildCompleteOrder(caseData.getOrderTypeAndDocument(), caseData.getOrder(),
             caseData.getJudgeAndLegalAdvisor()));
 
-        caseDetails.getData().put("generatedOrders", orders);
+        caseDetails.getData().put("orderCollection", orders);
         caseDetails.getData().remove("orderTypeAndDocument");
         caseDetails.getData().remove("order");
         caseDetails.getData().remove("judgeAndLegalAdvisor");
@@ -120,7 +120,7 @@ public class GeneratedOrderController {
                                      @RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
         String mostRecentUploadedDocumentUrl = service.mostRecentUploadedOrderDocumentUrl(
-            caseData.getGeneratedOrders());
+            caseData.getOrderCollection());
 
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest, authorization, userId,
             concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(mostRecentUploadedDocumentUrl)));
@@ -133,7 +133,7 @@ public class GeneratedOrderController {
             service.getOrderTemplateData(caseData), ORDER);
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-            service.generateDocumentFileName(caseData.getOrderTypeAndDocument()));
+            service.generateDocumentFileName(caseData.getOrderTypeAndDocument().getOrderType().getType()));
     }
 
     private String concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(

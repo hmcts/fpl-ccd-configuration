@@ -184,7 +184,7 @@ class GeneratedOrderControllerTest {
 
     private void aboutToSubmitAssertions(CaseData caseData, GeneratedOrder expectedOrder) {
 
-        List<Element<GeneratedOrder>> orders = caseData.getGeneratedOrders();
+        List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
         assertThat(caseData.getOrderTypeAndDocument()).isEqualTo(null);
         assertThat(caseData.getOrder()).isEqualTo(null);
         assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(null);
@@ -223,7 +223,7 @@ class GeneratedOrderControllerTest {
             .caseDetails(CaseDetails.builder()
                 .id(19898989L)
                 .data(ImmutableMap.of(
-                    "generatedOrders", createOrders(),
+                    "orderCollection", createOrders(),
                     "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
                     "respondents1", createRespondents(),
                     "caseLocalAuthority", LOCAL_AUTHORITY_CODE,

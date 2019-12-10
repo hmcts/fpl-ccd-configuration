@@ -174,8 +174,8 @@ class GeneratedOrderServiceTest {
             .orderType(BLANK_ORDER)
             .document(DocumentReference.builder().build()).build();
 
-        assertThat(service.generateDocumentFileName(typeAndDocument)).isEqualTo(formatTypeToFileName(
-            BLANK_ORDER.getType()));
+        assertThat(service.generateDocumentFileName(typeAndDocument.getOrderType().getType())).isEqualTo(
+            formatTypeToFileName(BLANK_ORDER.getType()));
     }
 
     @Test
@@ -184,8 +184,8 @@ class GeneratedOrderServiceTest {
             .orderType(CARE_ORDER)
             .document(DocumentReference.builder().build()).build();
 
-        assertThat(service.generateDocumentFileName(typeAndDocument)).isEqualTo(formatTypeToFileName(
-            CARE_ORDER.getType()));
+        assertThat(service.generateDocumentFileName(typeAndDocument.getOrderType().getType())).isEqualTo(
+            formatTypeToFileName(CARE_ORDER.getType()));
     }
 
     @Nested

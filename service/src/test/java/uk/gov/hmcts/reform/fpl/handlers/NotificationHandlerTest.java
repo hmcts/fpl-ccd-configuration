@@ -133,12 +133,6 @@ class NotificationHandlerTest {
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
-        final Map<String, Object> orderCafcassParameters = ImmutableMap.<String, Object>builder()
-            .putAll(c2Parameters)
-            .put("localAuthorityOrCafcass", CAFCASS_NAME)
-            .put("linkToDocument", mostRecentUploadedDocumentUrl)
-            .build();
-
         final Map<String, Object> orderLocalAuthorityParameters = ImmutableMap.<String, Object>builder()
             .putAll(c2Parameters)
             .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)

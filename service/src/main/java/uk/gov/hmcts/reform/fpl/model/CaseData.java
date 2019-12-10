@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.ValidateCaseNumberGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 
 import java.time.LocalDate;
@@ -120,7 +120,7 @@ public class CaseData {
     @Valid
     private final List<@NotNull(message = "You need to add details to children") Element<Child>> children1;
     @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,
-        ValidateCaseNumberGroup.class})
+        ValidateFamilyManCaseNumberGroup.class})
     private final String familyManCaseNumber;
     private final NoticeOfProceedings noticeOfProceedings;
 
@@ -143,10 +143,10 @@ public class CaseData {
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
     private final OrderTypeAndDocument orderTypeAndDocument;
     private final GeneratedOrder order;
-    private final List<Element<GeneratedOrder>> generatedOrders;
+    private final List<Element<GeneratedOrder>> orderCollection;
 
-    public List<Element<GeneratedOrder>> getGeneratedOrders() {
-        return defaultIfNull(generatedOrders, new ArrayList<>());
+    public List<Element<GeneratedOrder>> getOrderCollection() {
+        return defaultIfNull(orderCollection, new ArrayList<>());
     }
 
     private final CaseManagementOrder caseManagementOrder;

@@ -134,8 +134,8 @@ public class GeneratedOrderService {
         return orderTemplateBuilder.build();
     }
 
-    public String generateDocumentFileName(OrderTypeAndDocument orderTypeAndDocument) {
-        return formatTypeToFileName(orderTypeAndDocument.getOrderType().getType());
+    public String generateDocumentFileName(String type) {
+        return type.toLowerCase().replaceAll("[()]", "").replaceAll("[ ]", "_") + ".pdf";
     }
 
     public String mostRecentUploadedOrderDocumentUrl(final List<Element<GeneratedOrder>> orders) {
@@ -171,9 +171,4 @@ public class GeneratedOrderService {
                     .formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG) : ""))
             .collect(toList());
     }
-
-    private String formatTypeToFileName(String type) {
-        return type.toLowerCase().replaceAll("[()]", "").replaceAll("[ ]", "_") + ".pdf";
-    }
-
 }
