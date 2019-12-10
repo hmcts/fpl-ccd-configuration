@@ -50,7 +50,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         final String subjectLine = buildSubjectLine(caseData);
 
         return ImmutableMap.of(
-            "hearingDetailsCallout", buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
+            "subjectLineWithHearingDate", buildSubjectLineWithHearingBookingDateSuffix(subjectLine,
                 caseData.getHearingDetails()),
             "reference", String.valueOf(caseDetails.getId()),
             "caseUrl", String.format("%1$s/case/%2$s/%3$s/%4$s",

@@ -252,7 +252,7 @@ class NotificationHandlerTest {
         private ImmutableMap<String, Object> getCMOIssuedNotificationParameters() {
             return ImmutableMap.<String, Object>builder()
                 .put("localAuthorityNameOrRepresentativeFullName", LOCAL_AUTHORITY_NAME)
-                .put("hearingDetailsCallout", subjectLine)
+                .put("subjectLineWithHearingDate", subjectLine)
                 .put("reference", "12345")
                 .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
                 .build();
