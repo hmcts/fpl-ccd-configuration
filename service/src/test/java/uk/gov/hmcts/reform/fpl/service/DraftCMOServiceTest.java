@@ -301,7 +301,7 @@ class DraftCMOServiceTest {
 
             caseManagementOrder = CaseManagementOrder.builder().status(SELF_REVIEW).build();
 
-            draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
+            draftCMOService.progressDraftCMO(data, caseManagementOrder);
 
             assertThat(data.get("caseManagementOrder")).isEqualTo(caseManagementOrder);
         }
@@ -313,7 +313,7 @@ class DraftCMOServiceTest {
             caseManagementOrder = CaseManagementOrder.builder().status(SELF_REVIEW).build();
             data.put("sharedDraftCMODocument", DocumentReference.builder().build());
 
-            draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
+            draftCMOService.progressDraftCMO(data, caseManagementOrder);
 
             assertThat(data.get("sharedDraftCMODocument")).isNull();
         }
@@ -328,7 +328,7 @@ class DraftCMOServiceTest {
                 .orderDoc(documentReference)
                 .build();
 
-            draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
+            draftCMOService.progressDraftCMO(data, caseManagementOrder);
 
             assertThat(data.get("sharedDraftCMODocument")).isEqualTo(documentReference);
         }

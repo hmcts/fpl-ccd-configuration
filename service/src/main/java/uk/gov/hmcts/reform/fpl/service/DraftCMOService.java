@@ -87,10 +87,13 @@ public class DraftCMOService {
         keysToRemove.forEach(caseData::remove);
     }
 
-    public void populateCaseDataWithCMO(Map<String, Object> caseData, CaseManagementOrder caseManagementOrder) {
+    public void progressDraftCMO(Map<String, Object> caseData, CaseManagementOrder caseManagementOrder) {
         switch (caseManagementOrder.getStatus()) {
             case SEND_TO_JUDGE:
-                // Does the same as PARTIES_REVIEW for now but in the future this will change
+                caseData.put("cmoToAction", caseManagementOrder);
+                caseData.remove("caseManagementOrder");
+                caseData.remove("sharedDraftCMODocument"); // Maybe not
+                break;
             case PARTIES_REVIEW:
                 caseData.put("sharedDraftCMODocument", caseManagementOrder.getOrderDoc());
                 break;
@@ -100,8 +103,6 @@ public class DraftCMOService {
             default:
                 break;
         }
-
-        caseData.put("caseManagementOrder", caseManagementOrder);
     }
 
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
