@@ -15,7 +15,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -201,6 +204,45 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("respondents")).isEqualTo(getExpectedRespondents());
         assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirections());
         assertThat(templateData.get("draftbackground")).isNull();
+    }
+
+    @Test
+    public void shouldGetEmptyListOfOthersWhenOthersIsNull() {
+        CaseData caseData = CaseData.builder().build();
+        assertThat(caseDataExtractionService.getOthers(caseData)).isEmpty();
+    }
+
+    @Test
+    public void shouldGetEmptyListOfOthersWhenOthersAreEmpty() {
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder().build())
+            .build();
+        assertThat(caseDataExtractionService.getOthers(caseData)).isEmpty();
+    }
+
+    @Test
+    public void shouldGetFirstOtherWhenNoAdditionalOthers() {
+        Other other1 = Other.builder().build();
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(other1)
+                .build())
+            .build();
+        assertThat(caseDataExtractionService.getOthers(caseData)).containsExactly(other1);
+    }
+
+    @Test
+    public void shouldGetAllOthers() {
+        Other other1 = Other.builder().build();
+        Other other2 = Other.builder().build();
+        CaseData caseData = CaseData.builder()
+            .others(Others.builder()
+                .firstOther(other1)
+                .additionalOthers(ElementUtils.wrapElements(other2))
+                .build())
+            .build();
+
+        assertThat(caseDataExtractionService.getOthers(caseData)).containsExactly(other1, other2);
     }
 
     private List<Map<String, String>> getExpectedChildren() {

@@ -158,4 +158,6 @@ public class CaseData {
 
     private final Others others;
     private final DynamicList nextHearingDateList;
+
+    private final List<Element<Representative>> representatives;
 }

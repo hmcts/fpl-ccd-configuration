@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import feign.FeignException;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,8 +17,11 @@ import uk.gov.hmcts.reform.rd.model.User;
 import uk.gov.hmcts.reform.rd.model.Users;
 
 import java.util.List;
+import java.util.Optional;
 
+import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +36,7 @@ class OrganisationServiceTest {
 
     private static final String AUTH_TOKEN_ID = "Bearer authorisedBearer";
     private static final String SERVICE_AUTH_TOKEN_ID = "Bearer authorised service";
+    private static final String USER_EMAIL = "test@test.com";
 
     @BeforeEach
     void setup() {
@@ -86,5 +91,41 @@ class OrganisationServiceTest {
                 .userIdentifier("41")
                 .build()
         ));
+    }
+
+    @Test
+    void shouldFindUser() {
+        User user = new User(RandomStringUtils.randomAlphanumeric(10));
+
+        when(organisationApi.findUsersByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenReturn(user);
+
+        Optional<String> actualUserId = organisationService.findUserByEmail(AUTH_TOKEN_ID, USER_EMAIL);
+
+        assertThat(actualUserId).isEqualTo(Optional.of(user.getUserIdentifier()));
+    }
+
+    @Test
+    void shouldNotReturnUserIdIfUserNotPresent() {
+        Exception exception = new FeignException.NotFound(EMPTY, null);
+
+        when(organisationApi.findUsersByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenThrow(exception);
+
+        Optional<String> actualUserId = organisationService.findUserByEmail(AUTH_TOKEN_ID, USER_EMAIL);
+
+        assertThat(actualUserId.isPresent()).isFalse();
+    }
+
+    @Test
+    void shouldRethrowExceptionOtherThanNotFound() {
+        Exception exception = new FeignException.InternalServerError(EMPTY, null);
+
+        when(organisationApi.findUsersByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenThrow(exception);
+
+        try {
+            organisationService.findUserByEmail(AUTH_TOKEN_ID, USER_EMAIL);
+            fail("Exception expected");
+        } catch (Exception e) {
+            assertThat(e).isEqualTo(exception);
+        }
     }
 }
