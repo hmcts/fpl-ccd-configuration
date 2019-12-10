@@ -121,7 +121,10 @@ public class ActionCMOController {
     public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
                                      @RequestHeader(value = "user-id") String userId,
                                      @RequestBody CallbackRequest callbackRequest) {
-        applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId));
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        if (hasJudgeApproved(caseData.getCaseManagementOrder())) {
+            applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId));
+        }
     }
 
     private Document getDocument(String authorization, String userId, CaseData data, boolean approved)
