@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -40,10 +39,11 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
 
 // Supports SDO case data. Tech debt ticket needed to refactor caseDataExtractionService and NoticeOfProceedingsService
-@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseDataExtractionService {
@@ -56,7 +56,6 @@ public class CaseDataExtractionService {
     private final DirectionHelperService directionHelperService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
-    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
 
     // TODO
     // No need to pass in CaseData to each method. Refactor to only use required model
@@ -92,8 +91,7 @@ public class CaseDataExtractionService {
 
         if (isNotEmpty(caseData.getStandardDirectionOrder())
             && caseData.getStandardDirectionOrder().getOrderStatus() != SEALED) {
-            data.put("draftbackground", String.format("image:base64:%1$s",
-                docmosisDocumentGeneratorService.generateDraftWatermarkEncodedString()));
+            data.put("draftbackground", String.format("image:base64:%1$s", generateDraftWatermarkEncodedString()));
         }
 
         return data.build();
@@ -170,7 +168,14 @@ public class CaseDataExtractionService {
                     "body", defaultIfNull(direction.getDirectionText(), EMPTY_PLACEHOLDER)))
                 .collect(toList());
 
-            formattedDirections.put(key.getValue(), directionsList);
+            //TODO: temp refactoring to deal with PARENTS_AND_RESPONDENTS value change. SDO Template to be updated in
+            // future. Ticket in backlog: FPLA-1061.
+            if (key == PARENTS_AND_RESPONDENTS) {
+                formattedDirections.put("parentsAndRespondentsDirections", directionsList);
+
+            } else {
+                formattedDirections.put(key.getValue(), directionsList);
+            }
         });
 
         return formattedDirections.build();

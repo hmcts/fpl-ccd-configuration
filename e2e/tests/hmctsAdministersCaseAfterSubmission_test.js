@@ -136,7 +136,7 @@ Scenario('HMCTS admin enters hearing details and submits', async (I, caseViewPag
 Scenario('HMCTS admin creates C21 order for the case', async (I, caseViewPage, createC21OrderEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createC21Order);
   await createC21OrderEventPage.enterOrder();
-  I.click('Continue');
+  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
   await createC21OrderEventPage.enterJudgeAndLegalAdvisor('Sotomayer', 'Peter Parker');
   await I.completeEvent('Save and continue');
   const now = new Date();

@@ -12,6 +12,8 @@ function get_user_ids() {
 
 swansea_user_ids=$(echo $(get_user_ids swansea) | tr -d ' ')
 hillingdon_user_ids=$(echo $(get_user_ids hillingdon) | tr -d ' ')
+swindon_user_ids=$(echo $(get_user_ids swindon) | tr -d ' ')
+wiltshire_user_ids=$(echo $(get_user_ids wiltshire) | tr -d ' ')
 
 cat > ${resources_dir}/application-user-mappings.yaml <<EOL
 spring:
@@ -19,5 +21,5 @@ spring:
 
 fpl:
   local_authority_user:
-    mapping: 'FPLA=>0;SA=>${swansea_user_ids};HN=>${hillingdon_user_ids}'
+    mapping: 'FPLA=>0;SA=>${swansea_user_ids};HN=>${hillingdon_user_ids};SN=>${swindon_user_ids};SNW=>${wiltshire_user_ids}'
 EOL

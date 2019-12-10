@@ -69,14 +69,14 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   await draftCaseManagementOrderEventPage.enterRecital('Recital 1', 'Recital 1 description');
   await I.retryUntilExists(() => I.click('Continue'), '#schedule_schedule');
   await draftCaseManagementOrderEventPage.enterSchedule(schedule);
-  await I.retryUntilExists(() => I.click('Continue'), '#reviewCaseManagementOrder_cmoStatus');
+  await I.retryUntilExists(() => I.click('Continue'), '#caseManagementOrder_cmoStatus');
   await draftCaseManagementOrderEventPage.markToReviewedBySelf();
   await I.completeEvent('Submit');
   assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview);
 });
 
 // This scenario relies on running after 'local authority creates CMO'
-Scenario('Other parties cannot see the draft CMO when it is marked for self review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+Scenario('Other parties cannot see the draft CMO document when it is marked for self review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   // Ensure the selection is self review
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await skipToReview(I);
@@ -85,13 +85,13 @@ Scenario('Other parties cannot see the draft CMO when it is marked for self revi
   assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview);
 
   for (let userDetails of allOtherPartyDetails) {
-    await assertUserCannotSeeDraftOrders(I, userDetails);
+    await assertUserCannotSeeDraftOrdersTab(I, userDetails);
   }
 });
 
 // This scenario relies on running after 'local authority creates CMO'
 // Currently send to judge does the same as party review
-Scenario('Other parties can see the draft CMO when it is marked for party review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+Scenario('Other parties can see the draft CMO document when it is marked for party review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   // Ensure the selection is party review
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await skipToReview(I);
@@ -100,7 +100,7 @@ Scenario('Other parties can see the draft CMO when it is marked for party review
   assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.partiesReview);
 
   for (let otherPartyDetails of allOtherPartyDetails) {
-    await assertUserCanSeeDraftOrdersAndCMO(I, otherPartyDetails, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.partiesReview);
+    await assertUserCanSeeDraftCMODocument(I, otherPartyDetails, caseViewPage);
   }
 });
 
@@ -149,15 +149,20 @@ const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
   I.seeAnswerInTab(7, 'Case management order', 'Is this ready to be sent to the judge?', cmoStatus);
 };
 
-const assertUserCannotSeeDraftOrders = async (I, userDetails) => {
+const assertCanSeeDraftCMODocument = (I, caseViewPage) => {
+  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  I.see('draft-case_management_order.pdf');
+};
+
+const assertUserCannotSeeDraftOrdersTab = async (I, userDetails) => {
   await switchUserAndNavigateToCase(I, userDetails);
   I.dontSee('Draft orders', '.tabs .tabs-list');
 };
 
-const assertUserCanSeeDraftOrdersAndCMO = async (I, userDetails, caseViewPage, cmoStatus) => {
+const assertUserCanSeeDraftCMODocument = async (I, userDetails, caseViewPage) => {
   await switchUserAndNavigateToCase(I, userDetails);
-  I.see('Draft orders', '.tabs .tabs-list');
-  assertCanSeeDraftCMO(I, caseViewPage, cmoStatus);
+  I.dontSee('Draft orders', '.tabs .tabs-list');
+  assertCanSeeDraftCMODocument(I, caseViewPage);
 };
 
 const switchUserAndNavigateToCase = async (I, userDetails) => {
@@ -170,7 +175,7 @@ const skipToReview = async (I) => {
   const ids = [
     '#allPartiesLabelCMO', '#localAuthorityDirectionsLabelCMO', '#respondentsDirectionLabelCMO',
     '#cafcassDirectionsLabelCMO', '#otherPartiesDirectionLabelCMO','#courtDirectionsLabelCMO', '#orderBasisLabel',
-    '#schedule_schedule', '#reviewCaseManagementOrder_cmoStatus',
+    '#schedule_schedule', '#caseManagementOrder_cmoStatus',
   ];
 
   for (let id of ids) {

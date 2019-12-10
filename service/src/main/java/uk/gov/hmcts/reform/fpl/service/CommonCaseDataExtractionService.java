@@ -5,13 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
+import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
 @Service
 public class CommonCaseDataExtractionService {
@@ -73,6 +77,13 @@ public class CommonCaseDataExtractionService {
             "hearingVenue", hearingVenueLookUpService.buildHearingVenue(hearingVenue),
             "preHearingAttendance", extractPrehearingAttendance(hearingBooking),
             "hearingTime", getHearingTime(hearingBooking)
+        );
+    }
+
+    public Map<String, Object> getJudgeAndLegalAdvisorData(final JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+        return ImmutableMap.of(
+            "judgeTitleAndName", defaultIfBlank(formatJudgeTitleAndName(judgeAndLegalAdvisor), EMPTY_PLACEHOLDER),
+            "legalAdvisorName", defaultIfBlank(getLegalAdvisorName(judgeAndLegalAdvisor), EMPTY_PLACEHOLDER)
         );
     }
 

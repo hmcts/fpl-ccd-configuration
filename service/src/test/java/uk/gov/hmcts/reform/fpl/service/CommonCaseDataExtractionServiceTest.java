@@ -8,14 +8,17 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createJudgeAndLegalAdvisor;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
@@ -31,7 +34,6 @@ class CommonCaseDataExtractionServiceTest {
         CommonCaseDataExtractionService commonCaseDataExtractionService) {
         this.commonCaseDataExtractionService = commonCaseDataExtractionService;
     }
-
 
     @Test
     void shouldReturnTheFormattedDateWhenStartAndEndDateAreNotTheSame() {
@@ -125,6 +127,28 @@ class CommonCaseDataExtractionServiceTest {
         assertThat(hearingBookingData.get("preHearingAttendance")).isEqualTo("11 December 2020, 2:30pm");
         assertThat(hearingBookingData.get("hearingTime")).isEqualTo("11 December, 3:30pm - 12 December, 4:30pm");
     }
+
+    @Test
+    void shouldReturnAMapWithTheFormattedJudgeAndLegalAdvisorNamesPopulatedWhenObjectIsPopulated() {
+        final JudgeAndLegalAdvisor judgeAndLegalAdvisor = createJudgeAndLegalAdvisor(
+            "legal", "full name", "last name", DISTRICT_JUDGE);
+
+        final Map<String, Object> judgeAndLegalAdvisorData = commonCaseDataExtractionService
+            .getJudgeAndLegalAdvisorData(judgeAndLegalAdvisor);
+
+        assertThat(judgeAndLegalAdvisorData.get("judgeTitleAndName")).isEqualTo("District Judge last name");
+        assertThat(judgeAndLegalAdvisorData.get("legalAdvisorName")).isEqualTo("legal");
+    }
+
+    @Test
+    void shouldReturnAMapWithEmptyPlaceholdersWhenObjectIsNull() {
+        final Map<String, Object> judgeAndLegalAdvisorData = commonCaseDataExtractionService
+            .getJudgeAndLegalAdvisorData(null);
+
+        assertThat(judgeAndLegalAdvisorData.get("judgeTitleAndName")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(judgeAndLegalAdvisorData.get("legalAdvisorName")).isEqualTo(EMPTY_PLACEHOLDER);
+    }
+
 
     private HearingBooking createHearingBookingWithTimesOnSameDay() {
         return createHearingBooking(LocalDateTime.of(2020, 12, 11, 15, 30),
