@@ -115,6 +115,7 @@ public class ActionCMOController {
 
         DocmosisDocument docmosisDocument = actionCmoService.getDocmosisDocument(caseData,
             hasJudgeApproved(caseData.getCaseManagementOrder()));
+
         applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId, docmosisDocument));
     }
 
