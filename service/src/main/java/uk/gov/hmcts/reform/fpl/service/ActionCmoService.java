@@ -54,7 +54,7 @@ public class ActionCmoService {
                 caseDetails.getData().put(LA_CMO_KEY, order);
                 caseDetails.getData().remove(JUDGE_CMO_KEY);
                 break;
-            case SELF_REVIEW:
+            default:
                 break;
         }
     }
