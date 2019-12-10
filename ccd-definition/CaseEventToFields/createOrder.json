@@ -2,8 +2,8 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "createC21Order",
-    "CaseFieldID": "c21Order",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "order",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
     "PageID": "OrderInformation",
@@ -15,7 +15,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseEventID": "createC21Order",
+    "CaseEventID": "createOrder",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
