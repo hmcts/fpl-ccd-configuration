@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static java.util.stream.Collectors.toList;
 
 @Data
 @Builder(toBuilder = true)
@@ -33,6 +33,29 @@ public class Direction {
     private List<Element<DirectionResponse>> responses;
 
     public List<Element<DirectionResponse>> getResponses() {
-        return defaultIfNull(responses, new ArrayList<>());
+        if (responses == null) {
+            responses = new ArrayList<>();
+        }
+        return responses;
+    }
+
+    public Direction deepCopy() {
+        List<Element<DirectionResponse>> responsesCopy = getResponses().stream()
+            .map(responseElement -> Element.<DirectionResponse>builder()
+                .id(responseElement.getId())
+                .value(responseElement.getValue().toBuilder().build())
+                .build())
+            .collect(toList());
+
+        DirectionResponse responseCopy = null;
+
+        if (response != null) {
+            responseCopy = response.toBuilder().build();
+        }
+
+        return this.toBuilder()
+            .response(responseCopy)
+            .responses(responsesCopy)
+            .build();
     }
 }
