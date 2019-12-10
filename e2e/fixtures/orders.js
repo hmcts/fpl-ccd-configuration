@@ -3,7 +3,7 @@ module.exports = [
     orderType: 'Blank order (C21)',
     orderTitle: 'Example Order Title',
     orderDetails: 'Example order details here - Lorem ipsum dolor sit amet...',
-    orderDoc: 'Blank order C21.pdf',
+    orderDoc: 'blank_order_c21.pdf',
     judgeAndLegalAdvisor: {
       judgeTitle: 'Her Honour Judge',
       judgeLastName: 'Sotomayer',
@@ -12,7 +12,7 @@ module.exports = [
   },
   {
     orderType: 'Care order',
-    orderDoc: 'Care order.pdf',
+    orderDoc: 'care_order.pdf',
     judgeAndLegalAdvisor: {
       judgeTitle: 'Her Honour Judge',
       judgeLastName: 'Judy',
