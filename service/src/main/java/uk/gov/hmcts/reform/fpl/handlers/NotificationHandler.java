@@ -154,6 +154,7 @@ public class NotificationHandler {
         CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
 
+        // TODO: 10/12/2019 Update the send logic to cater for NotificationChannels once 911 completed -> AC 1 & 3
         sendCMONotificationForLocalAuthority(caseDetails, localAuthorityCode);
         sendCMODocumentLinkNotificationForCafcass(caseDetails, localAuthorityCode, event.getDocument());
     }
@@ -201,17 +202,13 @@ public class NotificationHandler {
     private void sendCMODocumentLinkNotificationForCafcass(final CaseDetails caseDetails,
                                                            final String localAuthorityCode,
                                                            final DocmosisDocument document) {
-        Map<String, Object> cafcassParameters;
-        try {
-            cafcassParameters = caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParametersForCafcass(
-                caseDetails, localAuthorityCode, document);
+        Map<String, Object> cafcassParameters =
+            caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParametersForCafcass(caseDetails,
+                localAuthorityCode, document);
 
-            String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
+        String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
 
-            sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters,
-                Long.toString(caseDetails.getId()));
-        } catch (NotificationClientException e) {
-            log.error("Unable to send notification for cafcass due to ", e);
-        }
+        sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters,
+            Long.toString(caseDetails.getId()));
     }
 }

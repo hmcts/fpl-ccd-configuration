@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service.email.content;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -21,6 +22,7 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 import static uk.gov.service.notify.NotificationClient.prepareUpload;
 
+@Slf4j
 @Service
 public class CaseManagementOrderEmailContentProvider extends AbstractEmailContentProvider {
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
@@ -52,8 +54,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
     public Map<String, Object> buildCMOIssuedNotificationParametersForCafcass(final CaseDetails caseDetails,
                                                                               final String localAuthorityCode,
-                                                                              final DocmosisDocument document)
-        throws NotificationClientException {
+                                                                              final DocmosisDocument document) {
 
         return ImmutableMap.<String, Object>builder()
             .putAll(buildCommonCMODocumentNotificationParameters(caseDetails, document))
@@ -63,7 +64,7 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
     // TODO: 10/12/2019 include method to build parameters for representatives once 911 completed
 
-    private Map<String, String> buildCommonCMONotificationParameters(final CaseDetails caseDetails) {
+    private Map<String, Object> buildCommonCMONotificationParameters(final CaseDetails caseDetails) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         final String subjectLine = buildSubjectLine(caseData);
 
@@ -77,12 +78,17 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     }
 
     private Map<String, Object> buildCommonCMODocumentNotificationParameters(final CaseDetails caseDetails,
-                                                                             final DocmosisDocument document)
-        throws NotificationClientException {
+                                                                             final DocmosisDocument document) {
 
-        return ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonCMONotificationParameters(caseDetails))
-            .put("link_to_document", prepareUpload(document.getBytes()))
-            .build();
+        ImmutableMap.Builder<String, Object> cmoNotificationParameters = ImmutableMap.<String, Object>builder()
+            .putAll(buildCommonCMONotificationParameters(caseDetails));
+
+        try {
+            cmoNotificationParameters.put("link_to_document", prepareUpload(document.getBytes()));
+        } catch (NotificationClientException e) {
+            log.error("Unable to send notification for cafcass due to ", e);
+        }
+
+        return cmoNotificationParameters.build();
     }
 }
