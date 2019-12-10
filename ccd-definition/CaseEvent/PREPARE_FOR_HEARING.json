@@ -218,6 +218,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "COMPLY_ON_BEHALF_SDO",
+    "Name": "Comply on behalf of others",
+    "Description": "Event gives Court user access to comply with all directions on behalf of others",
+    "DisplayOrder": 11,
+    "PreConditionState(s)": "PREPARE_FOR_HEARING",
+    "PostConditionState": "PREPARE_FOR_HEARING",
+    "SecurityClassification": "Public",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-on-behalf/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/comply-on-behalf/about-to-submit",
+    "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "addStatementOfService-PREPARE_FOR_HEARING",
     "Name": "Add statement of service (c9)",
     "Description": "Add statement of service",

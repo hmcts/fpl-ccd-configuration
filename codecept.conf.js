@@ -66,9 +66,10 @@ exports.config = {
     addStatementOfServiceEventPage: './e2e/pages/events/addStatementOfServiceEvent.page.js',
     uploadC2DocumentsEventPage: './e2e/pages/events/uploadC2DocumentsEvent.page.js',
     draftStandardDirectionsEventPage: './e2e/pages/events/draftStandardDirectionsEvent.page.js',
-    createC21OrderEventPage: './e2e/pages/events/createC21OrderEvent.page.js',
+    createOrderEventPage: './e2e/pages/events/createOrderEvent.page.js',
     draftCaseManagementOrderEventPage: './e2e/pages/events/draftCaseManagementOrderEvent.page.js',
     complyWithDirectionsEventPage: './e2e/pages/events/complyWithDirectionsEvent.page.js',
+    complyOnBehalfOfOthersEventPage: './e2e/pages/events/complyOnBehalfOfOthersEvent.page.js',
   },
   plugins: {
     autoDelay: {

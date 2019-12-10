@@ -28,12 +28,9 @@ import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
 @ExtendWith(SpringExtension.class)
@@ -114,39 +111,6 @@ class DraftCMOServiceTest {
             formatLocalDateToMediumStyle(5));
 
         assertThat(caseManagementOrder.getDirections()).isEqualTo(createCmoDirections());
-    }
-
-    @Test
-    void shouldFormatRespondentsIntoKeyWhenRespondentsArePresent() {
-        String respondentsKey = draftCMOService.createRespondentAssigneeDropdownKey(createRespondents());
-
-        assertThat(respondentsKey).contains(
-            "Respondent 1 - Timothy Jones",
-            "Respondent 2 - Sarah Simpson");
-    }
-
-    @Test
-    void shouldFormatOthersIntoKeyWhenOthersArePresent() {
-        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(createOthers());
-
-        assertThat(othersKey).contains(
-            "Person 1 - Kyle Stafford",
-            "Other person 1 - Sarah Simpson");
-    }
-
-    @Test
-    void shouldIncludeEmptyStatePlaceholderWhenAnOtherDoesNotIncludeFullName() {
-        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(createFirstOtherWithoutAName());
-
-        assertThat(othersKey).contains(
-            "Person 1 - " + EMPTY_PLACEHOLDER,
-            "Other person 1 - Peter Smith");
-    }
-
-    @Test
-    void shouldReturnEmptyStringIfOthersDoesNotExist() {
-        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(Others.builder().build());
-        assertThat(othersKey).isEqualTo("");
     }
 
     private DynamicList getDynamicList() {
