@@ -27,21 +27,28 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
     JsonOrdersLookupService.class, DateFormatterService.class, DirectionHelperService.class,
     DocmosisConfiguration.class, RestTemplate.class, CaseDataExtractionService.class,
     DocmosisDocumentGeneratorService.class, CommonCaseDataExtractionService.class, HearingBookingService.class,
-    HearingVenueLookUpService.class, DraftCMOService.class
+    HearingVenueLookUpService.class, DraftCMOService.class, CMODocmosisTemplateDataGenerationService.class
 })
 class ActionCmoServiceTest {
     private final DraftCMOService draftCMOService;
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+    private final CMODocmosisTemplateDataGenerationService cmoDocmosisTemplateDataGenerationService;
 
     private ActionCmoService service;
 
     @Autowired
-    ActionCmoServiceTest(DraftCMOService draftCMOService) {
+    ActionCmoServiceTest(DraftCMOService draftCMOService,
+                         DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
+                         CMODocmosisTemplateDataGenerationService cmoDocmosisTemplateDataGenerationService) {
         this.draftCMOService = draftCMOService;
+        this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
+        this.cmoDocmosisTemplateDataGenerationService = cmoDocmosisTemplateDataGenerationService;
     }
 
     @BeforeEach
     void setUp() {
-        service = new ActionCmoService(draftCMOService);
+        service = new ActionCmoService(draftCMOService, docmosisDocumentGeneratorService,
+            cmoDocmosisTemplateDataGenerationService);
     }
 
     @Test

@@ -13,14 +13,13 @@ import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C21OrderEvent;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CMOEvent;
-import uk.gov.hmcts.reform.fpl.events.CMOIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
-import uk.gov.hmcts.reform.fpl.service.email.content.CMOEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
 import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
@@ -59,7 +58,6 @@ public class NotificationHandler {
     private final GatekeeperEmailContentProvider gatekeeperEmailContentProvider;
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
     private final C21OrderEmailContentProvider c21OrderEmailContentProvider;
-    private final CMOEmailContentProvider cmoEmailContentProvider;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
     private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
     private final NotificationClient notificationClient;
@@ -157,7 +155,7 @@ public class NotificationHandler {
         String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
 
         sendCMONotificationForLocalAuthority(caseDetails, localAuthorityCode);
-        // TODO: 10/12/2019 FPLA-27 will add document related notifications
+        sendCMODocumentLinkNotificationForCafcass(caseDetails, localAuthorityCode, event.getDocument());
     }
 
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
@@ -200,27 +198,20 @@ public class NotificationHandler {
             Long.toString(caseDetails.getId()));
     }
 
-    private void sendCMONotificationForCafcass(final CaseDetails caseDetails, final String localAuthorityCode,
-                                               final String documentUrl) {
-        Map<String, Object> cafcassParameters =
-            cmoEmailContentProvider.buildCMONotificationParametersForCafcass(
-                caseDetails, localAuthorityCode, documentUrl);
-        String cafcassName = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName();
-        //Todo: get the cafcass/Cafcass Cymru email from FPLA-911 based on cafcass name above
-        //inboxLookupService.getNotificationRecipientEmail(caseDetails, cafcassName);
-        String cafcassEmail = "respondantEmail@test.com";
-        sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters,
-            Long.toString(caseDetails.getId()));
-    }
+    private void sendCMODocumentLinkNotificationForCafcass(final CaseDetails caseDetails,
+                                                           final String localAuthorityCode,
+                                                           final DocmosisDocument document) {
+        Map<String, Object> cafcassParameters;
+        try {
+            cafcassParameters = caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParametersForCafcass(
+                caseDetails, localAuthorityCode, document);
 
-    private void sendCMONotificationForRespondents(final CaseDetails caseDetails, final String localAuthorityCode,
-                                                      final String documentUrl) {
-        Map<String, Object> localAuthorityParameters =
-            cmoEmailContentProvider.buildCMONotificationParametersForRespondents(
-                caseDetails, localAuthorityCode, documentUrl);
-        //Todo: get the list of all the respondants emails FPLA-911 to send notification
-        String respondantEmail = "respondantEmail@test.com";
-        sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, respondantEmail, localAuthorityParameters,
-            Long.toString(caseDetails.getId()));
+            String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
+
+            sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters,
+                Long.toString(caseDetails.getId()));
+        } catch (NotificationClientException e) {
+            log.error("Unable to send notification for cafcass due to ", e);
+        }
     }
 }

@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.fpl.events.CMOEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C21OrderEmailContentProvider;
@@ -55,6 +56,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C21_ORDER_NOTIFICATION_TEM
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
@@ -225,36 +227,71 @@ class NotificationHandlerTest {
 
     @Nested
     class CaseManagementOrderNotificationTests {
+        byte[] documentContent = {1, 2, 3};
         final String subjectLine = "Lastname, SACCCCCCCC5676576567";
-        final Map<String, Object> cmoOrderIssuedNotificationParameters = getCMOIssuedNotificationParameters();
+        final Map<String, Object> cmoOrderIssuedCaseLinkNotificationParameters;
+        final Map<String, Object> cmoOrderIssuedDocumentLinkNotificationParameters;
+        final DocmosisDocument document = getDocument();
+
+        CaseManagementOrderNotificationTests() throws NotificationClientException {
+            cmoOrderIssuedCaseLinkNotificationParameters = getCMOIssuedCaseLinkNotificationParameters();
+            cmoOrderIssuedDocumentLinkNotificationParameters = getCMOIssuedDocumentLinkNotificationParameters();
+        }
 
         @BeforeEach
-        void setup() throws IOException {
+        void setup() throws Exception {
             given(inboxLookupService.getNotificationRecipientEmail(callbackRequest().getCaseDetails(),
                 LOCAL_AUTHORITY_CODE))
                 .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
+            given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+                .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
+
             given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParametersForLocalAuthority(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE))
-                .willReturn(cmoOrderIssuedNotificationParameters);
+                .willReturn(cmoOrderIssuedCaseLinkNotificationParameters);
+
+            given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParametersForCafcass(
+                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, document))
+                .willReturn(cmoOrderIssuedDocumentLinkNotificationParameters);
         }
 
         @Test
-        void shouldNotifyLocalAuthorityOfCMOIssued() throws Exception {
+        void shouldNotifyPartiesOfCMOIssued() throws Exception {
             notificationHandler.sendNotificationsForIssuedCaseManagementOrder(
-                new CMOEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+                new CMOEvent(callbackRequest(), AUTH_TOKEN, USER_ID, document));
 
             verify(notificationClient, times(1)).sendEmail(
                 eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-                eq(cmoOrderIssuedNotificationParameters), eq("12345"));
+                eq(cmoOrderIssuedCaseLinkNotificationParameters), eq("12345"));
+
+            verify(notificationClient, times(1)).sendEmail(
+                eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
+                eq(cmoOrderIssuedDocumentLinkNotificationParameters), eq("12345"));
         }
 
-        private ImmutableMap<String, Object> getCMOIssuedNotificationParameters() {
+        private ImmutableMap<String, Object> getCMOIssuedCaseLinkNotificationParameters() {
             return ImmutableMap.<String, Object>builder()
                 .put("localAuthorityNameOrRepresentativeFullName", LOCAL_AUTHORITY_NAME)
                 .put("subjectLineWithHearingDate", subjectLine)
                 .put("reference", "12345")
                 .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+                .build();
+        }
+
+        private DocmosisDocument getDocument() {
+            return DocmosisDocument.builder()
+                .documentTitle("case-management-order.pdf")
+                .bytes(documentContent)
+                .build();
+        }
+
+        private ImmutableMap<String, Object> getCMOIssuedDocumentLinkNotificationParameters()
+            throws NotificationClientException {
+
+            return ImmutableMap.<String, Object>builder()
+                .putAll(getCMOIssuedCaseLinkNotificationParameters())
+                .put("link_to_document", NotificationClient.prepareUpload(documentContent))
                 .build();
         }
     }
