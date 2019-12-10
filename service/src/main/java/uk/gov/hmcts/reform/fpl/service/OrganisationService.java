@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,7 +12,6 @@ import uk.gov.hmcts.reform.rd.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -37,18 +34,14 @@ public class OrganisationService {
         List<String> userIds = new ArrayList<>();
 
         try {
-            userIds.addAll(localAuthorityUserLookupConfiguration.getUserIds(localAuthorityCode));
+            addUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode, userIds);
         } catch (UnknownLocalAuthorityCodeException ex) {
             try {
-                organisationApi
-                    .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE)
-                    .stream()
-                    .map(User::getUserIdentifier)
-                    .forEach(userIds::add);
+                addUsersFromSameOrganisationBasedOnReferenceData(authorisation, userIds);
             } catch (Exception e) {
                 log.warn("Can't find LocalAuthority for code: "
                     + localAuthorityCode
-                    + " in app config. The PRD endpoint call threw an exception.", e);
+                    + " in app config and the PRD endpoint call threw an exception.", e);
             }
         }
 
@@ -57,5 +50,17 @@ public class OrganisationService {
         }
 
         return userIds;
+    }
+
+    private void addUsersFromSameOrganisationBasedOnAppConfig(String localAuthorityCode, List<String> userIds) {
+        userIds.addAll(localAuthorityUserLookupConfiguration.getUserIds(localAuthorityCode));
+    }
+
+    private void addUsersFromSameOrganisationBasedOnReferenceData(String authorisation, List<String> userIds) {
+        organisationApi
+            .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE)
+            .stream()
+            .map(User::getUserIdentifier)
+            .forEach(userIds::add);
     }
 }
