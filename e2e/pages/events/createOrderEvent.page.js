@@ -1,15 +1,16 @@
 const {I} = inject();
 const judgeAndLegalAdvisor = require('../../fragments/judgeAndLegalAdvisor');
+const orders = require('../../fixtures/orders.js');
 
 module.exports = {
   fields: {
-    orderTitle: '#c21Order_orderTitle',
-    orderDetails: '#c21Order_orderDetails',
+    orderTitle: '#order_orderTitle',
+    orderDetails: '#order_orderDetails',
   },
 
-  enterOrder() {
-    I.fillField(this.fields.orderTitle, 'Example Title');
-    I.fillField(this.fields.orderDetails, 'Example order details here - Lorem ipsum dolor sit amet...');
+  enterC21OrderDetails() {
+    I.fillField(this.fields.orderTitle, orders[0].orderTitle);
+    I.fillField(this.fields.orderDetails, orders[0].orderDetails);
   },
 
   async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName) {

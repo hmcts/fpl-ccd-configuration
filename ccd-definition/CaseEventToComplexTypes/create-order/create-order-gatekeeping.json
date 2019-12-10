@@ -1,9 +1,9 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C21OrderComplexType",
-    "CaseEventID": "createC21Order",
-    "CaseFieldID": "c21Order",
+    "ID": "GeneratedOrderComplexType",
+    "CaseEventID": "createOrderGatekeeping",
+    "CaseFieldID": "order",
     "ListElementCode": "orderTitle",
     "EventElementLabel": "Order title",
     "FieldDisplayOrder": 1,
@@ -11,9 +11,9 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C21OrderComplexType",
-    "CaseEventID": "createC21Order",
-    "CaseFieldID": "c21Order",
+    "ID": "GeneratedOrderComplexType",
+    "CaseEventID": "createOrderGatekeeping",
+    "CaseFieldID": "order",
     "ListElementCode": "orderDetails",
     "EventElementLabel": "Order details",
     "FieldDisplayOrder": 2,
@@ -21,9 +21,9 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C21OrderComplexType",
-    "CaseEventID": "createC21Order",
-    "CaseFieldID": "c21Order",
+    "ID": "GeneratedOrderComplexType",
+    "CaseEventID": "createOrderGatekeeping",
+    "CaseFieldID": "order",
     "ListElementCode": "document",
     "EventElementLabel": "Order document",
     "FieldDisplayOrder": 3,
@@ -32,9 +32,9 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C21OrderComplexType",
-    "CaseEventID": "createC21Order",
-    "CaseFieldID": "c21Order",
+    "ID": "GeneratedOrderComplexType",
+    "CaseEventID": "createOrderGatekeeping",
+    "CaseFieldID": "order",
     "ListElementCode": "orderDate",
     "EventElementLabel": "Date and time of upload",
     "FieldDisplayOrder": 4,
@@ -44,7 +44,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisorComplexType",
-    "CaseEventID": "createC21Order",
+    "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeTitle",
     "EventElementLabel": "Judge or magistrate's title",
@@ -54,7 +54,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisorComplexType",
-    "CaseEventID": "createC21Order",
+    "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeLastName",
     "EventElementLabel": "Last name",
@@ -64,7 +64,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisorComplexType",
-    "CaseEventID": "createC21Order",
+    "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeFullName",
     "EventElementLabel": "Full name",
@@ -74,7 +74,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisorComplexType",
-    "CaseEventID": "createC21Order",
+    "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "legalAdvisorName",
     "EventElementLabel": "Legal advisor's full name",
