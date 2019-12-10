@@ -93,7 +93,6 @@ public class DraftCMOService {
             case SEND_TO_JUDGE:
                 caseData.put("cmoToAction", caseManagementOrder);
                 caseData.remove("caseManagementOrder");
-                caseData.remove("sharedDraftCMODocument"); // Maybe not
                 break;
             case PARTIES_REVIEW:
                 caseData.put("sharedDraftCMODocument", caseManagementOrder.getOrderDoc());
