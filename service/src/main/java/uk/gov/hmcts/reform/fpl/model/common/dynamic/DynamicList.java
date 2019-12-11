@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -40,5 +41,13 @@ public class DynamicList {
             .collect(Collectors.toList());
 
         return DynamicList.builder().listItems(items).value(selected).build();
+    }
+
+    public String getValueLabel() {
+        return value == null ? null : value.getLabel();
+    }
+
+    public UUID getValueCode() {
+        return value == null ? null : value.getCode();
     }
 }
