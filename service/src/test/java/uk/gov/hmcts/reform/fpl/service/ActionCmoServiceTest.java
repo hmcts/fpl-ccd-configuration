@@ -77,7 +77,6 @@ class ActionCmoServiceTest {
     void shouldDoNothingToCaseDataWhenSelfReviewIsRequired() {
         CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
 
-        service.progressCMOToAction(caseDetails, CaseManagementOrder.builder().build());
         final CaseManagementOrder order = CaseManagementOrder.builder()
             .action(OrderAction.builder()
                 .type(SELF_REVIEW)
