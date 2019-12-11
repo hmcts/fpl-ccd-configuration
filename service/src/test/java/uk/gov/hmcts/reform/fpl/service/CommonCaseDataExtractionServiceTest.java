@@ -35,6 +35,7 @@ class CommonCaseDataExtractionServiceTest {
         this.commonCaseDataExtractionService = commonCaseDataExtractionService;
     }
 
+
     @Test
     void shouldReturnTheFormattedDateWhenStartAndEndDateAreNotTheSame() {
         hearingBooking = createHearingBookingWithTimesOnDifferentDays();

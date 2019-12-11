@@ -12,28 +12,27 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.time.LocalDateTime;
-
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 @Service
 public class ActionCmoService {
-    private final DraftCMOService draftCMOService;
     private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
 
+    public static final String SHARED_DRAFT_CMO_DOCUMENT_KEY = "sharedDraftCMODocument";
     private static final String LA_CMO_KEY = "caseManagementOrder";
     private static final String JUDGE_CMO_KEY = "cmoToAction";
 
     //TODO: this should all exist in one CaseManagementOrderService
     @Autowired
-    public ActionCmoService(DraftCMOService draftCMOService,
-                            DateFormatterService dateFormatterService,
+    public ActionCmoService(DateFormatterService dateFormatterService,
                             HearingBookingService hearingBookingService) {
-        this.draftCMOService = draftCMOService;
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
     }
@@ -44,11 +43,17 @@ public class ActionCmoService {
             .build();
     }
 
+    public CaseManagementOrder addAction(CaseManagementOrder order, OrderAction orderAction) {
+        return order.toBuilder()
+            .action(orderAction)
+            .build();
+    }
+
     // REFACTOR: 10/12/2019 Method name
-    public void progressCMOToAction(CaseDetails caseDetails, CaseManagementOrder order, boolean approved) {
+    public void progressCMOToAction(CaseDetails caseDetails, CaseManagementOrder order) {
         switch (order.getAction().getType()) {
             case SEND_TO_ALL_PARTIES:
-                caseDetails.getData().put("sharedDraftCMODocument", order.getOrderDoc());
+                caseDetails.getData().put(SHARED_DRAFT_CMO_DOCUMENT_KEY, order.getOrderDoc());
                 break;
             case JUDGE_REQUESTED_CHANGE:
                 caseDetails.getData().put(LA_CMO_KEY, order);
@@ -59,9 +64,17 @@ public class ActionCmoService {
         }
     }
 
-    public Map<String, Object> extractMapFieldsFromCaseManagementOrder(CaseManagementOrder order,
-                                                                       List<Element<HearingBooking>> hearingDetails) {
-        return draftCMOService.extractIndividualCaseManagementOrderObjects(order, hearingDetails);
+    public Map<String, Object> extractMapFieldsFromCaseManagementOrder(CaseManagementOrder order) {
+        if (isNull(order)) {
+            order = CaseManagementOrder.builder().build();
+        }
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("schedule", order.getSchedule());
+        data.put("recitals", order.getRecitals());
+        data.put("orderAction", order.getAction());
+
+        return data;
     }
 
     public CaseManagementOrder buildCMOWithHearingDate(DynamicList list, CaseManagementOrder order) {

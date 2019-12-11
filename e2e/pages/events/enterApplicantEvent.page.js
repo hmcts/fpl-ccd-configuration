@@ -31,7 +31,8 @@ module.exports = {
     I.fillField(this.fields(elementIndex).applicant.name, applicant.name);
     I.fillField(this.fields(elementIndex).applicant.pbaNumber, applicant.pbaNumber);
     within(this.fields(elementIndex).applicant.address, () => {
-      postcodeLookup.lookupPostcode(applicant.address);
+      //XXX postcode lookup
+      postcodeLookup.enterAddressManually(applicant.address);
     });
     I.fillField(this.fields(elementIndex).applicant.telephone, applicant.telephoneNumber);
     I.fillField(this.fields(elementIndex).applicant.nameOfPersonToContact, applicant.nameOfPersonToContact);

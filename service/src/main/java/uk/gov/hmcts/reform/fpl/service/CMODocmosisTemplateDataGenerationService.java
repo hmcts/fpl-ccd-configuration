@@ -66,8 +66,6 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         ImmutableMap.Builder cmoTemplateData = ImmutableMap.<String, Object>builder();
         final DynamicList hearingDateList = caseData.getCmoHearingDateList();
         final String localAuthorityCode = caseData.getCaseLocalAuthority();
-        final CaseManagementOrder caseManagementOrder = defaultIfNull(draftCMOService.prepareCMO(caseData),
-            CaseManagementOrder.builder().build());
 
         cmoTemplateData.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_PLACEHOLDER));
         cmoTemplateData.put("generationDate",
@@ -93,9 +91,11 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         cmoTemplateData.put("representatives",
             getRepresentatives(caseData.getRespondents1(), applicantName, caseData.getSolicitor()));
 
-        if (caseManagementOrder.getAction() != null && caseManagementOrder.getAction().getNextHearingId() != null) {
+        CaseManagementOrder order = draftCMOService.prepareCMO(caseData, getCaseManagementOrder(caseData));
+
+        if (order.getAction() != null && order.getAction().getNextHearingId() != null) {
             List<Element<HearingBooking>> hearingBookings = caseData.getHearingDetails();
-            UUID nextHearingId = caseManagementOrder.getAction().getNextHearingId();
+            UUID nextHearingId = order.getAction().getNextHearingId();
 
             HearingBooking nextHearing = hearingBookingService.getHearingBookingByUUID(hearingBookings, nextHearingId);
             cmoTemplateData.putAll(commonCaseDataExtractionService.getHearingBookingData(nextHearing));
@@ -108,22 +108,34 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
         cmoTemplateData.putAll(commonCaseDataExtractionService.getJudgeAndLegalAdvisorData(judgeAndLegalAdvisor));
 
-        cmoTemplateData.putAll(getGroupedCMODirections(caseManagementOrder));
+        cmoTemplateData.putAll(getGroupedCMODirections(order));
 
         if (draft) {
             cmoTemplateData.putAll(getDraftWaterMarkData());
         }
 
-        List<Map<String, String>> recitals = buildRecitals(caseManagementOrder.getRecitals());
+        List<Map<String, String>> recitals = buildRecitals(order.getRecitals());
         cmoTemplateData.put("recitals", recitals);
         cmoTemplateData.put("recitalsProvided", isNotEmpty(recitals));
 
-        cmoTemplateData.putAll(getSchedule(caseManagementOrder));
+        cmoTemplateData.putAll(getSchedule(order));
 
         //defaulting as 1 as we currently do not have impl for multiple CMos
         cmoTemplateData.put("caseManagementNumber", 1);
 
         return cmoTemplateData.build();
+    }
+
+    private CaseManagementOrder getCaseManagementOrder(CaseData caseData) {
+        if (caseData.getCaseManagementOrder() != null) {
+            return caseData.getCaseManagementOrder();
+        }
+
+        if (caseData.getCmoToAction() != null) {
+            return caseData.getCmoToAction();
+        }
+
+        return null;
     }
 
     private List<Map<String, Object>> getRepresentatives(List<Element<Respondent>> respondents1,
@@ -216,33 +228,31 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
     }
 
     private Map<String, Object> getGroupedCMODirections(final CaseManagementOrder caseManagementOrder) {
-
         if (caseManagementOrder == null || isEmpty(caseManagementOrder.getDirections())) {
             return ImmutableMap.of();
         }
 
-        Map<DirectionAssignee, List<Element<Direction>>> groupedDirections =
+        Map<DirectionAssignee, List<Element<Direction>>> directions =
             directionHelperService.sortDirectionsByAssignee(directionHelperService.numberDirections(
                 caseManagementOrder.getDirections()));
 
-        List<Element<Direction>> parentsAndRespondents = groupedDirections.remove(PARENTS_AND_RESPONDENTS);
-        List<Element<Direction>> otherParties = groupedDirections.remove(OTHERS);
+        List<Element<Direction>> respondents = defaultIfNull(directions.remove(PARENTS_AND_RESPONDENTS), emptyList());
+        List<Element<Direction>> otherParties = defaultIfNull(directions.remove(OTHERS), emptyList());
         ImmutableMap.Builder<String, Object> formattedDirections = ImmutableMap.builder();
 
-        final Map<ParentsAndRespondentsDirectionAssignee, List<Element<Direction>>> groupedParentsAndRespondents =
-            parentsAndRespondents.stream()
-                .collect(groupingBy(directionElement -> directionElement.getValue()
-                    .getParentsAndRespondentsAssignee()));
+        final Map<ParentsAndRespondentsDirectionAssignee, List<Element<Direction>>> respondentDirections =
+            respondents.stream()
+                .collect(groupingBy(element -> element.getValue().getParentsAndRespondentsAssignee()));
 
-        final Map<OtherPartiesDirectionAssignee, List<Element<Direction>>> groupedOtherParties = otherParties.stream()
-            .collect(groupingBy(directionElement -> directionElement.getValue().getOtherPartiesAssignee()));
+        final Map<OtherPartiesDirectionAssignee, List<Element<Direction>>> otherPartyDirections = otherParties.stream()
+            .collect(groupingBy(element -> element.getValue().getOtherPartiesAssignee()));
 
         formattedDirections.put(PARENTS_AND_RESPONDENTS.getValue(),
-            getFormattedParentsAndRespondentsDirections(groupedParentsAndRespondents));
+            getFormattedParentsAndRespondentsDirections(respondentDirections));
 
-        formattedDirections.put(OTHERS.getValue(), getFormattedOtherPartiesDirections(groupedOtherParties));
+        formattedDirections.put(OTHERS.getValue(), getFormattedOtherPartiesDirections(otherPartyDirections));
 
-        groupedDirections.forEach((key, value) -> {
+        directions.forEach((key, value) -> {
             List<Map<String, String>> directionsList = buildFormattedDirectionList(value);
             formattedDirections.put(key.getValue(), directionsList);
         });
@@ -253,17 +263,17 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
     private List<Map<String, Object>> getFormattedOtherPartiesDirections(
         Map<OtherPartiesDirectionAssignee, List<Element<Direction>>> groupedOtherParties) {
 
-        List<Map<String, Object>> directionsToRespondents = new ArrayList<>();
+        List<Map<String, Object>> directionsToOthers = new ArrayList<>();
         groupedOtherParties.forEach((key, value) -> {
-            Map<String, Object> directionForRespondent = new HashMap<>();
-            directionForRespondent.put("header", "For " + key.getLabel());
+            Map<String, Object> directionForOthers = new HashMap<>();
+            directionForOthers.put("header", "For " + key.getLabel());
             List<Map<String, String>> directionsList = buildFormattedDirectionList(
                 value);
-            directionForRespondent.put("directions", directionsList);
-            directionsToRespondents.add(directionForRespondent);
+            directionForOthers.put("directions", directionsList);
+            directionsToOthers.add(directionForOthers);
         });
 
-        return directionsToRespondents;
+        return directionsToOthers;
     }
 
     private List<Map<String, Object>> getFormattedParentsAndRespondentsDirections(

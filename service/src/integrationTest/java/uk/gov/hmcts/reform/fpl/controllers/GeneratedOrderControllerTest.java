@@ -15,8 +15,8 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -42,19 +42,19 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C21_ORDER_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createC21Orders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(C21OrderController.class)
+@WebMvcTest(GeneratedOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class C21OrderControllerTest {
+class GeneratedOrderControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final String LOCAL_AUTHORITY_CODE = "example";
@@ -102,7 +102,7 @@ class C21OrderControllerTest {
     }
 
     @Test
-    void midEventShouldGenerateC21OrderDocument() throws Exception {
+    void midEventShouldGenerateOrderDocument() throws Exception {
         byte[] pdf = {1, 2, 3, 4, 5};
         Document document = document();
         DocmosisDocument docmosisDocument = new DocmosisDocument(C21.getDocumentTitle(), pdf);
@@ -115,7 +115,7 @@ class C21OrderControllerTest {
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(caseData.getC21Order().getDocument()).isEqualTo(DocumentReference.builder()
+        assertThat(caseData.getOrder().getDocument()).isEqualTo(DocumentReference.builder()
             .binaryUrl(document.links.binary.href)
             .filename(document.originalDocumentName)
             .url(document.links.self.href)
@@ -128,7 +128,7 @@ class C21OrderControllerTest {
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        C21Order expectedOrder = C21Order.builder()
+        GeneratedOrder expectedOrder = GeneratedOrder.builder()
             .orderTitle("Example Order")
             .orderDetails("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
             .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
@@ -140,25 +140,25 @@ class C21OrderControllerTest {
                 .build())
             .build();
 
-        List<Element<C21Order>> c21Orders = caseData.getC21Orders();
+        List<Element<GeneratedOrder>> orders = caseData.getGeneratedOrders();
 
-        assertThat(caseData.getC21Order()).isEqualTo(null);
+        assertThat(caseData.getOrder()).isEqualTo(null);
         assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(null);
-        assertThat(c21Orders.get(0).getValue()).isEqualTo(expectedOrder);
+        assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
     }
 
     @Test
-    void shouldTriggerC21EventWhenSubmitted() throws Exception {
+    void shouldTriggerOrderEventWhenSubmitted() throws Exception {
         String expectedCaseReference = "19898989";
         makeSubmittedRequest(buildCallbackRequest());
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(C21_ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(expectedC21LocalAuthorityParameters()), eq(expectedCaseReference));
+            eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(expectedOrderLocalAuthorityParameters()), eq(expectedCaseReference));
 
         verify(notificationClient, times(1)).sendEmail(
-            eq(C21_ORDER_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
-            eq(expectedC21CafcassParameters()), eq(expectedCaseReference));
+            eq(ORDER_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
+            eq(expectedOrderCafcassParameters()), eq(expectedCaseReference));
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request, String endpoint)
@@ -193,7 +193,7 @@ class C21OrderControllerTest {
             .caseDetails(CaseDetails.builder()
                 .id(19898989L)
                 .data(ImmutableMap.of(
-                    "c21Orders", createC21Orders(),
+                    "orderCollection", createOrders(),
                     "hearingDetails", createHearingBookings(dateIn3Months, dateIn3Months.plusHours(4)),
                     "respondents1", createRespondents(),
                     "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
@@ -216,14 +216,14 @@ class C21OrderControllerTest {
             .build();
     }
 
-    private Map<String, Object> expectedC21CafcassParameters() {
+    private Map<String, Object> expectedOrderCafcassParameters() {
         return ImmutableMap.<String, Object>builder()
             .putAll(commonNotificationParameters())
             .put("localAuthorityOrCafcass", CAFCASS_NAME)
             .build();
     }
 
-    private Map<String, Object> expectedC21LocalAuthorityParameters() {
+    private Map<String, Object> expectedOrderLocalAuthorityParameters() {
         return ImmutableMap.<String, Object>builder()
             .putAll(commonNotificationParameters())
             .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)
