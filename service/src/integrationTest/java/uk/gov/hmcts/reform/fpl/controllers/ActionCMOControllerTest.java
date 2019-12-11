@@ -23,9 +23,11 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.io.IOException;
@@ -84,6 +86,9 @@ class ActionCMOControllerTest {
     @Autowired
     private DateFormatterService dateFormatterService;
 
+    @Autowired
+    private DraftCMOService draftCMOService;
+
     private Document document;
 
     @BeforeEach
@@ -115,10 +120,18 @@ class ActionCMOControllerTest {
     }
 
     @Test
-    void midEventShouldReturnDocumentReferenceForAction() throws Exception {
+    void midEventShouldReturnOrderAction() throws Exception {
+        DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
+
+        dynamicHearingDates.setValue(DynamicListElement.builder()
+            .code(NEXT_HEARING_ID)
+            .label(TODAYS_DATE.plusDays(5).toString())
+            .build());
+
         Map<String, Object> data = new HashMap<>();
-        data.put("caseManagementOrder", createDraftCaseManagementOrder());
-        data.put("hearingDetails", createHearingBookings(LocalDateTime.now()));
+        data.put("cmoToAction", getCaseManagementOrder(OrderAction.builder().build()));
+        data.put("hearingDetails", createHearingBookings(TODAYS_DATE));
+        data.put("nextHearingDateList", dynamicHearingDates);
 
         CallbackRequest request = buildCallbackRequest(data);
 
@@ -126,21 +139,27 @@ class ActionCMOControllerTest {
 
         verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-case-management-order.pdf");
 
-        assertThat(response.getData().get("orderAction")).extracting("orderDoc")
+        assertThat(response.getData().get("cmoToAction")).extracting("orderDoc")
             .isEqualTo(ImmutableMap.of(
                 "document_binary_url", document.links.binary.href,
                 "document_filename", document.originalDocumentName,
                 "document_url", document.links.self.href));
+
+        assertThat(response.getData().get("cmoToAction")).extracting("action")
+            .isEqualTo(ImmutableMap.of(
+                "nextHearingId", NEXT_HEARING_ID.toString(),
+                "nextHearingDate", TODAYS_DATE.plusDays(5).toString()));
     }
 
     @Test
     void aboutToSubmitShouldReturnCaseManagementOrderWithActionAndSchedule() throws Exception {
-        CaseManagementOrder caseManagementOrder = getCaseManagementOrder(OrderAction.builder().build());
+        CaseManagementOrder caseManagementOrder = getCaseManagementOrder(OrderAction.builder()
+            .nextHearingId(NEXT_HEARING_ID)
+            .build());
 
         Map<String, Object> data = ImmutableMap.of(
-            "caseManagementOrder", caseManagementOrder,
-            "orderAction", getOrderAction(),
-            "hearingDetails", createHearingBookings(LocalDateTime.now()));
+            "cmoToAction", caseManagementOrder,
+            "hearingDetails", createHearingBookings(TODAYS_DATE));
 
         AboutToStartOrSubmitCallbackResponse response =
             makeRequest(buildCallbackRequest(data), "about-to-submit");

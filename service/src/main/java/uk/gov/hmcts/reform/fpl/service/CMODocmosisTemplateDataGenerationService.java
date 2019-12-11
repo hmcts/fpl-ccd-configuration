@@ -32,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.groupingBy;
@@ -92,8 +93,15 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         cmoTemplateData.put("representatives",
             getRepresentatives(caseData.getRespondents1(), applicantName, caseData.getSolicitor()));
 
-        // Populate with the next hearing booking, currently not captured
-        cmoTemplateData.putAll(commonCaseDataExtractionService.getHearingBookingData(null));
+        if (caseManagementOrder.getAction() != null && caseManagementOrder.getAction().getNextHearingId() != null) {
+            List<Element<HearingBooking>> hearingBookings = caseData.getHearingDetails();
+            UUID nextHearingId = caseManagementOrder.getAction().getNextHearingId();
+
+            HearingBooking nextHearing = hearingBookingService.getHearingBookingByUUID(hearingBookings, nextHearingId);
+            cmoTemplateData.putAll(commonCaseDataExtractionService.getHearingBookingData(nextHearing));
+        } else {
+            cmoTemplateData.putAll(commonCaseDataExtractionService.getHearingBookingData(null));
+        }
 
         HearingBooking hearingBooking = hearingBookingService.getHearingBooking(
             caseData.getHearingDetails(), hearingDateList);

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -81,11 +80,16 @@ public class ActionCMOController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseManagementOrder order = caseData.getCmoToAction();
 
+        CaseManagementOrder orderWithHearingDate =
+            actionCmoService.appendNextHearingDateToCMO(caseData.getNextHearingDateList(), order);
+
+        caseData = caseData.toBuilder().cmoToAction(orderWithHearingDate).build();
+
         Document document = getDocument(authorization, userId, caseData, false);
 
-        CaseManagementOrder orderWithDocument = actionCmoService.addDocument(order, document);
+        CaseManagementOrder orderWithDocument = actionCmoService.addDocument(orderWithHearingDate, document);
 
-        caseDetails.getData().put("orderAction", ImmutableMap.of("orderDoc", orderWithDocument.getOrderDoc()));
+        caseDetails.getData().put("cmoToAction", orderWithDocument);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -112,13 +116,8 @@ public class ActionCMOController {
         // TODO: 10/12/2019 check me
         CaseManagementOrder orderWithDocument = actionCmoService.addDocument(order, document);
 
-        CaseManagementOrder orderWithNextHearing =
-            actionCmoService.appendNextHearingDateToCMO(caseData.getNextHearingDateList(), orderWithDocument);
-
-        String nextHearingDateLabel =
-            actionCmoService.createNextHearingDateLabel(orderWithNextHearing, caseData.getHearingDetails());
-
-        caseDetails.getData().put("nextHearingDateLabel", nextHearingDateLabel);
+        caseDetails.getData().put("nextHearingDateLabel",
+            actionCmoService.createNextHearingDateLabel(orderWithDocument, caseData.getHearingDetails()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
