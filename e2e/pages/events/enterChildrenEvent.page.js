@@ -71,11 +71,8 @@ module.exports = {
     const elementIndex = await this.getActiveElementIndex();
 
     within(this.fields(elementIndex).child.situation.addressOfChild, () => {
-      if (elementIndex === 0) {
-        postcodeLookup.lookupPostcode(address);
-      } else {
-        postcodeLookup.enterAddressManually(address);
-      }
+      //XXX removed postcode lookup due to instability
+      postcodeLookup.enterAddressManually(address);
     });
   },
 

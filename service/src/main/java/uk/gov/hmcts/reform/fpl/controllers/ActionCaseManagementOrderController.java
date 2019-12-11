@@ -18,8 +18,8 @@ import uk.gov.hmcts.reform.fpl.events.CMOEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
-import uk.gov.hmcts.reform.fpl.service.ActionCmoService;
 import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
+import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -27,32 +27,34 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import java.io.IOException;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+
 @Api
 @RestController
 @RequestMapping("/callback/action-cmo")
-public class ActionCMOController {
+public class ActionCaseManagementOrderController {
     private final DraftCMOService draftCMOService;
-    private final ActionCmoService actionCmoService;
+    private final CaseManagementOrderService caseManagementOrderService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
-    private final CMODocmosisTemplateDataGenerationService cmoDocmosisTemplateDataGenerationService;
+    private final CMODocmosisTemplateDataGenerationService templateDataGenerationService;
 
-    public ActionCMOController(DraftCMOService draftCMOService,
-                               ActionCmoService actionCmoService,
-                               DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
-                               UploadDocumentService uploadDocumentService,
-                               ObjectMapper mapper,
-                               ApplicationEventPublisher applicationEventPublisher,
-                               CMODocmosisTemplateDataGenerationService cmoDocmosisTemplateDataGenerationService) {
+    public ActionCaseManagementOrderController(DraftCMOService draftCMOService,
+                                               CaseManagementOrderService caseManagementOrderService,
+                                               DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
+                                               UploadDocumentService uploadDocumentService,
+                                               ObjectMapper mapper,
+                                               ApplicationEventPublisher applicationEventPublisher,
+                               CMODocmosisTemplateDataGenerationService templateDataGenerationService) {
         this.draftCMOService = draftCMOService;
-        this.actionCmoService = actionCmoService;
+        this.caseManagementOrderService = caseManagementOrderService;
         this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
         this.mapper = mapper;
         this.applicationEventPublisher = applicationEventPublisher;
-        this.cmoDocmosisTemplateDataGenerationService = cmoDocmosisTemplateDataGenerationService;
+        this.templateDataGenerationService = templateDataGenerationService;
     }
 
     @PostMapping("/about-to-start")
@@ -61,10 +63,10 @@ public class ActionCMOController {
         Map<String, Object> data = caseDetails.getData();
         final CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        caseDetails.getData().putAll(actionCmoService.extractMapFieldsFromCaseManagementOrder(
-            caseData.getCmoToAction(), caseData.getHearingDetails()));
+        caseDetails.getData()
+            .putAll(caseManagementOrderService.extractMapFieldsFromCaseManagementOrder(caseData.getCmoToAction()));
 
-        draftCMOService.prepareCustomDirections(caseDetails.getData());
+        draftCMOService.prepareCustomDirections(caseDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -79,13 +81,10 @@ public class ActionCMOController {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseManagementOrder order = caseData.getCmoToAction();
 
         Document document = getDocument(authorization, userId, caseData, false);
 
-        CaseManagementOrder orderWithDocument = actionCmoService.addDocument(order, document);
-
-        caseDetails.getData().put("orderAction", ImmutableMap.of("orderDoc", orderWithDocument.getOrderDoc()));
+        caseDetails.getData().put("orderAction", ImmutableMap.of("document", buildFromDocument(document)));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -97,20 +96,20 @@ public class ActionCMOController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) throws IOException {
+
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseManagementOrder order = caseData.getCmoToAction();
 
-        CaseManagementOrder order = caseData.getCmoToAction().toBuilder()
-            .action(caseData.getOrderAction())
-            .build();
+        order = draftCMOService.prepareCMO(caseData, order);
 
-        caseDetails.getData()
-            .putAll(actionCmoService.extractMapFieldsFromCaseManagementOrder(order, caseData.getHearingDetails()));
+        order = caseManagementOrderService.addAction(order, caseData.getOrderAction());
 
         Document document = getDocument(authorization, userId, caseData, order.isApprovedByJudge());
 
-        // TODO: 10/12/2019 check me
-        CaseManagementOrder orderWithDocument = actionCmoService.addDocument(order, document);
+        order = caseManagementOrderService.addDocument(order, document);
+
+        caseDetails.getData().put("cmoToAction", order);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -131,8 +130,7 @@ public class ActionCMOController {
 
     private Document getDocument(String authorization, String userId, CaseData data, boolean approved)
         throws IOException {
-        Map<String, Object> cmoDocumentTemplateData = cmoDocmosisTemplateDataGenerationService.getTemplateData(data,
-            approved);
+        Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(data, approved);
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
             cmoDocumentTemplateData, DocmosisTemplates.CMO);

@@ -3,18 +3,17 @@ package uk.gov.hmcts.reform.fpl.utils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.RandomStringUtils;
-import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
-import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
+import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -43,6 +42,7 @@ import java.util.stream.Collectors;
 
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -269,10 +269,10 @@ public class CaseDataGeneratorHelper {
             )).build();
     }
 
-    public static List<Element<C21Order>> createC21Orders() {
+    public static List<Element<GeneratedOrder>> createOrders() {
         return ImmutableList.of(
-            Element.<C21Order>builder()
-                .value(C21Order.builder()
+            Element.<GeneratedOrder>builder()
+                .value(GeneratedOrder.builder()
                     .orderTitle("Example Order")
                     .orderDetails(
                         "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
@@ -282,9 +282,9 @@ public class CaseDataGeneratorHelper {
                         "Judy", null, HER_HONOUR_JUDGE))
                     .build())
                 .build(),
-            Element.<C21Order>builder()
+            Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
-                .value(C21Order.builder()
+                .value(GeneratedOrder.builder()
                     .orderTitle("Winter is here")
                     .orderDetails("Westeros")
                     .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
@@ -294,9 +294,9 @@ public class CaseDataGeneratorHelper {
                     .document(createDocumentReference(randomUUID().toString()))
                     .build())
                 .build(),
-            Element.<C21Order>builder()
+            Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
-                .value(C21Order.builder()
+                .value(GeneratedOrder.builder()
                     .orderTitle("Black Sails")
                     .orderDetails("Long John Silver")
                     .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
@@ -473,9 +473,9 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    public static CaseManagementOrder createDraftCaseManagementOrder() {
+    public static CaseManagementOrder createCaseManagementOrder() {
         return CaseManagementOrder.builder()
-            .status(CMOStatus.SEND_TO_JUDGE)
+            .status(SEND_TO_JUDGE)
             .schedule(createSchedule(true))
             .recitals(createRecitals())
             .directions(createCmoDirections())
@@ -491,7 +491,7 @@ public class CaseDataGeneratorHelper {
     }
 
     private static List<Element<Direction>> getDirectionByAssignee(List<Element<Direction>> list,
-                                                            DirectionAssignee assignee) {
+                                                                   DirectionAssignee assignee) {
         return list.stream()
             .filter(element -> element.getValue().getAssignee().equals(assignee))
             .map(element -> {

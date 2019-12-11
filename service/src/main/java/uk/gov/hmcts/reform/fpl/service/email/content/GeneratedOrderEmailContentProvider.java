@@ -19,46 +19,44 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubjectLineWithHearingBookingDateSuffix;
 
 @Service
-public class C21OrderEmailContentProvider extends AbstractEmailContentProvider {
+public class GeneratedOrderEmailContentProvider extends AbstractEmailContentProvider {
 
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final ObjectMapper objectMapper;
 
-    public C21OrderEmailContentProvider(@Value("${ccd.ui.base.url}")String uiBaseUrl,
-                                           ObjectMapper objectMapper,
-                                           HearingBookingService hearingBookingService,
-                                           LocalAuthorityNameLookupConfiguration
-                                               localAuthorityNameLookupConfiguration,
-                                           DateFormatterService dateFormatterService,
-                                           CafcassLookupConfiguration cafcassLookupConfiguration) {
+    public GeneratedOrderEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
+                                              ObjectMapper objectMapper,
+                                              HearingBookingService hearingBookingService,
+                                              LocalAuthorityNameLookupConfiguration
+                                                  localAuthorityNameLookupConfiguration,
+                                              DateFormatterService dateFormatterService,
+                                              CafcassLookupConfiguration cafcassLookupConfiguration) {
         super(uiBaseUrl, dateFormatterService, hearingBookingService);
         this.objectMapper = objectMapper;
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.cafcassLookupConfiguration = cafcassLookupConfiguration;
     }
 
-    public Map<String, Object> buildC21OrderNotificationParametersForCafcass(final CaseDetails caseDetails,
-                                                                             final String localAuthorityCode,
-                                                                          final String mostRecentUploadedDocumentUrl) {
+    public Map<String, Object> buildOrderNotificationParametersForCafcass(
+        final CaseDetails caseDetails, final String localAuthorityCode, final String mostRecentUploadedDocumentUrl) {
         return ImmutableMap.<String, Object>builder()
-            .putAll(commonC21NotificationParameters(caseDetails, mostRecentUploadedDocumentUrl))
+            .putAll(commonOrderNotificationParameters(caseDetails, mostRecentUploadedDocumentUrl))
             .put("localAuthorityOrCafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
             .build();
     }
 
-    public Map<String, Object> buildC21OrderNotificationParametersForLocalAuthority(final CaseDetails caseDetails,
-                                                                                    final String localAuthorityCode,
-                                                                          final String mostRecentUploadedDocumentUrl) {
+    public Map<String, Object> buildOrderNotificationParametersForLocalAuthority(
+        final CaseDetails caseDetails, final String localAuthorityCode, final String mostRecentUploadedDocumentUrl) {
         return ImmutableMap.<String, Object>builder()
-            .putAll(commonC21NotificationParameters(caseDetails, mostRecentUploadedDocumentUrl))
+            .putAll(commonOrderNotificationParameters(caseDetails, mostRecentUploadedDocumentUrl))
             .put("localAuthorityOrCafcass",
                 localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
             .build();
     }
 
-    private Map<String, Object> commonC21NotificationParameters(final CaseDetails caseDetails,
-                                                                final String linkToDocument) {
+    private Map<String, Object> commonOrderNotificationParameters(final CaseDetails caseDetails,
+                                                                  final String linkToDocument) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         final String subjectLine = buildSubjectLine(caseData);
         return ImmutableMap.of(

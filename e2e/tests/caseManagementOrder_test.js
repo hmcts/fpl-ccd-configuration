@@ -69,7 +69,7 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
   await draftCaseManagementOrderEventPage.enterRecital('Recital 1', 'Recital 1 description');
   await I.retryUntilExists(() => I.click('Continue'), '#schedule_schedule');
   await draftCaseManagementOrderEventPage.enterSchedule(schedule);
-  await I.retryUntilExists(() => I.click('Continue'), '#caseManagementOrder_cmoStatus');
+  await I.retryUntilExists(() => I.click('Continue'), '#caseManagementOrder_status');
   await draftCaseManagementOrderEventPage.markToReviewedBySelf();
   await I.completeEvent('Submit');
   assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview);
@@ -103,6 +103,8 @@ Scenario('Other parties can see the draft CMO document when it is marked for par
     await assertUserCanSeeDraftCMODocument(I, otherPartyDetails, caseViewPage);
   }
 });
+
+// Scenario('Judge actions CMO', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage))
 
 const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
@@ -150,7 +152,7 @@ const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
 };
 
 const assertCanSeeDraftCMODocument = (I, caseViewPage) => {
-  caseViewPage.selectTab(caseViewPage.tabs.documents);
+  caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.see('draft-case_management_order.pdf');
 };
 
@@ -161,7 +163,6 @@ const assertUserCannotSeeDraftOrdersTab = async (I, userDetails) => {
 
 const assertUserCanSeeDraftCMODocument = async (I, userDetails, caseViewPage) => {
   await switchUserAndNavigateToCase(I, userDetails);
-  I.dontSee('Draft orders', '.tabs .tabs-list');
   assertCanSeeDraftCMODocument(I, caseViewPage);
 };
 
@@ -175,7 +176,7 @@ const skipToReview = async (I) => {
   const ids = [
     '#allPartiesLabelCMO', '#localAuthorityDirectionsLabelCMO', '#respondentsDirectionLabelCMO',
     '#cafcassDirectionsLabelCMO', '#otherPartiesDirectionLabelCMO','#courtDirectionsLabelCMO', '#orderBasisLabel',
-    '#schedule_schedule', '#caseManagementOrder_cmoStatus',
+    '#schedule_schedule', '#caseManagementOrder_status',
   ];
 
   for (let id of ids) {

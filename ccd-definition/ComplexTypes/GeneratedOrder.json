@@ -1,7 +1,7 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C21Order",
+    "ID": "GeneratedOrder",
     "ListElementCode": "orderTitle",
     "FieldType": "Text",
     "ElementLabel": "Order title",
@@ -10,7 +10,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C21Order",
+    "ID": "GeneratedOrder",
     "ListElementCode": "orderDetails",
     "FieldType": "TextArea",
     "ElementLabel": "Order details",
@@ -20,7 +20,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C21Order",
+    "ID": "GeneratedOrder",
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "Order document",
@@ -28,7 +28,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C21Order",
+    "ID": "GeneratedOrder",
     "ListElementCode": "orderDate",
     "FieldType": "Text",
     "ElementLabel": "Date and time of upload",
@@ -36,7 +36,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "C21Order",
+    "ID": "GeneratedOrder",
     "ListElementCode": "judgeAndLegalAdvisor",
     "FieldType": "JudgeAndLegalAdvisor",
     "ElementLabel": "Judge and legal advisor",

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -10,11 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
@@ -32,15 +30,11 @@ import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.values;
-import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOthers;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createUnassignedDirection;
 
 @ExtendWith(SpringExtension.class)
@@ -125,7 +119,7 @@ class DraftCMOServiceTest {
         caseData.put("cmoHearingDateList", getDynamicList());
 
         CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(
-            mapper.convertValue(caseData, CaseData.class));
+            mapper.convertValue(caseData, CaseData.class), null);
 
         assertThat(caseManagementOrder).isNotNull()
             .extracting("id", "hearingDate").containsExactly(
@@ -133,39 +127,6 @@ class DraftCMOServiceTest {
             formatLocalDateToMediumStyle(5));
 
         assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
-    }
-
-    @Test
-    void shouldFormatRespondentsIntoKeyWhenRespondentsArePresent() {
-        String respondentsKey = draftCMOService.createRespondentAssigneeDropdownKey(createRespondents());
-
-        assertThat(respondentsKey).contains(
-            "Respondent 1 - Timothy Jones",
-            "Respondent 2 - Sarah Simpson");
-    }
-
-    @Test
-    void shouldFormatOthersIntoKeyWhenOthersArePresent() {
-        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(createOthers());
-
-        assertThat(othersKey).contains(
-            "Person 1 - Kyle Stafford",
-            "Other person 1 - Sarah Simpson");
-    }
-
-    @Test
-    void shouldIncludeEmptyStatePlaceholderWhenAnOtherDoesNotIncludeFullName() {
-        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(createFirstOtherWithoutAName());
-
-        assertThat(othersKey).contains(
-            "Person 1 - " + EMPTY_PLACEHOLDER,
-            "Other person 1 - Peter Smith");
-    }
-
-    @Test
-    void shouldReturnEmptyStringIfOthersDoesNotExist() {
-        String othersKey = draftCMOService.createOtherPartiesAssigneeDropdownKey(Others.builder().build());
-        assertThat(othersKey).isEqualTo("");
     }
 
     @Test
@@ -203,7 +164,7 @@ class DraftCMOServiceTest {
             .directions(createCmoDirections())
             .build());
 
-        draftCMOService.prepareCustomDirections(caseData);
+        draftCMOService.prepareCustomDirections(CaseDetails.builder().data(caseData).build());
 
         assertThat(caseData).containsKeys("allParties",
             "localAuthorityDirections",
@@ -221,7 +182,7 @@ class DraftCMOServiceTest {
             caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
         );
 
-        draftCMOService.prepareCustomDirections(caseData);
+        draftCMOService.prepareCustomDirections(CaseDetails.builder().data(caseData).build());
 
         assertThat(caseData).doesNotContainKeys("allPartiesCustom",
             "localAuthorityDirectionsCustom",
@@ -260,21 +221,6 @@ class DraftCMOServiceTest {
         return dateFormatterService.formatLocalDateToString(NOW.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
     }
 
-    private Others createFirstOtherWithoutAName() {
-        return Others.builder()
-            .firstOther(Other.builder()
-                .DOB("02/05/1988")
-                .build())
-            .additionalOthers(ImmutableList.of(
-                Element.<Other>builder()
-                    .value(Other.builder()
-                        .name("Peter Smith")
-                        .DOB("02/05/1988")
-                        .build())
-                    .build()
-            )).build();
-    }
-
     @Nested
     class PrepareCaseDetailsTest {
         private final String[] keys = {
@@ -293,44 +239,6 @@ class DraftCMOServiceTest {
             draftCMOService.removeTransientObjectsFromCaseData(data);
 
             assertThat(data).doesNotContainKeys(keys);
-        }
-
-        @Test
-        void shouldOnlyPopulateCaseManagementOrderWhenCMOStatusIsSelfReview() {
-            data = new HashMap<>();
-
-            caseManagementOrder = CaseManagementOrder.builder().status(SELF_REVIEW).build();
-
-            draftCMOService.progressDraftCMO(data, caseManagementOrder);
-
-            assertThat(data.get("caseManagementOrder")).isEqualTo(caseManagementOrder);
-        }
-
-        @Test
-        void shouldMakeSharedDraftCMODocumentNullWhenCMOStatusIsSelfReview() {
-            data = new HashMap<>();
-
-            caseManagementOrder = CaseManagementOrder.builder().status(SELF_REVIEW).build();
-            data.put("sharedDraftCMODocument", DocumentReference.builder().build());
-
-            draftCMOService.progressDraftCMO(data, caseManagementOrder);
-
-            assertThat(data.get("sharedDraftCMODocument")).isNull();
-        }
-
-        @Test
-        void shouldPopulateSharedDraftCMODocumentWhenCMOStatusIsPartyReview() {
-            data = new HashMap<>();
-
-            DocumentReference documentReference = DocumentReference.builder().build();
-            caseManagementOrder = CaseManagementOrder.builder()
-                .status(PARTIES_REVIEW)
-                .orderDoc(documentReference)
-                .build();
-
-            draftCMOService.progressDraftCMO(data, caseManagementOrder);
-
-            assertThat(data.get("sharedDraftCMODocument")).isEqualTo(documentReference);
         }
     }
 }
