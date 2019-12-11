@@ -2,17 +2,21 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
@@ -201,5 +205,62 @@ class RespondentServiceTest {
 
         assertThat(secondParty).containsEntry("firstName", "Lucy");
         assertThat(secondParty.get("partyId")).isNotNull();
+    }
+
+    @Nested
+    class BuildRespondentLabel {
+
+        @Test
+        void shouldBuildExpectedLabelWhenSingleElementInList() {
+            List<Element<Respondent>> respondents = ImmutableList.of(Element.<Respondent>builder()
+                .value(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("James")
+                        .lastName("Daniels")
+                        .build())
+                    .build())
+                .build());
+
+            String result = service.buildRespondentLabel(respondents);
+
+            assertThat(result).isEqualTo("Respondent 1 - James Daniels\n");
+        }
+
+        @Test
+        void shouldBuildExpectedLabelWhenManyElementsInList() {
+            List<Element<Respondent>> respondents = getRespondents();
+
+            String result = service.buildRespondentLabel(respondents);
+
+            assertThat(result).isEqualTo("Respondent 1 - James Daniels\nRespondent 2 - Bob Martyn\n");
+        }
+
+        @Test
+        void shouldBuildExpectedLabelWhenEmptyList() {
+            List<Element<Respondent>> respondents = emptyList();
+
+            String result = service.buildRespondentLabel(respondents);
+
+            assertThat(result).isEqualTo("No respondents on the case");
+        }
+
+        private List<Element<Respondent>> getRespondents() {
+            return ImmutableList.of(Element.<Respondent>builder()
+                    .value(Respondent.builder()
+                        .party(RespondentParty.builder()
+                            .firstName("James")
+                            .lastName("Daniels")
+                            .build())
+                        .build())
+                    .build(),
+                Element.<Respondent>builder()
+                    .value(Respondent.builder()
+                        .party(RespondentParty.builder()
+                            .firstName("Bob")
+                            .lastName("Martyn")
+                            .build())
+                        .build())
+                    .build());
+        }
     }
 }

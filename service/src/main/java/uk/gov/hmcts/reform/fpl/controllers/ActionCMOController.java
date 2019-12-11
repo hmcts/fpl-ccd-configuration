@@ -60,7 +60,7 @@ public class ActionCMOController {
         caseDetails.getData()
             .putAll(actionCmoService.extractMapFieldsFromCaseManagementOrder(caseData.getCmoToAction()));
 
-        draftCMOService.prepareCustomDirections(caseDetails.getData());
+        draftCMOService.prepareCustomDirections(caseDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

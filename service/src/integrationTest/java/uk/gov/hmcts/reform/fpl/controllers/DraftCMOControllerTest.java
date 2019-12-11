@@ -101,18 +101,11 @@ class DraftCMOControllerTest {
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
 
-        String parentsAndRespondentsKeyCmo =
-            mapper.convertValue(callbackResponse.getData().get("respondentsDropdownLabelCMO"), String.class);
-        String otherPartiesKeyCMO =
-            mapper.convertValue(callbackResponse.getData().get("otherPartiesDropdownLabelCMO"), String.class);
+        assertThat(callbackResponse.getData().get("respondents_label")).isEqualTo(
+            "Respondent 1 - Timothy Jones\nRespondent 2 - Sarah Simpson\n");
 
-        assertThat(parentsAndRespondentsKeyCmo).contains(
-            "Respondent 1 - Timothy Jones",
-            "Respondent 2 - Sarah Simpson");
-
-        assertThat(otherPartiesKeyCMO).contains(
-            "Person 1 - Kyle Stafford",
-            "Other person 1 - Sarah Simpson");
+        assertThat(callbackResponse.getData().get("others_label")).isEqualTo(
+            "Person 1 - Kyle Stafford\nOther person 1 - Sarah Simpson\n");
 
         assertThat(callbackResponse.getData()).doesNotContainKey("allPartiesCustom");
         assertThat(callbackResponse.getData()).doesNotContainKey("localAuthorityDirectionsCustom");

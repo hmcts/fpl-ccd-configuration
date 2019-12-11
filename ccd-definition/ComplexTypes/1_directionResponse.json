@@ -11,6 +11,33 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "DirectionResponse",
+    "ListElementCode": "respondingOnBehalfOfRespondent",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "ParentsAndRespondentsDirectionAssignee",
+    "ElementLabel": "Complying on behalf of",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "respondingOnBehalfOfOthers",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "OtherPartiesDirectionAssignee",
+    "ElementLabel": "Complying on behalf of",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
+    "ListElementCode": "respondingOnBehalfOfCafcass",
+    "FieldType": "FixedList",
+    "FieldTypeParameter": "CafcassDirectionAssignee",
+    "ElementLabel": "Complying on behalf of",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "DirectionResponse",
     "ListElementCode": "directionId",
     "FieldType": "Text",
     "ElementLabel": "Direction ID",

@@ -8,10 +8,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.model.C21Order;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -25,11 +25,11 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createC21Orders;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
-class CreateC21OrderServiceTest {
+class GeneratedOrderServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_NAME = "Example Court";
     private static final String COURT_EMAIL = "example@court.com";
@@ -41,18 +41,18 @@ class CreateC21OrderServiceTest {
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
 
-    private CreateC21OrderService service;
+    private GeneratedOrderService service;
 
     @BeforeEach
     void setup() {
-        this.service = new CreateC21OrderService(dateFormatterService, hmctsCourtLookupConfiguration, time);
+        this.service = new GeneratedOrderService(dateFormatterService, hmctsCourtLookupConfiguration, time);
     }
 
     @Test
-    void shouldAddDocumentToEmptyC21WhenDocumentExists() throws IOException {
+    void shouldAddDocumentToEmptyOrderWhenDocumentExists() throws IOException {
         Document document = document();
 
-        C21Order returnedOrder = service.addDocumentToC21(C21Order.builder().build(), document);
+        GeneratedOrder returnedOrder = service.addDocumentToOrder(GeneratedOrder.builder().build(), document);
 
         assertThat(returnedOrder).hasFieldOrPropertyWithValue("document", DocumentReference.builder()
             .binaryUrl(document.links.binary.href)
@@ -62,13 +62,13 @@ class CreateC21OrderServiceTest {
     }
 
     @Test
-    void shouldAddDocumentToPopulatedC21WhenDocumentExists() throws IOException {
+    void shouldAddDocumentToPopulatedOrderWhenDocumentExists() throws IOException {
         Document document = document();
-        C21Order.C21OrderBuilder order = C21Order.builder()
+        GeneratedOrder.GeneratedOrderBuilder order = GeneratedOrder.builder()
             .orderTitle("Order")
             .orderDetails("Some details");
 
-        C21Order returnedOrder = service.addDocumentToC21(order.build(), document);
+        GeneratedOrder returnedOrder = service.addDocumentToOrder(order.build(), document);
 
         assertThat(returnedOrder).isEqualTo(order.document(DocumentReference.builder()
             .binaryUrl(document.links.binary.href)
@@ -78,14 +78,14 @@ class CreateC21OrderServiceTest {
     }
 
     @Test
-    void shouldReturnExpectedC21OrderWhenOrderTitleIsNull() {
-        C21Order c21Order = C21Order.builder()
+    void shouldReturnExpectedOrderWhenOrderTitleIsNull() {
+        GeneratedOrder order = GeneratedOrder.builder()
             .orderTitle(null)
             .orderDetails("Some details")
             .document(DocumentReference.builder().build())
             .build();
 
-        Element<C21Order> returnedElement = service.addCustomValuesToC21Order(c21Order,
+        Element<GeneratedOrder> returnedElement = service.addCustomValuesToOrder(order,
             JudgeAndLegalAdvisor.builder().build());
 
         assertThat(returnedElement.getValue().getOrderTitle()).isEqualTo("Order");
@@ -97,14 +97,14 @@ class CreateC21OrderServiceTest {
     }
 
     @Test
-    void shouldReturnExpectedC21OrderWhenOrderTitleIsEmptyString() {
-        C21Order c21Order = C21Order.builder()
+    void shouldReturnExpectedOrderWhenOrderTitleIsEmptyString() {
+        GeneratedOrder order = GeneratedOrder.builder()
             .orderTitle("")
             .orderDetails("Some details")
             .document(DocumentReference.builder().build())
             .build();
 
-        Element<C21Order> returnedElement = service.addCustomValuesToC21Order(c21Order,
+        Element<GeneratedOrder> returnedElement = service.addCustomValuesToOrder(order,
             JudgeAndLegalAdvisor.builder().build());
 
         assertThat(returnedElement.getValue().getOrderTitle()).isEqualTo("Order");
@@ -116,14 +116,14 @@ class CreateC21OrderServiceTest {
     }
 
     @Test
-    void shouldReturnExpectedC21OrderWhenOrderTitleIsStringWithSpaceCharacter() {
-        C21Order c21Order = C21Order.builder()
+    void shouldReturnExpectedOrderWhenOrderTitleIsStringWithSpaceCharacter() {
+        GeneratedOrder order = GeneratedOrder.builder()
             .orderTitle(" ")
             .orderDetails("Some details")
             .document(DocumentReference.builder().build())
             .build();
 
-        Element<C21Order> returnedElement = service.addCustomValuesToC21Order(c21Order,
+        Element<GeneratedOrder> returnedElement = service.addCustomValuesToOrder(order,
             JudgeAndLegalAdvisor.builder().build());
 
         assertThat(returnedElement.getValue().getOrderTitle()).isEqualTo("Order");
@@ -135,14 +135,14 @@ class CreateC21OrderServiceTest {
     }
 
     @Test
-    void shouldReturnExpectedC21OrderWhenOrderTitlePresent() {
-        C21Order c21Order = C21Order.builder()
+    void shouldReturnExpectedOrderWhenOrderTitlePresent() {
+        GeneratedOrder order = GeneratedOrder.builder()
             .orderTitle("Example Title")
             .orderDetails("Some details")
             .document(DocumentReference.builder().build())
             .build();
 
-        Element<C21Order> returnedElement = service.addCustomValuesToC21Order(c21Order,
+        Element<GeneratedOrder> returnedElement = service.addCustomValuesToOrder(order,
             JudgeAndLegalAdvisor.builder().build());
 
         assertThat(returnedElement.getValue().getOrderTitle()).isEqualTo("Example Title");
@@ -154,14 +154,14 @@ class CreateC21OrderServiceTest {
     }
 
     @Test
-    void shouldReturnExpectedC21OrderWhenJudgeAndLegalAdvisorFullyPopulated() {
-        C21Order c21Order = C21Order.builder()
+    void shouldReturnExpectedOrderWhenJudgeAndLegalAdvisorFullyPopulated() {
+        GeneratedOrder order = GeneratedOrder.builder()
             .orderTitle("Example Title")
             .orderDetails("Some details")
             .document(DocumentReference.builder().build())
             .build();
 
-        Element<C21Order> returnedElement = service.addCustomValuesToC21Order(c21Order, JudgeAndLegalAdvisor.builder()
+        Element<GeneratedOrder> returnedElement = service.addCustomValuesToOrder(order, JudgeAndLegalAdvisor.builder()
             .judgeTitle(HER_HONOUR_JUDGE)
             .judgeLastName("Judy")
             .legalAdvisorName("Peter Parker")
@@ -185,18 +185,20 @@ class CreateC21OrderServiceTest {
         CaseData caseData = populatedCaseData(localDate);
 
         Map<String, Object> expectedMap = expectedData(date);
-        Map<String, Object> templateData = service.getC21OrderTemplateData(caseData);
+        Map<String, Object> templateData = service.getOrderTemplateData(caseData);
 
         assertThat(templateData).isEqualTo(expectedMap);
     }
 
     @Test
-    void shouldReturnMostRecentUploadedC21DocumentUrl() {
-        final String expectedMostRecentUploadedC21DocumentUrl = "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
-        final String returnedMostRecentUploadedC21DocumentUrl = service.mostRecentUploadedC21DocumentUrl(
-            createC21Orders());
+    void shouldReturnMostRecentUploadedOrderDocumentUrl() {
+        final String expectedMostRecentUploadedOrderDocumentUrl =
+            "http://dm-store:8080/documents/79ec80ec-7be6-493b-b4e6-f002f05b7079/binary";
+        final String returnedMostRecentUploadedOrderDocumentUrl = service.mostRecentUploadedOrderDocumentUrl(
+            createOrders());
 
-        assertThat(expectedMostRecentUploadedC21DocumentUrl).isEqualTo(returnedMostRecentUploadedC21DocumentUrl);
+        assertThat(expectedMostRecentUploadedOrderDocumentUrl).isEqualTo(
+            returnedMostRecentUploadedOrderDocumentUrl);
     }
 
     @SuppressWarnings("unchecked")
@@ -223,7 +225,7 @@ class CreateC21OrderServiceTest {
         return CaseData.builder()
             .familyManCaseNumber("123")
             .caseLocalAuthority("example")
-            .c21Order(C21Order.builder()
+            .order(GeneratedOrder.builder()
                 .orderTitle("Example Title")
                 .orderDetails("Example details")
                 .build())

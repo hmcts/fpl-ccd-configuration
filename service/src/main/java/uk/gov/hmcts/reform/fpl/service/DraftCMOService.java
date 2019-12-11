@@ -4,15 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
@@ -20,7 +17,6 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +25,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import static java.util.Comparator.comparingInt;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -39,7 +35,6 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
-import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -49,7 +44,8 @@ public class DraftCMOService {
     private final DirectionHelperService directionHelperService;
 
     public Map<String, Object> extractIndividualCaseManagementOrderObjects(
-        CaseManagementOrder caseManagementOrder, List<Element<HearingBooking>> hearingDetails) {
+        CaseManagementOrder caseManagementOrder,
+        List<Element<HearingBooking>> hearingDetails) {
 
         if (isNull(caseManagementOrder)) {
             caseManagementOrder = CaseManagementOrder.builder().build();
@@ -91,9 +87,6 @@ public class DraftCMOService {
     public void progressDraftCMO(Map<String, Object> caseData, CaseManagementOrder caseManagementOrder) {
         switch (caseManagementOrder.getStatus()) {
             case SEND_TO_JUDGE:
-                caseData.put("cmoToAction", caseManagementOrder);
-                caseData.remove("caseManagementOrder");
-                break;
             case PARTIES_REVIEW:
                 caseData.put("sharedDraftCMODocument", caseManagementOrder.getOrderDoc());
                 break;
@@ -126,59 +119,24 @@ public class DraftCMOService {
         return hearingDatesDynamic;
     }
 
-    public String createRespondentAssigneeDropdownKey(List<Element<Respondent>> respondents) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        for (int i = 0; i < respondents.size(); i++) {
-            RespondentParty respondentParty = respondents.get(i).getValue().getParty();
-
-            String key = String.format("Respondent %d - %s", i + 1, respondentParty.getFullName());
-            stringBuilder.append(key).append("\n\n");
-        }
-
-        return stringBuilder.toString().stripTrailing();
-    }
-
-    public String createOtherPartiesAssigneeDropdownKey(Others others) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        if (isNotEmpty(others)) {
-            for (int i = 0; i < others.getAllOthers().size(); i++) {
-                Other other = others.getAllOthers().get(i);
-                String key;
-
-                if (i == 0) {
-                    key = String.format("Person 1 - %s", defaultIfNull(other.getName(), EMPTY_PLACEHOLDER));
-                } else {
-                    key = String.format("Other person %d - %s", i,
-                        defaultIfNull(other.getName(), EMPTY_PLACEHOLDER));
-                }
-
-                stringBuilder.append(key).append("\n\n");
-            }
-        }
-
-        return stringBuilder.toString().stripTrailing();
-    }
-
-    public void prepareCustomDirections(Map<String, Object> data) {
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+    public void prepareCustomDirections(CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (!isNull(caseData.getCaseManagementOrder())) {
             directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
-                .forEach((key, value) -> data.put(key.getValue(), value));
+                .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
         } else {
-            removeExistingCustomDirections(data);
+            removeExistingCustomDirections(caseDetails);
         }
     }
 
-    private void removeExistingCustomDirections(Map<String, Object> caseData) {
-        caseData.remove("allPartiesCustom");
-        caseData.remove("localAuthorityDirectionsCustom");
-        caseData.remove("cafcassDirectionsCustom");
-        caseData.remove("courtDirectionsCustom");
-        caseData.remove("respondentDirectionsCustom");
-        caseData.remove("otherPartiesDirectionsCustom");
+    private void removeExistingCustomDirections(CaseDetails caseDetails) {
+        caseDetails.getData().remove("allPartiesCustom");
+        caseDetails.getData().remove("localAuthorityDirectionsCustom");
+        caseDetails.getData().remove("cafcassDirectionsCustom");
+        caseDetails.getData().remove("courtDirectionsCustom");
+        caseDetails.getData().remove("respondentDirectionsCustom");
+        caseDetails.getData().remove("otherPartiesDirectionsCustom");
     }
 
     private void prePopulateHearingDateSelection(List<Element<HearingBooking>> hearingDetails,
@@ -224,7 +182,7 @@ public class DraftCMOService {
     }
 
     private List<Element<Direction>> orderByParentsAndRespondentAssignee(List<Element<Direction>> directions) {
-        directions.sort(Comparator.comparingInt(direction -> direction.getValue()
+        directions.sort(comparingInt(direction -> direction.getValue()
             .getParentsAndRespondentsAssignee()
             .ordinal()));
 
@@ -232,7 +190,7 @@ public class DraftCMOService {
     }
 
     private List<Element<Direction>> orderByOtherPartiesAssignee(List<Element<Direction>> directions) {
-        directions.sort(Comparator.comparingInt(direction -> direction.getValue()
+        directions.sort(comparingInt(direction -> direction.getValue()
             .getOtherPartiesAssignee()
             .ordinal()));
 
