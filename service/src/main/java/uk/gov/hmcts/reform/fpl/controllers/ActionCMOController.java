@@ -113,11 +113,12 @@ public class ActionCMOController {
 
         Document document = getDocument(authorization, userId, caseData, order.isApprovedByJudge());
 
-        // TODO: 10/12/2019 check me
         CaseManagementOrder orderWithDocument = actionCmoService.addDocument(order, document);
 
         caseDetails.getData().put("nextHearingDateLabel",
             actionCmoService.createNextHearingDateLabel(orderWithDocument, caseData.getHearingDetails()));
+
+        caseDetails.getData().put("cmoToAction", orderWithDocument);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

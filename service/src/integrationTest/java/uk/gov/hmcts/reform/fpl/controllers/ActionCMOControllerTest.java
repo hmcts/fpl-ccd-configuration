@@ -153,12 +153,11 @@ class ActionCMOControllerTest {
 
     @Test
     void aboutToSubmitShouldReturnCaseManagementOrderWithActionAndSchedule() throws Exception {
-        CaseManagementOrder caseManagementOrder = getCaseManagementOrder(OrderAction.builder()
-            .nextHearingId(NEXT_HEARING_ID)
-            .build());
+        CaseManagementOrder caseManagementOrder = getCaseManagementOrder(OrderAction.builder().build());
 
         Map<String, Object> data = ImmutableMap.of(
             "cmoToAction", caseManagementOrder,
+            "orderAction", getOrderAction(),
             "hearingDetails", createHearingBookings(TODAYS_DATE));
 
         AboutToStartOrSubmitCallbackResponse response =
@@ -167,8 +166,8 @@ class ActionCMOControllerTest {
         CaseData caseData = objectMapper.convertValue(response.getData(), CaseData.class);
 
         verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "case-management-order.pdf");
-        assertThat(caseData.getCaseManagementOrder().getAction()).isEqualTo(getOrderAction());
-        assertThat(caseData.getCaseManagementOrder().getSchedule()).isEqualTo(createSchedule(true));
+        assertThat(caseData.getCmoToAction().getAction()).isEqualTo(getOrderAction());
+        assertThat(caseData.getCmoToAction().getSchedule()).isEqualTo(createSchedule(true));
 
         String date = dateFormatterService.formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "d MMMM");
         String time = dateFormatterService.formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "h:mma");

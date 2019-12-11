@@ -91,15 +91,13 @@ public class ActionCmoService {
             HearingBooking hearingBooking =
                 hearingBookingService.getHearingBookingByUUID(hearingBookings, nextHearingId);
 
-            nextHearingLabel = formatHearingBookingLabel(hearingBooking);
+            nextHearingLabel = formatHearingBookingLabel(hearingBooking.getStartDate());
         }
 
         return nextHearingLabel;
     }
 
-    private String formatHearingBookingLabel(HearingBooking hearingBooking) {
-        LocalDateTime startDate = hearingBooking.getStartDate();
-
+    private String formatHearingBookingLabel(LocalDateTime startDate) {
         String date = dateFormatterService.formatLocalDateTimeBaseUsingFormat(startDate, "d MMMM");
         String time = dateFormatterService.formatLocalDateTimeBaseUsingFormat(startDate, "h:mma");
 
