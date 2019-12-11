@@ -33,8 +33,17 @@
     "ID": "OrderAction",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "orderAction",
-    "ListElementCode": "changeRequestedByJudge",
+    "ListElementCode": "nextHearingId",
     "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderAction",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "orderAction",
+    "ListElementCode": "nextHearingDate",
+    "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY"
   }
 ]
