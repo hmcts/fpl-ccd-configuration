@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,8 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
@@ -33,7 +30,6 @@ import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.values;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
@@ -225,21 +221,6 @@ class DraftCMOServiceTest {
         return dateFormatterService.formatLocalDateToString(NOW.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
     }
 
-    private Others createFirstOtherWithoutAName() {
-        return Others.builder()
-            .firstOther(Other.builder()
-                .DOB("02/05/1988")
-                .build())
-            .additionalOthers(ImmutableList.of(
-                Element.<Other>builder()
-                    .value(Other.builder()
-                        .name("Peter Smith")
-                        .DOB("02/05/1988")
-                        .build())
-                    .build()
-            )).build();
-    }
-
     @Nested
     class PrepareCaseDetailsTest {
         private final String[] keys = {
@@ -258,45 +239,6 @@ class DraftCMOServiceTest {
             draftCMOService.removeTransientObjectsFromCaseData(data);
 
             assertThat(data).doesNotContainKeys(keys);
-        }
-
-        @Test
-        void shouldMaintainCaseManagementOrderWhenCMOStatusIsSelfReview() {
-            data = new HashMap<>();
-
-            caseManagementOrder = CaseManagementOrder.builder().status(SELF_REVIEW).build();
-            data.put("caseManagementOrder", caseManagementOrder);
-
-            draftCMOService.progressDraftCMO(data, caseManagementOrder);
-
-            assertThat(data.get("caseManagementOrder")).isEqualTo(caseManagementOrder);
-        }
-
-        @Test
-        void shouldMakeSharedDraftCMODocumentNullWhenCMOStatusIsSelfReview() {
-            data = new HashMap<>();
-
-            caseManagementOrder = CaseManagementOrder.builder().status(SELF_REVIEW).build();
-            data.put("sharedDraftCMODocument", DocumentReference.builder().build());
-
-            draftCMOService.progressDraftCMO(data, caseManagementOrder);
-
-            assertThat(data.get("sharedDraftCMODocument")).isNull();
-        }
-
-        @Test
-        void shouldPopulateSharedDraftCMODocumentWhenCMOStatusIsPartyReview() {
-            data = new HashMap<>();
-
-            DocumentReference documentReference = DocumentReference.builder().build();
-            caseManagementOrder = CaseManagementOrder.builder()
-                .status(PARTIES_REVIEW)
-                .orderDoc(documentReference)
-                .build();
-
-            draftCMOService.progressDraftCMO(data, caseManagementOrder);
-
-            assertThat(data.get("sharedDraftCMODocument")).isEqualTo(documentReference);
         }
     }
 }

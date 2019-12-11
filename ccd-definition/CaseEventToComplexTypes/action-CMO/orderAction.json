@@ -4,7 +4,7 @@
     "ID": "OrderAction",
     "CaseEventID": "actionCMO",
     "CaseFieldID": "orderAction",
-    "ListElementCode": "orderDoc",
+    "ListElementCode": "document",
     "EventElementLabel": "Check the order",
     "FieldDisplayOrder": 1,
     "DisplayContext": "READONLY"

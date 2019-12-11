@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,13 +44,14 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedu
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(ActionCMOController.class)
+@WebMvcTest(ActionCaseManagementOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ActionCMOControllerTest {
-    public static final String CMO_TO_ACTION_KEY = "cmoToAction";
+class ActionCaseManagementOrderControllerTest {
+    private static final String CMO_TO_ACTION_KEY = "cmoToAction";
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final byte[] pdf = {1, 2, 3, 4, 5};
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -91,20 +91,17 @@ class ActionCMOControllerTest {
     }
 
     @Test
-    void midEventShouldReturnDocumentReferenceForTheCaseManagementOrder() throws Exception {
+    void midEventShouldAddDocumentReferenceToOrderAction() throws Exception {
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
             buildCallbackRequest(ImmutableMap.of()), "mid-event");
 
         verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-case-management-order.pdf");
 
-        final Map<String, Object> responseCaseData = callbackResponse.getData();
+        Map<String, Object> responseCaseData = callbackResponse.getData();
 
-        assertThat(responseCaseData).containsKey(CMO_TO_ACTION_KEY);
+        OrderAction action = objectMapper.convertValue(responseCaseData.get("orderAction"), OrderAction.class);
 
-        final CaseManagementOrder order = objectMapper.convertValue(responseCaseData.get(
-            CMO_TO_ACTION_KEY), CaseManagementOrder.class);
-
-        AssertionsForClassTypes.assertThat(order.getOrderDoc()).isEqualTo(
+        assertThat(action.getDocument()).isEqualTo(
             DocumentReference.builder()
                 .binaryUrl(document().links.binary.href)
                 .filename(document().originalDocumentName)
