@@ -15,8 +15,8 @@ import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
-import uk.gov.hmcts.reform.fpl.service.ActionCmoService;
 import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
+import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -29,22 +29,22 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Api
 @RestController
 @RequestMapping("/callback/action-cmo")
-public class ActionCMOController {
+public class ActionCaseManagementOrderController {
     private final DraftCMOService draftCMOService;
-    private final ActionCmoService actionCmoService;
+    private final CaseManagementOrderService caseManagementOrderService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final ObjectMapper mapper;
     private final CMODocmosisTemplateDataGenerationService templateDataGenerationService;
 
-    public ActionCMOController(DraftCMOService draftCMOService,
-                               ActionCmoService actionCmoService,
-                               DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
-                               UploadDocumentService uploadDocumentService,
-                               ObjectMapper mapper,
-                               CMODocmosisTemplateDataGenerationService templateDataGenerationService) {
+    public ActionCaseManagementOrderController(DraftCMOService draftCMOService,
+                                               CaseManagementOrderService caseManagementOrderService,
+                                               DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
+                                               UploadDocumentService uploadDocumentService,
+                                               ObjectMapper mapper,
+                                               CMODocmosisTemplateDataGenerationService templateDataGenerationService) {
         this.draftCMOService = draftCMOService;
-        this.actionCmoService = actionCmoService;
+        this.caseManagementOrderService = caseManagementOrderService;
         this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
         this.mapper = mapper;
@@ -58,7 +58,7 @@ public class ActionCMOController {
         final CaseData caseData = mapper.convertValue(data, CaseData.class);
 
         caseDetails.getData()
-            .putAll(actionCmoService.extractMapFieldsFromCaseManagementOrder(caseData.getCmoToAction()));
+            .putAll(caseManagementOrderService.extractMapFieldsFromCaseManagementOrder(caseData.getCmoToAction()));
 
         draftCMOService.prepareCustomDirections(caseDetails);
 
@@ -79,7 +79,7 @@ public class ActionCMOController {
         Document document = getDocument(authorization, userId, caseData, false);
 
         CaseManagementOrder order = defaultIfNull(caseData.getCmoToAction(), CaseManagementOrder.builder().build());
-        CaseManagementOrder orderWithDocument = actionCmoService.addDocument(order, document);
+        CaseManagementOrder orderWithDocument = caseManagementOrderService.addDocument(order, document);
 
         caseDetails.getData().put("cmoToAction", orderWithDocument);
 
@@ -100,12 +100,12 @@ public class ActionCMOController {
 
         order = draftCMOService.prepareCMO(caseData, order);
 
-        order = actionCmoService.addAction(order, caseData.getOrderAction());
+        order = caseManagementOrderService.addAction(order, caseData.getOrderAction());
 
         if (order.isApprovedByJudge()) {
             Document document = getDocument(authorization, userId, caseData, true);
 
-            order = actionCmoService.addDocument(order, document);
+            order = caseManagementOrderService.addDocument(order, document);
         }
 
         caseDetails.getData().put("cmoToAction", order);
