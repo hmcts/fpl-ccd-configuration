@@ -108,8 +108,8 @@ public class NotificationHandler {
     public void sendNotificationToGatekeeper(NotifyGatekeeperEvent event) {
         EventData eventData = new EventData(event);
         String email = (String) eventData.getCaseDetails().getData().get("gateKeeperEmail");
-        Map<String, Object> parameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(eventData.getCaseDetails(),
-            eventData.getLocalAuthorityCode());
+        Map<String, Object> parameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(
+            eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
 
         sendNotification(GATEKEEPER_SUBMISSION_TEMPLATE, email, parameters, eventData.getReference());
     }
@@ -118,7 +118,8 @@ public class NotificationHandler {
     public void notifyCafcassOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
         EventData eventData = new EventData(event);
         Map<String, Object> parameters = cafcassEmailContentProviderSDOIssued
-            .buildCafcassStandardDirectionOrderIssuedNotification(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
+            .buildCafcassStandardDirectionOrderIssuedNotification(eventData.getCaseDetails(),
+                eventData.getLocalAuthorityCode());
         String email = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getEmail();
 
         sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, eventData.getReference());
@@ -128,8 +129,10 @@ public class NotificationHandler {
     public void notifyLocalAuthorityOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
         EventData eventData = new EventData(event);
         Map<String, Object> parameters = localAuthorityEmailContentProvider
-            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
-        String email = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
+            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(eventData.getCaseDetails(),
+                eventData.getLocalAuthorityCode());
+        String email = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
+            eventData.getLocalAuthorityCode());
 
         sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, eventData.getReference());
     }
@@ -172,7 +175,7 @@ public class NotificationHandler {
         private String localAuthorityCode;
         private String reference;
 
-        private EventData (CallbackEvent event) {
+        private EventData(CallbackEvent event) {
             this.caseDetails = event.getCallbackRequest().getCaseDetails();
             this.localAuthorityCode = (String) this.caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
             this.reference = Long.toString(this.caseDetails.getId());
