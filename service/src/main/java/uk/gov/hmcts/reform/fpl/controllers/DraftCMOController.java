@@ -113,11 +113,12 @@ public class DraftCMOController {
         final Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData);
+        CaseManagementOrder populatedCMO = draftCMOService.prepareCMO(
+            caseData, caseData.getCaseManagementOrder());
 
         draftCMOService.removeTransientObjectsFromCaseData(data);
 
-        data.put("caseManagementOrder", caseManagementOrder);
+        data.put("caseManagementOrder", populatedCMO);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)

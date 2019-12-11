@@ -39,7 +39,7 @@ public class CMOProgressionController {
         if (caseData.getCaseManagementOrder() != null) {
             draftCMOService.progressDraftCMO(caseDetails.getData(), caseData.getCaseManagementOrder());
         } else {
-            actionCmoService.progressCMOToAction(caseDetails, caseData.getCmoToAction(), true);
+            actionCmoService.progressCMOToAction(caseDetails, caseData.getCmoToAction());
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

@@ -125,7 +125,7 @@ class DraftCMOServiceTest {
         caseData.put("cmoHearingDateList", getDynamicList());
 
         CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(
-            mapper.convertValue(caseData, CaseData.class));
+            mapper.convertValue(caseData, CaseData.class), null);
 
         assertThat(caseManagementOrder).isNotNull()
             .extracting("id", "hearingDate").containsExactly(
@@ -296,10 +296,11 @@ class DraftCMOServiceTest {
         }
 
         @Test
-        void shouldOnlyPopulateCaseManagementOrderWhenCMOStatusIsSelfReview() {
+        void shouldMaintainCaseManagementOrderWhenCMOStatusIsSelfReview() {
             data = new HashMap<>();
 
             caseManagementOrder = CaseManagementOrder.builder().status(SELF_REVIEW).build();
+            data.put("caseManagementOrder", caseManagementOrder);
 
             draftCMOService.progressDraftCMO(data, caseManagementOrder);
 

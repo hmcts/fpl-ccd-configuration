@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,11 +22,11 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,9 +38,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCaseManagementOrder;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createDraftCaseManagementOrder;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -48,10 +48,10 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @WebMvcTest(ActionCMOController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ActionCMOControllerTest {
+    public static final String CMO_TO_ACTION_KEY = "cmoToAction";
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final byte[] pdf = {1, 2, 3, 4, 5};
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -59,62 +59,68 @@ class ActionCMOControllerTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
+    private DocmosisDocumentGeneratorService documentGeneratorService;
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
-    private Document document;
-
     @BeforeEach
     void setup() throws IOException {
-        document = document();
+        Document document = document();
         DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", pdf);
 
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+        given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
     }
 
     @Test
-    void aboutToStartShouldReturnCaseManagementOrder() throws Exception {
+    void aboutToStartShouldExtractIndividualCaseManagementOrderFields() throws Exception {
         Map<String, Object> data = new HashMap<>();
-        data.put("caseManagementOrder", createDraftCaseManagementOrder());
+        final CaseManagementOrder order = createCaseManagementOrder();
+
+        data.put(CMO_TO_ACTION_KEY, order);
 
         CallbackRequest request = buildCallbackRequest(data);
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-start");
         CaseData caseData = objectMapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(caseData.getCaseManagementOrder()).isEqualTo(createDraftCaseManagementOrder());
+        assertThat(caseData.getOrderAction()).isNull();
+        assertThat(caseData.getSchedule()).isEqualTo(order.getSchedule());
+        assertThat(caseData.getRecitals()).isEqualTo(order.getRecitals());
     }
 
     @Test
-    void midEventShouldReturnDocumentReferenceForAction() throws Exception {
-        Map<String, Object> data = new HashMap<>();
-        data.put("caseManagementOrder", createDraftCaseManagementOrder());
-        data.put("hearingDetails", createHearingBookings(LocalDateTime.now()));
-
-        CallbackRequest request = buildCallbackRequest(data);
-
-        AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "mid-event");
+    void midEventShouldReturnDocumentReferenceForTheCaseManagementOrder() throws Exception {
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
+            buildCallbackRequest(ImmutableMap.of()), "mid-event");
 
         verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-case-management-order.pdf");
 
-        assertThat(response.getData().get("orderAction")).extracting("orderDoc")
-            .isEqualTo(ImmutableMap.of(
-                "document_binary_url", document.links.binary.href,
-                "document_filename", document.originalDocumentName,
-                "document_url", document.links.self.href));
+        final Map<String, Object> responseCaseData = callbackResponse.getData();
+
+        assertThat(responseCaseData).containsKey(CMO_TO_ACTION_KEY);
+
+        final CaseManagementOrder order = objectMapper.convertValue(responseCaseData.get(
+            CMO_TO_ACTION_KEY), CaseManagementOrder.class);
+
+        AssertionsForClassTypes.assertThat(order.getOrderDoc()).isEqualTo(
+            DocumentReference.builder()
+                .binaryUrl(document().links.binary.href)
+                .filename(document().originalDocumentName)
+                .url(document().links.self.href)
+                .build());
     }
 
     @Test
-    void aboutToSubmitShouldReturnCaseManagementOrderWithActionAndSchedule() throws Exception {
-        CaseManagementOrder caseManagementOrder = getCaseManagementOrder(OrderAction.builder().build());
+    void aboutToSubmitShouldReturnAPopulatedCaseManagementOrderWithUpdatedDocumentWhenSendToAllParties()
+        throws Exception {
+
+        CaseManagementOrder order = getCaseManagementOrder(OrderAction.builder().build());
 
         Map<String, Object> data = ImmutableMap.of(
-            "caseManagementOrder", caseManagementOrder,
-            "orderAction", getOrderAction(),
-            "hearingDetails", createHearingBookings(LocalDateTime.now()));
+            CMO_TO_ACTION_KEY, order,
+            "orderAction", getOrderAction());
 
         AboutToStartOrSubmitCallbackResponse response =
             makeRequest(buildCallbackRequest(data), "about-to-submit");
@@ -122,8 +128,7 @@ class ActionCMOControllerTest {
         CaseData caseData = objectMapper.convertValue(response.getData(), CaseData.class);
 
         verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "case-management-order.pdf");
-        assertThat(caseData.getCaseManagementOrder().getAction()).isEqualTo(getOrderAction());
-        assertThat(caseData.getCaseManagementOrder().getSchedule()).isEqualTo(createSchedule(true));
+        assertThat(caseData.getCmoToAction().getAction()).isEqualTo(getOrderAction());
     }
 
     private CallbackRequest buildCallbackRequest(Map<String, Object> data) {

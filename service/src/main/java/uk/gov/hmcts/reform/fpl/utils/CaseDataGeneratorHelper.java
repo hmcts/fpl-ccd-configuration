@@ -473,7 +473,7 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    public static CaseManagementOrder createDraftCaseManagementOrder() {
+    public static CaseManagementOrder createCaseManagementOrder() {
         return CaseManagementOrder.builder()
             .status(CMOStatus.SEND_TO_JUDGE)
             .schedule(createSchedule(true))

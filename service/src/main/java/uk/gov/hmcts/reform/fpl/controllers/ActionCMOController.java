@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +24,8 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import java.io.IOException;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 @Api
 @RestController
 @RequestMapping("/callback/action-cmo")
@@ -34,20 +35,20 @@ public class ActionCMOController {
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final ObjectMapper mapper;
-    private final CMODocmosisTemplateDataGenerationService cmoDocmosisTemplateDataGenerationService;
+    private final CMODocmosisTemplateDataGenerationService templateDataGenerationService;
 
     public ActionCMOController(DraftCMOService draftCMOService,
                                ActionCmoService actionCmoService,
                                DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
                                UploadDocumentService uploadDocumentService,
                                ObjectMapper mapper,
-                               CMODocmosisTemplateDataGenerationService cmoDocmosisTemplateDataGenerationService) {
+                               CMODocmosisTemplateDataGenerationService templateDataGenerationService) {
         this.draftCMOService = draftCMOService;
         this.actionCmoService = actionCmoService;
         this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
         this.mapper = mapper;
-        this.cmoDocmosisTemplateDataGenerationService = cmoDocmosisTemplateDataGenerationService;
+        this.templateDataGenerationService = templateDataGenerationService;
     }
 
     @PostMapping("/about-to-start")
@@ -56,8 +57,8 @@ public class ActionCMOController {
         Map<String, Object> data = caseDetails.getData();
         final CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        caseDetails.getData().putAll(actionCmoService.extractMapFieldsFromCaseManagementOrder(
-            caseData.getCmoToAction(), caseData.getHearingDetails()));
+        caseDetails.getData()
+            .putAll(actionCmoService.extractMapFieldsFromCaseManagementOrder(caseData.getCmoToAction()));
 
         draftCMOService.prepareCustomDirections(caseDetails.getData());
 
@@ -74,13 +75,13 @@ public class ActionCMOController {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseManagementOrder order = caseData.getCmoToAction();
 
         Document document = getDocument(authorization, userId, caseData, false);
 
+        CaseManagementOrder order = defaultIfNull(caseData.getCmoToAction(), CaseManagementOrder.builder().build());
         CaseManagementOrder orderWithDocument = actionCmoService.addDocument(order, document);
 
-        caseDetails.getData().put("orderAction", ImmutableMap.of("orderDoc", orderWithDocument.getOrderDoc()));
+        caseDetails.getData().put("cmoToAction", orderWithDocument);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -92,20 +93,22 @@ public class ActionCMOController {
         @RequestHeader(value = "authorization") String authorization,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) throws IOException {
+
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseManagementOrder order = caseData.getCmoToAction();
 
-        CaseManagementOrder order = caseData.getCmoToAction().toBuilder()
-            .action(caseData.getOrderAction())
-            .build();
+        order = draftCMOService.prepareCMO(caseData, order);
 
-        caseDetails.getData()
-            .putAll(actionCmoService.extractMapFieldsFromCaseManagementOrder(order, caseData.getHearingDetails()));
+        order = actionCmoService.addAction(order, caseData.getOrderAction());
 
-        Document document = getDocument(authorization, userId, caseData, order.isApprovedByJudge());
+        if (order.isApprovedByJudge()) {
+            Document document = getDocument(authorization, userId, caseData, true);
 
-        // TODO: 10/12/2019 check me
-        CaseManagementOrder orderWithDocument = actionCmoService.addDocument(order, document);
+            order = actionCmoService.addDocument(order, document);
+        }
+
+        caseDetails.getData().put("cmoToAction", order);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -114,8 +117,7 @@ public class ActionCMOController {
 
     private Document getDocument(String authorization, String userId, CaseData data, boolean approved)
         throws IOException {
-        Map<String, Object> cmoDocumentTemplateData = cmoDocmosisTemplateDataGenerationService.getTemplateData(data,
-            approved);
+        Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(data, approved);
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
             cmoDocumentTemplateData, DocmosisTemplates.CMO);

@@ -65,8 +65,8 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         ImmutableMap.Builder cmoTemplateData = ImmutableMap.<String, Object>builder();
         final DynamicList hearingDateList = caseData.getCmoHearingDateList();
         final String localAuthorityCode = caseData.getCaseLocalAuthority();
-        final CaseManagementOrder caseManagementOrder = defaultIfNull(draftCMOService.prepareCMO(caseData),
-            CaseManagementOrder.builder().build());
+
+        CaseManagementOrder order = draftCMOService.prepareCMO(caseData, getCaseManagementOrder(caseData));
 
         cmoTemplateData.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_PLACEHOLDER));
         cmoTemplateData.put("generationDate",
@@ -100,22 +100,34 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         JudgeAndLegalAdvisor judgeAndLegalAdvisor = hearingBooking.getJudgeAndLegalAdvisor();
         cmoTemplateData.putAll(commonCaseDataExtractionService.getJudgeAndLegalAdvisorData(judgeAndLegalAdvisor));
 
-        cmoTemplateData.putAll(getGroupedCMODirections(caseManagementOrder));
+        cmoTemplateData.putAll(getGroupedCMODirections(order));
 
         if (draft) {
             cmoTemplateData.putAll(getDraftWaterMarkData());
         }
 
-        List<Map<String, String>> recitals = buildRecitals(caseManagementOrder.getRecitals());
+        List<Map<String, String>> recitals = buildRecitals(order.getRecitals());
         cmoTemplateData.put("recitals", recitals);
         cmoTemplateData.put("recitalsProvided", isNotEmpty(recitals));
 
-        cmoTemplateData.putAll(getSchedule(caseManagementOrder));
+        cmoTemplateData.putAll(getSchedule(order));
 
         //defaulting as 1 as we currently do not have impl for multiple CMos
         cmoTemplateData.put("caseManagementNumber", 1);
 
         return cmoTemplateData.build();
+    }
+
+    private CaseManagementOrder getCaseManagementOrder(CaseData caseData) {
+        if (caseData.getCaseManagementOrder() != null) {
+            return caseData.getCaseManagementOrder();
+        }
+
+        if (caseData.getCmoToAction() != null) {
+            return caseData.getCmoToAction();
+        }
+
+        return null;
     }
 
     private List<Map<String, Object>> getRepresentatives(List<Element<Respondent>> respondents1,

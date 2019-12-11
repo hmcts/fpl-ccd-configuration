@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
@@ -19,6 +19,9 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
@@ -27,22 +30,12 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
     JsonOrdersLookupService.class, DateFormatterService.class, DirectionHelperService.class,
     DocmosisConfiguration.class, RestTemplate.class, CaseDataExtractionService.class,
     DocmosisDocumentGeneratorService.class, CommonCaseDataExtractionService.class, HearingBookingService.class,
-    HearingVenueLookUpService.class, DraftCMOService.class
+    HearingVenueLookUpService.class, ActionCmoService.class
 })
 class ActionCmoServiceTest {
-    private final DraftCMOService draftCMOService;
-
-    private ActionCmoService service;
 
     @Autowired
-    ActionCmoServiceTest(DraftCMOService draftCMOService) {
-        this.draftCMOService = draftCMOService;
-    }
-
-    @BeforeEach
-    void setUp() {
-        service = new ActionCmoService(draftCMOService);
-    }
+    private ActionCmoService service;
 
     @Test
     void shouldAddDocumentToOrderWhenOrderAndDocumentExist() throws IOException {
@@ -57,20 +50,51 @@ class ActionCmoServiceTest {
     }
 
     @Test
-    void shouldAddOrderActionToCaseDataAndCaseManagementOrderWhenApproved() {
+    void shouldAddSharedDocumentToCaseDataAndCaseManagementOrderWhenApproved() {
         CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
 
-        service.progressCMOToAction(caseDetails, CaseManagementOrder.builder().build(), true);
+        final CaseManagementOrder order = CaseManagementOrder.builder()
+            .action(OrderAction.builder()
+                .type(SEND_TO_ALL_PARTIES)
+                .build())
+            .build();
 
-        assertThat(caseDetails.getData()).containsOnlyKeys("orderAction", "caseManagementOrder");
+        service.progressCMOToAction(caseDetails, order);
+
+        assertThat(caseDetails.getData()).containsOnlyKeys("sharedDraftCMODocument");
     }
 
     @Test
-    void shouldAddOrderActionToCaseDataButNotCaseManagementOrderWhenNotApproved() {
+    void shouldDoNothingToCaseDataWhenSelfReviewIsRequired() {
         CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
 
-        service.progressCMOToAction(caseDetails, CaseManagementOrder.builder().build(), false);
+        final CaseManagementOrder order = CaseManagementOrder.builder()
+            .action(OrderAction.builder()
+                .type(SELF_REVIEW)
+                .build())
+            .build();
 
-        assertThat(caseDetails.getData()).containsOnlyKeys("orderAction");
+        service.progressCMOToAction(caseDetails, order);
+
+        assertThat(caseDetails.getData()).isEmpty();
+    }
+
+    @Test
+    void shouldRemoveCMOToActionAndAddCaseManagementOrderToCaseDataWhenJudgeRequestsChange() {
+        final HashMap<String, Object> data = new HashMap<>();
+        data.put("cmoToAction", null);
+        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
+
+        final CaseManagementOrder order = CaseManagementOrder.builder()
+            .action(OrderAction.builder()
+                .type(JUDGE_REQUESTED_CHANGE)
+                .build())
+            .build();
+
+        service.progressCMOToAction(caseDetails, order);
+
+        assertThat(caseDetails.getData()).doesNotContainKey("cmoToAction");
+        assertThat(caseDetails.getData()).containsKey("caseManagementOrder");
+        assertThat(caseDetails.getData().get("caseManagementOrder")).isEqualTo(order);
     }
 }

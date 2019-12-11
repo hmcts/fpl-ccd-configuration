@@ -63,8 +63,8 @@ public class DraftCMOService {
         return data;
     }
 
-    public CaseManagementOrder prepareCMO(CaseData caseData) {
-        Optional<CaseManagementOrder> oldCMO = Optional.ofNullable(caseData.getCaseManagementOrder());
+    public CaseManagementOrder prepareCMO(CaseData caseData, CaseManagementOrder order) {
+        Optional<CaseManagementOrder> oldCMO = Optional.ofNullable(order);
         Optional<DynamicList> cmoHearingDateList = Optional.ofNullable(caseData.getCmoHearingDateList());
 
         return CaseManagementOrder.builder()
@@ -75,6 +75,7 @@ public class DraftCMOService {
             .recitals(caseData.getRecitals())
             .status(oldCMO.map(CaseManagementOrder::getStatus).orElse(null))
             .orderDoc(oldCMO.map(CaseManagementOrder::getOrderDoc).orElse(null))
+            .action(oldCMO.map(CaseManagementOrder::getAction).orElse(null))
             .build();
     }
 
