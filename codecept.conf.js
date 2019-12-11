@@ -70,6 +70,7 @@ exports.config = {
     draftCaseManagementOrderEventPage: './e2e/pages/events/draftCaseManagementOrderEvent.page.js',
     complyWithDirectionsEventPage: './e2e/pages/events/complyWithDirectionsEvent.page.js',
     complyOnBehalfOfOthersEventPage: './e2e/pages/events/complyOnBehalfOfOthersEvent.page.js',
+    actionCaseManagementOrderEventPage: './e2e/pages/events/actionCaseManagementOrderEventPage.js',
   },
   plugins: {
     autoDelay: {
