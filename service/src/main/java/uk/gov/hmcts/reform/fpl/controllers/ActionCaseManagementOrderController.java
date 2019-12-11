@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import java.io.IOException;
 import java.util.Map;
 
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 @Api
 @RestController
@@ -78,10 +79,7 @@ public class ActionCaseManagementOrderController {
 
         Document document = getDocument(authorization, userId, caseData, false);
 
-        CaseManagementOrder order = defaultIfNull(caseData.getCmoToAction(), CaseManagementOrder.builder().build());
-        CaseManagementOrder orderWithDocument = caseManagementOrderService.addDocument(order, document);
-
-        caseDetails.getData().put("cmoToAction", orderWithDocument);
+        caseDetails.getData().put("orderAction", ImmutableMap.of("document", buildFromDocument(document)));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -102,11 +100,9 @@ public class ActionCaseManagementOrderController {
 
         order = caseManagementOrderService.addAction(order, caseData.getOrderAction());
 
-        if (order.isApprovedByJudge()) {
-            Document document = getDocument(authorization, userId, caseData, true);
+        Document document = getDocument(authorization, userId, caseData, order.isApprovedByJudge());
 
-            order = caseManagementOrderService.addDocument(order, document);
-        }
+        order = caseManagementOrderService.addDocument(order, document);
 
         caseDetails.getData().put("cmoToAction", order);
 
