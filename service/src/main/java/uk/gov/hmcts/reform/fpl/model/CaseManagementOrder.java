@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,8 @@ import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import java.util.List;
 import java.util.UUID;
 
-//TODO: extend Order class
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
+
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -25,4 +27,12 @@ public class CaseManagementOrder {
     private final List<Element<Recital>> recitals;
     private final CMOStatus status;
     private final OrderAction action;
+
+    @JsonIgnore
+    public boolean isApprovedByJudge() {
+        if (action != null) {
+            return action.getType().equals(SEND_TO_ALL_PARTIES);
+        }
+        return false;
+    }
 }

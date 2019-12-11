@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+
 @Service
 public class ActionCmoService {
     private final DraftCMOService draftCMOService;
@@ -22,7 +24,8 @@ public class ActionCmoService {
     private final CMODocmosisTemplateDataGenerationService cmoDocmosisTemplateDataGenerationService;
 
     private static final String CMO_ACTION_KEY = "orderAction";
-    private static final String CMO_KEY = "caseManagementOrder";
+    private static final String LA_CMO_KEY = "caseManagementOrder";
+    private static final String JUDGE_CMO_KEY = "cmoToAction";
 
     //TODO: this should all exist in one CaseManagementOrderService
     public ActionCmoService(DraftCMOService draftCMOService,
@@ -35,17 +38,22 @@ public class ActionCmoService {
 
     public CaseManagementOrder addDocument(CaseManagementOrder caseManagementOrder, Document document) {
         return caseManagementOrder.toBuilder()
-            .orderDoc(buildDocumentReference(document))
+            .orderDoc(buildFromDocument(document))
             .build();
     }
 
-    public void prepareCaseDetailsForSubmission(CaseDetails caseDetails, CaseManagementOrder order, boolean approved) {
-        caseDetails.getData().put(CMO_ACTION_KEY, order.getAction());
-
-        if (approved) {
-            caseDetails.getData().put(CMO_KEY, order);
-        } else {
-            caseDetails.getData().remove(CMO_KEY);
+    // REFACTOR: 10/12/2019 Method name
+    public void progressCMOToAction(CaseDetails caseDetails, CaseManagementOrder order, boolean approved) {
+        switch (order.getAction().getType()) {
+            case SEND_TO_ALL_PARTIES:
+                caseDetails.getData().put("sharedDraftCMODocument", order.getOrderDoc());
+                break;
+            case JUDGE_REQUESTED_CHANGE:
+                caseDetails.getData().put(LA_CMO_KEY, order);
+                caseDetails.getData().remove(JUDGE_CMO_KEY);
+                break;
+            case SELF_REVIEW:
+                break;
         }
     }
 
@@ -63,14 +71,6 @@ public class ActionCmoService {
         String documentTitle = (approved ? document.getDocumentTitle() : "draft-" + document.getDocumentTitle());
         return document.toBuilder()
             .documentTitle(documentTitle)
-            .build();
-    }
-
-    private DocumentReference buildDocumentReference(final Document document) {
-        return DocumentReference.builder()
-            .url(document.links.self.href)
-            .binaryUrl(document.links.binary.href)
-            .filename(document.originalDocumentName)
             .build();
     }
 }
