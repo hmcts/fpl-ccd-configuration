@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,8 +13,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
@@ -223,21 +220,6 @@ class DraftCMOServiceTest {
 
     private String formatLocalDateToMediumStyle(int i) {
         return dateFormatterService.formatLocalDateToString(NOW.plusDays(i).toLocalDate(), FormatStyle.MEDIUM);
-    }
-
-    private Others createFirstOtherWithoutAName() {
-        return Others.builder()
-            .firstOther(Other.builder()
-                .DOB("02/05/1988")
-                .build())
-            .additionalOthers(ImmutableList.of(
-                Element.<Other>builder()
-                    .value(Other.builder()
-                        .name("Peter Smith")
-                        .DOB("02/05/1988")
-                        .build())
-                    .build()
-            )).build();
     }
 
     @Nested
