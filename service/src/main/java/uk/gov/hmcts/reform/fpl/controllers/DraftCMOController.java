@@ -124,7 +124,6 @@ public class DraftCMOController {
             .build();
     }
 
-    // TODO: 10/12/2019 Update integration tests
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
         coreCaseDataService.triggerEvent(

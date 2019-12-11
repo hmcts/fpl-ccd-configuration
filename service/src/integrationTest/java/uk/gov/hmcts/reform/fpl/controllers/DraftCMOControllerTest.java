@@ -47,6 +47,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
@@ -63,6 +65,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 class DraftCMOControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
+    private static final long ID = 1L;
     private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
     private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
@@ -179,11 +182,19 @@ class DraftCMOControllerTest {
 
     @Test
     void submittedShouldTriggerCMOProgressionEvent() throws Exception {
-        Map<String, Object> data = new HashMap<>();
-        long caseId = 1L;
+        String event = "internal-change:CMO_PROGRESSION";
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(ID)
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .data(ImmutableMap.of("caseManagementOrder", CaseManagementOrder.builder().status(SELF_REVIEW).build()))
+                .build())
+            .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "submitted");
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        makeRequest(request, "submitted");
+
+        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, ID, event);
     }
 
     private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {
@@ -201,6 +212,9 @@ class DraftCMOControllerTest {
         final Map<String, Object> data, final String endpoint) throws Exception {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
+                .id(ID)
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
                 .data(data)
                 .build())
             .build();
