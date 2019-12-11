@@ -117,7 +117,7 @@ gateway:
   url: http://localhost:3453
 
 notify:
-  api_key: pretends-12f756df-f01d-4a32-a405-e1ea8a494fbb-21670ef3-5abb-4f05-9208-a72e41b4a01c
+  api_key: fake-key
 
 ccd:
   ui:
