@@ -30,7 +30,6 @@ import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.values;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
@@ -240,45 +239,6 @@ class DraftCMOServiceTest {
             draftCMOService.removeTransientObjectsFromCaseData(data);
 
             assertThat(data).doesNotContainKeys(keys);
-        }
-
-        @Test
-        void shouldMaintainCaseManagementOrderWhenCMOStatusIsSelfReview() {
-            data = new HashMap<>();
-
-            caseManagementOrder = CaseManagementOrder.builder().status(SELF_REVIEW).build();
-            data.put("caseManagementOrder", caseManagementOrder);
-
-            draftCMOService.progressDraftCMO(data, caseManagementOrder);
-
-            assertThat(data.get("caseManagementOrder")).isEqualTo(caseManagementOrder);
-        }
-
-        @Test
-        void shouldMakeSharedDraftCMODocumentNullWhenCMOStatusIsSelfReview() {
-            data = new HashMap<>();
-
-            caseManagementOrder = CaseManagementOrder.builder().status(SELF_REVIEW).build();
-            data.put("sharedDraftCMODocument", DocumentReference.builder().build());
-
-            draftCMOService.progressDraftCMO(data, caseManagementOrder);
-
-            assertThat(data.get("sharedDraftCMODocument")).isNull();
-        }
-
-        @Test
-        void shouldPopulateSharedDraftCMODocumentWhenCMOStatusIsPartyReview() {
-            data = new HashMap<>();
-
-            DocumentReference documentReference = DocumentReference.builder().build();
-            caseManagementOrder = CaseManagementOrder.builder()
-                .status(PARTIES_REVIEW)
-                .orderDoc(documentReference)
-                .build();
-
-            draftCMOService.progressDraftCMO(data, caseManagementOrder);
-
-            assertThat(data.get("sharedDraftCMODocument")).isEqualTo(documentReference);
         }
     }
 }

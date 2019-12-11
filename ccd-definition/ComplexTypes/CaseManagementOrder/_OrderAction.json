@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderAction",
-    "ListElementCode": "orderDoc",
+    "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "File",
     "SecurityClassification": "Public"

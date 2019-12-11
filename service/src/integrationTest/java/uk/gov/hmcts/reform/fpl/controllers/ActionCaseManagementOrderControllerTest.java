@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,10 +59,10 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedu
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
-@WebMvcTest(ActionCMOController.class)
+@WebMvcTest(ActionCaseManagementOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ActionCMOControllerTest {
-    public static final String CMO_TO_ACTION_KEY = "cmoToAction";
+class ActionCaseManagementOrderControllerTest {
+    private static final String CMO_TO_ACTION_KEY = "cmoToAction";
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final byte[] pdf = {1, 2, 3, 4, 5};
@@ -124,7 +123,7 @@ class ActionCMOControllerTest {
     }
 
     @Test
-    void midEventShouldReturnDocumentReferenceForTheCaseManagementOrder() throws Exception {
+    void midEventShouldAddDocumentReferenceToOrderAction() throws Exception {
         DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
 
         dynamicHearingDates.setValue(DynamicListElement.builder()
@@ -149,18 +148,18 @@ class ActionCMOControllerTest {
         final CaseManagementOrder order = objectMapper.convertValue(responseCaseData.get(
             CMO_TO_ACTION_KEY), CaseManagementOrder.class);
 
-        AssertionsForClassTypes.assertThat(order.getOrderDoc()).isEqualTo(
+        assertThat(order.getOrderDoc()).isEqualTo(
             DocumentReference.builder()
                 .binaryUrl(document().links.binary.href)
                 .filename(document().originalDocumentName)
                 .url(document().links.self.href)
                 .build());
 
-        AssertionsForClassTypes.assertThat(order.getAction()).isEqualTo(
+        assertThat(order.getAction()).isEqualTo(
             OrderAction.builder()
                 .nextHearingId(NEXT_HEARING_ID)
                 .nextHearingDate(TODAYS_DATE.plusDays(5).toString())
-            .build());
+                .build());
     }
 
     @Test

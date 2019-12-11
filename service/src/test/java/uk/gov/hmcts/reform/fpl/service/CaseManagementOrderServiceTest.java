@@ -7,27 +7,25 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
-import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
+import static java.util.Collections.emptyList;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SELF_REVIEW;
-import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingDynmaicList;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -38,73 +36,54 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
     JsonOrdersLookupService.class, DateFormatterService.class, DirectionHelperService.class,
     DocmosisConfiguration.class, RestTemplate.class, CaseDataExtractionService.class,
     DocmosisDocumentGeneratorService.class, CommonCaseDataExtractionService.class, HearingBookingService.class,
-    HearingVenueLookUpService.class, ActionCmoService.class
+    HearingVenueLookUpService.class, CaseManagementOrderService.class
 })
-class ActionCmoServiceTest {
+class CaseManagementOrderServiceTest {
     private static final LocalDateTime MOCK_DATE = LocalDateTime.of(2018, 2, 12, 9, 30);
 
     @Autowired
-    private ActionCmoService service;
+    private CaseManagementOrderService service;
 
     @Test
-    void shouldAddDocumentToOrderWhenOrderAndDocumentExist() throws IOException {
-        Document document = document();
-        CaseManagementOrder orderWithDocument = service.addDocument(CaseManagementOrder.builder().build(), document);
+    void shouldAddDocumentToOrderWhenDocumentExists() throws IOException {
+        CaseManagementOrder orderWithDoc = service.addDocument(CaseManagementOrder.builder().build(), document());
 
-        assertThat(orderWithDocument.getOrderDoc()).isEqualTo(DocumentReference.builder()
-            .url(document.links.self.href)
-            .binaryUrl(document.links.binary.href)
-            .filename(document.originalDocumentName)
+        assertThat(orderWithDoc.getOrderDoc()).isEqualTo(buildFromDocument(document()));
+    }
+
+    @Test
+    void shouldAddActionToOrderWhenActionExists() {
+        CaseManagementOrder orderWithDoc = service.addAction(CaseManagementOrder.builder().build(),
+            OrderAction.builder().type(SELF_REVIEW).build());
+
+        assertThat(orderWithDoc.getAction()).isEqualTo(OrderAction.builder().type(SELF_REVIEW).build());
+    }
+
+    @Test
+    void shouldExtractExpectedMapFieldsWhenAllDataIsPresent() {
+        Map<String, Object> data = service.extractMapFieldsFromCaseManagementOrder(CaseManagementOrder.builder()
+            .schedule(Schedule.builder().build())
+            .recitals(emptyList())
+            .action(OrderAction.builder().build())
             .build());
+
+        assertThat(data).containsOnlyKeys("schedule", "recitals", "orderAction");
     }
 
     @Test
-    void shouldAddSharedDocumentToCaseDataAndCaseManagementOrderWhenApproved() {
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+    void shouldExtractMapFieldsWhenPartialDataIsPresent() {
+        Map<String, Object> data = service.extractMapFieldsFromCaseManagementOrder(CaseManagementOrder.builder()
+            .schedule(Schedule.builder().build())
+            .build());
 
-        final CaseManagementOrder order = CaseManagementOrder.builder()
-            .action(OrderAction.builder()
-                .type(SEND_TO_ALL_PARTIES)
-                .build())
-            .build();
-
-        service.progressCMOToAction(caseDetails, order);
-
-        assertThat(caseDetails.getData()).containsOnlyKeys("sharedDraftCMODocument");
+        assertThat(data).containsOnlyKeys("schedule", "recitals", "orderAction");
     }
 
     @Test
-    void shouldDoNothingToCaseDataWhenSelfReviewIsRequired() {
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
+    void shouldExtractMapFieldsWhenCaseManagementOrderIsNull() {
+        Map<String, Object> data = service.extractMapFieldsFromCaseManagementOrder(null);
 
-        final CaseManagementOrder order = CaseManagementOrder.builder()
-            .action(OrderAction.builder()
-                .type(SELF_REVIEW)
-                .build())
-            .build();
-
-        service.progressCMOToAction(caseDetails, order);
-
-        assertThat(caseDetails.getData()).isEmpty();
-    }
-
-    @Test
-    void shouldRemoveCMOToActionAndAddCaseManagementOrderToCaseDataWhenJudgeRequestsChange() {
-        final HashMap<String, Object> data = new HashMap<>();
-        data.put("cmoToAction", null);
-        CaseDetails caseDetails = CaseDetails.builder().data(data).build();
-
-        final CaseManagementOrder order = CaseManagementOrder.builder()
-            .action(OrderAction.builder()
-                .type(JUDGE_REQUESTED_CHANGE)
-                .build())
-            .build();
-
-        service.progressCMOToAction(caseDetails, order);
-
-        assertThat(caseDetails.getData()).doesNotContainKey("cmoToAction");
-        assertThat(caseDetails.getData()).containsKey("caseManagementOrder");
-        assertThat(caseDetails.getData().get("caseManagementOrder")).isEqualTo(order);
+        assertThat(data).containsOnlyKeys("schedule", "recitals", "orderAction");
     }
 
     @Test

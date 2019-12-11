@@ -36,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 
+//TODO: methods to be moved to CaseManagementOrderService and DirectionHelperService.
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOService {
@@ -82,20 +83,6 @@ public class DraftCMOService {
             "recitals");
 
         keysToRemove.forEach(caseData::remove);
-    }
-
-    public void progressDraftCMO(Map<String, Object> caseData, CaseManagementOrder caseManagementOrder) {
-        switch (caseManagementOrder.getStatus()) {
-            case SEND_TO_JUDGE:
-            case PARTIES_REVIEW:
-                caseData.put("sharedDraftCMODocument", caseManagementOrder.getOrderDoc());
-                break;
-            case SELF_REVIEW:
-                caseData.remove("sharedDraftCMODocument");
-                break;
-            default:
-                break;
-        }
     }
 
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {

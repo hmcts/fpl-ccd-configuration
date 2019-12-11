@@ -20,8 +20,9 @@ import java.util.UUID;
 import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
+//TODO: this class will take some of the methods out of draftCMO service.
 @Service
-public class ActionCmoService {
+public class CaseManagementOrderService {
     private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
 
@@ -29,13 +30,13 @@ public class ActionCmoService {
     private static final String LA_CMO_KEY = "caseManagementOrder";
     private static final String JUDGE_CMO_KEY = "cmoToAction";
 
-    //TODO: this should all exist in one CaseManagementOrderService
     @Autowired
-    public ActionCmoService(DateFormatterService dateFormatterService,
+    public CaseManagementOrderService(DateFormatterService dateFormatterService,
                             HearingBookingService hearingBookingService) {
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
     }
+
 
     public CaseManagementOrder addDocument(CaseManagementOrder caseManagementOrder, Document document) {
         return caseManagementOrder.toBuilder()
@@ -49,7 +50,6 @@ public class ActionCmoService {
             .build();
     }
 
-    // REFACTOR: 10/12/2019 Method name
     public void progressCMOToAction(CaseDetails caseDetails, CaseManagementOrder order) {
         switch (order.getAction().getType()) {
             case SEND_TO_ALL_PARTIES:
