@@ -97,8 +97,8 @@ class GeneratedOrderEmailContentProviderTest {
                 "orderCollection", ImmutableList.of(
                     Element.<GeneratedOrder>builder()
                         .value(GeneratedOrder.builder()
-                            .orderTitle("Example Order")
-                            .orderDetails(
+                            .title("Example Order")
+                            .details(
                                 "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
                             .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker",
                                 "Judy", null, HER_HONOUR_JUDGE))

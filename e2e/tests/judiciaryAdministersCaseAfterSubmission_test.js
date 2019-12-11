@@ -76,7 +76,7 @@ Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage,
 Scenario('Judiciary creates multiple orders for the case', async (I, caseViewPage, createOrderEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);
   await createOrderEventPage.selectType(orders[0].type);
-  await I.retryUntilExists(() => I.click('Continue'), '#order_orderTitle');
+  await I.retryUntilExists(() => I.click('Continue'), '#order_title');
   await createOrderEventPage.enterC21OrderDetails();
   await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
   await createOrderEventPage.enterJudgeAndLegalAdvisor(orders[0].judgeAndLegalAdvisor.judgeLastName, orders[0].judgeAndLegalAdvisor.legalAdvisorName);
@@ -86,7 +86,7 @@ Scenario('Judiciary creates multiple orders for the case', async (I, caseViewPag
   I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeAnswerInTab(1, 'Order 1', 'Type of order', orders[0].type);
-  I.seeAnswerInTab(2, 'Order 1', 'Order title', orders[0].orderTitle);
+  I.seeAnswerInTab(2, 'Order 1', 'Order title', orders[0].title);
   I.seeAnswerInTab(4, 'Order 1', 'Order document', orders[0].document);
   I.seeAnswerInTab(5, 'Order 1', 'Date and time of upload', dateFormat(orderTime, 'd mmmm yyyy'));
   I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', orders[0].judgeAndLegalAdvisor.judgeTitle);

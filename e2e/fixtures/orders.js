@@ -1,8 +1,8 @@
 module.exports = [
   {
     type: 'Blank order (C21)',
-    orderTitle: 'Example Order Title',
-    orderDetails: 'Example order details here - Lorem ipsum dolor sit amet...',
+    title: 'Example Order Title',
+    details: 'Example order details here - Lorem ipsum dolor sit amet...',
     document: 'blank_order_c21.pdf',
     //future work: extract judgeAndLegalAdvisor to separate fixture
     judgeAndLegalAdvisor: {

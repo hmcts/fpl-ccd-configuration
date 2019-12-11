@@ -271,10 +271,10 @@ public class CaseDataGeneratorHelper {
         return ImmutableList.of(
             Element.<GeneratedOrder>builder()
                 .value(GeneratedOrder.builder()
-                    .orderTitle("Example Order")
-                    .orderDetails(
+                    .title("Example Order")
+                    .details(
                         "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                    .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
+                    .date(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
                         LocalDateTime.now().plusDays(57), FORMAT_STYLE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker",
                         "Judy", null, HER_HONOUR_JUDGE))
@@ -283,9 +283,9 @@ public class CaseDataGeneratorHelper {
             Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
                 .value(GeneratedOrder.builder()
-                    .orderTitle("Winter is here")
-                    .orderDetails("Westeros")
-                    .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
+                    .title("Winter is here")
+                    .details("Westeros")
+                    .date(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
                         LocalDateTime.now().plusDays(59), FORMAT_STYLE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Baratheon",
                         "Tyrion Lannister", "Lannister", HIS_HONOUR_JUDGE))
@@ -295,9 +295,9 @@ public class CaseDataGeneratorHelper {
             Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
                 .value(GeneratedOrder.builder()
-                    .orderTitle("Black Sails")
-                    .orderDetails("Long John Silver")
-                    .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
+                    .title("Black Sails")
+                    .details("Long John Silver")
+                    .date(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
                         LocalDateTime.now().plusDays(60), FORMAT_STYLE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Edward Teach",
                         "Captain Flint", "Scott", DEPUTY_DISTRICT_JUDGE))

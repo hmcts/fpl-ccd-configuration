@@ -25,7 +25,7 @@
     "ID": "GeneratedOrderComplexType",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "order",
-    "ListElementCode": "orderTitle",
+    "ListElementCode": "title",
     "EventElementLabel": "Order title",
     "FieldDisplayOrder": 1,
     "DisplayContext": "OPTIONAL"
@@ -35,7 +35,7 @@
     "ID": "GeneratedOrderComplexType",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "order",
-    "ListElementCode": "orderDetails",
+    "ListElementCode": "details",
     "EventElementLabel": "Order details",
     "FieldDisplayOrder": 2,
     "DisplayContext": "MANDATORY"
@@ -45,7 +45,7 @@
     "ID": "GeneratedOrderComplexType",
     "CaseEventID": "createOrderGatekeeping",
     "CaseFieldID": "order",
-    "ListElementCode": "orderDate",
+    "ListElementCode": "date",
     "EventElementLabel": "Date and time of upload",
     "FieldDisplayOrder": 3,
     "DisplayContext": "READONLY",

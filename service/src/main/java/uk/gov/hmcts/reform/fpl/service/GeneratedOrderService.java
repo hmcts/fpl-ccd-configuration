@@ -77,11 +77,11 @@ public class GeneratedOrderService {
         //Scalable for future types of orders which may have additional fields
         switch (typeAndDocument.getType()) {
             case BLANK_ORDER:
-                orderBuilder.orderTitle(defaultIfBlank(generatedOrder.getOrderTitle(), "Order"));
-                orderBuilder.orderDetails(generatedOrder.getOrderDetails());
+                orderBuilder.title(defaultIfBlank(generatedOrder.getTitle(), "Order"));
+                orderBuilder.details(generatedOrder.getDetails());
                 break;
             case CARE_ORDER:
-                orderBuilder.orderTitle(null);
+                orderBuilder.title(null);
                 break;
             default:
         }
@@ -92,7 +92,7 @@ public class GeneratedOrderService {
                 .type(typeAndDocument.getType())
                 .document(typeAndDocument.getDocument())
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
-                .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
+                .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
                     "h:mma, d MMMM yyyy"))
                 .build())
             .build();
@@ -105,14 +105,14 @@ public class GeneratedOrderService {
         switch (caseData.getOrderTypeAndDocument().getType()) {
             case BLANK_ORDER:
                 orderTemplateBuilder
-                    .put("type", BLANK_ORDER)
-                    .put("orderTitle", defaultIfNull(caseData.getOrder().getOrderTitle(), "Order"))
+                    .put("orderType", BLANK_ORDER)
+                    .put("orderTitle", defaultIfNull(caseData.getOrder().getTitle(), "Order"))
                     .put("childrenAct", "Section 31 Children Act 1989")
-                    .put("orderDetails", caseData.getOrder().getOrderDetails());
+                    .put("orderDetails", caseData.getOrder().getDetails());
                 break;
             case CARE_ORDER:
                 orderTemplateBuilder
-                    .put("type", CARE_ORDER)
+                    .put("orderType", CARE_ORDER)
                     .put("orderTitle", "Care Order")
                     .put("childrenAct", "Children Act 1989")
                     .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),

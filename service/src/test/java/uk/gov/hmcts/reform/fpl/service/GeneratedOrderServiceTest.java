@@ -78,8 +78,8 @@ class GeneratedOrderServiceTest {
     @Test
     void shouldReturnExpectedC21OrderWhenOrderTitleIsNull() {
         GeneratedOrder order = GeneratedOrder.builder()
-            .orderTitle(null)
-            .orderDetails("Some details")
+            .title(null)
+            .details("Some details")
             .document(DocumentReference.builder().build())
             .build();
 
@@ -90,14 +90,14 @@ class GeneratedOrderServiceTest {
             order, JudgeAndLegalAdvisor.builder().build());
 
         assertCommonC21Fields(returnedElement.getValue());
-        assertThat(returnedElement.getValue().getOrderTitle()).isEqualTo("Order");
+        assertThat(returnedElement.getValue().getTitle()).isEqualTo("Order");
     }
 
     @Test
     void shouldReturnExpectedOrderWhenC21OrderTitleIsEmptyString() {
         GeneratedOrder order = GeneratedOrder.builder()
-            .orderTitle("")
-            .orderDetails("Some details")
+            .title("")
+            .details("Some details")
             .document(DocumentReference.builder().build())
             .build();
 
@@ -108,14 +108,14 @@ class GeneratedOrderServiceTest {
             order, JudgeAndLegalAdvisor.builder().build());
 
         assertCommonC21Fields(returnedElement.getValue());
-        assertThat(returnedElement.getValue().getOrderTitle()).isEqualTo("Order");
+        assertThat(returnedElement.getValue().getTitle()).isEqualTo("Order");
     }
 
     @Test
     void shouldReturnExpectedOrderWhenOrderTitleIsStringWithSpaceCharacter() {
         GeneratedOrder order = GeneratedOrder.builder()
-            .orderTitle(" ")
-            .orderDetails("Some details")
+            .title(" ")
+            .details("Some details")
             .document(DocumentReference.builder().build())
             .build();
 
@@ -126,14 +126,14 @@ class GeneratedOrderServiceTest {
             order, JudgeAndLegalAdvisor.builder().build());
 
         assertCommonC21Fields(returnedElement.getValue());
-        assertThat(returnedElement.getValue().getOrderTitle()).isEqualTo("Order");
+        assertThat(returnedElement.getValue().getTitle()).isEqualTo("Order");
     }
 
     @Test
     void shouldReturnExpectedOrderWhenOrderTitlePresent() {
         GeneratedOrder order = GeneratedOrder.builder()
-            .orderTitle("Example Title")
-            .orderDetails("Some details")
+            .title("Example Title")
+            .details("Some details")
             .document(DocumentReference.builder().build())
             .build();
 
@@ -144,7 +144,7 @@ class GeneratedOrderServiceTest {
             order, JudgeAndLegalAdvisor.builder().build());
 
         assertCommonC21Fields(returnedElement.getValue());
-        assertThat(returnedElement.getValue().getOrderTitle()).isEqualTo("Example Title");
+        assertThat(returnedElement.getValue().getTitle()).isEqualTo("Example Title");
     }
 
     @Test
@@ -160,7 +160,7 @@ class GeneratedOrderServiceTest {
                 .build());
 
         assertThat(returnedElement.getValue().getDocument()).isEqualTo(DocumentReference.builder().build());
-        assertThat(returnedElement.getValue().getOrderDate()).isNotNull();
+        assertThat(returnedElement.getValue().getDate()).isNotNull();
         assertThat(returnedElement.getValue().getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder()
             .judgeTitle(HER_HONOUR_JUDGE)
             .judgeLastName("Judy")
@@ -232,8 +232,8 @@ class GeneratedOrderServiceTest {
     private void assertCommonC21Fields(GeneratedOrder order) {
         assertThat(order.getType()).isEqualTo(BLANK_ORDER);
         assertThat(order.getDocument()).isEqualTo(DocumentReference.builder().build());
-        assertThat(order.getOrderDetails()).isEqualTo("Some details");
-        assertThat(order.getOrderDate()).isNotNull();
+        assertThat(order.getDetails()).isEqualTo("Some details");
+        assertThat(order.getDate()).isNotNull();
         assertThat(order.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder().build());
     }
 
@@ -244,14 +244,14 @@ class GeneratedOrderServiceTest {
         switch (type) {
             case BLANK_ORDER:
                 expectedMap
-                    .put("type", BLANK_ORDER)
+                    .put("orderType", BLANK_ORDER)
                     .put("orderTitle", "Example Title")
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails", "Example details");
                 break;
             case CARE_ORDER:
                 expectedMap
-                    .put("type", CARE_ORDER)
+                    .put("orderType", CARE_ORDER)
                     .put("orderTitle", "Care Order")
                     .put("childrenAct", "Children Act 1989")
                     .put("orderDetails",
@@ -286,8 +286,8 @@ class GeneratedOrderServiceTest {
                         .document(DocumentReference.builder().build())
                         .build())
                     .order(GeneratedOrder.builder()
-                        .orderTitle("Example Title")
-                        .orderDetails("Example details")
+                        .title("Example Title")
+                        .details("Example details")
                         .build());
                 break;
             case CARE_ORDER:

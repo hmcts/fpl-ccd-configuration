@@ -123,7 +123,7 @@ class GeneratedOrderControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldUpdateCaseDataAccordinglyWhenC21IsSelected() throws Exception {
+    void aboutToSubmitShouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() throws Exception {
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "about-to-submit");
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -133,7 +133,7 @@ class GeneratedOrderControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldUpdateCaseDataAccordinglyWhenCareOrderIsSelected() throws Exception {
+    void aboutToSubmitShouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() throws Exception {
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(careOrderRequest(), "about-to-submit");
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -159,9 +159,9 @@ class GeneratedOrderControllerTest {
                 .url("some url")
                 .binaryUrl("some binary url")
                 .filename("file.pdf").build())
-            .orderTitle("Example Order")
-            .orderDetails("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-            .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+            .title("Example Order")
+            .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+            .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
                 FixedTimeConfiguration.NOW, "h:mma, d MMMM yyyy"))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HER_HONOUR_JUDGE)
@@ -178,7 +178,7 @@ class GeneratedOrderControllerTest {
                 .url("some url")
                 .binaryUrl("some binary url")
                 .filename("file.pdf").build())
-            .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+            .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
                 FixedTimeConfiguration.NOW, "h:mma, d MMMM yyyy"))
             .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
                 .judgeTitle(HER_HONOUR_JUDGE)

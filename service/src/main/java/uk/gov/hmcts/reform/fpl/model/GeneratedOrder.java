@@ -10,9 +10,9 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 @Builder(toBuilder = true)
 public class GeneratedOrder {
     private final GeneratedOrderType type;
-    private final String orderTitle;
-    private final String orderDetails;
+    private final String title;
+    private final String details;
     private final DocumentReference document;
-    private final String orderDate;
+    private final String date;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
 }
