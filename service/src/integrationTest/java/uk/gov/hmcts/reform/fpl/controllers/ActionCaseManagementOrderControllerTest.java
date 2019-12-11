@@ -51,6 +51,7 @@ class ActionCaseManagementOrderControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final byte[] pdf = {1, 2, 3, 4, 5};
+
     @Autowired
     private MockMvc mockMvc;
 
