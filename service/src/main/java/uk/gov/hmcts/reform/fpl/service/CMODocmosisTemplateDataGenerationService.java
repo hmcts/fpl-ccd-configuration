@@ -61,7 +61,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
     private final ObjectMapper mapper;
 
     @SuppressWarnings("unchecked")
-    public Map<String, Object> getTemplateData(CaseData caseData) throws IOException {
+    public Map<String, Object> getTemplateData(CaseData caseData, boolean draft) throws IOException {
         ImmutableMap.Builder cmoTemplateData = ImmutableMap.<String, Object>builder();
         final DynamicList hearingDateList = caseData.getCmoHearingDateList();
         final String localAuthorityCode = caseData.getCaseLocalAuthority();
@@ -102,7 +102,9 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
         cmoTemplateData.putAll(getGroupedCMODirections(caseManagementOrder));
 
-        cmoTemplateData.putAll(getDraftWaterMarkData());
+        if (draft) {
+            cmoTemplateData.putAll(getDraftWaterMarkData());
+        }
 
         List<Map<String, String>> recitals = buildRecitals(caseManagementOrder.getRecitals());
         cmoTemplateData.put("recitals", recitals);
