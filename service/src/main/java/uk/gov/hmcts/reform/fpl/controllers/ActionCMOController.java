@@ -112,9 +112,9 @@ public class ActionCMOController {
                                      @RequestHeader(value = "user-id") String userId,
                                      @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+
         if (hasJudgeApproved(caseData.getCaseManagementOrder())) {
-            DocmosisDocument docmosisDocument = actionCmoService.getDocmosisDocument(caseData,
-                hasJudgeApproved(caseData.getCaseManagementOrder()));
+            DocmosisDocument docmosisDocument = actionCmoService.getDocmosisDocument(caseData, true);
 
             applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId,
                 docmosisDocument));
