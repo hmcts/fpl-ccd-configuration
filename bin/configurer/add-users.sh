@@ -9,4 +9,4 @@ jq -r '.[] | .email + " " + .roles + " " +  .lastName' ${dir}/users.json | while
 done
 
 echo "\nGenerating local user mappings"
-${dir}/utils/generate-local-user-mappings.sh
+#${dir}/utils/generate-local-user-mappings.sh

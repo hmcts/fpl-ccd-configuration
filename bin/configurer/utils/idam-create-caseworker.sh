@@ -90,23 +90,26 @@ IFS=',' read -ra roles <<<"${rolesStr}"
 
 rolesJson=''
 for role in "${roles[@]}"; do
+  echo "Role: ${role}"
   if [[ -n ${rolesJson} ]]; then
     rolesJson="${rolesJson},"
   fi
   rolesJson=${rolesJson}'{"code":"'${role}'"}'
 done
 
-printf "\n%s%s\n" "Creating IDAM user: " "${email}"
+echo "Roles JSON: {$rolesJson}"
 
-userCreationResponse=$(create_user_request)
-
-# Unfortunately trying to create the same user throws 403, so we don't know what went wrong
-if [[ $userCreationResponse -eq 403 ]]; then
-  printf "%s%s%s\n" "User " "${email}" " already exists"
-  recreate_user
-elif [[ $userCreationResponse -ne 201 ]]; then
-  printf "%s%s\n" "Unexpected HTTP status code from IDAM: " "${userCreationResponse}"
-  exit 1
-else
-  printf "%s%s%s\n" "User " "${email}" " - added to IDAM"
-fi
+#printf "\n%s%s\n" "Creating IDAM user: " "${email}"
+#
+#userCreationResponse=$(create_user_request)
+#
+## Unfortunately trying to create the same user throws 403, so we don't know what went wrong
+#if [[ $userCreationResponse -eq 403 ]]; then
+#  printf "%s%s%s\n" "User " "${email}" " already exists"
+#  recreate_user
+#elif [[ $userCreationResponse -ne 201 ]]; then
+#  printf "%s%s\n" "Unexpected HTTP status code from IDAM: " "${userCreationResponse}"
+#  exit 1
+#else
+#  printf "%s%s%s\n" "User " "${email}" " - added to IDAM"
+#fi

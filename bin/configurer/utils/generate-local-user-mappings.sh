@@ -5,6 +5,7 @@ set -eu
 dir=$(dirname ${0})
 root_dir=$(realpath ${dir}/../../..)
 
+user_template_file=${root_dir}/docker/wiremock/__files/userTemplate.json
 mock_file=${root_dir}/docker/wiremock/__files/mockResponse.json
 mock_tmp_file=${root_dir}/docker/wiremock/__files/mockResponse.tmp.json
 users_file=${root_dir}/bin/configurer/users.json
@@ -25,14 +26,14 @@ function get_users_ids() {
 }
 
 function create_mock_response() {
-  jq --arg organisation $1 '[.[] | select(.email | contains($organisation))]' $users_file > $mock_file
+  jq --arg organisation $1 --argjson template "$(<$user_template_file)" '[.[] | select(.email | contains($organisation)) | $template + .]' $users_file > $mock_file
   echo $(get_users_email_id_mappings $1) > $users_ids_tmp_file
 
-  for i in `seq 1 $(jq '. | length' $mock_file)`
+  for i in `seq 0 $(jq '. | length - 1' $mock_file)`
   do
-    email=$(jq -r --argjson index $i '.[$index-1].email' $mock_file)
+    email=$(jq -r --argjson i $i '.[$i].email' $mock_file)
     user_id=$(jq -r --arg email $email '.[$email]' $users_ids_tmp_file)
-    jq -r --argjson index $i --arg user_id $user_id '.[$index-1].userIdentifier=$user_id | .[$index-1].firstName=.[$index-1].email | .[$index-1].idamStatus="ACTIVE" | .[$index-1].idamStatusCode="0" | .[$index-1].idamMessage="" | .[$index-1].roles|=split(",")' $mock_file > $mock_tmp_file && mv $mock_tmp_file $mock_file
+    jq -r --argjson i $i --arg user_id $user_id '.[$i].userIdentifier=$user_id | .[$i].firstName=.[$i].email | .[$i].roles|=split(",")' $mock_file > $mock_tmp_file && mv $mock_tmp_file $mock_file
   done
 
   rm $users_ids_tmp_file

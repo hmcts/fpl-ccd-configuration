@@ -11,6 +11,7 @@ Family public law's implementation of the CCD template
 
 - [Docker](https://www.docker.com)
 - [realpath-osx](https://github.com/harto/realpath-osx) (Mac OS only)
+- [jq](https://stedolan.github.io/jq/)
 
 Run command:
 ```
