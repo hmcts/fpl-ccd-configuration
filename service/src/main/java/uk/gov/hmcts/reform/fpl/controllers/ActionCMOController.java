@@ -122,7 +122,9 @@ public class ActionCMOController {
                                      @RequestHeader(value = "user-id") String userId,
                                      @RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-        if (hasJudgeApproved(caseData.getCaseManagementOrder())) {
+        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
+
+        if (caseManagementOrder.isApprovedByJudge()) {
             applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId));
         }
     }
