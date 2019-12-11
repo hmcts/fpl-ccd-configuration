@@ -19,6 +19,6 @@ public interface OrganisationApi {
     List<User> findUsersByOrganisation(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
-        @RequestParam(value = "status") final Status status
+        @RequestParam(value = "status") Status status
     );
 }
