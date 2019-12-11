@@ -106,11 +106,9 @@ public class DraftCMOService {
         return hearingDatesDynamic;
     }
 
-    public void prepareCustomDirections(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        if (!isNull(caseData.getCaseManagementOrder())) {
-            directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
+    public void prepareCustomDirections(CaseDetails caseDetails, CaseManagementOrder order) {
+        if (!isNull(order)) {
+            directionHelperService.sortDirectionsByAssignee(order.getDirections())
                 .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
         } else {
             removeExistingCustomDirections(caseDetails);
