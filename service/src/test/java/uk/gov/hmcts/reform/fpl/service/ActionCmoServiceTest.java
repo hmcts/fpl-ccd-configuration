@@ -118,7 +118,7 @@ class ActionCmoServiceTest {
         CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder().build();
 
         CaseManagementOrder updatedCaseManagementOrder =
-            service.appendNextHearingDateToCMO(createHearingBookingDynmaicList(), caseManagementOrder);
+            service.buildCMOWithHearingDate(createHearingBookingDynmaicList(), caseManagementOrder);
 
         OrderAction orderAction = updatedCaseManagementOrder.getAction();
 
@@ -132,8 +132,7 @@ class ActionCmoServiceTest {
             .hearingDate("Test date")
             .build();
 
-        CaseManagementOrder updatedCaseManagementOrder = service.appendNextHearingDateToCMO(null,
-            caseManagementOrder);
+        CaseManagementOrder updatedCaseManagementOrder = service.buildCMOWithHearingDate(null, caseManagementOrder);
 
         assertThat(updatedCaseManagementOrder.getHearingDate()).isEqualTo("Test date");
     }

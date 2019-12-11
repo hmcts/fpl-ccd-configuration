@@ -64,7 +64,7 @@ public class ActionCmoService {
         return draftCMOService.extractIndividualCaseManagementOrderObjects(order, hearingDetails);
     }
 
-    public CaseManagementOrder appendNextHearingDateToCMO(DynamicList list, CaseManagementOrder order) {
+    public CaseManagementOrder buildCMOWithHearingDate(DynamicList list, CaseManagementOrder order) {
         CaseManagementOrder.CaseManagementOrderBuilder builder = order.toBuilder();
 
         if (list != null) {

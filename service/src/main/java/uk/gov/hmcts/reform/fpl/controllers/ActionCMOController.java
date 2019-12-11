@@ -81,7 +81,7 @@ public class ActionCMOController {
         CaseManagementOrder order = caseData.getCmoToAction();
 
         CaseManagementOrder orderWithHearingDate =
-            actionCmoService.appendNextHearingDateToCMO(caseData.getNextHearingDateList(), order);
+            actionCmoService.buildCMOWithHearingDate(caseData.getNextHearingDateList(), order);
 
         caseData = caseData.toBuilder().cmoToAction(orderWithHearingDate).build();
 
