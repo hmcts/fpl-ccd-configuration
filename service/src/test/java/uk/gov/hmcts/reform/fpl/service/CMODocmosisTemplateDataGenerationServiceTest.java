@@ -158,7 +158,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData).containsAllEntriesOf(getExpectedSchedule());
         assertThat(templateData.get("scheduleProvided")).isEqualTo(true);
         assertThat(templateData.get("draftbackground")).isNotNull();
-        assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
+        assertThat(templateData.get("caseManagementNumber")).isEqualTo(2);
     }
 
     private List<Map<String, String>> getExpectedRepresentatives() {
