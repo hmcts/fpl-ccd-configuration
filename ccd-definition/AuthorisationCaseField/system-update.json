@@ -46,14 +46,14 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoToAction",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "C"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseManagementOrder",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "D"
+    "CRUD": "CRUD"
   },
   {
     "LiveFrom": "01/01/2017",
