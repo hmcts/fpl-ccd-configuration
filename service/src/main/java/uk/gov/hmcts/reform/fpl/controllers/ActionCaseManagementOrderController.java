@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 @Api
 @RestController
 @RequestMapping("/callback/action-cmo")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ActionCaseManagementOrderController {
     private final DraftCMOService draftCMOService;
     private final CaseManagementOrderService caseManagementOrderService;
@@ -43,24 +46,6 @@ public class ActionCaseManagementOrderController {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CMODocmosisTemplateDataGenerationService templateDataGenerationService;
     private final CoreCaseDataService coreCaseDataService;
-
-    public ActionCaseManagementOrderController(DraftCMOService draftCMOService,
-                                               CaseManagementOrderService caseManagementOrderService,
-                                               DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
-                                               UploadDocumentService uploadDocumentService,
-                                               ObjectMapper mapper,
-                                               ApplicationEventPublisher applicationEventPublisher,
-                               CMODocmosisTemplateDataGenerationService templateDataGenerationService,
-                                               CoreCaseDataService coreCaseDataService) {
-        this.draftCMOService = draftCMOService;
-        this.caseManagementOrderService = caseManagementOrderService;
-        this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.mapper = mapper;
-        this.applicationEventPublisher = applicationEventPublisher;
-        this.templateDataGenerationService = templateDataGenerationService;
-        this.coreCaseDataService = coreCaseDataService;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -130,6 +115,8 @@ public class ActionCaseManagementOrderController {
     public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
                                      @RequestHeader(value = "user-id") String userId,
                                      @RequestBody CallbackRequest callbackRequest) {
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+
         coreCaseDataService.triggerEvent(
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
@@ -137,10 +124,7 @@ public class ActionCaseManagementOrderController {
             "internal-change:CMO_PROGRESSION"
         );
 
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-        CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
-
-        if (caseManagementOrder.isApprovedByJudge()) {
+        if (caseData.getCmoToAction().isApprovedByJudge()) {
             applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId));
         }
     }
