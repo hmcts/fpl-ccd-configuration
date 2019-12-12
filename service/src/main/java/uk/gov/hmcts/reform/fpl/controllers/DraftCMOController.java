@@ -143,7 +143,7 @@ public class DraftCMOController {
         CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
         CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
 
-        if (caseData.getCaseManagementOrder().getStatus() != caseDataBefore.getCaseManagementOrder().getStatus()) {
+        if (statusChange(caseData.getCaseManagementOrder(), caseDataBefore.getCaseManagementOrder())) {
             coreCaseDataService.triggerEvent(
                 callbackRequest.getCaseDetails().getJurisdiction(),
                 callbackRequest.getCaseDetails().getCaseTypeId(),
@@ -151,6 +151,10 @@ public class DraftCMOController {
                 "internal-change:CMO_PROGRESSION"
             );
         }
+    }
+
+    private boolean statusChange(CaseManagementOrder current, CaseManagementOrder before) {
+        return current.getStatus() != before.getStatus();
     }
 
     private String getRespondentsLabel(CaseData caseData) {

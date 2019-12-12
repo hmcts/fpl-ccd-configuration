@@ -30,6 +30,6 @@ public class CaseManagementOrder {
 
     @JsonIgnore
     public boolean isApprovedByJudge() {
-        return action.getType() != null && action.getType().equals(SEND_TO_ALL_PARTIES);
+        return action != null && action.getType().equals(SEND_TO_ALL_PARTIES);
     }
 }
