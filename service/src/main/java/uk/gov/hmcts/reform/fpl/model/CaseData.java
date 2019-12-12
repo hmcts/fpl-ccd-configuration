@@ -152,7 +152,6 @@ public class CaseData {
 
     // for local authority
     private final CaseManagementOrder caseManagementOrder;
-
     private final OrderAction orderAction;
     private final DynamicList cmoHearingDateList;
     private final Schedule schedule;

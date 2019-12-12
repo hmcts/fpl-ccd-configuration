@@ -160,6 +160,16 @@ class ActionCaseManagementOrderControllerTest {
             .build();
     }
 
+    private void makeRequest(CallbackRequest request) throws Exception {
+        mockMvc.perform(post("/callback/action-cmo/submitted")
+            .header("authorization", AUTH_TOKEN)
+            .header("user-id", USER_ID)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andReturn();
+    }
+
     private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request, String endpoint)
         throws Exception {
         MvcResult response = mockMvc
@@ -173,17 +183,6 @@ class ActionCaseManagementOrderControllerTest {
 
         return mapper
             .readValue(response.getResponse().getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-    }
-
-    private void makeRequest(CallbackRequest request) throws Exception {
-        mockMvc
-            .perform(post("/callback/action-cmo/submitted")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
     }
 
     private OrderAction getOrderAction() {

@@ -56,7 +56,6 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 
-//TODO: burn this. burn it asap.
 public class CaseDataGeneratorHelper {
 
     private static final DateFormatterService DATE_FORMATTER_SERVICE = new DateFormatterService();
