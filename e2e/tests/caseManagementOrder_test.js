@@ -124,8 +124,8 @@ Scenario('Local Authority sends draft to Judge who approves CMO', async (I, case
   await I.retryUntilExists(() => I.click('Continue'), actionCaseManagementOrderEventPage.staticFields.statusRadioGroup.groupName);
   actionCaseManagementOrderEventPage.markToBeSentToAllParties();
   actionCaseManagementOrderEventPage.markNextHearingToBeFinalHearing();
-  await I.completeEvent('Save and Continue');
-  assertCanSeeActionCMO(I, caseViewPage, actionCaseManagementOrderEventPage.labels.files.sealedCaseManagementOrder);
+  await I.completeEvent('Save and continue');
+  assertCanSeeActionCMO(I, caseViewPage, actionCaseManagementOrderEventPage.labels.files.draftCaseManagementOrder);
 });
 
 const assertCanSeeActionCMO = (I, caseViewPage, fileName) => {
