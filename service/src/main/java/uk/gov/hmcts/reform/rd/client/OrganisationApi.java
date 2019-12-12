@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.fpl.config.FeignConfiguration;
 import uk.gov.hmcts.reform.rd.model.Status;
 import uk.gov.hmcts.reform.rd.model.User;
+import uk.gov.hmcts.reform.rd.model.Users;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ import static uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi.SERVICE_AUTHORIZATI
 @FeignClient(name = "rd-professional-api", url = "${rd_professional.api.url}", configuration = FeignConfiguration.class)
 public interface OrganisationApi {
     @GetMapping("/refdata/external/v1/organisations/users")
-    List<User> findUsersByOrganisation(
+    Users findUsersByOrganisation(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @RequestParam(value = "status") Status status
