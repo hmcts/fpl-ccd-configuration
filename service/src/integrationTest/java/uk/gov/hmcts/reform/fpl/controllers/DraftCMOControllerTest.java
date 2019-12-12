@@ -174,6 +174,7 @@ class DraftCMOControllerTest {
         assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
     }
 
+    //TODO: caseDetails before is in this test as a start for conditional call to submitted code.
     @Test
     void submittedShouldTriggerCMOProgressionEvent() throws Exception {
         String event = "internal-change:CMO_PROGRESSION";

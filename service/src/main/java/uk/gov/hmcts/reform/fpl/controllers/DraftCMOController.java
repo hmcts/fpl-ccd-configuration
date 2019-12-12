@@ -135,26 +135,17 @@ public class DraftCMOController {
             .build();
     }
 
+    //TODO: logic for only calling this when necessary. When status change new vs old.
+    // When new document to share.
+    // When no data before.
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
-        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
-
-        if (statusChange(caseData.getCaseManagementOrder(), caseDataBefore.getCaseManagementOrder())) {
-            coreCaseDataService.triggerEvent(
-                callbackRequest.getCaseDetails().getJurisdiction(),
-                callbackRequest.getCaseDetails().getCaseTypeId(),
-                callbackRequest.getCaseDetails().getId(),
-                "internal-change:CMO_PROGRESSION"
-            );
-        }
-    }
-
-    private boolean statusChange(CaseManagementOrder current, CaseManagementOrder before) {
-        return current.getStatus() != before.getStatus();
+        coreCaseDataService.triggerEvent(
+            callbackRequest.getCaseDetails().getJurisdiction(),
+            callbackRequest.getCaseDetails().getCaseTypeId(),
+            callbackRequest.getCaseDetails().getId(),
+            "internal-change:CMO_PROGRESSION"
+        );
     }
 
     private String getRespondentsLabel(CaseData caseData) {
