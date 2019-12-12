@@ -23,7 +23,5 @@ public abstract class DocmosisTemplateDataGeneration {
         );
     }
 
-    // QUESTION: 05/12/2019 Should there be some sort of contract to check if the template data will be for a draft
-    //  document? Maybe a boolean parameter or a method of some sort?
-    public abstract Map<String, Object> getTemplateData(CaseData caseData) throws IOException;
+    public abstract Map<String, Object> getTemplateData(CaseData caseData, boolean draft) throws IOException;
 }
