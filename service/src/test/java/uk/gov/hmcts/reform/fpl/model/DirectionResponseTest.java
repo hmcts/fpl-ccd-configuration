@@ -69,10 +69,10 @@ class DirectionResponseTest {
     void shouldSerialiseWhenNoValues() throws JsonProcessingException {
         String serialised = mapper.writeValueAsString(DirectionResponse.builder().build());
 
-        assertThat(serialised).isEqualTo("{\"directionId\":null,\"assignee\":null,\"complied\":null,"
+        JSONAssert.assertEquals("{\"directionId\":null,\"assignee\":null,\"complied\":null,"
             + "\"documentDetails\":null,\"file\":null,\"cannotComplyReason\":null,\"c2Uploaded\":null,"
             + "\"cannotComplyFile\":null,\"respondingOnBehalfOfRespondent\":null,\"respondingOnBehalfOfOthers\":null,"
-            + "\"respondingOnBehalfOfCafcass\":null}");
+            + "\"respondingOnBehalfOfCafcass\":null}", serialised, false);
     }
 
     @Test
