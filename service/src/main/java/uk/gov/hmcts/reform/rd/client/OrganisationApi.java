@@ -6,10 +6,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.fpl.config.FeignConfiguration;
 import uk.gov.hmcts.reform.rd.model.Status;
-import uk.gov.hmcts.reform.rd.model.User;
 import uk.gov.hmcts.reform.rd.model.Users;
-
-import java.util.List;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi.SERVICE_AUTHORIZATION;
