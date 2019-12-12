@@ -86,9 +86,9 @@ class CMODocmosisTemplateDataGenerationServiceTest {
     }
 
     @Test
-    void shouldReturnEmptyMapValuesWhenCaseDataIsEmptyAndIsNotDraft() throws IOException {
+    void shouldReturnEmptyMapValuesWhenCaseDataIsEmpty() throws IOException {
         final Map<String, Object> templateData = templateDataGenerationService.getTemplateData(CaseData.builder()
-            .build(), false);
+            .build(), true);
 
         assertThat(templateData.get("courtName")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo(EMPTY_PLACEHOLDER);
@@ -116,12 +116,12 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("recitalsProvided")).isEqualTo(false);
         Arrays.stream(scheduleKeys).forEach(key -> assertThat(templateData.get(key)).isEqualTo(EMPTY_PLACEHOLDER));
         assertThat(templateData.get("scheduleProvided")).isEqualTo(false);
-        assertThat(templateData.get("draftbackground")).isNull();
+        assertThat(templateData.get("draftbackground")).isNotNull();
         assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
     }
 
     @Test
-    void shouldReturnFullyPopulatedMapWhenCompleteCaseDetailsAreProvidedAndIsDraft() throws IOException {
+    void shouldReturnFullyPopulatedMapWhenCompleteCaseDetailsAreProvided() throws IOException {
         final Map<String, Object> caseDataMap = buildCaseDataMapForDraftCMODocmosisGeneration(NOW);
 
         final CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
