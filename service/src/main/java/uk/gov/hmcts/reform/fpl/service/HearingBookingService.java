@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,5 +36,18 @@ public class HearingBookingService {
             .map(Element::getValue)
             .min(comparing(HearingBooking::getStartDate))
             .orElseThrow(() -> new IllegalStateException("Expected to have at least one hearing booking"));
+    }
+
+    public HearingBooking getHearingBooking(final List<Element<HearingBooking>> hearingDetails,
+                                            final DynamicList hearingDateList) {
+        if (hearingDetails == null || hearingDateList == null || hearingDateList.getValue() == null) {
+            return HearingBooking.builder().build();
+        }
+
+        return hearingDetails.stream()
+            .filter(element -> element.getId().equals(hearingDateList.getValue().getCode()))
+            .findFirst()
+            .map(Element::getValue)
+            .orElse(HearingBooking.builder().build());
     }
 }

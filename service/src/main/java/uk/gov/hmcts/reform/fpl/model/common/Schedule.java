@@ -1,19 +1,20 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
+@Builder(toBuilder = true)
 public class Schedule {
-    public final String allocation;
-    public final String application;
-    public final String todaysHearing;
-    public final String childrensCurrentArrangement;
-    public final String timetableForProceedings;
-    public final String timetableForTheChildren;
-    public final String alternativeCarers;
-    public final String threshold;
-    public final String keyIssues;
-    public final String partiesPositions;
+    private final String includeSchedule;
+    private final String allocation;
+    private final String application;
+    private final String todaysHearing;
+    private final String childrensCurrentArrangement;
+    private final String timetableForProceedings;
+    private final String timetableForChildren;
+    private final String alternativeCarers;
+    private final String threshold;
+    private final String keyIssues;
+    private final String partiesPositions;
 }
