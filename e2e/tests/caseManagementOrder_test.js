@@ -125,7 +125,7 @@ Scenario('Local Authority sends draft to Judge who approves CMO', async (I, case
   actionCaseManagementOrderEventPage.markToBeSentToAllParties();
   actionCaseManagementOrderEventPage.markNextHearingToBeFinalHearing();
   await I.completeEvent('Save and continue');
-  assertCanSeeActionCMO(I, caseViewPage, actionCaseManagementOrderEventPage.labels.files.draftCaseManagementOrder);
+  assertCanSeeActionCMO(I, caseViewPage, actionCaseManagementOrderEventPage.labels.files.sealedCaseManagementOrder);
 });
 
 const assertCanSeeActionCMO = (I, caseViewPage, fileName) => {
