@@ -16,9 +16,6 @@ import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisRequest;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Base64;
 import java.util.Map;
 
 @Service
@@ -61,16 +58,5 @@ public class DocmosisDocumentGeneratorService {
         }
 
         return new DocmosisDocument(docmosisTemplate.getDocumentTitle(), response);
-    }
-
-    public String generateDraftWatermarkEncodedString() {
-        InputStream is = getClass().getResourceAsStream("/assets/images/draft-watermark.png");
-        byte[] fileContent = new byte[0];
-        try {
-            fileContent = is.readAllBytes();
-        } catch (IOException e) {
-            log.error("Unable to generate draft water image for template.", e);
-        }
-        return Base64.getEncoder().encodeToString(fileContent);
     }
 }

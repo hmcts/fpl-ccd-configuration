@@ -117,9 +117,7 @@ class ActionCaseManagementOrderControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldReturnAPopulatedCaseManagementOrderWithUpdatedDocumentWhenSendToAllParties()
-        throws Exception {
-
+    void aboutToSubmitShouldReturnCaseManagementOrderWithNewDocumentWhenSendToAllParties() throws Exception {
         CaseManagementOrder order = getCaseManagementOrder(OrderAction.builder().build());
 
         Map<String, Object> data = ImmutableMap.of(
