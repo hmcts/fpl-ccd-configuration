@@ -13,6 +13,6 @@
     "headers": {
       "Content-Type": "application/json"
     },
-    "bodyFileName": "swanseaOrg.json"
+    "bodyFileName": "mockResponse.json"
   }
 }

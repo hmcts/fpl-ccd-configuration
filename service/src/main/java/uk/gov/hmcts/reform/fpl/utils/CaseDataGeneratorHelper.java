@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
 
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -471,6 +473,15 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
+    public static CaseManagementOrder createCaseManagementOrder() {
+        return CaseManagementOrder.builder()
+            .status(SEND_TO_JUDGE)
+            .schedule(createSchedule(true))
+            .recitals(createRecitals())
+            .directions(createCmoDirections())
+            .build();
+    }
+
     private static Solicitor createSolicitor() {
         return Solicitor.builder()
             .name("Bruce Wayne")
@@ -480,7 +491,7 @@ public class CaseDataGeneratorHelper {
     }
 
     private static List<Element<Direction>> getDirectionByAssignee(List<Element<Direction>> list,
-                                                            DirectionAssignee assignee) {
+                                                                   DirectionAssignee assignee) {
         return list.stream()
             .filter(element -> element.getValue().getAssignee().equals(assignee))
             .map(element -> {

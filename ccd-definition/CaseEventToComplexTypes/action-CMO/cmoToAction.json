@@ -1,0 +1,11 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "cmoToAction",
+    "ListElementCode": "hearingDate",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  }
+]
