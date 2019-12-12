@@ -37,3 +37,6 @@ charts/*/charts/*.tgz
 
 # user mappings file
 application-user-mappings.yaml
+
+# wiremock response
+docker/wiremock/__files/mockResponse.json
