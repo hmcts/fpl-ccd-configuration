@@ -174,7 +174,7 @@ class GeneratedOrderServiceTest {
             .type(BLANK_ORDER)
             .document(DocumentReference.builder().build()).build();
 
-        assertThat(service.generateDocumentFileName(typeAndDocument.getType().getLabel())).isEqualTo(
+        assertThat(service.generateOrderDocumentFileName(typeAndDocument.getType().getLabel())).isEqualTo(
             formatTypeToFileName(BLANK_ORDER.getLabel()));
     }
 
@@ -184,7 +184,7 @@ class GeneratedOrderServiceTest {
             .type(CARE_ORDER)
             .document(DocumentReference.builder().build()).build();
 
-        assertThat(service.generateDocumentFileName(typeAndDocument.getType().getLabel())).isEqualTo(
+        assertThat(service.generateOrderDocumentFileName(typeAndDocument.getType().getLabel())).isEqualTo(
             formatTypeToFileName(CARE_ORDER.getLabel()));
     }
 
@@ -246,14 +246,14 @@ class GeneratedOrderServiceTest {
                 expectedMap
                     .put("orderType", BLANK_ORDER)
                     .put("orderTitle", "Example Title")
-                    .put("childrenAct", "Section 31 Children Act 1989")
+                    .put("childrenAct", "Children Act 1989")
                     .put("orderDetails", "Example details");
                 break;
             case CARE_ORDER:
                 expectedMap
                     .put("orderType", CARE_ORDER)
                     .put("orderTitle", "Care Order")
-                    .put("childrenAct", "Children Act 1989")
+                    .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails",
                         "It is ordered that the child is placed in the care of Example Local Authority.");
                 break;

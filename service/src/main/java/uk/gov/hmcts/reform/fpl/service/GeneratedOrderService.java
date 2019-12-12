@@ -107,14 +107,14 @@ public class GeneratedOrderService {
                 orderTemplateBuilder
                     .put("orderType", BLANK_ORDER)
                     .put("orderTitle", defaultIfNull(caseData.getOrder().getTitle(), "Order"))
-                    .put("childrenAct", "Section 31 Children Act 1989")
+                    .put("childrenAct", "Children Act 1989")
                     .put("orderDetails", caseData.getOrder().getDetails());
                 break;
             case CARE_ORDER:
                 orderTemplateBuilder
                     .put("orderType", CARE_ORDER)
                     .put("orderTitle", "Care Order")
-                    .put("childrenAct", "Children Act 1989")
+                    .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),
                         caseData.getCaseLocalAuthority()));
                 break;
@@ -134,7 +134,7 @@ public class GeneratedOrderService {
         return orderTemplateBuilder.build();
     }
 
-    public String generateDocumentFileName(String type) {
+    public String generateOrderDocumentFileName(String type) {
         return type.toLowerCase().replaceAll("[()]", "").replaceAll("[ ]", "_") + ".pdf";
     }
 

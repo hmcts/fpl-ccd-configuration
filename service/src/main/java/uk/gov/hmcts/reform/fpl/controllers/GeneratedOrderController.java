@@ -133,7 +133,7 @@ public class GeneratedOrderController {
             service.getOrderTemplateData(caseData), ORDER);
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-            service.generateDocumentFileName(caseData.getOrderTypeAndDocument().getType().getLabel()));
+            service.generateOrderDocumentFileName(caseData.getOrderTypeAndDocument().getType().getLabel()));
     }
 
     private String concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
