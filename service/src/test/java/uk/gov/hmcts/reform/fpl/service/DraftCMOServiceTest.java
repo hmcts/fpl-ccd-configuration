@@ -160,18 +160,13 @@ class DraftCMOServiceTest {
     void shouldMoveDirectionsToCaseDetailsWhenCMOExistsWithDirections() {
         Map<String, Object> caseData = new HashMap<>();
 
-        caseData.put("caseManagementOrder", CaseManagementOrder.builder()
-            .directions(createCmoDirections())
-            .build());
+        draftCMOService.prepareCustomDirections(CaseDetails.builder().data(caseData).build(),
+            CaseManagementOrder.builder()
+                .directions(createCmoDirections())
+                .build());
 
-        draftCMOService.prepareCustomDirections(CaseDetails.builder().data(caseData).build());
-
-        assertThat(caseData).containsKeys("allParties",
-            "localAuthorityDirections",
-            "cafcassDirections",
-            "courtDirections",
-            "otherPartiesDirections",
-            "respondentDirections");
+        assertThat(caseData).containsKeys("allParties", "localAuthorityDirections", "cafcassDirections",
+            "courtDirections", "otherPartiesDirections", "respondentDirections");
     }
 
     @Test
@@ -182,14 +177,10 @@ class DraftCMOServiceTest {
             caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
         );
 
-        draftCMOService.prepareCustomDirections(CaseDetails.builder().data(caseData).build());
+        draftCMOService.prepareCustomDirections(CaseDetails.builder().data(caseData).build(), null);
 
-        assertThat(caseData).doesNotContainKeys("allPartiesCustom",
-            "localAuthorityDirectionsCustom",
-            "cafcassDirectionsCustom",
-            "courtDirectionsCustom",
-            "otherPartiesDirections",
-            "respondentDirections");
+        assertThat(caseData).doesNotContainKeys("allPartiesCustom", "localAuthorityDirectionsCustom",
+            "cafcassDirectionsCustom", "courtDirectionsCustom", "otherPartiesDirections", "respondentDirections");
     }
 
     private DynamicList getDynamicList() {

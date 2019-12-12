@@ -70,7 +70,7 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        draftCMOService.prepareCustomDirections(caseDetails);
+        draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
 
         caseDetails.getData().putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
@@ -135,6 +135,9 @@ public class DraftCMOController {
             .build();
     }
 
+    //TODO: logic for only calling this when necessary. When status change new vs old.
+    // When new document to share.
+    // When no data before.
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
         coreCaseDataService.triggerEvent(

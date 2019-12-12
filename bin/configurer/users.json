@@ -1,0 +1,16 @@
+[
+  {"email": "damian@swansea.gov.uk", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor", "lastName": "(local-authority)"},
+  {"email": "kurt@swansea.gov.uk", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor", "lastName": "(local-authority)"},
+  {"email": "james@swansea.gov.uk", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor", "lastName": "(local-authority)"},
+  {"email": "sam@hillingdon.gov.uk", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor", "lastName": "(local-authority)"},
+  {"email": "siva@hillingdon.gov.uk", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor", "lastName": "(local-authority)"},
+  {"email": "raghu@swindon.gov.uk", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor", "lastName": "(local-authority)"},
+  {"email": "sam@swindon.gov.uk", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor", "lastName": "(local-authority)"},
+  {"email": "raghu@wiltshire.gov.uk", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor", "lastName": "(local-authority)"},
+  {"email": "sam@wiltshire.gov.uk", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-solicitor", "lastName": "(local-authority)"},
+  {"email": "hmcts-admin@example.com", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-courtadmin", "lastName": "(hmcts-admin)"},
+  {"email": "cafcass@example.com", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-cafcass", "lastName": "(cafcass)"},
+  {"email": "judiciary@mailnesia.com", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-courtadmin,caseworker-publiclaw-judiciary,caseworker-publiclaw-gatekeeper", "lastName": "(judiciary)"},
+  {"email": "gatekeeper@mailnesia.com", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-gatekeeper,caseworker-publiclaw-courtadmin", "lastName": "(gatekeeper)"},
+  {"email": "fpl-system-update@mailnesia.com", "roles": "caseworker,caseworker-publiclaw,caseworker-publiclaw-systemupdate", "lastName": "(system-update)"}
+]

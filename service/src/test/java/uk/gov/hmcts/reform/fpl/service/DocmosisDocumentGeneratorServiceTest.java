@@ -52,12 +52,6 @@ class DocmosisDocumentGeneratorServiceTest {
         assertThat(argumentCaptor.getValue().getBody().getOutputFormat()).isEqualTo("pdf");
     }
 
-    @Test
-    void shouldGenerateEncodedStringWhenGenerateDraftWatermarkCalled() {
-        String encodedImgString = createServiceInstance().generateDraftWatermarkEncodedString();
-        assertThat(encodedImgString).isNotEqualTo("");
-    }
-
     private Map<String, Object> getTemplatePlaceholders() {
         return Map.of(
             "jurisdiction", "PUBLICLAW",
