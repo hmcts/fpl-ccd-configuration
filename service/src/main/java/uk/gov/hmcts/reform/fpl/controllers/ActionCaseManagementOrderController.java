@@ -26,6 +26,8 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import java.io.IOException;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 @Api
@@ -82,7 +84,8 @@ public class ActionCaseManagementOrderController {
 
         Document document = getDocument(authorization, userId, caseData, true);
 
-        caseDetails.getData().put("orderAction", OrderAction.builder().document(buildFromDocument(document)).build());
+        caseDetails.getData()
+            .put(ORDER_ACTION.getKey(), OrderAction.builder().document(buildFromDocument(document)).build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -112,7 +115,7 @@ public class ActionCaseManagementOrderController {
 
         order = caseManagementOrderService.addDocument(order, document);
 
-        caseDetails.getData().put("cmoToAction", order);
+        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

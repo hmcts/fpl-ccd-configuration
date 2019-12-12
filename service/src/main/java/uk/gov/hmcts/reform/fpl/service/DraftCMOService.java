@@ -28,6 +28,9 @@ import static java.util.Comparator.comparingInt;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -51,9 +54,9 @@ public class DraftCMOService {
         }
 
         Map<String, Object> data = new HashMap<>();
-        data.put("cmoHearingDateList", getHearingDateDynamicList(hearingDetails, caseManagementOrder));
-        data.put("schedule", caseManagementOrder.getSchedule());
-        data.put("recitals", caseManagementOrder.getRecitals());
+        data.put(HEARING_DATE_LIST.getKey(), getHearingDateDynamicList(hearingDetails, caseManagementOrder));
+        data.put(SCHEDULE.getKey(), caseManagementOrder.getSchedule());
+        data.put(RECITALS.getKey(), caseManagementOrder.getRecitals());
 
         return data;
     }
@@ -75,10 +78,7 @@ public class DraftCMOService {
     }
 
     public void removeTransientObjectsFromCaseData(Map<String, Object> caseData) {
-        final Set<String> keysToRemove = Set.of(
-            "cmoHearingDateList",
-            "schedule",
-            "recitals");
+        final Set<String> keysToRemove = Set.of(HEARING_DATE_LIST.getKey(), SCHEDULE.getKey(), RECITALS.getKey());
 
         keysToRemove.forEach(caseData::remove);
     }

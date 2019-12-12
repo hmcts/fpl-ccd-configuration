@@ -51,6 +51,8 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
@@ -131,10 +133,10 @@ class DraftCMOControllerTest {
 
         final Map<String, Object> responseCaseData = callbackResponse.getData();
 
-        assertThat(responseCaseData).containsKey("caseManagementOrder");
+        assertThat(responseCaseData).containsKey(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
 
         final CaseManagementOrder caseManagementOrder = mapper.convertValue(responseCaseData.get(
-            "caseManagementOrder"), CaseManagementOrder.class);
+            CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey()), CaseManagementOrder.class);
 
         assertThat(caseManagementOrder.getOrderDoc()).isEqualTo(
             DocumentReference.builder()
@@ -161,8 +163,9 @@ class DraftCMOControllerTest {
             data.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
         );
 
-        data.put("cmoHearingDateList", dynamicHearingDates);
-        data.put("caseManagementOrder", CaseManagementOrder.builder().status(SELF_REVIEW).build());
+        data.put(HEARING_DATE_LIST.getKey(), dynamicHearingDates);
+        data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(),
+            CaseManagementOrder.builder().status(SELF_REVIEW).build());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -184,14 +187,16 @@ class DraftCMOControllerTest {
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .data(ImmutableMap.of(
-                    "caseManagementOrder", CaseManagementOrder.builder().status(SELF_REVIEW).build()))
+                    CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(),
+                    CaseManagementOrder.builder().status(SELF_REVIEW).build()))
                 .build())
             .caseDetailsBefore(CaseDetails.builder()
                 .id(ID)
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .data(ImmutableMap.of(
-                    "caseManagementOrder", CaseManagementOrder.builder().status(PARTIES_REVIEW).build()))
+                    CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(),
+                    CaseManagementOrder.builder().status(PARTIES_REVIEW).build()))
                 .build())
             .build();
 
@@ -202,7 +207,7 @@ class DraftCMOControllerTest {
 
     private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {
         Map<String, Object> cmoHearingResponse = mapper.convertValue(
-            callbackResponse.getData().get("cmoHearingDateList"), Map.class);
+            callbackResponse.getData().get(HEARING_DATE_LIST.getKey()), Map.class);
 
         List<Map<String, Object>> listItemMap = mapper.convertValue(cmoHearingResponse.get("list_items"), List.class);
 

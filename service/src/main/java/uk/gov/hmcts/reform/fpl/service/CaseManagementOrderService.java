@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Objects.isNull;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 //TODO: this class will take some of the methods out of draftCMO service.
@@ -32,9 +35,9 @@ public class CaseManagementOrderService {
         }
 
         Map<String, Object> data = new HashMap<>();
-        data.put("schedule", order.getSchedule());
-        data.put("recitals", order.getRecitals());
-        data.put("orderAction", order.getAction());
+        data.put(SCHEDULE.getKey(), order.getSchedule());
+        data.put(RECITALS.getKey(), order.getRecitals());
+        data.put(ORDER_ACTION.getKey(), order.getAction());
 
         return data;
     }

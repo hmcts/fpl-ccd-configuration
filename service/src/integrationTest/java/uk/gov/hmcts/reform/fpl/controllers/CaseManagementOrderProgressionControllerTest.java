@@ -30,6 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseManagementOrderProgressionController.class)
@@ -51,11 +53,11 @@ class CaseManagementOrderProgressionControllerTest {
                 .build())
             .build();
 
-        Map<String, Object> data = ImmutableMap.of("cmoToAction", order);
+        Map<String, Object> data = ImmutableMap.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(buildCallbackRequest(data));
 
-        assertThat(response.getData()).containsOnlyKeys("caseManagementOrder");
+        assertThat(response.getData()).containsOnlyKeys(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
     }
 
 
@@ -69,7 +71,7 @@ class CaseManagementOrderProgressionControllerTest {
             .build();
 
         Map<String, Object> data = ImmutableMap.of(
-            "cmoToAction", order,
+            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order,
             "hearingDetails", ImmutableList.of(Element.<HearingBooking>builder()
                 .id(uuid)
                 .value(HearingBooking.builder()
@@ -92,7 +94,7 @@ class CaseManagementOrderProgressionControllerTest {
             .build();
 
         Map<String, Object> data = ImmutableMap.of(
-            "cmoToAction", order,
+            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order,
             "hearingDetails", ImmutableList.of(Element.<HearingBooking>builder()
                 .id(uuid)
                 .value(HearingBooking.builder()

@@ -35,6 +35,9 @@ import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_SHARED;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
@@ -69,7 +72,7 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(updatedCaseData.getCmoToAction()).isEqualTo(caseData.getCaseManagementOrder());
-        assertThat(caseDetails.getData().get("caseManagementOrder")).isNull();
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey())).isNull();
     }
 
     @Test
@@ -82,8 +85,8 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder());
-        assertThat(caseDetails.getData().get("sharedDraftCMODocument")).isNotNull();
-        assertThat(caseDetails.getData().get("cmoToAction")).isNull();
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_SHARED.getKey())).isNotNull();
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey())).isNull();
     }
 
     @Test
@@ -99,7 +102,7 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder());
-        assertThat(caseDetails.getData().get("sharedDraftCMODocument")).isNull();
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_SHARED.getKey())).isNull();
     }
 
     @Test
@@ -140,7 +143,7 @@ class CaseManagementOrderProgressionServiceTest {
         assertThat(updatedCaseData.getServedCaseManagementOrders()).hasSize(1);
         assertThat(updatedCaseData.getServedCaseManagementOrders().get(0).getValue())
             .isEqualTo(caseData.getCmoToAction());
-        assertThat(caseDetails.getData().get("cmoToAction")).isNull();
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey())).isNull();
     }
 
     @Test
@@ -167,7 +170,7 @@ class CaseManagementOrderProgressionServiceTest {
         assertThat(updatedCaseData.getServedCaseManagementOrders()).hasSize(2);
         assertThat(updatedCaseData.getServedCaseManagementOrders().get(0).getValue())
             .isEqualTo(caseData.getCmoToAction());
-        assertThat(caseDetails.getData().get("cmoToAction")).isNull();
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey())).isNull();
     }
 
     @Test
@@ -181,7 +184,7 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCmoToAction());
-        assertThat(caseDetails.getData().get("cmoToAction")).isNull();
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey())).isNull();
     }
 
     @Test
@@ -195,7 +198,7 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(updatedCaseData.getCmoToAction()).isEqualTo(caseData.getCmoToAction());
-        assertThat(caseDetails.getData().get("caseManagementOrder")).isNull();
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey())).isNull();
     }
 
     private CaseData.CaseDataBuilder caseDataWithCaseManagementOrder(CMOStatus status) throws IOException {

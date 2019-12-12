@@ -40,6 +40,8 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCaseManagementOrder;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
@@ -85,7 +87,7 @@ class ActionCaseManagementOrderControllerTest {
         Map<String, Object> data = new HashMap<>();
         final CaseManagementOrder order = createCaseManagementOrder();
 
-        data.put(CMO_TO_ACTION_KEY, order);
+        data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
 
         CallbackRequest request = buildCallbackRequest(data);
 
@@ -106,7 +108,7 @@ class ActionCaseManagementOrderControllerTest {
 
         Map<String, Object> responseCaseData = callbackResponse.getData();
 
-        OrderAction action = mapper.convertValue(responseCaseData.get("orderAction"), OrderAction.class);
+        OrderAction action = mapper.convertValue(responseCaseData.get(ORDER_ACTION.getKey()), OrderAction.class);
 
         assertThat(action.getDocument()).isEqualTo(
             DocumentReference.builder()
@@ -121,8 +123,8 @@ class ActionCaseManagementOrderControllerTest {
         CaseManagementOrder order = getCaseManagementOrder(OrderAction.builder().build());
 
         Map<String, Object> data = ImmutableMap.of(
-            CMO_TO_ACTION_KEY, order,
-            "orderAction", getOrderAction());
+            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order,
+            ORDER_ACTION.getKey(), getOrderAction());
 
         AboutToStartOrSubmitCallbackResponse response =
             makeRequest(buildCallbackRequest(data), "about-to-submit");
@@ -141,7 +143,8 @@ class ActionCaseManagementOrderControllerTest {
                 .id(1L)
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
-                .data(ImmutableMap.of("cmoToAction", CaseManagementOrder.builder().status(SELF_REVIEW).build()))
+                .data(ImmutableMap.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(),
+                    CaseManagementOrder.builder().status(SELF_REVIEW).build()))
                 .build())
             .build();
 
