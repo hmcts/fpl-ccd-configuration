@@ -152,13 +152,16 @@ class ActionCaseManagementOrderControllerTest {
     @Test
     void submittedShouldTriggerCMOProgressionEventAndSendNotificationsWhenIssuedOrderApproved() throws Exception {
         String event = "internal-change:CMO_PROGRESSION";
-        CaseManagementOrder approvedCaseManagementOrder = getCaseManagementOrder(getOrderAction());
-
         Map<String, Object> data = ImmutableMap.of(
             "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
             "respondents1", createRespondents(),
             "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
-            CMO_TO_ACTION_KEY, approvedCaseManagementOrder);
+            CMO_TO_ACTION_KEY, CaseManagementOrder.builder()
+                .status(SEND_TO_JUDGE)
+                .action(OrderAction.builder()
+                    .type(SEND_TO_ALL_PARTIES)
+                    .build())
+                .build());
 
         CallbackRequest callbackRequest = buildCallbackRequest(data);
 
@@ -189,30 +192,6 @@ class ActionCaseManagementOrderControllerTest {
         verify(notificationClient, never()).sendEmail(
             eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             eq(getExpectedCMOIssuedCaseLinkNotificationParameters()), eq(CASE_ID));
-    }
-
-    @Test
-    void submittedShouldTriggerCMOProgressionEvent() throws Exception {
-        String event = "internal-change:CMO_PROGRESSION";
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(1L)
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .data(ImmutableMap.of(
-                    "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
-                    "respondents1", createRespondents(),
-                    "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
-                    CMO_TO_ACTION_KEY, CaseManagementOrder.builder()
-                        .status(SEND_TO_JUDGE)
-                        .action(OrderAction.builder()
-                            .type(SEND_TO_ALL_PARTIES)
-                            .build())
-                        .build()))
-                .build())
-            .build();
-        makeRequest(request);
-        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, 1L, event);
     }
 
     private CallbackRequest buildCallbackRequest(Map<String, Object> data) {
