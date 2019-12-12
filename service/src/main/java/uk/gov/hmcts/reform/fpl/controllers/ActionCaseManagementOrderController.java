@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
@@ -82,21 +81,9 @@ public class ActionCaseManagementOrderController {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseManagementOrder order = caseData.getCmoToAction();
-
-        String nextHearingId = (String) caseDetails.getData().get("nextHearingDateList");
-
-        CaseManagementOrder orderWithHearingDate =
-            caseManagementOrderService.buildCMOWithHearingDate(caseData.getHearingDetails(),
-                UUID.fromString(nextHearingId), order);
-
-        caseData = caseData.toBuilder().cmoToAction(orderWithHearingDate).build();
 
         Document document = getDocument(authorization, userId, caseData, false);
 
-        CaseManagementOrder orderWithDocument = caseManagementOrderService.addDocument(orderWithHearingDate, document);
-
-        caseDetails.getData().put("cmoToAction", orderWithDocument);
         caseDetails.getData().put("orderAction", ImmutableMap.of("document", buildFromDocument(document)));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
@@ -115,13 +102,18 @@ public class ActionCaseManagementOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseManagementOrder order = caseData.getCmoToAction();
 
+        caseData = caseData.toBuilder().cmoToAction(order).build();
+
         order = draftCMOService.prepareCMO(caseData, order);
 
         order = caseManagementOrderService.addAction(order, caseData.getOrderAction());
 
-        Document document = getDocument(authorization, userId, caseData, order.isApprovedByJudge());
+        CaseManagementOrder orderWithHearingDate =
+            caseManagementOrderService.buildCMOWithHearingDate(caseData.getNextHearingDateList(), order);
 
-        order = caseManagementOrderService.addDocument(order, document);
+        Document document = getDocument(authorization, userId, caseData, orderWithHearingDate.isApprovedByJudge());
+
+        order = caseManagementOrderService.addDocument(orderWithHearingDate, document);
 
         caseDetails.getData().put("nextHearingDateLabel",
             caseManagementOrderService.createNextHearingDateLabel(order, caseData.getHearingDetails()));

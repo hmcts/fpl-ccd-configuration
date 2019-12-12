@@ -158,7 +158,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoToAction",
     "UserRole": "caseworker-publiclaw-judiciary",
-    "CRUD": "RU"
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",

@@ -25,7 +25,9 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingDynmaicList;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
@@ -106,29 +108,28 @@ class CaseManagementOrderServiceTest {
 
     @Test
     void shouldSetOrderActionNextHearingDateWhenProvidedNextHearingDateList() {
-        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder().build();
-        List<Element<HearingBooking>> hearingBookings = createHearingBookings(MOCK_DATE);
+        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
+            .action(OrderAction.builder()
+                .type(SEND_TO_ALL_PARTIES)
+                .build())
+            .build();
 
         CaseManagementOrder updatedCaseManagementOrder =
-            service.buildCMOWithHearingDate(hearingBookings, HEARING_BOOKING_ID,
-                caseManagementOrder);
+            service.buildCMOWithHearingDate(createHearingBookingDynmaicList(), caseManagementOrder);
 
         OrderAction orderAction = updatedCaseManagementOrder.getAction();
 
-        assertThat(orderAction.getNextHearingId()).isEqualTo(HEARING_BOOKING_ID);
-        assertThat(orderAction.getNextHearingDate()).isEqualTo("12 Feb 2018");
+        assertThat(orderAction.getNextHearingId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
+        assertThat(orderAction.getNextHearingDate()).isEqualTo("15th Dec 2019");
     }
 
     @Test
-    void shouldPreserveCMOWhenNextHearingBookingFailsToBeMatched() {
-        List<Element<HearingBooking>> hearingBookings = createHearingBookings(LocalDateTime.now());
-
+    void shouldPreserveCMOWhenNextHearingDateListIsNotProvided() {
         CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
             .hearingDate("Test date")
             .build();
 
-        CaseManagementOrder updatedCaseManagementOrder = service.buildCMOWithHearingDate(hearingBookings,
-            UUID.fromString("ecac3668-8fa6-4ba0-8894-2114601a3e39"), caseManagementOrder);
+        CaseManagementOrder updatedCaseManagementOrder = service.buildCMOWithHearingDate(null, caseManagementOrder);
 
         assertThat(updatedCaseManagementOrder.getHearingDate()).isEqualTo("Test date");
     }
