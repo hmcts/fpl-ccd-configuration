@@ -145,7 +145,9 @@ public class CaseData {
 
     @JsonIgnore
     public List<Element<GeneratedOrder>> getOrderCollection() {
-
+        return defaultIfNull(orderCollection, new ArrayList<>());
+    }
+    
     // for judiciary
     private final CaseManagementOrder cmoToAction;
 
