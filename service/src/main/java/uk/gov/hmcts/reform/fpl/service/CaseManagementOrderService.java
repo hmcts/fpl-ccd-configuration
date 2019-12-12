@@ -38,4 +38,8 @@ public class CaseManagementOrderService {
 
         return data;
     }
+
+    public OrderAction removeDocumentFromOrderAction(OrderAction orderAction) {
+        return orderAction.toBuilder().document(null).build();
+    }
 }

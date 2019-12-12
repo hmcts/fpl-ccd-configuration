@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +14,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
@@ -59,8 +59,7 @@ public class ActionCaseManagementOrderController {
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        Map<String, Object> data = caseDetails.getData();
-        final CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         caseDetails.getData()
             .putAll(caseManagementOrderService.extractMapFieldsFromCaseManagementOrder(caseData.getCmoToAction()));
@@ -81,9 +80,9 @@ public class ActionCaseManagementOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Document document = getDocument(authorization, userId, caseData, false);
+        Document document = getDocument(authorization, userId, caseData, true);
 
-        caseDetails.getData().put("orderAction", ImmutableMap.of("document", buildFromDocument(document)));
+        caseDetails.getData().put("orderAction", OrderAction.builder().document(buildFromDocument(document)).build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -100,11 +99,16 @@ public class ActionCaseManagementOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseManagementOrder order = caseData.getCmoToAction();
 
-        order = draftCMOService.prepareCMO(caseData, order);
+        order = draftCMOService.prepareCMO(caseData, order).toBuilder()
+            .id(order.getId())
+            .hearingDate(order.getHearingDate())
+            .build();
 
-        order = caseManagementOrderService.addAction(order, caseData.getOrderAction());
+        OrderAction orderAction = caseManagementOrderService.removeDocumentFromOrderAction(caseData.getOrderAction());
 
-        Document document = getDocument(authorization, userId, caseData, order.isApprovedByJudge());
+        order = caseManagementOrderService.addAction(order, orderAction);
+
+        Document document = getDocument(authorization, userId, caseData, order.isDraft());
 
         order = caseManagementOrderService.addDocument(order, document);
 
@@ -125,15 +129,14 @@ public class ActionCaseManagementOrderController {
         );
     }
 
-    private Document getDocument(String authorization, String userId, CaseData data, boolean approved)
-        throws IOException {
-        Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(data, approved);
+    private Document getDocument(String auth, String userId, CaseData data, boolean draft) throws IOException {
+        Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(data, draft);
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
             cmoDocumentTemplateData, DocmosisTemplates.CMO);
 
-        String documentTitle = (approved ? document.getDocumentTitle() : "draft-" + document.getDocumentTitle());
+        String documentTitle = (draft ? "draft-" + document.getDocumentTitle() : document.getDocumentTitle());
 
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), documentTitle);
+        return uploadDocumentService.uploadPDF(userId, auth, document.getBytes(), documentTitle);
     }
 }

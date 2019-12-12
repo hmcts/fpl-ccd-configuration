@@ -29,10 +29,7 @@ public class CaseManagementOrder {
     private final OrderAction action;
 
     @JsonIgnore
-    public boolean isApprovedByJudge() {
-        if (action != null) {
-            return action.getType().equals(SEND_TO_ALL_PARTIES);
-        }
-        return false;
+    public boolean isDraft() {
+        return action == null || !action.getType().equals(SEND_TO_ALL_PARTIES);
     }
 }
