@@ -193,7 +193,7 @@ class GeneratedOrderServiceTest {
         LocalDate localDate = LocalDate.now();
         String date = dateFormatterService.formatLocalDateToString(localDate, FormatStyle.LONG);
 
-        TemplateDataTests() throws IOException {
+        TemplateDataTests() {
             //NO - OP
         }
 
