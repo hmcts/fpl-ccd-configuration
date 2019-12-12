@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,10 @@ import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Status;
 import uk.gov.hmcts.reform.rd.model.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
@@ -26,32 +27,32 @@ public class OrganisationService {
     private final AuthTokenGenerator authTokenGenerator;
 
     public List<String> findUserIdsInSameOrganisation(String authorisation, String localAuthorityCode) {
-        List<String> userIds = new ArrayList<>();
 
         try {
-            addUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode, userIds);
+            return ImmutableList
+                .copyOf(getUsersFromSameOrganisationBasedOnAppConfig(localAuthorityCode));
         } catch (UnknownLocalAuthorityCodeException ex) {
             try {
-                addUsersFromSameOrganisationBasedOnReferenceData(authorisation, userIds);
+                return
+                    ImmutableList
+                        .copyOf(getUsersFromSameOrganisationBasedOnReferenceData(authorisation));
             } catch (Exception e) {
                 throw new UserOrganisationLookupException(
                     format("Can't find users for %s local authority", localAuthorityCode), e
                 );
             }
         }
-
-        return userIds;
     }
 
-    private void addUsersFromSameOrganisationBasedOnAppConfig(String localAuthorityCode, List<String> userIds) {
-        userIds.addAll(localAuthorityUserLookupConfiguration.getUserIds(localAuthorityCode));
+    private List<String> getUsersFromSameOrganisationBasedOnAppConfig(String localAuthorityCode) {
+        return localAuthorityUserLookupConfiguration.getUserIds(localAuthorityCode);
     }
 
-    private void addUsersFromSameOrganisationBasedOnReferenceData(String authorisation, List<String> userIds) {
-        organisationApi
+    private List<String> getUsersFromSameOrganisationBasedOnReferenceData(String authorisation) {
+        return organisationApi
             .findUsersByOrganisation(authorisation, authTokenGenerator.generate(), Status.ACTIVE)
             .stream()
             .map(User::getUserIdentifier)
-            .forEach(userIds::add);
+            .collect(toList());
     }
 }

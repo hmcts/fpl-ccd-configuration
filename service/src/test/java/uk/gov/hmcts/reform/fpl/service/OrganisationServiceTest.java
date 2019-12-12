@@ -9,7 +9,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityUserLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.exceptions.NoAssociatedUsersException;
 import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Status;
@@ -18,10 +17,8 @@ import uk.gov.hmcts.reform.rd.model.User;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.document.DocumentUploadClientApi.USER_ID;
 
 @ExtendWith(SpringExtension.class)
 class OrganisationServiceTest {

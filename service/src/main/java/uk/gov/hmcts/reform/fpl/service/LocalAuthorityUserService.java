@@ -67,8 +67,8 @@ public class LocalAuthorityUserService {
             return organisationService
                 .findUserIdsInSameOrganisation(authorisation, localAuthorityCode);
         } catch (Exception e) {
-            log.warn("Exception while looking for users within the same LA. " +
-                "Only the callerId will be given access to the case", e);
+            log.warn("Exception while looking for users within the same LA. "
+                + "Only the callerId will be given access to the case", e);
             return List.of();
         }
     }
