@@ -131,7 +131,7 @@ Scenario('Local Authority sends draft to Judge who approves CMO', async (I, case
 const assertCanSeeActionCMO = (I, caseViewPage, fileName) => {
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.see(fileName);
-  I.seeAnswerInTab(1, 'Order actions', 'Is this ready to be sent to parties?', 'Yes, it can be sealed and sent to parties');
+  I.seeAnswerInTab(1, 'Order actions', 'Is this ready to be sent to parties?', 'Yes, send this to all parties');
   I.seeAnswerInTab(2, 'Order actions', 'What is the next hearing?', 'Final hearing');
   I.seeAnswerInTab(3, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
   I.seeAnswerInTab(1, 'Directions 1', 'Direction title', 'Mock title');
