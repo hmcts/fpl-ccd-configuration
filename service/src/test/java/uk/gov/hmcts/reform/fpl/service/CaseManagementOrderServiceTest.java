@@ -38,6 +38,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
     HearingVenueLookUpService.class, CaseManagementOrderService.class
 })
 class CaseManagementOrderServiceTest {
+    private static final UUID HEARING_BOOKING_ID = fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31");
     private static final LocalDateTime MOCK_DATE = LocalDateTime.of(2018, 2, 12, 9, 30);
 
     @Autowired
@@ -89,7 +90,6 @@ class CaseManagementOrderServiceTest {
     void shouldReturnEmptyStringWhenOrderActionIsNotPresentOnCMO() {
         List<Element<HearingBooking>> hearingBookings = createHearingBookings(MOCK_DATE);
         CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder().build();
-
         String label = service.createNextHearingDateLabel(caseManagementOrder, hearingBookings);
 
         assertThat(label).isEqualTo("");
@@ -98,10 +98,7 @@ class CaseManagementOrderServiceTest {
     @Test
     void shouldFormatNextHearingBookingLabelWhenCMOOrderActionContainsMatchingUUID() {
         List<Element<HearingBooking>> hearingBookings = createHearingBookings(MOCK_DATE);
-
-        CaseManagementOrder caseManagementOrder =
-            createCMOWithNextHearing(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"));
-
+        CaseManagementOrder caseManagementOrder = createCMOWithNextHearing();
         String label = service.createNextHearingDateLabel(caseManagementOrder, hearingBookings);
 
         assertThat(label).isEqualTo("The next hearing date is on 12 February at 9:30am");
@@ -110,16 +107,16 @@ class CaseManagementOrderServiceTest {
     @Test
     void shouldSetOrderActionNextHearingDateWhenProvidedNextHearingDateList() {
         CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder().build();
-        List<Element<HearingBooking>> hearingBookings = createHearingBookings(LocalDateTime.now());
+        List<Element<HearingBooking>> hearingBookings = createHearingBookings(MOCK_DATE);
 
         CaseManagementOrder updatedCaseManagementOrder =
-            service.buildCMOWithHearingDate(hearingBookings, fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"),
+            service.buildCMOWithHearingDate(hearingBookings, HEARING_BOOKING_ID,
                 caseManagementOrder);
 
         OrderAction orderAction = updatedCaseManagementOrder.getAction();
 
-        assertThat(orderAction.getNextHearingId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
-        assertThat(orderAction.getNextHearingDate()).isEqualTo("16 Dec 2019");
+        assertThat(orderAction.getNextHearingId()).isEqualTo(HEARING_BOOKING_ID);
+        assertThat(orderAction.getNextHearingDate()).isEqualTo("12 Feb 2018");
     }
 
     @Test
@@ -136,10 +133,10 @@ class CaseManagementOrderServiceTest {
         assertThat(updatedCaseManagementOrder.getHearingDate()).isEqualTo("Test date");
     }
 
-    private CaseManagementOrder createCMOWithNextHearing(UUID hearingID) {
+    private CaseManagementOrder createCMOWithNextHearing() {
         return CaseManagementOrder.builder()
             .action(OrderAction.builder()
-                .nextHearingId(hearingID)
+                .nextHearingId(HEARING_BOOKING_ID)
                 .build())
             .build();
     }
