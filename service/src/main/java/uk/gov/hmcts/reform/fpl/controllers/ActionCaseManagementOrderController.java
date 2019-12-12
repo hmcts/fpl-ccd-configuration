@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
@@ -83,8 +84,11 @@ public class ActionCaseManagementOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
         CaseManagementOrder order = caseData.getCmoToAction();
 
+        String nextHearingId = (String) caseDetails.getData().get("nextHearingDateList");
+
         CaseManagementOrder orderWithHearingDate =
-            caseManagementOrderService.buildCMOWithHearingDate(caseData.getNextHearingDateList(), order);
+            caseManagementOrderService.buildCMOWithHearingDate(caseData.getHearingDetails(),
+                UUID.fromString(nextHearingId), order);
 
         caseData = caseData.toBuilder().cmoToAction(orderWithHearingDate).build();
 

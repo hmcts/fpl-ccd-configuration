@@ -61,6 +61,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
+@SuppressWarnings("unchecked")
 class ActionCaseManagementOrderControllerTest {
     private static final String CMO_TO_ACTION_KEY = "cmoToAction";
     private static final String AUTH_TOKEN = "Bearer token";
@@ -134,7 +135,7 @@ class ActionCaseManagementOrderControllerTest {
         Map<String, Object> data = new HashMap<>();
         data.put("cmoToAction", getCaseManagementOrder(OrderAction.builder().build()));
         data.put("hearingDetails", createHearingBookings(TODAYS_DATE));
-        data.put("nextHearingDateList", dynamicHearingDates);
+        data.put("nextHearingDateList", NEXT_HEARING_ID.toString());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
             buildCallbackRequest(data), "mid-event");
@@ -158,7 +159,8 @@ class ActionCaseManagementOrderControllerTest {
         assertThat(order.getAction()).isEqualTo(
             OrderAction.builder()
                 .nextHearingId(NEXT_HEARING_ID)
-                .nextHearingDate(TODAYS_DATE.plusDays(5).toString())
+                .nextHearingDate(dateFormatterService
+                    .formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "dd MMM YYYY"))
                 .build());
     }
 
@@ -230,9 +232,13 @@ class ActionCaseManagementOrderControllerTest {
     }
 
     private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {
-        CaseData caseData = objectMapper.convertValue(callbackResponse.getData(), CaseData.class);
+        Map<String, Object> cmoHearingResponse = objectMapper.convertValue(
+            callbackResponse.getData().get("nextHearingDateList"), Map.class);
 
-        return caseData.getNextHearingDateList().getListItems().stream()
+        List<Map<String, Object>> listItemMap = objectMapper.convertValue(cmoHearingResponse.get("list_items"),
+            List.class);
+
+        return listItemMap.stream()
             .map(element -> objectMapper.convertValue(element, DynamicListElement.class))
             .map(DynamicListElement::getLabel).collect(Collectors.toList());
     }

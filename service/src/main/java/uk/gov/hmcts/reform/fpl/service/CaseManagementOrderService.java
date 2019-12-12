@@ -6,10 +6,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -77,16 +75,20 @@ public class CaseManagementOrderService {
         return data;
     }
 
-    public CaseManagementOrder buildCMOWithHearingDate(DynamicList list, CaseManagementOrder order) {
+    public CaseManagementOrder buildCMOWithHearingDate(List<Element<HearingBooking>> hearingBookings,
+                                                       UUID nextHearingId,
+                                                       CaseManagementOrder order) {
         CaseManagementOrder.CaseManagementOrderBuilder builder = order.toBuilder();
 
-        if (list != null) {
-            HearingDateDynamicElement hearingDateDynamicElement = hearingBookingService.getHearingDynamicElement(list);
+        HearingBooking hearingBooking =
+            hearingBookingService.getHearingBookingByUUID(hearingBookings, nextHearingId);
 
+        if (hearingBooking != null && hearingBooking.getStartDate() != null) {
             builder
                 .action(OrderAction.builder()
-                    .nextHearingId(hearingDateDynamicElement.getId())
-                    .nextHearingDate(hearingDateDynamicElement.getDate())
+                    .nextHearingId(nextHearingId)
+                    .nextHearingDate(dateFormatterService
+                        .formatLocalDateTimeBaseUsingFormat(hearingBooking.getStartDate(), "dd MMM YYYY"))
                     .build())
                 .build();
         }
