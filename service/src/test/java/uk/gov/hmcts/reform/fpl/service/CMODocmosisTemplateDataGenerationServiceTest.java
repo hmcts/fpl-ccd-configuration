@@ -163,6 +163,14 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
     }
 
+    @Test
+    void shouldNotReturnWatermarkWhenDraftIsFalse() throws IOException {
+        Map<String, Object> templateData =
+            templateDataGenerationService.getTemplateData(CaseData.builder().build(), false);
+
+        assertThat(templateData.get("draftbackground")).isNull();
+    }
+
     private List<Map<String, String>> getExpectedRepresentatives() {
         return List.of(
             Map.of(

@@ -118,7 +118,7 @@ public class ActionCaseManagementOrderController {
 
         order = caseManagementOrderService.addHearingDetailsToCMO(caseData.getNextHearingDateList(), order);
 
-        Document document = getDocument(authorization, userId, caseData, order.isApprovedByJudge());
+        Document document = getDocument(authorization, userId, caseData, false);
 
         order = caseManagementOrderService.addDocument(order, document);
 
@@ -144,7 +144,7 @@ public class ActionCaseManagementOrderController {
 
     private Document getDocument(String authorization, String userId, CaseData data, boolean approved)
         throws IOException {
-        Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(data, approved);
+        Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(data, !approved);
 
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
             cmoDocumentTemplateData, DocmosisTemplates.CMO);

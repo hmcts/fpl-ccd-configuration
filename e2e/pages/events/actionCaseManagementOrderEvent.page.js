@@ -56,19 +56,19 @@ module.exports = {
   },
 
   markNextHearingToBeCaseManagement() {
-    within(this.staticFields.statusRadioGroup.groupName, () => {
+    within(this.staticFields.nextHearingRadioGroup.groupName, () => {
       I.click(locate('label').withText(this.staticFields.nextHearingRadioGroup.options.furtherCaseManagementHearing));
     });
   },
 
   markNextHearingToBeIssueResolution() {
-    within(this.staticFields.statusRadioGroup.groupName, () => {
+    within(this.staticFields.nextHearingRadioGroup.groupName, () => {
       I.click(locate('label').withText(this.staticFields.nextHearingRadioGroup.options.issueResolutionHearing));
     });
   },
 
   markNextHearingToBeFinalHearing() {
-    within(this.staticFields.statusRadioGroup.groupName, () => {
+    within(this.staticFields.nextHearingRadioGroup.groupName, () => {
       I.click(locate('label').withText(this.staticFields.nextHearingRadioGroup.options.finalHearing));
     });
   },

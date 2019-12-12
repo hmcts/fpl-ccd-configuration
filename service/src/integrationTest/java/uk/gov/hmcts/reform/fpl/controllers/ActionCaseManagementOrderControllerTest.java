@@ -171,7 +171,7 @@ class ActionCaseManagementOrderControllerTest {
 
         CaseData caseData = objectMapper.convertValue(response.getData(), CaseData.class);
 
-        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "case-management-order.pdf");
+        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-case-management-order.pdf");
 
         assertThat(caseData.getCmoToAction().getAction()).isEqualTo(
             OrderAction.builder()

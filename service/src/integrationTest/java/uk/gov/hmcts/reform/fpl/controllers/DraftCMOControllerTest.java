@@ -50,6 +50,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
@@ -176,6 +177,7 @@ class DraftCMOControllerTest {
         assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
     }
 
+    //TODO: caseDetails before is in this test as a start for conditional call to submitted code.
     @Test
     void submittedShouldTriggerCMOProgressionEvent() throws Exception {
         String event = "internal-change:CMO_PROGRESSION";
@@ -184,7 +186,15 @@ class DraftCMOControllerTest {
                 .id(ID)
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
-                .data(ImmutableMap.of("caseManagementOrder", CaseManagementOrder.builder().status(SELF_REVIEW).build()))
+                .data(ImmutableMap.of(
+                    "caseManagementOrder", CaseManagementOrder.builder().status(SELF_REVIEW).build()))
+                .build())
+            .caseDetailsBefore(CaseDetails.builder()
+                .id(ID)
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .data(ImmutableMap.of(
+                    "caseManagementOrder", CaseManagementOrder.builder().status(PARTIES_REVIEW).build()))
                 .build())
             .build();
 
