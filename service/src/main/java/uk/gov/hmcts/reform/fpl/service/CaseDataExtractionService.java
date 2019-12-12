@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -27,10 +27,8 @@ import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -40,12 +38,14 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
+import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
 
 // Supports SDO case data. Tech debt ticket needed to refactor caseDataExtractionService and NoticeOfProceedingsService
-@Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseDataExtractionService {
 
     public static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
@@ -56,23 +56,6 @@ public class CaseDataExtractionService {
     private final DirectionHelperService directionHelperService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
-
-    @Autowired
-    public CaseDataExtractionService(DateFormatterService dateFormatterService,
-                                     HearingBookingService hearingBookingService,
-                                     HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration,
-                                     OrdersLookupService ordersLookupService,
-                                     DirectionHelperService directionHelperService,
-                                     HearingVenueLookUpService hearingVenueLookUpService,
-                                     CommonCaseDataExtractionService commonCaseDataExtractionService) {
-        this.dateFormatterService = dateFormatterService;
-        this.hearingBookingService = hearingBookingService;
-        this.hmctsCourtLookupConfiguration = hmctsCourtLookupConfiguration;
-        this.ordersLookupService = ordersLookupService;
-        this.directionHelperService = directionHelperService;
-        this.hearingVenueLookUpService = hearingVenueLookUpService;
-        this.commonCaseDataExtractionService = commonCaseDataExtractionService;
-    }
 
     // TODO
     // No need to pass in CaseData to each method. Refactor to only use required model
@@ -108,16 +91,7 @@ public class CaseDataExtractionService {
 
         if (isNotEmpty(caseData.getStandardDirectionOrder())
             && caseData.getStandardDirectionOrder().getOrderStatus() != SEALED) {
-            byte[] fileContent;
-            try {
-                InputStream is = getClass().getResourceAsStream("/assets/images/draft-watermark.png");
-                fileContent = is.readAllBytes();
-                String encodedString = Base64.getEncoder().encodeToString(fileContent);
-
-                data.put("draftbackground", String.format("image:base64:%1$s", encodedString));
-            } catch (IOException e) {
-                log.warn(e.getMessage());
-            }
+            data.put("draftbackground", String.format("image:base64:%1$s", generateDraftWatermarkEncodedString()));
         }
 
         return data.build();
@@ -161,7 +135,7 @@ public class CaseDataExtractionService {
             .collect(Collectors.joining(", "));
     }
 
-    private String getFirstApplicantName(CaseData caseData) {
+    String getFirstApplicantName(CaseData caseData) {
         return caseData.getAllApplicants().stream()
             .map(Element::getValue)
             .filter(Objects::nonNull)
@@ -207,9 +181,9 @@ public class CaseDataExtractionService {
         return formattedDirections.build();
     }
 
-    private List<Map<String, String>> getRespondentsNameAndRelationship(CaseData caseData) {
+    List<Map<String, String>> getRespondentsNameAndRelationship(CaseData caseData) {
 
-        if (caseData.getRespondents1() == null || caseData.getRespondents1().isEmpty()) {
+        if (isEmpty(caseData.getRespondents1())) {
             return ImmutableList.of();
         }
 
@@ -224,7 +198,7 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
+    List<Map<String, String>> getChildrenDetails(CaseData caseData) {
         // children is validated as not null
         return caseData.getAllChildren().stream()
             .map(Element::getValue)
@@ -237,7 +211,7 @@ public class CaseDataExtractionService {
             .collect(toList());
     }
 
-    private String formatTitle(Direction direction, List<DirectionConfiguration> directions) {
+    String formatTitle(Direction direction, List<DirectionConfiguration> directions) {
         @AllArgsConstructor
         @NoArgsConstructor
         @Data

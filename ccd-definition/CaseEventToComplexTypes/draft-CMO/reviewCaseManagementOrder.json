@@ -1,0 +1,33 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "draftCMO",
+    "CaseFieldID": "caseManagementOrder",
+    "ListElementCode": "orderDoc",
+    "EventElementLabel": "Check the order",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "draftCMO",
+    "CaseFieldID": "caseManagementOrder",
+    "ListElementCode": "hearingDate",
+    "EventElementLabel": "",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "orderDoc=\"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ReviewCaseManagementOrder",
+    "CaseEventID": "draftCMO",
+    "CaseFieldID": "caseManagementOrder",
+    "ListElementCode": "status",
+    "EventElementLabel": "Is this ready to be sent to the judge?",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY"
+  }
+]

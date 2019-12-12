@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.utils;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.RandomStringUtils;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
@@ -8,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -18,20 +20,29 @@ import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.model.common.Recital;
+import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -42,6 +53,8 @@ import static uk.gov.hmcts.reform.fpl.enums.DocumentStatus.ATTACHED;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DEPUTY_DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
+import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 
 public class CaseDataGeneratorHelper {
 
@@ -307,6 +320,23 @@ public class CaseDataGeneratorHelper {
             .build());
     }
 
+    public static List<Element<HearingBooking>> createHearingBookings(LocalDateTime date) {
+        return ImmutableList.of(
+            Element.<HearingBooking>builder()
+                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                .value(createHearingBooking(date.plusDays(5), date.plusDays(6)))
+                .build(),
+            Element.<HearingBooking>builder()
+                .id(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                .value(createHearingBooking(date.plusDays(2), date.plusDays(3)))
+                .build(),
+            Element.<HearingBooking>builder()
+                .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                .value(createHearingBooking(date, date.plusDays(1)))
+                .build()
+        );
+    }
+
     public static DocumentReference createDocumentReference(final String id) {
         final String documentUrl = "http://" + String.join("/", "dm-store:8080", "documents", id);
         return DocumentReference.builder()
@@ -376,5 +406,119 @@ public class CaseDataGeneratorHelper {
             Element.<Direction>builder()
                 .value(createCustomDirection(OTHERS))
                 .build());
+    }
+
+    public static List<Element<Recital>> createRecitals() {
+        return ImmutableList.of(
+            Element.<Recital>builder()
+                .value(Recital.builder()
+                    .title("A title")
+                    .description("A description")
+                    .build())
+                .build()
+        );
+    }
+
+    public static Schedule createSchedule(boolean includeSchedule) {
+        if (!includeSchedule) {
+            return Schedule.builder()
+                .includeSchedule("No")
+                .build();
+        }
+
+        return Schedule.builder()
+            .allocation("An allocation")
+            .alternativeCarers("Alternatives")
+            .application("An application")
+            .childrensCurrentArrangement("Current arrangement")
+            .includeSchedule("Yes")
+            .keyIssues("Key Issues")
+            .partiesPositions("Some positions")
+            .threshold("threshold")
+            .timetableForChildren("time goes by")
+            .timetableForProceedings("so slowly")
+            .todaysHearing("slowly")
+            .build();
+    }
+
+    public static ImmutableMap<String, Object> buildCaseDataMapForDraftCMODocmosisGeneration(
+        LocalDateTime localDateTime) {
+
+        final List<Element<Direction>> cmoDirections = createCmoDirections();
+
+        return ImmutableMap.<String, Object>builder()
+            .put("caseLocalAuthority", "example")
+            .put("familyManCaseNumber", "123")
+            .put("applicants", createPopulatedApplicants())
+            .put("solicitor", createSolicitor())
+            .put("children1", createPopulatedChildren())
+            .put("hearingDetails", createHearingBookings(localDateTime))
+            .put("dateSubmitted", LocalDate.now())
+            .put("respondents1", createRespondents())
+            .put("cmoHearingDateList", DynamicList.builder()
+                .value(DynamicListElement.builder()
+                    .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                    .label(DATE_FORMATTER_SERVICE.formatLocalDateToString(
+                        localDateTime.plusDays(5).toLocalDate(), FormatStyle.MEDIUM))
+                    .build())
+                .build())
+            .put("schedule", createSchedule(true))
+            .put("recitals", createRecitals())
+            .put("allPartiesCustom", getDirectionByAssignee(cmoDirections, ALL_PARTIES))
+            .put("localAuthorityDirectionsCustom", getDirectionByAssignee(cmoDirections, LOCAL_AUTHORITY))
+            .put("courtDirectionsCustom", getDirectionByAssignee(cmoDirections, COURT))
+            .put("cafcassDirectionsCustom", getDirectionByAssignee(cmoDirections, CAFCASS))
+            .put("otherPartiesDirectionsCustom", getDirectionByAssignee(cmoDirections, OTHERS))
+            .put("respondentDirectionsCustom", getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
+            .build();
+    }
+
+    public static CaseManagementOrder createCaseManagementOrder() {
+        return CaseManagementOrder.builder()
+            .status(SEND_TO_JUDGE)
+            .schedule(createSchedule(true))
+            .recitals(createRecitals())
+            .directions(createCmoDirections())
+            .build();
+    }
+
+    private static Solicitor createSolicitor() {
+        return Solicitor.builder()
+            .name("Bruce Wayne")
+            .email("bruce-wayne@notbatman.com")
+            .mobile("07700900304")
+            .build();
+    }
+
+    private static List<Element<Direction>> getDirectionByAssignee(List<Element<Direction>> list,
+                                                                   DirectionAssignee assignee) {
+        return list.stream()
+            .filter(element -> element.getValue().getAssignee().equals(assignee))
+            .map(element -> {
+                Element<Direction> prepared = element;
+                final UUID elementId = element.getId();
+                final Direction direction = element.getValue();
+
+                if (assignee.equals(OTHERS)) {
+                    prepared = Element.<Direction>builder()
+                        .id(elementId)
+                        .value(direction.toBuilder()
+                            .otherPartiesAssignee(OTHER_1)
+                            .build())
+                        .build();
+                }
+
+                if (assignee.equals(PARENTS_AND_RESPONDENTS)) {
+                    prepared = Element.<Direction>builder()
+                        .id(elementId)
+                        .value(direction.toBuilder()
+                            .parentsAndRespondentsAssignee(RESPONDENT_1)
+                            .build())
+                        .build();
+                }
+
+                return prepared;
+            })
+            .collect(Collectors.toList());
     }
 }
