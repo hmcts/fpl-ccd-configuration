@@ -75,12 +75,12 @@ class HearingBookingServiceTest {
     }
 
     @Test
-    void shouldReturnEmptyHearingBookingWhenKeyDoesNotMatchHearingBookingElementUUID() {
+    void shouldReturnNullWhenKeyDoesNotMatchHearingBookingElementUUID() {
         List<Element<HearingBooking>> hearingBookings = createHearingBookings();
         HearingBooking hearingBooking =
             service.getHearingBookingByUUID(hearingBookings, fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2606"));
 
-        assertThat(hearingBooking).isEqualTo(HearingBooking.builder().build());
+        assertThat(hearingBooking).isNull();
     }
 
     @Test

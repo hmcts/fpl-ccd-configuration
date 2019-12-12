@@ -69,7 +69,7 @@ class ActionCaseManagementOrderControllerTest {
     private static final String CMO_TO_ACTION_KEY = "cmoToAction";
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-    private static final byte[] pdf = {1, 2, 3, 4, 5};
+    private static final byte[] PDF = {1, 2, 3, 4, 5};
     private static final UUID NEXT_HEARING_ID = UUID.fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31");
     private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
     private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
@@ -100,7 +100,7 @@ class ActionCaseManagementOrderControllerTest {
     @BeforeEach
     void setup() throws IOException {
         Document document = document();
-        DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", pdf);
+        DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", PDF);
 
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
@@ -134,7 +134,7 @@ class ActionCaseManagementOrderControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
             buildCallbackRequest(ImmutableMap.of()), "mid-event");
 
-        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-case-management-order.pdf");
+        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, PDF, "draft-case-management-order.pdf");
 
         Map<String, Object> responseCaseData = callbackResponse.getData();
 
@@ -171,7 +171,7 @@ class ActionCaseManagementOrderControllerTest {
 
         CaseData caseData = objectMapper.convertValue(response.getData(), CaseData.class);
 
-        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-case-management-order.pdf");
+        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, PDF, "draft-case-management-order.pdf");
 
         assertThat(caseData.getCmoToAction().getAction()).isEqualTo(
             OrderAction.builder()

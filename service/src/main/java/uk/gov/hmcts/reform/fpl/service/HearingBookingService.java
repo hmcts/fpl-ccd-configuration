@@ -58,7 +58,7 @@ public class HearingBookingService {
             .filter(hearingBookingElement -> hearingBookingElement.getId().equals(elementId))
             .map(Element::getValue)
             .findFirst()
-            .orElse(HearingBooking.builder().build());
+            .orElse(null);
     }
 
     public HearingDateDynamicElement getHearingDynamicElement(DynamicList list) {
