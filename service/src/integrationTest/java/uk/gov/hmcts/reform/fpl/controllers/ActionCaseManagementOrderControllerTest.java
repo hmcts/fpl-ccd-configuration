@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -49,7 +50,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
+import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCaseManagementOrder;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
@@ -89,6 +93,9 @@ class ActionCaseManagementOrderControllerTest {
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
+
+    @MockBean
+    private CoreCaseDataService coreCaseDataService;
 
     @BeforeEach
     void setup() throws IOException {
@@ -171,6 +178,7 @@ class ActionCaseManagementOrderControllerTest {
                 .type(SEND_TO_ALL_PARTIES)
                 .nextHearingId(NEXT_HEARING_ID)
                 .nextHearingDate(TODAYS_DATE.plusDays(5).toString())
+                .nextHearingType(ISSUES_RESOLUTION_HEARING)
                 .build());
 
         String date = dateFormatterService.formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "d MMMM");
@@ -180,12 +188,43 @@ class ActionCaseManagementOrderControllerTest {
         assertThat(response.getData().get("nextHearingDateLabel")).isEqualTo(expectedLabel);
     }
 
+    @Test
+    void submittedShouldTriggerCMOProgressionEvent() throws Exception {
+        String event = "internal-change:CMO_PROGRESSION";
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .id(1L)
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
+                .data(ImmutableMap.of(
+                    "cmoToAction", CaseManagementOrder.builder()
+                        .status(SEND_TO_JUDGE)
+                        .action(OrderAction.builder()
+                            .type(SEND_TO_ALL_PARTIES)
+                            .build())
+                        .build()))
+                .build())
+            .build();
+        makeRequest(request);
+        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, 1L, event);
+    }
+
     private CallbackRequest buildCallbackRequest(Map<String, Object> data) {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .data(data)
                 .build())
             .build();
+    }
+
+    private void makeRequest(CallbackRequest request) throws Exception {
+        mockMvc.perform(post("/callback/action-cmo/submitted")
+            .header("authorization", AUTH_TOKEN)
+            .header("user-id", USER_ID)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+            .andExpect(status().isOk())
+            .andReturn();
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request, String endpoint)

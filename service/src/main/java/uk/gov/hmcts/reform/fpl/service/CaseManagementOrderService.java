@@ -84,10 +84,9 @@ public class CaseManagementOrderService {
             HearingDateDynamicElement hearingDateDynamicElement = hearingBookingService.getHearingDynamicElement(list);
 
             builder
-                .action(OrderAction.builder()
+                .action(order.getAction().toBuilder()
                     .nextHearingId(hearingDateDynamicElement.getId())
                     .nextHearingDate(hearingDateDynamicElement.getDate())
-                    .type(order.getAction().getType())
                     .build())
                 .build();
         }
@@ -109,6 +108,10 @@ public class CaseManagementOrderService {
         }
 
         return nextHearingLabel;
+    }
+
+    public OrderAction removeDocumentFromOrderAction(OrderAction orderAction) {
+        return orderAction.toBuilder().document(null).build();
     }
 
     private String formatHearingBookingLabel(LocalDateTime startDate) {

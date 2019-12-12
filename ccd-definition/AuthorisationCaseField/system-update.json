@@ -60,6 +60,6 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "sharedDraftCMODocument",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CD"
+    "CRUD": "CRUD"
   }
 ]
