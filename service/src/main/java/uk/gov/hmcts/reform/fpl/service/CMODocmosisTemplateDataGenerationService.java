@@ -95,9 +95,9 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
         HearingBooking nextHearing = null;
 
-        if (order.getAction() != null && order.getAction().getNextHearingId() != null) {
+        if (order.getNextHearing() != null && order.getNextHearing().getId() != null) {
             List<Element<HearingBooking>> hearingBookings = caseData.getHearingDetails();
-            UUID nextHearingId = order.getAction().getNextHearingId();
+            UUID nextHearingId = order.getNextHearing().getId();
             nextHearing = hearingBookingService.getHearingBookingByUUID(hearingBookings, nextHearingId);
         }
 

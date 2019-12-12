@@ -71,6 +71,7 @@ public class DraftCMOService {
             .status(oldCMO.map(CaseManagementOrder::getStatus).orElse(null))
             .orderDoc(oldCMO.map(CaseManagementOrder::getOrderDoc).orElse(null))
             .action(oldCMO.map(CaseManagementOrder::getAction).orElse(null))
+            .nextHearing(oldCMO.map(CaseManagementOrder::getNextHearing).orElse(null))
             .build();
     }
 

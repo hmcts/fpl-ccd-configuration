@@ -15,8 +15,8 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.Order;
-import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -472,8 +472,8 @@ public class CaseDataGeneratorHelper {
             .put("otherPartiesDirectionsCustom", getDirectionByAssignee(cmoDirections, OTHERS))
             .put("respondentDirectionsCustom", getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
             .put("cmoToAction", CaseManagementOrder.builder()
-                .action(OrderAction.builder()
-                    .nextHearingId(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                .nextHearing(NextHearing.builder()
+                    .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
                     .build())
                 .build())
             .build();

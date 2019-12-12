@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
+import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
@@ -59,7 +60,7 @@ public class CaseManagementOrderService {
         return data;
     }
 
-    public CaseManagementOrder addHearingDetailsToCMO(DynamicList list, CaseManagementOrder order) {
+    public CaseManagementOrder addMextHearingtoCMO(DynamicList list, CaseManagementOrder order) {
         if (list == null) {
             return order;
         }
@@ -67,9 +68,9 @@ public class CaseManagementOrderService {
         HearingDateDynamicElement hearingDateDynamicElement = hearingBookingService.getHearingDynamicElement(list);
 
         return order.toBuilder()
-            .action(order.getAction().toBuilder()
-                .nextHearingId(hearingDateDynamicElement.getId())
-                .nextHearingDate(hearingDateDynamicElement.getDate())
+            .nextHearing(NextHearing.builder()
+                .id(hearingDateDynamicElement.getId())
+                .date(hearingDateDynamicElement.getDate())
                 .build())
             .build();
     }
@@ -77,8 +78,8 @@ public class CaseManagementOrderService {
     public String createNextHearingDateLabel(CaseManagementOrder caseManagementOrder,
                                              List<Element<HearingBooking>> hearingBookings) {
 
-        if (caseManagementOrder != null && caseManagementOrder.getAction() != null) {
-            UUID nextHearingId = caseManagementOrder.getAction().getNextHearingId();
+        if (caseManagementOrder != null && caseManagementOrder.getNextHearing() != null) {
+            UUID nextHearingId = caseManagementOrder.getNextHearing().getId();
 
             return Optional.ofNullable(hearingBookingService.getHearingBookingByUUID(hearingBookings, nextHearingId))
                 .map(booking -> formatHearingBookingLabel(booking.getStartDate())).orElse("");

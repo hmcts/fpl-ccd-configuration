@@ -7,8 +7,6 @@ import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.NextHearingType;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 
-import java.util.UUID;
-
 @Data
 @Builder(toBuilder = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -18,6 +16,4 @@ public class OrderAction {
     private final ActionType type;
     private final NextHearingType nextHearingType;
     private final String changeRequestedByJudge;
-    private final UUID nextHearingId;
-    private final String nextHearingDate;
 }

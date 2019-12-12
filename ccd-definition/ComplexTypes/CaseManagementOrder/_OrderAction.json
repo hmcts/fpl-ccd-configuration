@@ -34,23 +34,5 @@
     "ElementLabel": "What do they need to change?",
     "FieldShowCondition": "type=\"JUDGE_REQUESTED_CHANGE\"",
     "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OrderAction",
-    "ListElementCode": "nextHearingDate",
-    "FieldType": "Text",
-    "ElementLabel": "Which hearing is next?",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "OrderAction",
-    "ListElementCode": "nextHearingId",
-    "FieldType": "Text",
-    "ElementLabel": "nextHearingId",
-    "SecurityClassification": "Public",
-    "FieldShowCondition": "nextHearingDate=\"DO_NOT_SHOW\"",
-    "Comment": "nextHearingId uniquely identifies selected date in action CMO"
   }
 ]

@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -176,9 +177,13 @@ class ActionCaseManagementOrderControllerTest {
         assertThat(caseData.getCmoToAction().getAction()).isEqualTo(
             OrderAction.builder()
                 .type(SEND_TO_ALL_PARTIES)
-                .nextHearingId(NEXT_HEARING_ID)
-                .nextHearingDate(TODAYS_DATE.plusDays(5).toString())
                 .nextHearingType(ISSUES_RESOLUTION_HEARING)
+                .build());
+
+        assertThat(caseData.getCmoToAction().getNextHearing()).isEqualTo(
+            NextHearing.builder()
+                .id(NEXT_HEARING_ID)
+                .date(TODAYS_DATE.plusDays(5).toString())
                 .build());
 
         String date = dateFormatterService.formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "d MMMM");
@@ -246,7 +251,6 @@ class ActionCaseManagementOrderControllerTest {
         return OrderAction.builder()
             .type(SEND_TO_ALL_PARTIES)
             .nextHearingType(ISSUES_RESOLUTION_HEARING)
-            .nextHearingId(NEXT_HEARING_ID)
             .build();
     }
 
