@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,11 +33,14 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.OrderOwner.JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.OrderOwner.LOCAL_AUTHORITY;
 
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CaseData {
     @NotBlank(message = "Enter a case name")
     private final String caseName;
@@ -148,10 +154,44 @@ public class CaseData {
     }
 
     // for judiciary
+    // to be removed
     private final CaseManagementOrder cmoToAction;
 
     // for local authority
-    private final CaseManagementOrder caseManagementOrder;
+    @JsonIgnore
+    private CaseManagementOrder caseManagementOrder;
+
+
+    @JsonGetter("caseManagementOrder_LOCAL_AUTHORITY")
+    private CaseManagementOrder getCaseManagementOrder_LOCAL_AUTHORITY() {
+        if (caseManagementOrder != null && caseManagementOrder.getOwner() == LOCAL_AUTHORITY) {
+            return caseManagementOrder;
+        }
+        return null;
+    }
+
+    @JsonSetter("caseManagementOrder_LOCAL_AUTHORITY")
+    private void setCaseManagementOrder_LOCAL_AUTHORITY(CaseManagementOrder order) {
+        if (order != null) {
+            caseManagementOrder = order;
+        }
+    }
+
+    @JsonGetter("caseManagementOrder_JUDICIARY")
+    private CaseManagementOrder getCaseManagementOrder_JUDICIARY() {
+        if (caseManagementOrder != null && caseManagementOrder.getOwner() == JUDICIARY) {
+            return caseManagementOrder;
+        }
+        return null;
+    }
+
+    @JsonSetter("caseManagementOrder_JUDICIARY")
+    private void setCaseManagementOrder_JUDICIARY(CaseManagementOrder order) {
+        if (order != null) {
+            caseManagementOrder = order;
+        }
+    }
+
     private final OrderAction orderAction;
     private final DynamicList cmoHearingDateList;
     private final Schedule schedule;
@@ -160,6 +200,7 @@ public class CaseData {
 
     private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
 
+    @JsonIgnore
     public List<Element<CaseManagementOrder>> getServedCaseManagementOrders() {
         return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
     }

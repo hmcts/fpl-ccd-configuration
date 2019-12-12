@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
+import uk.gov.hmcts.reform.fpl.enums.OrderOwner;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
@@ -27,6 +28,7 @@ public class CaseManagementOrder {
     private final List<Element<Recital>> recitals;
     private final CMOStatus status;
     private final OrderAction action;
+    private final OrderOwner owner;
 
     @JsonIgnore
     public boolean isDraft() {
