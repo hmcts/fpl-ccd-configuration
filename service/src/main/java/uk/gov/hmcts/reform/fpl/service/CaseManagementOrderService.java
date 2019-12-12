@@ -93,9 +93,7 @@ public class CaseManagementOrderService {
     }
 
     private String formatHearingBookingLabel(LocalDateTime startDate) {
-        String date = dateFormatterService.formatLocalDateTimeBaseUsingFormat(startDate, "d MMMM");
-        String time = dateFormatterService.formatLocalDateTimeBaseUsingFormat(startDate, "h:mma");
-
-        return String.format("The next hearing date is on %s at %s", date, time);
+        String date = dateFormatterService.formatLocalDateTimeBaseUsingFormat(startDate, "d MMMM at h:mma");
+        return String.format("The next hearing date is on %s", date);
     }
 }
