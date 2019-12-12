@@ -137,12 +137,20 @@ public class DraftCMOController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
-        coreCaseDataService.triggerEvent(
-            callbackRequest.getCaseDetails().getJurisdiction(),
-            callbackRequest.getCaseDetails().getCaseTypeId(),
-            callbackRequest.getCaseDetails().getId(),
-            "internal-change:CMO_PROGRESSION"
-        );
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        CaseDetails caseDetailsBefore = callbackRequest.getCaseDetailsBefore();
+        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+
+        if (caseData.getCaseManagementOrder().getStatus() != caseDataBefore.getCaseManagementOrder().getStatus()) {
+            coreCaseDataService.triggerEvent(
+                callbackRequest.getCaseDetails().getJurisdiction(),
+                callbackRequest.getCaseDetails().getCaseTypeId(),
+                callbackRequest.getCaseDetails().getId(),
+                "internal-change:CMO_PROGRESSION"
+            );
+        }
     }
 
     private String getRespondentsLabel(CaseData caseData) {
