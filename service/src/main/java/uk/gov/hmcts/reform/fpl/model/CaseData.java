@@ -24,12 +24,9 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Data
 @Builder(toBuilder = true)
@@ -143,11 +140,10 @@ public class CaseData {
     private final GeneratedOrder order;
     private final List<Element<GeneratedOrder>> orderCollection;
 
-    @JsonIgnore
     public List<Element<GeneratedOrder>> getOrderCollection() {
-        return defaultIfNull(orderCollection, new ArrayList<>());
+        return orderCollection != null ? orderCollection : new ArrayList<>();
     }
-    
+
     // for judiciary
     private final CaseManagementOrder cmoToAction;
 
