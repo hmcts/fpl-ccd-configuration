@@ -77,7 +77,7 @@ public class CaseManagementOrderService {
         return data;
     }
 
-    public CaseManagementOrder buildCMOWithHearingDate(DynamicList list, CaseManagementOrder order) {
+    public CaseManagementOrder addHearingDetailsToCMO(DynamicList list, CaseManagementOrder order) {
         CaseManagementOrder.CaseManagementOrderBuilder builder = order.toBuilder();
 
         if (list != null) {
