@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -158,20 +159,26 @@ class DraftCMOControllerTest {
         Map<String, Object> data = new HashMap<>();
 
         Stream.of(DirectionAssignee.values()).forEach(direction ->
-            data.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
+            data.put(direction.toCustomDirectionField(), createElementCollection(createUnassignedDirection()))
         );
 
         data.put("cmoHearingDateList", dynamicHearingDates);
-        data.put("caseManagementOrder", CaseManagementOrder.builder().status(SELF_REVIEW).build());
+        data.put("caseManagementOrder", CaseManagementOrder.builder()
+            .orderDoc(DocumentReference.builder().filename("draft-case-management-order.pdf").build())
+            .status(SELF_REVIEW)
+            .action(OrderAction.builder().changeRequestedByJudge("Changes").build())
+            .build());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
         assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
-        assertThat(caseManagementOrder).extracting("id", "hearingDate")
-            .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), TODAYS_DATE.plusDays(5).toString());
+        assertThat(caseManagementOrder.getId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
+        assertThat(caseManagementOrder.getHearingDate()).isEqualTo(TODAYS_DATE.plusDays(5).toString());
         assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
+        assertThat(caseManagementOrder.getOrderDoc().getFilename()).isEqualTo("draft-case-management-order.pdf");
+        assertThat(caseManagementOrder.getAction().getChangeRequestedByJudge()).isEqualTo("Changes");
     }
 
     //TODO: caseDetails before is in this test as a start for conditional call to submitted code.

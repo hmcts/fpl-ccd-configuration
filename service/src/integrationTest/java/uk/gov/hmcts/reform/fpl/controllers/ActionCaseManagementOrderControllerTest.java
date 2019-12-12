@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
@@ -38,6 +39,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
@@ -117,12 +119,12 @@ class ActionCaseManagementOrderControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldReturnCaseManagementOrderWithNewDocumentWhenSendToAllParties() throws Exception {
+    void aboutToSubmitShouldReturnCaseManagementOrderWithFinalDocumentWhenSendToAllParties() throws Exception {
         CaseManagementOrder order = getCaseManagementOrder(OrderAction.builder().build());
 
         Map<String, Object> data = ImmutableMap.of(
             CMO_TO_ACTION_KEY, order,
-            "orderAction", getOrderAction());
+            "orderAction", getOrderAction(SEND_TO_ALL_PARTIES));
 
         AboutToStartOrSubmitCallbackResponse response =
             makeRequest(buildCallbackRequest(data), "about-to-submit");
@@ -130,7 +132,24 @@ class ActionCaseManagementOrderControllerTest {
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "case-management-order.pdf");
-        assertThat(caseData.getCmoToAction().getAction()).isEqualTo(getOrderAction());
+        assertThat(caseData.getCmoToAction().getAction()).isEqualTo(getOrderAction(SEND_TO_ALL_PARTIES));
+    }
+
+    @Test
+    void aboutToSubmitShouldReturnCaseManagementOrderWithDraftDocumentWhenNotSendToAllParties() throws Exception {
+        CaseManagementOrder order = getCaseManagementOrder(OrderAction.builder().build());
+
+        Map<String, Object> data = ImmutableMap.of(
+            CMO_TO_ACTION_KEY, order,
+            "orderAction", getOrderAction(JUDGE_REQUESTED_CHANGE));
+
+        AboutToStartOrSubmitCallbackResponse response =
+            makeRequest(buildCallbackRequest(data), "about-to-submit");
+
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-case-management-order.pdf");
+        assertThat(caseData.getCmoToAction().getAction()).isEqualTo(getOrderAction(JUDGE_REQUESTED_CHANGE));
     }
 
     @Test
@@ -183,9 +202,9 @@ class ActionCaseManagementOrderControllerTest {
             .readValue(response.getResponse().getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 
-    private OrderAction getOrderAction() {
+    private OrderAction getOrderAction(ActionType type) {
         return OrderAction.builder()
-            .type(SEND_TO_ALL_PARTIES)
+            .type(type)
             .nextHearingType(ISSUES_RESOLUTION_HEARING)
             .build();
     }
