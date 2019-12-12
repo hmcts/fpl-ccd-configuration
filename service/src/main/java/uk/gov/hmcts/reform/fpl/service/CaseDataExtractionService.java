@@ -49,7 +49,7 @@ import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.gen
 public class CaseDataExtractionService {
 
     public static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
-    private static final String HEARING_EMPTY_PLACEHOLDER = "This will be shown on the issued CMO";
+    private static final String HEARING_EMPTY_PLACEHOLDER = "This only appears on the issued CMO";
     private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;

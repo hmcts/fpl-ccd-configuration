@@ -50,7 +50,7 @@ class CaseDataExtractionServiceTest {
     private static final LocalDate TODAYS_DATE = LocalDate.now();
     private static final LocalDateTime TODAYS_DATE_TIME = LocalDateTime.now();
     private static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
-    private static final String HEARING_EMPTY_PLACEHOLDER = "This will be shown on the issued CMO";
+    private static final String HEARING_EMPTY_PLACEHOLDER = "This only appears on the issued CMO";
 
     @Autowired
     private HearingVenueLookUpService hearingVenueLookUpService;
