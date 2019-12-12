@@ -76,7 +76,7 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
 });
 
 // This scenario relies on running after 'local authority creates CMO'
-Scenario('Other parties cannot see the draft CMO document when it is marked for self review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+xScenario('Other parties cannot see the draft CMO document when it is marked for self review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   // Ensure the selection is self review
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await skipToReview(I, ids);
@@ -91,7 +91,7 @@ Scenario('Other parties cannot see the draft CMO document when it is marked for 
 
 // This scenario relies on running after 'local authority creates CMO'
 // Currently send to judge does the same as party review
-Scenario('Other parties can see the draft CMO document when it is marked for party review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
+xScenario('Other parties can see the draft CMO document when it is marked for party review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   // Ensure the selection is party review
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
   await skipToReview(I, ids);
