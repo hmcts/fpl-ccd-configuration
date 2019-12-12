@@ -9,7 +9,7 @@ public enum CaseManagementOrderKeys {
     ORDER_ACTION("orderAction"),
     SCHEDULE("schedule"),
     RECITALS("recitals"),
-    HEARING_DATE_LIST("cmoHearingList");
+    HEARING_DATE_LIST("cmoHearingDateList");
 
     @Getter
     private final String key;
