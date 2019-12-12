@@ -86,12 +86,12 @@ public class NotificationHandler {
 
     @EventListener
     public void sendNotificationForOrder(final GeneratedOrderEvent event) {
-        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+        EventData eventData = new EventData(event);
 
-        sendOrderNotificationForLocalAuthority(caseDetails, localAuthorityCode,
+        sendOrderNotificationForLocalAuthority(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
             event.getMostRecentUploadedDocumentUrl());
-        sendOrderNotificationForCafcass(caseDetails, localAuthorityCode, event.getMostRecentUploadedDocumentUrl());
+        sendOrderNotificationForCafcass(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
+            event.getMostRecentUploadedDocumentUrl());
     }
 
     @EventListener
