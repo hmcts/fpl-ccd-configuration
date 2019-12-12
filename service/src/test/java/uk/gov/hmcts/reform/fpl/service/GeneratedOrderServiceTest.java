@@ -252,7 +252,7 @@ class GeneratedOrderServiceTest {
             case CARE_ORDER:
                 expectedMap
                     .put("orderType", CARE_ORDER)
-                    .put("orderTitle", "Care Order")
+                    .put("orderTitle", "Care order")
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails",
                         "It is ordered that the child is placed in the care of Example Local Authority.");

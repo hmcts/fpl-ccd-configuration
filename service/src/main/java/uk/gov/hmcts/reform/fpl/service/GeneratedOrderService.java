@@ -113,7 +113,7 @@ public class GeneratedOrderService {
             case CARE_ORDER:
                 orderTemplateBuilder
                     .put("orderType", CARE_ORDER)
-                    .put("orderTitle", "Care Order")
+                    .put("orderTitle", "Care order")
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),
                         caseData.getCaseLocalAuthority()));
