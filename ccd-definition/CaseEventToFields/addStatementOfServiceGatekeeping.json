@@ -1,0 +1,47 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addStatementOfServiceGatekeeping",
+    "CaseFieldID": "c9Declaration",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addStatementOfServiceGatekeeping",
+    "CaseFieldID": "statementOfService",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "MANDATORY",
+    "ShowSummaryChangeOption": "Y",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addStatementOfServiceGatekeeping",
+    "CaseFieldID": "serviceDeclarationLabel",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "READONLY",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "addStatementOfServiceGatekeeping",
+    "CaseFieldID": "serviceConsent",
+    "PageFieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY",
+    "PageID": 1,
+    "PageDisplayOrder": 1,
+    "PageColumnNumber": 1
+  }
+]
