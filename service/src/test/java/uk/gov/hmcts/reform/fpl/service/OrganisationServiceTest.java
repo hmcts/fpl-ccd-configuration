@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.fpl.exceptions.UserOrganisationLookupException;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.Status;
 import uk.gov.hmcts.reform.rd.model.User;
+import uk.gov.hmcts.reform.rd.model.Users;
 
 import java.util.List;
 
@@ -51,7 +52,7 @@ class OrganisationServiceTest {
 
     @Test
     void shouldReturnUsersFromOrganisationIfExistsInRefData() {
-        List<User> usersInAnOrganisation = prepareUsersForAnOrganisation();
+        Users usersInAnOrganisation = prepareUsersForAnOrganisation();
         when(organisationApi.findUsersByOrganisation(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, Status.ACTIVE))
             .thenReturn(usersInAnOrganisation);
 
@@ -74,8 +75,8 @@ class OrganisationServiceTest {
             .hasMessage("Can't find users for AN local authority");
     }
 
-    private List<User> prepareUsersForAnOrganisation() {
-        return List.of(
+    private Users prepareUsersForAnOrganisation() {
+        return new Users(List.of(
             User
                 .builder()
                 .userIdentifier("40")
@@ -84,6 +85,6 @@ class OrganisationServiceTest {
                 .builder()
                 .userIdentifier("41")
                 .build()
-        );
+        ));
     }
 }
