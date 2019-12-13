@@ -487,7 +487,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondents_label",
-    "UserRole": "caseworker-publiclaw-solicitor",
+    "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
   },
   {
@@ -508,7 +508,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "others_label",
-    "UserRole": "caseworker-publiclaw-solicitor",
+    "UserRole": "[LASOLICITOR]",
     "CRUD": "CRU"
   },
   {
