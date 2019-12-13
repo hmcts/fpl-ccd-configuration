@@ -11,8 +11,11 @@ import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.UUID.randomUUID;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
@@ -41,53 +44,56 @@ public class CaseManagementOrderProgressionService {
 
     public void handleCaseManagementOrderProgression(CaseDetails caseDetails, List<String> errors) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        Map<String, Object> data = caseDetails.getData();
+        CaseManagementOrder order = caseData.getCaseManagementOrder();
 
-        if (caseData.getCaseManagementOrder() != null) {
-            progressDraftCaseManagementOrder(caseDetails, caseData.getCaseManagementOrder());
+        if (order != null && order.getAction() == null) {
+            progressDraftCaseManagementOrder(data, order);
         } else {
-            progressActionCaseManagementOrder(caseDetails, caseData, errors);
+            progressActionCaseManagementOrder(data, caseData, errors);
         }
     }
 
-    private void progressDraftCaseManagementOrder(CaseDetails caseDetails, CaseManagementOrder order) {
+    private void progressDraftCaseManagementOrder(Map<String, Object> data, CaseManagementOrder order) {
         switch (order.getStatus()) {
             case SEND_TO_JUDGE:
-                caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
-                caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
+                data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
+                data.remove(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
                 break;
             case PARTIES_REVIEW:
-                caseDetails.getData().put(CASE_MANAGEMENT_ORDER_SHARED.getKey(), order.getOrderDoc());
+                data.put(CASE_MANAGEMENT_ORDER_SHARED.getKey(), order.getOrderDoc());
                 break;
             case SELF_REVIEW:
-                caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_SHARED.getKey());
+                data.remove(CASE_MANAGEMENT_ORDER_SHARED.getKey());
                 break;
         }
     }
 
-    private void progressActionCaseManagementOrder(CaseDetails caseDetails, CaseData caseData, List<String> errors) {
-        switch (caseData.getCmoToAction().getAction().getType()) {
+    private void progressActionCaseManagementOrder(Map<String, Object> data, CaseData caseData, List<String> errors) {
+        switch (caseData.getCaseManagementOrder().getAction().getType()) {
             case SEND_TO_ALL_PARTIES:
                 LocalDateTime date = hearingBookingService
-                    .getHearingBookingByUUID(caseData.getHearingDetails(), caseData.getCmoToAction().getId())
+                    .getHearingBookingByUUID(caseData.getHearingDetails(), caseData.getCaseManagementOrder().getId())
                     .getStartDate();
 
                 if (date.isAfter(time.now())) {
                     List<Element<CaseManagementOrder>> orders = caseData.getServedCaseManagementOrders();
                     orders.add(0, Element.<CaseManagementOrder>builder()
                         .id(randomUUID())
-                        .value(caseData.getCmoToAction())
+                        .value(caseData.getCaseManagementOrder())
                         .build());
 
-                    caseDetails.getData().put("servedCaseManagementOrders", orders);
-                    caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
+                    data.put("servedCaseManagementOrders", orders);
+                    data.remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
                 } else {
                     errors.add(HEARING_NOT_COMPLETED.getValue());
                 }
 
                 break;
             case JUDGE_REQUESTED_CHANGE:
-                caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), caseData.getCmoToAction());
-                caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
+                data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(),
+                    caseData.getCaseManagementOrder().toBuilder().status(SELF_REVIEW).build());
+                data.remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
                 break;
             case SELF_REVIEW:
                 break;

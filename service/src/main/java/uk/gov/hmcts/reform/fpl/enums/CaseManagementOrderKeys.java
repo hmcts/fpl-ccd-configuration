@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.fpl.enums;
 import lombok.Getter;
 
 public enum CaseManagementOrderKeys {
-    CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY("caseManagementOrder"),
-    CASE_MANAGEMENT_ORDER_JUDICIARY("cmoToAction"),
+    CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY("caseManagementOrder_LocalAuthority"),
+    CASE_MANAGEMENT_ORDER_JUDICIARY("caseManagementOrder_Judiciary"),
     CASE_MANAGEMENT_ORDER_SHARED("sharedDraftCMODocument"),
     ORDER_ACTION("orderAction"),
     SCHEDULE("schedule"),

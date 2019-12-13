@@ -29,6 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
@@ -48,6 +49,7 @@ class CaseManagementOrderProgressionControllerTest {
     @Test
     void aboutToSubmitReturnCaseManagementOrdersToLocalAuthorityWhenChangesAreRequested() throws Exception {
         CaseManagementOrder order = CaseManagementOrder.builder()
+            .status(SEND_TO_JUDGE)
             .action(OrderAction.builder()
                 .type(JUDGE_REQUESTED_CHANGE)
                 .build())
@@ -65,6 +67,7 @@ class CaseManagementOrderProgressionControllerTest {
     void aboutToSubmitShouldReturnErrorsWhenJudgeSendsToAllPartiesAndHearingIsNotComplete() throws Exception {
         CaseManagementOrder order = CaseManagementOrder.builder()
             .id(uuid)
+            .status(SEND_TO_JUDGE)
             .action(OrderAction.builder()
                 .type(SEND_TO_ALL_PARTIES)
                 .build())
@@ -88,6 +91,7 @@ class CaseManagementOrderProgressionControllerTest {
     void aboutToSubmitShouldPopulateListServedCaseManagementOrdersWhenSendsToAllParties() throws Exception {
         CaseManagementOrder order = CaseManagementOrder.builder()
             .id(uuid)
+            .status(SEND_TO_JUDGE)
             .action(OrderAction.builder()
                 .type(SEND_TO_ALL_PARTIES)
                 .build())

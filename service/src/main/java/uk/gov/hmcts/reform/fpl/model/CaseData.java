@@ -33,8 +33,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.OrderOwner.JUDICIARY;
-import static uk.gov.hmcts.reform.fpl.enums.OrderOwner.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 
 @Data
 @Builder(toBuilder = true)
@@ -153,40 +152,37 @@ public class CaseData {
         return defaultIfNull(orderCollection, new ArrayList<>());
     }
 
-    // for judiciary
-    // to be removed
-    private final CaseManagementOrder cmoToAction;
-
-    // for local authority
+    //TODO: update CCD definitions
+    // for local authority and judiciary
     @JsonIgnore
     private CaseManagementOrder caseManagementOrder;
 
 
-    @JsonGetter("caseManagementOrder_LOCAL_AUTHORITY")
-    private CaseManagementOrder getCaseManagementOrder_LOCAL_AUTHORITY() {
-        if (caseManagementOrder != null && caseManagementOrder.getOwner() == LOCAL_AUTHORITY) {
+    @JsonGetter("caseManagementOrder_LocalAuthority")
+    private CaseManagementOrder getCaseManagementOrder_LocalAuthority() {
+        if (caseManagementOrder != null && caseManagementOrder.getStatus() != SEND_TO_JUDGE) {
             return caseManagementOrder;
         }
         return null;
     }
 
-    @JsonSetter("caseManagementOrder_LOCAL_AUTHORITY")
-    private void setCaseManagementOrder_LOCAL_AUTHORITY(CaseManagementOrder order) {
+    @JsonSetter("caseManagementOrder_LocalAuthority")
+    private void setCaseManagementOrder_LocalAuthority(CaseManagementOrder order) {
         if (order != null) {
             caseManagementOrder = order;
         }
     }
 
-    @JsonGetter("caseManagementOrder_JUDICIARY")
-    private CaseManagementOrder getCaseManagementOrder_JUDICIARY() {
-        if (caseManagementOrder != null && caseManagementOrder.getOwner() == JUDICIARY) {
+    @JsonGetter("caseManagementOrder_Judiciary")
+    private CaseManagementOrder getCaseManagementOrder_Judiciary() {
+        if (caseManagementOrder != null && caseManagementOrder.getStatus() == SEND_TO_JUDGE) {
             return caseManagementOrder;
         }
         return null;
     }
 
-    @JsonSetter("caseManagementOrder_JUDICIARY")
-    private void setCaseManagementOrder_JUDICIARY(CaseManagementOrder order) {
+    @JsonSetter("caseManagementOrder_Judiciary")
+    private void setCaseManagementOrder_Judiciary(CaseManagementOrder order) {
         if (order != null) {
             caseManagementOrder = order;
         }
@@ -200,10 +196,11 @@ public class CaseData {
 
     private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
 
-    @JsonIgnore
-    public List<Element<CaseManagementOrder>> getServedCaseManagementOrders() {
-        return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
-    }
+    //TODO: tests fail when this is defined / not defined
+    //    @JsonIgnore
+    //    public List<Element<CaseManagementOrder>> getServedCaseManagementOrders() {
+    //        return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
+    //    }
 
     private final Others others;
 }

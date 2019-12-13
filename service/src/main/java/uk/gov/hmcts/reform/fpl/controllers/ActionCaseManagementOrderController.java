@@ -63,10 +63,10 @@ public class ActionCaseManagementOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData()
-            .putAll(caseManagementOrderService.extractMapFieldsFromCaseManagementOrder(caseData.getCmoToAction()));
+        caseDetails.getData().putAll(
+            caseManagementOrderService.extractMapFieldsFromCaseManagementOrder(caseData.getCaseManagementOrder()));
 
-        draftCMOService.prepareCustomDirections(caseDetails, caseData.getCmoToAction());
+        draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -100,7 +100,7 @@ public class ActionCaseManagementOrderController {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-        CaseManagementOrder order = caseData.getCmoToAction();
+        CaseManagementOrder order = caseData.getCaseManagementOrder();
 
         order = draftCMOService.prepareCMO(caseData, order).toBuilder()
             .id(order.getId())

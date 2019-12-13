@@ -123,8 +123,8 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
             return caseData.getCaseManagementOrder();
         }
 
-        if (caseData.getCmoToAction() != null) {
-            return caseData.getCmoToAction();
+        if (caseData.getCaseManagementOrder() != null) {
+            return caseData.getCaseManagementOrder();
         }
 
         return null;

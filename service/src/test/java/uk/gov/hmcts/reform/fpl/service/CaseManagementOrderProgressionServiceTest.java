@@ -71,7 +71,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        assertThat(updatedCaseData.getCmoToAction()).isEqualTo(caseData.getCaseManagementOrder());
+        assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder());
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey())).isNull();
     }
 
@@ -107,7 +107,7 @@ class CaseManagementOrderProgressionServiceTest {
 
     @Test
     void shouldPopulateErrorsWhenTryingToSendToAllPartiesBeforeHearingIsComplete() {
-        CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
+        CaseData caseData = caseDataWithCaseManagementOrderAction(SEND_TO_ALL_PARTIES)
             .hearingDetails(ImmutableList.of(Element.<HearingBooking>builder()
                 .id(UUID)
                 .value(HearingBooking.builder()
@@ -125,7 +125,7 @@ class CaseManagementOrderProgressionServiceTest {
 
     @Test
     void shouldPopulateServedCaseManagementOrdersWhenTryingToSendToAllPartiesAndHearingIsComplete() {
-        CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
+        CaseData caseData = caseDataWithCaseManagementOrderAction(SEND_TO_ALL_PARTIES)
             .hearingDetails(ImmutableList.of(Element.<HearingBooking>builder()
                 .id(UUID)
                 .value(HearingBooking.builder()
@@ -142,7 +142,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         assertThat(updatedCaseData.getServedCaseManagementOrders()).hasSize(1);
         assertThat(updatedCaseData.getServedCaseManagementOrders().get(0).getValue())
-            .isEqualTo(caseData.getCmoToAction());
+            .isEqualTo(caseData.getCaseManagementOrder());
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey())).isNull();
     }
 
@@ -151,7 +151,7 @@ class CaseManagementOrderProgressionServiceTest {
         List<Element<CaseManagementOrder>> orders = new ArrayList<>();
         orders.add(Element.<CaseManagementOrder>builder().build());
 
-        CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
+        CaseData caseData = caseDataWithCaseManagementOrderAction(SEND_TO_ALL_PARTIES)
             .servedCaseManagementOrders(orders)
             .hearingDetails(ImmutableList.of(Element.<HearingBooking>builder()
                 .id(UUID)
@@ -169,13 +169,13 @@ class CaseManagementOrderProgressionServiceTest {
 
         assertThat(updatedCaseData.getServedCaseManagementOrders()).hasSize(2);
         assertThat(updatedCaseData.getServedCaseManagementOrders().get(0).getValue())
-            .isEqualTo(caseData.getCmoToAction());
+            .isEqualTo(caseData.getCaseManagementOrder());
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey())).isNull();
     }
 
     @Test
     void shouldPopulateDraftCaseManagementOrderWhenJudgeRequestsChange() {
-        CaseData caseData = caseDataWithCmoToAction(JUDGE_REQUESTED_CHANGE).build();
+        CaseData caseData = caseDataWithCaseManagementOrderAction(JUDGE_REQUESTED_CHANGE).build();
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
@@ -183,13 +183,14 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCmoToAction());
+        assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(
+            caseData.getCaseManagementOrder().toBuilder().status(CMOStatus.SELF_REVIEW).build());
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey())).isNull();
     }
 
     @Test
     void shouldDoNothingWhenJudgeLeavesInSelfReview() {
-        CaseData caseData = caseDataWithCmoToAction(SELF_REVIEW).build();
+        CaseData caseData = caseDataWithCaseManagementOrderAction(SELF_REVIEW).build();
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
@@ -197,7 +198,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        assertThat(updatedCaseData.getCmoToAction()).isEqualTo(caseData.getCmoToAction());
+        assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder());
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey())).isNull();
     }
 
@@ -209,10 +210,11 @@ class CaseManagementOrderProgressionServiceTest {
                 .build());
     }
 
-    private CaseData.CaseDataBuilder caseDataWithCmoToAction(ActionType type) {
+    private CaseData.CaseDataBuilder caseDataWithCaseManagementOrderAction(ActionType type) {
         return CaseData.builder()
-            .cmoToAction(CaseManagementOrder.builder()
+            .caseManagementOrder(CaseManagementOrder.builder()
                 .id(UUID)
+                .status(SEND_TO_JUDGE)
                 .action(OrderAction.builder()
                     .type(type)
                     .build())
