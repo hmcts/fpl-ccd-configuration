@@ -185,7 +185,9 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCmoToAction());
+        assertThat(updatedCaseData.getCaseManagementOrder())
+            .isEqualTo(caseData.getCmoToAction().toBuilder().status(CMOStatus.SELF_REVIEW).build());
+
         assertThat(caseDetails.getData().get("cmoToAction")).isNull();
     }
 
@@ -215,6 +217,7 @@ class CaseManagementOrderProgressionServiceTest {
         return CaseData.builder()
             .cmoToAction(CaseManagementOrder.builder()
                 .id(UUID)
+                .status(SEND_TO_JUDGE)
                 .action(OrderAction.builder()
                     .type(type)
                     .build())

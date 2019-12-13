@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.util.UUID.randomUUID;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 
 @Service
@@ -87,7 +88,9 @@ public class CaseManagementOrderProgressionService {
 
                 break;
             case JUDGE_REQUESTED_CHANGE:
-                caseDetails.getData().put(LA_CMO_KEY, caseData.getCmoToAction());
+                CaseManagementOrder updatedOrder = caseData.getCmoToAction().toBuilder().status(SELF_REVIEW).build();
+
+                caseDetails.getData().put(LA_CMO_KEY, updatedOrder);
                 caseDetails.getData().remove(JUDGE_CMO_KEY);
                 break;
             case SELF_REVIEW:
