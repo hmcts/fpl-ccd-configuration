@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.lang.String.format;
@@ -146,6 +148,15 @@ public class RepresentativeService {
                 representative.getValue().setIdamId(userId);
             }
         }
+    }
+
+    public List<Representative> getRepresentativesByServedPreference(List<Element<Representative>> representatives,
+                                                                     RepresentativeServingPreferences preference) {
+        return representatives.stream()
+            .filter(Objects::nonNull)
+            .map(Element::getValue)
+            .filter(representative ->  preference == representative.getServingPreferences())
+            .collect(toList());
     }
 
     private void linkWithRepresentable(CaseData caseData, Element<Representative> representative) {

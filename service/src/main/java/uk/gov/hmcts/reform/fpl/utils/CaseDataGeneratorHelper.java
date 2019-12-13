@@ -6,6 +6,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -18,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
@@ -55,6 +57,7 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrap;
 
 public class CaseDataGeneratorHelper {
 
@@ -480,6 +483,15 @@ public class CaseDataGeneratorHelper {
             .recitals(createRecitals())
             .directions(createCmoDirections())
             .build();
+    }
+
+    public static List<Element<Representative>> createRepresentatives(
+        RepresentativeServingPreferences servingPreferences) {
+        return wrap(Representative.builder()
+            .email("abc@example.com")
+            .fullName("Jon Snow")
+            .servingPreferences(servingPreferences)
+            .build());
     }
 
     private static Solicitor createSolicitor() {

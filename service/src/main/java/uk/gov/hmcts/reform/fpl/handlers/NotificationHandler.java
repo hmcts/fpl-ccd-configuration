@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,14 +11,19 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
 import uk.gov.hmcts.reform.fpl.events.CMOEvent;
+import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
@@ -32,6 +39,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
@@ -39,6 +47,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMP
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 
 @Slf4j
 @Component
@@ -62,6 +71,9 @@ public class NotificationHandler {
     private final IdamApi idamApi;
     private final InboxLookupService inboxLookupService;
     private final CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
+    private final RepresentativeService representativeService;
+    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
+    private final ObjectMapper objectMapper;
 
     @EventListener
     public void sendNotificationToHmctsAdmin(SubmittedCaseEvent event) {
@@ -150,11 +162,44 @@ public class NotificationHandler {
 
     @EventListener
     public void sendNotificationsForIssuedCaseManagementOrder(CMOEvent event) {
-        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+        EventData eventData = new EventData(event);
 
-        sendCMONotificationForLocalAuthority(caseDetails, localAuthorityCode);
-        // TODO: 10/12/2019 FPLA-27 will add document related notifications
+        sendCMOCaseLinkNotifications(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
+    }
+
+    private void sendCMOCaseLinkNotificationForLocalAuthority(final CaseDetails caseDetails,
+                                                              final String localAuthorityCode) {
+        final String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(
+            localAuthorityCode);
+
+        Map<String, Object> localAuthorityNotificationParameters = caseManagementOrderEmailContentProvider
+            .buildCMOIssuedCaseLinkNotificationParameters(caseDetails, localAuthorityName);
+
+        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
+        sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, email,
+            localAuthorityNotificationParameters, Long.toString(caseDetails.getId()));
+    }
+
+    private void sendCMOCaseLinkNotifications(final CaseDetails caseDetails, final String localAuthorityCode) {
+        sendCMOCaseLinkNotificationForLocalAuthority(caseDetails, localAuthorityCode);
+        sendCMOCaseLinkNotificationToRepresentatives(caseDetails);
+    }
+
+    private void sendCMOCaseLinkNotificationToRepresentatives(final CaseDetails caseDetails) {
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
+            caseData.getRepresentatives(), DIGITAL_SERVICE);
+
+        representatives.stream()
+            .filter(representative -> isNotBlank(representative.getEmail()))
+            .forEach(representative -> {
+                Map<String, Object> representativeNotificationParameters =
+                    caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(
+                        caseDetails, representative.getFullName());
+
+                sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, representative.getEmail(),
+                    representativeNotificationParameters, Long.toString(caseDetails.getId()));
+            });
     }
 
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
@@ -189,11 +234,16 @@ public class NotificationHandler {
             Long.toString(caseDetails.getId()));
     }
 
-    private void sendCMONotificationForLocalAuthority(final CaseDetails caseDetails, final String localAuthorityCode) {
-        Map<String, Object> localAuthorityNotificationParameters = caseManagementOrderEmailContentProvider
-            .buildCMOIssuedNotificationParametersForLocalAuthority(caseDetails, localAuthorityCode);
-        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
-        sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, email, localAuthorityNotificationParameters,
-            Long.toString(caseDetails.getId()));
+    @Getter
+    static class EventData {
+        private final CaseDetails caseDetails;
+        private final String localAuthorityCode;
+        private final String caseReference;
+
+        public EventData(CallbackEvent event) {
+            this.caseDetails = event.getCallbackRequest().getCaseDetails();
+            this.localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+            this.caseReference = Long.toString(caseDetails.getId());
+        }
     }
 }

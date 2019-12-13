@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
@@ -19,31 +18,23 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 
 @Service
 public class CaseManagementOrderEmailContentProvider extends AbstractEmailContentProvider {
-    private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
     private final ObjectMapper objectMapper;
 
     protected CaseManagementOrderEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
                                                       DateFormatterService dateFormatterService,
                                                       HearingBookingService hearingBookingService,
-                                                      LocalAuthorityNameLookupConfiguration
-                                                          localAuthorityNameLookupConfiguration,
                                                       ObjectMapper objectMapper) {
         super(uiBaseUrl, dateFormatterService, hearingBookingService);
-        this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
         this.objectMapper = objectMapper;
     }
 
-    public Map<String, Object> buildCMOIssuedNotificationParametersForLocalAuthority(final CaseDetails caseDetails,
-                                                                                     final String localAuthorityCode) {
+    public Map<String, Object> buildCMOIssuedCaseLinkNotificationParameters(final CaseDetails caseDetails,
+                                                                            final String recipientName) {
         return ImmutableMap.<String, Object>builder()
             .putAll(buildCommonCMONotificationParameters(caseDetails))
-            .put("localAuthorityNameOrRepresentativeFullName",
-                localAuthorityNameLookupConfiguration.getLocalAuthorityName(
-                localAuthorityCode))
+            .put("localAuthorityNameOrRepresentativeFullName", recipientName)
             .build();
     }
-
-    // TODO: 06/12/2019 include method to build parameters for representatives once 911 completed
 
     private Map<String, String> buildCommonCMONotificationParameters(final CaseDetails caseDetails) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);

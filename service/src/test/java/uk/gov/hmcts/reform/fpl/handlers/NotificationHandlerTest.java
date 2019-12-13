@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -7,7 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -21,8 +28,11 @@ import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
@@ -40,6 +50,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -58,12 +69,15 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMP
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @SuppressWarnings("LineLength")
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class NotificationHandlerTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
@@ -123,6 +137,12 @@ class NotificationHandlerTest {
 
     @Mock
     private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
+
+    @Mock
+    private RepresentativeService representativeService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @InjectMocks
     private NotificationHandler notificationHandler;
@@ -229,37 +249,117 @@ class NotificationHandlerTest {
 
     @Nested
     class CaseManagementOrderNotificationTests {
-        final String subjectLine = "Lastname, SACCCCCCCC5676576567";
-        final Map<String, Object> cmoOrderIssuedNotificationParameters = getCMOIssuedNotificationParameters();
+        private final Map<String, Object> cmoOrderIssuedNotificationParameters = getCMOIssuedNotificationParameters();
+        private final Map<String, Object> expectedCMOOrderIssuedNotificationParametersForRepresentative =
+            getExpectedCMOOrderIssuedNotificationParametersForRepresentative();
+
+        private NotificationHandler cmoNotificationHandler;
 
         @BeforeEach
-        void setup() throws IOException {
-            given(inboxLookupService.getNotificationRecipientEmail(callbackRequest().getCaseDetails(),
-                LOCAL_AUTHORITY_CODE))
-                .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
-
-            given(caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParametersForLocalAuthority(
-                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE))
-                .willReturn(cmoOrderIssuedNotificationParameters);
+        void setup() {
+            // did this to enable ObjectMapper injection
+            cmoNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration, cafcassLookupConfiguration,
+                hmctsEmailContentProvider, cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued,
+                gatekeeperEmailContentProvider, c2UploadedEmailContentProvider, orderEmailContentProvider,
+                localAuthorityEmailContentProvider, localAuthorityEmailLookupConfiguration, notificationClient,
+                idamApi, inboxLookupService, caseManagementOrderEmailContentProvider, representativeService,
+                localAuthorityNameLookupConfiguration, objectMapper);
         }
 
         @Test
         void shouldNotifyLocalAuthorityOfCMOIssued() throws Exception {
-            notificationHandler.sendNotificationsForIssuedCaseManagementOrder(
-                new CMOEvent(callbackRequest(), AUTH_TOKEN, USER_ID));
+            CallbackRequest callbackRequest = callbackRequest();
+            CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+            given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+                .willReturn(LOCAL_AUTHORITY_NAME);
+
+            given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
+                .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+
+            given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
+                LOCAL_AUTHORITY_NAME))
+                .willReturn(cmoOrderIssuedNotificationParameters);
+
+            cmoNotificationHandler.sendNotificationsForIssuedCaseManagementOrder(
+                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID));
 
             verify(notificationClient, times(1)).sendEmail(
                 eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 eq(cmoOrderIssuedNotificationParameters), eq("12345"));
         }
 
+        @Test
+        void shouldNotifyRepresentativesOfCMOIssued() throws Exception {
+            CallbackRequest callbackRequest = buildCallbackRequest();
+            CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+            CaseData caseData = buildCaseDataWithRepresentatives();
+            given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
+                DIGITAL_SERVICE))
+                .willReturn(expectedRepresentatives());
+
+            given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
+                "Jon Snow"))
+                .willReturn(expectedCMOOrderIssuedNotificationParametersForRepresentative);
+
+            cmoNotificationHandler.sendNotificationsForIssuedCaseManagementOrder(
+                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID));
+
+            verify(notificationClient, times(1)).sendEmail(
+                eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("abc@example.com"),
+                eq(expectedCMOOrderIssuedNotificationParametersForRepresentative), eq("12345"));
+        }
+
         private ImmutableMap<String, Object> getCMOIssuedNotificationParameters() {
             return ImmutableMap.<String, Object>builder()
                 .put("localAuthorityNameOrRepresentativeFullName", LOCAL_AUTHORITY_NAME)
-                .put("subjectLineWithHearingDate", subjectLine)
-                .put("reference", "12345")
-                .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+                .putAll(expectedCommonCMONotificationParameters())
                 .build();
+        }
+
+        private CaseDetails buildCaseDetailsWithRepresentatives() throws IOException {
+            CaseDetails caseDetails = callbackRequest().getCaseDetails();
+            Map<String, Object> caseData = caseDetails.getData();
+
+            caseData.put("representatives", createRepresentatives(DIGITAL_SERVICE));
+            return caseDetails.toBuilder()
+                .data(caseData)
+                .build();
+        }
+
+        private CaseData buildCaseDataWithRepresentatives() {
+            return CaseData.builder()
+                .representatives(createRepresentatives(DIGITAL_SERVICE))
+                .build();
+        }
+
+        private Map<String, Object> getExpectedCMOOrderIssuedNotificationParametersForRepresentative() {
+            return ImmutableMap.<String, Object>builder()
+                .put("localAuthorityNameOrRepresentativeFullName", "Jon Snow")
+                .putAll(expectedCommonCMONotificationParameters())
+                .build();
+        }
+
+        private CallbackRequest buildCallbackRequest() throws IOException {
+            return CallbackRequest.builder()
+                .caseDetails(buildCaseDetailsWithRepresentatives())
+                .build();
+        }
+
+        private List<Representative> expectedRepresentatives() {
+            return ImmutableList.of(Representative.builder()
+                .email("abc@example.com")
+                .fullName("Jon Snow")
+                .servingPreferences(DIGITAL_SERVICE)
+                .build());
+        }
+
+        private Map<String, Object> expectedCommonCMONotificationParameters() {
+            String subjectLine = "Lastname, SACCCCCCCC5676576567";
+            return ImmutableMap.of("subjectLineWithHearingDate", subjectLine,
+                "reference", "12345",
+                "caseUrl", String.format("null/case/%s/%s/12345", JURISDICTION, CASE_TYPE));
         }
     }
 
