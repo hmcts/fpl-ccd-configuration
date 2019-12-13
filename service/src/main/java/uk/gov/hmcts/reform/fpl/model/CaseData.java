@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -119,10 +120,12 @@ public class CaseData {
     private final String familyManCaseNumber;
     private final NoticeOfProceedings noticeOfProceedings;
 
+    @JsonIgnore
     public List<Element<Applicant>> getAllApplicants() {
         return applicants != null ? applicants : new ArrayList<>();
     }
 
+    @JsonIgnore
     public List<Element<Child>> getAllChildren() {
         return children1 != null ? children1 : new ArrayList<>();
     }
@@ -139,11 +142,18 @@ public class CaseData {
     private final GeneratedOrder order;
     private final List<Element<GeneratedOrder>> orderCollection;
 
+    @JsonIgnore
     public List<Element<GeneratedOrder>> getGeneratedOrders() {
         return defaultIfNull(orderCollection, new ArrayList<>());
     }
 
+    // for judiciary
+    private final CaseManagementOrder cmoToAction;
+
+    // for local authority
     private final CaseManagementOrder caseManagementOrder;
+
+    private final OrderAction orderAction;
     private final DynamicList cmoHearingDateList;
     private final Schedule schedule;
     private final List<Element<Recital>> recitals;

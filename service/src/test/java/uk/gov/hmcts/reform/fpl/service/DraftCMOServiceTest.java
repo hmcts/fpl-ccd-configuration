@@ -30,7 +30,6 @@ import java.util.stream.Stream;
 
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.values;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
@@ -120,7 +119,7 @@ class DraftCMOServiceTest {
         caseData.put("cmoHearingDateList", getDynamicList());
 
         CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(
-            mapper.convertValue(caseData, CaseData.class));
+            mapper.convertValue(caseData, CaseData.class), null);
 
         assertThat(caseManagementOrder).isNotNull()
             .extracting("id", "hearingDate").containsExactly(
@@ -128,6 +127,18 @@ class DraftCMOServiceTest {
             formatLocalDateToMediumStyle(5));
 
         assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
+    }
+
+    @Test
+    void shouldReturnAMapWithAllIndividualCMOEntriesPopulated() {
+        caseManagementOrder = createCaseManagementOrder();
+
+        hearingDetails = createHearingBookings(NOW);
+
+        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+            caseManagementOrder, hearingDetails);
+
+        assertThat(data).containsKeys("cmoHearingDateList", "schedule", "recitals");
     }
 
     @Test
@@ -149,18 +160,13 @@ class DraftCMOServiceTest {
     void shouldMoveDirectionsToCaseDetailsWhenCMOExistsWithDirections() {
         Map<String, Object> caseData = new HashMap<>();
 
-        caseData.put("caseManagementOrder", CaseManagementOrder.builder()
-            .directions(createCmoDirections())
-            .build());
+        draftCMOService.prepareCustomDirections(CaseDetails.builder().data(caseData).build(),
+            CaseManagementOrder.builder()
+                .directions(createCmoDirections())
+                .build());
 
-        draftCMOService.prepareCustomDirections(CaseDetails.builder().data(caseData).build());
-
-        assertThat(caseData).containsKeys("allParties",
-            "localAuthorityDirections",
-            "cafcassDirections",
-            "courtDirections",
-            "otherPartiesDirections",
-            "respondentDirections");
+        assertThat(caseData).containsKeys("allParties", "localAuthorityDirections", "cafcassDirections",
+            "courtDirections", "otherPartiesDirections", "respondentDirections");
     }
 
     @Test
@@ -171,14 +177,10 @@ class DraftCMOServiceTest {
             caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
         );
 
-        draftCMOService.prepareCustomDirections(CaseDetails.builder().data(caseData).build());
+        draftCMOService.prepareCustomDirections(CaseDetails.builder().data(caseData).build(), null);
 
-        assertThat(caseData).doesNotContainKeys("allPartiesCustom",
-            "localAuthorityDirectionsCustom",
-            "cafcassDirectionsCustom",
-            "courtDirectionsCustom",
-            "otherPartiesDirections",
-            "respondentDirections");
+        assertThat(caseData).doesNotContainKeys("allPartiesCustom", "localAuthorityDirectionsCustom",
+            "cafcassDirectionsCustom", "courtDirectionsCustom", "otherPartiesDirections", "respondentDirections");
     }
 
     private DynamicList getDynamicList() {
@@ -201,7 +203,7 @@ class DraftCMOServiceTest {
                 .value(Recital.builder().build())
                 .build()))
             .schedule(Schedule.builder().build())
-            .cmoStatus(SELF_REVIEW)
+            .status(SELF_REVIEW)
             .orderDoc(DocumentReference.builder().build())
             .build();
     }
@@ -228,44 +230,6 @@ class DraftCMOServiceTest {
             draftCMOService.removeTransientObjectsFromCaseData(data);
 
             assertThat(data).doesNotContainKeys(keys);
-        }
-
-        @Test
-        void shouldOnlyPopulateCaseManagementOrderWhenCMOStatusIsSelfReview() {
-            data = new HashMap<>();
-
-            caseManagementOrder = CaseManagementOrder.builder().cmoStatus(SELF_REVIEW).build();
-
-            draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
-
-            assertThat(data.get("caseManagementOrder")).isEqualTo(caseManagementOrder);
-        }
-
-        @Test
-        void shouldMakeSharedDraftCMODocumentNullWhenCMOStatusIsSelfReview() {
-            data = new HashMap<>();
-
-            caseManagementOrder = CaseManagementOrder.builder().cmoStatus(SELF_REVIEW).build();
-            data.put("sharedDraftCMODocument", DocumentReference.builder().build());
-
-            draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
-
-            assertThat(data.get("sharedDraftCMODocument")).isNull();
-        }
-
-        @Test
-        void shouldPopulateSharedDraftCMODocumentWhenCMOStatusIsPartyReview() {
-            data = new HashMap<>();
-
-            DocumentReference documentReference = DocumentReference.builder().build();
-            caseManagementOrder = CaseManagementOrder.builder()
-                .cmoStatus(PARTIES_REVIEW)
-                .orderDoc(documentReference)
-                .build();
-
-            draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
-
-            assertThat(data.get("sharedDraftCMODocument")).isEqualTo(documentReference);
         }
     }
 }

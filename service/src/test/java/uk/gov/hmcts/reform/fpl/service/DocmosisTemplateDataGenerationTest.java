@@ -13,7 +13,7 @@ class DocmosisTemplateDataGenerationTest {
 
     private static final DocmosisTemplateDataGeneration templateDataGeneration = new DocmosisTemplateDataGeneration() {
         @Override
-        public Map<String, Object> getTemplateData(CaseData caseData) {
+        public Map<String, Object> getTemplateData(CaseData caseData, boolean draft) {
             throw new NotImplementedException("Not testing this method");
         }
     };
