@@ -105,12 +105,7 @@ class CaseManagementOrderProgressionServiceTest {
     @Test
     void shouldPopulateErrorsWhenTryingToSendToAllPartiesBeforeHearingIsComplete() {
         CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
-            .hearingDetails(ImmutableList.of(Element.<HearingBooking>builder()
-                .id(UUID)
-                .value(HearingBooking.builder()
-                    .startDate(NOW.minusDays(1))
-                    .build())
-                .build()))
+            .hearingDetails(hearingBookingWithStartDatePlus(-1))
             .build();
 
         CaseDetails caseDetails = getCaseDetails(caseData);
@@ -123,12 +118,7 @@ class CaseManagementOrderProgressionServiceTest {
     @Test
     void shouldPopulateServedCaseManagementOrdersWhenTryingToSendToAllPartiesAndHearingIsComplete() {
         CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
-            .hearingDetails(ImmutableList.of(Element.<HearingBooking>builder()
-                .id(UUID)
-                .value(HearingBooking.builder()
-                    .startDate(NOW.plusDays(1))
-                    .build())
-                .build()))
+            .hearingDetails(hearingBookingWithStartDatePlus(1))
             .build();
 
         CaseDetails caseDetails = getCaseDetails(caseData);
@@ -149,12 +139,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
             .servedCaseManagementOrders(orders)
-            .hearingDetails(ImmutableList.of(Element.<HearingBooking>builder()
-                .id(UUID)
-                .value(HearingBooking.builder()
-                    .startDate(NOW.plusDays(1))
-                    .build())
-                .build()))
+            .hearingDetails(hearingBookingWithStartDatePlus(1))
             .build();
 
         CaseDetails caseDetails = getCaseDetails(caseData);
@@ -167,12 +152,6 @@ class CaseManagementOrderProgressionServiceTest {
         assertThat(updatedCaseData.getServedCaseManagementOrders().get(0).getValue())
             .isEqualTo(caseData.getCmoToAction());
         assertThat(caseDetails.getData().get("cmoToAction")).isNull();
-    }
-
-    private List<Element<CaseManagementOrder>> orderListWithOneElement() {
-        List<Element<CaseManagementOrder>> orders = new ArrayList<>();
-        orders.add(Element.<CaseManagementOrder>builder().build());
-        return orders;
     }
 
     @Test
@@ -228,5 +207,20 @@ class CaseManagementOrderProgressionServiceTest {
     private CaseDetails getCaseDetails(CaseData caseData) {
         Map<String, Object> data = mapper.convertValue(caseData, Map.class);
         return CaseDetails.builder().data(data).build();
+    }
+
+    private List<Element<HearingBooking>> hearingBookingWithStartDatePlus(int days) {
+        return ImmutableList.of(Element.<HearingBooking>builder()
+            .id(UUID)
+            .value(HearingBooking.builder()
+                .startDate(NOW.plusDays(days))
+                .build())
+            .build());
+    }
+
+    private List<Element<CaseManagementOrder>> orderListWithOneElement() {
+        List<Element<CaseManagementOrder>> orders = new ArrayList<>();
+        orders.add(Element.<CaseManagementOrder>builder().build());
+        return orders;
     }
 }
