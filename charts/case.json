@@ -1,0 +1,1205 @@
+{
+  "orders": {
+    "orderType": [
+      "CARE_ORDER"
+    ],
+    "directions": null
+  },
+  "grounds": {
+    "thresholdReason": [
+      "noCare"
+    ],
+    "thresholdDetails": "mock threshold details"
+  },
+  "hearing": {
+    "type": null,
+    "reason": "test reason",
+    "timeFrame": "Same day",
+    "reducedNotice": null,
+    "withoutNotice": null,
+    "respondentsAware": null
+  },
+  "caseName": "Barnet Council v Smith",
+  "recitals": [
+    {
+      "id": "11b40c42-bd20-44f3-8db8-988f8d0ec728",
+      "value": {
+        "title": null,
+        "description": "jhasgvdsd fkhsabfm"
+      }
+    }
+  ],
+  "schedule": {
+    "includeSchedule": "No"
+  },
+  "children1": [
+    {
+      "id": "bacee16c-6f35-478a-b028-b11b6bf171ad",
+      "value": {
+        "party": {
+          "gender": "Boy",
+          "partyId": "36690038-60d1-4860-a45c-95214cbb456d",
+          "lastName": "Jones",
+          "firstName": "Timothy",
+          "partyType": "INDIVIDUAL",
+          "dateOfBirth": "2015-08-01",
+          "socialWorkerTelephoneNumber": {}
+        }
+      }
+    }
+  ],
+  "solicitor": {
+    "dx": "160010 Kingsway 7",
+    "name": "John Smith",
+    "email": "solicitor@email.com",
+    "mobile": "07000000000",
+    "reference": "reference",
+    "telephone": "00000000000"
+  },
+  "allParties": [
+    {
+      "id": "b9f2cd94-6184-4b56-a176-3c05de23634d",
+      "value": {
+        "status": null,
+        "assignee": "ALL_PARTIES",
+        "readOnly": "Yes",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionType": "Request permission for expert evidence",
+        "directionRemovable": "No",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    },
+    {
+      "id": "06a7c5a0-12eb-4539-b5e9-6cdd08e6a8d4",
+      "value": {
+        "status": null,
+        "assignee": "ALL_PARTIES",
+        "readOnly": "Yes",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionType": "Request help to take part in proceedings",
+        "directionRemovable": "No",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    },
+    {
+      "id": "86a3f85c-aee7-4016-9730-73d5cab9d41b",
+      "value": {
+        "status": null,
+        "assignee": "ALL_PARTIES",
+        "readOnly": "Yes",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionType": "Ask for disclosure",
+        "directionRemovable": "No",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    },
+    {
+      "id": "91cae739-8f72-4096-98c6-f840723a4876",
+      "value": {
+        "status": null,
+        "assignee": "ALL_PARTIES",
+        "readOnly": "No",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionText": "Parties and their legal representatives must attend the pre-hearing and hearing",
+        "directionType": "Attend the pre-hearing and hearing",
+        "directionRemovable": "No",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    },
+    {
+      "id": "7cba4ce6-609d-49ec-a676-626d1a70fa62",
+      "value": {
+        "status": null,
+        "assignee": "ALL_PARTIES",
+        "readOnly": "Yes",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionType": "Contact alternative carers",
+        "directionRemovable": "No",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    }
+  ],
+  "applicants": [
+    {
+      "id": "53d0de28-3fd1-4955-980b-58d2cacff0cb",
+      "value": {
+        "party": {
+          "email": {
+            "email": "applicant@email.com"
+          },
+          "address": {
+            "County": "",
+            "Country": "United Kingdom",
+            "PostCode": "RG4 7AA",
+            "PostTown": "Reading",
+            "AddressLine1": "Flat 2",
+            "AddressLine2": "Caversham House 15-17",
+            "AddressLine3": "Church Road"
+          },
+          "partyId": "b36cff90-da2b-4f7b-8c00-7d0be64ae3d4",
+          "jobTitle": "Legal adviser",
+          "partyType": "ORGANISATION",
+          "pbaNumber": "PBA1234567",
+          "mobileNumber": {
+            "telephoneNumber": "07000000000"
+          },
+          "telephoneNumber": {
+            "telephoneNumber": "00000000000",
+            "contactDirection": "Jonathon Walker"
+          },
+          "organisationName": "John Smith"
+        },
+        "leadApplicantIndicator": "Yes"
+      }
+    }
+  ],
+  "cmoToAction": {
+    "id": "59922267-f5df-49f8-9357-f13e863a4597",
+    "action": {
+      "type": "SEND_TO_ALL_PARTIES",
+      "nextHearingType": "FURTHER_CASE_MGMT_HEARING"
+    },
+    "status": "SEND_TO_JUDGE",
+    "orderDoc": {
+      "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/79b2768e-6e74-44ef-a44f-dbf4d1a64688",
+      "document_filename": "case_management_order.pdf",
+      "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/79b2768e-6e74-44ef-a44f-dbf4d1a64688/binary"
+    },
+    "recitals": [
+      {
+        "id": "11b40c42-bd20-44f3-8db8-988f8d0ec728",
+        "value": {
+          "title": null,
+          "description": "jhasgvdsd fkhsabfm"
+        }
+      }
+    ],
+    "schedule": {
+      "keyIssues": null,
+      "threshold": null,
+      "allocation": null,
+      "application": null,
+      "todaysHearing": null,
+      "includeSchedule": "No",
+      "partiesPositions": null,
+      "alternativeCarers": null,
+      "timetableForChildren": null,
+      "timetableForProceedings": null,
+      "childrensCurrentArrangement": null
+    },
+    "directions": [
+      {
+        "id": "0e01251f-90c2-4194-9a74-003ffda589fb",
+        "value": {
+          "custom": "Yes",
+          "assignee": "ALL_PARTIES",
+          "readOnly": "No",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "Test All parties direction"
+        }
+      },
+      {
+        "id": "6de03c16-d5d9-4db1-9ab4-1a8cd8fa1561",
+        "value": {
+          "custom": "Yes",
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "No",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "LA direction"
+        }
+      }
+    ],
+    "hearingDate": "12 Dec 2019"
+  },
+  "orderAction": {
+    "type": "SEND_TO_ALL_PARTIES",
+    "document": {
+      "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4651286b-eeb5-4147-b8d3-cf35b98f6895",
+      "document_filename": "draft-case_management_order.pdf",
+      "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/4651286b-eeb5-4147-b8d3-cf35b98f6895/binary"
+    },
+    "nextHearingType": "FURTHER_CASE_MGMT_HEARING"
+  },
+  "others_label": "No others on the case",
+  "respondents1": [
+    {
+      "id": "471017cf-bf13-4a66-a245-a50a4e715c8e",
+      "value": {
+        "party": {
+          "gender": "Male",
+          "address": {
+            "County": "",
+            "Country": "United Kingdom",
+            "PostCode": "RG4 7AA",
+            "PostTown": "Reading",
+            "AddressLine1": "Flat 2",
+            "AddressLine2": "Caversham House 15-17",
+            "AddressLine3": "Church Road"
+          },
+          "partyId": "6ffe7ae3-0ac8-4251-822e-af5080d40ee5",
+          "lastName": "Bloggs",
+          "firstName": "Joe",
+          "partyType": "INDIVIDUAL",
+          "dateOfBirth": "1980-01-01",
+          "placeOfBirth": "London",
+          "telephoneNumber": {
+            "telephoneNumber": "00000 000000"
+          }
+        },
+        "leadRespondentIndicator": "No"
+      }
+    }
+  ],
+  "dateSubmitted": "2019-12-13",
+  "submittedForm": {
+    "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/cd1a9d0f-3574-4176-84b8-67f9fbee58f8",
+    "document_filename": "Barnet_Council_v_Smith.pdf",
+    "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/cd1a9d0f-3574-4176-84b8-67f9fbee58f8/binary"
+  },
+  "hearingDetails": [
+    {
+      "id": "59922267-f5df-49f8-9357-f13e863a4597",
+      "value": {
+        "type": "CASE_MANAGEMENT",
+        "venue": "3",
+        "endDate": "2019-12-12T10:00:00.000",
+        "startDate": "2019-12-12T09:00:00.000",
+        "typeDetails": null,
+        "hearingNeedsBooked": [
+          "INTERPRETER"
+        ],
+        "hearingNeedsDetails": "sdjfbhsdm fsdjfbhsdf",
+        "judgeAndLegalAdvisor": {
+          "judgeTitle": "HER_HONOUR_JUDGE",
+          "judgeLastName": "sfdjhbjs dnfjsdhfkjsdf",
+          "legalAdvisorName": "sdfbhjsd fsdfbjhsdfs"
+        }
+      }
+    }
+  ],
+  "courtDirections": [
+    {
+      "id": "e7776b34-b972-4f08-af68-841536e98262",
+      "value": {
+        "status": null,
+        "assignee": "COURT",
+        "readOnly": "Yes",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionType": "Arrange interpreters",
+        "directionNeeded": null,
+        "directionRemovable": "Yes",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    }
+  ],
+  "gateKeeperEmail": "familypubliclaw+gatekeeper@gmail.com",
+  "allPartiesCustom": [
+    {
+      "id": "0e01251f-90c2-4194-9a74-003ffda589fb",
+      "value": {
+        "status": null,
+        "assignee": null,
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionText": "Test All parties direction",
+        "directionType": null,
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    }
+  ],
+  "cafcassDirections": [
+    {
+      "id": "b07f11e6-cf4b-45c1-ad48-e8488806de00",
+      "value": {
+        "status": null,
+        "assignee": "CAFCASS",
+        "readOnly": "Yes",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionType": "Arrange an advocates’ meeting",
+        "directionRemovable": "No",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    },
+    {
+      "id": "b9b53a57-3980-4dde-b032-eb98da86941c",
+      "value": {
+        "status": null,
+        "assignee": "CAFCASS",
+        "readOnly": "Yes",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionType": "Send the guardian’s analysis to all parties",
+        "directionRemovable": "No",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    },
+    {
+      "id": "febe8878-574b-4b5c-ba7b-516f639a4358",
+      "value": {
+        "status": null,
+        "assignee": "CAFCASS",
+        "readOnly": "No",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionText": "Preferably",
+        "directionType": "Appoint a children’s guardian",
+        "directionRemovable": "No",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    }
+  ],
+  "respondents_label": "Respondent 1 - Joe Bloggs",
+  "submissionConsent": [
+    "agree"
+  ],
+  "allocationDecision": {
+    "proposal": "District judge",
+    "proposalReason": null,
+    "judgeLevelRadio": null,
+    "allocationProposalPresent": null
+  },
+  "allocationProposal": {
+    "proposal": "District judge",
+    "proposalReason": null
+  },
+  "caseLocalAuthority": "SA",
+  "familyManCaseNumber": "mock case ID",
+  "dateAndTimeSubmitted": "2019-12-13T13:48:50.388611Z",
+  "respondentDirections": [
+    {
+      "id": "a36a5e2d-a7e6-4828-ae1c-fb536d54109e",
+      "value": {
+        "status": null,
+        "assignee": "PARENTS_AND_RESPONDENTS",
+        "readOnly": "Yes",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionType": "Send response to threshold statement to all parties",
+        "directionRemovable": "No",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    }
+  ],
+  "courtDirectionsCustom": [],
+  "otherPartiesDirections": [
+    {
+      "id": "af8ca286-2d4a-4ded-91ac-9dd5e7307f93",
+      "value": {
+        "status": null,
+        "assignee": "OTHERS",
+        "readOnly": "Yes",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionType": "Object to a request for disclosure",
+        "directionRemovable": "No",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    }
+  ],
+  "standardDirectionOrder": {
+    "orderDoc": {
+      "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/31ad9dff-533a-4d5c-b350-e9d13a7cc3aa",
+      "document_filename": "standard-directions-order.pdf",
+      "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/31ad9dff-533a-4d5c-b350-e9d13a7cc3aa/binary"
+    },
+    "directions": [
+      {
+        "id": "b9f2cd94-6184-4b56-a176-3c05de23634d",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts. ",
+          "directionType": "Request permission for expert evidence",
+          "directionRemovable": "No"
+        }
+      },
+      {
+        "id": "06a7c5a0-12eb-4539-b5e9-6cdd08e6a8d4",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "Make an application to the court if you believe any party or witness needs help with:\n\n• understanding proceedings and their role in them in court\n• putting their views to the court\n• instructing their representatives before, during and after the hearing\n• attending the hearing without significant distress\n\nIf possible, include in your application:\n\n• why the party or witness would benefit from help\n• the kind of help that would benefit them the most in giving evidence or participating, and is practically possible\n• written confirmation from any relevant witnesses of their view\n",
+          "directionType": "Request help to take part in proceedings",
+          "directionRemovable": "No"
+        }
+      },
+      {
+        "id": "86a3f85c-aee7-4016-9730-73d5cab9d41b",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "Serve requests for disclosure on any third parties, for example the police or a hospital.\n\nIf you plan to ask for a disclosure order at the case management hearing, let the third party know in writing. Include a copy of this order.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court’s permission.  \n",
+          "directionType": "Ask for disclosure",
+          "directionRemovable": "No"
+        }
+      },
+      {
+        "id": "91cae739-8f72-4096-98c6-f840723a4876",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "No",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "Parties and their legal representatives must attend the pre-hearing and hearing",
+          "directionType": "Attend the pre-hearing and hearing",
+          "directionRemovable": "No"
+        }
+      },
+      {
+        "id": "7cba4ce6-609d-49ec-a676-626d1a70fa62",
+        "value": {
+          "assignee": "ALL_PARTIES",
+          "readOnly": "Yes",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "Contact anyone who might want to be a carer if your preferred plan proves to be impossible. Give their contact details to the Local Authority.",
+          "directionType": "Contact alternative carers",
+          "directionRemovable": "No"
+        }
+      },
+      {
+        "id": "68310d7b-a7b6-4457-97aa-6e27527d91e0",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "No",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "Give all parties access to all documents sent to the court, including:\n\n• the application form\n• annex documents\n• evidential checklist documents\n• any documents sent later on",
+          "directionType": "Send documents to all parties",
+          "directionRemovable": "No"
+        }
+      },
+      {
+        "id": "e0e217d7-db49-4708-8e0d-b81f83cdd4c3",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "No",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "• Social work chronology\n• Social work statement\n• Family tree (genogram)\n• Social work assessment\n• Care plan\n• Threshold document\n• Index of checklist documents",
+          "directionType": "Send missing annex documents to the court and all parties",
+          "directionRemovable": "No"
+        }
+      },
+      {
+        "id": "1d6a1033-3797-480b-bc9b-d680a17845c5",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "Yes",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "Contact the parents to make sure there is a complete family tree showing family members who could be alternative carers.",
+          "directionType": "Identify alternative carers",
+          "directionRemovable": "No"
+        }
+      },
+      {
+        "id": "97eb81d7-5122-4f8d-bf92-3731541db1d8",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "Yes",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "Send translations of case documents to respondents who need them in a language they understand.\n\nThis must include documents that the local authority relies on to support allegations and explain why they have made their application for an order.\n",
+          "directionType": "Send translated case documents to respondents",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "a2c9ccec-506c-40c0-ac64-96b4a69e1689",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "Yes",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "It must comply with practice direction 27A from Family Procedure Rules 2010.",
+          "directionType": "Lodge a bundle",
+          "directionRemovable": "No"
+        }
+      },
+      {
+        "id": "60ca49d3-7272-43c2-b3a4-7e781dd109b1",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "Yes",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "Send to the court and all parties.",
+          "directionType": "Send case summary to all parties",
+          "directionRemovable": "No"
+        }
+      },
+      {
+        "id": "9560934b-fb6a-4ec1-beb9-cbd971433387",
+        "value": {
+          "assignee": "LOCAL_AUTHORITY",
+          "readOnly": "No",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "The court has jurisdiction, based on all of the relevant law and facts, for example habitual residency. \n\nIf there is an issue, consider it urgently. Ask the relevant state authority for information needed to decide where jurisdiction lies. Bring this information to the case management hearing at .\n\nIf the child is a foreign national, tell the consulate or embassy in writing that these proceedings are happening. Invite any representations to be made to the court.",
+          "directionType": "Urgently consider jurisdiction and invite any representations",
+          "directionRemovable": "Yes"
+        }
+      },
+      {
+        "id": "a36a5e2d-a7e6-4828-ae1c-fb536d54109e",
+        "value": {
+          "assignee": "PARENTS_AND_RESPONDENTS",
+          "readOnly": "Yes",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "Send a written statement to the court and all parties, showing:\n\n• the parents’ response to the local authority’s threshold statement\n• the parents’ proposals for placing the children, immediately and long-term\n• whether they agree to a family group conference if one has not taken place yet\n\nIf the parents do not do this, the court can assume they do not disagree with allegations in the threshold statement.\n",
+          "directionType": "Send response to threshold statement to all parties",
+          "directionRemovable": "No"
+        }
+      },
+      {
+        "id": "b07f11e6-cf4b-45c1-ad48-e8488806de00",
+        "value": {
+          "assignee": "CAFCASS",
+          "readOnly": "Yes",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "All of the advocates who will appear at the related hearing must attend. ",
+          "directionType": "Arrange an advocates’ meeting",
+          "directionRemovable": "No"
+        }
+      },
+      {
+        "id": "b9b53a57-3980-4dde-b032-eb98da86941c",
+        "value": {
+          "assignee": "CAFCASS",
+          "readOnly": "Yes",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "Send to the court and all parties.",
+          "directionType": "Send the guardian’s analysis to all parties",
+          "directionRemovable": "No"
+        }
+      },
+      {
+        "id": "febe8878-574b-4b5c-ba7b-516f639a4358",
+        "value": {
+          "assignee": "CAFCASS",
+          "readOnly": "No",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "Preferably",
+          "directionType": "Appoint a children’s guardian",
+          "directionRemovable": "No"
+        }
+      },
+      {
+        "id": "af8ca286-2d4a-4ded-91ac-9dd5e7307f93",
+        "value": {
+          "assignee": "OTHERS",
+          "readOnly": "Yes",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "If you object to the disclosure request, attend the case management hearing or write to the court to explain your objection.\n\nAnything disclosed in this case is confidential. It cannot be shown to any third party without the court’s permission.\n",
+          "directionType": "Object to a request for disclosure",
+          "directionRemovable": "No"
+        }
+      },
+      {
+        "id": "e7776b34-b972-4f08-af68-841536e98262",
+        "value": {
+          "assignee": "COURT",
+          "readOnly": "Yes",
+          "response": {
+            "file": null,
+            "assignee": null,
+            "complied": null,
+            "c2Uploaded": null,
+            "directionId": null,
+            "documentDetails": null,
+            "cannotComplyFile": null,
+            "cannotComplyReason": null,
+            "respondingOnBehalfOfOthers": null,
+            "respondingOnBehalfOfCafcass": null,
+            "respondingOnBehalfOfRespondent": null
+          },
+          "responses": [],
+          "directionText": "At all hearings, the court must arrange an interpreter for respondents who need one in a language they understand.",
+          "directionType": "Arrange interpreters",
+          "directionRemovable": "Yes"
+        }
+      }
+    ],
+    "orderStatus": "SEALED",
+    "judgeAndLegalAdvisor": {
+      "judgeTitle": "HER_HONOUR_JUDGE",
+      "otherTitle": null,
+      "judgeFullName": null,
+      "judgeLastName": "zxmnbvmxcv",
+      "legalAdvisorName": "xcvnxcmvc"
+    }
+  },
+  "submissionConsentLabel": "I, kurt@swansea.gov.uk (local-authority), believe that the facts stated in this application are true.",
+  "cafcassDirectionsCustom": [],
+  "localAuthorityDirections": [
+    {
+      "id": "68310d7b-a7b6-4457-97aa-6e27527d91e0",
+      "value": {
+        "status": null,
+        "assignee": "LOCAL_AUTHORITY",
+        "readOnly": "No",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionText": "Give all parties access to all documents sent to the court, including:\n\n• the application form\n• annex documents\n• evidential checklist documents\n• any documents sent later on",
+        "directionType": "Send documents to all parties",
+        "directionRemovable": "No",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    },
+    {
+      "id": "e0e217d7-db49-4708-8e0d-b81f83cdd4c3",
+      "value": {
+        "status": null,
+        "assignee": "LOCAL_AUTHORITY",
+        "readOnly": "No",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionText": "• Social work chronology\n• Social work statement\n• Family tree (genogram)\n• Social work assessment\n• Care plan\n• Threshold document\n• Index of checklist documents",
+        "directionType": "Send missing annex documents to the court and all parties",
+        "directionRemovable": "No",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    },
+    {
+      "id": "1d6a1033-3797-480b-bc9b-d680a17845c5",
+      "value": {
+        "status": null,
+        "assignee": "LOCAL_AUTHORITY",
+        "readOnly": "Yes",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionType": "Identify alternative carers",
+        "directionRemovable": "No",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    },
+    {
+      "id": "97eb81d7-5122-4f8d-bf92-3731541db1d8",
+      "value": {
+        "status": null,
+        "assignee": "LOCAL_AUTHORITY",
+        "readOnly": "Yes",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionType": "Send translated case documents to respondents",
+        "directionNeeded": null,
+        "directionRemovable": "Yes",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    },
+    {
+      "id": "a2c9ccec-506c-40c0-ac64-96b4a69e1689",
+      "value": {
+        "status": null,
+        "assignee": "LOCAL_AUTHORITY",
+        "readOnly": "Yes",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionType": "Lodge a bundle",
+        "directionRemovable": "No",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    },
+    {
+      "id": "60ca49d3-7272-43c2-b3a4-7e781dd109b1",
+      "value": {
+        "status": null,
+        "assignee": "LOCAL_AUTHORITY",
+        "readOnly": "Yes",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionType": "Send case summary to all parties",
+        "directionRemovable": "No",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    },
+    {
+      "id": "9560934b-fb6a-4ec1-beb9-cbd971433387",
+      "value": {
+        "status": null,
+        "assignee": "LOCAL_AUTHORITY",
+        "readOnly": "No",
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionText": "The court has jurisdiction, based on all of the relevant law and facts, for example habitual residency. \n\nIf there is an issue, consider it urgently. Ask the relevant state authority for information needed to decide where jurisdiction lies. Bring this information to the case management hearing at .\n\nIf the child is a foreign national, tell the consulate or embassy in writing that these proceedings are happening. Invite any representations to be made to the court.",
+        "directionType": "Urgently consider jurisdiction and invite any representations",
+        "directionNeeded": null,
+        "directionRemovable": "Yes",
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    }
+  ],
+  "documents_socialWorkOther": [],
+  "respondentDirectionsCustom": [],
+  "documents_checklist_document": {
+    "documentStatus": "Attached",
+    "typeOfDocument": {
+      "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/a98d9c99-f229-4d80-94ff-a6a76af84d6f",
+      "document_filename": "mockFile.txt",
+      "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/a98d9c99-f229-4d80-94ff-a6a76af84d6f/binary"
+    }
+  },
+  "documents_threshold_document": {
+    "documentStatus": "Attached",
+    "typeOfDocument": {
+      "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/b3fb09ef-9464-4a89-be58-d1ccc3b83c86",
+      "document_filename": "mockFile.txt",
+      "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/b3fb09ef-9464-4a89-be58-d1ccc3b83c86/binary"
+    }
+  },
+  "otherPartiesDirectionsCustom": [],
+  "localAuthorityDirectionsCustom": [
+    {
+      "id": "6de03c16-d5d9-4db1-9ab4-1a8cd8fa1561",
+      "value": {
+        "status": null,
+        "assignee": null,
+        "response": {
+          "assignee": null,
+          "complied": null,
+          "respondingOnBehalfOfOthers": null,
+          "respondingOnBehalfOfCafcass": null,
+          "respondingOnBehalfOfRespondent": null
+        },
+        "responses": [],
+        "directionText": "LA direction",
+        "directionType": null,
+        "dateToBeCompletedBy": null,
+        "otherPartiesAssignee": null,
+        "parentsAndRespondentsAssignee": null
+      }
+    }
+  ],
+  "documents_socialWorkCarePlan_document": {
+    "documentStatus": "Attached",
+    "typeOfDocument": {
+      "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/68b584e8-a12d-4fa8-9719-74c2b9f47d59",
+      "document_filename": "mockFile.txt",
+      "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/68b584e8-a12d-4fa8-9719-74c2b9f47d59/binary"
+    }
+  },
+  "documents_socialWorkStatement_document": {
+    "documentStatus": "Included in social work evidence template (SWET)"
+  },
+  "documents_socialWorkAssessment_document": {
+    "documentStatus": "Attached",
+    "typeOfDocument": {
+      "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c62ee6b8-4a5a-4f1d-97b9-01a24b4372c6",
+      "document_filename": "mockFile.txt",
+      "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c62ee6b8-4a5a-4f1d-97b9-01a24b4372c6/binary"
+    }
+  },
+  "documents_socialWorkChronology_document": {
+    "statusReason": "mock reason",
+    "documentStatus": "To follow"
+  },
+  "documents_socialWorkEvidenceTemplate_document": {
+    "documentStatus": "Attached",
+    "typeOfDocument": {
+      "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/055222e1-a3c8-4d30-bf5a-be3d2574aa0f",
+      "document_filename": "mockFile.txt",
+      "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/055222e1-a3c8-4d30-bf5a-be3d2574aa0f/binary"
+    }
+  }
+}
