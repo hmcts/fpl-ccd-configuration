@@ -133,7 +133,7 @@ const assertCanSeeActionCMO = (I, caseViewPage, fileName) => {
   I.see(fileName);
   I.seeAnswerInTab(1, 'Order actions', 'Is this ready to be sent to parties?', 'Yes, send this to all parties');
   I.seeAnswerInTab(2, 'Order actions', 'What is the next hearing?', 'Final hearing');
-  I.seeAnswerInTab(3, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
+  I.seeAnswerInTab(3, 'Case management orders 1', 'Which hearing is this order for?', '1 Jan 2050');
   I.seeAnswerInTab(1, 'Directions 1', 'Direction title', 'Mock title');
   I.seeAnswerInTab(4, 'Directions 1', 'Description', 'Mock description');
   I.seeAnswerInTab(5, 'Directions 1', 'For', 'All parties');
