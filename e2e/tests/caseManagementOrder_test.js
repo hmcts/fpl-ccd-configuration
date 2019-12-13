@@ -120,9 +120,9 @@ Scenario('Local Authority sends draft to Judge who approves CMO', async (I, case
 
   // Approve CMO
   await caseViewPage.goToNewActions(config.applicationActions.actionCaseManagementOrder);
-  await skipToReview(I, ids.slice(1, ids.length - 1));
+  await skipToSchedule(I, ids);
   await I.retryUntilExists(() => I.click('Continue'), actionCaseManagementOrderEventPage.fields.nextHearingDateList);
-  actionCaseManagementOrderEventPage.selectNextHearingDate('2 Feb 2021');
+  actionCaseManagementOrderEventPage.selectNextHearingDate('1 Jan 2050');
   await I.retryUntilExists(() => I.click('Continue'), actionCaseManagementOrderEventPage.staticFields.statusRadioGroup.groupName);
   actionCaseManagementOrderEventPage.markToBeSentToAllParties();
   actionCaseManagementOrderEventPage.markNextHearingToBeFinalHearing();
@@ -175,7 +175,7 @@ const assertCanSeeActionCMO = (I, caseViewPage, fileName) => {
   I.seeAnswerInTab(10, 'Schedule', 'Key issues', 'Are there any other family or friends capable of caring in the children');
   I.seeAnswerInTab(11, 'Schedule', 'Parties\' positions', 'The mother agrees section 20');
   I.seeAnswerInTab(8, 'Case management order', 'Is this ready to be sent to the judge?', 'Yes, send this to the judge');
-  I.seeAnswerInTab(1, 'Next Hearing', 'Which hearing is next?', '2 Feb 2021');
+  I.seeAnswerInTab(1, 'Next Hearing', 'Which hearing is next?', '1 Jan 2050');
 };
 
 const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {
@@ -244,8 +244,14 @@ const switchUserAndNavigateToCase = async (I, userDetails) => {
   await I.navigateToCaseDetails(caseId);
 };
 
-const skipToReview = async (I, ids) => {
+const skipToReview = async(I, ids) => {
   for (let id of ids) {
+    await I.retryUntilExists(() => I.click('Continue'), id);
+  }
+};
+
+const skipToSchedule = async (I, ids) => {
+  for (let id of ids.slice(1, ids.length - 1)) {
     await I.retryUntilExists(() => I.click('Continue'), id);
   }
 };

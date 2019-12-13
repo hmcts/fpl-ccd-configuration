@@ -76,6 +76,6 @@ module.exports = {
 
   selectNextHearingDate(date) {
     I.waitForElement(this.fields.nextHearingDateList);
-    I.selectOption(this.fields.cmoHearingDateList, date);
+    I.selectOption(this.fields.nextHearingDateList, date);
   },
 };
