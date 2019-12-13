@@ -43,12 +43,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.careOrderRequest;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ActiveProfiles("integration-test")
@@ -58,8 +60,6 @@ class GeneratedOrderControllerTest {
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String CAFCASS_EMAIL_ADDRESS = "cafcass@cafcass.com";
-    private static final String CAFCASS_NAME = "cafcass";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
@@ -105,17 +105,17 @@ class GeneratedOrderControllerTest {
     void midEventShouldGenerateOrderDocument() throws Exception {
         byte[] pdf = {1, 2, 3, 4, 5};
         Document document = document();
-        DocmosisDocument docmosisDocument = new DocmosisDocument(C21.getDocumentTitle(), pdf);
+        DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
 
         given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, C21.getDocumentTitle()))
+        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "blank_order_c21.pdf"))
             .willReturn(document);
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "mid-event");
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        assertThat(caseData.getOrder().getDocument()).isEqualTo(DocumentReference.builder()
+        assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(DocumentReference.builder()
             .binaryUrl(document.links.binary.href)
             .filename(document.originalDocumentName)
             .url(document.links.self.href)
@@ -123,28 +123,23 @@ class GeneratedOrderControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldUpdateCaseData() throws Exception {
+    void aboutToSubmitShouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() throws Exception {
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "about-to-submit");
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-        GeneratedOrder expectedOrder = GeneratedOrder.builder()
-            .orderTitle("Example Order")
-            .orderDetails("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-            .orderDate(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
-                FixedTimeConfiguration.NOW, "h:mma, d MMMM yyyy"))
-            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
-                .judgeTitle(HER_HONOUR_JUDGE)
-                .judgeLastName("Judy")
-                .legalAdvisorName("Peter Parker")
-                .build())
-            .build();
+        GeneratedOrder expectedC21Order = buildExpectedC21Order();
+        aboutToSubmitAssertions(caseData, expectedC21Order);
+    }
 
-        List<Element<GeneratedOrder>> orders = caseData.getGeneratedOrders();
+    @Test
+    void aboutToSubmitShouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() throws Exception {
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(careOrderRequest(), "about-to-submit");
 
-        assertThat(caseData.getOrder()).isEqualTo(null);
-        assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(null);
-        assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        GeneratedOrder expectedCareOrder = buildExpectedCareOrder();
+        aboutToSubmitAssertions(caseData, expectedCareOrder);
     }
 
     @Test
@@ -155,10 +150,51 @@ class GeneratedOrderControllerTest {
         verify(notificationClient, times(1)).sendEmail(
             eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
             eq(expectedOrderLocalAuthorityParameters()), eq(expectedCaseReference));
+    }
 
-        verify(notificationClient, times(1)).sendEmail(
-            eq(ORDER_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
-            eq(expectedOrderCafcassParameters()), eq(expectedCaseReference));
+    private GeneratedOrder buildExpectedC21Order() {
+        return GeneratedOrder.builder()
+            .type(BLANK_ORDER)
+            .document(DocumentReference.builder()
+                .url("some url")
+                .binaryUrl("some binary url")
+                .filename("file.pdf").build())
+            .title("Example Order")
+            .details("Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
+            .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                FixedTimeConfiguration.NOW, "h:mma, d MMMM yyyy"))
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HER_HONOUR_JUDGE)
+                .judgeLastName("Judy")
+                .legalAdvisorName("Peter Parker")
+                .build())
+            .build();
+    }
+
+    private GeneratedOrder buildExpectedCareOrder() {
+        return GeneratedOrder.builder()
+            .type(CARE_ORDER)
+            .document(DocumentReference.builder()
+                .url("some url")
+                .binaryUrl("some binary url")
+                .filename("file.pdf").build())
+            .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(
+                FixedTimeConfiguration.NOW, "h:mma, d MMMM yyyy"))
+            .judgeAndLegalAdvisor(JudgeAndLegalAdvisor.builder()
+                .judgeTitle(HER_HONOUR_JUDGE)
+                .judgeLastName("Judy")
+                .legalAdvisorName("Peter Parker")
+                .build())
+            .build();
+    }
+
+    private void aboutToSubmitAssertions(CaseData caseData, GeneratedOrder expectedOrder) {
+
+        List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
+        assertThat(caseData.getOrderTypeAndDocument()).isEqualTo(null);
+        assertThat(caseData.getOrder()).isEqualTo(null);
+        assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(null);
+        assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request, String endpoint)
@@ -213,13 +249,6 @@ class GeneratedOrderControllerTest {
                 dateIn3Months.toLocalDate(), FormatStyle.MEDIUM))
             .put("reference", "19898989")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/19898989")
-            .build();
-    }
-
-    private Map<String, Object> expectedOrderCafcassParameters() {
-        return ImmutableMap.<String, Object>builder()
-            .putAll(commonNotificationParameters())
-            .put("localAuthorityOrCafcass", CAFCASS_NAME)
             .build();
     }
 

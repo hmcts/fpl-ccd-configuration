@@ -30,7 +30,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.C21;
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
 
 @Slf4j
 @Api
@@ -81,9 +81,11 @@ public class GeneratedOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        Document orderDoc = getDocument(authorization, userId, caseData);
+        Document document = getDocument(authorization, userId, caseData);
 
-        caseDetails.getData().put("order", service.addDocumentToOrder(caseData.getOrder(), orderDoc));
+        //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
+        caseDetails.getData().put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
+            caseData.getOrderTypeAndDocument(), document));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -96,11 +98,14 @@ public class GeneratedOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<GeneratedOrder>> orders = caseData.getGeneratedOrders();
+        List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
 
-        orders.add(service.addCustomValuesToOrder(caseData.getOrder(), caseData.getJudgeAndLegalAdvisor()));
+        //Builds an order with custom values based on order type and adds it to list of orders
+        orders.add(service.buildCompleteOrder(caseData.getOrderTypeAndDocument(), caseData.getOrder(),
+            caseData.getJudgeAndLegalAdvisor()));
 
         caseDetails.getData().put("orderCollection", orders);
+        caseDetails.getData().remove("orderTypeAndDocument");
         caseDetails.getData().remove("order");
         caseDetails.getData().remove("judgeAndLegalAdvisor");
 
@@ -114,8 +119,8 @@ public class GeneratedOrderController {
                                      @RequestHeader(value = "user-id") String userId,
                                      @RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-        String mostRecentUploadedDocumentUrl = service.mostRecentUploadedOrderDocumentUrl(
-            caseData.getGeneratedOrders());
+        String mostRecentUploadedDocumentUrl = service.getMostRecentUploadedOrderDocumentUrl(
+            caseData.getOrderCollection());
 
         applicationEventPublisher.publishEvent(new GeneratedOrderEvent(callbackRequest, authorization, userId,
             concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(mostRecentUploadedDocumentUrl)));
@@ -125,10 +130,10 @@ public class GeneratedOrderController {
                                  String userId,
                                  CaseData caseData) {
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            service.getOrderTemplateData(caseData), C21);
+            service.getOrderTemplateData(caseData), ORDER);
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(),
-            C21.getDocumentTitle());
+            service.generateOrderDocumentFileName(caseData.getOrderTypeAndDocument().getType().getLabel()));
     }
 
     private String concatGatewayConfigurationUrlAndMostRecentUploadedOrderDocumentPath(
