@@ -68,18 +68,22 @@ class CaseManagementOrderProgressionControllerTest {
                 .build())
             .build();
 
-        Map<String, Object> data = ImmutableMap.of(
-            "cmoToAction", order,
-            "hearingDetails", ImmutableList.of(Element.<HearingBooking>builder()
-                .id(uuid)
-                .value(HearingBooking.builder()
-                    .startDate(LocalDateTime.now().minusDays(1))
-                    .build())
-                .build()));
+        Map<String, Object> data = caseDataMap(order, LocalDateTime.now().plusDays(1));
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(buildCallbackRequest(data));
 
         assertThat(response.getErrors()).containsOnly(HEARING_NOT_COMPLETED.getValue());
+    }
+
+    private Map<String, Object> caseDataMap(CaseManagementOrder order, LocalDateTime localDateTime) {
+        return ImmutableMap.of(
+            "cmoToAction", order,
+            "hearingDetails", ImmutableList.of(Element.<HearingBooking>builder()
+                .id(uuid)
+                .value(HearingBooking.builder()
+                    .startDate(localDateTime)
+                    .build())
+                .build()));
     }
 
     @Test
@@ -91,14 +95,7 @@ class CaseManagementOrderProgressionControllerTest {
                 .build())
             .build();
 
-        Map<String, Object> data = ImmutableMap.of(
-            "cmoToAction", order,
-            "hearingDetails", ImmutableList.of(Element.<HearingBooking>builder()
-                .id(uuid)
-                .value(HearingBooking.builder()
-                    .startDate(LocalDateTime.now().plusDays(1))
-                    .build())
-                .build()));
+        Map<String, Object> data = caseDataMap(order, LocalDateTime.now().minusDays(1));
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(buildCallbackRequest(data));
 

@@ -69,11 +69,11 @@ public class CaseManagementOrderProgressionService {
     private void progressActionCaseManagementOrder(CaseDetails caseDetails, CaseData caseData, List<String> errors) {
         switch (caseData.getCmoToAction().getAction().getType()) {
             case SEND_TO_ALL_PARTIES:
-                LocalDateTime date = hearingBookingService
+                LocalDateTime hearingDate = hearingBookingService
                     .getHearingBookingByUUID(caseData.getHearingDetails(), caseData.getCmoToAction().getId())
                     .getStartDate();
 
-                if (date.isAfter(time.now())) {
+                if (time.now().isAfter(hearingDate)) {
                     List<Element<CaseManagementOrder>> orders = caseData.getServedCaseManagementOrders();
                     orders.add(0, Element.<CaseManagementOrder>builder()
                         .id(randomUUID())

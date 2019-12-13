@@ -105,7 +105,7 @@ class CaseManagementOrderProgressionServiceTest {
     @Test
     void shouldPopulateErrorsWhenTryingToSendToAllPartiesBeforeHearingIsComplete() {
         CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
-            .hearingDetails(hearingBookingWithStartDatePlus(-1))
+            .hearingDetails(hearingBookingWithStartDatePlus(1))
             .build();
 
         CaseDetails caseDetails = getCaseDetails(caseData);
@@ -118,7 +118,7 @@ class CaseManagementOrderProgressionServiceTest {
     @Test
     void shouldPopulateServedCaseManagementOrdersWhenTryingToSendToAllPartiesAndHearingIsComplete() {
         CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
-            .hearingDetails(hearingBookingWithStartDatePlus(1))
+            .hearingDetails(hearingBookingWithStartDatePlus(-1))
             .build();
 
         CaseDetails caseDetails = getCaseDetails(caseData);
@@ -139,7 +139,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
             .servedCaseManagementOrders(orders)
-            .hearingDetails(hearingBookingWithStartDatePlus(1))
+            .hearingDetails(hearingBookingWithStartDatePlus(-1))
             .build();
 
         CaseDetails caseDetails = getCaseDetails(caseData);
