@@ -2,14 +2,6 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -17,7 +9,6 @@ import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.IOException;
@@ -42,10 +33,10 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 class CaseManagementOrderServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
     private final Time time = () -> NOW;
-    private static final UUID HEARING_BOOKING_ID = fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31");
     private static final LocalDateTime DATE = LocalDateTime.of(2018, 2, 12, 9, 30);
 
-    private CaseManagementOrderService service = new CaseManagementOrderService(time, new DateFormatterService(), new HearingBookingService());
+    private CaseManagementOrderService service = new CaseManagementOrderService(time,
+        new DateFormatterService(), new HearingBookingService());
 
     @Test
     void shouldAddDocumentToOrderWhenDocumentExists() throws IOException {
@@ -171,7 +162,7 @@ class CaseManagementOrderServiceTest {
     private CaseManagementOrder createCMOWithNextHearing() {
         return CaseManagementOrder.builder()
             .nextHearing(NextHearing.builder()
-                .id(HEARING_BOOKING_ID)
+                .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
                 .build())
             .build();
     }

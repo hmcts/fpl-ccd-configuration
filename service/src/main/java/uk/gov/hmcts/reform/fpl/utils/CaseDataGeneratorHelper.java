@@ -465,26 +465,21 @@ public class CaseDataGeneratorHelper {
                 .build())
             .put("schedule", createSchedule(true))
             .put("recitals", createRecitals())
-            .put("servedCaseManagementOrders", createServedCaseManagementOrders())
             .put("allPartiesCustom", getDirectionByAssignee(cmoDirections, ALL_PARTIES))
             .put("localAuthorityDirectionsCustom", getDirectionByAssignee(cmoDirections, LOCAL_AUTHORITY))
             .put("courtDirectionsCustom", getDirectionByAssignee(cmoDirections, COURT))
             .put("cafcassDirectionsCustom", getDirectionByAssignee(cmoDirections, CAFCASS))
             .put("otherPartiesDirectionsCustom", getDirectionByAssignee(cmoDirections, OTHERS))
             .put("respondentDirectionsCustom", getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
+            .put("servedCaseManagementOrders", ImmutableList.of(Element.<CaseManagementOrder>builder()
+                .value(CaseManagementOrder.builder().build())
+                .build()))
             .put("cmoToAction", CaseManagementOrder.builder()
                 .nextHearing(NextHearing.builder()
                     .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
                     .build())
                 .build())
             .build();
-    }
-
-    private static List<Element<CaseManagementOrder>> createServedCaseManagementOrders() {
-        return ImmutableList.of(
-            Element.<CaseManagementOrder>builder()
-                .build()
-        );
     }
 
     public static CaseManagementOrder createCaseManagementOrder() {
