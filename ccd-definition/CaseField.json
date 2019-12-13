@@ -782,7 +782,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "nextHearingDateHintText",
-    "Label": "Case hearing details will not show on the draft CMO. Check the ‘Hearings’ tab to confirm these.",
+    "Label": "These details might not appear on the draft CMO, but they will be on the issued order. Check the ‘Hearings’ tab to confirm them.",
     "FieldType": "Label",
     "SecurityClassification": "Public"
   },
