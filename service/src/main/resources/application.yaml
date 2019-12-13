@@ -140,13 +140,13 @@ fpl:
   local_authority_email_to_code:
     mapping: 'fpla.local=>FPLA;swansea.gov.uk=>SA;hillingdon.gov.uk=>HN;swindon.gov.uk=>SN;wiltshire.gov.uk=>SNW;croydon.gov.uk=>CR'
   local_authority_code_to_name:
-    mapping: 'SA=>Swansea City Council;HN=>London Borough Hillingdon;PCC=>Portsmouth City Council;STF=>Staffordshire County Council;SCC=>Southampton City Council;SN=>Swindon County Council;SNW=>Wiltshire County Council;CR=>Croydon Local Authority'
+    mapping: 'SA=>Swansea City Council;HN=>London Borough Hillingdon;PCC=>Portsmouth City Council;STF=>Staffordshire County Council;SCC=>Southampton City Council;SN=>Swindon County Council;SNW=>Wiltshire County Council'
   local_authority_code_to_hmcts_court:
-    mapping: 'SA=>Family Court sitting at Swansea:FamilyPublicLaw+sa@gmail.com;HN=>Family Court sitting at West London:FamilyPublicLaw+hn@gmail.com;SN=>Family Court sitting at Swindon:FamilyPublicLaw+sn@gmail.com;SNW=>Family Court sitting at Swindon:FamilyPublicLaw+sn@gmail.com;CR=>Croydon Combined Court:FamilyPublicLaw+cr@gmail.com'
+    mapping: 'SA=>Family Court sitting at Swansea:FamilyPublicLaw+sa@gmail.com;HN=>Family Court sitting at West London:FamilyPublicLaw+hn@gmail.com;SN=>Family Court sitting at Swindon:FamilyPublicLaw+sn@gmail.com;SNW=>Family Court sitting at Swindon:FamilyPublicLaw+sn@gmail.com'
   local_authority_code_to_cafcass:
-    mapping: 'SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com;SN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com;SNW=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com;CR=>Cafcass Cymru:FamilyPublicLaw+cafcass@gmail.com'
+    mapping: 'SA=>Cafcass Cymru:FamilyPublicLaw+cafcassWales@gmail.com;HN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com;SN=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com;SNW=>Cafcass:FamilyPublicLaw+cafcassEngland@gmail.com'
   local_authority_code_to_shared_inbox:
-    mapping: 'SA=>FamilyPublicLaw+sa@gmail.com;HN=>FamilyPublicLaw+hn@gmail.com;SN=>FamilyPublicLaw+sn@gmail.com;SNW=>FamilyPublicLaw+sn@gmail.com;CR=>FamilyPublicLaw+sn@gmail.com'
+    mapping: 'SA=>FamilyPublicLaw+sa@gmail.com;HN=>FamilyPublicLaw+hn@gmail.com;SN=>FamilyPublicLaw+sn@gmail.com;SNW=>FamilyPublicLaw+sn@gmail.com'
   local_authority_fallback_inbox: 'FamilyPublicLaw+PublicLawEmail@gmail.com'
   system_update:
     username: 'fpl-system-update@mailnesia.com'
