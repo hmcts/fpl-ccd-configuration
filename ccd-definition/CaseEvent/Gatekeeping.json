@@ -165,6 +165,20 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "limitedUploadDocumentsGatekeeping",
+    "Name": "Documents",
+    "Description": "Upload documents",
+    "DisplayOrder": 11,
+    "PreConditionState(s)": "Gatekeeping",
+    "PostConditionState": "Gatekeeping",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
+    "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "uploadC2Gatekeeping",
     "Name": "Upload a C2",
     "Description": "Upload a c2 to the case",
@@ -209,5 +223,35 @@
     "ShowSummary": "N",
     "ShowEventNotes": "N",
     "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "addStatementOfServiceGatekeeping",
+    "Name": "Add statement of service (c9)",
+    "Description": "Add statement of service",
+    "DisplayOrder": 14,
+    "PreConditionState(s)": "Gatekeeping",
+    "PostConditionState": "Gatekeeping",
+    "SecurityClassification": "Public",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/statement-of-service/about-to-start",
+    "ShowSummary": "Y",
+    "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "manageRepresentativesGatekeeping",
+    "Name": "Manage representatives",
+    "Description": "Manage representatives ",
+    "DisplayOrder": 15,
+    "PreConditionState(s)": "Gatekeeping",
+    "PostConditionState": "Gatekeeping",
+    "SecurityClassification": "Public",
+    "ShowSummary": "N",
+    "ShowEventNotes": "N",
+    "EndButtonLabel": "Save and continue",
+    "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-representatives/about-to-start",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-representatives/about-to-submit"
   }
 ]

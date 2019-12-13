@@ -160,4 +160,6 @@ public class CaseData {
     private final DocumentReference sharedDraftCMODocument;
 
     private final Others others;
+
+    private final List<Element<Representative>> representatives;
 }

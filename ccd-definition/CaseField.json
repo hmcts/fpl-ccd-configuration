@@ -777,5 +777,14 @@
     "Label": "Case management order",
     "FieldType": "CaseManagementOrder",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "representatives",
+    "Label": "Representatives",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Representative",
+    "SecurityClassification": "Public"
   }
 ]

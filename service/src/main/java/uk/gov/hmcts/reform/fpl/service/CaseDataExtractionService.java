@@ -11,29 +11,26 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
-import uk.gov.hmcts.reform.fpl.model.Applicant;
-import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.Direction;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingVenue;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
 import uk.gov.hmcts.reform.fpl.model.configuration.Display;
 import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -233,5 +230,15 @@ public class CaseDataExtractionService {
             (direction.getDateToBeCompletedBy() != null ? dateFormatterService
                 .formatLocalDateTimeBaseUsingFormat(direction.getDateToBeCompletedBy(),
                     dateFormattingConfig.getPattern()) : "unknown"));
+    }
+
+    public List<Other> getOthers(CaseData caseData) {
+        final List<Other> othersList = new ArrayList<>();
+
+        ofNullable(caseData.getOthers()).map(Others::getFirstOther).ifPresent(othersList::add);
+        ofNullable(caseData.getOthers()).map(Others::getAdditionalOthers)
+            .ifPresent(additionalOthers -> othersList.addAll(ElementUtils.unwrap(additionalOthers)));
+
+        return Collections.unmodifiableList(othersList);
     }
 }
