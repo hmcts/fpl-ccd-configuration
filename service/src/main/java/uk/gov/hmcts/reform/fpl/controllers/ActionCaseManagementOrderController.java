@@ -137,9 +137,6 @@ public class ActionCaseManagementOrderController {
 
         String documentTitle = (draft ? "draft-" + document.getDocumentTitle() : document.getDocumentTitle());
 
-        System.out.println(draft);
-        System.out.println("documentTitle = " + documentTitle);
-
         return uploadDocumentService.uploadPDF(userId, auth, document.getBytes(), documentTitle);
     }
 }

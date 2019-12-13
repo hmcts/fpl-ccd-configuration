@@ -172,7 +172,7 @@ const assertCanSeeActionCMO = (I, caseViewPage, fileName) => {
   I.seeAnswerInTab(9, 'Schedule', 'Threshold', 'The S.31 threshold for the making of orders is in dispute');
   I.seeAnswerInTab(10, 'Schedule', 'Key issues', 'Are there any other family or friends capable of caring in the children');
   I.seeAnswerInTab(11, 'Schedule', 'Parties\' positions', 'The mother agrees section 20');
-  I.seeAnswerInTab(8, 'Case management order', 'Is this ready to be sent to the judge?', 'Yes, send this to the judge');
+  I.seeAnswerInTab(8, 'Case management orders 1', 'Is this ready to be sent to the judge?', 'Yes, send this to the judge');
 };
 
 const assertCanSeeDraftCMO = (I, caseViewPage, cmoStatus) => {

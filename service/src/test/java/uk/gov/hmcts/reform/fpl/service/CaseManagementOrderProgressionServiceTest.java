@@ -145,8 +145,7 @@ class CaseManagementOrderProgressionServiceTest {
 
     @Test
     void shouldPopulateFirstElementOfServedCaseManagementOrdersWhenTryingToSendToAllPartiesAndHearingIsComplete() {
-        List<Element<CaseManagementOrder>> orders = new ArrayList<>();
-        orders.add(Element.<CaseManagementOrder>builder().build());
+        List<Element<CaseManagementOrder>> orders = orderListWithOneElement();
 
         CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
             .servedCaseManagementOrders(orders)
@@ -168,6 +167,12 @@ class CaseManagementOrderProgressionServiceTest {
         assertThat(updatedCaseData.getServedCaseManagementOrders().get(0).getValue())
             .isEqualTo(caseData.getCmoToAction());
         assertThat(caseDetails.getData().get("cmoToAction")).isNull();
+    }
+
+    private List<Element<CaseManagementOrder>> orderListWithOneElement() {
+        List<Element<CaseManagementOrder>> orders = new ArrayList<>();
+        orders.add(Element.<CaseManagementOrder>builder().build());
+        return orders;
     }
 
     @Test
