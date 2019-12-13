@@ -122,7 +122,7 @@ Scenario('Local Authority sends draft to Judge who approves CMO', async (I, case
   await caseViewPage.goToNewActions(config.applicationActions.actionCaseManagementOrder);
   await skipToReview(I, ids.slice(1, ids.length - 1));
   await I.retryUntilExists(() => I.click('Continue'), actionCaseManagementOrderEventPage.fields.nextHearingDateList);
-  actionCaseManagementOrderEventPage.selectNextHearingDate('1 Jan 2050');
+  actionCaseManagementOrderEventPage.selectNextHearingDate('2 Feb 2021');
   await I.retryUntilExists(() => I.click('Continue'), actionCaseManagementOrderEventPage.staticFields.statusRadioGroup.groupName);
   actionCaseManagementOrderEventPage.markToBeSentToAllParties();
   actionCaseManagementOrderEventPage.markNextHearingToBeFinalHearing();
