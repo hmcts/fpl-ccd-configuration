@@ -126,5 +126,5 @@ Scenario('Local Authority sends draft to Judge who approves CMO', async (I, case
   actionCaseManagementOrderEventPage.markToBeSentToAllParties();
   actionCaseManagementOrderEventPage.markNextHearingToBeFinalHearing();
   await I.completeEvent('Save and continue');
-  cmoHelper.assertCanSeeActionCMO(I, caseViewPage, actionCaseManagementOrderEventPage.labels.files.draftCaseManagementOrder);
+  cmoHelper.assertCanSeeActionCMO(I, caseViewPage, actionCaseManagementOrderEventPage.labels.files.sealedCaseManagementOrder);
 });
