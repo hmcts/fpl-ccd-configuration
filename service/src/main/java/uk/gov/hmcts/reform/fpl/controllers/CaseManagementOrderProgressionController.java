@@ -11,9 +11,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderProgressionService;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Api
 @RestController
 @RequestMapping("/callback/cmo-progression")
@@ -28,13 +25,11 @@ public class CaseManagementOrderProgressionController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        List<String> errors = new ArrayList<>();
 
-        progressionService.handleCaseManagementOrderProgression(caseDetails, errors);
+        progressionService.handleCaseManagementOrderProgression(caseDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
-            .errors(errors)
             .build();
     }
 }

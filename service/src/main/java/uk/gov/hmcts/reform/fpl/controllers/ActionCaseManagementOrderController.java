@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +27,8 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import java.io.IOException;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 @Api
@@ -97,6 +100,13 @@ public class ActionCaseManagementOrderController {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if (sendToAllPartiesBeforeHearingDate(caseData)) {
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .errors(ImmutableList.of(HEARING_NOT_COMPLETED.getValue()))
+                .build();
+        }
+
         CaseManagementOrder order = caseData.getCmoToAction();
 
         order = draftCMOService.prepareCMO(caseData, order).toBuilder()
@@ -127,6 +137,11 @@ public class ActionCaseManagementOrderController {
             callbackRequest.getCaseDetails().getId(),
             "internal-change:CMO_PROGRESSION"
         );
+    }
+
+    private boolean sendToAllPartiesBeforeHearingDate(CaseData caseData) {
+        return caseData.getOrderAction().getType() == SEND_TO_ALL_PARTIES
+            && caseManagementOrderService.isHearingDateInFuture(caseData);
     }
 
     private Document getDocument(String auth, String userId, CaseData data, boolean draft) throws IOException {

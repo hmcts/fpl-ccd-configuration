@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,17 +21,23 @@ import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -42,6 +49,7 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCaseManagementOrder;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
@@ -53,10 +61,12 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @WebMvcTest(ActionCaseManagementOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
 class ActionCaseManagementOrderControllerTest {
+    private static final LocalDateTime NOW = LocalDateTime.now();
     private static final String CMO_TO_ACTION_KEY = "cmoToAction";
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final byte[] pdf = {1, 2, 3, 4, 5};
+    private static final UUID ID = randomUUID();
 
     @Autowired
     private MockMvc mockMvc;
@@ -120,10 +130,9 @@ class ActionCaseManagementOrderControllerTest {
 
     @Test
     void aboutToSubmitShouldReturnCaseManagementOrderWithFinalDocumentWhenSendToAllParties() throws Exception {
-        CaseManagementOrder order = getCaseManagementOrder(OrderAction.builder().build());
-
         Map<String, Object> data = ImmutableMap.of(
-            CMO_TO_ACTION_KEY, order,
+            "hearingDetails", hearingBookingWithStartDatePlus(-1),
+            CMO_TO_ACTION_KEY, getCaseManagementOrder(),
             "orderAction", getOrderAction(SEND_TO_ALL_PARTIES));
 
         AboutToStartOrSubmitCallbackResponse response =
@@ -136,11 +145,22 @@ class ActionCaseManagementOrderControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldReturnCaseManagementOrderWithDraftDocumentWhenNotSendToAllParties() throws Exception {
-        CaseManagementOrder order = getCaseManagementOrder(OrderAction.builder().build());
-
+    void aboutToSubmitShouldErrorIfHearingDateInFutureWhenSendToAllParties() throws Exception {
         Map<String, Object> data = ImmutableMap.of(
-            CMO_TO_ACTION_KEY, order,
+            "hearingDetails", hearingBookingWithStartDatePlus(1),
+            CMO_TO_ACTION_KEY, getCaseManagementOrder(),
+            "orderAction", getOrderAction(SEND_TO_ALL_PARTIES));
+
+        AboutToStartOrSubmitCallbackResponse response =
+            makeRequest(buildCallbackRequest(data), "about-to-submit");
+
+        assertThat(response.getErrors()).containsOnly(HEARING_NOT_COMPLETED.getValue());
+    }
+
+    @Test
+    void aboutToSubmitShouldReturnCaseManagementOrderWithDraftDocumentWhenNotSendToAllParties() throws Exception {
+        Map<String, Object> data = ImmutableMap.of(
+            CMO_TO_ACTION_KEY, getCaseManagementOrder(),
             "orderAction", getOrderAction(JUDGE_REQUESTED_CHANGE));
 
         AboutToStartOrSubmitCallbackResponse response =
@@ -209,13 +229,22 @@ class ActionCaseManagementOrderControllerTest {
             .build();
     }
 
-    private CaseManagementOrder getCaseManagementOrder(OrderAction expectedAction) {
+    private CaseManagementOrder getCaseManagementOrder() {
         return CaseManagementOrder.builder()
-            .action(expectedAction)
+            .id(ID)
             .status(CMOStatus.SEND_TO_JUDGE)
             .schedule(createSchedule(true))
             .recitals(createRecitals())
             .directions(createCmoDirections())
             .build();
+    }
+
+    private List<Element<HearingBooking>> hearingBookingWithStartDatePlus(int days) {
+        return ImmutableList.of(Element.<HearingBooking>builder()
+            .id(ID)
+            .value(HearingBooking.builder()
+                .startDate(NOW.plusDays(days))
+                .build())
+            .build());
     }
 }
