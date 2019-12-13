@@ -9,11 +9,13 @@ import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -41,6 +43,7 @@ import java.util.stream.Collectors;
 
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -271,10 +274,10 @@ public class CaseDataGeneratorHelper {
         return ImmutableList.of(
             Element.<GeneratedOrder>builder()
                 .value(GeneratedOrder.builder()
-                    .orderTitle("Example Order")
-                    .orderDetails(
+                    .title("Example Order")
+                    .details(
                         "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
-                    .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
+                    .date(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
                         LocalDateTime.now().plusDays(57), FORMAT_STYLE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker",
                         "Judy", null, HER_HONOUR_JUDGE))
@@ -283,9 +286,9 @@ public class CaseDataGeneratorHelper {
             Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
                 .value(GeneratedOrder.builder()
-                    .orderTitle("Winter is here")
-                    .orderDetails("Westeros")
-                    .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
+                    .title("Winter is here")
+                    .details("Westeros")
+                    .date(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
                         LocalDateTime.now().plusDays(59), FORMAT_STYLE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Baratheon",
                         "Tyrion Lannister", "Lannister", HIS_HONOUR_JUDGE))
@@ -295,9 +298,9 @@ public class CaseDataGeneratorHelper {
             Element.<GeneratedOrder>builder()
                 .id(UUID.randomUUID())
                 .value(GeneratedOrder.builder()
-                    .orderTitle("Black Sails")
-                    .orderDetails("Long John Silver")
-                    .orderDate(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
+                    .title("Black Sails")
+                    .details("Long John Silver")
+                    .date(DATE_FORMATTER_SERVICE.formatLocalDateTimeBaseUsingFormat(
                         LocalDateTime.now().plusDays(60), FORMAT_STYLE))
                     .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Edward Teach",
                         "Captain Flint", "Scott", DEPUTY_DISTRICT_JUDGE))
@@ -468,6 +471,20 @@ public class CaseDataGeneratorHelper {
             .put("cafcassDirectionsCustom", getDirectionByAssignee(cmoDirections, CAFCASS))
             .put("otherPartiesDirectionsCustom", getDirectionByAssignee(cmoDirections, OTHERS))
             .put("respondentDirectionsCustom", getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
+            .put("cmoToAction", CaseManagementOrder.builder()
+                .nextHearing(NextHearing.builder()
+                    .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                    .build())
+                .build())
+            .build();
+    }
+
+    public static CaseManagementOrder createCaseManagementOrder() {
+        return CaseManagementOrder.builder()
+            .status(SEND_TO_JUDGE)
+            .schedule(createSchedule(true))
+            .recitals(createRecitals())
+            .directions(createCmoDirections())
             .build();
     }
 
@@ -480,7 +497,7 @@ public class CaseDataGeneratorHelper {
     }
 
     private static List<Element<Direction>> getDirectionByAssignee(List<Element<Direction>> list,
-                                                            DirectionAssignee assignee) {
+                                                                   DirectionAssignee assignee) {
         return list.stream()
             .filter(element -> element.getValue().getAssignee().equals(assignee))
             .map(element -> {
@@ -509,5 +526,15 @@ public class CaseDataGeneratorHelper {
                 return prepared;
             })
             .collect(Collectors.toList());
+    }
+
+    public static DynamicList createHearingBookingDynmaicList() {
+        return DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                .label("15th Dec 2019")
+                .build())
+            .listItems(List.of(DynamicListElement.builder().code(UUID.randomUUID()).label("test").build()))
+            .build();
     }
 }

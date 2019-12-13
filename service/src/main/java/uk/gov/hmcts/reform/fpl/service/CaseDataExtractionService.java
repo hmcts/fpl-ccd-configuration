@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -45,12 +44,12 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
 
 // Supports SDO case data. Tech debt ticket needed to refactor caseDataExtractionService and NoticeOfProceedingsService
-@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CaseDataExtractionService {
 
     public static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
+    public static final String HEARING_EMPTY_PLACEHOLDER = "This will appear on the issued CMO";
     private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -102,10 +101,10 @@ public class CaseDataExtractionService {
     private Map<String, Object> getHearingBookingData(CaseData caseData) {
         if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
             return ImmutableMap.<String, Object>builder()
-                .put("hearingDate", EMPTY_PLACEHOLDER)
-                .put("hearingVenue", EMPTY_PLACEHOLDER)
-                .put("preHearingAttendance", EMPTY_PLACEHOLDER)
-                .put("hearingTime", EMPTY_PLACEHOLDER)
+                .put("hearingDate", HEARING_EMPTY_PLACEHOLDER)
+                .put("hearingVenue", HEARING_EMPTY_PLACEHOLDER)
+                .put("preHearingAttendance", HEARING_EMPTY_PLACEHOLDER)
+                .put("hearingTime", HEARING_EMPTY_PLACEHOLDER)
                 .put("hearingJudgeTitleAndName", EMPTY_PLACEHOLDER)
                 .put("hearingLegalAdvisorName", "")
                 .build();

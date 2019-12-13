@@ -40,6 +40,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
     private static final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration =
         new HmctsCourtLookupConfiguration(
             String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL_ADDRESS));
+    private static final String HEARING_VENUE = "Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW";
     private final DateFormatterService dateFormatterService;
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
     private final DirectionHelperService directionHelperService;
@@ -88,7 +89,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
     @Test
     void shouldReturnEmptyMapValuesWhenCaseDataIsEmpty() throws IOException {
         final Map<String, Object> templateData = templateDataGenerationService.getTemplateData(CaseData.builder()
-            .build());
+            .build(), true);
 
         assertThat(templateData.get("courtName")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo(EMPTY_PLACEHOLDER);
@@ -126,7 +127,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
 
         final CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
 
-        final Map<String, Object> templateData = templateDataGenerationService.getTemplateData(caseData);
+        final Map<String, Object> templateData = templateDataGenerationService.getTemplateData(caseData, true);
 
         assertThat(templateData.get("courtName")).isEqualTo(COURT_NAME);
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
@@ -139,10 +140,11 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("applicantName")).isEqualTo("Bran Stark");
         assertThat(templateData.get("respondents")).isEqualTo(getExpectedRespondents());
         assertThat(templateData.get("representatives")).isEqualTo(getExpectedRepresentatives());
-        assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingDate")).isEqualTo("");
+        assertThat(templateData.get("hearingVenue")).isEqualTo(HEARING_VENUE);
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo(
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.minusHours(1), "dd MMMM YYYY, h:mma"));
+        assertThat(templateData.get("hearingTime")).isEqualTo(getHearingTime());
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("Her Honour Judge Law");
         assertThat(templateData.get("legalAdvisorName")).isEqualTo("Peter Parker");
         assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirection(2));
@@ -159,6 +161,14 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("scheduleProvided")).isEqualTo(true);
         assertThat(templateData.get("draftbackground")).isNotNull();
         assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
+    }
+
+    @Test
+    void shouldNotReturnWatermarkWhenDraftIsFalse() throws IOException {
+        Map<String, Object> templateData =
+            templateDataGenerationService.getTemplateData(CaseData.builder().build(), false);
+
+        assertThat(templateData.get("draftbackground")).isNull();
     }
 
     private List<Map<String, String>> getExpectedRepresentatives() {
@@ -271,6 +281,12 @@ class CMODocmosisTemplateDataGenerationServiceTest {
                 )
             )
         );
+    }
+
+    private String getHearingTime() {
+        return String.format("%s - %s",
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW, "dd MMMM, h:mma"),
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.plusDays(1), "dd MMMM, h:mma"));
     }
 
 }

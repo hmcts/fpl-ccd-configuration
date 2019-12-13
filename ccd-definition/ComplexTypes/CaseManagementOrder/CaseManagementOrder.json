@@ -2,6 +2,14 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CaseManagementOrder",
+    "ListElementCode": "action",
+    "FieldType": "OrderAction",
+    "ElementLabel": "Order actions",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
     "ListElementCode": "orderDoc",
     "FieldType": "Document",
     "ElementLabel": "File",
@@ -54,10 +62,18 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "CaseManagementOrder",
-    "ListElementCode": "cmoStatus",
+    "ListElementCode": "status",
     "FieldType": "FixedRadioList",
     "FieldTypeParameter": "CMOStatus",
     "ElementLabel": "Is this ready to be sent to the judge?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "ListElementCode": "nextHearing",
+    "FieldType": "NextHearing",
+    "ElementLabel": "Next Hearing",
     "SecurityClassification": "Public"
   }
 ]

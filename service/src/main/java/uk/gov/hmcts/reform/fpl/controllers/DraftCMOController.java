@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
+import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.io.IOException;
 import java.util.Map;
@@ -43,6 +44,7 @@ public class DraftCMOController {
     private final CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService;
     private final RespondentService respondentService;
     private final OthersService othersService;
+    private final CoreCaseDataService coreCaseDataService;
 
     @Autowired
     public DraftCMOController(ObjectMapper mapper,
@@ -50,6 +52,7 @@ public class DraftCMOController {
                               DocmosisDocumentGeneratorService docmosisService,
                               UploadDocumentService uploadDocumentService,
                               CMODocmosisTemplateDataGenerationService docmosisTemplateDataGenerationService,
+                              CoreCaseDataService coreCaseDataService,
                               RespondentService respondentService,
                               OthersService othersService) {
         this.mapper = mapper;
@@ -59,6 +62,7 @@ public class DraftCMOController {
         this.docmosisTemplateDataGenerationService = docmosisTemplateDataGenerationService;
         this.respondentService = respondentService;
         this.othersService = othersService;
+        this.coreCaseDataService = coreCaseDataService;
     }
 
     @PostMapping("/about-to-start")
@@ -66,7 +70,7 @@ public class DraftCMOController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        draftCMOService.prepareCustomDirections(caseDetails);
+        draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
 
         caseDetails.getData().putAll(draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseData.getCaseManagementOrder(), caseData.getHearingDetails()));
@@ -89,7 +93,7 @@ public class DraftCMOController {
         final Map<String, Object> data = caseDetails.getData();
         final CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        final Map<String, Object> cmoTemplateData = docmosisTemplateDataGenerationService.getTemplateData(caseData);
+        Map<String, Object> cmoTemplateData = docmosisTemplateDataGenerationService.getTemplateData(caseData, true);
 
         Document document = getDocument(authorization, userId, cmoTemplateData);
 
@@ -119,14 +123,29 @@ public class DraftCMOController {
         final Map<String, Object> data = caseDetails.getData();
         CaseData caseData = mapper.convertValue(data, CaseData.class);
 
-        CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(caseData);
+        CaseManagementOrder populatedCMO = draftCMOService.prepareCMO(
+            caseData, caseData.getCaseManagementOrder());
 
         draftCMOService.removeTransientObjectsFromCaseData(data);
-        draftCMOService.populateCaseDataWithCMO(data, caseManagementOrder);
+
+        data.put("caseManagementOrder", populatedCMO);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
             .build();
+    }
+
+    //TODO: logic for only calling this when necessary. When status change new vs old.
+    // When new document to share.
+    // When no data before.
+    @PostMapping("/submitted")
+    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+        coreCaseDataService.triggerEvent(
+            callbackRequest.getCaseDetails().getJurisdiction(),
+            callbackRequest.getCaseDetails().getCaseTypeId(),
+            callbackRequest.getCaseDetails().getId(),
+            "internal-change:CMO_PROGRESSION"
+        );
     }
 
     private String getRespondentsLabel(CaseData caseData) {
@@ -148,5 +167,4 @@ public class DraftCMOController {
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), docTitle);
     }
-
 }

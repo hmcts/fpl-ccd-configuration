@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.HEARING_EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
@@ -49,7 +51,6 @@ class CaseDataExtractionServiceTest {
     private static final String CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL);
     private static final LocalDate TODAYS_DATE = LocalDate.now();
     private static final LocalDateTime TODAYS_DATE_TIME = LocalDateTime.now();
-    private static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
 
     @Autowired
     private HearingVenueLookUpService hearingVenueLookUpService;
@@ -87,10 +88,10 @@ class CaseDataExtractionServiceTest {
             .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
         assertThat(templateData.get("complianceDeadline")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("children")).isEqualTo(ImmutableList.of());
-        assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingDate")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingVenue")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingTime")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
         assertThat(templateData.get("hearingJudgeTitleAndName")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
         assertThat(templateData.get("allParties")).isNull();
@@ -155,10 +156,10 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("complianceDeadline")).isEqualTo(dateFormatterService
             .formatLocalDateToString(TODAYS_DATE.plusWeeks(26), FormatStyle.LONG));
         assertThat(templateData.get("children")).isEqualTo(getExpectedChildren());
-        assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingDate")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingVenue")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingTime")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
         assertThat(templateData.get("hearingJudgeTitleAndName")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
         assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirections());
