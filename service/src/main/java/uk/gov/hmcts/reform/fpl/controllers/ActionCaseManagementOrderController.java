@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.events.CMOEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
@@ -40,7 +39,6 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 public class ActionCaseManagementOrderController {
     private final DraftCMOService draftCMOService;
     private final CaseManagementOrderService caseManagementOrderService;
-    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
@@ -114,7 +112,7 @@ public class ActionCaseManagementOrderController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
                                      @RequestHeader(value = "user-id") String userId,
-                                     @RequestBody CallbackRequest callbackRequest) {
+                                     @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
         coreCaseDataService.triggerEvent(
@@ -125,7 +123,12 @@ public class ActionCaseManagementOrderController {
         );
 
         if (caseData.getCmoToAction().isApprovedByJudge()) {
-            applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId));
+            Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(data, true);
+            DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
+                cmoDocumentTemplateData, DocmosisTemplates.CMO);
+
+            applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId,
+                docmosisDocument));
         }
     }
 
@@ -136,8 +139,6 @@ public class ActionCaseManagementOrderController {
         DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
             cmoDocumentTemplateData, DocmosisTemplates.CMO);
 
-        String documentTitle = (approved ? document.getDocumentTitle() : "draft-" + document.getDocumentTitle());
-
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), documentTitle);
+        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), document.getDocumentTitle());
     }
 }
