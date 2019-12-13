@@ -64,55 +64,6 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "UserIDAMId": "raghu@croydon.gov.uk",
-    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
-    "WorkBasketDefaultState": "Open"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "UserIDAMId": "toireasa@camden.gov.uk",
-    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
-    "WorkBasketDefaultState": "Open"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "UserIDAMId": "theo@camden.gov.uk",
-    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
-    "WorkBasketDefaultState": "Open"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "UserIDAMId": "joe@barnet.gov.uk",
-    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
-    "WorkBasketDefaultState": "Open"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "UserIDAMId": "sara@enfield.gov.uk",
-    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
-    "WorkBasketDefaultState": "Open"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "UserIDAMId": "etim@kingston.gov.uk",
-    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
-    "WorkBasketDefaultState": "Open"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "UserIDAMId": "alison@richmond.gov.uk",
-    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
-    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
-    "WorkBasketDefaultState": "Open"
-  },
-  {
-    "LiveFrom": "01/01/2017",
     "UserIDAMId": "hmcts-admin@example.com",
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
