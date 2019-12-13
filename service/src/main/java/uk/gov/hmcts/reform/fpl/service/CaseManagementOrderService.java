@@ -16,7 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import static java.util.Objects.isNull;
 import static uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement.getHearingDynamicElement;
@@ -82,15 +81,13 @@ public class CaseManagementOrderService {
 
     public String createNextHearingDateLabel(CaseManagementOrder caseManagementOrder,
                                              List<Element<HearingBooking>> hearingBookings) {
-
-        if (caseManagementOrder != null && caseManagementOrder.getNextHearing() != null) {
-            UUID nextHearingId = caseManagementOrder.getNextHearing().getId();
-
-            return Optional.ofNullable(hearingBookingService.getHearingBookingByUUID(hearingBookings, nextHearingId))
-                .map(booking -> formatHearingBookingLabel(booking.getStartDate())).orElse("");
-        }
-
-        return "";
+        return Optional.ofNullable(caseManagementOrder)
+            .map(CaseManagementOrder::getNextHearing)
+            .map(NextHearing::getId)
+            .map(id -> hearingBookingService.getHearingBookingByUUID(hearingBookings, id))
+            .map(HearingBooking::getStartDate)
+            .map(this::formatHearingBookingLabel)
+            .orElse("");
     }
 
     private String formatHearingBookingLabel(LocalDateTime startDate) {
