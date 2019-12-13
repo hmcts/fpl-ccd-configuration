@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,8 +15,11 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
@@ -24,8 +28,11 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 @Api
@@ -66,6 +73,8 @@ public class ActionCaseManagementOrderController {
 
         draftCMOService.prepareCustomDirections(caseDetails, caseData.getCmoToAction());
 
+        caseDetails.getData().put("nextHearingDateList", getHearingDynamicList(caseData.getHearingDetails()));
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
@@ -89,6 +98,7 @@ public class ActionCaseManagementOrderController {
             .build();
     }
 
+    //TODO: refactor. far too much logic in this controller now
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestHeader(value = "authorization") String authorization,
@@ -97,6 +107,13 @@ public class ActionCaseManagementOrderController {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if (sendToAllPartiesBeforeHearingDate(caseData)) {
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .errors(ImmutableList.of(HEARING_NOT_COMPLETED.getValue()))
+                .build();
+        }
+
         CaseManagementOrder order = caseData.getCmoToAction();
 
         order = draftCMOService.prepareCMO(caseData, order).toBuilder()
@@ -108,9 +125,16 @@ public class ActionCaseManagementOrderController {
 
         order = caseManagementOrderService.addAction(order, orderAction);
 
+        order = caseManagementOrderService.addNextHearingToCMO(caseData.getNextHearingDateList(), order);
+
+        caseData = caseData.toBuilder().cmoToAction(order).build();
+
         Document document = getDocument(authorization, userId, caseData, order.isDraft());
 
         order = caseManagementOrderService.addDocument(order, document);
+
+        caseDetails.getData().put("nextHearingDateLabel",
+            caseManagementOrderService.createNextHearingDateLabel(order, caseData.getHearingDetails()));
 
         caseDetails.getData().put("cmoToAction", order);
 
@@ -129,6 +153,11 @@ public class ActionCaseManagementOrderController {
         );
     }
 
+    private boolean sendToAllPartiesBeforeHearingDate(CaseData caseData) {
+        return caseData.getOrderAction().getType() == SEND_TO_ALL_PARTIES
+            && caseManagementOrderService.isHearingDateInFuture(caseData);
+    }
+
     private Document getDocument(String auth, String userId, CaseData data, boolean draft) throws IOException {
         Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(data, draft);
 
@@ -138,5 +167,9 @@ public class ActionCaseManagementOrderController {
         String documentTitle = (draft ? "draft-" + document.getDocumentTitle() : document.getDocumentTitle());
 
         return uploadDocumentService.uploadPDF(userId, auth, document.getBytes(), documentTitle);
+    }
+
+    private DynamicList getHearingDynamicList(List<Element<HearingBooking>> hearingBookings) {
+        return draftCMOService.getHearingDateDynamicList(hearingBookings, null);
     }
 }

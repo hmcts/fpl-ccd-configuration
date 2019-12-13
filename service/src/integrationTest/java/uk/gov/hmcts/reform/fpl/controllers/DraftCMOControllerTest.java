@@ -72,10 +72,13 @@ class DraftCMOControllerTest {
     private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
+
     @Autowired
     private DraftCMOService draftCMOService;
+
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private ObjectMapper mapper;
 
@@ -84,6 +87,7 @@ class DraftCMOControllerTest {
 
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
+
     @MockBean
     private UploadDocumentService uploadDocumentService;
 

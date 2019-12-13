@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -34,7 +33,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ActionType.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
@@ -44,19 +42,14 @@ class CaseManagementOrderProgressionServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
     private static final UUID UUID = randomUUID();
 
-    private final HearingBookingService hearingBookingService = new HearingBookingService();
-    private final Time time = () -> NOW;
-
     @Autowired
     private ObjectMapper mapper;
 
     private CaseManagementOrderProgressionService service;
-    private List<String> errors;
 
     @BeforeEach
     void setUp() {
-        this.service = new CaseManagementOrderProgressionService(time, hearingBookingService, mapper);
-        this.errors = new ArrayList<>();
+        this.service = new CaseManagementOrderProgressionService(mapper);
     }
 
     @Test
@@ -64,7 +57,7 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData caseData = caseDataWithCaseManagementOrder(SEND_TO_JUDGE).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
+        service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -77,7 +70,7 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData caseData = caseDataWithCaseManagementOrder(PARTIES_REVIEW).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
+        service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -94,7 +87,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
+        service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -103,27 +96,14 @@ class CaseManagementOrderProgressionServiceTest {
     }
 
     @Test
-    void shouldPopulateErrorsWhenTryingToSendToAllPartiesBeforeHearingIsComplete() {
-        CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
-            .hearingDetails(hearingBookingWithStartDatePlus(-1))
-            .build();
-
-        CaseDetails caseDetails = getCaseDetails(caseData);
-
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
-
-        assertThat(errors).containsExactly(HEARING_NOT_COMPLETED.getValue());
-    }
-
-    @Test
     void shouldPopulateServedCaseManagementOrdersWhenTryingToSendToAllPartiesAndHearingIsComplete() {
         CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
-            .hearingDetails(hearingBookingWithStartDatePlus(1))
+            .hearingDetails(hearingBookingWithStartDateInPast())
             .build();
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
+        service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -139,12 +119,12 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
             .servedCaseManagementOrders(orders)
-            .hearingDetails(hearingBookingWithStartDatePlus(1))
+            .hearingDetails(hearingBookingWithStartDateInPast())
             .build();
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
+        service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -160,7 +140,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
+        service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -176,7 +156,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
+        service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -209,11 +189,11 @@ class CaseManagementOrderProgressionServiceTest {
         return CaseDetails.builder().data(data).build();
     }
 
-    private List<Element<HearingBooking>> hearingBookingWithStartDatePlus(int days) {
+    private List<Element<HearingBooking>> hearingBookingWithStartDateInPast() {
         return ImmutableList.of(Element.<HearingBooking>builder()
             .id(UUID)
             .value(HearingBooking.builder()
-                .startDate(NOW.plusDays(days))
+                .startDate(NOW.plusDays(-1))
                 .build())
             .build());
     }

@@ -24,7 +24,6 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -139,12 +138,12 @@ public class CaseData {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
+    private final OrderTypeAndDocument orderTypeAndDocument;
     private final GeneratedOrder order;
     private final List<Element<GeneratedOrder>> orderCollection;
 
-    @JsonIgnore
-    public List<Element<GeneratedOrder>> getGeneratedOrders() {
-        return defaultIfNull(orderCollection, new ArrayList<>());
+    public List<Element<GeneratedOrder>> getOrderCollection() {
+        return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
     // for judiciary
@@ -165,4 +164,5 @@ public class CaseData {
     }
 
     private final Others others;
+    private final DynamicList nextHearingDateList;
 }

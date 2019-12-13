@@ -65,6 +65,22 @@ class HearingBookingServiceTest {
         assertThat(sortedHearingBooking.getStartDate()).isEqualTo(TODAYS_DATE);
     }
 
+    @Test
+    void shouldGetHearingBookingWhenKeyMatchesHearingBookingElementUUID() {
+        List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+        HearingBooking hearingBooking = service.getHearingBookingByUUID(hearingBookings, UUIDS[2]);
+        assertThat(hearingBooking.getStartDate()).isEqualTo(TODAYS_DATE);
+    }
+
+    @Test
+    void shouldReturnNullWhenKeyDoesNotMatchHearingBookingElementUUID() {
+        List<Element<HearingBooking>> hearingBookings = createHearingBookings();
+        HearingBooking hearingBooking =
+            service.getHearingBookingByUUID(hearingBookings, fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2606"));
+
+        assertThat(hearingBooking).isNull();
+    }
+
     @Nested
     class GetHearingBooking {
 
@@ -114,12 +130,20 @@ class HearingBookingServiceTest {
         private DynamicListElement createDynamicElement(UUID code) {
             return DynamicListElement.builder().code(code).label("").build();
         }
-
     }
 
     private List<Element<HearingBooking>> createHearingBookings() {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
+                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2601"))
+                .value(createHearingBooking(TODAYS_DATE.plusDays(5), TODAYS_DATE.plusDays(6)))
+                .build(),
+            Element.<HearingBooking>builder()
+                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2602"))
+                .value(createHearingBooking(TODAYS_DATE.plusDays(2), TODAYS_DATE.plusDays(3)))
+                .build(),
+            Element.<HearingBooking>builder()
+                .id(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2603"))
                 .id(UUIDS[0])
                 .value(createHearingBooking(TODAYS_DATE.plusDays(5), TODAYS_DATE.plusDays(6)))
                 .build(),
