@@ -1190,7 +1190,7 @@ class DirectionHelperServiceTest {
                 .complied("Yes")
                 .build();
 
-            service.addComplyOnBehalfResponsesToDirectionsInStandardDirectionsOrder(caseData);
+            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData);
 
             assertThat(getResponses(caseData).get(0).getValue()).isEqualTo(expectedResponse);
         }
@@ -1215,7 +1215,7 @@ class DirectionHelperServiceTest {
                     .build())
                 .build());
 
-            service.addComplyOnBehalfResponsesToDirectionsInStandardDirectionsOrder(caseData);
+            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData);
 
             assertThat(getResponses(caseData)).containsAll(expectedResponses);
         }

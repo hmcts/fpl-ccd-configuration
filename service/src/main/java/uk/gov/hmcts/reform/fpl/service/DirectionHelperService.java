@@ -290,8 +290,9 @@ public class DirectionHelperService {
      *
      * @param caseData caseData containing custom role collections and standard directions order.
      */
-    public void addComplyOnBehalfResponsesToDirectionsInStandardDirectionsOrder(CaseData caseData) {
+    public void addComplyOnBehalfResponsesToDirectionsInOrder(CaseData caseData) {
         Map<DirectionAssignee, List<Element<Direction>>> customDirectionsMap = collectCustomDirectionsToMap(caseData);
+        List<Element<Direction>> directionsToComplyWith = getDirectionsToComplyWith(caseData);
 
         customDirectionsMap.forEach((assignee, directions) -> {
             switch (assignee) {
@@ -300,14 +301,14 @@ public class DirectionHelperService {
                         .map(response -> response.toBuilder().respondingOnBehalfOf("CAFCASS").build())
                         .collect(toList());
 
-                    addResponsesToDirections(responses, caseData.getStandardDirectionOrder().getDirections());
+                    addResponsesToDirections(responses, directionsToComplyWith);
 
                     break;
                 case PARENTS_AND_RESPONDENTS:
                 case OTHERS:
                     List<Element<DirectionResponse>> elements = addValuesToListResponseDirections(directions);
 
-                    addResponseElementsToDirections(elements, caseData.getStandardDirectionOrder().getDirections());
+                    addResponseElementsToDirections(elements, directionsToComplyWith);
 
                     break;
             }

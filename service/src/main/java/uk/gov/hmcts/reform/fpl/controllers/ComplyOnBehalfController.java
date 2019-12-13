@@ -50,8 +50,10 @@ public class ComplyOnBehalfController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        List<Element<Direction>> directionsToComplyWith = directionHelperService.getDirectionsToComplyWith(caseData);
+
         Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
-            directionHelperService.sortDirectionsByAssignee(caseData.getStandardDirectionOrder().getDirections());
+            directionHelperService.sortDirectionsByAssignee(directionsToComplyWith);
 
         directionHelperService.addDirectionsToCaseDetails(caseDetails, sortedDirections);
 
@@ -68,9 +70,14 @@ public class ComplyOnBehalfController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        directionHelperService.addComplyOnBehalfResponsesToDirectionsInStandardDirectionsOrder(caseData);
+        directionHelperService.addComplyOnBehalfResponsesToDirectionsInOrder(caseData);
 
-        caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
+        //TODO: new service for sdo vs cmo in placing directions
+        if (caseData.getServedCaseManagementOrders().isEmpty()) {
+            caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
+        } else {
+            caseDetails.getData().put("servedCaseManagementOrders", caseData.getServedCaseManagementOrders());
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
