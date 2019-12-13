@@ -19,16 +19,31 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -43,6 +58,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCaseManagementOrder;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -54,13 +70,24 @@ class ActionCaseManagementOrderControllerTest {
     private static final String CMO_TO_ACTION_KEY = "cmoToAction";
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-    private static final byte[] pdf = {1, 2, 3, 4, 5};
+    private static final byte[] PDF = {1, 2, 3, 4, 5};
+    private static final UUID NEXT_HEARING_ID = UUID.fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31");
+    private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
+    private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
+        FormatStyle.MEDIUM).localizedBy(Locale.UK);
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private DateFormatterService dateFormatterService;
+
+    @Autowired
+    private DraftCMOService draftCMOService;
 
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
@@ -74,7 +101,7 @@ class ActionCaseManagementOrderControllerTest {
     @BeforeEach
     void setup() throws IOException {
         Document document = document();
-        DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", pdf);
+        DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", PDF);
 
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
@@ -86,12 +113,18 @@ class ActionCaseManagementOrderControllerTest {
         final CaseManagementOrder order = createCaseManagementOrder();
 
         data.put(CMO_TO_ACTION_KEY, order);
+        data.put("hearingDetails", createHearingBookings(LocalDateTime.now()));
 
         CallbackRequest request = buildCallbackRequest(data);
+        List<String> expected = Arrays.asList(
+            TODAYS_DATE.plusDays(5).format(dateTimeFormatter),
+            TODAYS_DATE.plusDays(2).format(dateTimeFormatter),
+            TODAYS_DATE.format(dateTimeFormatter));
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-start");
         CaseData caseData = objectMapper.convertValue(response.getData(), CaseData.class);
 
+        assertThat(getHearingDates(response)).isEqualTo(expected);
         assertThat(caseData.getOrderAction()).isNull();
         assertThat(caseData.getSchedule()).isEqualTo(order.getSchedule());
         assertThat(caseData.getRecitals()).isEqualTo(order.getRecitals());
@@ -102,7 +135,7 @@ class ActionCaseManagementOrderControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
             buildCallbackRequest(ImmutableMap.of()), "mid-event");
 
-        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-case-management-order.pdf");
+        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, PDF, "draft-case-management-order.pdf");
 
         Map<String, Object> responseCaseData = callbackResponse.getData();
 
@@ -119,20 +152,46 @@ class ActionCaseManagementOrderControllerTest {
     @Test
     void aboutToSubmitShouldReturnAPopulatedCaseManagementOrderWithUpdatedDocumentWhenSendToAllParties()
         throws Exception {
+        DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
+
+        dynamicHearingDates.setValue(DynamicListElement.builder()
+            .code(NEXT_HEARING_ID)
+            .label(TODAYS_DATE.plusDays(5).toString())
+            .build());
 
         CaseManagementOrder order = getCaseManagementOrder(OrderAction.builder().build());
 
         Map<String, Object> data = ImmutableMap.of(
             CMO_TO_ACTION_KEY, order,
-            "orderAction", getOrderAction());
+            "hearingDetails", createHearingBookings(TODAYS_DATE),
+            "orderAction", getOrderAction(),
+            "nextHearingDateList", dynamicHearingDates);
 
         AboutToStartOrSubmitCallbackResponse response =
             makeRequest(buildCallbackRequest(data), "about-to-submit");
 
         CaseData caseData = objectMapper.convertValue(response.getData(), CaseData.class);
 
-        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-case-management-order.pdf");
-        assertThat(caseData.getCmoToAction().getAction()).isEqualTo(getOrderAction());
+        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, PDF, "draft-case-management-order.pdf");
+
+        assertThat(caseData.getCmoToAction().getAction()).isEqualTo(
+            OrderAction.builder()
+                .type(SEND_TO_ALL_PARTIES)
+                .nextHearingType(ISSUES_RESOLUTION_HEARING)
+                .build());
+
+        assertThat(caseData.getCmoToAction().getNextHearing()).isEqualTo(
+            NextHearing.builder()
+                .id(NEXT_HEARING_ID)
+                .date(TODAYS_DATE.plusDays(5).toString())
+                .build());
+
+        String formattedDate = dateFormatterService
+            .formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "d MMMM 'at' h:mma");
+
+        String expectedLabel = String.format("The next hearing date is on %s", formattedDate);
+
+        assertThat(response.getData().get("nextHearingDateLabel")).isEqualTo(expectedLabel);
     }
 
     @Test
@@ -204,5 +263,13 @@ class ActionCaseManagementOrderControllerTest {
             .recitals(createRecitals())
             .directions(createCmoDirections())
             .build();
+    }
+
+    private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {
+        CaseData caseData = objectMapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        return caseData.getNextHearingDateList().getListItems().stream()
+            .map(element -> objectMapper.convertValue(element, DynamicListElement.class))
+            .map(DynamicListElement::getLabel).collect(Collectors.toList());
     }
 }

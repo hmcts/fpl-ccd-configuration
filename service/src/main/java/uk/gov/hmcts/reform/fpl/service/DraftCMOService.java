@@ -71,6 +71,7 @@ public class DraftCMOService {
             .status(oldCMO.map(CaseManagementOrder::getStatus).orElse(null))
             .orderDoc(oldCMO.map(CaseManagementOrder::getOrderDoc).orElse(null))
             .action(oldCMO.map(CaseManagementOrder::getAction).orElse(null))
+            .nextHearing(oldCMO.map(CaseManagementOrder::getNextHearing).orElse(null))
             .build();
     }
 
@@ -86,14 +87,16 @@ public class DraftCMOService {
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
         List<HearingDateDynamicElement> hearingDates = hearingDetails
             .stream()
-            .map(element -> new HearingDateDynamicElement(
-                formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()), element.getId()))
+            .map(element -> HearingDateDynamicElement.builder()
+                .id(element.getId())
+                .date(formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()))
+                .build())
             .collect(toList());
 
         return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);
     }
 
-    private DynamicList getHearingDateDynamicList(List<Element<HearingBooking>> hearingDetails,
+    public DynamicList getHearingDateDynamicList(List<Element<HearingBooking>> hearingDetails,
                                                   CaseManagementOrder caseManagementOrder) {
         DynamicList hearingDatesDynamic = buildDynamicListFromHearingDetails(hearingDetails);
 
