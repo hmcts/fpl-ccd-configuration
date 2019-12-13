@@ -28,6 +28,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
