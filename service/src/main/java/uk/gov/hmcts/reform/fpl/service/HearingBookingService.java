@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
@@ -59,12 +58,5 @@ public class HearingBookingService {
             .map(Element::getValue)
             .findFirst()
             .orElse(null);
-    }
-
-    public HearingDateDynamicElement getHearingDynamicElement(DynamicList list) {
-        return HearingDateDynamicElement.builder()
-            .date(list.getValue().getLabel())
-            .id(list.getValue().getCode())
-            .build();
     }
 }

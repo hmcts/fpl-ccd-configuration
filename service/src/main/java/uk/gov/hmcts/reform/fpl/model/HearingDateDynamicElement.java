@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicElementIndicator;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.util.UUID;
@@ -18,5 +19,12 @@ public class HearingDateDynamicElement implements DynamicElementIndicator {
     @Override
     public DynamicListElement toDynamicElement() {
         return DynamicListElement.builder().code(id).label(date).build();
+    }
+
+    public static HearingDateDynamicElement getHearingDynamicElement(DynamicList list) {
+        return HearingDateDynamicElement.builder()
+            .date(list.getValue().getLabel())
+            .id(list.getValue().getCode())
+            .build();
     }
 }

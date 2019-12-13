@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static java.util.Objects.isNull;
+import static uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement.getHearingDynamicElement;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 //TODO: this class will take some of the methods out of draftCMO service.
@@ -69,7 +70,7 @@ public class CaseManagementOrderService {
             return order;
         }
 
-        HearingDateDynamicElement hearingDateDynamicElement = hearingBookingService.getHearingDynamicElement(list);
+        HearingDateDynamicElement hearingDateDynamicElement = getHearingDynamicElement(list);
 
         return order.toBuilder()
             .nextHearing(NextHearing.builder()
