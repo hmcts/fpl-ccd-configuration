@@ -40,6 +40,7 @@ public class ComplyWithDirectionsController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        //TODO: could exist in sdo vs cmo service.
         List<Element<Direction>> directionsToComplyWith = directionHelperService.getDirectionsToComplyWith(caseData);
 
         Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
@@ -66,11 +67,16 @@ public class ComplyWithDirectionsController {
             directionHelperService.collectDirectionsToMap(caseData);
 
         List<DirectionResponse> responses = directionHelperService.getResponses(directionsMap);
+        List<Element<Direction>> directionsToComplyWith = directionHelperService.getDirectionsToComplyWith(caseData);
 
-        directionHelperService.addResponsesToDirections(
-            responses, caseData.getStandardDirectionOrder().getDirections());
+        directionHelperService.addResponsesToDirections(responses, directionsToComplyWith);
 
-        caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
+        //TODO: new service for sdo vs cmo in placing directions
+        if (caseData.getServedCaseManagementOrders().isEmpty()) {
+            caseDetails.getData().put("standardDirectionOrder", caseData.getStandardDirectionOrder());
+        } else {
+            caseDetails.getData().put("servedCaseManagementOrders", caseData.getServedCaseManagementOrders());
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
