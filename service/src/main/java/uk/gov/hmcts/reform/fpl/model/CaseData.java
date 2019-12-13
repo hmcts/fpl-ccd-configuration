@@ -164,4 +164,5 @@ public class CaseData {
     }
 
     private final Others others;
+    private final DynamicList nextHearingDateList;
 }

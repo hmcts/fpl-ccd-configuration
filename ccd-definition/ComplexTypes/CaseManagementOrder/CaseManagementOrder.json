@@ -67,5 +67,13 @@
     "FieldTypeParameter": "CMOStatus",
     "ElementLabel": "Is this ready to be sent to the judge?",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "CaseManagementOrder",
+    "ListElementCode": "nextHearing",
+    "FieldType": "NextHearing",
+    "ElementLabel": "Next Hearing",
+    "SecurityClassification": "Public"
   }
 ]

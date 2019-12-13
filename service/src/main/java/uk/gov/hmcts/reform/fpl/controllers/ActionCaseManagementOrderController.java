@@ -15,8 +15,11 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
@@ -25,6 +28,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
@@ -69,6 +73,8 @@ public class ActionCaseManagementOrderController {
 
         draftCMOService.prepareCustomDirections(caseDetails, caseData.getCmoToAction());
 
+        caseDetails.getData().put("nextHearingDateList", getHearingDynamicList(caseData.getHearingDetails()));
+
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
@@ -92,6 +98,7 @@ public class ActionCaseManagementOrderController {
             .build();
     }
 
+    //TODO: refactor. far too much logic in this controller now
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestHeader(value = "authorization") String authorization,
@@ -118,9 +125,16 @@ public class ActionCaseManagementOrderController {
 
         order = caseManagementOrderService.addAction(order, orderAction);
 
+        order = caseManagementOrderService.addNextHearingToCMO(caseData.getNextHearingDateList(), order);
+
+        caseData = caseData.toBuilder().cmoToAction(order).build();
+
         Document document = getDocument(authorization, userId, caseData, order.isDraft());
 
         order = caseManagementOrderService.addDocument(order, document);
+
+        caseDetails.getData().put("nextHearingDateLabel",
+            caseManagementOrderService.createNextHearingDateLabel(order, caseData.getHearingDetails()));
 
         caseDetails.getData().put("cmoToAction", order);
 
@@ -153,5 +167,9 @@ public class ActionCaseManagementOrderController {
         String documentTitle = (draft ? "draft-" + document.getDocumentTitle() : document.getDocumentTitle());
 
         return uploadDocumentService.uploadPDF(userId, auth, document.getBytes(), documentTitle);
+    }
+
+    private DynamicList getHearingDynamicList(List<Element<HearingBooking>> hearingBookings) {
+        return draftCMOService.getHearingDateDynamicList(hearingBookings, null);
     }
 }

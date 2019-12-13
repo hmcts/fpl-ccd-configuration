@@ -470,9 +470,6 @@ public class CaseDataGeneratorHelper {
             .put("cafcassDirectionsCustom", getDirectionByAssignee(cmoDirections, CAFCASS))
             .put("otherPartiesDirectionsCustom", getDirectionByAssignee(cmoDirections, OTHERS))
             .put("respondentDirectionsCustom", getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
-            .put("servedCaseManagementOrders", ImmutableList.of(Element.<CaseManagementOrder>builder()
-                .value(CaseManagementOrder.builder().build())
-                .build()))
             .build();
     }
 
@@ -523,5 +520,15 @@ public class CaseDataGeneratorHelper {
                 return prepared;
             })
             .collect(Collectors.toList());
+    }
+
+    public static DynamicList createHearingBookingDynmaicList() {
+        return DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                .label("15th Dec 2019")
+                .build())
+            .listItems(List.of(DynamicListElement.builder().code(UUID.randomUUID()).label("test").build()))
+            .build();
     }
 }
