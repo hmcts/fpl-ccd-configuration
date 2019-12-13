@@ -312,7 +312,15 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "statementOfService",
     "UserRole": "caseworker-publiclaw-solicitor",
-    "CRUD": "CRUD"
+    "Comment": "Update permissions here as ccd collections doesn't work with case role",
+    "CRUD": "CUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "statementOfService",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "R"
   },
   {
     "LiveFrom": "01/01/2017",
