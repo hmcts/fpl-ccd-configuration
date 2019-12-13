@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
@@ -26,7 +25,6 @@ import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.buildSubject
 public class GeneratedOrderEmailContentProvider extends AbstractEmailContentProvider {
 
     private final LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
-    private final CafcassLookupConfiguration cafcassLookupConfiguration;
     private final ObjectMapper objectMapper;
 
     public GeneratedOrderEmailContentProvider(@Value("${ccd.ui.base.url}") String uiBaseUrl,
@@ -34,20 +32,10 @@ public class GeneratedOrderEmailContentProvider extends AbstractEmailContentProv
                                               HearingBookingService hearingBookingService,
                                               LocalAuthorityNameLookupConfiguration
                                                   localAuthorityNameLookupConfiguration,
-                                              DateFormatterService dateFormatterService,
-                                              CafcassLookupConfiguration cafcassLookupConfiguration) {
+                                              DateFormatterService dateFormatterService) {
         super(uiBaseUrl, dateFormatterService, hearingBookingService);
         this.objectMapper = objectMapper;
         this.localAuthorityNameLookupConfiguration = localAuthorityNameLookupConfiguration;
-        this.cafcassLookupConfiguration = cafcassLookupConfiguration;
-    }
-
-    public Map<String, Object> buildOrderNotificationParametersForCafcass(
-        final CaseDetails caseDetails, final String localAuthorityCode, final String mostRecentUploadedDocumentUrl) {
-        return ImmutableMap.<String, Object>builder()
-            .putAll(commonOrderNotificationParameters(caseDetails, mostRecentUploadedDocumentUrl))
-            .put("localAuthorityOrCafcass", cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName())
-            .build();
     }
 
     public Map<String, Object> buildOrderNotificationParametersForLocalAuthority(

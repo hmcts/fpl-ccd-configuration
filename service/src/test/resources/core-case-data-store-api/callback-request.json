@@ -473,14 +473,22 @@
           }
         }
       ],
+      "orderTypeAndDocument": {
+        "type": "BLANK_ORDER",
+        "document": {
+          "document_url": "some url",
+          "document_binary_url": "some binary url",
+          "document_filename": "file.pdf"
+        }
+      },
       "judgeAndLegalAdvisor": {
         "judgeTitle": "HER_HONOUR_JUDGE",
         "judgeLastName": "Judy",
         "legalAdvisorName": "Peter Parker"
       },
       "order": {
-        "orderTitle": "Example Order",
-        "orderDetails": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit"
+        "title": "Example Order",
+        "details": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit"
       },
       "familyManCaseNumber": "12345L"
     }

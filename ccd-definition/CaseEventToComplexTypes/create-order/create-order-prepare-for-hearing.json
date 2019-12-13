@@ -2,7 +2,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTypeAndDocumentComplexType",
-    "CaseEventID": "createOrderGatekeeping",
+    "CaseEventID": "createOrder-PREPARE_FOR_HEARING",
     "CaseFieldID": "orderTypeAndDocument",
     "ListElementCode": "type",
     "EventElementLabel": "Type of order",
@@ -12,7 +12,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "OrderTypeAndDocumentComplexType",
-    "CaseEventID": "createOrderGatekeeping",
+    "CaseEventID": "createOrder-PREPARE_FOR_HEARING",
     "CaseFieldID": "orderTypeAndDocument",
     "ListElementCode": "document",
     "EventElementLabel": "Order document",
@@ -23,7 +23,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrderComplexType",
-    "CaseEventID": "createOrderGatekeeping",
+    "CaseEventID": "createOrder-PREPARE_FOR_HEARING",
     "CaseFieldID": "order",
     "ListElementCode": "title",
     "EventElementLabel": "Order title",
@@ -33,7 +33,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrderComplexType",
-    "CaseEventID": "createOrderGatekeeping",
+    "CaseEventID": "createOrder-PREPARE_FOR_HEARING",
     "CaseFieldID": "order",
     "ListElementCode": "details",
     "EventElementLabel": "Order details",
@@ -43,7 +43,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrderComplexType",
-    "CaseEventID": "createOrderGatekeeping",
+    "CaseEventID": "createOrder-PREPARE_FOR_HEARING",
     "CaseFieldID": "order",
     "ListElementCode": "date",
     "EventElementLabel": "Date and time of upload",
@@ -54,7 +54,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisorComplexType",
-    "CaseEventID": "createOrderGatekeeping",
+    "CaseEventID": "createOrder-PREPARE_FOR_HEARING",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeTitle",
     "EventElementLabel": "Judge or magistrate's title",
@@ -64,7 +64,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisorComplexType",
-    "CaseEventID": "createOrderGatekeeping",
+    "CaseEventID": "createOrder-PREPARE_FOR_HEARING",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeLastName",
     "EventElementLabel": "Last name",
@@ -74,7 +74,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisorComplexType",
-    "CaseEventID": "createOrderGatekeeping",
+    "CaseEventID": "createOrder-PREPARE_FOR_HEARING",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "judgeFullName",
     "EventElementLabel": "Full name",
@@ -84,7 +84,7 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisorComplexType",
-    "CaseEventID": "createOrderGatekeeping",
+    "CaseEventID": "createOrder-PREPARE_FOR_HEARING",
     "CaseFieldID": "judgeAndLegalAdvisor",
     "ListElementCode": "legalAdvisorName",
     "EventElementLabel": "Legal advisor's full name",

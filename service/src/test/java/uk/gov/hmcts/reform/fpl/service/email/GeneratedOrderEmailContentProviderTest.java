@@ -13,7 +13,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -40,19 +39,13 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespon
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class, GeneratedOrderEmailContentProvider.class,
-    HearingBookingService.class, LocalAuthorityNameLookupConfiguration.class, DateFormatterService.class,
-    CafcassLookupConfiguration.class})
+    HearingBookingService.class, LocalAuthorityNameLookupConfiguration.class, DateFormatterService.class})
 class GeneratedOrderEmailContentProviderTest {
     private final LocalDate today = LocalDate.now();
     private final DateFormatterService dateFormatterService = new DateFormatterService();
     private final HearingBookingService hearingBookingService = new HearingBookingService();
 
     private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String CAFCASS_EMAIL = "FamilyPublicLaw+cafcass@gmail.com";
-    private static final String CAFCASS_NAME = "Example Cafcass";
-
-    @MockBean
-    private CafcassLookupConfiguration cafcassLookupConfiguration;
 
     @MockBean
     private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration;
@@ -69,35 +62,14 @@ class GeneratedOrderEmailContentProviderTest {
     @BeforeEach
     void setup() {
         this.orderEmailContentProvider = new GeneratedOrderEmailContentProvider("",
-            objectMapper, hearingBookingService, localAuthorityNameLookupConfiguration, dateFormatterService,
-            cafcassLookupConfiguration);
+            objectMapper, hearingBookingService, localAuthorityNameLookupConfiguration, dateFormatterService);
 
         given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
             .willReturn("Example Local Authority");
 
-        given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
-            .willReturn((new CafcassLookupConfiguration.Cafcass(CAFCASS_NAME, CAFCASS_EMAIL)));
-
         familyManCaseNumber = RandomStringUtils.randomAlphabetic(8);
         documentId = randomUUID();
         subjectLine = "Jones, " + familyManCaseNumber;
-    }
-
-    @Test
-    void shouldReturnExactOrderCafcassNotificationParametersWithUploadedDocumentUrl() {
-        final String documentUrl = "http://dm-store:8080/documents/" + documentId + "/binary";
-        CaseDetails caseDetails = createCaseDetailsWithSingleOrderElement();
-
-        Map<String, Object> returnedCafcassParameters =
-            orderEmailContentProvider.buildOrderNotificationParametersForCafcass(
-                caseDetails, LOCAL_AUTHORITY_CODE, documentUrl);
-
-        assertThat(returnedCafcassParameters)
-            .extracting("subjectLine", "localAuthorityOrCafcass", "hearingDetailsCallout",
-                "linkToDocument", "reference", "caseUrl")
-            .containsExactly(subjectLine, "Example Cafcass",
-                (subjectLine + ", hearing " + dateFormatterService.formatLocalDateToString(today, FormatStyle.MEDIUM)),
-                documentUrl, "167888", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/167888");
     }
 
     @Test
@@ -125,8 +97,8 @@ class GeneratedOrderEmailContentProviderTest {
                 "orderCollection", ImmutableList.of(
                     Element.<GeneratedOrder>builder()
                         .value(GeneratedOrder.builder()
-                            .orderTitle("Example Order")
-                            .orderDetails(
+                            .title("Example Order")
+                            .details(
                                 "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit")
                             .judgeAndLegalAdvisor(createJudgeAndLegalAdvisor("Peter Parker",
                                 "Judy", null, HER_HONOUR_JUDGE))
