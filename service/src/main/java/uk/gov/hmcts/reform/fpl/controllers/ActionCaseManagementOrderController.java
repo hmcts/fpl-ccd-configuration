@@ -96,7 +96,6 @@ public class ActionCaseManagementOrderController {
             .build();
     }
 
-
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(
         @RequestHeader(value = "authorization") String authorization,
