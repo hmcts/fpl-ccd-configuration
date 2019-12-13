@@ -660,22 +660,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "nextHearingDateHintText",
-    "Label": "Case hearing details will not show on the draft CMO. Check the ‘Hearings’ tab to confirm these.",
-    "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "nextHearingDateList",
-    "Label": "Which hearing is next?",
-    "FieldType": "DynamicList",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "caseManagementOrder",
     "Label": "Case management order",
     "FieldType": "CaseManagementOrder",
@@ -687,14 +671,6 @@
     "ID": "allPartiesLabelCMO",
     "Label": "## For all parties",
     "FieldType": "Label",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "nextHearingDateLabel",
-    "Label": " ",
-    "FieldType": "Text",
     "SecurityClassification": "Public"
   },
   {
@@ -800,6 +776,30 @@
     "ID": "cmoToAction",
     "Label": "Case management order",
     "FieldType": "CaseManagementOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nextHearingDateHintText",
+    "Label": "Case hearing details will not show on the draft CMO. Check the ‘Hearings’ tab to confirm these.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nextHearingDateLabel",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nextHearingDateList",
+    "Label": "Which hearing is next?",
+    "FieldType": "DynamicList",
     "SecurityClassification": "Public"
   },
   {

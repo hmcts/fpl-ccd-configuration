@@ -107,7 +107,7 @@ class ActionCaseManagementOrderControllerTest {
         given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
     }
 
-  \  @Test
+    @Test
     void aboutToStartShouldExtractIndividualCaseManagementOrderFields() throws Exception {
         Map<String, Object> data = new HashMap<>();
         final CaseManagementOrder order = createCaseManagementOrder();
@@ -186,8 +186,10 @@ class ActionCaseManagementOrderControllerTest {
                 .date(TODAYS_DATE.plusDays(5).toString())
                 .build());
 
-        String date = dateFormatterService.formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "d MMMM at h:mma");
-        String expectedLabel = String.format("The next hearing date is on %s", date);
+        String formattedDate = dateFormatterService
+            .formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "d MMMM 'at' h:mma");
+
+        String expectedLabel = String.format("The next hearing date is on %s", formattedDate);
 
         assertThat(response.getData().get("nextHearingDateLabel")).isEqualTo(expectedLabel);
     }

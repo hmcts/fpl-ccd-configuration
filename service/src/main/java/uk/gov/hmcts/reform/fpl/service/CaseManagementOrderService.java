@@ -60,7 +60,11 @@ public class CaseManagementOrderService {
         return data;
     }
 
-    public CaseManagementOrder addMextHearingtoCMO(DynamicList list, CaseManagementOrder order) {
+    public OrderAction removeDocumentFromOrderAction(OrderAction orderAction) {
+        return orderAction.toBuilder().document(null).build();
+    }
+
+    public CaseManagementOrder addNextHearingToCMO(DynamicList list, CaseManagementOrder order) {
         if (list == null) {
             return order;
         }
@@ -88,12 +92,8 @@ public class CaseManagementOrderService {
         return "";
     }
 
-    public OrderAction removeDocumentFromOrderAction(OrderAction orderAction) {
-        return orderAction.toBuilder().document(null).build();
-    }
-
     private String formatHearingBookingLabel(LocalDateTime startDate) {
-        String date = dateFormatterService.formatLocalDateTimeBaseUsingFormat(startDate, "d MMMM at h:mma");
-        return String.format("The next hearing date is on %s", date);
+        String formattedDate = dateFormatterService.formatLocalDateTimeBaseUsingFormat(startDate, "d MMMM 'at' h:mma");
+        return String.format("The next hearing date is on %s", formattedDate);
     }
 }

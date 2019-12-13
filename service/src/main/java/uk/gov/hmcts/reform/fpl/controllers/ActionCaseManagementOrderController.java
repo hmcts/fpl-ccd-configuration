@@ -116,7 +116,7 @@ public class ActionCaseManagementOrderController {
 
         order = caseManagementOrderService.addAction(order, orderAction);
 
-        order = caseManagementOrderService.addMextHearingtoCMO(caseData.getNextHearingDateList(), order);
+        order = caseManagementOrderService.addNextHearingToCMO(caseData.getNextHearingDateList(), order);
 
         Document document = getDocument(authorization, userId, caseData, false);
 

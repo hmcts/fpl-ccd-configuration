@@ -12,8 +12,8 @@ module.exports = {
     statusRadioGroup: {
       groupName: '#orderAction_type',
       options: {
-        sendToAllParties: 'Yes, it can be sealed and sent to parties',
-        judgeRequestedChanges: 'No, local authority needs to make changes',
+        sendToAllParties: 'Yes, send this to all parties',
+        judgeRequestedChanges: 'No, the local authority needs to make changes',
         selfReview: 'No, I need to make changes',
       },
     },
@@ -75,7 +75,7 @@ module.exports = {
   },
 
   selectNextHearingDate(date) {
-      I.waitForElement(this.fields.nextHearingDateList);
-      I.selectOption(this.fields.cmoHearingDateList, date);
+    I.waitForElement(this.fields.nextHearingDateList);
+    I.selectOption(this.fields.cmoHearingDateList, date);
   },
 };

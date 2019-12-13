@@ -1,3 +1,4 @@
+
 [
   {
     "LiveFrom": "01/01/2017",
@@ -26,6 +27,15 @@
     "CaseFieldID": "orderAction",
     "ListElementCode": "nextHearingType",
     "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "OrderAction",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "orderAction",
+    "ListElementCode": "changeRequestedByJudge",
+    "FieldDisplayOrder": 4,
     "DisplayContext": "MANDATORY"
   }
 ]
