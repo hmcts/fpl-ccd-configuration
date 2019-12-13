@@ -265,16 +265,6 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "internal-change:CMO_PROGRESSION",
-    "Name": "-",
-    "PreConditionState(s)": "PREPARE_FOR_HEARING",
-    "PostConditionState": "PREPARE_FOR_HEARING",
-    "SecurityClassification": "Public",
-    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/cmo-progression/about-to-submit"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "addStatementOfService-PREPARE_FOR_HEARING",
     "Name": "Add statement of service (c9)",
     "Description": "Add statement of service",
@@ -285,5 +275,15 @@
     "CallBackURLAboutToStartEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/statement-of-service/about-to-start",
     "ShowSummary": "Y",
     "EndButtonLabel": "Save and continue"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "internal-change:CMO_PROGRESSION",
+    "Name": "-",
+    "PreConditionState(s)": "PREPARE_FOR_HEARING",
+    "PostConditionState": "PREPARE_FOR_HEARING",
+    "SecurityClassification": "Public",
+    "CallBackURLAboutToSubmitEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/cmo-progression/about-to-submit"
   }
 ]
