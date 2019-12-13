@@ -753,5 +753,29 @@
     "Label": "Draft case management order",
     "FieldType": "Document",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderAction",
+    "Label": " ",
+    "FieldType": "OrderAction",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cmoActionTypeLabel",
+    "Label": "### Is this ready to be sent to parties?",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cmoToAction",
+    "Label": "Case management order",
+    "FieldType": "CaseManagementOrder",
+    "SecurityClassification": "Public"
   }
 ]

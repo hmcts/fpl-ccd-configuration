@@ -88,7 +88,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
     @Test
     void shouldReturnEmptyMapValuesWhenCaseDataIsEmpty() throws IOException {
         final Map<String, Object> templateData = templateDataGenerationService.getTemplateData(CaseData.builder()
-            .build());
+            .build(), true);
 
         assertThat(templateData.get("courtName")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo(EMPTY_PLACEHOLDER);
@@ -126,7 +126,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
 
         final CaseData caseData = mapper.convertValue(caseDataMap, CaseData.class);
 
-        final Map<String, Object> templateData = templateDataGenerationService.getTemplateData(caseData);
+        final Map<String, Object> templateData = templateDataGenerationService.getTemplateData(caseData, true);
 
         assertThat(templateData.get("courtName")).isEqualTo(COURT_NAME);
         assertThat(templateData.get("familyManCaseNumber")).isEqualTo("123");
@@ -159,6 +159,14 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("scheduleProvided")).isEqualTo(true);
         assertThat(templateData.get("draftbackground")).isNotNull();
         assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
+    }
+
+    @Test
+    void shouldNotReturnWatermarkWhenDraftIsFalse() throws IOException {
+        Map<String, Object> templateData =
+            templateDataGenerationService.getTemplateData(CaseData.builder().build(), false);
+
+        assertThat(templateData.get("draftbackground")).isNull();
     }
 
     private List<Map<String, String>> getExpectedRepresentatives() {
