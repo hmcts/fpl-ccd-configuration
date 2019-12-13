@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.Order;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -470,6 +471,11 @@ public class CaseDataGeneratorHelper {
             .put("cafcassDirectionsCustom", getDirectionByAssignee(cmoDirections, CAFCASS))
             .put("otherPartiesDirectionsCustom", getDirectionByAssignee(cmoDirections, OTHERS))
             .put("respondentDirectionsCustom", getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
+            .put("cmoToAction", CaseManagementOrder.builder()
+                .nextHearing(NextHearing.builder()
+                    .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                    .build())
+                .build())
             .build();
     }
 
@@ -520,5 +526,15 @@ public class CaseDataGeneratorHelper {
                 return prepared;
             })
             .collect(Collectors.toList());
+    }
+
+    public static DynamicList createHearingBookingDynmaicList() {
+        return DynamicList.builder()
+            .value(DynamicListElement.builder()
+                .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                .label("15th Dec 2019")
+                .build())
+            .listItems(List.of(DynamicListElement.builder().code(UUID.randomUUID()).label("test").build()))
+            .build();
     }
 }
