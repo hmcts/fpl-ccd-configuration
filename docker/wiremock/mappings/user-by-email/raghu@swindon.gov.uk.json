@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/refdata/external/v1/organisations/users",
+    "queryParameters": {
+      "email": {
+        "equalTo": "raghu@swindon.gov.uk"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{ \"userIdentifier\": \"5595e8bd-4349-4fc0-b9e1-b082d7d8883b\"}"
+  }
+}

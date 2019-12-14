@@ -3,13 +3,27 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "createOrder",
-    "CaseFieldID": "order",
+    "CaseFieldID": "orderTypeAndDocument",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "COMPLEX",
-    "PageID": "OrderInformation",
+    "PageID": "OrderTypeAndDocument",
     "PageLabel": " ",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
+    "ShowSummaryChangeOption": "Y"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "createOrder",
+    "CaseFieldID": "order",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "COMPLEX",
+    "PageID": "OrderTitleAndDetails",
+    "PageLabel": " ",
+    "PageDisplayOrder": 2,
+    "PageColumnNumber": 1,
+    "PageShowCondition": "orderTypeAndDocument.type=\"BLANK_ORDER\"",
     "ShowSummaryChangeOption": "Y"
   },
   {
@@ -21,7 +35,7 @@
     "DisplayContext": "COMPLEX",
     "PageID": "JudgeInformation",
     "PageLabel": " ",
-    "PageDisplayOrder": 2,
+    "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/create-order/mid-event"

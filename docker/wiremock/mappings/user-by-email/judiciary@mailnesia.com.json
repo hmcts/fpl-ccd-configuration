@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/refdata/external/v1/organisations/users",
+    "queryParameters": {
+      "email": {
+        "equalTo": "judiciary@mailnesia.com"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{ \"userIdentifier\": \"49774ecb-5c96-4174-92e5-6a23aa13430f\"}"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/refdata/external/v1/organisations/users",
+    "queryParameters": {
+      "email": {
+        "equalTo": "james@swansea.gov.uk"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "body": "{ \"userIdentifier\": \"ecde0336-2e30-4b90-bfe9-727c42f17146\"}"
+  }
+}

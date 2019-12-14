@@ -5,6 +5,7 @@ module.exports = {
     orderAction: {
       requestChange: '#orderAction_changeRequestedByJudge',
     },
+    nextHearingDateList: '#nextHearingDateList',
   },
 
   staticFields: {
@@ -71,5 +72,10 @@ module.exports = {
     within(this.staticFields.nextHearingRadioGroup.groupName, () => {
       I.click(locate('label').withText(this.staticFields.nextHearingRadioGroup.options.finalHearing));
     });
+  },
+
+  selectNextHearingDate(date) {
+    I.waitForElement(this.fields.nextHearingDateList);
+    I.selectOption(this.fields.nextHearingDateList, date);
   },
 };
