@@ -46,9 +46,11 @@ import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCaseManagementOrder;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
@@ -66,6 +68,7 @@ class ActionCaseManagementOrderControllerTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     public static final String CASE_ID = "12345";
+    public static final String REPRESENTATIVES = "representatives";
 
     @Autowired
     private MockMvc mockMvc;
@@ -150,12 +153,14 @@ class ActionCaseManagementOrderControllerTest {
     }
 
     @Test
-    void submittedShouldTriggerCMOProgressionEventAndSendNotificationsWhenIssuedOrderApproved() throws Exception {
+    void submittedShouldTriggerCMOProgressionEventAndSendCaseLinkNotificationsWhenIssuedOrderApproved()
+        throws Exception {
         String event = "internal-change:CMO_PROGRESSION";
         Map<String, Object> data = ImmutableMap.of(
             "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
             "respondents1", createRespondents(),
             "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+            REPRESENTATIVES, createRepresentatives(DIGITAL_SERVICE),
             CMO_TO_ACTION_KEY, CaseManagementOrder.builder()
                 .status(SEND_TO_JUDGE)
                 .action(OrderAction.builder()
@@ -167,10 +172,16 @@ class ActionCaseManagementOrderControllerTest {
 
         makeRequest(callbackRequest);
 
-        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, 12345L, event);
+        verify(coreCaseDataService)
+            .triggerEvent(JURISDICTION, CASE_TYPE, 12345L, event);
+
         verify(notificationClient).sendEmail(
             eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(getExpectedCMOIssuedCaseLinkNotificationParameters()), eq(CASE_ID));
+            eq(getExpectedCMOIssuedCaseLinkNotificationParameters(LOCAL_AUTHORITY_NAME)), eq(CASE_ID));
+
+        verify(notificationClient).sendEmail(
+            eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("abc@example.com"),
+            eq(getExpectedCMOIssuedCaseLinkNotificationParameters("Jon Snow")), eq(CASE_ID));
     }
 
     @Test
@@ -191,7 +202,7 @@ class ActionCaseManagementOrderControllerTest {
 
         verify(notificationClient, never()).sendEmail(
             eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-            eq(getExpectedCMOIssuedCaseLinkNotificationParameters()), eq(CASE_ID));
+            eq(getExpectedCMOIssuedCaseLinkNotificationParameters(LOCAL_AUTHORITY_NAME)), eq(CASE_ID));
     }
 
     private CallbackRequest buildCallbackRequest(Map<String, Object> data) {
@@ -247,10 +258,10 @@ class ActionCaseManagementOrderControllerTest {
             .build();
     }
 
-    private ImmutableMap<String, Object> getExpectedCMOIssuedCaseLinkNotificationParameters() {
+    private ImmutableMap<String, Object> getExpectedCMOIssuedCaseLinkNotificationParameters(String recipientName) {
         final String subjectLine = "Jones, SACCCCCCCC5676576567";
         return ImmutableMap.<String, Object>builder()
-            .put("localAuthorityNameOrRepresentativeFullName", LOCAL_AUTHORITY_NAME)
+            .put("localAuthorityNameOrRepresentativeFullName", recipientName)
             .put("subjectLineWithHearingDate", subjectLine)
             .put("reference", CASE_ID)
             .put("caseUrl", String.format("http://fake-url/case/%s/%s/12345", JURISDICTION, CASE_TYPE))
