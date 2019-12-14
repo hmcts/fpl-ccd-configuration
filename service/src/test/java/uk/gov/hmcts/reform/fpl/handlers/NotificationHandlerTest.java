@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
@@ -287,7 +288,7 @@ class NotificationHandlerTest {
                 .willReturn(expectedCMOIssuedNotificationParameters);
 
             cmoNotificationHandler.sendNotificationsForIssuedCaseManagementOrder(
-                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
+                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID, getDocument()));
 
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
@@ -309,7 +310,7 @@ class NotificationHandlerTest {
                 .willReturn(expectedCMOIssuedNotificationParametersForRepresentative);
 
             cmoNotificationHandler.sendNotificationsForIssuedCaseManagementOrder(
-                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
+                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID, getDocument()));
 
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("abc@example.com"),
@@ -365,6 +366,13 @@ class NotificationHandlerTest {
             return ImmutableMap.of("subjectLineWithHearingDate", subjectLine,
                 "reference", "12345",
                 "caseUrl", String.format("null/case/%s/%s/12345", JURISDICTION, CASE_TYPE));
+        }
+
+        private DocmosisDocument getDocument() {
+            return DocmosisDocument.builder()
+                .documentTitle("case-management-order.pdf")
+                .bytes(documentContents)
+                .build();
         }
     }
 

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.service.notify.NotificationClientException;
@@ -42,10 +43,10 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
     public Map<String, Object> buildCMOIssuedDocumentLinkNotificationParameters(final CaseDetails caseDetails,
                                                                                 final String recipientName,
-                                                                                final byte[] documentContents) {
+                                                                                final DocmosisDocument document) {
 
         return ImmutableMap.<String, Object>builder()
-            .putAll(buildCMODocumentLinkNotificationParameters(caseDetails, documentContents))
+            .putAll(buildCMODocumentLinkNotificationParameters(caseDetails, document))
             .put("cafcassOrRespondentName", recipientName)
             .build();
     }
@@ -64,13 +65,13 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
     }
 
     private Map<String, Object> buildCMODocumentLinkNotificationParameters(final CaseDetails caseDetails,
-                                                                           final byte[] documentContents) {
+                                                                           final DocmosisDocument document) {
 
         ImmutableMap.Builder<String, Object> cmoNotificationParameters = ImmutableMap.<String, Object>builder()
             .putAll(buildCommonCMONotificationParameters(caseDetails));
 
         try {
-            cmoNotificationParameters.put("link_to_document", prepareUpload(documentContents));
+            cmoNotificationParameters.put("link_to_document", prepareUpload(document.getBytes()));
         } catch (NotificationClientException e) {
             log.error("Unable to send notification for cafcass due to ", e);
         }

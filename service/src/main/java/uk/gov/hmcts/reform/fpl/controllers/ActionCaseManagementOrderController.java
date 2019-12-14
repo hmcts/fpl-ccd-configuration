@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -25,7 +23,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
-import uk.gov.hmcts.reform.fpl.service.DownloadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -49,7 +46,6 @@ public class ActionCaseManagementOrderController {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CMODocmosisTemplateDataGenerationService templateDataGenerationService;
     private final CoreCaseDataService coreCaseDataService;
-    private final DownloadDocumentService downloadDocumentService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -129,12 +125,10 @@ public class ActionCaseManagementOrderController {
         );
 
         if (caseData.getCmoToAction().isApprovedByJudge()) {
-            final String documentUrl = caseData.getCmoToAction().getOrderDoc().getBinaryUrl();
-            final Resource documentResource = downloadDocumentService.downloadDocumentResource(authorization, userId,
-                documentUrl);
-            final byte[] documentContents = IOUtils.toByteArray(documentResource.getInputStream());
+            final DocmosisDocument document = generateDocmosisDocument(caseData, true);
+
             applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId,
-                documentContents));
+                document));
         }
     }
 
@@ -142,7 +136,9 @@ public class ActionCaseManagementOrderController {
         throws IOException {
         DocmosisDocument document = generateDocmosisDocument(data, !approved);
 
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), document.getDocumentTitle());
+        String documentTitle = (approved ? document.getDocumentTitle() : "draft-" + document.getDocumentTitle());
+
+        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), documentTitle);
     }
 
     private DocmosisDocument generateDocmosisDocument(CaseData caseData, boolean draft) throws IOException {
