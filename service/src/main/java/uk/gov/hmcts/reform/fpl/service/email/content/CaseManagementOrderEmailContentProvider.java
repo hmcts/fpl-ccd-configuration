@@ -46,7 +46,8 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
                                                                                 final DocmosisDocument document) {
 
         return ImmutableMap.<String, Object>builder()
-            .putAll(buildCMODocumentLinkNotificationParameters(caseDetails, document))
+            .putAll(buildCommonCMONotificationParameters(caseDetails))
+            .putAll(buildCMODocumentLinkNotificationParameters(document))
             .put("cafcassOrRespondentName", recipientName)
             .build();
     }
@@ -64,11 +65,9 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         );
     }
 
-    private Map<String, Object> buildCMODocumentLinkNotificationParameters(final CaseDetails caseDetails,
-                                                                           final DocmosisDocument document) {
+    private Map<String, Object> buildCMODocumentLinkNotificationParameters(final DocmosisDocument document) {
 
-        ImmutableMap.Builder<String, Object> cmoNotificationParameters = ImmutableMap.<String, Object>builder()
-            .putAll(buildCommonCMONotificationParameters(caseDetails));
+        ImmutableMap.Builder<String, Object> cmoNotificationParameters = ImmutableMap.builder();
 
         try {
             cmoNotificationParameters.put("link_to_document", prepareUpload(document.getBytes()));

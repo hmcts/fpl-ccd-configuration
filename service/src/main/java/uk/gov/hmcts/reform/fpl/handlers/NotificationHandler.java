@@ -50,6 +50,7 @@ import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEM
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 
 @Slf4j
 @Component
@@ -212,7 +213,9 @@ public class NotificationHandler {
     }
 
     private void sendCMOCaseLinkNotificationToRepresentatives(final CaseDetails caseDetails) {
-        List<Representative> representatives = getDigitalServiceRepresentatives(caseDetails);
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
+            caseData.getRepresentatives(), DIGITAL_SERVICE);
 
         representatives.stream()
             .filter(representative -> isNotBlank(representative.getEmail()))
@@ -228,7 +231,9 @@ public class NotificationHandler {
 
     private void sendCMODocumentLinkNotificationsToRepresentatives(final CaseDetails caseDetails,
                                                                    final DocmosisDocument document) {
-        List<Representative> representatives = getDigitalServiceRepresentatives(caseDetails);
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
+            caseData.getRepresentatives(), EMAIL);
 
         representatives.stream()
             .filter(representative -> isNotBlank(representative.getEmail()))
@@ -240,12 +245,6 @@ public class NotificationHandler {
                 sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, representative.getEmail(),
                     representativeNotificationParameters, Long.toString(caseDetails.getId()));
             });
-    }
-
-    private List<Representative> getDigitalServiceRepresentatives(final CaseDetails caseDetails) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-        return representativeService.getRepresentativesByServedPreference(
-            caseData.getRepresentatives(), DIGITAL_SERVICE);
     }
 
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
