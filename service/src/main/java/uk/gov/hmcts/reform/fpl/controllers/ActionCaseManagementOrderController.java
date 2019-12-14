@@ -4,8 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.io.Resource;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -23,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.DownloadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -30,6 +33,7 @@ import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 import java.io.IOException;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 @Api
@@ -39,11 +43,13 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 public class ActionCaseManagementOrderController {
     private final DraftCMOService draftCMOService;
     private final CaseManagementOrderService caseManagementOrderService;
+    private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CMODocmosisTemplateDataGenerationService templateDataGenerationService;
     private final CoreCaseDataService coreCaseDataService;
+    private final DownloadDocumentService downloadDocumentService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -123,22 +129,24 @@ public class ActionCaseManagementOrderController {
         );
 
         if (caseData.getCmoToAction().isApprovedByJudge()) {
-            Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(data, true);
-            DocmosisDocument docmosisDocument = docmosisDocumentGeneratorService.generateDocmosisDocument(
-                cmoDocumentTemplateData, DocmosisTemplates.CMO);
-
+            final String documentUrl = caseData.getCmoToAction().getOrderDoc().getBinaryUrl();
+            final Resource documentResource = downloadDocumentService.downloadDocumentResource(authorization, userId,
+                documentUrl);
+            final byte[] documentContents = IOUtils.toByteArray(documentResource.getInputStream());
             applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId,
-                docmosisDocument));
+                documentContents));
         }
     }
 
     private Document getDocument(String authorization, String userId, CaseData data, boolean approved)
         throws IOException {
-        Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(data, !approved);
-
-        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
-            cmoDocumentTemplateData, DocmosisTemplates.CMO);
+        DocmosisDocument document = generateDocmosisDocument(data, !approved);
 
         return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), document.getDocumentTitle());
+    }
+
+    private DocmosisDocument generateDocmosisDocument(CaseData caseData, boolean draft) throws IOException {
+        Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(caseData, draft);
+        return docmosisDocumentGeneratorService.generateDocmosisDocument(cmoDocumentTemplateData, CMO);
     }
 }

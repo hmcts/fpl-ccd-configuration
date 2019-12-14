@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
@@ -167,6 +166,15 @@ public class NotificationHandler {
         EventData eventData = new EventData(event);
 
         sendCMOCaseLinkNotifications(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
+        sendCMODocumentLinkNotifications(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
+            event.getDocumentContents());
+    }
+
+    private void sendCMODocumentLinkNotifications(final CaseDetails caseDetails,
+                                                  final String localAuthorityCode,
+                                                  final byte[] documentContents) {
+        sendCMODocumentLinkNotificationForCafcass(caseDetails, localAuthorityCode, documentContents);
+        sendCMODocumentLinkNotificationsToRepresentatives(caseDetails, documentContents);
     }
 
     private void sendCMOCaseLinkNotificationForLocalAuthority(final CaseDetails caseDetails,
@@ -182,15 +190,28 @@ public class NotificationHandler {
             localAuthorityNotificationParameters, Long.toString(caseDetails.getId()));
     }
 
+    private void sendCMODocumentLinkNotificationForCafcass(final CaseDetails caseDetails,
+                                                           final String localAuthorityCode,
+                                                           final byte[] documentContents) {
+        final String cafcassName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode);
+
+        Map<String, Object> cafcassParameters =
+            caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(caseDetails,
+                cafcassName, documentContents);
+
+        String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
+
+        sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters,
+            Long.toString(caseDetails.getId()));
+    }
+
     private void sendCMOCaseLinkNotifications(final CaseDetails caseDetails, final String localAuthorityCode) {
         sendCMOCaseLinkNotificationForLocalAuthority(caseDetails, localAuthorityCode);
         sendCMOCaseLinkNotificationToRepresentatives(caseDetails);
     }
 
     private void sendCMOCaseLinkNotificationToRepresentatives(final CaseDetails caseDetails) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
-        List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
-            caseData.getRepresentatives(), DIGITAL_SERVICE);
+        List<Representative> representatives = getDigitalServiceRepresentatives(caseDetails);
 
         representatives.stream()
             .filter(representative -> isNotBlank(representative.getEmail()))
@@ -202,6 +223,28 @@ public class NotificationHandler {
                 sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, representative.getEmail(),
                     representativeNotificationParameters, Long.toString(caseDetails.getId()));
             });
+    }
+
+    private void sendCMODocumentLinkNotificationsToRepresentatives(final CaseDetails caseDetails,
+                                                                   final byte[] documentContents) {
+        List<Representative> representatives = getDigitalServiceRepresentatives(caseDetails);
+
+        representatives.stream()
+            .filter(representative -> isNotBlank(representative.getEmail()))
+            .forEach(representative -> {
+                Map<String, Object> representativeNotificationParameters =
+                    caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(
+                        caseDetails, representative.getFullName(), documentContents);
+
+                sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, representative.getEmail(),
+                    representativeNotificationParameters, Long.toString(caseDetails.getId()));
+            });
+    }
+
+    private List<Representative> getDigitalServiceRepresentatives(final CaseDetails caseDetails) {
+        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        return representativeService.getRepresentativesByServedPreference(
+            caseData.getRepresentatives(), DIGITAL_SERVICE);
     }
 
     private void sendNotification(String templateId, String email, Map<String, Object> parameters, String reference) {
@@ -236,29 +279,14 @@ public class NotificationHandler {
             Long.toString(caseDetails.getId()));
     }
 
-    private void sendCMODocumentLinkNotificationForCafcass(final CaseDetails caseDetails,
-                                                           final String localAuthorityCode,
-                                                           final DocmosisDocument document) {
-        Map<String, Object> cafcassParameters =
-            caseManagementOrderEmailContentProvider.buildCMOIssuedNotificationParametersForCafcass(caseDetails,
-                localAuthorityCode, document);
-
-        String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
-
-        sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters,
-            Long.toString(caseDetails.getId()));
-    }
-
     @Getter
     static class EventData {
         private final CaseDetails caseDetails;
         private final String localAuthorityCode;
-        private final String caseReference;
 
         public EventData(CallbackEvent event) {
             this.caseDetails = event.getCallbackRequest().getCaseDetails();
             this.localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
-            this.caseReference = Long.toString(caseDetails.getId());
         }
     }
 }

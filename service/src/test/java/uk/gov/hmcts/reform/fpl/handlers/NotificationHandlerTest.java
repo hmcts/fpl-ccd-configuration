@@ -28,7 +28,6 @@ import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
@@ -66,7 +65,6 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
-import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
@@ -251,21 +249,22 @@ class NotificationHandlerTest {
 
     @Nested
     class CaseManagementOrderNotificationTests {
-        byte[] documentContent = {1, 2, 3};
-        final String subjectLine = "Lastname, SACCCCCCCC5676576567";
-        final Map<String, Object> cmoOrderIssuedCaseLinkNotificationParameters;
-        final Map<String, Object> cmoOrderIssuedDocumentLinkNotificationParameters;
-        final DocmosisDocument document = getDocument();
+        private final byte[] documentContents = {1, 2, 3};
+        private final Map<String, Object> expectedCMOIssuedNotificationParameters =
+            getCMOIssuedCaseLinkNotificationParameters();
+        private final Map<String, Object> expectedCMOIssuedNotificationParametersForRepresentative =
+            getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative();
 
         private NotificationHandler cmoNotificationHandler;
 
-        CaseManagementOrderNotificationTests() throws NotificationClientException {
-            cmoOrderIssuedCaseLinkNotificationParameters = getCMOIssuedCaseLinkNotificationParameters();
-            cmoOrderIssuedDocumentLinkNotificationParameters = getCMOIssuedDocumentLinkNotificationParameters();
-        }
-
         @BeforeEach
         void setup() {
+            given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+                .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
+
+            given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+                .willReturn(LOCAL_AUTHORITY_NAME);
+
             // did this to enable ObjectMapper injection
             cmoNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration, cafcassLookupConfiguration,
                 hmctsEmailContentProvider, cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued,
@@ -276,30 +275,23 @@ class NotificationHandlerTest {
         }
 
         @Test
-        void shouldNotifyPartiesOfCMOIssued() throws Exception {
+        void shouldNotifyLocalAuthorityOfCMOIssued() throws Exception {
             CallbackRequest callbackRequest = callbackRequest();
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
-            given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
-                .willReturn(LOCAL_AUTHORITY_NAME);
 
             given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
                 .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
             given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
                 LOCAL_AUTHORITY_NAME))
-                .willReturn(cmoOrderIssuedNotificationParameters);
+                .willReturn(expectedCMOIssuedNotificationParameters);
 
             cmoNotificationHandler.sendNotificationsForIssuedCaseManagementOrder(
-                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID, document));
+                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
 
-            verify(notificationClient, times(1)).sendEmail(
+            verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-                eq(cmoOrderIssuedCaseLinkNotificationParameters), eq("12345"));
-
-            verify(notificationClient, times(1)).sendEmail(
-                eq(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
-                eq(cmoOrderIssuedDocumentLinkNotificationParameters), eq("12345"));
+                eq(expectedCMOIssuedNotificationParameters), eq("12345"));
         }
 
         @Test
@@ -314,14 +306,14 @@ class NotificationHandlerTest {
 
             given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
                 "Jon Snow"))
-                .willReturn(expectedCMOOrderIssuedNotificationParametersForRepresentative);
+                .willReturn(expectedCMOIssuedNotificationParametersForRepresentative);
 
             cmoNotificationHandler.sendNotificationsForIssuedCaseManagementOrder(
-                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID));
+                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
 
-            verify(notificationClient, times(1)).sendEmail(
+            verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("abc@example.com"),
-                eq(expectedCMOOrderIssuedNotificationParametersForRepresentative), eq("12345"));
+                eq(expectedCMOIssuedNotificationParametersForRepresentative), eq("12345"));
         }
 
         private ImmutableMap<String, Object> getCMOIssuedCaseLinkNotificationParameters() {
@@ -347,26 +339,10 @@ class NotificationHandlerTest {
                 .build();
         }
 
-        private Map<String, Object> getExpectedCMOOrderIssuedNotificationParametersForRepresentative() {
+        private Map<String, Object> getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative() {
             return ImmutableMap.<String, Object>builder()
                 .put("localAuthorityNameOrRepresentativeFullName", "Jon Snow")
                 .putAll(expectedCommonCMONotificationParameters())
-                .build();
-        }
-
-        private DocmosisDocument getDocument() {
-            return DocmosisDocument.builder()
-                .documentTitle("case-management-order.pdf")
-                .bytes(documentContent)
-                .build();
-        }
-
-        private ImmutableMap<String, Object> getCMOIssuedDocumentLinkNotificationParameters()
-            throws NotificationClientException {
-
-            return ImmutableMap.<String, Object>builder()
-                .putAll(getCMOIssuedCaseLinkNotificationParameters())
-                .put("link_to_document", NotificationClient.prepareUpload(documentContent))
                 .build();
         }
 
