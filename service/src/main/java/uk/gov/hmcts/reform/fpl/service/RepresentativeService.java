@@ -19,6 +19,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static java.lang.String.format;
+import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
@@ -152,11 +153,15 @@ public class RepresentativeService {
 
     public List<Representative> getRepresentativesByServedPreference(List<Element<Representative>> representatives,
                                                                      RepresentativeServingPreferences preference) {
-        return representatives.stream()
-            .filter(Objects::nonNull)
-            .map(Element::getValue)
-            .filter(representative ->  preference == representative.getServingPreferences())
-            .collect(toList());
+        if (ObjectUtils.isNotEmpty(representatives)) {
+            return representatives.stream()
+                .filter(Objects::nonNull)
+                .map(Element::getValue)
+                .filter(representative ->  preference == representative.getServingPreferences())
+                .collect(toList());
+        }
+
+        return emptyList();
     }
 
     private void linkWithRepresentable(CaseData caseData, Element<Representative> representative) {
