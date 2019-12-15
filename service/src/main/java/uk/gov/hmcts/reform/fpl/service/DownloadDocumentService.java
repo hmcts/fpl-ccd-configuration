@@ -3,13 +3,18 @@ package uk.gov.hmcts.reform.fpl.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.document.DocumentDownloadClientApi;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
+
+import java.net.URI;
+
+import static java.util.Objects.requireNonNull;
+import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @Service
@@ -19,19 +24,20 @@ public class DownloadDocumentService {
     private final DocumentDownloadClientApi documentDownloadClient;
     private final IdamApi idamApi;
 
-    public Resource downloadDocumentResource(final String authorisation, final String userId,
-                                             final String documentDownloadUri) {
+    public byte[] downloadDocumentResource(final String authorisation, final String userId,
+                                             final String documentUrlString) {
         final String userRoles = idamApi.retrieveUserInfo(authorisation).getRoles().toString();
 
         ResponseEntity<Resource> documentDownloadResponse = documentDownloadClient.downloadBinary(authorisation,
-            authTokenGenerator.generate(), userRoles, userId, documentDownloadUri);
+            authTokenGenerator.generate(), userRoles, userId, URI.create(documentUrlString).getPath());
 
-        if (documentDownloadResponse.getStatusCode() == HttpStatus.OK) {
-            return documentDownloadResponse.getBody();
+        if (OK.equals(documentDownloadResponse.getStatusCode())) {
+            ByteArrayResource resourceByte = (ByteArrayResource) documentDownloadResponse.getBody();
+            return requireNonNull(resourceByte).getByteArray();
         } else {
-            log.error("Download of document from {} unsuccessful due to a {}", documentDownloadUri,
-                documentDownloadResponse.getStatusCodeValue());
-            return null;
+            throw new IllegalArgumentException(String.format(
+                "Download of document from %s unsuccessful with a %s error. More details %s", documentUrlString,
+                documentDownloadResponse.getStatusCodeValue(), documentDownloadResponse.getBody()));
         }
     }
 }
