@@ -2,7 +2,16 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
-    "ListElementCode": "orderTitle",
+    "ListElementCode": "type",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "GeneratedOrderType",
+    "ElementLabel": "Type of order",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrder",
+    "ListElementCode": "title",
     "FieldType": "Text",
     "ElementLabel": "Order title",
     "SecurityClassification": "Public",
@@ -11,12 +20,12 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
-    "ListElementCode": "orderDetails",
+    "ListElementCode": "details",
     "FieldType": "TextArea",
     "ElementLabel": "Order details",
     "SecurityClassification": "Public",
-    "FieldShowCondition": "orderDate!=\"*\"",
-    "Comment": "Order details should not be displayed in the tab view. When orderDate is set, order has reached tab view stage"
+    "FieldShowCondition": "date!=\"*\"",
+    "Comment": "Order details should not be displayed in the tab view. When date is set, order has reached tab view stage"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -24,12 +33,14 @@
     "ListElementCode": "document",
     "FieldType": "Document",
     "ElementLabel": "Order document",
-    "SecurityClassification": "Public"
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "date=\"*\"",
+    "Comment": "During event, document is linked to page 1 for visibility on check answers page - during tab view stage, make document visible as part of Order object"
   },
   {
     "LiveFrom": "01/01/2017",
     "ID": "GeneratedOrder",
-    "ListElementCode": "orderDate",
+    "ListElementCode": "date",
     "FieldType": "Text",
     "ElementLabel": "Date and time of upload",
     "SecurityClassification": "Public"

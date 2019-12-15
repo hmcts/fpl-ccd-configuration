@@ -634,8 +634,16 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "orderTypeAndDocument",
+    "Label": "Type of order",
+    "FieldType": "OrderTypeAndDocument",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "orderCollection",
-    "Label": "C21 order",
+    "Label": "Order",
     "FieldType": "Collection",
     "FieldTypeParameter": "GeneratedOrder",
     "SecurityClassification": "Public"
@@ -776,6 +784,38 @@
     "ID": "cmoToAction",
     "Label": "Case management order",
     "FieldType": "CaseManagementOrder",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nextHearingDateHintText",
+    "Label": "These details might not appear on the draft CMO, but they will be on the issued order. Check the ‘Hearings’ tab to confirm them.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nextHearingDateLabel",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nextHearingDateList",
+    "Label": "Which hearing is next?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nextHearing",
+    "Label": " ",
+    "FieldType": "NextHearing",
     "SecurityClassification": "Public"
   },
   {
