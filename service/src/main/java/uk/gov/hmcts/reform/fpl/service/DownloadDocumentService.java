@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.idam.client.IdamApi;
 
 import java.net.URI;
 
+import static java.lang.String.join;
 import static java.util.Objects.requireNonNull;
-import static org.springframework.http.HttpStatus.OK;
 
 @Slf4j
 @Service
@@ -24,19 +24,19 @@ public class DownloadDocumentService {
     private final DocumentDownloadClientApi documentDownloadClient;
     private final IdamApi idamApi;
 
-    public byte[] downloadDocument(final String authorisation, final String userId, final String documentUrlString) {
-        final String userRoles = String.join(",", idamApi.retrieveUserInfo(authorisation).getRoles());
+    public byte[] downloadDocument(final String authorization, final String userId, final String documentUrlString) {
+        final String userRoles = join(",", idamApi.retrieveUserInfo(authorization).getRoles());
 
-        ResponseEntity<Resource> documentDownloadResponse = documentDownloadClient.downloadBinary(authorisation,
-            authTokenGenerator.generate(), userRoles, userId, URI.create(documentUrlString).getPath());
+        try {
+            ResponseEntity<Resource> documentDownloadResponse = documentDownloadClient.downloadBinary(
+                authorization, authTokenGenerator.generate(), userRoles, userId,
+                URI.create(documentUrlString).getPath());
 
-        if (OK.equals(documentDownloadResponse.getStatusCode())) {
             ByteArrayResource resourceByte = (ByteArrayResource) documentDownloadResponse.getBody();
             return requireNonNull(resourceByte).getByteArray();
-        } else {
+        } catch (Exception exc) {
             throw new IllegalArgumentException(String.format(
-                "Download of document from %s unsuccessful with a %s error. More details %s", documentUrlString,
-                documentDownloadResponse.getStatusCodeValue(), documentDownloadResponse.getBody()));
+                "Download of document from %s unsuccessful due to %s", documentUrlString, exc));
         }
     }
 }
