@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Comparator.comparing;
 
@@ -49,5 +50,13 @@ public class HearingBookingService {
             .findFirst()
             .map(Element::getValue)
             .orElse(HearingBooking.builder().build());
+    }
+
+    public HearingBooking getHearingBookingByUUID(List<Element<HearingBooking>> hearingBookings, UUID elementId) {
+        return hearingBookings.stream()
+            .filter(hearingBookingElement -> hearingBookingElement.getId().equals(elementId))
+            .map(Element::getValue)
+            .findFirst()
+            .orElse(null);
     }
 }

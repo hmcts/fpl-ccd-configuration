@@ -160,12 +160,6 @@ class NotificationHandlerTest {
             .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
-        final Map<String, Object> orderCafcassParameters = ImmutableMap.<String, Object>builder()
-            .putAll(c2Parameters)
-            .put("localAuthorityOrCafcass", CAFCASS_NAME)
-            .put("linkToDocument", mostRecentUploadedDocumentUrl)
-            .build();
-
         final Map<String, Object> orderLocalAuthorityParameters = ImmutableMap.<String, Object>builder()
             .putAll(c2Parameters)
             .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)
@@ -198,10 +192,6 @@ class NotificationHandlerTest {
             given(orderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
                 callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, mostRecentUploadedDocumentUrl))
                 .willReturn(orderLocalAuthorityParameters);
-
-            given(orderEmailContentProvider.buildOrderNotificationParametersForCafcass(
-                callbackRequest().getCaseDetails(), LOCAL_AUTHORITY_CODE, mostRecentUploadedDocumentUrl))
-                .willReturn(orderCafcassParameters);
         }
 
         @Test
@@ -241,10 +231,6 @@ class NotificationHandlerTest {
             verify(notificationClient, times(1)).sendEmail(
                 eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 eq(orderLocalAuthorityParameters), eq("12345"));
-
-            verify(notificationClient, times(1)).sendEmail(
-                eq(ORDER_NOTIFICATION_TEMPLATE), eq(CAFCASS_EMAIL_ADDRESS),
-                eq(orderCafcassParameters), eq("12345"));
         }
     }
 
