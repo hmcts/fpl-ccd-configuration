@@ -24,9 +24,8 @@ public class DownloadDocumentService {
     private final DocumentDownloadClientApi documentDownloadClient;
     private final IdamApi idamApi;
 
-    public byte[] downloadDocumentResource(final String authorisation, final String userId,
-                                             final String documentUrlString) {
-        final String userRoles = idamApi.retrieveUserInfo(authorisation).getRoles().toString();
+    public byte[] downloadDocument(final String authorisation, final String userId, final String documentUrlString) {
+        final String userRoles = String.join(",", idamApi.retrieveUserInfo(authorisation).getRoles());
 
         ResponseEntity<Resource> documentDownloadResponse = documentDownloadClient.downloadBinary(authorisation,
             authTokenGenerator.generate(), userRoles, userId, URI.create(documentUrlString).getPath());
