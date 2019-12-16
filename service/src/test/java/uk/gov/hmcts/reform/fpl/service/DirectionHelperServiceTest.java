@@ -14,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.Order;
@@ -31,6 +32,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.Collections.EMPTY_LIST;
+import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -1274,6 +1276,50 @@ class DirectionHelperServiceTest {
 
         private List<Element<DirectionResponse>> getResponses(CaseData caseData) {
             return caseData.getStandardDirectionOrder().getDirections().get(0).getValue().getResponses();
+        }
+    }
+
+    @Nested
+    class GetDirectionsToComplyWith {
+
+        @Test
+        void shouldReturnStandardDirectionOrderDirectionsWhenServedCaseManagementOrdersIsEmpty() {
+            List<Element<Direction>> sdoDirections = buildDirections(LOCAL_AUTHORITY);
+            CaseData caseData = caseDataWithSdo(sdoDirections)
+                .servedCaseManagementOrders(emptyList())
+                .build();
+
+            List<Element<Direction>> directions = service.getDirectionsToComplyWith(caseData);
+
+            assertThat(directions).isEqualTo(sdoDirections);
+        }
+
+        @Test
+        void shouldReturnCaseManagementOrderDirectionsWhenServedCaseManagementOrdersIsNotEmpty() {
+            List<Element<Direction>> cmoDirections = buildDirections(LOCAL_AUTHORITY);
+            CaseData caseData = caseDataWithSdo(buildDirections(CAFCASS))
+                .servedCaseManagementOrders(servedCaseManagementOrder(cmoDirections))
+                .build();
+
+            List<Element<Direction>> directions = service.getDirectionsToComplyWith(caseData);
+
+            assertThat(directions).isEqualTo(cmoDirections);
+        }
+
+        private CaseData.CaseDataBuilder caseDataWithSdo(List<Element<Direction>> sdoDirections) {
+            return CaseData.builder()
+                .standardDirectionOrder(
+                    Order.builder()
+                        .directions(sdoDirections)
+                        .build());
+        }
+
+        private List<Element<CaseManagementOrder>> servedCaseManagementOrder(List<Element<Direction>> cmoDirections) {
+            return ImmutableList.of(Element.<CaseManagementOrder>builder()
+                .value(CaseManagementOrder.builder()
+                    .directions(cmoDirections)
+                    .build())
+                .build());
         }
     }
 
