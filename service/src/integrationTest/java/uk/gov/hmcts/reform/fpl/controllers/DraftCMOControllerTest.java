@@ -100,12 +100,12 @@ class DraftCMOControllerTest {
 
         List<String> expected = Arrays.asList(
             TODAYS_DATE.plusDays(5).format(dateTimeFormatter),
-            TODAYS_DATE.plusDays(2).format(dateTimeFormatter),
-            TODAYS_DATE.format(dateTimeFormatter));
+            TODAYS_DATE.plusDays(2).format(dateTimeFormatter));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
+        assertThat(getHearingDates(callbackResponse)).doesNotContain(TODAYS_DATE.format(dateTimeFormatter));
 
         assertThat(callbackResponse.getData().get("respondents_label")).isEqualTo(
             "Respondent 1 - Timothy Jones\nRespondent 2 - Sarah Simpson\n");
