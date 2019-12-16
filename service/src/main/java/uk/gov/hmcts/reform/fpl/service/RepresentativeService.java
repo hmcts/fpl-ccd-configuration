@@ -82,10 +82,8 @@ public class RepresentativeService {
                 validationErrors.add(format("Select how %s wants to get case information", representativeLabel));
             }
 
-            if (EMAIL.equals(servingPreferences)) {
-                if (isEmpty(representative.getEmail())) {
-                    validationErrors.add(format("Enter an email address for %s", representativeLabel));
-                }
+            if (EMAIL.equals(servingPreferences) && isEmpty(representative.getEmail())) {
+                validationErrors.add(format("Enter an email address for %s", representativeLabel));
             }
 
             if (POST.equals(servingPreferences)) {
@@ -136,7 +134,7 @@ public class RepresentativeService {
     }
 
     public void addRepresentatives(CaseData caseData, Long caseId, String auth) {
-        caseData.getRepresentatives().stream()
+        caseData.getRepresentatives()
             .forEach(representative -> {
                 addToCase(representative, caseId, auth);
                 linkWithRepresentable(caseData, representative);
@@ -145,16 +143,14 @@ public class RepresentativeService {
 
     private void addToCase(Element<Representative> representativeWithId, Long caseId, String auth) {
         Representative representative = representativeWithId.getValue();
-        if (DIGITAL_SERVICE.equals(representative.getServingPreferences())) {
-            if (isNull(representative.getIdamId())) {
-                organisationService.findUserByEmail(auth, representative.getEmail()).ifPresent(
-                    userId -> {
-                        caseService.addUser(auth, Long.toString(caseId), userId,
-                            representative.getRole().getCaseRoles());
-                        representative.setIdamId(userId);
-                    }
-                );
-            }
+        if (DIGITAL_SERVICE.equals(representative.getServingPreferences()) && isNull(representative.getIdamId())) {
+            organisationService.findUserByEmail(auth, representative.getEmail()).ifPresent(
+                userId -> {
+                    caseService.addUser(auth, Long.toString(caseId), userId,
+                        representative.getRole().getCaseRoles());
+                    representative.setIdamId(userId);
+                }
+            );
         }
     }
 
