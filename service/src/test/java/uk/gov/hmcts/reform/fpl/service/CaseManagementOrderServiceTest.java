@@ -1,20 +1,15 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.RestTemplate;
-import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
-import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -24,7 +19,10 @@ import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static java.util.UUID.fromString;
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -32,20 +30,13 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearin
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {
-    JacksonAutoConfiguration.class, JsonOrdersLookupService.class, LookupTestConfig.class,
-    JsonOrdersLookupService.class, DateFormatterService.class, DirectionHelperService.class,
-    DocmosisConfiguration.class, RestTemplate.class, CaseDataExtractionService.class,
-    DocmosisDocumentGeneratorService.class, CommonCaseDataExtractionService.class, HearingBookingService.class,
-    HearingVenueLookUpService.class, CaseManagementOrderService.class
-})
 class CaseManagementOrderServiceTest {
-    private static final UUID HEARING_BOOKING_ID = fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31");
+    private static final LocalDateTime NOW = LocalDateTime.now();
+    private final Time time = () -> NOW;
     private static final LocalDateTime DATE = LocalDateTime.of(2018, 2, 12, 9, 30);
 
-    @Autowired
-    private CaseManagementOrderService service;
+    private CaseManagementOrderService service = new CaseManagementOrderService(time,
+        new DateFormatterService(), new HearingBookingService());
 
     @Test
     void shouldAddDocumentToOrderWhenDocumentExists() throws IOException {
@@ -87,6 +78,39 @@ class CaseManagementOrderServiceTest {
         Map<String, Object> data = service.extractMapFieldsFromCaseManagementOrder(null);
 
         assertThat(data).containsOnlyKeys("schedule", "recitals", "orderAction");
+    }
+
+    @Test
+    void shouldReturnTrueWhenHearingDateIsInFuture() {
+        UUID id = randomUUID();
+        CaseData caseData = caseDataWithCmo(id)
+            .hearingDetails(hearingBookingWithStartDatePlus(id, 1))
+            .build();
+
+        assertTrue(service.isHearingDateInFuture(caseData));
+    }
+
+    @Test
+    void shouldReturnFalseWhenHearingDateIsInPast() {
+        UUID id = randomUUID();
+        CaseData caseData = caseDataWithCmo(id)
+            .hearingDetails(hearingBookingWithStartDatePlus(id, -1))
+            .build();
+
+        assertFalse(service.isHearingDateInFuture(caseData));
+    }
+
+    private CaseData.CaseDataBuilder caseDataWithCmo(UUID id) {
+        return CaseData.builder().cmoToAction(CaseManagementOrder.builder().id(id).build());
+    }
+
+    private List<Element<HearingBooking>> hearingBookingWithStartDatePlus(UUID id, int days) {
+        return ImmutableList.of(Element.<HearingBooking>builder()
+            .id(id)
+            .value(HearingBooking.builder()
+                .startDate(NOW.plusDays(days))
+                .build())
+            .build());
     }
 
     @Test
@@ -138,7 +162,7 @@ class CaseManagementOrderServiceTest {
     private CaseManagementOrder createCMOWithNextHearing() {
         return CaseManagementOrder.builder()
             .nextHearing(NextHearing.builder()
-                .id(HEARING_BOOKING_ID)
+                .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
                 .build())
             .build();
     }
