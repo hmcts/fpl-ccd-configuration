@@ -75,7 +75,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecita
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrap;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ActionCaseManagementOrderController.class)
@@ -274,7 +274,7 @@ class ActionCaseManagementOrderControllerTest {
 
     @Test
     void submittedShouldTriggerCMOProgressionAndSendNotificationsToOnlyLocalAuthorityAndCafcass() throws Exception {
-        List<Element<Representative>> representativeServedByPost = wrap(Representative.builder()
+        List<Element<Representative>> representativeServedByPost = wrapElements(Representative.builder()
             .email("bien@example.com")
             .fullName("Bien")
             .servingPreferences(POST)
@@ -399,7 +399,7 @@ class ActionCaseManagementOrderControllerTest {
     }
 
     private List<Element<Representative>> buildRepresentativesServedByDigitalService() {
-        return wrap(Representative.builder()
+        return wrapElements(Representative.builder()
             .email("abc@example.com")
             .fullName("Jon Snow")
             .servingPreferences(DIGITAL_SERVICE)
@@ -429,7 +429,7 @@ class ActionCaseManagementOrderControllerTest {
     }
 
     private List<Element<Representative>> buildRepresentativesServedByEmail() {
-        return wrap(Representative.builder()
+        return wrapElements(Representative.builder()
             .email("jamie@example.com")
             .fullName("Jamie Lannister")
             .servingPreferences(EMAIL)
