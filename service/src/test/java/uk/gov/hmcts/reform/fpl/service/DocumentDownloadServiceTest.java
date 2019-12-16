@@ -14,8 +14,6 @@ import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
-import java.util.UUID;
-
 import static java.lang.String.join;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -55,7 +53,7 @@ public class DocumentDownloadServiceTest {
         given(authTokenGenerator.generate())
             .willReturn(token);
 
-        userId = UUID.randomUUID().toString();
+        userId = "8a0a7c46-631c-4a55-9b81-4cc9fb9798f4";
 
         UserInfo userInfo = UserInfo.builder()
             .sub("cafcass@cafcass.com")

@@ -7,7 +7,7 @@ import feign.jackson.JacksonDecoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 
-//removed @Configuration so beans are not globally discoverable
+// removed @Configuration so beans are not globally discoverable
 public class FeignConfiguration {
 
     @Bean
