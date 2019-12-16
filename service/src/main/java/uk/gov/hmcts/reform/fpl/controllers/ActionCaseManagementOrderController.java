@@ -3,6 +3,9 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -13,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.events.CMOEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -36,30 +40,16 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 @Api
 @RestController
 @RequestMapping("/callback/action-cmo")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ActionCaseManagementOrderController {
     private final DraftCMOService draftCMOService;
     private final CaseManagementOrderService caseManagementOrderService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final ObjectMapper mapper;
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final CMODocmosisTemplateDataGenerationService templateDataGenerationService;
     private final CoreCaseDataService coreCaseDataService;
-
-    public ActionCaseManagementOrderController(DraftCMOService draftCMOService,
-                                               CaseManagementOrderService caseManagementOrderService,
-                                               DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
-                                               UploadDocumentService uploadDocumentService,
-                                               ObjectMapper mapper,
-                                               CMODocmosisTemplateDataGenerationService templateDataGenerationService,
-                                               CoreCaseDataService coreCaseDataService) {
-        this.draftCMOService = draftCMOService;
-        this.caseManagementOrderService = caseManagementOrderService;
-        this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.mapper = mapper;
-        this.templateDataGenerationService = templateDataGenerationService;
-        this.coreCaseDataService = coreCaseDataService;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -134,13 +124,21 @@ public class ActionCaseManagementOrderController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+    public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
+                                     @RequestHeader(value = "user-id") String userId,
+                                     @RequestBody CallbackRequest callbackRequest) {
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+
         coreCaseDataService.triggerEvent(
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
             callbackRequest.getCaseDetails().getId(),
             "internal-change:CMO_PROGRESSION"
         );
+
+        if (caseData.getCmoToAction().isApprovedByJudge()) {
+            applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId));
+        }
     }
 
     private Document getDocument(String authorization, String userId, CaseData data, boolean approved)

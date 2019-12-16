@@ -375,7 +375,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseManagementOrder",
-    "UserRole": "caseworker-publiclaw-solicitor",
+    "UserRole": "[LASOLICITOR]",
     "Comments": "This complex type permission should be for LASOLICITOR role, but somehow it causes issues in CCD.",
     "CRUD": "CRUD"
   },

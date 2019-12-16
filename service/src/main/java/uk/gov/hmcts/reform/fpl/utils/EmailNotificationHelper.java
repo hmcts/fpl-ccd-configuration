@@ -2,18 +2,26 @@ package uk.gov.hmcts.reform.fpl.utils;
 
 import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
+import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 
+import java.time.format.FormatStyle;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 public class EmailNotificationHelper {
+    private static final HearingBookingService hearingBookingService = new HearingBookingService();
+    private static final DateFormatterService dateFormatterService = new DateFormatterService();
 
     private EmailNotificationHelper() {
     }
@@ -25,6 +33,25 @@ public class EmailNotificationHelper {
         return Stream.of(lastName, familyManCaseNumber)
             .filter(StringUtils::isNotBlank)
             .collect(joining(", "));
+    }
+
+    public static String buildSubjectLineWithHearingBookingDateSuffix(final String subjectLine,
+                                                                      final List<Element<HearingBooking>>
+                                                                          hearingBookings) {
+        String hearingDateText = "";
+        if (isNotEmpty(hearingBookings)) {
+            hearingDateText = buildHearingDateText(hearingBookings);
+        }
+
+        return Stream.of(subjectLine, hearingDateText)
+            .filter(StringUtils::isNotBlank)
+            .collect(joining(","));
+    }
+
+    private static String buildHearingDateText(final List<Element<HearingBooking>> hearingBookings) {
+        return " hearing " + dateFormatterService.formatLocalDateToString(
+            hearingBookingService.getMostUrgentHearingBooking(
+                hearingBookings).getStartDate().toLocalDate(), FormatStyle.MEDIUM);
     }
 
     private static String getFirstRespondentLastName(final CaseData caseData) {

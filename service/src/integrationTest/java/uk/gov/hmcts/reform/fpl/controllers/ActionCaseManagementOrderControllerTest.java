@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
+import uk.gov.service.notify.NotificationClient;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -47,19 +48,26 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCaseManagementOrder;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRecitals;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createSchedule;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
@@ -76,6 +84,12 @@ class ActionCaseManagementOrderControllerTest {
     private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
+    private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
+    private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
+    private static final String LOCAL_AUTHORITY_CODE = "example";
+    private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
+    public static final String CASE_ID = "12345";
+    public static final String REPRESENTATIVES = "representatives";
 
     @Autowired
     private MockMvc mockMvc;
@@ -97,6 +111,9 @@ class ActionCaseManagementOrderControllerTest {
 
     @MockBean
     private CoreCaseDataService coreCaseDataService;
+
+    @MockBean
+    private NotificationClient notificationClient;
 
     @BeforeEach
     void setup() throws IOException {
@@ -195,29 +212,64 @@ class ActionCaseManagementOrderControllerTest {
     }
 
     @Test
-    void submittedShouldTriggerCMOProgressionEvent() throws Exception {
+    void submittedShouldTriggerCMOProgressionEventAndSendCaseLinkNotificationsWhenIssuedOrderApproved()
+        throws Exception {
         String event = "internal-change:CMO_PROGRESSION";
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(1L)
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .data(ImmutableMap.of(
-                    "cmoToAction", CaseManagementOrder.builder()
-                        .status(SEND_TO_JUDGE)
-                        .action(OrderAction.builder()
-                            .type(SEND_TO_ALL_PARTIES)
-                            .build())
-                        .build()))
-                .build())
-            .build();
-        makeRequest(request);
-        verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, 1L, event);
+        Map<String, Object> data = ImmutableMap.of(
+            "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
+            "respondents1", createRespondents(),
+            "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+            REPRESENTATIVES, createRepresentatives(DIGITAL_SERVICE),
+            CMO_TO_ACTION_KEY, CaseManagementOrder.builder()
+                .status(SEND_TO_JUDGE)
+                .action(OrderAction.builder()
+                    .type(SEND_TO_ALL_PARTIES)
+                    .build())
+                .build());
+
+        CallbackRequest callbackRequest = buildCallbackRequest(data);
+
+        makeRequest(callbackRequest);
+
+        verify(coreCaseDataService)
+            .triggerEvent(JURISDICTION, CASE_TYPE, 12345L, event);
+
+        verify(notificationClient).sendEmail(
+            eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(getExpectedCMOIssuedCaseLinkNotificationParameters(LOCAL_AUTHORITY_NAME)), eq(CASE_ID));
+
+        verify(notificationClient).sendEmail(
+            eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("abc@example.com"),
+            eq(getExpectedCMOIssuedCaseLinkNotificationParameters("Jon Snow")), eq(CASE_ID));
+    }
+
+    @Test
+    void submittedShouldNotSendNotificationsWhenIssuedOrderNotApproved() throws Exception {
+        CaseManagementOrder caseManagementOrder = getCaseManagementOrder(OrderAction.builder()
+            .type(JUDGE_REQUESTED_CHANGE)
+            .build());
+
+        Map<String, Object> data = ImmutableMap.of(
+            "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
+            "respondents1", createRespondents(),
+            "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
+            CMO_TO_ACTION_KEY, caseManagementOrder);
+
+        CallbackRequest callbackRequest = buildCallbackRequest(data);
+
+        makeRequest(callbackRequest);
+
+        verify(notificationClient, never()).sendEmail(
+            eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+            eq(getExpectedCMOIssuedCaseLinkNotificationParameters(LOCAL_AUTHORITY_NAME)), eq(CASE_ID));
     }
 
     private CallbackRequest buildCallbackRequest(Map<String, Object> data) {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
+                .id(12345L)
+                .jurisdiction(JURISDICTION)
+                .caseTypeId(CASE_TYPE)
                 .data(data)
                 .build())
             .build();
@@ -271,5 +323,15 @@ class ActionCaseManagementOrderControllerTest {
         return caseData.getNextHearingDateList().getListItems().stream()
             .map(element -> objectMapper.convertValue(element, DynamicListElement.class))
             .map(DynamicListElement::getLabel).collect(Collectors.toList());
+    }
+
+    private ImmutableMap<String, Object> getExpectedCMOIssuedCaseLinkNotificationParameters(String recipientName) {
+        final String subjectLine = "Jones, SACCCCCCCC5676576567";
+        return ImmutableMap.<String, Object>builder()
+            .put("localAuthorityNameOrRepresentativeFullName", recipientName)
+            .put("subjectLineWithHearingDate", subjectLine)
+            .put("reference", CASE_ID)
+            .put("caseUrl", String.format("http://fake-url/case/%s/%s/12345", JURISDICTION, CASE_TYPE))
+            .build();
     }
 }
