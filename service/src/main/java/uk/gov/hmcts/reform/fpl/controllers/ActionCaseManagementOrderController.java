@@ -115,9 +115,9 @@ public class ActionCaseManagementOrderController {
 
         order = caseManagementOrderService.addAction(order, orderAction);
 
-        order = caseManagementOrderService.addNextHearingToCMO(caseData.getNextHearingDateList(), order);
-
-        caseData = caseData.toBuilder().cmoToAction(order).build();
+        if (order.isApprovedByJudge()) {
+            order = caseManagementOrderService.addNextHearingToCMO(caseData.getNextHearingDateList(), order);
+        }
 
         Document document = getDocument(authorization, userId, caseData, false);
 
