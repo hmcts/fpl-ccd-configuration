@@ -29,6 +29,7 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
@@ -153,7 +154,7 @@ class CaseManagementOrderProgressionServiceTest {
 
     @Test
     void shouldDoNothingWhenJudgeLeavesInSelfReview() {
-        CaseData caseData = caseDataWithCmoToAction(ActionType.SELF_REVIEW).build();
+        CaseData caseData = caseDataWithCmoToAction(SELF_REVIEW).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
         service.handleCaseManagementOrderProgression(caseDetails);
