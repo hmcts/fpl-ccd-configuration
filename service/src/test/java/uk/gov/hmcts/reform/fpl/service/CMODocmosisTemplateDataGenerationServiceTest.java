@@ -160,15 +160,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData).containsAllEntriesOf(getExpectedSchedule());
         assertThat(templateData.get("scheduleProvided")).isEqualTo(true);
         assertThat(templateData.get("draftbackground")).isNotNull();
-        assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
-    }
-
-    @Test
-    void shouldNotReturnWatermarkWhenDraftIsFalse() throws IOException {
-        Map<String, Object> templateData =
-            templateDataGenerationService.getTemplateData(CaseData.builder().build(), false);
-
-        assertThat(templateData.get("draftbackground")).isNull();
+        assertThat(templateData.get("caseManagementNumber")).isEqualTo(2);
     }
 
     private List<Map<String, Object>> getExpectedRepresentatives() {

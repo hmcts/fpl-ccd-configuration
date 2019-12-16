@@ -6,6 +6,12 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+
+import java.util.List;
+
+import static java.util.UUID.randomUUID;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 
 @Service
 public class CaseManagementOrderProgressionService {
@@ -32,7 +38,7 @@ public class CaseManagementOrderProgressionService {
         if (caseData.getCaseManagementOrder() != null) {
             progressDraftCaseManagementOrder(caseDetails, caseData.getCaseManagementOrder());
         } else {
-            progressActionCaseManagementOrder(caseDetails, caseData.getCmoToAction());
+            progressActionCaseManagementOrder(caseDetails, caseData);
         }
     }
 
@@ -51,17 +57,32 @@ public class CaseManagementOrderProgressionService {
         }
     }
 
-    private void progressActionCaseManagementOrder(CaseDetails caseDetails, CaseManagementOrder order) {
-        switch (order.getAction().getType()) {
+    private void progressActionCaseManagementOrder(CaseDetails caseDetails, CaseData caseData) {
+        switch (caseData.getCmoToAction().getAction().getType()) {
             case SEND_TO_ALL_PARTIES:
-                //TODO: logic for send to all parties, implemented by FPLA-961.
+                List<Element<CaseManagementOrder>> orders = addOrderToList(caseData);
+
+                caseDetails.getData().put("servedCaseManagementOrders", orders);
+                caseDetails.getData().remove(JUDGE_CMO_KEY);
                 break;
             case JUDGE_REQUESTED_CHANGE:
-                caseDetails.getData().put(LA_CMO_KEY, order);
+                CaseManagementOrder updatedOrder = caseData.getCmoToAction().toBuilder().status(SELF_REVIEW).build();
+
+                caseDetails.getData().put(LA_CMO_KEY, updatedOrder);
                 caseDetails.getData().remove(JUDGE_CMO_KEY);
                 break;
             case SELF_REVIEW:
                 break;
         }
+    }
+
+    private List<Element<CaseManagementOrder>> addOrderToList(CaseData caseData) {
+        List<Element<CaseManagementOrder>> orders = caseData.getServedCaseManagementOrders();
+        orders.add(0, Element.<CaseManagementOrder>builder()
+            .id(randomUUID())
+            .value(caseData.getCmoToAction())
+            .build());
+
+        return orders;
     }
 }
