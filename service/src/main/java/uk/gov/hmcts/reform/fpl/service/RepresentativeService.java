@@ -146,7 +146,8 @@ public class RepresentativeService {
             if (isNull(representative.getIdamId())) {
                 organisationService.findUserByEmail(auth, representative.getEmail()).ifPresent(
                     userId -> {
-                        caseService.addUser(auth, Long.toString(caseId), userId, representative.getRole().getCaseRoles());
+                        caseService.addUser(auth, Long.toString(caseId), userId,
+                            representative.getRole().getCaseRoles());
                         representative.setIdamId(userId);
                     }
                 );
