@@ -306,6 +306,9 @@ public class DirectionHelperService {
                     break;
                 case PARENTS_AND_RESPONDENTS:
                 case OTHERS:
+                    //TODO: court is always added as party in comply on behalf. This needs to be updated
+                    // to accept solicitors also comply on behalf. Can use eventId from caseDetails as a flag
+                    // to point code towards correct method.
                     List<Element<DirectionResponse>> elements = addValuesToListResponseDirections(directions);
 
                     addResponseElementsToDirections(elements, directionsToComplyWith);
@@ -318,6 +321,7 @@ public class DirectionHelperService {
     private List<Element<DirectionResponse>> addValuesToListResponseDirections(List<Element<Direction>> directions) {
         AtomicReference<UUID> id = new AtomicReference<>();
 
+        //TODO: addCourtAssigneeAndDirectionId should use eventId flag to add different assignee.
         return directions.stream()
             .map(directionElement -> {
                 id.set(directionElement.getId());
