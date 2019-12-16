@@ -123,9 +123,6 @@ public class ActionCaseManagementOrderController {
 
         order = caseManagementOrderService.addDocument(order, document);
 
-        caseDetails.getData().put("nextHearingDateLabel",
-            caseManagementOrderService.createNextHearingDateLabel(order, caseData.getHearingDetails()));
-
         caseDetails.getData().put("cmoToAction", order);
 
         return AboutToStartOrSubmitCallbackResponse.builder()

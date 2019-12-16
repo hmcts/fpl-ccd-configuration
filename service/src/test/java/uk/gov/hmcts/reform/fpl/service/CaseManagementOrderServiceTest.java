@@ -9,16 +9,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.fpl.config.DocmosisConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
-import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -29,7 +25,6 @@ import static uk.gov.hmcts.reform.fpl.enums.ActionType.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingDynmaicList;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
@@ -42,7 +37,6 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 })
 class CaseManagementOrderServiceTest {
     private static final UUID HEARING_BOOKING_ID = fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31");
-    private static final LocalDateTime DATE = LocalDateTime.of(2018, 2, 12, 9, 30);
 
     @Autowired
     private CaseManagementOrderService service;
@@ -87,24 +81,6 @@ class CaseManagementOrderServiceTest {
         Map<String, Object> data = service.extractMapFieldsFromCaseManagementOrder(null);
 
         assertThat(data).containsOnlyKeys("schedule", "recitals", "orderAction");
-    }
-
-    @Test
-    void shouldReturnEmptyStringWhenOrderActionIsNotPresentOnCMO() {
-        List<Element<HearingBooking>> hearingBookings = createHearingBookings(DATE);
-        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder().build();
-        String label = service.createNextHearingDateLabel(caseManagementOrder, hearingBookings);
-
-        assertThat(label).isEqualTo("");
-    }
-
-    @Test
-    void shouldFormatNextHearingBookingLabelWhenCMOOrderActionContainsMatchingUUID() {
-        List<Element<HearingBooking>> hearingBookings = createHearingBookings(DATE);
-        CaseManagementOrder caseManagementOrder = createCMOWithNextHearing();
-        String label = service.createNextHearingDateLabel(caseManagementOrder, hearingBookings);
-
-        assertThat(label).isEqualTo("The next hearing date is on 12 February at 9:30am");
     }
 
     @Test

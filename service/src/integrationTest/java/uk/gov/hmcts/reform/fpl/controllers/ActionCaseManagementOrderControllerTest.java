@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -82,9 +81,6 @@ class ActionCaseManagementOrderControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private DateFormatterService dateFormatterService;
 
     @Autowired
     private DraftCMOService draftCMOService;
@@ -185,13 +181,6 @@ class ActionCaseManagementOrderControllerTest {
                 .id(NEXT_HEARING_ID)
                 .date(TODAYS_DATE.plusDays(5).toString())
                 .build());
-
-        String formattedDate = dateFormatterService
-            .formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "d MMMM 'at' h:mma");
-
-        String expectedLabel = String.format("The next hearing date is on %s", formattedDate);
-
-        assertThat(response.getData().get("nextHearingDateLabel")).isEqualTo(expectedLabel);
     }
 
     @Test
