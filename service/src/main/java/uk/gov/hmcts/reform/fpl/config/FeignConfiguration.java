@@ -5,10 +5,9 @@ import feign.Retryer;
 import feign.codec.Decoder;
 import feign.jackson.JacksonDecoder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
-@Configuration
+//removed @Configuration so beans are not globally discoverable
 public class FeignConfiguration {
 
     @Bean

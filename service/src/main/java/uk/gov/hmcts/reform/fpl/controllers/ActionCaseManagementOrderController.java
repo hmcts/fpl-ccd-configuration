@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.events.CMOEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
@@ -26,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -34,7 +36,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 @Api
@@ -50,6 +51,7 @@ public class ActionCaseManagementOrderController {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CMODocmosisTemplateDataGenerationService templateDataGenerationService;
     private final CoreCaseDataService coreCaseDataService;
+    private final DocumentDownloadService documentDownloadService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -126,9 +128,7 @@ public class ActionCaseManagementOrderController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
                                      @RequestHeader(value = "user-id") String userId,
-                                     @RequestBody CallbackRequest callbackRequest) throws IOException {
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-
+                                     @RequestBody CallbackRequest callbackRequest) {
         coreCaseDataService.triggerEvent(
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
@@ -136,17 +136,15 @@ public class ActionCaseManagementOrderController {
             "internal-change:CMO_PROGRESSION"
         );
 
-        if (caseData.getCmoToAction().isApprovedByJudge()) {
-            final DocmosisDocument document = generateDocmosisDocument(caseData, true);
-
-            applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId,
-                document));
-        }
+        publishEventOnApprovedCMO(authorization, userId, callbackRequest);
     }
 
     private Document getDocument(String authorization, String userId, CaseData data, boolean approved)
         throws IOException {
-        DocmosisDocument document = generateDocmosisDocument(data, !approved);
+        Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(data, !approved);
+
+        DocmosisDocument document = docmosisDocumentGeneratorService.generateDocmosisDocument(
+            cmoDocumentTemplateData, DocmosisTemplates.CMO);
 
         String documentTitle = (approved ? document.getDocumentTitle() : "draft-" + document.getDocumentTitle());
 
@@ -157,8 +155,17 @@ public class ActionCaseManagementOrderController {
         return draftCMOService.getHearingDateDynamicList(hearingBookings, null);
     }
 
-    private DocmosisDocument generateDocmosisDocument(CaseData caseData, boolean draft) throws IOException {
-        Map<String, Object> cmoDocumentTemplateData = templateDataGenerationService.getTemplateData(caseData, draft);
-        return docmosisDocumentGeneratorService.generateDocmosisDocument(cmoDocumentTemplateData, CMO);
+    private void publishEventOnApprovedCMO(String authorization, String userId, CallbackRequest callbackRequest) {
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        CaseManagementOrder actionedCmo = caseData.getCmoToAction();
+
+        if (actionedCmo.isApprovedByJudge()) {
+            final String actionCmoDocumentUrl = actionedCmo.getOrderDoc().getBinaryUrl();
+            byte[] documentContents = documentDownloadService.downloadDocument(authorization, userId,
+                actionCmoDocumentUrl);
+
+            applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId,
+                documentContents));
+        }
     }
 }

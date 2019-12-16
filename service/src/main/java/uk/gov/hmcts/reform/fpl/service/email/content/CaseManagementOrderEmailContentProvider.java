@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.service.notify.NotificationClientException;
@@ -43,11 +42,11 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
 
     public Map<String, Object> buildCMOIssuedDocumentLinkNotificationParameters(final CaseDetails caseDetails,
                                                                                 final String recipientName,
-                                                                                final DocmosisDocument document) {
+                                                                                final byte[] documentContents) {
 
         return ImmutableMap.<String, Object>builder()
             .putAll(buildCommonCMONotificationParameters(caseDetails))
-            .putAll(buildCMODocumentLinkNotificationParameters(document))
+            .putAll(buildCMODocumentLinkNotificationParameters(documentContents))
             .put("cafcassOrRespondentName", recipientName)
             .build();
     }
@@ -65,12 +64,12 @@ public class CaseManagementOrderEmailContentProvider extends AbstractEmailConten
         );
     }
 
-    private Map<String, Object> buildCMODocumentLinkNotificationParameters(final DocmosisDocument document) {
+    private Map<String, Object> buildCMODocumentLinkNotificationParameters(final byte[] documentContents) {
 
         ImmutableMap.Builder<String, Object> cmoNotificationParameters = ImmutableMap.builder();
 
         try {
-            cmoNotificationParameters.put("link_to_document", prepareUpload(document.getBytes()));
+            cmoNotificationParameters.put("link_to_document", prepareUpload(documentContents));
         } catch (NotificationClientException e) {
             log.error("Unable to send notification for cafcass due to ", e);
         }

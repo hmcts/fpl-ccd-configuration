@@ -30,6 +30,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -51,6 +52,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
@@ -123,13 +125,21 @@ class ActionCaseManagementOrderControllerTest {
     @MockBean
     private NotificationClient notificationClient;
 
+    @MockBean
+    private DocumentDownloadService documentDownloadService;
+
+    private Document document;
+
     @BeforeEach
     void setup() throws IOException {
-        Document document = document();
+        document = document();
         DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", PDF);
 
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
+
+        given(documentDownloadService.downloadDocument(anyString(), anyString(), anyString()))
+            .willReturn(PDF);
     }
 
     @Test
@@ -392,6 +402,7 @@ class ActionCaseManagementOrderControllerTest {
             REPRESENTATIVES, representatives,
             CMO_TO_ACTION_KEY, CaseManagementOrder.builder()
                 .status(SEND_TO_JUDGE)
+                .orderDoc(DocumentReference.buildFromDocument(document))
                 .action(OrderAction.builder()
                     .type(SEND_TO_ALL_PARTIES)
                     .build())

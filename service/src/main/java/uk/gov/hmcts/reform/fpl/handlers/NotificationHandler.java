@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
 import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
@@ -168,14 +167,14 @@ public class NotificationHandler {
 
         sendCMOCaseLinkNotifications(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
         sendCMODocumentLinkNotifications(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
-            event.getDocument());
+            event.getDocumentContents());
     }
 
     private void sendCMODocumentLinkNotifications(final CaseDetails caseDetails,
                                                   final String localAuthorityCode,
-                                                  final DocmosisDocument document) {
-        sendCMODocumentLinkNotificationForCafcass(caseDetails, localAuthorityCode, document);
-        sendCMODocumentLinkNotificationsToRepresentatives(caseDetails, document);
+                                                  final byte[] documentContents) {
+        sendCMODocumentLinkNotificationForCafcass(caseDetails, localAuthorityCode, documentContents);
+        sendCMODocumentLinkNotificationsToRepresentatives(caseDetails, documentContents);
     }
 
     private void sendCMOCaseLinkNotificationForLocalAuthority(final CaseDetails caseDetails,
@@ -193,12 +192,12 @@ public class NotificationHandler {
 
     private void sendCMODocumentLinkNotificationForCafcass(final CaseDetails caseDetails,
                                                            final String localAuthorityCode,
-                                                           final DocmosisDocument document) {
+                                                           final byte[] documentContents) {
         final String cafcassName = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getName();
 
         Map<String, Object> cafcassParameters =
             caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(caseDetails,
-                cafcassName, document);
+                cafcassName, documentContents);
 
         String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
 
@@ -229,7 +228,7 @@ public class NotificationHandler {
     }
 
     private void sendCMODocumentLinkNotificationsToRepresentatives(final CaseDetails caseDetails,
-                                                                   final DocmosisDocument document) {
+                                                                   final byte[] documentContents) {
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
         List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
             caseData.getRepresentatives(), EMAIL);
@@ -239,7 +238,7 @@ public class NotificationHandler {
             .forEach(representative -> {
                 Map<String, Object> representativeNotificationParameters =
                     caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(
-                        caseDetails, representative.getFullName(), document);
+                        caseDetails, representative.getFullName(), documentContents);
 
                 sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, representative.getEmail(),
                     representativeNotificationParameters, Long.toString(caseDetails.getId()));

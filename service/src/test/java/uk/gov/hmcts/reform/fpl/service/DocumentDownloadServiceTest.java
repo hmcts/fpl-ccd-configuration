@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.fpl.enums.UserRole.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
-public class DownloadDocumentServiceTest {
+public class DocumentDownloadServiceTest {
     private final String token = "token";
 
     @Mock
@@ -42,7 +42,7 @@ public class DownloadDocumentServiceTest {
     @Mock
     private ResponseEntity<Resource> resourceResponseEntity;
 
-    private DownloadDocumentService downloadDocumentService;
+    private DocumentDownloadService documentDownloadService;
 
     private String userId;
 
@@ -66,7 +66,7 @@ public class DownloadDocumentServiceTest {
         given(idamApi.retrieveUserInfo(token))
             .willReturn(userInfo);
 
-        downloadDocumentService = new DownloadDocumentService(authTokenGenerator, documentDownloadClient, idamApi);
+        documentDownloadService = new DocumentDownloadService(authTokenGenerator, documentDownloadClient, idamApi);
     }
 
     @Test
@@ -85,7 +85,7 @@ public class DownloadDocumentServiceTest {
             eq(join(",", CAFCASS.getRoles())), anyString(), anyString()))
             .willReturn(resourceResponseEntity);
 
-        byte[] documentContents = downloadDocumentService.downloadDocument(token, userId, document.links.binary.href);
+        byte[] documentContents = documentDownloadService.downloadDocument(token, userId, document.links.binary.href);
 
         assertThat(documentContents).isNotEmpty();
         assertThat(documentContents).isEqualTo(expectedDocumentContents);
@@ -104,7 +104,7 @@ public class DownloadDocumentServiceTest {
             eq(join(",", CAFCASS.getRoles())), anyString(), anyString()))
             .willReturn(null);
 
-        assertThrows(IllegalArgumentException.class, () -> downloadDocumentService.downloadDocument(
+        assertThrows(IllegalArgumentException.class, () -> documentDownloadService.downloadDocument(
             token, userId, document.links.binary.href));
     }
 }
