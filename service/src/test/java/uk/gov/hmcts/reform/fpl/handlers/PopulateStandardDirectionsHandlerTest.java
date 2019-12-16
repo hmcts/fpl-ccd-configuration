@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.configuration.OrderDefinition;
 import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.HearingBookingService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
+import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -68,12 +70,15 @@ class PopulateStandardDirectionsHandlerTest {
     @Autowired
     private HearingBookingService hearingBookingService;
 
+    @MockBean
+    private UserDetailsService userDetailsService;
+
     @Autowired
     private ObjectMapper objectMapper;
 
     private PopulateStandardDirectionsHandler populateStandardDirectionsHandler;
 
-    private DirectionHelperService directionHelperService = new DirectionHelperService();
+    private DirectionHelperService directionHelperService = new DirectionHelperService(userDetailsService);
 
     @BeforeEach
     void before() {
@@ -87,6 +92,8 @@ class PopulateStandardDirectionsHandlerTest {
             .build());
 
         given(authTokenGenerator.generate()).willReturn(AUTH_TOKEN);
+
+        given(userDetailsService.getUserName(AUTH_TOKEN)).willReturn("Emma Taylor");
     }
 
     @Test

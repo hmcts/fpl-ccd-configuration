@@ -36,6 +36,7 @@ import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -143,6 +144,7 @@ class ComplyOnBehalfControllerTest {
     @Test
     void aboutToSubmitShouldAddResponsesOnBehalfOfParty() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
+            .eventId(COMPLY_ON_BEHALF_SDO.toString())
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of(
                     "standardDirectionOrder", orderWithAllPartiesDirection(),

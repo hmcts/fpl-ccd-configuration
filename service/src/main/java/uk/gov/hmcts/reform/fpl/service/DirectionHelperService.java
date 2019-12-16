@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -28,6 +29,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -40,6 +42,11 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPON
  */
 @Service
 public class DirectionHelperService {
+    private final UserDetailsService userDetailsService;
+
+    public DirectionHelperService(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     /**
      * Combines role directions into a single List of directions.
@@ -290,7 +297,9 @@ public class DirectionHelperService {
      *
      * @param caseData caseData containing custom role collections and standard directions order.
      */
-    public void addComplyOnBehalfResponsesToDirectionsInOrder(CaseData caseData) {
+    public void addComplyOnBehalfResponsesToDirectionsInOrder(CaseData caseData,
+                                                              ComplyOnBehalfEvent eventId,
+                                                              String authorisation) {
         Map<DirectionAssignee, List<Element<Direction>>> customDirectionsMap = collectCustomDirectionsToMap(caseData);
         List<Element<Direction>> directionsToComplyWith = getDirectionsToComplyWith(caseData);
 
@@ -304,12 +313,12 @@ public class DirectionHelperService {
                     addResponsesToDirections(responses, directionsToComplyWith);
 
                     break;
+
+                    //TODO: add test cases for addValuesToListResponseDirections. assert right assignee.
                 case PARENTS_AND_RESPONDENTS:
                 case OTHERS:
-                    //TODO: court is always added as party in comply on behalf. This needs to be updated
-                    // to accept solicitors also comply on behalf. Can use eventId from caseDetails as a flag
-                    // to point code towards correct method.
-                    List<Element<DirectionResponse>> elements = addValuesToListResponseDirections(directions);
+                    List<Element<DirectionResponse>> elements = addValuesToListResponseDirections(
+                        directions, eventId, authorisation);
 
                     addResponseElementsToDirections(elements, directionsToComplyWith);
 
@@ -318,10 +327,11 @@ public class DirectionHelperService {
         });
     }
 
-    private List<Element<DirectionResponse>> addValuesToListResponseDirections(List<Element<Direction>> directions) {
+    private List<Element<DirectionResponse>> addValuesToListResponseDirections(List<Element<Direction>> directions,
+                                                                               ComplyOnBehalfEvent eventId,
+                                                                               String authorisation) {
         AtomicReference<UUID> id = new AtomicReference<>();
 
-        //TODO: addCourtAssigneeAndDirectionId should use eventId flag to add different assignee.
         return directions.stream()
             .map(directionElement -> {
                 id.set(directionElement.getId());
@@ -329,7 +339,15 @@ public class DirectionHelperService {
                 return directionElement.getValue().getResponses();
             })
             .flatMap(List::stream)
-            .map(element -> addCourtAssigneeAndDirectionId(id, element))
+            .map(element -> {
+
+                //TODO: separate method?
+                if (eventId == COMPLY_ON_BEHALF_SDO) {
+                    return addCourtAssigneeAndDirectionId(id, element);
+                } else {
+                    return addSolicitorAssigneeAndDirectionId(id, element, authorisation);
+                }
+            })
             .collect(toList());
     }
 
@@ -339,6 +357,22 @@ public class DirectionHelperService {
             .id(element.getId())
             .value(element.getValue().toBuilder()
                 .assignee(COURT)
+                .directionId(id.get())
+                .build())
+            .build();
+    }
+
+    private Element<DirectionResponse> addSolicitorAssigneeAndDirectionId(AtomicReference<UUID> id,
+                                                                          Element<DirectionResponse> element,
+                                                                          String authorisation) {
+        String userName = userDetailsService.getUserName(authorisation);
+
+        //TODO: DirectionResponse needs a field for solicitor user name to be added.
+
+        return Element.<DirectionResponse>builder()
+            .id(element.getId())
+            .value(element.getValue().toBuilder()
+                .assignee(PARENTS_AND_RESPONDENTS)
                 .directionId(id.get())
                 .build())
             .build();
