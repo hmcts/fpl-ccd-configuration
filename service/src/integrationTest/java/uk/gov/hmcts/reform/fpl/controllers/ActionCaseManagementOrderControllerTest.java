@@ -115,7 +115,7 @@ class ActionCaseManagementOrderControllerTest {
     }
 
     @Test
-    void aboutToStartShouldExtractIndividualCaseManagementOrderFields() throws Exception {
+    void aboutToStartShouldExtractIndividualCaseManagementOrderFieldsWithFutureHearingDates() throws Exception {
         Map<String, Object> data = new HashMap<>();
         final CaseManagementOrder order = createCaseManagementOrder();
 
@@ -125,13 +125,13 @@ class ActionCaseManagementOrderControllerTest {
         CallbackRequest request = buildCallbackRequest(data);
         List<String> expected = Arrays.asList(
             NOW.plusDays(5).format(dateTimeFormatter),
-            NOW.plusDays(2).format(dateTimeFormatter),
-            NOW.format(dateTimeFormatter));
+            NOW.plusDays(2).format(dateTimeFormatter));
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-start");
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(getHearingDates(response)).isEqualTo(expected);
+        assertThat(getHearingDates(response)).doesNotContain(NOW.format(dateTimeFormatter));
         assertThat(caseData.getOrderAction()).isNull();
         assertThat(caseData.getSchedule()).isEqualTo(order.getSchedule());
         assertThat(caseData.getRecitals()).isEqualTo(order.getRecitals());
