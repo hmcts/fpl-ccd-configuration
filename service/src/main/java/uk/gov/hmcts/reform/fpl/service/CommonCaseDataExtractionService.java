@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.HEARING_EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
@@ -63,10 +64,10 @@ public class CommonCaseDataExtractionService {
     public Map<String, Object> getHearingBookingData(final HearingBooking hearingBooking) {
         if (hearingBooking == null) {
             return ImmutableMap.of(
-                "hearingDate", EMPTY_PLACEHOLDER,
-                "hearingVenue", EMPTY_PLACEHOLDER,
-                "preHearingAttendance", EMPTY_PLACEHOLDER,
-                "hearingTime", EMPTY_PLACEHOLDER
+                "hearingDate", HEARING_EMPTY_PLACEHOLDER,
+                "hearingVenue", HEARING_EMPTY_PLACEHOLDER,
+                "preHearingAttendance", HEARING_EMPTY_PLACEHOLDER,
+                "hearingTime", HEARING_EMPTY_PLACEHOLDER
             );
         }
 

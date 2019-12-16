@@ -95,7 +95,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
         HearingBooking nextHearing = null;
 
-        if (order.getNextHearing() != null && order.getNextHearing().getId() != null && order.isApprovedByJudge()) {
+        if (order.getNextHearing() != null && order.getNextHearing().getId() != null && !order.isDraft()) {
             List<Element<HearingBooking>> hearingBookings = caseData.getHearingDetails();
             UUID nextHearingId = order.getNextHearing().getId();
             nextHearing = hearingBookingService.getHearingBookingByUUID(hearingBookings, nextHearingId);
@@ -120,8 +120,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
         cmoTemplateData.putAll(getSchedule(order));
 
-        //defaulting as 1 as we currently do not have impl for multiple CMos
-        cmoTemplateData.put("caseManagementNumber", 1);
+        cmoTemplateData.put("caseManagementNumber", caseData.getServedCaseManagementOrders().size() + 1);
 
         return cmoTemplateData.build();
     }

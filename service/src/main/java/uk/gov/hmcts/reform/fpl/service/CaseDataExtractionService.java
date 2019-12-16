@@ -101,10 +101,10 @@ public class CaseDataExtractionService {
     private Map<String, Object> getHearingBookingData(CaseData caseData) {
         if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
             return ImmutableMap.<String, Object>builder()
-                .put("hearingDate", HEARING_EMPTY_PLACEHOLDER)
-                .put("hearingVenue", HEARING_EMPTY_PLACEHOLDER)
-                .put("preHearingAttendance", HEARING_EMPTY_PLACEHOLDER)
-                .put("hearingTime", HEARING_EMPTY_PLACEHOLDER)
+                .put("hearingDate", EMPTY_PLACEHOLDER)
+                .put("hearingVenue", EMPTY_PLACEHOLDER)
+                .put("preHearingAttendance", EMPTY_PLACEHOLDER)
+                .put("hearingTime", EMPTY_PLACEHOLDER)
                 .put("hearingJudgeTitleAndName", EMPTY_PLACEHOLDER)
                 .put("hearingLegalAdvisorName", "")
                 .build();

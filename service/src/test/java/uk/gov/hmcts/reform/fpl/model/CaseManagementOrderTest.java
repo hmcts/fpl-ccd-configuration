@@ -15,19 +15,19 @@ import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 class CaseManagementOrderTest {
 
     @Test
-    void shouldReturnTrueWhenActionTypeEqualsSendToAllParties() {
-        assertTrue(order(SEND_TO_ALL_PARTIES).isApprovedByJudge());
+    void shouldReturnFalseWhenActionTypeEqualsSendToAllParties() {
+        assertFalse(order(SEND_TO_ALL_PARTIES).isDraft());
     }
 
     @EnumSource(value = ActionType.class, names = {"JUDGE_REQUESTED_CHANGE", "SELF_REVIEW"})
     @ParameterizedTest
-    void shouldReturnFalseWhenActionTypeEqualsOtherThanSendToAllParties(ActionType type) {
-        assertFalse(order(type).isApprovedByJudge());
+    void shouldReturnTrueWhenActionTypeEqualsOtherThanSendToAllParties(ActionType type) {
+        assertTrue(order(type).isDraft());
     }
 
     @Test
-    void shouldReturnFalseWhenActionTypeIsNull() {
-        assertFalse(CaseManagementOrder.builder().build().isApprovedByJudge());
+    void shouldReturnTrueWhenActionTypeIsNull() {
+        assertTrue(CaseManagementOrder.builder().build().isDraft());
     }
 
     private CaseManagementOrder order(ActionType type) {

@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.HEARING_EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataMapForDraftCMODocmosisGeneration;
 
 @ExtendWith(SpringExtension.class)
@@ -101,10 +102,10 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("applicantName")).isEqualTo("");
         assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
         assertThat(templateData.get("representatives")).isEqualTo(getEmptyRepresentativeList());
-        assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingDate")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingVenue")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingTime")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("legalAdvisorName")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("allParties")).isNull();
@@ -160,15 +161,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData).containsAllEntriesOf(getExpectedSchedule());
         assertThat(templateData.get("scheduleProvided")).isEqualTo(true);
         assertThat(templateData.get("draftbackground")).isNotNull();
-        assertThat(templateData.get("caseManagementNumber")).isEqualTo(1);
-    }
-
-    @Test
-    void shouldNotReturnWatermarkWhenDraftIsFalse() throws IOException {
-        Map<String, Object> templateData =
-            templateDataGenerationService.getTemplateData(CaseData.builder().build(), false);
-
-        assertThat(templateData.get("draftbackground")).isNull();
+        assertThat(templateData.get("caseManagementNumber")).isEqualTo(2);
     }
 
     private List<Map<String, String>> getExpectedRepresentatives() {
