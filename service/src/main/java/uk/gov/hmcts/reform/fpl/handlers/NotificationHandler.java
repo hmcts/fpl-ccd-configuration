@@ -90,8 +90,6 @@ public class NotificationHandler {
 
         sendOrderNotificationForLocalAuthority(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
             event.getMostRecentUploadedDocumentUrl());
-        sendOrderNotificationForCafcass(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
-            event.getMostRecentUploadedDocumentUrl());
     }
 
     @EventListener
