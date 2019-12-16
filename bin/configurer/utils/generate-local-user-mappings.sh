@@ -53,6 +53,9 @@ function create_user_by_email_responses() {
     generate_user_by_email_mock $user_id $email
   done
 
+  allUsers=$(jq ". | {users: .}" $mock_file)
+  echo $allUsers | jq > $mock_file
+
   rm $users_ids_tmp_file
 }
 
