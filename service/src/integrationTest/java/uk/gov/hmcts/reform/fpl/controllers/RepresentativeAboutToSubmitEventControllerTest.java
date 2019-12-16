@@ -13,19 +13,26 @@ import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.User;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(RepresentativesController.class)
@@ -34,18 +41,6 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 class RepresentativeAboutToSubmitEventControllerTest extends AbstractControllerTest {
 
     private final String serviceAuthToken = RandomStringUtils.randomAlphanumeric(10);
-    private final String representativeEmail = "test@test.com";
-
-    private final Representative.RepresentativeBuilder representativeBuilder = Representative.builder()
-        .fullName("John Smith")
-        .positionInACase("Position")
-        .role(RepresentativeRole.REPRESENTING_PERSON_1)
-        .servingPreferences(DIGITAL_SERVICE);
-
-
-    public RepresentativeAboutToSubmitEventControllerTest() {
-        super("manage-representatives");
-    }
 
     @MockBean
     private AuthTokenGenerator authTokenGenerator;
@@ -56,33 +51,47 @@ class RepresentativeAboutToSubmitEventControllerTest extends AbstractControllerT
     @MockBean
     private CaseUserApi caseUserApi;
 
+    public RepresentativeAboutToSubmitEventControllerTest() {
+        super("manage-representatives");
+    }
+
     @Test
-    void shouldSuccessfullyValidateRepresentativeAccountExistence() {
+    void shouldAddUsersToCaseAndAssociateRepresentativesWithPerson() {
         final Long caseId = RandomUtils.nextLong();
+        final UUID representativeId = UUID.randomUUID();
         final String userId = RandomStringUtils.randomAlphanumeric(10);
 
-        Map<String, Object> incomingCaseDate = caseDataWithRepresentatives(representativeBuilder
-            .email(representativeEmail)
+        Respondent respondent = Respondent.builder().build();
+        Representative representative = Representative.builder()
+            .fullName("John Smith")
+            .positionInACase("Position")
             .role(RepresentativeRole.REPRESENTING_PERSON_1)
-            .build());
+            .servingPreferences(DIGITAL_SERVICE)
+            .email("test@test.com")
+            .role(RepresentativeRole.REPRESENTING_RESPONDENT_1)
+            .build();
+
+        Map<String, Object> incomingCaseDate = buildCaseData(respondent, new Element(representativeId, representative));
 
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
-        given(organisationApi.findUsersByEmail(userAuthToken, serviceAuthToken, representativeEmail))
+        given(organisationApi.findUsersByEmail(userAuthToken, serviceAuthToken, representative.getEmail()))
             .willReturn(new User(userId));
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postSubmittedEvent(caseId, incomingCaseDate, SC_OK);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseId, incomingCaseDate, SC_OK);
 
-        verify(organisationApi).findUsersByEmail(userAuthToken, serviceAuthToken, representativeEmail);
+        verify(organisationApi).findUsersByEmail(userAuthToken, serviceAuthToken, representative.getEmail());
 
         verify(caseUserApi).updateCaseRolesForUser(userAuthToken, serviceAuthToken,
-            caseId.toString(), userId, new CaseUser(userId, Set.of("[SOLICITOR]")));
+            caseId.toString(), userId, new CaseUser(userId, Set.of(SOLICITOR.formattedName())));
 
+        CaseData outgoingCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        Respondent updatedResponded = outgoingCaseData.getRespondents1().get(0).getValue();
+
+        assertThat(unwrapElements(updatedResponded.getRepresentedBy())).containsExactly(representativeId);
         assertThat(callbackResponse.getErrors()).isNullOrEmpty();
-
     }
 
-    Map<String, Object> caseDataWithRepresentatives(Representative... representatives) {
-        return ImmutableMap.of("representatives", ElementUtils.wrap(representatives));
+    private static Map<String, Object> buildCaseData(Respondent respondent, Element<Representative> representative) {
+        return ImmutableMap.of("representatives", List.of(representative), "respondents1", wrapElements(respondent));
     }
-
 }

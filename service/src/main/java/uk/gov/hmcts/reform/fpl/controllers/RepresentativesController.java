@@ -33,7 +33,10 @@ public class RepresentativesController {
     private final OthersService othersService;
 
     @Autowired
-    public RepresentativesController(ObjectMapper mapper, RepresentativeService representativeService, RespondentService respondentService, OthersService othersService) {
+    public RepresentativesController(ObjectMapper mapper,
+                                     RepresentativeService representativeService,
+                                     RespondentService respondentService,
+                                     OthersService othersService) {
         this.mapper = mapper;
         this.representativeService = representativeService;
         this.respondentService = respondentService;
@@ -45,7 +48,7 @@ public class RepresentativesController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("representatives", representativeService.getRepresentatives(caseData));
+        caseDetails.getData().put("representatives", representativeService.getDefaultRepresentatives(caseData));
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
         caseDetails.getData().put("others_label", getOthersLabel(caseData));
 
@@ -69,7 +72,6 @@ public class RepresentativesController {
             .build();
     }
 
-
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleSubmitted(
         @RequestHeader(value = "authorization") String authorisation,
@@ -77,8 +79,7 @@ public class RepresentativesController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        representativeService.addRepresentatives(caseData, caseDetails.getId(),
-            authorisation);
+        representativeService.addRepresentatives(caseData, caseDetails.getId(), authorisation);
 
         caseDetails.getData().put("representatives", caseData.getRepresentatives());
         caseDetails.getData().put("others", caseData.getOthers());
@@ -96,5 +97,4 @@ public class RepresentativesController {
     private String getOthersLabel(CaseData caseData) {
         return othersService.buildOthersLabel(defaultIfNull(caseData.getOthers(), Others.builder().build()));
     }
-
 }

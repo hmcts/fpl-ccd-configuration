@@ -45,6 +45,7 @@ import java.util.stream.Collectors;
 
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
+import static org.apache.commons.lang.StringUtils.left;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -58,7 +59,8 @@ import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JU
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HIS_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrap;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 public class CaseDataGeneratorHelper {
 
@@ -201,25 +203,19 @@ public class CaseDataGeneratorHelper {
     }
 
     public static List<Element<Respondent>> createRespondents() {
-        return ImmutableList.of(
-            Element.<Respondent>builder()
-                .id(randomUUID())
-                .value(Respondent.builder().party(
-                    RespondentParty.builder()
-                        .firstName("Timothy")
-                        .lastName("Jones")
-                        .relationshipToChild("Father")
-                        .build())
+        return wrapElements(
+            Respondent.builder().party(
+                RespondentParty.builder()
+                    .firstName("Timothy")
+                    .lastName("Jones")
+                    .relationshipToChild("Father")
                     .build())
                 .build(),
-            Element.<Respondent>builder()
-                .id(randomUUID())
-                .value(Respondent.builder().party(
-                    RespondentParty.builder()
-                        .firstName("Sarah")
-                        .lastName("Simpson")
-                        .relationshipToChild("Mother")
-                        .build())
+            Respondent.builder().party(
+                RespondentParty.builder()
+                    .firstName("Sarah")
+                    .lastName("Simpson")
+                    .relationshipToChild("Mother")
                     .build())
                 .build()
         );
@@ -391,36 +387,21 @@ public class CaseDataGeneratorHelper {
     }
 
     public static List<Element<Direction>> createCmoDirections() {
-        return ImmutableList.of(
-            Element.<Direction>builder()
-                .value(createCustomDirection(ALL_PARTIES))
-                .build(),
-            Element.<Direction>builder()
-                .value(createCustomDirection(LOCAL_AUTHORITY))
-                .build(),
-            Element.<Direction>builder()
-                .value(createCustomDirection(CAFCASS))
-                .build(),
-            Element.<Direction>builder()
-                .value(createCustomDirection(COURT))
-                .build(),
-            Element.<Direction>builder()
-                .value(createCustomDirection(PARENTS_AND_RESPONDENTS))
-                .build(),
-            Element.<Direction>builder()
-                .value(createCustomDirection(OTHERS))
-                .build());
+        return wrapElements(
+            createCustomDirection(ALL_PARTIES),
+            createCustomDirection(LOCAL_AUTHORITY),
+            createCustomDirection(CAFCASS),
+            createCustomDirection(COURT),
+            createCustomDirection(PARENTS_AND_RESPONDENTS),
+            createCustomDirection(OTHERS)
+        );
     }
 
     public static List<Element<Recital>> createRecitals() {
-        return ImmutableList.of(
-            Element.<Recital>builder()
-                .value(Recital.builder()
-                    .title("A title")
-                    .description("A description")
-                    .build())
-                .build()
-        );
+        return wrapElements(Recital.builder()
+            .title("A title")
+            .description("A description")
+            .build());
     }
 
     public static Schedule createSchedule(boolean includeSchedule) {
@@ -450,6 +431,15 @@ public class CaseDataGeneratorHelper {
 
         final List<Element<Direction>> cmoDirections = createCmoDirections();
 
+        List<Element<Respondent>> respondents = createRespondents();
+        Others others = createOthers();
+
+        List<Element<Representative>> representatives = List.of(
+            createRepresentativesFor(respondents.get(0).getValue()),
+            createRepresentativesFor(respondents.get(0).getValue()),
+            createRepresentativesFor(respondents.get(1).getValue()),
+            createRepresentativesFor(others.getFirstOther()));
+
         return ImmutableMap.<String, Object>builder()
             .put("caseLocalAuthority", "example")
             .put("familyManCaseNumber", "123")
@@ -458,7 +448,8 @@ public class CaseDataGeneratorHelper {
             .put("children1", createPopulatedChildren())
             .put("hearingDetails", createHearingBookings(localDateTime))
             .put("dateSubmitted", LocalDate.now())
-            .put("respondents1", createRespondents())
+            .put("respondents1", respondents)
+            .put("others", others)
             .put("cmoHearingDateList", DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
@@ -474,12 +465,45 @@ public class CaseDataGeneratorHelper {
             .put("cafcassDirectionsCustom", getDirectionByAssignee(cmoDirections, CAFCASS))
             .put("otherPartiesDirectionsCustom", getDirectionByAssignee(cmoDirections, OTHERS))
             .put("respondentDirectionsCustom", getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
+            .put("representatives", representatives)
             .put("cmoToAction", CaseManagementOrder.builder()
                 .nextHearing(NextHearing.builder()
                     .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
                     .build())
                 .build())
             .build();
+    }
+
+    private static Element<Representative> createRepresentativesFor(Respondent respondent) {
+        RespondentParty respondentParty = respondent.getParty();
+        String initials = left(respondentParty.getFirstName(), 1) + left(respondentParty.getLastName(), 1);
+
+        int representativeSequence = respondent.getRepresentedBy().size() + 1;
+
+        Element<Representative> representative = element(Representative.builder()
+            .fullName(String.format("George Rep %s (%s)", representativeSequence, initials))
+            .email(String.format("%s%s@representatives.com", representativeSequence, initials))
+            .telephoneNumber(String.format("+44 7900000%s", representativeSequence))
+            .build());
+
+        respondent.addRepresentative(representative.getId());
+
+        return representative;
+    }
+
+    private static Element<Representative> createRepresentativesFor(Other other) {
+        String respondentInitials = left(other.getName(), 1);
+        int representativeSequence = other.getRepresentedBy().size() + 1;
+
+        Element<Representative> representative = element(Representative.builder()
+            .fullName(String.format("Barbara Rep %s (%s)", representativeSequence, respondentInitials))
+            .email(String.format("%s%s@representatives.com", representativeSequence, respondentInitials))
+            .telephoneNumber(String.format("+44 7100000%s", representativeSequence))
+            .build());
+
+        other.addRepresentative(representative.getId());
+
+        return representative;
     }
 
     public static CaseManagementOrder createCaseManagementOrder() {
@@ -493,7 +517,7 @@ public class CaseDataGeneratorHelper {
 
     public static List<Element<Representative>> createRepresentatives(
         RepresentativeServingPreferences servingPreferences) {
-        return wrap(Representative.builder()
+        return wrapElements(Representative.builder()
             .email("abc@example.com")
             .fullName("Jon Snow")
             .servingPreferences(servingPreferences)

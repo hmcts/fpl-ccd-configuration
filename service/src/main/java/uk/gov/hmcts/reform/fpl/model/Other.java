@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 @Data
 @Builder
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class Other extends Representable {
     @SuppressWarnings("membername")
     private final String DOB;

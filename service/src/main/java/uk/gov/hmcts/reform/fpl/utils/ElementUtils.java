@@ -16,13 +16,13 @@ public class ElementUtils {
     }
 
     @SafeVarargs
-    public static <T extends Object> List<Element<T>> wrap(T... elements) {
+    public static <T extends Object> List<Element<T>> wrapElements(T... elements) {
         return Stream.of(elements)
             .map(element -> Element.<T>builder().value(element).build())
             .collect(Collectors.toUnmodifiableList());
     }
 
-    public static <T extends Object> List<T> unwrap(List<Element<T>> elements) {
+    public static <T extends Object> List<T> unwrapElements(List<Element<T>> elements) {
         return Optional.ofNullable(elements)
             .orElse(emptyList())
             .stream()
@@ -33,6 +33,4 @@ public class ElementUtils {
     public static <T> Element<T> element(T element) {
         return Element.<T>builder().id(UUID.randomUUID()).value(element).build();
     }
-
-
 }

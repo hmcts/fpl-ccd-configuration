@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableMap;
 import feign.FeignException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import uk.gov.hmcts.reform.rd.client.OrganisationApi;
 import uk.gov.hmcts.reform.rd.model.User;
 
@@ -23,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(RepresentativesController.class)
@@ -51,7 +50,7 @@ class RepresentativeMidEventControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldValidateRepresentativesAndReturnValidationErrors() {
-        Map<String, Object> incomingCaseDate = caseDataWithRepresentatives(representativeBuilder.build());
+        Map<String, Object> incomingCaseDate = buildCaseData(representativeBuilder.build());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(incomingCaseDate);
 
@@ -60,7 +59,7 @@ class RepresentativeMidEventControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldValidateRepresentativeAccountExistenceAndReturnValidationErrors() {
-        Map<String, Object> incomingCaseDate = caseDataWithRepresentatives(representativeBuilder
+        Map<String, Object> incomingCaseDate = buildCaseData(representativeBuilder
             .email(representativeEmail).build());
 
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
@@ -77,7 +76,7 @@ class RepresentativeMidEventControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldSuccessfullyValidateRepresentativeAccountExistence() {
-        Map<String, Object> incomingCaseDate = caseDataWithRepresentatives(representativeBuilder
+        Map<String, Object> incomingCaseDate = buildCaseData(representativeBuilder
             .email(representativeEmail).build());
 
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
@@ -91,7 +90,9 @@ class RepresentativeMidEventControllerTest extends AbstractControllerTest {
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
-    Map<String, Object> caseDataWithRepresentatives(Representative... representatives) {
-        return ImmutableMap.of("representatives", ElementUtils.wrap(representatives), "respondents1", ElementUtils.wrap(Respondent.builder().build()));
+    Map<String, Object> buildCaseData(Representative... representatives) {
+        return Map.of(
+            "representatives", wrapElements(representatives),
+            "respondents1", wrapElements(Respondent.builder().build()));
     }
 }

@@ -20,10 +20,6 @@ public class AbstractControllerTest {
 
     private String eventName;
 
-    public AbstractControllerTest(String eventName) {
-        this.eventName = eventName;
-    }
-
     protected final String userAuthToken = "Bearer token";
 
     @Autowired
@@ -32,47 +28,44 @@ public class AbstractControllerTest {
     @Autowired
     protected ObjectMapper mapper;
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToStart(Map<String, Object> data, int expectedHttpStats) {
-        return postEvent(String.format("/callback/%s/about-to-start", eventName), data, expectedHttpStats);
+    public AbstractControllerTest(String eventName) {
+        this.eventName = eventName;
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToStart(Map<String, Object> data) {
-        return postAboutToStart(data, SC_OK);
+    protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(Map<String, Object> caseData,
+                                                                         int expectedStatus) {
+        return postEvent(String.format("/callback/%s/about-to-start", eventName), caseData, expectedStatus);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postMidEvent(Map<String, Object> data, int expectedHttpStats) {
-        return postEvent(String.format("/callback/%s/mid-event", eventName), data, expectedHttpStats);
+    protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(Map<String, Object> caseData) {
+        return postAboutToStartEvent(caseData, SC_OK);
+    }
+
+    protected AboutToStartOrSubmitCallbackResponse postMidEvent(Map<String, Object> caseData, int expectedStatus) {
+        return postEvent(String.format("/callback/%s/mid-event", eventName), caseData, expectedStatus);
     }
 
     protected AboutToStartOrSubmitCallbackResponse postMidEvent(Map<String, Object> data) {
         return postMidEvent(data, SC_OK);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postSubmittedEvent(Map<String, Object> data, int expectedHttpStats) {
-        return postEvent(String.format("/callback/%s/submitted", eventName), data, expectedHttpStats);
+    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(Long id, Map<String, Object> caseData,
+                                                                          int expectedStatus) {
+        return postEvent(String.format("/callback/%s/about-to-submit", eventName), id, caseData, expectedStatus);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postSubmittedEvent(Long id, Map<String, Object> data,
-                                                                      int expectedHttpStats) {
-        return postEvent(String.format("/callback/%s/submitted", eventName), id, data, expectedHttpStats);
-    }
-
-    protected AboutToStartOrSubmitCallbackResponse postSubmittedEvent(Map<String, Object> data) {
-        return postSubmittedEvent(data, SC_OK);
-    }
-
-    private AboutToStartOrSubmitCallbackResponse postEvent(String path, Long id, Map<String, Object> data,
-                                                           int expectedHttpStats) {
+    private AboutToStartOrSubmitCallbackResponse postEvent(String path, Long id, Map<String, Object> caseData,
+                                                           int expectedStatus) {
         try {
             CallbackRequest request = CallbackRequest.builder()
-                .caseDetails(CaseDetails.builder().id(id).data(data).build()).build();
+                .caseDetails(CaseDetails.builder().id(id).data(caseData).build()).build();
 
             MvcResult response = mockMvc
                 .perform(post(path)
                     .header("authorization", userAuthToken)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(mapper.writeValueAsString(request)))
-                .andExpect(status().is(expectedHttpStats))
+                .andExpect(status().is(expectedStatus))
                 .andReturn();
 
             return mapper.readValue(response.getResponse().getContentAsByteArray(),

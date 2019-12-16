@@ -14,5 +14,4 @@ public enum CaseRole {
     public String formattedName() {
         return formattedName;
     }
-
 }

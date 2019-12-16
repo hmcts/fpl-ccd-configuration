@@ -212,7 +212,6 @@ class CaseDataExtractionServiceTest {
         assertThat(caseDataExtractionService.getOthers(caseData)).isEmpty();
     }
 
-
     @Test
     public void shouldGetEmptyListOfOthersWhenOthersAreEmpty() {
         CaseData caseData = CaseData.builder()
@@ -239,7 +238,7 @@ class CaseDataExtractionServiceTest {
         CaseData caseData = CaseData.builder()
             .others(Others.builder()
                 .firstOther(other1)
-                .additionalOthers(ElementUtils.wrap(other2))
+                .additionalOthers(ElementUtils.wrapElements(other2))
                 .build())
             .build();
 

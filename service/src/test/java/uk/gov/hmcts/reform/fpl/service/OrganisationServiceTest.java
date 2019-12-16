@@ -36,7 +36,6 @@ class OrganisationServiceTest {
 
     private static final String AUTH_TOKEN_ID = "Bearer authorisedBearer";
     private static final String SERVICE_AUTH_TOKEN_ID = "Bearer authorised service";
-
     private static final String USER_EMAIL = "test@test.com";
 
     @BeforeEach
@@ -96,7 +95,6 @@ class OrganisationServiceTest {
 
     @Test
     void shouldFindUser() {
-
         User user = new User(RandomStringUtils.randomAlphanumeric(10));
 
         when(organisationApi.findUsersByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenReturn(user);
@@ -130,5 +128,4 @@ class OrganisationServiceTest {
             assertThat(e).isEqualTo(exception);
         }
     }
-
 }

@@ -39,8 +39,8 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrap;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrap;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ExtendWith(SpringExtension.class)
 class RepresentativesServiceTest {
@@ -71,7 +71,6 @@ class RepresentativesServiceTest {
         CaseData caseData = caseWithRepresentatives(representative);
 
         List<String> validationErrors = representativesService.validateRepresentatives(caseData, authentication);
-
 
         assertThat(validationErrors).containsExactly(
             "Enter a full name for Representative",
@@ -165,7 +164,8 @@ class RepresentativesServiceTest {
 
         List<String> validationErrors = representativesService.validateRepresentatives(caseData, authentication);
 
-        assertThat(validationErrors).containsExactly("Representative must already have an account with the digital service");
+        assertThat(validationErrors)
+            .containsExactly("Representative must already have an account with the digital service");
 
         verify(organisationService).findUserByEmail(authentication, representative.getEmail());
     }
@@ -202,25 +202,24 @@ class RepresentativesServiceTest {
 
         CaseData caseData = caseWithRepresentatives(representative);
 
-        List<Element<Representative>> actualRepresentatives = representativesService.getRepresentatives(caseData);
+        List<Element<Representative>> representatives = representativesService.getDefaultRepresentatives(caseData);
 
-        assertThat(actualRepresentatives).isEqualTo(caseData.getRepresentatives());
+        assertThat(representatives).isEqualTo(caseData.getRepresentatives());
     }
 
     @Test
     public void shouldReturnEmptyRepresentativeIfNoRepresentativePresents() {
         CaseData caseData = CaseData.builder().build();
 
-        List<Element<Representative>> expectedRepresentatives = wrap(Representative.builder().build());
-        List<Element<Representative>> actualRepresentatives = representativesService.getRepresentatives(caseData);
+        List<Element<Representative>> expectedRepresentatives = wrapElements(Representative.builder().build());
+        List<Element<Representative>> representatives = representativesService.getDefaultRepresentatives(caseData);
 
-        assertThat(actualRepresentatives).isEqualTo(expectedRepresentatives);
+        assertThat(representatives).isEqualTo(expectedRepresentatives);
     }
 
     @Test
     public void shouldAddUserToCase() {
-
-        Long caseId = RandomUtils.nextLong();
+        final Long caseId = RandomUtils.nextLong();
 
         String representative1UserId = RandomStringUtils.randomAlphabetic(10);
         String representative2UserId = RandomStringUtils.randomAlphabetic(10);
@@ -308,28 +307,27 @@ class RepresentativesServiceTest {
                 responded2Representative))
             .others(Others.builder()
                 .firstOther(otherPerson1)
-                .additionalOthers(wrap(otherPerson2))
+                .additionalOthers(wrapElements(otherPerson2))
                 .build())
-            .respondents1(wrap(respondent1, respondent2))
+            .respondents1(wrapElements(respondent1, respondent2))
             .build();
 
-        when(caseDataExtractionService.getOthers(caseData))
-            .thenReturn(asList(otherPerson1, otherPerson2));
+        when(caseDataExtractionService.getOthers(caseData)).thenReturn(asList(otherPerson1, otherPerson2));
 
         representativesService.addRepresentatives(caseData, caseId, authentication);
 
-        assertThat(unwrap(otherPerson1.getRepresentedBy()))
+        assertThat(unwrapElements(otherPerson1.getRepresentedBy()))
             .containsExactly(person1Representative1.getId(), person1Representative2.getId());
-        assertThat(unwrap(otherPerson2.getRepresentedBy()))
+        assertThat(unwrapElements(otherPerson2.getRepresentedBy()))
             .containsExactly(person2Representative.getId());
-        assertThat(unwrap(respondent1.getRepresentedBy()))
+        assertThat(unwrapElements(respondent1.getRepresentedBy()))
             .containsExactly(responded1Representative1.getId(), responded1Representative2.getId());
-        assertThat(unwrap(respondent2.getRepresentedBy())).
-            containsExactly(responded2Representative.getId());
+        assertThat(unwrapElements(respondent2.getRepresentedBy()))
+            .containsExactly(responded2Representative.getId());
     }
 
     private static CaseData caseWithRepresentatives(Representative... representatives) {
-        return CaseData.builder().representatives(wrap(representatives)).build();
+        return CaseData.builder().representatives(wrapElements(representatives)).build();
     }
 
     private static Element<Representative> representativeFor(RepresentativeRole representativeRole) {

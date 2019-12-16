@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
@@ -10,10 +11,8 @@ import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,6 +28,8 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Service
 public class RepresentativeService {
@@ -42,11 +43,9 @@ public class RepresentativeService {
     @Autowired
     private CaseDataExtractionService caseDataExtractionService;
 
-    public List<Element<Representative>> getRepresentatives(CaseData caseData) {
+    public List<Element<Representative>> getDefaultRepresentatives(CaseData caseData) {
         if (ObjectUtils.isEmpty(caseData.getRepresentatives())) {
-            return Arrays.asList(Element.<Representative>builder()
-                .value(Representative.builder().build())
-                .build());
+            return wrapElements(Representative.builder().build());
         } else {
             return caseData.getRepresentatives();
         }
@@ -55,13 +54,15 @@ public class RepresentativeService {
     public List<String> validateRepresentatives(CaseData caseData, String authorisation) {
         List<String> validationErrors = new ArrayList<>();
 
-        List<Representative> representatives = caseData.getRepresentatives().stream()
-            .map(Element::getValue)
-            .collect(toList());
+        List<Representative> representatives = unwrapElements(caseData.getRepresentatives());
 
         int representativeSequence = 1;
 
         for (Representative representative : representatives) {
+
+            final RepresentativeServingPreferences servingPreferences = representative.getServingPreferences();
+            final RepresentativeRole role = representative.getRole();
+
             String representativeLabel = representatives.size() == 1
                 ? "Representative" : "Representative " + representativeSequence++;
 
@@ -73,22 +74,21 @@ public class RepresentativeService {
                 validationErrors.add(format("Enter a position in the case for %s", representativeLabel));
             }
 
-            if (isNull(representative.getRole())) {
+            if (isNull(role)) {
                 validationErrors.add(format("Select who %s is", representativeLabel));
             }
 
-
-            if (isNull(representative.getServingPreferences())) {
+            if (isNull(servingPreferences)) {
                 validationErrors.add(format("Select how %s wants to get case information", representativeLabel));
             }
 
-            if (nonNull(representative.getServingPreferences()) && EMAIL.equals(representative.getServingPreferences())) {
+            if (EMAIL.equals(servingPreferences)) {
                 if (isEmpty(representative.getEmail())) {
                     validationErrors.add(format("Enter an email address for %s", representativeLabel));
                 }
             }
 
-            if (nonNull(representative.getServingPreferences()) && POST.equals(representative.getServingPreferences())) {
+            if (POST.equals(servingPreferences)) {
                 if (isNull(representative.getAddress()) || isEmpty(representative.getAddress().getPostcode())) {
                     validationErrors.add(format("Enter a postcode for %s", representativeLabel));
                 }
@@ -97,23 +97,27 @@ public class RepresentativeService {
                 }
             }
 
-            if (nonNull(representative.getRole()) && RESPONDENT.equals(representative.getRole().getType())) {
-                Optional<Representable> responded = findRespondent(caseData, representative.getRole().getSequenceNo());
+            if (nonNull(role) && RESPONDENT.equals(representative.getRole().getType())) {
+                Optional<Representable> responded = findRespondent(caseData, role.getSequenceNo());
                 if (responded.isEmpty()) {
-                    validationErrors.add(format("Respondents %s represented by %s doesn't exist. Choose a respondent who is associated with this case", representative.getRole().getSequenceNo() + 1, representativeLabel));
+                    validationErrors.add(format("Respondent %s represented by %s doesn't exist."
+                            + " Choose a respondent who is associated with this case",
+                        representative.getRole().getSequenceNo() + 1, representativeLabel));
                 }
             }
 
-            if (nonNull(representative.getRole()) && OTHER.equals(representative.getRole().getType())) {
+            if (nonNull(role) && OTHER.equals(role.getType())) {
                 int otherPersonSeq = representative.getRole().getSequenceNo();
                 Optional<Representable> other = findOther(caseData, otherPersonSeq);
                 if (other.isEmpty()) {
                     String otherPersonLabel = otherPersonSeq == 0 ? "Person" : "Other person " + otherPersonSeq;
-                    validationErrors.add(format("%s represented by %s doesn't exist. Choose a person who is associated with this case", otherPersonLabel, representativeLabel));
+                    validationErrors.add(format("%s represented by %s doesn't exist."
+                            + " Choose a person who is associated with this case",
+                        otherPersonLabel, representativeLabel));
                 }
             }
 
-            if (nonNull(representative.getServingPreferences()) && DIGITAL_SERVICE.equals(representative.getServingPreferences())) {
+            if (DIGITAL_SERVICE.equals(servingPreferences)) {
                 if (isEmpty(representative.getEmail())) {
                     validationErrors.add(format("Enter an email address for %s", representativeLabel));
                 } else {
@@ -126,7 +130,6 @@ public class RepresentativeService {
                     }
                 }
             }
-
         }
 
         return validationErrors;
@@ -140,13 +143,17 @@ public class RepresentativeService {
             });
     }
 
-    private void addToCase(Element<Representative> representative, Long caseId, String authorisation) {
-        if (representative.getValue().getServingPreferences().equals(DIGITAL_SERVICE)) {
-            if (isNull(representative.getValue().getIdamId())) {
-                String userId = organisationService.findUserByEmail(authorisation, representative.getValue().getEmail()).get();
-                caseService.addUser(authorisation, Long.toString(caseId), userId, representative.getValue().getRole().getCaseRoles());
-
-                representative.getValue().setIdamId(userId);
+    private void addToCase(Element<Representative> representativeWithId, Long caseId, String auth) {
+        Representative representative = representativeWithId.getValue();
+        if (DIGITAL_SERVICE.equals(representative.getServingPreferences())) {
+            if (isNull(representative.getIdamId())) {
+                organisationService.findUserByEmail(auth, representative.getEmail()).ifPresent(
+                    userId -> {
+                        caseService.addUser(auth, Long.toString(caseId), userId,
+                            representative.getRole().getCaseRoles());
+                        representative.setIdamId(userId);
+                    }
+                );
             }
         }
     }
@@ -181,21 +188,15 @@ public class RepresentativeService {
     }
 
     private Optional<Representable> findRespondent(CaseData caseData, int sequenceNo) {
-        List<Respondent> respondents = ElementUtils.unwrap(caseData.getRespondents1());
-        try {
-            return Optional.of(respondents.get(sequenceNo));
-        } catch (IndexOutOfBoundsException e) {
-            return Optional.empty();
-        }
+        List<Respondent> respondents = unwrapElements(caseData.getRespondents1());
+
+        return respondents.size() <= sequenceNo ? Optional.empty() : Optional.of(respondents.get(sequenceNo));
     }
 
     private Optional<Representable> findOther(CaseData caseData, int sequenceNo) {
         List<Other> others = caseDataExtractionService.getOthers(caseData);
-        try {
-            return Optional.of(others.get(sequenceNo));
-        } catch (IndexOutOfBoundsException e) {
-            return Optional.empty();
-        }
+
+        return others.size() <= sequenceNo ? Optional.empty() : Optional.of(others.get(sequenceNo));
     }
 
 }

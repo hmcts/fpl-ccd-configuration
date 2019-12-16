@@ -4,12 +4,9 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageRepresentativesGatekeeping",
     "CaseFieldID": "respondents_label",
+    "PageID": 1,
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": 1,
-    "PageLabel": " ",
-    "PageDisplayOrder": 1,
-    "PageColumnNumber": 1,
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/manage-representatives/mid-event"
   },
   {
@@ -17,22 +14,17 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageRepresentativesGatekeeping",
     "CaseFieldID": "others_label",
-    "PageFieldDisplayOrder": 2,
-    "DisplayContext": "READONLY",
     "PageID": 1,
-    "PageLabel": " ",
-    "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "manageRepresentativesGatekeeping",
     "CaseFieldID": "representatives",
-    "PageFieldDisplayOrder": 3,
-    "DisplayContext": "OPTIONAL",
     "PageID": 1,
-    "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "OPTIONAL"
   }
 ]

@@ -36,7 +36,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -152,18 +151,20 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
         List<Map<String, Object>> representativesInfo = new ArrayList<>();
         List<Element<Representative>> representatives = caseData.getRepresentatives();
-        List<Respondent> respondents = ElementUtils.unwrap(caseData.getRespondents1());
+        List<Respondent> respondents = ElementUtils.unwrapElements(caseData.getRespondents1());
         List<Other> others = caseDataExtractionService.getOthers(caseData);
 
         representativesInfo.add(getApplicantDetails(applicantName, solicitor));
 
         respondents.stream()
+            .filter(respondent -> isNotEmpty(respondent.getRepresentedBy()))
             .forEach(respondent -> representativesInfo.add(ImmutableMap.of(
                 "name", defaultIfNull(respondent.getParty().getFullName(), EMPTY),
                 "representedBy", getRepresentativesInfo(respondent, representatives))
             ));
 
         others.stream()
+            .filter(other -> isNotEmpty(other.getRepresentedBy()))
             .forEach(other -> representativesInfo.add(ImmutableMap.of(
                 "name", defaultIfNull(other.getName(), EMPTY),
                 "representedBy", getRepresentativesInfo(other, representatives))));
@@ -171,7 +172,8 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         return representativesInfo;
     }
 
-    private List<Map<String, Object>> getRepresentativesInfo(Representable representable, List<Element<Representative>> representatives) {
+    private List<Map<String, Object>> getRepresentativesInfo(Representable representable,
+                                                             List<Element<Representative>> representatives) {
         return representable.getRepresentedBy().stream()
             .map(representativeId -> findRepresentative(representatives, representativeId.getValue()))
             .filter(Optional::isPresent)
@@ -236,18 +238,19 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         applicantDetails.put("name", defaultIfBlank(applicantName, EMPTY_PLACEHOLDER));
 
         if (solicitor == null) {
-            applicantDetails.put("representedBy", ImmutableMap.of(
+            applicantDetails.put("representedBy", List.of(Map.of(
                 "representativeName", EMPTY_PLACEHOLDER,
                 "representativeEmail", EMPTY_PLACEHOLDER,
                 "representativePhoneNumber", EMPTY_PLACEHOLDER
-            ));
+            )));
         } else {
             String phoneNumber = defaultIfBlank(solicitor.getTelephone(), solicitor.getMobile());
-            applicantDetails.put("representedBy", ImmutableMap.of(
-                "representativeName", defaultIfBlank(solicitor.getName(), EMPTY_PLACEHOLDER),
-                "representativeEmail", defaultIfBlank(solicitor.getEmail(), EMPTY_PLACEHOLDER),
-                "representativePhoneNumber", defaultIfBlank(phoneNumber, EMPTY_PLACEHOLDER)
-            ));
+            applicantDetails.put("representedBy", List.of(
+                Map.of(
+                    "representativeName", defaultIfBlank(solicitor.getName(), EMPTY_PLACEHOLDER),
+                    "representativeEmail", defaultIfBlank(solicitor.getEmail(), EMPTY_PLACEHOLDER),
+                    "representativePhoneNumber", defaultIfBlank(phoneNumber, EMPTY_PLACEHOLDER)
+                )));
         }
 
         return applicantDetails;

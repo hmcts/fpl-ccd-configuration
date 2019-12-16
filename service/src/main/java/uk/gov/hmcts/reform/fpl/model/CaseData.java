@@ -157,7 +157,7 @@ public class CaseData {
     private final DocumentReference sharedDraftCMODocument;
 
     private final Others others;
+    private final DynamicList nextHearingDateList;
 
     private final List<Element<Representative>> representatives;
-    private final DynamicList nextHearingDateList;
 }

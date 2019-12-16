@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class Respondent extends Representable {
     @Valid
     @NotNull(message = "You need to add details to respondents")

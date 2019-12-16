@@ -5,10 +5,9 @@ set -eu
 dir=$(dirname ${0})
 root_dir=$(realpath ${dir}/../../..)
 
-mock_user_by_email_template=${root_dir}/docker/wiremock/templates/userByEmail.template.json
+mock_user_by_email_template=${root_dir}/docker/wiremock/templates/userByEmail.json
 mock_user_by_email_dir=${root_dir}/docker/wiremock/mappings/user-by-email
-
-user_template_file=${root_dir}/docker/wiremock/__files/userTemplate.json
+user_template_file=${root_dir}/docker/wiremock/templates/userTemplate.json
 mock_file=${root_dir}/docker/wiremock/__files/mockResponse.json
 mock_tmp_file=${root_dir}/docker/wiremock/__files/mockResponse.tmp.json
 users_file=${root_dir}/bin/configurer/users.json
@@ -37,39 +36,33 @@ function create_mock_response() {
     email=$(jq -r --argjson i $i '.[$i].email' $mock_file)
     user_id=$(jq -r --arg email $email '.[$email]' $users_ids_tmp_file)
     jq -r --argjson i $i --arg user_id $user_id '.[$i].userIdentifier=$user_id | .[$i].firstName=.[$i].email | .[$i].roles|=split(",")' $mock_file > $mock_tmp_file && mv $mock_tmp_file $mock_file
-    generate_user_by_email_mock $user_id $email
   done
+
+  allUsers=$(jq ". | {users: .}" $mock_file)
+  echo $allUsers | jq > $mock_file
 
   rm $users_ids_tmp_file
 }
 
 function create_user_by_email_responses() {
+  rm -rf $mock_user_by_email_dir
+  mkdir $mock_user_by_email_dir
   echo $(get_users_email_id_mappings '@') > $users_ids_tmp_file
 
   for i in `seq 0 $(jq '. | length - 1' $users_file)`
   do
     email=$(jq -r --argjson i $i '.[$i].email' $users_file)
-    user_id=$(jq -r --arg email $email '.[$email]' $users_ids_tmp_file)
-    generate_user_by_email_mock $user_id $email
+    id=$(jq -r --arg email $email '.[$email]' $users_ids_tmp_file)
+
+    if [ "$id" != "null" ]; then
+       userByEmailMappings=$(sed -e "s|\[email]|$email|" -e "s|\[userId]|$id|" $mock_user_by_email_template)
+       echo $userByEmailMappings | jq '.' > "$mock_user_by_email_dir/${email}.json"
+    fi
+
   done
 
   rm $users_ids_tmp_file
 }
-
-function generate_user_by_email_mock() {
-  id=$1
-  email=$2
-
-echo $id $email
-  if [ "$id" != "null" ]; then
-   userByEmailMappings=$(sed -e "s|\[email]|$email|" -e "s|\[userId]|$id|" $mock_user_by_email_template)
-   echo $userByEmailMappings | jq '.' > "$mock_user_by_email_dir/${email}.json"
-  fi
-}
-
-
-rm -rf $mock_user_by_email_dir
-mkdir $mock_user_by_email_dir
 
 create_mock_response swansea
 create_user_by_email_responses

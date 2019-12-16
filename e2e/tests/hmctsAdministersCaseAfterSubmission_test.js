@@ -1,6 +1,7 @@
 const config = require('../config.js');
 const hearingDetails = require('../fixtures/hearingTypeDetails.js');
 const orders = require('../fixtures/orders.js');
+const representatives = require('../fixtures/representatives.js');
 const dateFormat = require('dateformat');
 const dateToString = require('../helpers/date_to_string_helper');
 
@@ -9,6 +10,7 @@ let caseId;
 Feature('Case administration after submission');
 
 Before(async (I, caseViewPage, submitApplicationEventPage) => {
+
   if (!caseId) {
     await I.logInAndCreateCase(config.swanseaLocalAuthorityEmailUserOne, config.localAuthorityPassword);
     await I.enterMandatoryFields();
@@ -23,6 +25,7 @@ Before(async (I, caseViewPage, submitApplicationEventPage) => {
     I.signOut();
     await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
   }
+
   await I.navigateToCaseDetails(caseId);
 });
 
@@ -182,6 +185,32 @@ Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseVi
   caseViewPage.selectTab(caseViewPage.tabs.documents);
   I.seeAnswerInTab('1', 'Notice of proceedings 1', 'File name', 'Notice_of_proceedings_c6.pdf');
   I.seeAnswerInTab('1', 'Notice of proceedings 2', 'File name', 'Notice_of_proceedings_c6a.pdf');
+});
+
+//Commented out as it wont work on preview env as PRD mock is needed
+xScenario('HMCTS admin share case with representatives', async (I, caseViewPage, enterRepresentativesEventPage) => {
+  await I.navigateToCaseDetails(caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
+  const representative = {...representatives[0], email: config.hillingdonLocalAuthorityEmailUserOne};
+  await enterRepresentativesEventPage.enterRepresentative(representative);
+
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
+
+  caseViewPage.selectTab(caseViewPage.tabs.casePeople);
+  I.seeAnswerInTab(1, 'Representatives 1', 'Full name', representative.fullName);
+  I.seeAnswerInTab(2, 'Representatives 1', 'Position in a case', representative.positionInACase);
+  I.seeAnswerInTab(3, 'Representatives 1', 'Email address', representative.email);
+  I.seeAnswerInTab(4, 'Representatives 1', 'Phone number', representative.telephone);
+  I.seeAnswerInTab(6, 'Representatives 1', 'How do they want to get case information?', representative.servingPreferences);
+  I.seeAnswerInTab(7, 'Representatives 1', 'Who are they?', representative.role);
+
+  I.signOut();
+  await I.signIn(config.hillingdonLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+  await I.navigateToCaseDetails(caseId);
+  I.see(caseId);
+  I.signOut();
+  await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
 });
 
 Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {

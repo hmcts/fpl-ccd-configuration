@@ -1,15 +1,16 @@
 package uk.gov.hmcts.reform.fpl.model.interfaces;
 
+import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrap;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
+@EqualsAndHashCode
 public abstract class Representable {
 
     private List<Element<UUID>> representedBy = new ArrayList<>();
@@ -19,7 +20,7 @@ public abstract class Representable {
     }
 
     public void addRepresentative(UUID representativeId) {
-        if (!unwrap(representedBy).contains(representativeId)) {
+        if (!unwrapElements(representedBy).contains(representativeId)) {
             this.representedBy.add(element(representativeId));
         }
     }

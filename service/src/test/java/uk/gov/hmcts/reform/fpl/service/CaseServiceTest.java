@@ -41,6 +41,11 @@ public class CaseServiceTest {
 
         caseService.addUser(AUTH_TOKEN, caseId, userId, caseRoles);
 
-        verify(caseUserApi).updateCaseRolesForUser(AUTH_TOKEN, SERVICE_TOKEN, caseId, userId, new CaseUser(userId, Set.of("[SOLICITOR]")));
+        verify(caseUserApi).updateCaseRolesForUser(
+            AUTH_TOKEN,
+            SERVICE_TOKEN,
+            caseId,
+            userId,
+            new CaseUser(userId, Set.of("[SOLICITOR]")));
     }
 }
