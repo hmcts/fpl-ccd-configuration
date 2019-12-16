@@ -36,6 +36,9 @@ function create_mock_response() {
     jq -r --argjson i $i --arg user_id $user_id '.[$i].userIdentifier=$user_id | .[$i].firstName=.[$i].email | .[$i].roles|=split(",")' $mock_file > $mock_tmp_file && mv $mock_tmp_file $mock_file
   done
 
+  allUsers=$(jq ". | {users: .}" $mock_file)
+  echo $allUsers | jq > $mock_file
+
   rm $users_ids_tmp_file
 }
 
