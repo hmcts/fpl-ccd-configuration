@@ -28,6 +28,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -149,12 +151,17 @@ public class CaseData {
 
     // for local authority
     private final CaseManagementOrder caseManagementOrder;
-
     private final OrderAction orderAction;
     private final DynamicList cmoHearingDateList;
     private final Schedule schedule;
     private final List<Element<Recital>> recitals;
     private final DocumentReference sharedDraftCMODocument;
+
+    private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
+
+    public List<Element<CaseManagementOrder>> getServedCaseManagementOrders() {
+        return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
+    }
 
     private final Others others;
     private final DynamicList nextHearingDateList;
