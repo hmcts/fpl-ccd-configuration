@@ -28,4 +28,9 @@ public class CoreCaseDataStoreLoader {
         String response = ResourceReader.readString("core-case-data-store-api/callback-request.json");
         return mapper.readValue(response, CallbackRequest.class);
     }
+
+    public static CallbackRequest careOrderRequest() throws IOException {
+        String response = ResourceReader.readString("core-case-data-store-api/care-order.json");
+        return mapper.readValue(response, CallbackRequest.class);
+    }
 }
