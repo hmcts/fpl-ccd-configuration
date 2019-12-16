@@ -94,8 +94,10 @@ class ActionCaseManagementOrderControllerTest {
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
-    public static final String CASE_ID = "12345";
-    public static final String REPRESENTATIVES = "representatives";
+    private static final String CASE_ID = "12345";
+    private static final String REPRESENTATIVES = "representatives";
+    private static final String CAFCASS_EMAIL_ADDRESS = "cafcass@cafcass.com";
+    private static final String EVENT_KEY = "internal-change:CMO_PROGRESSION";
 
     @Autowired
     private MockMvc mockMvc;
