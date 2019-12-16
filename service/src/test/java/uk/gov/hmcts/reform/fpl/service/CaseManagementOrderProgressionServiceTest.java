@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -30,11 +29,9 @@ import java.util.UUID;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
-import static uk.gov.hmcts.reform.fpl.enums.ActionType.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
-import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_SHARED;
@@ -47,19 +44,14 @@ class CaseManagementOrderProgressionServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
     private static final UUID UUID = randomUUID();
 
-    private final HearingBookingService hearingBookingService = new HearingBookingService();
-    private final Time time = () -> NOW;
-
     @Autowired
     private ObjectMapper mapper;
 
     private CaseManagementOrderProgressionService service;
-    private List<String> errors;
 
     @BeforeEach
     void setUp() {
-        this.service = new CaseManagementOrderProgressionService(time, hearingBookingService, mapper);
-        this.errors = new ArrayList<>();
+        this.service = new CaseManagementOrderProgressionService(mapper);
     }
 
     @Test
@@ -67,7 +59,7 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData caseData = caseDataWithCaseManagementOrder(SEND_TO_JUDGE).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
+        service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -80,7 +72,7 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData caseData = caseDataWithCaseManagementOrder(PARTIES_REVIEW).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
+        service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -97,7 +89,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
+        service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -106,37 +98,14 @@ class CaseManagementOrderProgressionServiceTest {
     }
 
     @Test
-    void shouldPopulateErrorsWhenTryingToSendToAllPartiesBeforeHearingIsComplete() {
-        CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
-            .hearingDetails(ImmutableList.of(Element.<HearingBooking>builder()
-                .id(UUID)
-                .value(HearingBooking.builder()
-                    .startDate(NOW.minusDays(1))
-                    .build())
-                .build()))
-            .build();
-
-        CaseDetails caseDetails = getCaseDetails(caseData);
-
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
-
-        assertThat(errors).containsExactly(HEARING_NOT_COMPLETED.getValue());
-    }
-
-    @Test
     void shouldPopulateServedCaseManagementOrdersWhenTryingToSendToAllPartiesAndHearingIsComplete() {
         CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
-            .hearingDetails(ImmutableList.of(Element.<HearingBooking>builder()
-                .id(UUID)
-                .value(HearingBooking.builder()
-                    .startDate(NOW.plusDays(1))
-                    .build())
-                .build()))
+            .hearingDetails(hearingBookingWithStartDateInPast())
             .build();
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
+        service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -148,22 +117,16 @@ class CaseManagementOrderProgressionServiceTest {
 
     @Test
     void shouldPopulateFirstElementOfServedCaseManagementOrdersWhenTryingToSendToAllPartiesAndHearingIsComplete() {
-        List<Element<CaseManagementOrder>> orders = new ArrayList<>();
-        orders.add(Element.<CaseManagementOrder>builder().build());
+        List<Element<CaseManagementOrder>> orders = orderListWithOneElement();
 
         CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
             .servedCaseManagementOrders(orders)
-            .hearingDetails(ImmutableList.of(Element.<HearingBooking>builder()
-                .id(UUID)
-                .value(HearingBooking.builder()
-                    .startDate(NOW.plusDays(1))
-                    .build())
-                .build()))
+            .hearingDetails(hearingBookingWithStartDateInPast())
             .build();
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
+        service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -176,24 +139,24 @@ class CaseManagementOrderProgressionServiceTest {
     @Test
     void shouldPopulateDraftCaseManagementOrderWhenJudgeRequestsChange() {
         CaseData caseData = caseDataWithCmoToAction(JUDGE_REQUESTED_CHANGE).build();
-
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
+        service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCmoToAction());
+        assertThat(updatedCaseData.getCaseManagementOrder())
+            .isEqualTo(caseData.getCmoToAction().toBuilder().status(CMOStatus.SELF_REVIEW).build());
+
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey())).isNull();
     }
 
     @Test
     void shouldDoNothingWhenJudgeLeavesInSelfReview() {
-        CaseData caseData = caseDataWithCmoToAction(SELF_REVIEW).build();
-
+        CaseData caseData = caseDataWithCmoToAction(ActionType.SELF_REVIEW).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails, errors);
+        service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -213,6 +176,7 @@ class CaseManagementOrderProgressionServiceTest {
         return CaseData.builder()
             .cmoToAction(CaseManagementOrder.builder()
                 .id(UUID)
+                .status(SEND_TO_JUDGE)
                 .action(OrderAction.builder()
                     .type(type)
                     .build())
@@ -223,5 +187,20 @@ class CaseManagementOrderProgressionServiceTest {
     private CaseDetails getCaseDetails(CaseData caseData) {
         Map<String, Object> data = mapper.convertValue(caseData, Map.class);
         return CaseDetails.builder().data(data).build();
+    }
+
+    private List<Element<HearingBooking>> hearingBookingWithStartDateInPast() {
+        return ImmutableList.of(Element.<HearingBooking>builder()
+            .id(UUID)
+            .value(HearingBooking.builder()
+                .startDate(NOW.plusDays(-1))
+                .build())
+            .build());
+    }
+
+    private List<Element<CaseManagementOrder>> orderListWithOneElement() {
+        List<Element<CaseManagementOrder>> orders = new ArrayList<>();
+        orders.add(Element.<CaseManagementOrder>builder().build());
+        return orders;
     }
 }

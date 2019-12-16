@@ -4,13 +4,20 @@ const orders = require('../../fixtures/orders.js');
 
 module.exports = {
   fields: {
-    orderTitle: '#order_orderTitle',
-    orderDetails: '#order_orderDetails',
+    title: '#order_title',
+    details: '#order_details',
+    orderTypeList: '#orderTypeAndDocument_type',
+  },
+
+  selectType(type) {
+    within(this.fields.orderTypeList, () => {
+      I.click(locate('label').withText(type));
+    });
   },
 
   enterC21OrderDetails() {
-    I.fillField(this.fields.orderTitle, orders[0].orderTitle);
-    I.fillField(this.fields.orderDetails, orders[0].orderDetails);
+    I.fillField(this.fields.title, orders[0].title);
+    I.fillField(this.fields.details, orders[0].details);
   },
 
   async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName) {

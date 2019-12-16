@@ -30,7 +30,7 @@ public class CaseManagementOrderProgressionController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         List<String> errors = new ArrayList<>();
 
-        progressionService.handleCaseManagementOrderProgression(caseDetails, errors);
+        progressionService.handleCaseManagementOrderProgression(caseDetails);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
