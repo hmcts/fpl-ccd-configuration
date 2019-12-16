@@ -173,7 +173,7 @@ public class ActionCaseManagementOrderController {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
         CaseManagementOrder actionedCmo = caseData.getCmoToAction();
 
-        if (actionedCmo.isApprovedByJudge()) {
+        if (!actionedCmo.isDraft()) {
             final String actionCmoDocumentUrl = actionedCmo.getOrderDoc().getBinaryUrl();
             byte[] documentContents = documentDownloadService.downloadDocument(authorization, userId,
                 actionCmoDocumentUrl);
