@@ -1,0 +1,106 @@
+[
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_OTHERS",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "directionType",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_OTHERS",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "directionNeeded",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "directionText = \"DO_NOT_SHOW\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_OTHERS",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "dateToBeCompletedBy",
+    "EventElementLabel": "Deadline",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_OTHERS",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "responses.respondingOnBehalfOfOthers",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_OTHERS",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "responses.complied",
+    "EventElementLabel": "Have they complied with this direction?",
+    "FieldDisplayOrder": 5,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_OTHERS",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "responses.documentDetails",
+    "FieldDisplayOrder": 6,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_OTHERS",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "responses.file",
+    "FieldDisplayOrder": 7,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_OTHERS",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "responses.cannotComplyTitle",
+    "EventElementLabel": "### Parties need to comply with directions to keep proceedings on track. ###\n\nIf they can’t comply, you need to explain:\n\n• reasons why\n\n• impact on timetable and next hearing\n\n• proposed next actions",
+    "FieldDisplayOrder": 8,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_OTHERS",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "responses.cannotComplyReason",
+    "FieldDisplayOrder": 9,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_OTHERS",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "responses.c2Uploaded",
+    "FieldDisplayOrder": 10,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_OTHERS",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "responses.cannotComplyFile",
+    "FieldDisplayOrder": 11,
+    "DisplayContext": "OPTIONAL"
+  }
+]
