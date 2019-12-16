@@ -144,10 +144,12 @@ public class RepresentativeService {
         Representative representative = representativeWithId.getValue();
         if (DIGITAL_SERVICE.equals(representative.getServingPreferences())) {
             if (isNull(representative.getIdamId())) {
-                String userId = organisationService.findUserByEmail(auth, representative.getEmail()).get();
-                caseService.addUser(auth, Long.toString(caseId), userId, representative.getRole().getCaseRoles());
-
-                representative.setIdamId(userId);
+                organisationService.findUserByEmail(auth, representative.getEmail()).ifPresent(
+                    userId -> {
+                        caseService.addUser(auth, Long.toString(caseId), userId, representative.getRole().getCaseRoles());
+                        representative.setIdamId(userId);
+                    }
+                );
             }
         }
     }
