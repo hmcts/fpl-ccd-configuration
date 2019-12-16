@@ -84,7 +84,6 @@ class ActionCaseManagementOrderControllerTest {
     private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
-    private static final byte[] pdf = {1, 2, 3, 4, 5};
     private static final String FAMILY_MAN_CASE_NUMBER = "SACCCCCCCC5676576567";
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
     private static final String LOCAL_AUTHORITY_CODE = "example";
