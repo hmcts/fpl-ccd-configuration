@@ -146,7 +146,7 @@ public class ActionCaseManagementOrderController {
             "internal-change:CMO_PROGRESSION"
         );
 
-        if (caseData.getCmoToAction().isApprovedByJudge()) {
+        if (!caseData.getCmoToAction().isDraft()) {
             applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId));
         }
     }

@@ -60,16 +60,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.enums.NextHearingType.ISSUES_RESOLUTION_HEARING;
-import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCaseManagementOrder;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
@@ -275,15 +273,15 @@ class ActionCaseManagementOrderControllerTest {
 
     @Test
     void submittedShouldNotSendNotificationsWhenIssuedOrderNotApproved() throws Exception {
-        CaseManagementOrder caseManagementOrder = getCaseManagementOrder(OrderAction.builder()
-            .type(JUDGE_REQUESTED_CHANGE)
-            .build());
+        CaseManagementOrder caseManagementOrder = getCaseManagementOrder();
 
         Map<String, Object> data = ImmutableMap.of(
             "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
             "respondents1", createRespondents(),
             "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
-            CMO_TO_ACTION_KEY, caseManagementOrder);
+            CMO_TO_ACTION_KEY, caseManagementOrder.toBuilder()
+                .action(getOrderAction(JUDGE_REQUESTED_CHANGE))
+                .build());
 
         CallbackRequest callbackRequest = buildCallbackRequest(data);
 
