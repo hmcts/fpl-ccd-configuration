@@ -74,8 +74,12 @@ public class DownloadDocumentServiceTest {
         Document document = document();
         byte[] expectedDocumentContents = "test".getBytes();
 
+        ResponseEntity<Resource> expectedResponse = ResponseEntity.ok(new ByteArrayResource(expectedDocumentContents));
+        given(resourceResponseEntity.getStatusCode())
+            .willReturn(expectedResponse.getStatusCode());
+
         given(resourceResponseEntity.getBody())
-            .willReturn(new ByteArrayResource(expectedDocumentContents));
+            .willReturn(expectedResponse.getBody());
 
         given(documentDownloadClient.downloadBinary(anyString(), anyString(),
             eq(join(",", CAFCASS.getRoles())), anyString(), anyString()))
@@ -92,6 +96,10 @@ public class DownloadDocumentServiceTest {
 
     @Test
     void shouldThrowExceptionWhenDownloadFromDocumentManagement() {
+        ResponseEntity<Resource> expectedResponse = ResponseEntity.notFound().build();
+        given(resourceResponseEntity.getStatusCode())
+            .willReturn(expectedResponse.getStatusCode());
+
         given(documentDownloadClient.downloadBinary(anyString(), anyString(),
             eq(join(",", CAFCASS.getRoles())), anyString(), anyString()))
             .willReturn(null);
