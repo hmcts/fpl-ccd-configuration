@@ -146,16 +146,6 @@ public class NotificationHandler {
         }
     }
 
-    private void sendOrderNotificationForCafcass(final CaseDetails caseDetails, final String localAuthorityCode,
-                                                 final String mostRecentUploadedDocumentUrl) {
-        Map<String, Object> cafCassParameters =
-            orderEmailContentProvider.buildOrderNotificationParametersForCafcass(
-                caseDetails, localAuthorityCode, mostRecentUploadedDocumentUrl);
-        String cafcassEmail = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
-        sendNotification(ORDER_NOTIFICATION_TEMPLATE, cafcassEmail, cafCassParameters,
-            Long.toString(caseDetails.getId()));
-    }
-
     private void sendOrderNotificationForLocalAuthority(final CaseDetails caseDetails, final String localAuthorityCode,
                                                         final String mostRecentUploadedDocumentUrl) {
         Map<String, Object> localAuthorityParameters =

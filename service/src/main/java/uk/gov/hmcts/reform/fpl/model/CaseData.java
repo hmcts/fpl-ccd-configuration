@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,12 +24,9 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-
-import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Data
 @Builder(toBuilder = true)
@@ -119,10 +117,12 @@ public class CaseData {
     private final String familyManCaseNumber;
     private final NoticeOfProceedings noticeOfProceedings;
 
+    @JsonIgnore
     public List<Element<Applicant>> getAllApplicants() {
         return applicants != null ? applicants : new ArrayList<>();
     }
 
+    @JsonIgnore
     public List<Element<Child>> getAllChildren() {
         return children1 != null ? children1 : new ArrayList<>();
     }
@@ -136,18 +136,26 @@ public class CaseData {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
+    private final OrderTypeAndDocument orderTypeAndDocument;
     private final GeneratedOrder order;
     private final List<Element<GeneratedOrder>> orderCollection;
 
-    public List<Element<GeneratedOrder>> getGeneratedOrders() {
-        return defaultIfNull(orderCollection, new ArrayList<>());
+    public List<Element<GeneratedOrder>> getOrderCollection() {
+        return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
+    // for judiciary
+    private final CaseManagementOrder cmoToAction;
+
+    // for local authority
     private final CaseManagementOrder caseManagementOrder;
+
+    private final OrderAction orderAction;
     private final DynamicList cmoHearingDateList;
     private final Schedule schedule;
     private final List<Element<Recital>> recitals;
     private final DocumentReference sharedDraftCMODocument;
 
     private final Others others;
+    private final DynamicList nextHearingDateList;
 }

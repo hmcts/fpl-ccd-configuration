@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,10 +35,10 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 
+//TODO: methods to be moved to CaseManagementOrderService and DirectionHelperService.
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DraftCMOService {
-    private final ObjectMapper mapper;
     private final DateFormatterService dateFormatterService;
     private final DirectionHelperService directionHelperService;
 
@@ -59,8 +58,8 @@ public class DraftCMOService {
         return data;
     }
 
-    public CaseManagementOrder prepareCMO(CaseData caseData) {
-        Optional<CaseManagementOrder> oldCMO = Optional.ofNullable(caseData.getCaseManagementOrder());
+    public CaseManagementOrder prepareCMO(CaseData caseData, CaseManagementOrder order) {
+        Optional<CaseManagementOrder> oldCMO = Optional.ofNullable(order);
         Optional<DynamicList> cmoHearingDateList = Optional.ofNullable(caseData.getCmoHearingDateList());
 
         return CaseManagementOrder.builder()
@@ -69,8 +68,10 @@ public class DraftCMOService {
             .directions(combineAllDirectionsForCmo(caseData))
             .schedule(caseData.getSchedule())
             .recitals(caseData.getRecitals())
-            .cmoStatus(oldCMO.map(CaseManagementOrder::getCmoStatus).orElse(null))
+            .status(oldCMO.map(CaseManagementOrder::getStatus).orElse(null))
             .orderDoc(oldCMO.map(CaseManagementOrder::getOrderDoc).orElse(null))
+            .action(oldCMO.map(CaseManagementOrder::getAction).orElse(null))
+            .nextHearing(oldCMO.map(CaseManagementOrder::getNextHearing).orElse(null))
             .build();
     }
 
@@ -83,33 +84,19 @@ public class DraftCMOService {
         keysToRemove.forEach(caseData::remove);
     }
 
-    public void populateCaseDataWithCMO(Map<String, Object> caseData, CaseManagementOrder caseManagementOrder) {
-        switch (caseManagementOrder.getCmoStatus()) {
-            case SEND_TO_JUDGE:
-            case PARTIES_REVIEW:
-                caseData.put("sharedDraftCMODocument", caseManagementOrder.getOrderDoc());
-                break;
-            case SELF_REVIEW:
-                caseData.remove("sharedDraftCMODocument");
-                break;
-            default:
-                break;
-        }
-
-        caseData.put("caseManagementOrder", caseManagementOrder);
-    }
-
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
         List<HearingDateDynamicElement> hearingDates = hearingDetails
             .stream()
-            .map(element -> new HearingDateDynamicElement(
-                formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()), element.getId()))
+            .map(element -> HearingDateDynamicElement.builder()
+                .id(element.getId())
+                .date(formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()))
+                .build())
             .collect(toList());
 
         return DynamicList.toDynamicList(hearingDates, DynamicListElement.EMPTY);
     }
 
-    private DynamicList getHearingDateDynamicList(List<Element<HearingBooking>> hearingDetails,
+    public DynamicList getHearingDateDynamicList(List<Element<HearingBooking>> hearingDetails,
                                                   CaseManagementOrder caseManagementOrder) {
         DynamicList hearingDatesDynamic = buildDynamicListFromHearingDetails(hearingDetails);
 
@@ -120,11 +107,9 @@ public class DraftCMOService {
         return hearingDatesDynamic;
     }
 
-    public void prepareCustomDirections(CaseDetails caseDetails) {
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        if (!isNull(caseData.getCaseManagementOrder())) {
-            directionHelperService.sortDirectionsByAssignee(caseData.getCaseManagementOrder().getDirections())
+    public void prepareCustomDirections(CaseDetails caseDetails, CaseManagementOrder order) {
+        if (!isNull(order)) {
+            directionHelperService.sortDirectionsByAssignee(order.getDirections())
                 .forEach((key, value) -> caseDetails.getData().put(key.getValue(), value));
         } else {
             removeExistingCustomDirections(caseDetails);
