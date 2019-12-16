@@ -376,6 +376,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseManagementOrder",
     "UserRole": "[LASOLICITOR]",
+    "Comments": "This complex type permission should be for LASOLICITOR role, but somehow it causes issues in CCD.",
     "CRUD": "CRUD"
   },
   {
@@ -419,6 +420,13 @@
     "CaseFieldID": "allPartiesLabelCMO",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "nextHearingDateLabel",
+    "UserRole": "caseworker-publiclaw-solicitor",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",
@@ -486,6 +494,13 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "respondents_label",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRU"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "respondentsDirectionLabelCMO",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "R"
@@ -496,6 +511,13 @@
     "CaseFieldID": "respondentDirectionsCustom",
     "UserRole": "caseworker-publiclaw-solicitor",
     "CRUD": "CRUD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "others_label",
+    "UserRole": "[LASOLICITOR]",
+    "CRUD": "CRU"
   },
   {
     "LiveFrom": "01/01/2017",

@@ -46,6 +46,7 @@ import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.gen
 public class CaseDataExtractionService {
 
     public static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
+    public static final String HEARING_EMPTY_PLACEHOLDER = "This will appear on the issued CMO";
     private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -97,10 +98,10 @@ public class CaseDataExtractionService {
     private Map<String, Object> getHearingBookingData(CaseData caseData) {
         if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
             return ImmutableMap.<String, Object>builder()
-                .put("hearingDate", EMPTY_PLACEHOLDER)
-                .put("hearingVenue", EMPTY_PLACEHOLDER)
-                .put("preHearingAttendance", EMPTY_PLACEHOLDER)
-                .put("hearingTime", EMPTY_PLACEHOLDER)
+                .put("hearingDate", HEARING_EMPTY_PLACEHOLDER)
+                .put("hearingVenue", HEARING_EMPTY_PLACEHOLDER)
+                .put("preHearingAttendance", HEARING_EMPTY_PLACEHOLDER)
+                .put("hearingTime", HEARING_EMPTY_PLACEHOLDER)
                 .put("hearingJudgeTitleAndName", EMPTY_PLACEHOLDER)
                 .put("hearingLegalAdvisorName", "")
                 .build();

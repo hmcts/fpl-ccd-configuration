@@ -36,6 +36,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -74,8 +75,6 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         final DynamicList hearingDateList = caseData.getCmoHearingDateList();
         final String localAuthorityCode = caseData.getCaseLocalAuthority();
 
-        CaseManagementOrder order = draftCMOService.prepareCMO(caseData, getCaseManagementOrder(caseData));
-
         cmoTemplateData.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_PLACEHOLDER));
         cmoTemplateData.put("generationDate",
             dateFormatterService.formatLocalDateToString(LocalDate.now(), FormatStyle.LONG));
@@ -100,8 +99,17 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         cmoTemplateData.put("representatives",
             getRepresentatives(caseData, applicantName, caseData.getSolicitor()));
 
-        // Populate with the next hearing booking, currently not captured
-        cmoTemplateData.putAll(commonCaseDataExtractionService.getHearingBookingData(null));
+        CaseManagementOrder order = draftCMOService.prepareCMO(caseData, getCaseManagementOrder(caseData));
+
+        HearingBooking nextHearing = null;
+
+        if (order.getNextHearing() != null && order.getNextHearing().getId() != null) {
+            List<Element<HearingBooking>> hearingBookings = caseData.getHearingDetails();
+            UUID nextHearingId = order.getNextHearing().getId();
+            nextHearing = hearingBookingService.getHearingBookingByUUID(hearingBookings, nextHearingId);
+        }
+
+        cmoTemplateData.putAll(commonCaseDataExtractionService.getHearingBookingData(nextHearing));
 
         HearingBooking hearingBooking = hearingBookingService.getHearingBooking(
             caseData.getHearingDetails(), hearingDateList);
