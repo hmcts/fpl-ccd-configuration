@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.lang.StringUtils.left;
+import static org.apache.commons.lang3.StringUtils.left;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
@@ -472,12 +472,12 @@ public class CaseDataGeneratorHelper {
             .put(SERVED_CASE_MANAGEMENT_ORDERS.getKey(), ImmutableList.of(Element.<CaseManagementOrder>builder()
                 .value(CaseManagementOrder.builder().build())
                 .build()))
-            .put("representatives", representatives)
             .put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), CaseManagementOrder.builder()
                 .nextHearing(NextHearing.builder()
                     .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
                     .build())
                 .build())
+            .put("representatives", representatives)
             .build();
     }
 
