@@ -30,7 +30,7 @@ public class CaseManagementOrder {
     private final NextHearing nextHearing;
 
     @JsonIgnore
-    public boolean isApprovedByJudge() {
-        return action != null && action.getType().equals(SEND_TO_ALL_PARTIES);
+    public boolean isDraft() {
+        return action == null || !action.getType().equals(SEND_TO_ALL_PARTIES);
     }
 }

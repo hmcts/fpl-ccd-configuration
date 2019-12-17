@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,6 +88,7 @@ public class DraftCMOService {
     public DynamicList buildDynamicListFromHearingDetails(List<Element<HearingBooking>> hearingDetails) {
         List<HearingDateDynamicElement> hearingDates = hearingDetails
             .stream()
+            .filter(hearingBooking -> hearingBooking.getValue().getStartDate().isAfter(LocalDateTime.now()))
             .map(element -> HearingDateDynamicElement.builder()
                 .id(element.getId())
                 .date(formatLocalDateToMediumStyle(element.getValue().getStartDate().toLocalDate()))
@@ -97,7 +99,7 @@ public class DraftCMOService {
     }
 
     public DynamicList getHearingDateDynamicList(List<Element<HearingBooking>> hearingDetails,
-                                                  CaseManagementOrder caseManagementOrder) {
+                                                 CaseManagementOrder caseManagementOrder) {
         DynamicList hearingDatesDynamic = buildDynamicListFromHearingDetails(hearingDetails);
 
         if (isNotEmpty(caseManagementOrder)) {

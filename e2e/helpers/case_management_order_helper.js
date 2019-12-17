@@ -26,7 +26,7 @@ const assertCanSeeActionCMO = (I, caseViewPage, fileName) => {
   I.see(fileName);
   I.seeAnswerInTab(1, 'Order actions', 'Is this ready to be sent to parties?', 'Yes, send this to all parties');
   I.seeAnswerInTab(2, 'Order actions', 'What is the next hearing?', 'Final hearing');
-  I.seeAnswerInTab(3, 'Case management order', 'Which hearing is this order for?', '1 Jan 2050');
+  I.seeAnswerInTab(3, 'Case management orders 1', 'Which hearing is this order for?', '1 Jan 2050');
   I.seeAnswerInTab(1, 'Directions 1', 'Direction title', 'Mock title');
   I.seeAnswerInTab(4, 'Directions 1', 'Description', 'Mock description');
   I.seeAnswerInTab(5, 'Directions 1', 'For', 'All parties');
@@ -65,7 +65,7 @@ const assertCanSeeActionCMO = (I, caseViewPage, fileName) => {
   I.seeAnswerInTab(9, 'Schedule', 'Threshold', 'The S.31 threshold for the making of orders is in dispute');
   I.seeAnswerInTab(10, 'Schedule', 'Key issues', 'Are there any other family or friends capable of caring in the children');
   I.seeAnswerInTab(11, 'Schedule', 'Parties\' positions', 'The mother agrees section 20');
-  I.seeAnswerInTab(8, 'Case management order', 'Is this ready to be sent to the judge?', 'Yes, send this to the judge');
+  I.seeAnswerInTab(8, 'Case management orders 1', 'Is this ready to be sent to the judge?', 'Yes, send this to the judge');
   I.seeAnswerInTab(1, 'Next Hearing', 'Which hearing is next?', '1 Jan 2050');
 };
 
