@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fpla-mock-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fpla-mock
+  template:
+    metadata:
+      labels:
+        app: fpla-mock
+    spec:
+      containers:
+        - name: fpla-mock
+          image: rodolpheche/wiremock
+          ports:
+            - containerPort: 8080

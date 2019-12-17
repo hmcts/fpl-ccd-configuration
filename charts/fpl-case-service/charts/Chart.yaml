@@ -1,0 +1,7 @@
+name: fpl-case-service-mock
+apiVersion: v1
+version: 1.2.0
+description: FPL Case Service Mock
+maintainers:
+  - name: HMCTS Family Public Law team
+    email: fpl-developers@HMCTS.NET
