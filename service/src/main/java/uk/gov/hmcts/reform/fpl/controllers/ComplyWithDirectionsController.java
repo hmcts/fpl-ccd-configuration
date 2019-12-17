@@ -46,6 +46,8 @@ public class ComplyWithDirectionsController {
         Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
             directionHelperService.sortDirectionsByAssignee(directionsToComplyWith);
 
+        directionHelperService.addEmptyDirectionsForAssigneeNotInMap(sortedDirections);
+
         sortedDirections.forEach((assignee, directions) -> {
             if (!assignee.equals(ALL_PARTIES)) {
                 directions.addAll(sortedDirections.get(ALL_PARTIES));

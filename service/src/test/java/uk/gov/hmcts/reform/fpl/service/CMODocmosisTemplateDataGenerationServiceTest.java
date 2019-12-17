@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
@@ -113,7 +114,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("cafcassDirections")).isNull();
         assertThat(templateData.get("otherPartiesDirections")).isNull();
         assertThat(templateData.get("courtDirections")).isNull();
-        assertThat(templateData.get("recitals")).isEqualTo(ImmutableList.of());
+        assertThat(templateData.get(RECITALS.getKey())).isEqualTo(ImmutableList.of());
         assertThat(templateData.get("recitalsProvided")).isEqualTo(false);
         Arrays.stream(scheduleKeys).forEach(key -> assertThat(templateData.get(key)).isEqualTo(EMPTY_PLACEHOLDER));
         assertThat(templateData.get("scheduleProvided")).isEqualTo(false);
@@ -155,7 +156,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("otherPartiesDirections")).isEqualTo(
             getExpectedDirectionWithHeader(6, OTHER_1.getLabel()));
         assertThat(templateData.get("courtDirections")).isEqualTo(getExpectedDirection(7));
-        assertThat(templateData.get("recitals")).isEqualTo(getExpectedRecital());
+        assertThat(templateData.get(RECITALS.getKey())).isEqualTo(getExpectedRecital());
         assertThat(templateData.get("recitalsProvided")).isEqualTo(true);
         assertThat(templateData).containsAllEntriesOf(getExpectedSchedule());
         assertThat(templateData.get("scheduleProvided")).isEqualTo(true);
