@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -158,5 +159,21 @@ class ChildrenServiceTest {
 
         assertThat(updatedChildren.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
         assertThat(updatedChildren.get(1).getValue().getParty().partyId).isNotNull();
+    }
+
+    @Test
+    void shouldHideChildAddressDetailsWhenConfidentialitySelected() {
+        List<Element<Child>> children = ImmutableList.of(
+            Element.<Child>builder()
+                .id(UUID.randomUUID())
+                .value(Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName("James")
+                        .detailsHidden("Yes")
+                        .address(Address.builder().addressLine1("22b Baker Street").build())
+                        .partyId("123")
+                        .build())
+                    .build())
+                .build());
     }
 }

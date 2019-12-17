@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
+import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -18,8 +19,8 @@ public class ChildrenService {
 
     @SuppressWarnings("squid:S2583")
     public List<Element<Child>> expandChildrenCollection(CaseData caseData) {
+        List<Element<Child>> populatedChildren = new ArrayList<>();
         if (caseData.getChildren1() == null) { // squid:S2583: value can be null in CCD JSON
-            List<Element<Child>> populatedChildren = new ArrayList<>();
 
             populatedChildren.add(Element.<Child>builder()
                 .value(Child.builder()
@@ -30,8 +31,24 @@ public class ChildrenService {
                 .build());
             return populatedChildren;
         } else {
-            return caseData.getChildren1();
+            for (Element<Child> child : caseData.getChildren1()) {
+                if (child.getValue().getParty().getDetailsHidden().equals("Yes")) {
+                    for (Element<Child> confidentialChild : caseData.getConfidentialChildren()) {
+                        if (isSameChildById(child, confidentialChild)) {
+                            populatedChildren.add(confidentialChild);
+                            break;
+                        }
+                    }
+                } else {
+                    populatedChildren.add(child);
+                }
+            }
+            return populatedChildren;
         }
+    }
+
+    private boolean isSameChildById(Element<Child> child, Element<Child> confidentialChild) {
+        return confidentialChild.getId().equals(child.getId());
     }
 
     public List<Element<Child>> addHiddenValues(CaseData caseData) {
@@ -44,6 +61,11 @@ public class ChildrenService {
                         .partyId(UUID.randomUUID().toString())
                         .partyType(PartyType.INDIVIDUAL)
                         .build());
+                    if (element.getValue().getParty().getDetailsHidden().equals("Yes")) {
+                        childBuilder.party(element.getValue().getParty().toBuilder()
+                            .address(Address.builder().build())
+                            .build());
+                    }
                 } else {
                     childBuilder.party(element.getValue().getParty().toBuilder().build());
                 }
@@ -54,5 +76,16 @@ public class ChildrenService {
                     .build();
             })
             .collect(toList());
+    }
+
+    public List<Element<Child>> addConfidentialChildren(CaseData caseData) {
+        List<Element<Child>> confidentialChildren = new ArrayList<>();
+        for (Element<Child> child : caseData.getChildren1()
+        ) {
+            if (child.getValue().getParty().getDetailsHidden().equals("Yes")) {
+                confidentialChildren.add(child);
+            }
+        }
+        return confidentialChildren;
     }
 }

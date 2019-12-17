@@ -157,4 +157,7 @@ public class CaseData {
     private final DocumentReference sharedDraftCMODocument;
 
     private final Others others;
+    private final List<Element<Child>> confidentialChildren;
+    private final List<Element<Respondent>> confidentialRespondents;
+    private final List<Element<Other>> confidentialOthers;
 }

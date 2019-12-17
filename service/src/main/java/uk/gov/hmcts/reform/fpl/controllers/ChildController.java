@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,6 +62,8 @@ public class ChildController {
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        caseDetails.getData().put("confidentialChildren", childrenService.addConfidentialChildren(caseData));
 
         if (caseData.getChildren1() != null) {
             caseDetails.getData().put("children1", childrenService.addHiddenValues(caseData));

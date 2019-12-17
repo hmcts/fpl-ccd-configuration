@@ -785,5 +785,31 @@
     "Label": "Case management order",
     "FieldType": "CaseManagementOrder",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "confidentialChildren",
+    "Label": "Child",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "ChildrenNew",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "confidentialRespondents",
+    "Label": "Respondents",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "RespondentNew",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "confidentialOthers",
+    "Label": "Others to be given notice",
+    "FieldType": "Person",
+    "SecurityClassification": "Public"
   }
 ]
