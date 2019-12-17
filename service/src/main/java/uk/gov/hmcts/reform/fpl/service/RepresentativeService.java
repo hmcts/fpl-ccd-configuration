@@ -196,19 +196,6 @@ public class RepresentativeService {
         return emptyList();
     }
 
-    public List<Representative> getRepresentativesByServedPreference(List<Element<Representative>> representatives,
-                                                                     RepresentativeServingPreferences preference) {
-        if (ObjectUtils.isNotEmpty(representatives)) {
-            return representatives.stream()
-                .filter(Objects::nonNull)
-                .map(Element::getValue)
-                .filter(representative ->  preference == representative.getServingPreferences())
-                .collect(toList());
-        }
-
-        return emptyList();
-    }
-
     private void linkWithRepresentable(CaseData caseData, Element<Representative> representative) {
         findRepresentable(caseData, representative.getValue())
             .ifPresent(representable -> representable.addRepresentative(representative.getId()));
