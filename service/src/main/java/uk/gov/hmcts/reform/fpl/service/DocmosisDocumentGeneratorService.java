@@ -47,7 +47,7 @@ public class DocmosisDocumentGeneratorService {
 
         HttpEntity<DocmosisRequest> request = new HttpEntity<>(requestBody, headers);
 
-        byte[] response = null;
+        byte[] response;
 
         try {
             response = restTemplate.exchange(docmosisDocumentGenerationConfiguration.getUrl() + "/rs/render",
