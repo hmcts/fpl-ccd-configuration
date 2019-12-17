@@ -66,77 +66,104 @@ public class RepresentativeService {
             String representativeLabel = representatives.size() == 1
                 ? "Representative" : "Representative " + representativeSequence++;
 
-            if (isEmpty(representative.getFullName())) {
-                validationErrors.add(format("Enter a full name for %s", representativeLabel));
-            }
-
-            if (isEmpty(representative.getPositionInACase())) {
-                validationErrors.add(format("Enter a position in the case for %s", representativeLabel));
-            }
-
-            if (isNull(role)) {
-                validationErrors.add(format("Select who %s is", representativeLabel));
-            }
-
-            if (isNull(servingPreferences)) {
-                validationErrors.add(format("Select how %s wants to get case information", representativeLabel));
-            }
-
-            if (EMAIL.equals(servingPreferences)) {
-                if (isEmpty(representative.getEmail())) {
-                    validationErrors.add(format("Enter an email address for %s", representativeLabel));
-                }
-            }
+            performBasicValidation(validationErrors, representative, servingPreferences, role, representativeLabel);
 
             if (POST.equals(servingPreferences)) {
-                if (isNull(representative.getAddress()) || isEmpty(representative.getAddress().getPostcode())) {
-                    validationErrors.add(format("Enter a postcode for %s", representativeLabel));
-                }
-                if (isNull(representative.getAddress()) || isEmpty(representative.getAddress().getAddressLine1())) {
-                    validationErrors.add(format("Enter a valid address for %s", representativeLabel));
-                }
+                validateRepresentativeAddress(validationErrors, representative, representativeLabel);
             }
 
             if (nonNull(role) && RESPONDENT.equals(representative.getRole().getType())) {
-                Optional<Representable> responded = findRespondent(caseData, role.getSequenceNo());
-                if (responded.isEmpty()) {
-                    validationErrors.add(format("Respondent %s represented by %s doesn't exist."
-                            + " Choose a respondent who is associated with this case",
-                        representative.getRole().getSequenceNo() + 1, representativeLabel));
-                }
+                validateRepresentativeRespondentRole(caseData, validationErrors, representative, role,
+                    representativeLabel);
             }
 
             if (nonNull(role) && OTHER.equals(role.getType())) {
-                int otherPersonSeq = representative.getRole().getSequenceNo();
-                Optional<Representable> other = findOther(caseData, otherPersonSeq);
-                if (other.isEmpty()) {
-                    String otherPersonLabel = otherPersonSeq == 0 ? "Person" : "Other person " + otherPersonSeq;
-                    validationErrors.add(format("%s represented by %s doesn't exist."
-                            + " Choose a person who is associated with this case",
-                        otherPersonLabel, representativeLabel));
-                }
+                validateRepresentativeOtherRole(caseData, validationErrors, representative, representativeLabel);
             }
 
             if (DIGITAL_SERVICE.equals(servingPreferences)) {
-                if (isEmpty(representative.getEmail())) {
-                    validationErrors.add(format("Enter an email address for %s", representativeLabel));
-                } else {
-                    Optional<String> userId = organisationService
-                        .findUserByEmail(authorisation, representative.getEmail());
-
-                    if (userId.isEmpty()) {
-                        validationErrors.add(
-                            format("%s must already have an account with the digital service", representativeLabel));
-                    }
-                }
+                validateDigitalServicePreference(authorisation, validationErrors, representative, representativeLabel);
             }
         }
 
         return validationErrors;
     }
 
+    private void performBasicValidation(List<String> validationErrors, Representative representative,
+                                        RepresentativeServingPreferences servingPreferences, RepresentativeRole role,
+                                        String representativeLabel) {
+        if (isEmpty(representative.getFullName())) {
+            validationErrors.add(format("Enter a full name for %s", representativeLabel));
+        }
+
+        if (isEmpty(representative.getPositionInACase())) {
+            validationErrors.add(format("Enter a position in the case for %s", representativeLabel));
+        }
+
+        if (isNull(role)) {
+            validationErrors.add(format("Select who %s is", representativeLabel));
+        }
+
+        if (isNull(servingPreferences)) {
+            validationErrors.add(format("Select how %s wants to get case information", representativeLabel));
+        }
+
+        if (EMAIL.equals(servingPreferences) && isEmpty(representative.getEmail())) {
+            validationErrors.add(format("Enter an email address for %s", representativeLabel));
+        }
+    }
+
+    private void validateRepresentativeRespondentRole(CaseData caseData, List<String> validationErrors,
+                                                      Representative representative, RepresentativeRole role,
+                                                      String representativeLabel) {
+        Optional<Representable> responded = findRespondent(caseData, role.getSequenceNo());
+        if (responded.isEmpty()) {
+            validationErrors.add(format("Respondent %s represented by %s doesn't exist."
+                    + " Choose a respondent who is associated with this case",
+                representative.getRole().getSequenceNo() + 1, representativeLabel));
+        }
+    }
+
+    private void validateRepresentativeOtherRole(CaseData caseData, List<String> validationErrors,
+                                                 Representative representative,
+                                                 String representativeLabel) {
+        int otherPersonSeq = representative.getRole().getSequenceNo();
+        Optional<Representable> other = findOther(caseData, otherPersonSeq);
+        if (other.isEmpty()) {
+            String otherPersonLabel = otherPersonSeq == 0 ? "Person" : "Other person " + otherPersonSeq;
+            validationErrors.add(format("%s represented by %s doesn't exist."
+                    + " Choose a person who is associated with this case",
+                otherPersonLabel, representativeLabel));
+        }
+    }
+
+    private void validateDigitalServicePreference(String authorisation, List<String> validationErrors,
+                                                  Representative representative, String representativeLabel) {
+        if (isEmpty(representative.getEmail())) {
+            validationErrors.add(format("Enter an email address for %s", representativeLabel));
+        } else {
+            Optional<String> userId = organisationService
+                .findUserByEmail(authorisation, representative.getEmail());
+
+            if (userId.isEmpty()) {
+                validationErrors.add(
+                    format("%s must already have an account with the digital service", representativeLabel));
+            }
+        }
+    }
+
+    private void validateRepresentativeAddress(List<String> validationErrors, Representative representative,
+                                               String representativeLabel) {
+        if (isNull(representative.getAddress()) || isEmpty(representative.getAddress().getPostcode())) {
+            validationErrors.add(format("Enter a postcode for %s", representativeLabel));
+        }
+        if (isNull(representative.getAddress()) || isEmpty(representative.getAddress().getAddressLine1())) {
+            validationErrors.add(format("Enter a valid address for %s", representativeLabel));
+        }
+    }
+
     public void addRepresentatives(CaseData caseData, Long caseId, String auth) {
-        caseData.getRepresentatives().stream()
+        caseData.getRepresentatives()
             .forEach(representative -> {
                 addToCase(representative, caseId, auth);
                 linkWithRepresentable(caseData, representative);
@@ -145,17 +172,28 @@ public class RepresentativeService {
 
     private void addToCase(Element<Representative> representativeWithId, Long caseId, String auth) {
         Representative representative = representativeWithId.getValue();
-        if (DIGITAL_SERVICE.equals(representative.getServingPreferences())) {
-            if (isNull(representative.getIdamId())) {
-                organisationService.findUserByEmail(auth, representative.getEmail()).ifPresent(
-                    userId -> {
-                        caseService.addUser(auth, Long.toString(caseId), userId,
-                            representative.getRole().getCaseRoles());
-                        representative.setIdamId(userId);
-                    }
-                );
-            }
+        if (DIGITAL_SERVICE.equals(representative.getServingPreferences()) && isNull(representative.getIdamId())) {
+            organisationService.findUserByEmail(auth, representative.getEmail()).ifPresent(
+                userId -> {
+                    caseService.addUser(auth, Long.toString(caseId), userId,
+                        representative.getRole().getCaseRoles());
+                    representative.setIdamId(userId);
+                }
+            );
         }
+    }
+
+    public List<Representative> getRepresentativesByServedPreference(List<Element<Representative>> representatives,
+                                                                     RepresentativeServingPreferences preference) {
+        if (ObjectUtils.isNotEmpty(representatives)) {
+            return representatives.stream()
+                .filter(Objects::nonNull)
+                .map(Element::getValue)
+                .filter(representative ->  preference == representative.getServingPreferences())
+                .collect(toList());
+        }
+
+        return emptyList();
     }
 
     public List<Representative> getRepresentativesByServedPreference(List<Element<Representative>> representatives,

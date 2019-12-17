@@ -59,6 +59,11 @@ import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PL
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDataGeneration {
+    public static final String REPRESENTED_BY = "representedBy";
+    public static final String NAME = "name";
+    public static final String REPRESENTATIVE_NAME = "representativeName";
+    public static final String REPRESENTATIVE_EMAIL = "representativeEmail";
+    public static final String REPRESENTATIVE_PHONE_NUMBER = "representativePhoneNumber";
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
     private final CaseDataExtractionService caseDataExtractionService;
     private final DateFormatterService dateFormatterService;
@@ -158,15 +163,15 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         respondents.stream()
             .filter(respondent -> isNotEmpty(respondent.getRepresentedBy()))
             .forEach(respondent -> representativesInfo.add(ImmutableMap.of(
-                "name", defaultIfNull(respondent.getParty().getFullName(), EMPTY),
-                "representedBy", getRepresentativesInfo(respondent, representatives))
+                NAME, defaultIfNull(respondent.getParty().getFullName(), EMPTY),
+                REPRESENTED_BY, getRepresentativesInfo(respondent, representatives))
             ));
 
         others.stream()
             .filter(other -> isNotEmpty(other.getRepresentedBy()))
             .forEach(other -> representativesInfo.add(ImmutableMap.of(
-                "name", defaultIfNull(other.getName(), EMPTY),
-                "representedBy", getRepresentativesInfo(other, representatives))));
+                NAME, defaultIfNull(other.getName(), EMPTY),
+                REPRESENTED_BY, getRepresentativesInfo(other, representatives))));
 
         return representativesInfo;
     }
@@ -190,9 +195,9 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
     private Map<String, Object> buildRepresentativeInfo(Representative representative) {
         return ImmutableMap.of(
-            "representativeName", representative.getFullName(),
-            "representativeEmail", defaultIfNull(representative.getEmail(), EMPTY),
-            "representativePhoneNumber", defaultIfNull(representative.getTelephoneNumber(), EMPTY)
+            REPRESENTATIVE_NAME, representative.getFullName(),
+            REPRESENTATIVE_EMAIL, defaultIfNull(representative.getEmail(), EMPTY),
+            REPRESENTATIVE_PHONE_NUMBER, defaultIfNull(representative.getTelephoneNumber(), EMPTY)
         );
     }
 
@@ -237,18 +242,18 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         applicantDetails.put("name", defaultIfBlank(applicantName, EMPTY_PLACEHOLDER));
 
         if (solicitor == null) {
-            applicantDetails.put("representedBy", List.of(Map.of(
-                "representativeName", EMPTY_PLACEHOLDER,
-                "representativeEmail", EMPTY_PLACEHOLDER,
-                "representativePhoneNumber", EMPTY_PLACEHOLDER
+            applicantDetails.put(REPRESENTED_BY, List.of(Map.of(
+                REPRESENTATIVE_NAME, EMPTY_PLACEHOLDER,
+                REPRESENTATIVE_EMAIL, EMPTY_PLACEHOLDER,
+                REPRESENTATIVE_PHONE_NUMBER, EMPTY_PLACEHOLDER
             )));
         } else {
             String phoneNumber = defaultIfBlank(solicitor.getTelephone(), solicitor.getMobile());
-            applicantDetails.put("representedBy", List.of(
+            applicantDetails.put(REPRESENTED_BY, List.of(
                 Map.of(
-                    "representativeName", defaultIfBlank(solicitor.getName(), EMPTY_PLACEHOLDER),
-                    "representativeEmail", defaultIfBlank(solicitor.getEmail(), EMPTY_PLACEHOLDER),
-                    "representativePhoneNumber", defaultIfBlank(phoneNumber, EMPTY_PLACEHOLDER)
+                    REPRESENTATIVE_NAME, defaultIfBlank(solicitor.getName(), EMPTY_PLACEHOLDER),
+                    REPRESENTATIVE_EMAIL, defaultIfBlank(solicitor.getEmail(), EMPTY_PLACEHOLDER),
+                    REPRESENTATIVE_PHONE_NUMBER, defaultIfBlank(phoneNumber, EMPTY_PLACEHOLDER)
                 )));
         }
 

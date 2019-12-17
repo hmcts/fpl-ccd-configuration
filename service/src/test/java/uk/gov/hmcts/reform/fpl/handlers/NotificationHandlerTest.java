@@ -235,14 +235,22 @@ class NotificationHandlerTest {
 
     @Nested
     class CaseManagementOrderNotificationTests {
-        private final Map<String, Object> cmoOrderIssuedNotificationParameters = getCMOIssuedNotificationParameters();
-        private final Map<String, Object> expectedCMOOrderIssuedNotificationParametersForRepresentative =
-            getExpectedCMOOrderIssuedNotificationParametersForRepresentative();
+        private final byte[] documentContents = {1, 2, 3};
+        private final Map<String, Object> expectedCMOIssuedNotificationParameters =
+            getCMOIssuedCaseLinkNotificationParameters();
+        private final Map<String, Object> expectedCMOIssuedNotificationParametersForRepresentative =
+            getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative();
 
         private NotificationHandler cmoNotificationHandler;
 
         @BeforeEach
         void setup() {
+            given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+                .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
+
+            given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+                .willReturn(LOCAL_AUTHORITY_NAME);
+
             // did this to enable ObjectMapper injection
             cmoNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration, cafcassLookupConfiguration,
                 hmctsEmailContentProvider, cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued,
@@ -257,22 +265,19 @@ class NotificationHandlerTest {
             CallbackRequest callbackRequest = callbackRequest();
             CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-            given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
-                .willReturn(LOCAL_AUTHORITY_NAME);
-
             given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
                 .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
             given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
                 LOCAL_AUTHORITY_NAME))
-                .willReturn(cmoOrderIssuedNotificationParameters);
+                .willReturn(expectedCMOIssuedNotificationParameters);
 
             cmoNotificationHandler.sendNotificationsForIssuedCaseManagementOrder(
-                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID));
+                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
 
-            verify(notificationClient, times(1)).sendEmail(
+            verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
-                eq(cmoOrderIssuedNotificationParameters), eq("12345"));
+                eq(expectedCMOIssuedNotificationParameters), eq("12345"));
         }
 
         @Test
@@ -287,17 +292,17 @@ class NotificationHandlerTest {
 
             given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
                 "Jon Snow"))
-                .willReturn(expectedCMOOrderIssuedNotificationParametersForRepresentative);
+                .willReturn(expectedCMOIssuedNotificationParametersForRepresentative);
 
             cmoNotificationHandler.sendNotificationsForIssuedCaseManagementOrder(
-                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID));
+                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
 
-            verify(notificationClient, times(1)).sendEmail(
+            verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("abc@example.com"),
-                eq(expectedCMOOrderIssuedNotificationParametersForRepresentative), eq("12345"));
+                eq(expectedCMOIssuedNotificationParametersForRepresentative), eq("12345"));
         }
 
-        private ImmutableMap<String, Object> getCMOIssuedNotificationParameters() {
+        private ImmutableMap<String, Object> getCMOIssuedCaseLinkNotificationParameters() {
             return ImmutableMap.<String, Object>builder()
                 .put("localAuthorityNameOrRepresentativeFullName", LOCAL_AUTHORITY_NAME)
                 .putAll(expectedCommonCMONotificationParameters())
@@ -320,7 +325,7 @@ class NotificationHandlerTest {
                 .build();
         }
 
-        private Map<String, Object> getExpectedCMOOrderIssuedNotificationParametersForRepresentative() {
+        private Map<String, Object> getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative() {
             return ImmutableMap.<String, Object>builder()
                 .put("localAuthorityNameOrRepresentativeFullName", "Jon Snow")
                 .putAll(expectedCommonCMONotificationParameters())
