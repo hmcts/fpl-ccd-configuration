@@ -753,6 +753,37 @@ class DirectionHelperServiceTest {
     }
 
     @Nested
+    class AddEmptyDirectionsForAssigneeNotInMap {
+
+        @Test
+        void shouldAddEmptyListValueWhenKeyNotPresentInMap() {
+            Map<DirectionAssignee, List<Element<Direction>>> map = new HashMap<>();
+
+            service.addEmptyDirectionsForAssigneeNotInMap(map);
+
+            Stream.of(DirectionAssignee.values())
+                .forEach(assignee -> assertThat(map.get(assignee)).isEqualTo(emptyList()));
+        }
+
+        @Test
+        void shouldAddEmptyListValueToNewKeysWhenSomeKeysAreAlreadyPresent() {
+            Map<DirectionAssignee, List<Element<Direction>>> map = new HashMap<>();
+            map.put(LOCAL_AUTHORITY, emptyListOfElement());
+            map.put(CAFCASS, emptyListOfElement());
+
+            service.addEmptyDirectionsForAssigneeNotInMap(map);
+
+            assertThat(map).containsOnlyKeys(DirectionAssignee.values());
+            assertThat(map).extracting(ALL_PARTIES, PARENTS_AND_RESPONDENTS, COURT, OTHERS).containsOnly(emptyList());
+            assertThat(map).extracting(LOCAL_AUTHORITY, CAFCASS).containsOnly(emptyListOfElement());
+        }
+
+        private ImmutableList<Element<Direction>> emptyListOfElement() {
+            return ImmutableList.of(Element.<Direction>builder().build());
+        }
+    }
+
+    @Nested
     class RemoveCustomDirections {
 
         @Test

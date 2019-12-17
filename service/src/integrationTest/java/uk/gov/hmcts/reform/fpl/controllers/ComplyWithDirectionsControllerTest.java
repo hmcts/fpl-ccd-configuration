@@ -69,6 +69,27 @@ class ComplyWithDirectionsControllerTest {
         assertThat(collectionsContainDirectionsForRoleAndAllParties(caseData));
     }
 
+    @Test
+    void aboutToStartCallbackShouldReturnAllPartiesDirectionsWhenNoSpecificRoleDirections() throws Exception {
+        Direction direction = Direction.builder().assignee(ALL_PARTIES).build();
+        Order sdo = Order.builder().directions(buildDirections(direction)).build();
+
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of("standardDirectionOrder", sdo))
+                .build())
+            .build();
+
+        CaseData caseData = makeRequest(request, "about-to-start");
+
+        assertThat(caseData.getAllParties()).isNull();
+        assertThat(caseData.getLocalAuthorityDirections()).containsAll(sdo.getDirections());
+        assertThat(caseData.getCafcassDirections()).containsAll(sdo.getDirections());
+        assertThat(caseData.getRespondentDirections()).containsAll(sdo.getDirections());
+        assertThat(caseData.getOtherPartiesDirections()).containsAll(sdo.getDirections());
+        assertThat(caseData.getCourtDirectionsCustom()).containsAll(sdo.getDirections());
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     void aboutToSubmitShouldAddResponseToStandardDirectionOrderWhenEmptyServedCaseManagementOrders() throws Exception {
