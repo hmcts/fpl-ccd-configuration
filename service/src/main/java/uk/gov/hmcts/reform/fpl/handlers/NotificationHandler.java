@@ -14,8 +14,8 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
-import uk.gov.hmcts.reform.fpl.events.CMOEvent;
 import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
@@ -160,10 +160,15 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void sendNotificationsForIssuedCaseManagementOrder(CMOEvent event) {
+    public void sendNotificationsForIssuedCaseManagementOrder(CaseManagementOrderIssuedEvent event) {
         EventData eventData = new EventData(event);
 
         sendCMOCaseLinkNotifications(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
+    }
+
+    private void sendCMOCaseLinkNotifications(final CaseDetails caseDetails, final String localAuthorityCode) {
+        sendCMOCaseLinkNotificationForLocalAuthority(caseDetails, localAuthorityCode);
+        sendCMOCaseLinkNotificationToRepresentatives(caseDetails);
     }
 
     private void sendCMOCaseLinkNotificationForLocalAuthority(final CaseDetails caseDetails,
@@ -177,11 +182,6 @@ public class NotificationHandler {
         String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
         sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, email,
             localAuthorityNotificationParameters, Long.toString(caseDetails.getId()));
-    }
-
-    private void sendCMOCaseLinkNotifications(final CaseDetails caseDetails, final String localAuthorityCode) {
-        sendCMOCaseLinkNotificationForLocalAuthority(caseDetails, localAuthorityCode);
-        sendCMOCaseLinkNotificationToRepresentatives(caseDetails);
     }
 
     private void sendCMOCaseLinkNotificationToRepresentatives(final CaseDetails caseDetails) {

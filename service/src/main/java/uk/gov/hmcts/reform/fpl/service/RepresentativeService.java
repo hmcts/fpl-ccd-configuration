@@ -22,6 +22,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeRole.Type.RESPONDENT;
@@ -160,7 +161,7 @@ public class RepresentativeService {
 
     public List<Representative> getRepresentativesByServedPreference(List<Element<Representative>> representatives,
                                                                      RepresentativeServingPreferences preference) {
-        if (ObjectUtils.isNotEmpty(representatives)) {
+        if (isNotEmpty(representatives)) {
             return representatives.stream()
                 .filter(Objects::nonNull)
                 .map(Element::getValue)
