@@ -14,9 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -150,19 +148,17 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
         List<Map<String, Object>> representativesInfo = new ArrayList<>();
         List<Element<Representative>> representatives = caseData.getRepresentatives();
-        List<Respondent> respondents = ElementUtils.unwrapElements(caseData.getRespondents1());
-        List<Other> others = caseDataExtractionService.getOthers(caseData);
 
         representativesInfo.add(getApplicantDetails(applicantName, solicitor));
 
-        respondents.stream()
+        ElementUtils.unwrapElements(caseData.getRespondents1()).stream()
             .filter(respondent -> isNotEmpty(respondent.getRepresentedBy()))
             .forEach(respondent -> representativesInfo.add(ImmutableMap.of(
                 "name", defaultIfNull(respondent.getParty().getFullName(), EMPTY),
                 "representedBy", getRepresentativesInfo(respondent, representatives))
             ));
 
-        others.stream()
+        caseDataExtractionService.getOthers(caseData).stream()
             .filter(other -> isNotEmpty(other.getRepresentedBy()))
             .forEach(other -> representativesInfo.add(ImmutableMap.of(
                 "name", defaultIfNull(other.getName(), EMPTY),

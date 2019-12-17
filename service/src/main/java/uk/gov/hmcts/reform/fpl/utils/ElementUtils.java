@@ -16,7 +16,7 @@ public class ElementUtils {
     }
 
     @SafeVarargs
-    public static <T extends Object> List<Element<T>> wrapElements(T... elements) {
+    public static <T> List<Element<T>> wrapElements(T... elements) {
         return Stream.of(elements)
             .map(element -> Element.<T>builder().value(element).build())
             .collect(Collectors.toUnmodifiableList());

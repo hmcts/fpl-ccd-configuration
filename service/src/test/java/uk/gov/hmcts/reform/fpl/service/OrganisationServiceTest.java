@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -121,11 +121,8 @@ class OrganisationServiceTest {
 
         when(organisationApi.findUsersByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenThrow(exception);
 
-        try {
-            organisationService.findUserByEmail(AUTH_TOKEN_ID, USER_EMAIL);
-            fail("Exception expected");
-        } catch (Exception e) {
-            assertThat(e).isEqualTo(exception);
-        }
+        Exception actualException = assertThrows(FeignException.InternalServerError.class,
+            () -> organisationService.findUserByEmail(AUTH_TOKEN_ID, USER_EMAIL));
+        assertThat(actualException).isEqualTo(exception);
     }
 }
