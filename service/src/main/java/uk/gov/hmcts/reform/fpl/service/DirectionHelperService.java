@@ -314,7 +314,7 @@ public class DirectionHelperService {
 
                     break;
 
-                    //TODO: add test cases for addValuesToListResponseDirections. assert right assignee.
+                //TODO: add test cases for addValuesToListResponseDirections. assert right assignee.
                 case PARENTS_AND_RESPONDENTS:
                 case OTHERS:
                     List<Element<DirectionResponse>> elements = addValuesToListResponseDirections(
@@ -339,41 +339,42 @@ public class DirectionHelperService {
                 return directionElement.getValue().getResponses();
             })
             .flatMap(List::stream)
-            .map(element -> {
-
-                //TODO: separate method?
-                if (eventId == COMPLY_ON_BEHALF_SDO) {
-                    return addCourtAssigneeAndDirectionId(id, element);
-                } else {
-                    return addSolicitorAssigneeAndDirectionId(id, element, authorisation);
-                }
-            })
+            .map(element -> getDirectionResponseElement(eventId, authorisation, id, element))
             .collect(toList());
     }
 
-    private Element<DirectionResponse> addCourtAssigneeAndDirectionId(AtomicReference<UUID> id,
-                                                                      Element<DirectionResponse> element) {
+    private Element<DirectionResponse> getDirectionResponseElement(ComplyOnBehalfEvent eventId,
+                                                                   String authorisation,
+                                                                   AtomicReference<UUID> id,
+                                                                   Element<DirectionResponse> element) {
+        if (eventId == COMPLY_ON_BEHALF_SDO) {
+            return addCourtAssigneeAndDirectionId(id.get(), element);
+        } else {
+            return addSolicitorAssigneeAndDirectionId(id.get(), element, authorisation);
+        }
+    }
+
+    private Element<DirectionResponse> addCourtAssigneeAndDirectionId(UUID id, Element<DirectionResponse> element) {
         return Element.<DirectionResponse>builder()
             .id(element.getId())
             .value(element.getValue().toBuilder()
                 .assignee(COURT)
-                .directionId(id.get())
+                .directionId(id)
                 .build())
             .build();
     }
 
-    private Element<DirectionResponse> addSolicitorAssigneeAndDirectionId(AtomicReference<UUID> id,
+    //TODO: name will always be updated to the most recent person complying with directions.
+    // Need to persist existing name...
+    private Element<DirectionResponse> addSolicitorAssigneeAndDirectionId(UUID id,
                                                                           Element<DirectionResponse> element,
                                                                           String authorisation) {
-        String userName = userDetailsService.getUserName(authorisation);
-
-        //TODO: DirectionResponse needs a field for solicitor user name to be added.
-
         return Element.<DirectionResponse>builder()
             .id(element.getId())
             .value(element.getValue().toBuilder()
-                .assignee(PARENTS_AND_RESPONDENTS)
-                .directionId(id.get())
+                .assignee(OTHERS)
+                .responder(userDetailsService.getUserName(authorisation))
+                .directionId(id)
                 .build())
             .build();
     }

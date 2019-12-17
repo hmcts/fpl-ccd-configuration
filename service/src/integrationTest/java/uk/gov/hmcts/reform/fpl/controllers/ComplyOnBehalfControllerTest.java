@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,9 +36,11 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -53,6 +57,9 @@ class ComplyOnBehalfControllerTest {
 
     @Autowired
     private ObjectMapper mapper;
+
+    @MockBean
+    private UserDetailsService userDetailsService;
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
@@ -91,7 +98,6 @@ class ComplyOnBehalfControllerTest {
         assertThat(response.getData().get("others_label")).isEqualTo("Person 1 - John Smith\n");
     }
 
-    //Test to check persistence of responses issue.
     @Test
     void aboutToStartCallbackShouldAddAllPartiesDirectionWithPartyResponseToCorrectMap() throws Exception {
         List<Element<Direction>> directions = getDirectionForRespondentsAllPartiesAndOthers();
@@ -115,30 +121,6 @@ class ComplyOnBehalfControllerTest {
 
         assertThat(response.getData().get("respondents_label")).isEqualTo("Respondent 1 - John Doe\n");
         assertThat(response.getData().get("others_label")).isEqualTo("Person 1 - John Smith\n");
-    }
-
-    private List<Element<Direction>> getDirectionForRespondentsAllPartiesAndOthers() {
-        List<Element<Direction>> directions = new ArrayList<>();
-        directions.add(Element.<Direction>builder()
-            .id(DIRECTION_ID)
-            .value(Direction.builder()
-                .assignee(ALL_PARTIES)
-                .responses(responses(PARENTS_AND_RESPONDENTS))
-                .build())
-            .build());
-        directions.add(Element.<Direction>builder()
-            .id(randomUUID())
-            .value(Direction.builder()
-                .assignee(PARENTS_AND_RESPONDENTS)
-                .build())
-            .build());
-        directions.add(Element.<Direction>builder()
-            .id(randomUUID())
-            .value(Direction.builder()
-                .assignee(OTHERS)
-                .build())
-            .build());
-        return directions;
     }
 
     @Test
@@ -165,6 +147,34 @@ class ComplyOnBehalfControllerTest {
                 expectedResponse("RESPONDENT_1"),
                 expectedResponse("CAFCASS"))
             .hasSize(3);
+    }
+
+    @Test
+    void aboutToSubmitShouldAddResponsesOnBehalfOfWhenOtherEvent() throws Exception {
+        given(userDetailsService.getUserName(AUTH_TOKEN)).willReturn("Emma Taylor");
+
+        CallbackRequest request = CallbackRequest.builder()
+            .eventId(COMPLY_OTHERS.toString())
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of(
+                    "standardDirectionOrder", orderWithAllPartiesDirection(),
+                    "otherPartiesDirectionsCustom", updatedDirection("OTHER_1")))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-submit");
+
+        List<Element<DirectionResponse>> responses = mapper.convertValue(response.getData(), CaseData.class)
+            .getStandardDirectionOrder().getDirections().get(0).getValue().getResponses();
+
+        assertThat(responses.stream().map(Element::getValue))
+            .containsOnly(DirectionResponse.builder()
+                .complied("Yes")
+                .responder("Emma Taylor")
+                .directionId(DIRECTION_ID)
+                .respondingOnBehalfOf("OTHER_1")
+                .assignee(OTHERS)
+                .build());
     }
 
     private List<Element<Direction>> directionsForRespondentsCafcassOthersAndAllParties() {
@@ -310,5 +320,29 @@ class ComplyOnBehalfControllerTest {
             .respondingOnBehalfOf(onBehalfOf)
             .assignee(COURT)
             .build();
+    }
+
+    private List<Element<Direction>> getDirectionForRespondentsAllPartiesAndOthers() {
+        List<Element<Direction>> directions = new ArrayList<>();
+        directions.add(Element.<Direction>builder()
+            .id(DIRECTION_ID)
+            .value(Direction.builder()
+                .assignee(ALL_PARTIES)
+                .responses(responses(PARENTS_AND_RESPONDENTS))
+                .build())
+            .build());
+        directions.add(Element.<Direction>builder()
+            .id(randomUUID())
+            .value(Direction.builder()
+                .assignee(PARENTS_AND_RESPONDENTS)
+                .build())
+            .build());
+        directions.add(Element.<Direction>builder()
+            .id(randomUUID())
+            .value(Direction.builder()
+                .assignee(OTHERS)
+                .build())
+            .build());
+        return directions;
     }
 }

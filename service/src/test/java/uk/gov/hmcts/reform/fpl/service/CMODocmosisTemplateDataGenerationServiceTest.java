@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -29,7 +30,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDat
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {
     JacksonAutoConfiguration.class, DraftCMOService.class, CommonCaseDataExtractionService.class,
-    DateFormatterService.class, DirectionHelperService.class, HearingVenueLookUpService.class,
+    DateFormatterService.class, DirectionHelperService.class, UserDetailsService.class, HearingVenueLookUpService.class,
     HearingBookingService.class, JsonOrdersLookupService.class
 })
 class CMODocmosisTemplateDataGenerationServiceTest {
@@ -43,7 +44,6 @@ class CMODocmosisTemplateDataGenerationServiceTest {
     private static final String HEARING_VENUE = "Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW";
     private final DateFormatterService dateFormatterService;
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
-    private final DirectionHelperService directionHelperService;
     private final DraftCMOService draftCMOService;
     private final HearingBookingService hearingBookingService;
     private final ObjectMapper mapper;
@@ -55,6 +55,11 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         "partiesPositions"
     };
     private CMODocmosisTemplateDataGenerationService templateDataGenerationService;
+
+    @MockBean
+    private UserDetailsService userDetailsService;
+
+    private DirectionHelperService directionHelperService;
 
     @Autowired
     CMODocmosisTemplateDataGenerationServiceTest(DateFormatterService dateFormatterService,
@@ -77,6 +82,8 @@ class CMODocmosisTemplateDataGenerationServiceTest {
 
     @BeforeEach
     void setUp() {
+        directionHelperService = new DirectionHelperService(userDetailsService);
+
         CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService(
             dateFormatterService, hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService,
             directionHelperService, hearingVenueLookUpService, commonCaseDataExtractionService);

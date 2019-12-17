@@ -34,8 +34,18 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_OTHERS",
     "CaseFieldID": "respondentDirectionsCustom",
-    "ListElementCode": "responses.respondingOnBehalfOfOthers",
+    "ListElementCode": "parentsAndRespondentsAssignee",
+    "EventElementLabel": "For",
     "FieldDisplayOrder": 4,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_OTHERS",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "responses.respondingOnBehalfOfOthers",
+    "FieldDisplayOrder": 5,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -45,15 +55,6 @@
     "CaseFieldID": "respondentDirectionsCustom",
     "ListElementCode": "responses.complied",
     "EventElementLabel": "Have they complied with this direction?",
-    "FieldDisplayOrder": 5,
-    "DisplayContext": "OPTIONAL"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "ID": "ComplyWithDirections",
-    "CaseEventID": "COMPLY_OTHERS",
-    "CaseFieldID": "respondentDirectionsCustom",
-    "ListElementCode": "responses.documentDetails",
     "FieldDisplayOrder": 6,
     "DisplayContext": "OPTIONAL"
   },
@@ -62,8 +63,17 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_OTHERS",
     "CaseFieldID": "respondentDirectionsCustom",
-    "ListElementCode": "responses.file",
+    "ListElementCode": "responses.documentDetails",
     "FieldDisplayOrder": 7,
+    "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_OTHERS",
+    "CaseFieldID": "respondentDirectionsCustom",
+    "ListElementCode": "responses.file",
+    "FieldDisplayOrder": 8,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -73,7 +83,7 @@
     "CaseFieldID": "respondentDirectionsCustom",
     "ListElementCode": "responses.cannotComplyTitle",
     "EventElementLabel": "### Parties need to comply with directions to keep proceedings on track. ###\n\nIf they can’t comply, you need to explain:\n\n• reasons why\n\n• impact on timetable and next hearing\n\n• proposed next actions",
-    "FieldDisplayOrder": 8,
+    "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -82,7 +92,7 @@
     "CaseEventID": "COMPLY_OTHERS",
     "CaseFieldID": "respondentDirectionsCustom",
     "ListElementCode": "responses.cannotComplyReason",
-    "FieldDisplayOrder": 9,
+    "FieldDisplayOrder": 10,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -91,7 +101,7 @@
     "CaseEventID": "COMPLY_OTHERS",
     "CaseFieldID": "respondentDirectionsCustom",
     "ListElementCode": "responses.c2Uploaded",
-    "FieldDisplayOrder": 10,
+    "FieldDisplayOrder": 11,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -100,7 +110,7 @@
     "CaseEventID": "COMPLY_OTHERS",
     "CaseFieldID": "respondentDirectionsCustom",
     "ListElementCode": "responses.cannotComplyFile",
-    "FieldDisplayOrder": 11,
+    "FieldDisplayOrder": 12,
     "DisplayContext": "OPTIONAL"
   }
 ]

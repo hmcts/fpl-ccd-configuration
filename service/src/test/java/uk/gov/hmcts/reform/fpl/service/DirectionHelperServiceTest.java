@@ -40,9 +40,9 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -56,11 +56,11 @@ class DirectionHelperServiceTest {
     @MockBean
     private UserDetailsService userDetailsService;
 
-    private final DirectionHelperService service = new DirectionHelperService(userDetailsService);
+    private DirectionHelperService service;
 
     @BeforeEach
     void setUp() {
-        given(userDetailsService.getUserName(any())).willReturn("Emma Taylor");
+        service = new DirectionHelperService(userDetailsService);
     }
 
     @Test
@@ -1229,6 +1229,34 @@ class DirectionHelperServiceTest {
                 .build());
 
             service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_ON_BEHALF_SDO, "auth");
+
+            assertThat(getResponses(caseData)).containsAll(expectedResponses);
+        }
+
+        @Test
+        void shouldAddResponseForOtherPartiesWhenValidResponseMadeBySolicitor() {
+            given(userDetailsService.getUserName("auth")).willReturn("Emma Taylor");
+
+            UUID directionId = randomUUID();
+            UUID responseId = randomUUID();
+            Direction.DirectionBuilder direction = Direction.builder().assignee(OTHERS);
+
+            DirectionResponse.DirectionResponseBuilder response = DirectionResponse.builder()
+                .complied("Yes")
+                .respondingOnBehalfOf("OTHERS_1");
+
+            CaseData caseData = prepareCaseData(directionId, direction, createResponses(responseId, response));
+
+            List<Element<DirectionResponse>> expectedResponses = ImmutableList.of(Element.<DirectionResponse>builder()
+                .id(responseId)
+                .value(response
+                    .directionId(directionId)
+                    .assignee(OTHERS)
+                    .responder("Emma Taylor")
+                    .build())
+                .build());
+
+            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_OTHERS, "auth");
 
             assertThat(getResponses(caseData)).containsAll(expectedResponses);
         }
