@@ -25,6 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingDynmaicList;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
@@ -61,7 +64,7 @@ class CaseManagementOrderServiceTest {
             .action(OrderAction.builder().build())
             .build());
 
-        assertThat(data).containsOnlyKeys("schedule", "recitals", "orderAction");
+        assertThat(data).containsOnlyKeys(SCHEDULE.getKey(), RECITALS.getKey(), ORDER_ACTION.getKey());
     }
 
     @Test
@@ -70,14 +73,14 @@ class CaseManagementOrderServiceTest {
             .schedule(Schedule.builder().build())
             .build());
 
-        assertThat(data).containsOnlyKeys("schedule", "recitals", "orderAction");
+        assertThat(data).containsOnlyKeys(SCHEDULE.getKey(), RECITALS.getKey(), ORDER_ACTION.getKey());
     }
 
     @Test
     void shouldExtractMapFieldsWhenCaseManagementOrderIsNull() {
         Map<String, Object> data = service.extractMapFieldsFromCaseManagementOrder(null);
 
-        assertThat(data).containsOnlyKeys("schedule", "recitals", "orderAction");
+        assertThat(data).containsOnlyKeys(SCHEDULE.getKey(), RECITALS.getKey(), ORDER_ACTION.getKey());
     }
 
     @Test
