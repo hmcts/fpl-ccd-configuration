@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -63,7 +62,12 @@ public class ChildController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("confidentialChildren", childrenService.addConfidentialChildren(caseData));
+        List<Element<Child>> confidentialChildren = childrenService.getConfidentialChildren(caseData);
+        if (confidentialChildren.size() != 0) {
+            caseDetails.getData().put("confidentialChildren", confidentialChildren);
+        } else {
+            caseDetails.getData().remove("confidentialChildren");
+        }
 
         if (caseData.getChildren1() != null) {
             caseDetails.getData().put("children1", childrenService.addHiddenValues(caseData));

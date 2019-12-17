@@ -33,10 +33,12 @@ public class ChildrenService {
         } else {
             for (Element<Child> child : caseData.getChildren1()) {
                 if (child.getValue().getParty().getDetailsHidden().equals("Yes")) {
-                    for (Element<Child> confidentialChild : caseData.getConfidentialChildren()) {
-                        if (isSameChildById(child, confidentialChild)) {
-                            populatedChildren.add(confidentialChild);
-                            break;
+                    if (caseData.getConfidentialChildren() != null) {
+                        for (Element<Child> confidentialChild : caseData.getConfidentialChildren()) {
+                            if (isSameChildById(child, confidentialChild)) {
+                                populatedChildren.add(confidentialChild);
+                                break;
+                            }
                         }
                     }
                 } else {
@@ -78,7 +80,7 @@ public class ChildrenService {
             .collect(toList());
     }
 
-    public List<Element<Child>> addConfidentialChildren(CaseData caseData) {
+    public List<Element<Child>> getConfidentialChildren(CaseData caseData) {
         List<Element<Child>> confidentialChildren = new ArrayList<>();
         for (Element<Child> child : caseData.getChildren1()
         ) {
@@ -86,6 +88,7 @@ public class ChildrenService {
                 confidentialChildren.add(child);
             }
         }
+        System.out.println(confidentialChildren.size());
         return confidentialChildren;
     }
 }
