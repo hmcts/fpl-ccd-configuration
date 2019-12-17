@@ -160,5 +160,4 @@ public class DraftCMOController {
         return uploadDocumentService.uploadPDF(
             userId, authorization, document.getBytes(), "draft-" + document.getDocumentTitle());
     }
-
 }
