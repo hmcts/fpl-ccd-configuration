@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.AllArgsConstructor;
@@ -33,13 +32,12 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.JUDGE_REVIEW;
 
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @HasDocumentsIncludedInSwet(groups = UploadDocumentsGroup.class)
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CaseData {
     @NotBlank(message = "Enter a case name")
     private final String caseName;
@@ -144,44 +142,43 @@ public class CaseData {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
+    private final OrderTypeAndDocument orderTypeAndDocument;
     private final GeneratedOrder order;
+
     private final List<Element<GeneratedOrder>> orderCollection;
 
-    @JsonIgnore
-    public List<Element<GeneratedOrder>> getGeneratedOrders() {
-        return defaultIfNull(orderCollection, new ArrayList<>());
+    public List<Element<GeneratedOrder>> getOrderCollection() {
+        return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
-    //TODO: update CCD definitions
-    // for local authority and judiciary
     @JsonIgnore
     private CaseManagementOrder caseManagementOrder;
 
 
-    @JsonGetter("caseManagementOrder_LocalAuthority")
+    @JsonGetter("caseManagementOrder")
     private CaseManagementOrder getCaseManagementOrder_LocalAuthority() {
-        if (caseManagementOrder != null && caseManagementOrder.getStatus() != SEND_TO_JUDGE) {
+        if (caseManagementOrder != null && caseManagementOrder.getStatus() != JUDGE_REVIEW) {
             return caseManagementOrder;
         }
         return null;
     }
 
-    @JsonSetter("caseManagementOrder_LocalAuthority")
+    @JsonSetter("caseManagementOrder")
     private void setCaseManagementOrder_LocalAuthority(CaseManagementOrder order) {
         if (order != null) {
             caseManagementOrder = order;
         }
     }
 
-    @JsonGetter("caseManagementOrder_Judiciary")
+    @JsonGetter("cmoToAction")
     private CaseManagementOrder getCaseManagementOrder_Judiciary() {
-        if (caseManagementOrder != null && caseManagementOrder.getStatus() == SEND_TO_JUDGE) {
+        if (caseManagementOrder != null && caseManagementOrder.getStatus() == JUDGE_REVIEW) {
             return caseManagementOrder;
         }
         return null;
     }
 
-    @JsonSetter("caseManagementOrder_Judiciary")
+    @JsonSetter("cmoToAction")
     private void setCaseManagementOrder_Judiciary(CaseManagementOrder order) {
         if (order != null) {
             caseManagementOrder = order;
@@ -196,11 +193,10 @@ public class CaseData {
 
     private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
 
-    //TODO: tests fail when this is defined / not defined
-    //    @JsonIgnore
-    //    public List<Element<CaseManagementOrder>> getServedCaseManagementOrders() {
-    //        return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
-    //    }
+    public List<Element<CaseManagementOrder>> getServedCaseManagementOrders() {
+        return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
+    }
 
     private final Others others;
+    private final DynamicList nextHearingDateList;
 }

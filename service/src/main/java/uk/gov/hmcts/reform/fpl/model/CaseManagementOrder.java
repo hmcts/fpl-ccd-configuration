@@ -27,6 +27,7 @@ public class CaseManagementOrder {
     private final List<Element<Recital>> recitals;
     private final CMOStatus status;
     private final OrderAction action;
+    private final NextHearing nextHearing;
 
     @JsonIgnore
     public boolean isDraft() {

@@ -70,7 +70,46 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCaseDetailsHasHearingDate() {
-        hearingDetails = createHearingBookings(NOW);
+        hearingDetails = createHearingBookings(NOW.plusDays(5));
+        caseManagementOrder = CaseManagementOrder.builder().build();
+
+        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+            caseManagementOrder, hearingDetails);
+
+        DynamicList hearingList = (DynamicList) data.get("cmoHearingDateList");
+
+        assertThat(hearingList.getListItems())
+            .containsAll(Arrays.asList(
+                DynamicListElement.builder()
+                    .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                    .label(formatLocalDateToMediumStyle(10))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                    .label(formatLocalDateToMediumStyle(7))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                    .label(formatLocalDateToMediumStyle(5))
+                    .build()));
+    }
+
+    @Test
+    void shouldNotReturnHearingDatesWhenHearingDateIsInThePast() {
+        hearingDetails = createHearingBookings(NOW.minusDays(10));
+        caseManagementOrder = CaseManagementOrder.builder().build();
+
+        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+            caseManagementOrder, hearingDetails);
+
+        DynamicList hearingList = (DynamicList) data.get(HEARING_DATE_LIST.getKey());
+
+        assertThat(hearingList.getListItems()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnHearingDatesWhenHearingDateIsSameDayButLaterTime() {
+        hearingDetails = createHearingBookings(NOW.plusMinutes(5));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(

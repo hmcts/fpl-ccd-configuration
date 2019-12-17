@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -73,10 +74,13 @@ class DraftCMOControllerTest {
     private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofLocalizedDate(
         FormatStyle.MEDIUM).localizedBy(Locale.UK);
+
     @Autowired
     private DraftCMOService draftCMOService;
+
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private ObjectMapper mapper;
 
@@ -85,6 +89,7 @@ class DraftCMOControllerTest {
 
     @MockBean
     private DocmosisDocumentGeneratorService documentGeneratorService;
+
     @MockBean
     private UploadDocumentService uploadDocumentService;
 
@@ -97,12 +102,12 @@ class DraftCMOControllerTest {
 
         List<String> expected = Arrays.asList(
             TODAYS_DATE.plusDays(5).format(dateTimeFormatter),
-            TODAYS_DATE.plusDays(2).format(dateTimeFormatter),
-            TODAYS_DATE.format(dateTimeFormatter));
+            TODAYS_DATE.plusDays(2).format(dateTimeFormatter));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
+        assertThat(getHearingDates(callbackResponse)).doesNotContain(TODAYS_DATE.format(dateTimeFormatter));
 
         assertThat(callbackResponse.getData().get("respondents_label")).isEqualTo(
             "Respondent 1 - Timothy Jones\nRespondent 2 - Sarah Simpson\n");
@@ -160,20 +165,24 @@ class DraftCMOControllerTest {
         Map<String, Object> data = new HashMap<>();
 
         Stream.of(DirectionAssignee.values()).forEach(direction ->
-            data.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
+            data.put(direction.toCustomDirectionField(), createElementCollection(createUnassignedDirection()))
         );
 
+
         data.put(HEARING_DATE_LIST.getKey(), dynamicHearingDates);
-        data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(),
-            CaseManagementOrder.builder().status(SELF_REVIEW).build());
+        data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), CaseManagementOrder.builder()
+            .orderDoc(DocumentReference.builder().filename("draft-case-management-order.pdf").build())
+            .status(SELF_REVIEW)
+            .action(OrderAction.builder().changeRequestedByJudge("Changes").build())
+            .build());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
         assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
-        assertThat(caseManagementOrder).extracting("id", "hearingDate")
-            .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), TODAYS_DATE.plusDays(5).toString());
+        assertThat(caseManagementOrder.getId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
+        assertThat(caseManagementOrder.getHearingDate()).isEqualTo(TODAYS_DATE.plusDays(5).toString());
         assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
     }
 
