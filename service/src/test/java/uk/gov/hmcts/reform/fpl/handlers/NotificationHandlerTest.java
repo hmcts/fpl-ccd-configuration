@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
-import uk.gov.hmcts.reform.fpl.events.CMOEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
@@ -252,6 +252,7 @@ class NotificationHandlerTest {
                 .willReturn(LOCAL_AUTHORITY_NAME);
 
             // did this to enable ObjectMapper injection
+            // TODO: 17/12/2019 nice to refactor to make cleaner
             cmoNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration, cafcassLookupConfiguration,
                 hmctsEmailContentProvider, cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued,
                 gatekeeperEmailContentProvider, c2UploadedEmailContentProvider, orderEmailContentProvider,
@@ -273,7 +274,7 @@ class NotificationHandlerTest {
                 .willReturn(expectedCMOIssuedNotificationParameters);
 
             cmoNotificationHandler.sendNotificationsForIssuedCaseManagementOrder(
-                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
+                new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
 
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
@@ -295,7 +296,7 @@ class NotificationHandlerTest {
                 .willReturn(expectedCMOIssuedNotificationParametersForRepresentative);
 
             cmoNotificationHandler.sendNotificationsForIssuedCaseManagementOrder(
-                new CMOEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
+                new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
 
             verify(notificationClient).sendEmail(
                 eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("abc@example.com"),

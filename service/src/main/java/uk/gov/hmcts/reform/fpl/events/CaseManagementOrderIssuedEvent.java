@@ -6,10 +6,10 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
-public class CMOEvent extends CallbackEvent {
+public class CaseManagementOrderIssuedEvent extends CallbackEvent {
     private final byte[] documentContents;
 
-    public CMOEvent(CallbackRequest callbackRequest, String authorization, String userId,
+    public CaseManagementOrderIssuedEvent(CallbackRequest callbackRequest, String authorization, String userId,
                     byte[] documentContents) {
         super(callbackRequest, authorization, userId);
         this.documentContents = documentContents;

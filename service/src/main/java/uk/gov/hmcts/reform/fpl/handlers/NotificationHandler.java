@@ -14,8 +14,8 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
-import uk.gov.hmcts.reform.fpl.events.CMOEvent;
 import uk.gov.hmcts.reform.fpl.events.CallbackEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
@@ -162,7 +162,7 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void sendNotificationsForIssuedCaseManagementOrder(CMOEvent event) {
+    public void sendNotificationsForIssuedCaseManagementOrder(CaseManagementOrderIssuedEvent event) {
         EventData eventData = new EventData(event);
 
         sendCMOCaseLinkNotifications(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
@@ -177,15 +177,16 @@ public class NotificationHandler {
         sendCMODocumentLinkNotificationsToRepresentatives(caseDetails, documentContents);
     }
 
-    private void sendCMOCaseLinkNotificationForLocalAuthority(final CaseDetails caseDetails,
-                                                              final String localAuthorityCode) {
+    private void sendCMOCaseLinkNotificationForLocalAuthority(final EventData eventData) {
         final String localAuthorityName = localAuthorityNameLookupConfiguration.getLocalAuthorityName(
-            localAuthorityCode);
+            eventData.getLocalAuthorityCode());
 
         Map<String, Object> localAuthorityNotificationParameters = caseManagementOrderEmailContentProvider
-            .buildCMOIssuedCaseLinkNotificationParameters(caseDetails, localAuthorityName);
+            .buildCMOIssuedCaseLinkNotificationParameters(eventData.getCaseDetails(), localAuthorityName);
 
-        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
+        String email = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
+            eventData.getLocalAuthorityCode());
+
         sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, email,
             localAuthorityNotificationParameters, Long.toString(caseDetails.getId()));
     }
@@ -210,8 +211,8 @@ public class NotificationHandler {
         sendCMOCaseLinkNotificationToRepresentatives(caseDetails);
     }
 
-    private void sendCMOCaseLinkNotificationToRepresentatives(final CaseDetails caseDetails) {
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+    private void sendCMOCaseLinkNotificationToRepresentatives(final EventData eventData) {
+        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
         List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
             caseData.getRepresentatives(), DIGITAL_SERVICE);
 
@@ -220,10 +221,10 @@ public class NotificationHandler {
             .forEach(representative -> {
                 Map<String, Object> representativeNotificationParameters =
                     caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(
-                        caseDetails, representative.getFullName());
+                        eventData.getCaseDetails(), representative.getFullName());
 
                 sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, representative.getEmail(),
-                    representativeNotificationParameters, Long.toString(caseDetails.getId()));
+                    representativeNotificationParameters, eventData.getCaseReference());
             });
     }
 
@@ -271,10 +272,12 @@ public class NotificationHandler {
     static class EventData {
         private final CaseDetails caseDetails;
         private final String localAuthorityCode;
+        private final String caseReference;
 
         public EventData(CallbackEvent event) {
             this.caseDetails = event.getCallbackRequest().getCaseDetails();
             this.localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+            this.caseReference = Long.toString(caseDetails.getId());
         }
     }
 }
