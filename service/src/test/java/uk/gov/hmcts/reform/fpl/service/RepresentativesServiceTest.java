@@ -208,7 +208,7 @@ class RepresentativesServiceTest {
     }
 
     @Test
-    public void shouldReturnEmptyRepresentativeIfNoRepresentativePresents() {
+    void shouldReturnEmptyRepresentativeIfNoRepresentativePresents() {
         CaseData caseData = CaseData.builder().build();
 
         List<Element<Representative>> expectedRepresentatives = wrapElements(Representative.builder().build());
@@ -218,7 +218,7 @@ class RepresentativesServiceTest {
     }
 
     @Test
-    public void shouldAddUserToCase() {
+    void shouldAddUserToCase() {
         final Long caseId = RandomUtils.nextLong();
 
         String representative1UserId = RandomStringUtils.randomAlphabetic(10);
@@ -282,7 +282,7 @@ class RepresentativesServiceTest {
     }
 
     @Test
-    public void shouldLinkRepresentativeWithRepresentable() {
+    void shouldLinkRepresentativeWithRepresentable() {
         Long caseId = RandomUtils.nextLong();
 
         Other otherPerson1 = Other.builder().build();

@@ -16,41 +16,41 @@ import static org.apache.http.HttpStatus.SC_OK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class AbstractControllerTest {
+abstract class AbstractControllerTest {
 
     private String eventName;
 
-    protected final String userAuthToken = "Bearer token";
+    final String userAuthToken = "Bearer token";
 
     @Autowired
-    protected MockMvc mockMvc;
+    MockMvc mockMvc;
 
     @Autowired
-    protected ObjectMapper mapper;
+    ObjectMapper mapper;
 
-    public AbstractControllerTest(String eventName) {
+    AbstractControllerTest(String eventName) {
         this.eventName = eventName;
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(Map<String, Object> caseData,
-                                                                         int expectedStatus) {
+    AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(Map<String, Object> caseData,
+                                                               int expectedStatus) {
         return postEvent(String.format("/callback/%s/about-to-start", eventName), caseData, expectedStatus);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(Map<String, Object> caseData) {
+    AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(Map<String, Object> caseData) {
         return postAboutToStartEvent(caseData, SC_OK);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postMidEvent(Map<String, Object> caseData, int expectedStatus) {
+    AboutToStartOrSubmitCallbackResponse postMidEvent(Map<String, Object> caseData, int expectedStatus) {
         return postEvent(String.format("/callback/%s/mid-event", eventName), caseData, expectedStatus);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postMidEvent(Map<String, Object> data) {
+    AboutToStartOrSubmitCallbackResponse postMidEvent(Map<String, Object> data) {
         return postMidEvent(data, SC_OK);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(Long id, Map<String, Object> caseData,
-                                                                          int expectedStatus) {
+    AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(Long id, Map<String, Object> caseData,
+                                                                int expectedStatus) {
         return postEvent(String.format("/callback/%s/about-to-submit", eventName), id, caseData, expectedStatus);
     }
 

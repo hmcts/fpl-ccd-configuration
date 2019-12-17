@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,16 +30,12 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RepresentativeService {
 
-    @Autowired
-    private OrganisationService organisationService;
-
-    @Autowired
-    private CaseService caseService;
-
-    @Autowired
-    private CaseDataExtractionService caseDataExtractionService;
+    private final OrganisationService organisationService;
+    private final CaseService caseService;
+    private final CaseDataExtractionService caseDataExtractionService;
 
     public List<Element<Representative>> getDefaultRepresentatives(CaseData caseData) {
         if (ObjectUtils.isEmpty(caseData.getRepresentatives())) {
@@ -79,10 +76,8 @@ public class RepresentativeService {
                 validationErrors.add(format("Select how %s wants to get case information", representativeLabel));
             }
 
-            if (EMAIL.equals(servingPreferences)) {
-                if (isEmpty(representative.getEmail())) {
-                    validationErrors.add(format("Enter an email address for %s", representativeLabel));
-                }
+            if (EMAIL.equals(servingPreferences) && isEmpty(representative.getEmail())) {
+                validationErrors.add(format("Enter an email address for %s", representativeLabel));
             }
 
             if (POST.equals(servingPreferences)) {
@@ -95,8 +90,7 @@ public class RepresentativeService {
             }
 
             if (nonNull(role) && RESPONDENT.equals(representative.getRole().getType())) {
-                Optional<Representable> responded = findRespondent(caseData, role.getSequenceNo());
-                if (responded.isEmpty()) {
+                if (findRespondent(caseData, role.getSequenceNo()).isEmpty()) {
                     validationErrors.add(format("Respondent %s represented by %s doesn't exist."
                             + " Choose a respondent who is associated with this case",
                         representative.getRole().getSequenceNo() + 1, representativeLabel));
@@ -105,8 +99,7 @@ public class RepresentativeService {
 
             if (nonNull(role) && OTHER.equals(role.getType())) {
                 int otherPersonSeq = representative.getRole().getSequenceNo();
-                Optional<Representable> other = findOther(caseData, otherPersonSeq);
-                if (other.isEmpty()) {
+                if (findOther(caseData, otherPersonSeq).isEmpty()) {
                     String otherPersonLabel = otherPersonSeq == 0 ? "Person" : "Other person " + otherPersonSeq;
                     validationErrors.add(format("%s represented by %s doesn't exist."
                             + " Choose a person who is associated with this case",
@@ -118,10 +111,7 @@ public class RepresentativeService {
                 if (isEmpty(representative.getEmail())) {
                     validationErrors.add(format("Enter an email address for %s", representativeLabel));
                 } else {
-                    Optional<String> userId = organisationService
-                        .findUserByEmail(authorisation, representative.getEmail());
-
-                    if (userId.isEmpty()) {
+                    if (organisationService.findUserByEmail(authorisation, representative.getEmail()).isEmpty()) {
                         validationErrors.add(
                             format("%s must already have an account with the digital service", representativeLabel));
                     }
@@ -133,7 +123,7 @@ public class RepresentativeService {
     }
 
     public void addRepresentatives(CaseData caseData, Long caseId, String auth) {
-        caseData.getRepresentatives().stream()
+        caseData.getRepresentatives()
             .forEach(representative -> {
                 addToCase(representative, caseId, auth);
                 linkWithRepresentable(caseData, representative);
@@ -142,16 +132,14 @@ public class RepresentativeService {
 
     private void addToCase(Element<Representative> representativeWithId, Long caseId, String auth) {
         Representative representative = representativeWithId.getValue();
-        if (DIGITAL_SERVICE.equals(representative.getServingPreferences())) {
-            if (isNull(representative.getIdamId())) {
-                organisationService.findUserByEmail(auth, representative.getEmail()).ifPresent(
-                    userId -> {
-                        caseService.addUser(auth, Long.toString(caseId), userId,
-                            representative.getRole().getCaseRoles());
-                        representative.setIdamId(userId);
-                    }
-                );
-            }
+        if (DIGITAL_SERVICE.equals(representative.getServingPreferences()) && isNull(representative.getIdamId())) {
+            organisationService.findUserByEmail(auth, representative.getEmail()).ifPresent(
+                userId -> {
+                    caseService.addUser(auth, Long.toString(caseId), userId,
+                        representative.getRole().getCaseRoles());
+                    representative.setIdamId(userId);
+                }
+            );
         }
     }
 
