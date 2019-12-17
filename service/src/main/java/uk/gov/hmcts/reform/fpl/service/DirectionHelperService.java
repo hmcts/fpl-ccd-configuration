@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.UUID.randomUUID;
@@ -402,6 +403,15 @@ public class DirectionHelperService {
         List<Element<Direction>> directions) {
         return directions.stream()
             .collect(groupingBy(directionElement -> directionElement.getValue().getAssignee()));
+    }
+
+    /**
+     * Adds any {@link DirectionAssignee} not present to a map with an empty list of directions.
+     *
+     * @param map assignee, directions key value pairs.
+     */
+    public void addEmptyDirectionsForAssigneeNotInMap(Map<DirectionAssignee, List<Element<Direction>>> map) {
+        stream(DirectionAssignee.values()).forEach(assignee -> map.putIfAbsent(assignee, new ArrayList<>()));
     }
 
     /**

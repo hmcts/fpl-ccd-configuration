@@ -34,7 +34,7 @@ public class DocumentGeneratorService {
     @SafeVarargs
     public final byte[] generateSubmittedFormPDF(CaseDetails caseDetails, Map.Entry<String, ?>... extraContextEntries) {
         Map<String, Object> context = mapper.convertValue(populateEmptyCollections(caseDetails),
-            new TypeReference<Map<String, Object>>() {});
+            new TypeReference<>() {});
 
         for (Map.Entry<String, ?> entry : extraContextEntries) {
             context.put(entry.getKey(), entry.getValue());
