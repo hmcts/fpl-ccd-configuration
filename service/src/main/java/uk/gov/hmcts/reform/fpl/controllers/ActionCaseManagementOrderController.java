@@ -139,7 +139,6 @@ public class ActionCaseManagementOrderController {
     public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
                                      @RequestHeader(value = "user-id") String userId,
                                      @RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
         coreCaseDataService.triggerEvent(
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
@@ -179,8 +178,8 @@ public class ActionCaseManagementOrderController {
             byte[] documentContents = documentDownloadService.downloadDocument(authorization, userId,
                 actionCmoDocumentUrl);
 
-            applicationEventPublisher.publishEvent(new CMOEvent(callbackRequest, authorization, userId,
-                documentContents));
+            applicationEventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(callbackRequest, authorization,
+                userId, documentContents));
         }
     }
 }
