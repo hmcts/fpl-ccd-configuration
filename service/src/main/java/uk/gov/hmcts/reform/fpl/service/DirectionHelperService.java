@@ -499,6 +499,20 @@ public class DirectionHelperService {
         }
     }
 
+    /**
+     * Returns a list of directions to comply with.
+     *
+     * @param caseData case data with standard directions and case management order directions.
+     * @return most recent directions that need to be complied with.
+     */
+    public List<Element<Direction>> getDirectionsToComplyWith(CaseData caseData) {
+        if (caseData.getServedCaseManagementOrders().isEmpty()) {
+            return caseData.getStandardDirectionOrder().getDirections();
+        } else {
+            return caseData.getServedCaseManagementOrders().get(0).getValue().getDirections();
+        }
+    }
+
     private String booleanToYesOrNo(boolean value) {
         return value ? "Yes" : "No";
     }

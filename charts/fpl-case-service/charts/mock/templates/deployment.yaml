@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fpla-prd-mock-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prd-mock
+  template:
+    metadata:
+      labels:
+        app: prd-mock
+    spec:
+      containers:
+        - name: prd-mock
+          image: rodolpheche/wiremock
+          ports:
+            - containerPort: 8080
+      volumeMounts:
+        - name: prd-mappings
+          mountPath: /home/wiremock/mappings
+      volumes:
+        - name: prd-mappings
+          configMap:
+            name: prd-mappings
