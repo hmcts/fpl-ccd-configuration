@@ -72,7 +72,7 @@ public class ActionCaseManagementOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         caseDetails.getData().putAll(
-                caseManagementOrderService.extractMapFieldsFromCaseManagementOrder(caseData.getCaseManagementOrder()));
+            caseManagementOrderService.extractMapFieldsFromCaseManagementOrder(caseData.getCaseManagementOrder()));
 
         draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
 
