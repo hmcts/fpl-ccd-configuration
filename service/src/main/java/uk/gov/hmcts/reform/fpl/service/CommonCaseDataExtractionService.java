@@ -14,7 +14,6 @@ import java.util.Optional;
 
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
-import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.HEARING_EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName;
 import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalAdvisorName;
 
@@ -22,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 public class CommonCaseDataExtractionService {
     private final DateFormatterService dateFormatterService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
+    public static final String HEARING_EMPTY_PLACEHOLDER = "This will appear on the issued CMO";
 
     @Autowired
     public CommonCaseDataExtractionService(DateFormatterService dateFormatterService,

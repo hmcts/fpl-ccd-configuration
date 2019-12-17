@@ -2,6 +2,10 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -9,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.service.time.TimeConfiguration;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -29,11 +33,14 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingDynmaicList;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {TimeConfiguration.class, CaseManagementOrderService.class,
+    HearingBookingService.class})
 class CaseManagementOrderServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
-    private final Time time = () -> NOW;
 
-    private CaseManagementOrderService service = new CaseManagementOrderService(time, new HearingBookingService());
+    @Autowired
+    private CaseManagementOrderService service;
 
     @Test
     void shouldAddDocumentToOrderWhenDocumentExists() throws IOException {

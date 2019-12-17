@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
-import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.HEARING_EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.reform.fpl.service.CommonCaseDataExtractionService.HEARING_EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataMapForDraftCMODocmosisGeneration;
 
 @ExtendWith(SpringExtension.class)
