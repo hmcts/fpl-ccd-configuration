@@ -761,7 +761,8 @@ class DirectionHelperServiceTest {
 
             service.addEmptyDirectionsForAssigneeNotInMap(map);
 
-            assertThat(map).containsOnlyKeys(DirectionAssignee.values());
+            Stream.of(DirectionAssignee.values())
+                .forEach(assignee -> assertThat(map.get(assignee)).isEqualTo(emptyList()));
         }
 
         @Test
