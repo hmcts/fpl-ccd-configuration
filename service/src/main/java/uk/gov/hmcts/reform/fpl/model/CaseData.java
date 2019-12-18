@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,11 +26,13 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.JUDGE_REVIEW;
 
 @Data
 @Builder(toBuilder = true)
@@ -146,11 +150,39 @@ public class CaseData {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
-    // for judiciary
-    private final CaseManagementOrder cmoToAction;
+    @JsonIgnore
+    private CaseManagementOrder caseManagementOrder;
 
-    // for local authority
-    private final CaseManagementOrder caseManagementOrder;
+    @JsonGetter("caseManagementOrder")
+    private CaseManagementOrder getCaseManagementOrder_LocalAuthority() {
+        if (caseManagementOrder != null && caseManagementOrder.getStatus() != JUDGE_REVIEW) {
+            return caseManagementOrder;
+        }
+        return null;
+    }
+
+    @JsonSetter("caseManagementOrder")
+    private void setCaseManagementOrder_LocalAuthority(CaseManagementOrder order) {
+        if (order != null) {
+            caseManagementOrder = order;
+        }
+    }
+
+    @JsonGetter("cmoToAction")
+    private CaseManagementOrder getCaseManagementOrder_Judiciary() {
+        if (caseManagementOrder != null && caseManagementOrder.getStatus() == JUDGE_REVIEW) {
+            return caseManagementOrder;
+        }
+        return null;
+    }
+
+    @JsonSetter("cmoToAction")
+    private void setCaseManagementOrder_Judiciary(CaseManagementOrder order) {
+        if (order != null) {
+            caseManagementOrder = order;
+        }
+    }
+
     private final OrderAction orderAction;
     private final DynamicList cmoHearingDateList;
     private final Schedule schedule;
