@@ -66,3 +66,7 @@ ccd:
     s2sKey: ${CCD_DEFINITION_STORE_S2S_SECRET}
   dataStoreApi:
     s2sKey: ${CCD_DATA_STORE_S2S_SECRET}
+
+fpl-prd-mock:
+    prd:
+      url: http://rd-professional-api-aat.service.core-compute-aat.internal

@@ -9,3 +9,4 @@ dependencies:
       - fpl-ccd-stack
   - name: fpl-prd-mock
     condition: tags.fpl-prd-mock
+    repository: "file://./charts/"
