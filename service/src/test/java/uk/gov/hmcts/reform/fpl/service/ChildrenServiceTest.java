@@ -65,7 +65,7 @@ class ChildrenServiceTest {
             .children1(children)
             .build();
 
-        List<Element<Child>> updatedChildren = service.addHiddenValues(caseData);
+        List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData);
 
         assertThat(updatedChildren.get(0).getValue().getParty().firstName).isEqualTo("James");
         assertThat(updatedChildren.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
@@ -96,7 +96,7 @@ class ChildrenServiceTest {
         CaseData caseData = CaseData.builder()
             .children1(children)
             .build();
-        List<Element<Child>> updatedChildren = service.addHiddenValues(caseData);
+        List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData);
 
         assertThat(updatedChildren.get(0).getValue().getParty().firstName).isEqualTo("James");
         assertThat(updatedChildren.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
@@ -123,7 +123,7 @@ class ChildrenServiceTest {
         CaseData caseData = CaseData.builder()
             .children1(children)
             .build();
-        List<Element<Child>> updatedChildren = service.addHiddenValues(caseData);
+        List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData);
 
         assertThat(updatedChildren.get(0).getValue().getParty().partyId).isEqualTo("123");
     }
@@ -152,7 +152,7 @@ class ChildrenServiceTest {
         CaseData caseData = CaseData.builder()
             .children1(children)
             .build();
-        List<Element<Child>> updatedChildren = service.addHiddenValues(caseData);
+        List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData);
 
         assertThat(updatedChildren.get(0).getValue().getParty().firstName).isEqualTo("James");
         assertThat(updatedChildren.get(0).getValue().getParty().partyId).isEqualTo("123");
@@ -162,18 +162,66 @@ class ChildrenServiceTest {
     }
 
     @Test
-    void shouldHideChildAddressDetailsWhenConfidentialitySelected() {
+    void shouldShowAddressDetailsOfConfidentialChildWhenExpandingChildCollection() {
+        UUID id = UUID.randomUUID();
         List<Element<Child>> children = ImmutableList.of(
             Element.<Child>builder()
-                .id(UUID.randomUUID())
+                .id(id)
                 .value(Child.builder()
                     .party(ChildParty.builder()
                         .firstName("James")
                         .detailsHidden("Yes")
-                        .address(Address.builder().addressLine1("22b Baker Street").build())
-                        .partyId("123")
                         .build())
                     .build())
                 .build());
+
+        List<Element<Child>> confidentialChildren = ImmutableList.of(
+            Element.<Child>builder()
+                .id(id)
+                .value(Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName("James")
+                        .detailsHidden("Yes")
+                        .address(Address.builder()
+                            .addressLine1("James' House")
+                            .build())
+                        .build())
+                    .build())
+                .build());
+
+        CaseData caseData = CaseData.builder()
+            .children1(children)
+            .confidentialChildren(confidentialChildren)
+            .build();
+
+        List<Element<Child>> expandedChildrenCollection = service.expandChildrenCollection(caseData);
+
+        assertThat(expandedChildrenCollection.get(0).getValue().getParty().getAddress().getAddressLine1()).isEqualTo(
+            "James' House");
     }
+
+    @Test
+    void shouldHideChildAddressDetailsWhenConfidentialitySelected() {
+            List<Element<Child>> children = ImmutableList.of(
+                Element.<Child>builder()
+                    .id(UUID.randomUUID())
+                    .value(Child.builder()
+                        .party(ChildParty.builder()
+                            .firstName("James")
+                            .detailsHidden("Yes")
+                            .address(Address.builder()
+                                .addressLine1("James' House")
+                                .build())
+                            .build())
+                        .build())
+                    .build());
+
+            CaseData caseData = CaseData.builder()
+                .children1(children)
+                .build();
+
+            List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData);
+
+            assertThat(updatedChildren.get(0).getValue().getParty().getAddress()).isNull();
+        }
 }

@@ -70,7 +70,7 @@ public class ChildController {
         }
 
         if (caseData.getChildren1() != null) {
-            caseDetails.getData().put("children1", childrenService.addHiddenValues(caseData));
+            caseDetails.getData().put("children1", childrenService.modifyHiddenValues(caseData));
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

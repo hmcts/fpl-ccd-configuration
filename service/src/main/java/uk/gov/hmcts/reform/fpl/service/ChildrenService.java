@@ -20,8 +20,8 @@ public class ChildrenService {
     @SuppressWarnings("squid:S2583")
     public List<Element<Child>> expandChildrenCollection(CaseData caseData) {
         List<Element<Child>> populatedChildren = new ArrayList<>();
-        if (caseData.getChildren1() == null) { // squid:S2583: value can be null in CCD JSON
 
+        if (caseData.getChildren1() == null) { // squid:S2583: value can be null in CCD JSON
             populatedChildren.add(Element.<Child>builder()
                 .value(Child.builder()
                     .party(ChildParty.builder()
@@ -32,7 +32,9 @@ public class ChildrenService {
             return populatedChildren;
         } else {
             for (Element<Child> child : caseData.getChildren1()) {
-                if (child.getValue().getParty().getDetailsHidden().equals("Yes")) {
+                String contactDetails = child.getValue().getParty().getDetailsHidden();
+
+                if (contactDetails != null && contactDetails.equals("Yes")) {
                     if (caseData.getConfidentialChildren() != null) {
                         for (Element<Child> confidentialChild : caseData.getConfidentialChildren()) {
                             if (isSameChildById(child, confidentialChild)) {
@@ -49,11 +51,7 @@ public class ChildrenService {
         }
     }
 
-    private boolean isSameChildById(Element<Child> child, Element<Child> confidentialChild) {
-        return confidentialChild.getId().equals(child.getId());
-    }
-
-    public List<Element<Child>> addHiddenValues(CaseData caseData) {
+    public List<Element<Child>> modifyHiddenValues(CaseData caseData) {
         return caseData.getChildren1().stream()
             .map(element -> {
                 Child.ChildBuilder childBuilder = Child.builder();
@@ -63,13 +61,15 @@ public class ChildrenService {
                         .partyId(UUID.randomUUID().toString())
                         .partyType(PartyType.INDIVIDUAL)
                         .build());
-                    if (element.getValue().getParty().getDetailsHidden().equals("Yes")) {
-                        childBuilder.party(element.getValue().getParty().toBuilder()
-                            .address(Address.builder().build())
-                            .build());
-                    }
                 } else {
                     childBuilder.party(element.getValue().getParty().toBuilder().build());
+                }
+
+                String contactDetails = element.getValue().getParty().getDetailsHidden();
+                if (contactDetails != null && contactDetails.equals("Yes")) {
+                    childBuilder.party(element.getValue().getParty().toBuilder()
+                        .address(null)
+                        .build());
                 }
 
                 return Element.<Child>builder()
@@ -88,7 +88,11 @@ public class ChildrenService {
                 confidentialChildren.add(child);
             }
         }
-        System.out.println(confidentialChildren.size());
         return confidentialChildren;
     }
+
+    private boolean isSameChildById(Element<Child> child, Element<Child> confidentialChild) {
+        return confidentialChild.getId().equals(child.getId());
+    }
+
 }

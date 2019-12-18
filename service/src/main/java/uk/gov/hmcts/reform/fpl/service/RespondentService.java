@@ -1,19 +1,16 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableMap;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
+import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
@@ -23,70 +20,67 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 @Service
 public class RespondentService {
 
-    @Autowired
-    private final ObjectMapper mapper = new ObjectMapper();
+    public List<Element<Respondent>> expandRespondentCollection(CaseData caseData) {
+        List<Element<Respondent>> populatedRespondents = new ArrayList<>();
 
-    public AboutToStartOrSubmitCallbackResponse expandRespondentCollection(CaseDetails caseDetails) {
-        Map<String, Object> data = caseDetails.getData();
+        if (caseData.getRespondents1() == null) { // squid:S2583: value can be null in CCD JSON
+            populatedRespondents.add(Element.<Respondent>builder()
+                .value(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .partyId(UUID.randomUUID().toString())
+                        .build())
+                    .build())
+                .build());
+            return populatedRespondents;
+        } else {
+            for (Element<Respondent> respondent : caseData.getRespondents1()) {
+                String contactDetails = respondent.getValue().getParty().getContactDetailsHidden();
 
-        if (!caseDetails.getData().containsKey("respondents1")) {
-            // Populates first respondent so UI contains expanded Respondent Object.
-            List<Map<String, Object>> populatedRespondent = new ArrayList<>();
-            populatedRespondent.add(ImmutableMap.of(
-                "id", UUID.randomUUID().toString(),
-                "value", ImmutableMap.of(
-                    "party", ImmutableMap.of(
-                        // Variable within CCD party structure must be set to expand Collection.
-                        // PartyId is a hidden field so setting a value will not persist to the db
-                        "partyId", UUID.randomUUID().toString()
-                    )
-                ))
-            );
-            data.put("respondents1", populatedRespondent);
+                if (contactDetails != null && contactDetails.equals("Yes")) {
+                    if (caseData.getConfidentialRespondents() != null) {
+                        for (Element<Respondent> confidentialRespondent : caseData.getConfidentialRespondents()) {
+                            if (isSameRespondentById(respondent, confidentialRespondent)) {
+                                populatedRespondents.add(confidentialRespondent);
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    populatedRespondents.add(respondent);
+                }
+            }
+            return populatedRespondents;
         }
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
     }
 
-    @SuppressWarnings("unchecked")
-    public AboutToStartOrSubmitCallbackResponse addHiddenValues(CaseDetails caseDetails) {
-        Map<String, Object> data = caseDetails.getData();
+    public List<Element<Respondent>> modifyHiddenValues(CaseData caseData) {
+        return caseData.getRespondents1().stream()
+            .map(element -> {
+                Respondent.RespondentBuilder respondentBuilder = Respondent.builder();
 
-        if (caseDetails.getData().containsKey("respondents1")) {
-            List<Map<String, Object>> respondentParties = (List<Map<String, Object>>) data.get("respondents1");
+                if (element.getValue().getParty().getPartyId() == null) {
+                    respondentBuilder.party(element.getValue().getParty().toBuilder()
+                        .partyId(UUID.randomUUID().toString())
+                        .partyType(PartyType.INDIVIDUAL)
+                        .build());
+                } else {
+                    respondentBuilder.party(element.getValue().getParty().toBuilder().build());
+                }
 
-            List<RespondentParty> respondentPartyList = respondentParties.stream()
-                .map(entry -> mapper.convertValue(entry.get("value"), Map.class))
-                .map(map -> mapper.convertValue(map.get("party"), RespondentParty.class))
-                .map(respondent -> {
-                    RespondentParty.RespondentPartyBuilder partyBuilder = respondent.toBuilder();
+                String contactDetails = element.getValue().getParty().getContactDetailsHidden();
+                if (contactDetails != null && contactDetails.equals("Yes")) {
+                    respondentBuilder.party(element.getValue().getParty().toBuilder()
+                        .address(null)
+                        .telephoneNumber(null)
+                        .build());
+                }
 
-                    if (respondent.getPartyId() == null) {
-                        partyBuilder.partyId(UUID.randomUUID().toString());
-                        partyBuilder.partyType(PartyType.INDIVIDUAL);
-                    }
-
-                    return partyBuilder.build();
-                })
-                .collect(toList());
-
-            List<Map<String, Object>> respondents = respondentPartyList.stream()
-                .map(item -> ImmutableMap.<String, Object>builder()
-                    .put("id", UUID.randomUUID().toString())
-                    .put("value", ImmutableMap.of(
-                        "party", mapper.convertValue(item, Map.class),
-                        "leadRespondentIndicator", "No"))
-                    .build())
-                .collect(toList());
-
-            data.put("respondents1", respondents);
-        }
-
-        return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
-            .build();
+                return Element.<Respondent>builder()
+                    .id(element.getId())
+                    .value(respondentBuilder.build())
+                    .build();
+            })
+            .collect(toList());
     }
 
     public String buildRespondentLabel(List<Element<Respondent>> respondents) {
@@ -104,6 +98,22 @@ public class RespondentService {
         }
 
         return sb.toString();
+    }
+
+    public List<Element<Respondent>> getConfidentialRespondents(CaseData caseData) {
+        List<Element<Respondent>> confidentialRespondents = new ArrayList<>();
+        for (Element<Respondent> respondentElement : caseData.getRespondents1()
+        ) {
+            if (respondentElement.getValue().getParty().getContactDetailsHidden().equals("Yes")) {
+                confidentialRespondents.add(respondentElement);
+            }
+        }
+        return confidentialRespondents;
+    }
+
+    private boolean isSameRespondentById(Element<Respondent> respondent, Element<Respondent> confidentialRespondent) {
+        return confidentialRespondent.getId().equals(respondent.getId());
+
     }
 
     private String getRespondentFullName(RespondentParty respondentParty) {
