@@ -153,7 +153,6 @@ public class CaseData {
     @JsonIgnore
     private CaseManagementOrder caseManagementOrder;
 
-
     @JsonGetter("caseManagementOrder")
     private CaseManagementOrder getCaseManagementOrder_LocalAuthority() {
         if (caseManagementOrder != null && caseManagementOrder.getStatus() != JUDGE_REVIEW) {
