@@ -71,7 +71,7 @@ public class CaseManagementOrderService {
 
     public boolean isHearingDateInFuture(CaseData caseData) {
         LocalDateTime hearingDate = hearingBookingService
-            .getHearingBookingByUUID(caseData.getHearingDetails(), caseData.getCmoToAction().getId())
+            .getHearingBookingByUUID(caseData.getHearingDetails(), caseData.getCaseManagementOrder().getId())
             .getStartDate();
 
         return time.now().isBefore(hearingDate);
