@@ -47,6 +47,9 @@ public class ComplyOnBehalfController {
         this.othersService = othersService;
     }
 
+    //TODO: filter responses with different userName in aboutToStart. Code below makes the assumption that only
+    // the same responder will be able edit a response. Currently any solicitor can amend a response but the
+    // name of the responder does not change.
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
@@ -57,7 +60,8 @@ public class ComplyOnBehalfController {
         Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
             directionHelperService.sortDirectionsByAssignee(directionsToComplyWith);
 
-        directionHelperService.addDirectionsToCaseDetails(caseDetails, sortedDirections);
+        directionHelperService.addDirectionsToCaseDetails(
+            caseDetails, sortedDirections, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));
 
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
         caseDetails.getData().put("others_label", getOthersLabel(caseData));

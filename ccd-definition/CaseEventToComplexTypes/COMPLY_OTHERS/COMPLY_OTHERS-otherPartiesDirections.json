@@ -37,6 +37,16 @@
     "ListElementCode": "otherPartiesAssignee",
     "EventElementLabel": "For",
     "FieldDisplayOrder": 4,
+    "DisplayContext": "READONLY",
+    "Comment": "cannot configure show hide condition to hide field for all parties directions as these are not assigned to one person"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_OTHERS",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
+    "ListElementCode": "responses.responder",
+    "FieldDisplayOrder": 5,
     "DisplayContext": "READONLY"
   },
   {
@@ -45,7 +55,7 @@
     "CaseEventID": "COMPLY_OTHERS",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.respondingOnBehalfOfOthers",
-    "FieldDisplayOrder": 5,
+    "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -55,7 +65,7 @@
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.complied",
     "EventElementLabel": "Have they complied with this direction?",
-    "FieldDisplayOrder": 6,
+    "FieldDisplayOrder": 7,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -64,7 +74,7 @@
     "CaseEventID": "COMPLY_OTHERS",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.documentDetails",
-    "FieldDisplayOrder": 7,
+    "FieldDisplayOrder": 8,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -73,7 +83,7 @@
     "CaseEventID": "COMPLY_OTHERS",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.file",
-    "FieldDisplayOrder": 8,
+    "FieldDisplayOrder": 9,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -83,7 +93,7 @@
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.cannotComplyTitle",
     "EventElementLabel": "### Parties need to comply with directions to keep proceedings on track. ###\n\nIf they can’t comply, you need to explain:\n\n• reasons why\n\n• impact on timetable and next hearing\n\n• proposed next actions",
-    "FieldDisplayOrder": 9,
+    "FieldDisplayOrder": 10,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -92,7 +102,7 @@
     "CaseEventID": "COMPLY_OTHERS",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.cannotComplyReason",
-    "FieldDisplayOrder": 10,
+    "FieldDisplayOrder": 11,
     "DisplayContext": "MANDATORY"
   },
   {
@@ -101,7 +111,7 @@
     "CaseEventID": "COMPLY_OTHERS",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.c2Uploaded",
-    "FieldDisplayOrder": 11,
+    "FieldDisplayOrder": 12,
     "DisplayContext": "OPTIONAL"
   },
   {
@@ -110,7 +120,7 @@
     "CaseEventID": "COMPLY_OTHERS",
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.cannotComplyFile",
-    "FieldDisplayOrder": 12,
+    "FieldDisplayOrder": 13,
     "DisplayContext": "OPTIONAL"
   }
 ]

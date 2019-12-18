@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.Order;
@@ -69,6 +70,7 @@ class ComplyOnBehalfControllerTest {
     @Test
     void aboutToStartCallbackShouldAddPartiesDirectionsIntoSeparateRoleCollectionsAndPopulateLabels() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
+            .eventId(COMPLY_ON_BEHALF_SDO.toString())
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of(
                     "standardDirectionOrder", Order.builder()
@@ -103,6 +105,36 @@ class ComplyOnBehalfControllerTest {
         List<Element<Direction>> directions = getDirectionForRespondentsAllPartiesAndOthers();
 
         CallbackRequest request = CallbackRequest.builder()
+            .eventId(COMPLY_ON_BEHALF_SDO.toString())
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of(
+                    "standardDirectionOrder", Order.builder().directions(directions).build(),
+                    "others", firstOther(),
+                    "respondents1", respondents()
+                ))
+                .build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-start");
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(actualResponses(caseData.getRespondentDirectionsCustom(), ALL_PARTIES))
+            .isEqualTo(responses(PARENTS_AND_RESPONDENTS))
+            .hasSize(1);
+
+        assertThat(response.getData().get("respondents_label")).isEqualTo("Respondent 1 - John Doe\n");
+        assertThat(response.getData().get("others_label")).isEqualTo("Person 1 - John Smith\n");
+    }
+
+    @Test
+    void aboutToStartCallbackShouldAddDirectionWithPartyResponseToCorrectMapForComplyOthersEvent() throws Exception {
+        List<Element<Direction>> directions = getDirectionForRespondentsAllPartiesAndOthers();
+        List<Element<CaseManagementOrder>> orders = ImmutableList.of(Element.<CaseManagementOrder>builder()
+            .value(CaseManagementOrder.builder().directions(directions).build())
+            .build());
+
+        CallbackRequest request = CallbackRequest.builder()
+            .eventId(COMPLY_OTHERS.toString())
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of(
                     "standardDirectionOrder", Order.builder().directions(directions).build(),

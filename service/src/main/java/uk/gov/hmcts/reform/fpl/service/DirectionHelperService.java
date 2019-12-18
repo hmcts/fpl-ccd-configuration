@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -151,7 +150,8 @@ public class DirectionHelperService {
      * @param directionsMap a map where the DirectionAssignee key corresponds to a list of directions elements.
      */
     public void addDirectionsToCaseDetails(CaseDetails caseDetails,
-                                           Map<DirectionAssignee, List<Element<Direction>>> directionsMap) {
+                                           Map<DirectionAssignee, List<Element<Direction>>> directionsMap,
+                                           ComplyOnBehalfEvent eventId) {
         directionsMap.forEach((assignee, directions) -> {
             final List<Element<Direction>> clone = getClone(directionsMap.get(ALL_PARTIES));
 
@@ -159,7 +159,11 @@ public class DirectionHelperService {
                 case PARENTS_AND_RESPONDENTS:
                     directions.addAll(clone);
 
-                    filterResponsesNotCompliedOnBehalfOfByTheCourt("RESPONDENT", directions);
+                    if (eventId == COMPLY_ON_BEHALF_SDO) {
+                        filterResponsesNotCompliedOnBehalfOfByTheCourt("RESPONDENT", directions);
+                    } else {
+                        filterResponsesNotCompliedBySolicitor(directions, PARENTS_AND_RESPONDENTS);
+                    }
 
                     caseDetails.getData().put(assignee.toCustomDirectionField(), directions);
 
@@ -167,7 +171,11 @@ public class DirectionHelperService {
                 case OTHERS:
                     directions.addAll(clone);
 
-                    filterResponsesNotCompliedOnBehalfOfByTheCourt("OTHER", directions);
+                    if (eventId == COMPLY_ON_BEHALF_SDO) {
+                        filterResponsesNotCompliedOnBehalfOfByTheCourt("OTHER", directions);
+                    } else {
+                        filterResponsesNotCompliedBySolicitor(directions, OTHERS);
+                    }
 
                     caseDetails.getData().put(assignee.toCustomDirectionField(), directions);
 
@@ -202,6 +210,13 @@ public class DirectionHelperService {
     public void filterResponsesNotCompliedOnBehalfOfByTheCourt(String onBehalfOf, List<Element<Direction>> directions) {
         directions.forEach(directionElement -> directionElement.getValue().getResponses()
             .removeIf(element -> notCompliedWithByCourt(onBehalfOf, element)));
+    }
+
+    private void filterResponsesNotCompliedBySolicitor(List<Element<Direction>> directions,
+                                                       DirectionAssignee assignee) {
+        directions.forEach(directionElement -> directionElement.getValue().getResponses()
+            .removeIf(element -> assignee != element.getValue().getAssignee()
+                || isEmpty(element.getValue().getResponder())));
     }
 
     private boolean notCompliedWithByCourt(String onBehalfOf, Element<DirectionResponse> element) {
@@ -314,46 +329,55 @@ public class DirectionHelperService {
 
                     break;
 
-                //TODO: add test cases for addValuesToListResponseDirections. assert right assignee.
                 case PARENTS_AND_RESPONDENTS:
-                case OTHERS:
-                    List<Element<DirectionResponse>> elements = addValuesToListResponseDirections(
-                        directions, eventId, authorisation);
+                    List<Element<DirectionResponse>> respondentResponses = addValuesToListResponses(
+                        directions, eventId, authorisation, PARENTS_AND_RESPONDENTS);
 
-                    addResponseElementsToDirections(elements, directionsToComplyWith);
+                    addResponseElementsToDirections(respondentResponses, directionsToComplyWith);
+
+                    break;
+                case OTHERS:
+                    List<Element<DirectionResponse>> otherResponses = addValuesToListResponses(
+                        directions, eventId, authorisation, OTHERS);
+
+                    addResponseElementsToDirections(otherResponses, directionsToComplyWith);
 
                     break;
             }
         });
     }
 
-    private List<Element<DirectionResponse>> addValuesToListResponseDirections(List<Element<Direction>> directions,
-                                                                               ComplyOnBehalfEvent eventId,
-                                                                               String authorisation) {
-        AtomicReference<UUID> id = new AtomicReference<>();
+    //TODO: refactor of addCourtAssigneeAndDirectionId would remove dependency on eventId.
+    private List<Element<DirectionResponse>> addValuesToListResponses(List<Element<Direction>> directions,
+                                                                      ComplyOnBehalfEvent eventId,
+                                                                      String authorisation,
+                                                                      DirectionAssignee assignee) {
+        final UUID[] id = new UUID[1];
 
         return directions.stream()
             .map(directionElement -> {
-                id.set(directionElement.getId());
+                id[0] = directionElement.getId();
 
                 return directionElement.getValue().getResponses();
             })
             .flatMap(List::stream)
-            .map(element -> getDirectionResponseElement(eventId, authorisation, id, element))
+            .map(element -> getDirectionResponse(eventId, authorisation, id[0], element, assignee))
             .collect(toList());
     }
 
-    private Element<DirectionResponse> getDirectionResponseElement(ComplyOnBehalfEvent eventId,
-                                                                   String authorisation,
-                                                                   AtomicReference<UUID> id,
-                                                                   Element<DirectionResponse> element) {
-        if (eventId == COMPLY_ON_BEHALF_SDO) {
-            return addCourtAssigneeAndDirectionId(id.get(), element);
+    private Element<DirectionResponse> getDirectionResponse(ComplyOnBehalfEvent event,
+                                                            String authorisation,
+                                                            UUID id,
+                                                            Element<DirectionResponse> response,
+                                                            DirectionAssignee assignee) {
+        if (event == COMPLY_ON_BEHALF_SDO) {
+            return addCourtAssigneeAndDirectionId(id, response);
         } else {
-            return addSolicitorAssigneeAndDirectionId(id.get(), element, authorisation);
+            return addResponderAssigneeAndDirectionId(response, authorisation, assignee, id);
         }
     }
 
+    //TODO: if name of user complying for court is added then this can be merged with logic from method below.
     private Element<DirectionResponse> addCourtAssigneeAndDirectionId(UUID id, Element<DirectionResponse> element) {
         return Element.<DirectionResponse>builder()
             .id(element.getId())
@@ -364,19 +388,30 @@ public class DirectionHelperService {
             .build();
     }
 
-    //TODO: name will always be updated to the most recent person complying with directions.
-    // Need to persist existing name...
-    private Element<DirectionResponse> addSolicitorAssigneeAndDirectionId(UUID id,
-                                                                          Element<DirectionResponse> element,
-                                                                          String authorisation) {
+    private Element<DirectionResponse> addResponderAssigneeAndDirectionId(Element<DirectionResponse> response,
+                                                                          String authorisation,
+                                                                          DirectionAssignee assignee,
+                                                                          UUID id) {
         return Element.<DirectionResponse>builder()
-            .id(element.getId())
-            .value(element.getValue().toBuilder()
-                .assignee(OTHERS)
-                .responder(userDetailsService.getUserName(authorisation))
+            .id(response.getId())
+            .value(response.getValue().toBuilder()
+                .assignee(assignee)
+                .responder(getUsername(response, authorisation))
                 .directionId(id)
                 .build())
             .build();
+    }
+
+    private String getUsername(Element<DirectionResponse> element, String authorisation) {
+        String userName;
+
+        if (isEmpty(element.getValue().getResponder())) {
+            userName = userDetailsService.getUserName(authorisation);
+        } else {
+            userName = element.getValue().getResponder();
+        }
+
+        return userName;
     }
 
     /**
