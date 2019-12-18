@@ -13,6 +13,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.JUDGE_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
@@ -27,7 +29,8 @@ class CaseDataTest {
             .caseManagementOrder(CaseManagementOrder.builder().status(SELF_REVIEW).build())
             .build());
 
-        JSONAssert.assertEquals("{caseManagementOrder:{status: SELF_REVIEW}}", serialised, false);
+        JSONAssert.assertEquals(String.format("{%s:{status: %s}}",
+            CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), SELF_REVIEW.name()), serialised, false);
     }
 
     @Test
@@ -36,12 +39,15 @@ class CaseDataTest {
             .caseManagementOrder(CaseManagementOrder.builder().status(JUDGE_REVIEW).build())
             .build());
 
-        JSONAssert.assertEquals("{cmoToAction:{status: JUDGE_REVIEW}}", serialised, false);
+        JSONAssert.assertEquals(
+            String.format("{%s:{status: %s}}", CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), JUDGE_REVIEW.name()),
+            serialised, false);
     }
 
     @Test
     void shouldDeserialiseCaseDataWhenCaseManagementOrderWithSelfReviewState() throws JsonProcessingException {
-        String content = "{\"caseManagementOrder\":{\"status\": \"SELF_REVIEW\"}}";
+        String content = String.format("{\"%s\":{\"status\": \"%s\"}}",
+            CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), SELF_REVIEW.name());
 
         CaseData deserialised = mapper.readValue(content, CaseData.class);
 
@@ -52,7 +58,8 @@ class CaseDataTest {
 
     @Test
     void shouldDeserialiseCaseDataWhenCaseManagementOrderWithSendToJudgeState() throws JsonProcessingException {
-        String content = "{\"cmoToAction\":{\"status\": \"JUDGE_REVIEW\"}}";
+        String content = String.format("{\"%s\":{\"status\": \"%s\"}}",
+            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), JUDGE_REVIEW.name());
 
         CaseData deserialised = mapper.readValue(content, CaseData.class);
 
