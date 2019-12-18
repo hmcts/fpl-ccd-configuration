@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: prd-mock-service
+  name: fpla-prd-mock-service
 spec:
   selector:
-    app: prd-mock
+    app: fpla-prd-mock
   ports:
     - protocol: TCP
       port: 80

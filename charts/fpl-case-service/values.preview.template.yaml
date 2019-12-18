@@ -1,6 +1,7 @@
 tags:
   fpl-ccd-stack: true
   ccd-idam-pr: true
+  fpl-prd-mock: true
 
 java:
   image: ${IMAGE_NAME}

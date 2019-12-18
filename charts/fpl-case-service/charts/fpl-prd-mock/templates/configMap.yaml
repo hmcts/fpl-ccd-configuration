@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fpl-prd-mock-mappings
+data:
+  {{- range .Values.users }}
+  {{ .identifier }}.json: |
+    {
+      "priority": 1,
+      "request": {
+        "method": "GET",
+        "urlPath": "/refdata/external/v1/organisations/users/accountId",
+        "queryParameters": {
+          "email": {
+            "equalTo": {{ .email | quote}}
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{ \"userIdentifier\": \"{{ .identifier }}\"}"
+      }
+    }
+  {{- end }}
+  passThrough.json: |
+    {
+        "priority": 10,
+        "request": {
+            "urlPattern": "/refdata/external/.*"
+        },
+        "response": {
+            "proxyBaseUrl" : {{ .Values.prd.url | quote }}
+        }
+    }

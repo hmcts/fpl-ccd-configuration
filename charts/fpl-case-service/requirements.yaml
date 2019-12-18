@@ -7,3 +7,5 @@ dependencies:
     repository: '@hmctspublic'
     tags:
       - fpl-ccd-stack
+  - name: fpl-prd-mock
+    condition: tags.fpl-prd-mock
