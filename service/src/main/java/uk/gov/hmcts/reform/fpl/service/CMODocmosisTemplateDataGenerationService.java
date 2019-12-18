@@ -43,6 +43,7 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
@@ -115,7 +116,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         }
 
         List<Map<String, String>> recitals = buildRecitals(order.getRecitals());
-        cmoTemplateData.put("recitals", recitals);
+        cmoTemplateData.put(RECITALS.getKey(), recitals);
         cmoTemplateData.put("recitalsProvided", isNotEmpty(recitals));
 
         cmoTemplateData.putAll(getSchedule(order));

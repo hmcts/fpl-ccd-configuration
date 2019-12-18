@@ -46,6 +46,11 @@ import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -458,25 +463,25 @@ public class CaseDataGeneratorHelper {
             .put("hearingDetails", createHearingBookings(localDateTime))
             .put("dateSubmitted", LocalDate.now())
             .put("respondents1", createRespondents())
-            .put("cmoHearingDateList", DynamicList.builder()
+            .put(HEARING_DATE_LIST.getKey(), DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
                     .label(DATE_FORMATTER_SERVICE.formatLocalDateToString(
                         localDateTime.plusDays(5).toLocalDate(), FormatStyle.MEDIUM))
                     .build())
                 .build())
-            .put("schedule", createSchedule(true))
-            .put("recitals", createRecitals())
+            .put(SCHEDULE.getKey(), createSchedule(true))
+            .put(RECITALS.getKey(), createRecitals())
             .put("allPartiesCustom", getDirectionByAssignee(cmoDirections, ALL_PARTIES))
             .put("localAuthorityDirectionsCustom", getDirectionByAssignee(cmoDirections, LOCAL_AUTHORITY))
             .put("courtDirectionsCustom", getDirectionByAssignee(cmoDirections, COURT))
             .put("cafcassDirectionsCustom", getDirectionByAssignee(cmoDirections, CAFCASS))
             .put("otherPartiesDirectionsCustom", getDirectionByAssignee(cmoDirections, OTHERS))
             .put("respondentDirectionsCustom", getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
-            .put("cmoToAction", createApprovedCMO())
-            .put("servedCaseManagementOrders", ImmutableList.of(Element.<CaseManagementOrder>builder()
+            .put(SERVED_CASE_MANAGEMENT_ORDERS.getKey(), ImmutableList.of(Element.<CaseManagementOrder>builder()
                 .value(CaseManagementOrder.builder().build())
                 .build()))
+            .put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), createApprovedCMO())
             .build();
     }
 
