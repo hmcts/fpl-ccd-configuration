@@ -12,7 +12,7 @@ data:
         "urlPath": "/refdata/external/v1/organisations/users/accountId",
         "queryParameters": {
           "email": {
-            "equalTo": {{ .email | quote}}
+            "equalTo": {{ .email | quote }}
           }
         }
       },
