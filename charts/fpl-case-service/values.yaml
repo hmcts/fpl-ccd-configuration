@@ -1,7 +1,6 @@
 tags:
   fpl-ccd-stack: false
   ccd-idam-pr: false
-  fpl-prd-mock: false
 
 java:
   image: hmctspublic.azurecr.io/fpl/case-service:latest
