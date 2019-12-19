@@ -107,7 +107,7 @@ class DraftCMOServiceTest {
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
 
-        DynamicList hearingList = (DynamicList) data.get("cmoHearingDateList");
+        DynamicList hearingList = (DynamicList) data.get(HEARING_DATE_LIST.getKey());
 
         assertThat(hearingList.getListItems()).isEmpty();
     }
