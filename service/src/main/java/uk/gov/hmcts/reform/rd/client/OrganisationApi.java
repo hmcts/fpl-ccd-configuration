@@ -22,7 +22,7 @@ public interface OrganisationApi {
     );
 
     @GetMapping("/refdata/external/v1/organisations/users/accountId")
-    User findUsersByEmail(
+    User findUserByEmail(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @RequestParam(value = "email") final String email

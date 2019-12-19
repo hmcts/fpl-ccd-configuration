@@ -159,7 +159,8 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
                 "representedBy", getRepresentativesInfo(respondent, representatives))
             ));
 
-        caseDataExtractionService.getOthers(caseData).stream()
+
+        caseData.getAllOthers().stream()
             .filter(other -> isNotEmpty(other.getRepresentedBy()))
             .forEach(other -> representativesInfo.add(ImmutableMap.of(
                 "name", defaultIfNull(other.getName(), EMPTY),

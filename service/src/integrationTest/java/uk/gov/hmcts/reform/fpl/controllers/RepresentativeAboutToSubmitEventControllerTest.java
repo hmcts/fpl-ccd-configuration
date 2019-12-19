@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
@@ -11,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CaseUserApi;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.CaseUser;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -57,7 +57,6 @@ class RepresentativeAboutToSubmitEventControllerTest extends AbstractControllerT
 
     @Test
     void shouldAddUsersToCaseAndAssociateRepresentativesWithPerson() {
-        final Long caseId = RandomUtils.nextLong();
         final UUID representativeId = UUID.randomUUID();
         final String userId = RandomStringUtils.randomAlphanumeric(10);
 
@@ -71,18 +70,18 @@ class RepresentativeAboutToSubmitEventControllerTest extends AbstractControllerT
             .role(RepresentativeRole.REPRESENTING_RESPONDENT_1)
             .build();
 
-        Map<String, Object> incomingCaseDate = buildCaseData(respondent, new Element(representativeId, representative));
+        CaseDetails caseDetails = buildCaseData(respondent, new Element(representativeId, representative));
 
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
-        given(organisationApi.findUsersByEmail(userAuthToken, serviceAuthToken, representative.getEmail()))
+        given(organisationApi.findUserByEmail(userAuthToken, serviceAuthToken, representative.getEmail()))
             .willReturn(new User(userId));
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseId, incomingCaseDate, SC_OK);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails, SC_OK);
 
-        verify(organisationApi).findUsersByEmail(userAuthToken, serviceAuthToken, representative.getEmail());
+        verify(organisationApi).findUserByEmail(userAuthToken, serviceAuthToken, representative.getEmail());
 
         verify(caseUserApi).updateCaseRolesForUser(userAuthToken, serviceAuthToken,
-            caseId.toString(), userId, new CaseUser(userId, Set.of(SOLICITOR.formattedName())));
+            caseDetails.getId().toString(), userId, new CaseUser(userId, Set.of(SOLICITOR.formattedName())));
 
         CaseData outgoingCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         Respondent updatedResponded = outgoingCaseData.getRespondents1().get(0).getValue();
@@ -91,7 +90,12 @@ class RepresentativeAboutToSubmitEventControllerTest extends AbstractControllerT
         assertThat(callbackResponse.getErrors()).isNullOrEmpty();
     }
 
-    private static Map<String, Object> buildCaseData(Respondent respondent, Element<Representative> representative) {
-        return ImmutableMap.of("representatives", List.of(representative), "respondents1", wrapElements(respondent));
+    private static CaseDetails buildCaseData(Respondent respondent, Element<Representative> representative) {
+        return CaseDetails.builder()
+            .id(RandomUtils.nextLong())
+            .data(Map.of(
+                "representatives", List.of(representative),
+                "respondents1", wrapElements(respondent)))
+            .build();
     }
 }

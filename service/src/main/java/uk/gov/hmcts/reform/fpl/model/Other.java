@@ -4,13 +4,21 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
 @Builder
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-public class Other extends Representable {
+@EqualsAndHashCode
+public class Other implements Representable {
     @SuppressWarnings("membername")
     private final String DOB;
     private final String name;
@@ -21,4 +29,11 @@ public class Other extends Representable {
     private final String childInformation;
     private final String litigationIssues;
     private final String genderIdentification;
+    private final List<Element<UUID>> representedBy = new ArrayList<>();
+
+    public void addRepresentative(UUID representativeId) {
+        if (!unwrapElements(representedBy).contains(representativeId)) {
+            this.representedBy.add(element(representativeId));
+        }
+    }
 }

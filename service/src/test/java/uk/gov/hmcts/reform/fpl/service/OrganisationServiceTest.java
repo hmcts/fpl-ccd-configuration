@@ -97,7 +97,7 @@ class OrganisationServiceTest {
     void shouldFindUser() {
         User user = new User(RandomStringUtils.randomAlphanumeric(10));
 
-        when(organisationApi.findUsersByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenReturn(user);
+        when(organisationApi.findUserByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenReturn(user);
 
         Optional<String> actualUserId = organisationService.findUserByEmail(AUTH_TOKEN_ID, USER_EMAIL);
 
@@ -108,7 +108,7 @@ class OrganisationServiceTest {
     void shouldNotReturnUserIdIfUserNotPresent() {
         Exception exception = new FeignException.NotFound(EMPTY, null);
 
-        when(organisationApi.findUsersByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenThrow(exception);
+        when(organisationApi.findUserByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenThrow(exception);
 
         Optional<String> actualUserId = organisationService.findUserByEmail(AUTH_TOKEN_ID, USER_EMAIL);
 
@@ -119,7 +119,7 @@ class OrganisationServiceTest {
     void shouldRethrowExceptionOtherThanNotFound() {
         Exception exception = new FeignException.InternalServerError(EMPTY, null);
 
-        when(organisationApi.findUsersByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenThrow(exception);
+        when(organisationApi.findUserByEmail(AUTH_TOKEN_ID, SERVICE_AUTH_TOKEN_ID, USER_EMAIL)).thenThrow(exception);
 
         Exception actualException = assertThrows(FeignException.InternalServerError.class,
             () -> organisationService.findUserByEmail(AUTH_TOKEN_ID, USER_EMAIL));

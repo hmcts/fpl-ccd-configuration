@@ -191,7 +191,7 @@ class RepresentativesServiceTest {
     }
 
     @Test
-    public void shouldReturnRepresentativesIfPresent() {
+    void shouldReturnRepresentativesIfPresent() {
         Representative representative = Representative.builder()
             .fullName("John Smith")
             .positionInACase("Solicitor")
@@ -262,8 +262,6 @@ class RepresentativesServiceTest {
             .others(Others.builder().firstOther(other).build())
             .build();
 
-        when(caseDataExtractionService.getOthers(caseData))
-            .thenReturn(asList(other));
         when(organisationService.findUserByEmail(authentication, representative1.getEmail()))
             .thenReturn(ofNullable(representative1UserId));
         when(organisationService.findUserByEmail(authentication, representative2.getEmail()))
@@ -311,8 +309,6 @@ class RepresentativesServiceTest {
                 .build())
             .respondents1(wrapElements(respondent1, respondent2))
             .build();
-
-        when(caseDataExtractionService.getOthers(caseData)).thenReturn(asList(otherPerson1, otherPerson2));
 
         representativesService.addRepresentatives(caseData, caseId, authentication);
 
