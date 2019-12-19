@@ -168,7 +168,7 @@ class ActionCaseManagementOrderControllerTest {
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, PDF, "case-management-order.pdf");
-        assertThat(caseData.getCmoToAction()).isEqualTo(expectedCaseManagementOrder());
+        assertThat(caseData.getCaseManagementOrder()).isEqualTo(expectedCaseManagementOrder());
     }
 
     @Test
@@ -196,7 +196,7 @@ class ActionCaseManagementOrderControllerTest {
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, PDF, "draft-case-management-order.pdf");
-        assertThat(caseData.getCmoToAction().getAction()).isEqualTo(getOrderAction(JUDGE_REQUESTED_CHANGE));
+        assertThat(caseData.getCaseManagementOrder().getAction()).isEqualTo(getOrderAction(JUDGE_REQUESTED_CHANGE));
     }
 
     @Test

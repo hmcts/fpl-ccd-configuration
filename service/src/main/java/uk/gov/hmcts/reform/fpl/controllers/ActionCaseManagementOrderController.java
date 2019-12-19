@@ -71,10 +71,10 @@ public class ActionCaseManagementOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData()
-            .putAll(caseManagementOrderService.extractMapFieldsFromCaseManagementOrder(caseData.getCmoToAction()));
+        caseDetails.getData().putAll(
+            caseManagementOrderService.extractMapFieldsFromCaseManagementOrder(caseData.getCaseManagementOrder()));
 
-        draftCMOService.prepareCustomDirections(caseDetails, caseData.getCmoToAction());
+        draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
 
         caseDetails.getData().put(NEXT_HEARING_DATE_LIST.getKey(), getHearingDynamicList(caseData.getHearingDetails()));
 
@@ -118,7 +118,7 @@ public class ActionCaseManagementOrderController {
                 .build();
         }
 
-        CaseManagementOrder order = caseData.getCmoToAction();
+        CaseManagementOrder order = caseData.getCaseManagementOrder();
 
         order = draftCMOService.prepareCMO(caseData, order).toBuilder()
             .id(order.getId())
