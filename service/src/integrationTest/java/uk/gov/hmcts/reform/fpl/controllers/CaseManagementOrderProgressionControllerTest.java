@@ -58,8 +58,7 @@ class CaseManagementOrderProgressionControllerTest {
 
         Map<String, Object> data = ImmutableMap.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
 
-        AboutToStartOrSubmitCallbackResponse response =
-            makeRequest(buildCallbackRequest(data));
+        AboutToStartOrSubmitCallbackResponse response = makeRequest(buildCallbackRequest(data));
 
         assertThat(response.getData()).containsOnlyKeys(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
     }
@@ -76,8 +75,7 @@ class CaseManagementOrderProgressionControllerTest {
 
         Map<String, Object> data = caseDataMap(order, LocalDateTime.now().minusDays(1));
 
-        AboutToStartOrSubmitCallbackResponse response =
-            makeRequest(buildCallbackRequest(data));
+        AboutToStartOrSubmitCallbackResponse response = makeRequest(buildCallbackRequest(data));
 
         assertThat(response.getData()).containsOnlyKeys(SERVED_CASE_MANAGEMENT_ORDERS.getKey(), "hearingDetails");
     }

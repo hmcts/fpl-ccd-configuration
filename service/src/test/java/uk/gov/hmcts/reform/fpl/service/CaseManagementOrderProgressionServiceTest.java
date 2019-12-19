@@ -67,7 +67,7 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder().toBuilder()
-            .status(CMOStatus.SEND_TO_JUDGE).build());
+            .status(SEND_TO_JUDGE).build());
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey())).isNull();
     }
 
@@ -180,7 +180,7 @@ class CaseManagementOrderProgressionServiceTest {
         return CaseData.builder()
             .caseManagementOrder(CaseManagementOrder.builder()
                 .id(UUID)
-                .status(CMOStatus.SEND_TO_JUDGE)
+                .status(SEND_TO_JUDGE)
                 .action(OrderAction.builder()
                     .type(type)
                     .build())
