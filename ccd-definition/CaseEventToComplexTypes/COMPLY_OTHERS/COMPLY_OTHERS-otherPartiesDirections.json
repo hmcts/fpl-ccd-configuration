@@ -47,7 +47,8 @@
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "ListElementCode": "responses.responder",
     "FieldDisplayOrder": 5,
-    "DisplayContext": "READONLY"
+    "DisplayContext": "READONLY",
+    "Comment": "Field is here so we do not have to persist data in callbacks"
   },
   {
     "LiveFrom": "01/01/2017",

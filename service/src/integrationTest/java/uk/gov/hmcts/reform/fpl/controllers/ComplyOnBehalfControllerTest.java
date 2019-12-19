@@ -40,6 +40,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
 import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
@@ -119,7 +120,7 @@ class ComplyOnBehalfControllerTest {
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(actualResponses(caseData.getRespondentDirectionsCustom(), ALL_PARTIES))
-            .isEqualTo(responses(PARENTS_AND_RESPONDENTS))
+            .isEqualTo(responsesByCourtFor(PARENTS_AND_RESPONDENTS))
             .hasSize(1);
 
         assertThat(response.getData().get("respondents_label")).isEqualTo("Respondent 1 - John Doe\n");
@@ -128,7 +129,7 @@ class ComplyOnBehalfControllerTest {
 
     @Test
     void aboutToStartCallbackShouldAddDirectionWithPartyResponseToCorrectMapForComplyOthersEvent() throws Exception {
-        List<Element<Direction>> directions = getDirectionForRespondentsAllPartiesAndOthers();
+        List<Element<Direction>> directions = directionsForRespondent();
         List<Element<CaseManagementOrder>> orders = ImmutableList.of(Element.<CaseManagementOrder>builder()
             .value(CaseManagementOrder.builder().directions(directions).build())
             .build());
@@ -138,6 +139,7 @@ class ComplyOnBehalfControllerTest {
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of(
                     "standardDirectionOrder", Order.builder().directions(directions).build(),
+                    SERVED_CASE_MANAGEMENT_ORDERS.getKey(), orders,
                     "others", firstOther(),
                     "respondents1", respondents()
                 ))
@@ -147,8 +149,8 @@ class ComplyOnBehalfControllerTest {
         AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-start");
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
-        assertThat(actualResponses(caseData.getRespondentDirectionsCustom(), ALL_PARTIES))
-            .isEqualTo(responses(PARENTS_AND_RESPONDENTS))
+        assertThat(caseData.getRespondentDirectionsCustom().get(1).getValue().getResponses())
+            .isEqualTo(responsesByRespondent())
             .hasSize(1);
 
         assertThat(response.getData().get("respondents_label")).isEqualTo("Respondent 1 - John Doe\n");
@@ -215,7 +217,7 @@ class ComplyOnBehalfControllerTest {
                 .id(DIRECTION_ID)
                 .value(Direction.builder()
                     .assignee(directionAssignee)
-                    .responses(responses(directionAssignee))
+                    .responses(responsesByCourtFor(directionAssignee))
                     .build())
                 .build())
             .collect(toList());
@@ -249,7 +251,7 @@ class ComplyOnBehalfControllerTest {
         return directions.stream().filter(x -> x.getValue().getAssignee() == assignee).collect(toList());
     }
 
-    private List<Element<DirectionResponse>> responses(DirectionAssignee assignee) {
+    private List<Element<DirectionResponse>> responsesByCourtFor(DirectionAssignee assignee) {
         String respondingOnBehalfOf = "";
 
         if (assignee == PARENTS_AND_RESPONDENTS) {
@@ -360,7 +362,7 @@ class ComplyOnBehalfControllerTest {
             .id(DIRECTION_ID)
             .value(Direction.builder()
                 .assignee(ALL_PARTIES)
-                .responses(responses(PARENTS_AND_RESPONDENTS))
+                .responses(responsesByCourtFor(PARENTS_AND_RESPONDENTS))
                 .build())
             .build());
         directions.add(Element.<Direction>builder()
@@ -376,5 +378,35 @@ class ComplyOnBehalfControllerTest {
                 .build())
             .build());
         return directions;
+    }
+
+    private List<Element<Direction>> directionsForRespondent() {
+        List<Element<Direction>> directions = new ArrayList<>();
+        directions.add(Element.<Direction>builder()
+            .id(DIRECTION_ID)
+            .value(Direction.builder()
+                .assignee(ALL_PARTIES)
+                .responses(responsesByRespondent())
+                .build())
+            .build());
+        directions.add(Element.<Direction>builder()
+            .id(randomUUID())
+            .value(Direction.builder()
+                .assignee(PARENTS_AND_RESPONDENTS)
+                .build())
+            .build());
+        return directions;
+    }
+
+    private List<Element<DirectionResponse>> responsesByRespondent() {
+        return ImmutableList.of(Element.<DirectionResponse>builder()
+            .id(RESPONSE_ID)
+            .value(DirectionResponse.builder()
+                .complied("Yes")
+                .directionId(DIRECTION_ID)
+                .assignee(DirectionAssignee.PARENTS_AND_RESPONDENTS)
+                .responder("Emma Taylor")
+                .build())
+            .build());
     }
 }
