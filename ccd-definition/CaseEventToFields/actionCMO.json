@@ -23,7 +23,7 @@
     "PageLabel": " ",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "PageShowCondition": "cmoToAction!=\"*\" OR cmoToAction.status!=\"JUDE_REVIEW\""
+    "PageShowCondition": "cmoToAction!=\"\" OR cmoToAction.status!=\"JUDE_REVIEW\""
   },
   {
     "LiveFrom": "01/01/2017",
