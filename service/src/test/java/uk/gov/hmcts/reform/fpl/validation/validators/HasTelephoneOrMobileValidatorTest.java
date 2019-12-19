@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
@@ -34,7 +35,7 @@ class HasTelephoneOrMobileValidatorTest {
             .build();
 
         List<String> errorMessages = validator.validate(applicantParty).stream()
-            .map(error -> error.getMessage())
+            .map(ConstraintViolation::getMessage)
             .collect(Collectors.toList());
 
         assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
@@ -49,7 +50,7 @@ class HasTelephoneOrMobileValidatorTest {
             .build();
 
         List<String> errorMessages = validator.validate(applicantParty).stream()
-            .map(error -> error.getMessage())
+            .map(ConstraintViolation::getMessage)
             .collect(Collectors.toList());
 
         assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
@@ -67,7 +68,7 @@ class HasTelephoneOrMobileValidatorTest {
             .build();
 
         List<String> errorMessages = validator.validate(applicantParty).stream()
-            .map(error -> error.getMessage())
+            .map(ConstraintViolation::getMessage)
             .collect(Collectors.toList());
 
         assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
@@ -85,7 +86,7 @@ class HasTelephoneOrMobileValidatorTest {
             .build();
 
         List<String> errorMessages = validator.validate(applicantParty).stream()
-            .map(error -> error.getMessage())
+            .map(ConstraintViolation::getMessage)
             .collect(Collectors.toList());
 
         assertThat(errorMessages).doesNotContain(ERROR_MESSAGE);
@@ -96,7 +97,7 @@ class HasTelephoneOrMobileValidatorTest {
         ApplicantParty applicantParty = ApplicantParty.builder().build();
 
         List<String> errorMessages = validator.validate(applicantParty).stream()
-            .map(error -> error.getMessage())
+            .map(ConstraintViolation::getMessage)
             .collect(Collectors.toList());
 
         assertThat(errorMessages).contains(ERROR_MESSAGE);
@@ -111,7 +112,7 @@ class HasTelephoneOrMobileValidatorTest {
             .build();
 
         List<String> errorMessages = validator.validate(applicantParty).stream()
-            .map(error -> error.getMessage())
+            .map(ConstraintViolation::getMessage)
             .collect(Collectors.toList());
 
         assertThat(errorMessages).contains(ERROR_MESSAGE);
@@ -129,7 +130,7 @@ class HasTelephoneOrMobileValidatorTest {
             .build();
 
         List<String> errorMessages = validator.validate(applicantParty).stream()
-            .map(error -> error.getMessage())
+            .map(ConstraintViolation::getMessage)
             .collect(Collectors.toList());
 
         assertThat(errorMessages).contains(ERROR_MESSAGE);

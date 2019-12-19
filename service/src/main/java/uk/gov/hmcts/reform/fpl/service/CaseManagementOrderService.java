@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement;
@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.service.time.Time;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -18,22 +19,26 @@ import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.model.HearingDateDynamicElement.getHearingDynamicElement;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 //TODO: this class will take some of the methods out of draftCMO service.
 @Service
 public class CaseManagementOrderService {
+    private final Time time;
     private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
 
-    @Autowired
-    public CaseManagementOrderService(DateFormatterService dateFormatterService,
+    public CaseManagementOrderService(Time time,
+                                      DateFormatterService dateFormatterService,
                                       HearingBookingService hearingBookingService) {
+        this.time = time;
         this.dateFormatterService = dateFormatterService;
         this.hearingBookingService = hearingBookingService;
     }
-
 
     public CaseManagementOrder addDocument(CaseManagementOrder caseManagementOrder, Document document) {
         return caseManagementOrder.toBuilder()
@@ -53,15 +58,23 @@ public class CaseManagementOrderService {
         }
 
         Map<String, Object> data = new HashMap<>();
-        data.put("schedule", order.getSchedule());
-        data.put("recitals", order.getRecitals());
-        data.put("orderAction", order.getAction());
+        data.put(SCHEDULE.getKey(), order.getSchedule());
+        data.put(RECITALS.getKey(), order.getRecitals());
+        data.put(ORDER_ACTION.getKey(), order.getAction());
 
         return data;
     }
 
     public OrderAction removeDocumentFromOrderAction(OrderAction orderAction) {
         return orderAction.toBuilder().document(null).build();
+    }
+
+    public boolean isHearingDateInFuture(CaseData caseData) {
+        LocalDateTime hearingDate = hearingBookingService
+            .getHearingBookingByUUID(caseData.getHearingDetails(), caseData.getCaseManagementOrder().getId())
+            .getStartDate();
+
+        return time.now().isBefore(hearingDate);
     }
 
     public CaseManagementOrder addNextHearingToCMO(DynamicList list, CaseManagementOrder order) {

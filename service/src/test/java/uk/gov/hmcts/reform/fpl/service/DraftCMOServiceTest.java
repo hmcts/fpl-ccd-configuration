@@ -31,6 +31,9 @@ import java.util.stream.Stream;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.values;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
@@ -67,13 +70,52 @@ class DraftCMOServiceTest {
 
     @Test
     void shouldReturnHearingDateDynamicListWhenCaseDetailsHasHearingDate() {
-        hearingDetails = createHearingBookings(NOW);
+        hearingDetails = createHearingBookings(NOW.plusDays(5));
         caseManagementOrder = CaseManagementOrder.builder().build();
 
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
 
         DynamicList hearingList = (DynamicList) data.get("cmoHearingDateList");
+
+        assertThat(hearingList.getListItems())
+            .containsAll(Arrays.asList(
+                DynamicListElement.builder()
+                    .code(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"))
+                    .label(formatLocalDateToMediumStyle(10))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("6b3ee98f-acff-4b64-bb00-cc3db02a24b2"))
+                    .label(formatLocalDateToMediumStyle(7))
+                    .build(),
+                DynamicListElement.builder()
+                    .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                    .label(formatLocalDateToMediumStyle(5))
+                    .build()));
+    }
+
+    @Test
+    void shouldNotReturnHearingDatesWhenHearingDateIsInThePast() {
+        hearingDetails = createHearingBookings(NOW.minusDays(10));
+        caseManagementOrder = CaseManagementOrder.builder().build();
+
+        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+            caseManagementOrder, hearingDetails);
+
+        DynamicList hearingList = (DynamicList) data.get(HEARING_DATE_LIST.getKey());
+
+        assertThat(hearingList.getListItems()).isEmpty();
+    }
+
+    @Test
+    void shouldReturnHearingDatesWhenHearingDateIsSameDayButLaterTime() {
+        hearingDetails = createHearingBookings(NOW.plusMinutes(5));
+        caseManagementOrder = CaseManagementOrder.builder().build();
+
+        Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
+            caseManagementOrder, hearingDetails);
+
+        DynamicList hearingList = (DynamicList) data.get(HEARING_DATE_LIST.getKey());
 
         assertThat(hearingList.getListItems())
             .containsAll(Arrays.asList(
@@ -99,7 +141,7 @@ class DraftCMOServiceTest {
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
 
-        DynamicList hearingList = mapper.convertValue(data.get("cmoHearingDateList"), DynamicList.class);
+        DynamicList hearingList = mapper.convertValue(data.get(HEARING_DATE_LIST.getKey()), DynamicList.class);
 
         assertThat(hearingList.getValue())
             .isEqualTo(DynamicListElement.builder()
@@ -116,7 +158,7 @@ class DraftCMOServiceTest {
             caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
         );
 
-        caseData.put("cmoHearingDateList", getDynamicList());
+        caseData.put(HEARING_DATE_LIST.getKey(), getDynamicList());
 
         CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(
             mapper.convertValue(caseData, CaseData.class), null);
@@ -138,7 +180,7 @@ class DraftCMOServiceTest {
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
 
-        assertThat(data).containsKeys("cmoHearingDateList", "schedule", "recitals");
+        assertThat(data).containsKeys(HEARING_DATE_LIST.getKey(), SCHEDULE.getKey(), RECITALS.getKey());
     }
 
     @Test
@@ -151,9 +193,9 @@ class DraftCMOServiceTest {
             .listItems(List.of())
             .build();
 
-        assertThat(data.get("cmoHearingDateList")).isEqualTo(emptyDynamicList);
-        assertThat(data.get("schedule")).isNull();
-        assertThat(data.get("recitals")).isNull();
+        assertThat(data.get(HEARING_DATE_LIST.getKey())).isEqualTo(emptyDynamicList);
+        assertThat(data.get(SCHEDULE.getKey())).isNull();
+        assertThat(data.get(RECITALS.getKey())).isNull();
     }
 
     @Test
@@ -215,9 +257,9 @@ class DraftCMOServiceTest {
     @Nested
     class PrepareCaseDetailsTest {
         private final String[] keys = {
-            "cmoHearingDateList",
-            "recitals",
-            "schedule"};
+            HEARING_DATE_LIST.getKey(),
+            RECITALS.getKey(),
+            SCHEDULE.getKey()};
 
         private HashMap<String, Object> data; // Tries to use an ImmutableMap unless specified
 

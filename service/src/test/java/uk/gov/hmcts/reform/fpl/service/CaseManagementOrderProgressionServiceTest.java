@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,25 +14,37 @@ import uk.gov.hmcts.reform.fpl.enums.ActionType;
 import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
+import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.JUDGE_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_SHARED;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class CaseManagementOrderProgressionServiceTest {
-    private static final java.util.UUID UUID = randomUUID();
+    private static final LocalDateTime NOW = LocalDateTime.now();
+    private static final UUID UUID = randomUUID();
 
     @Autowired
     private ObjectMapper mapper;
@@ -52,8 +65,9 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        assertThat(updatedCaseData.getCmoToAction()).isEqualTo(caseData.getCaseManagementOrder());
-        assertThat(caseDetails.getData().get("caseManagementOrder")).isNull();
+        assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder().toBuilder()
+            .status(JUDGE_REVIEW).build());
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey())).isNull();
     }
 
     @Test
@@ -66,13 +80,13 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder());
-        assertThat(caseDetails.getData().get("sharedDraftCMODocument")).isNotNull();
-        assertThat(caseDetails.getData().get("cmoToAction")).isNull();
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_SHARED.getKey())).isNotNull();
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey())).isNull();
     }
 
     @Test
     void shouldRemoveSharedDraftDocumentWhenStatusIsSelfReview() throws IOException {
-        CaseData caseData = caseDataWithCaseManagementOrder(SELF_REVIEW)
+        CaseData caseData = caseDataWithCaseManagementOrder(CMOStatus.SELF_REVIEW)
             .sharedDraftCMODocument(DocumentReference.builder().build())
             .build();
 
@@ -83,33 +97,74 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder());
-        assertThat(caseDetails.getData().get("sharedDraftCMODocument")).isNull();
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_SHARED.getKey())).isNull();
+    }
+
+    @Test
+    void shouldPopulateServedCaseManagementOrdersWhenTryingToSendToAllPartiesAndHearingIsComplete() {
+        CaseData caseData = caseDataWithCaseManagementOrderAction(SEND_TO_ALL_PARTIES)
+            .hearingDetails(hearingBookingWithStartDateInPast())
+            .build();
+
+        CaseDetails caseDetails = getCaseDetails(caseData);
+
+        service.handleCaseManagementOrderProgression(caseDetails);
+
+        CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        assertThat(updatedCaseData.getServedCaseManagementOrders()).hasSize(1);
+        assertThat(updatedCaseData.getServedCaseManagementOrders().get(0).getValue())
+            .isEqualTo(caseData.getCaseManagementOrder());
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey())).isNull();
+    }
+
+    @Test
+    void shouldPopulateFirstElementOfServedCaseManagementOrdersWhenTryingToSendToAllPartiesAndHearingIsComplete() {
+        List<Element<CaseManagementOrder>> orders = orderListWithOneElement();
+
+        CaseData caseData = caseDataWithCaseManagementOrderAction(SEND_TO_ALL_PARTIES)
+            .servedCaseManagementOrders(orders)
+            .hearingDetails(hearingBookingWithStartDateInPast())
+            .build();
+
+        CaseDetails caseDetails = getCaseDetails(caseData);
+
+        service.handleCaseManagementOrderProgression(caseDetails);
+
+        CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        assertThat(updatedCaseData.getServedCaseManagementOrders()).hasSize(2);
+        assertThat(updatedCaseData.getServedCaseManagementOrders().get(0).getValue())
+            .isEqualTo(caseData.getCaseManagementOrder());
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey())).isNull();
     }
 
     @Test
     void shouldPopulateDraftCaseManagementOrderWhenJudgeRequestsChange() {
-        CaseData caseData = caseDataWithCmoToAction(JUDGE_REQUESTED_CHANGE).build();
+        CaseData caseData = caseDataWithCaseManagementOrderAction(JUDGE_REQUESTED_CHANGE).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
         service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCmoToAction());
-        assertThat(caseDetails.getData().get("cmoToAction")).isNull();
+        assertThat(updatedCaseData.getCaseManagementOrder())
+            .isEqualTo(caseData.getCaseManagementOrder().toBuilder().status(CMOStatus.SELF_REVIEW).build());
+
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey())).isNull();
     }
 
     @Test
     void shouldDoNothingWhenJudgeLeavesInSelfReview() {
-        CaseData caseData = caseDataWithCmoToAction(ActionType.SELF_REVIEW).build();
+        CaseData caseData = caseDataWithCaseManagementOrderAction(SELF_REVIEW).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
         service.handleCaseManagementOrderProgression(caseDetails);
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        assertThat(updatedCaseData.getCmoToAction()).isEqualTo(caseData.getCmoToAction());
-        assertThat(caseDetails.getData().get("caseManagementOrder")).isNull();
+        assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder());
+        assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey())).isNull();
     }
 
     private CaseData.CaseDataBuilder caseDataWithCaseManagementOrder(CMOStatus status) throws IOException {
@@ -120,19 +175,35 @@ class CaseManagementOrderProgressionServiceTest {
                 .build());
     }
 
+    private CaseData.CaseDataBuilder caseDataWithCaseManagementOrderAction(ActionType type) {
+        return CaseData.builder()
+            .caseManagementOrder(CaseManagementOrder.builder()
+                .id(UUID)
+                .status(JUDGE_REVIEW)
+                .action(OrderAction.builder()
+                    .type(type)
+                    .build())
+                .build());
+    }
+
     @SuppressWarnings("unchecked")
     private CaseDetails getCaseDetails(CaseData caseData) {
         Map<String, Object> data = mapper.convertValue(caseData, Map.class);
         return CaseDetails.builder().data(data).build();
     }
 
-    private CaseData.CaseDataBuilder caseDataWithCmoToAction(ActionType type) {
-        return CaseData.builder()
-            .cmoToAction(CaseManagementOrder.builder()
-                .id(UUID)
-                .action(OrderAction.builder()
-                    .type(type)
-                    .build())
-                .build());
+    private List<Element<HearingBooking>> hearingBookingWithStartDateInPast() {
+        return ImmutableList.of(Element.<HearingBooking>builder()
+            .id(UUID)
+            .value(HearingBooking.builder()
+                .startDate(NOW.plusDays(-1))
+                .build())
+            .build());
+    }
+
+    private List<Element<CaseManagementOrder>> orderListWithOneElement() {
+        List<Element<CaseManagementOrder>> orders = new ArrayList<>();
+        orders.add(Element.<CaseManagementOrder>builder().build());
+        return orders;
     }
 }

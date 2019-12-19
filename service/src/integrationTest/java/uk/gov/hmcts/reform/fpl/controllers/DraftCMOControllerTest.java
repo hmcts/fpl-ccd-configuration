@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
+import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -51,6 +52,8 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
@@ -99,12 +102,12 @@ class DraftCMOControllerTest {
 
         List<String> expected = Arrays.asList(
             TODAYS_DATE.plusDays(5).format(dateTimeFormatter),
-            TODAYS_DATE.plusDays(2).format(dateTimeFormatter),
-            TODAYS_DATE.format(dateTimeFormatter));
+            TODAYS_DATE.plusDays(2).format(dateTimeFormatter));
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
+        assertThat(getHearingDates(callbackResponse)).doesNotContain(TODAYS_DATE.format(dateTimeFormatter));
 
         assertThat(callbackResponse.getData().get("respondents_label")).isEqualTo(
             "Respondent 1 - Timothy Jones\nRespondent 2 - Sarah Simpson\n");
@@ -135,10 +138,10 @@ class DraftCMOControllerTest {
 
         final Map<String, Object> responseCaseData = callbackResponse.getData();
 
-        assertThat(responseCaseData).containsKey("caseManagementOrder");
+        assertThat(responseCaseData).containsKey(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
 
         final CaseManagementOrder caseManagementOrder = mapper.convertValue(responseCaseData.get(
-            "caseManagementOrder"), CaseManagementOrder.class);
+            CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey()), CaseManagementOrder.class);
 
         assertThat(caseManagementOrder.getOrderDoc()).isEqualTo(
             DocumentReference.builder()
@@ -162,20 +165,27 @@ class DraftCMOControllerTest {
         Map<String, Object> data = new HashMap<>();
 
         Stream.of(DirectionAssignee.values()).forEach(direction ->
-            data.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
+            data.put(direction.toCustomDirectionField(), createElementCollection(createUnassignedDirection()))
         );
 
-        data.put("cmoHearingDateList", dynamicHearingDates);
-        data.put("caseManagementOrder", CaseManagementOrder.builder().status(SELF_REVIEW).build());
+
+        data.put(HEARING_DATE_LIST.getKey(), dynamicHearingDates);
+        data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), CaseManagementOrder.builder()
+            .orderDoc(DocumentReference.builder().filename("draft-case-management-order.pdf").build())
+            .status(SELF_REVIEW)
+            .action(OrderAction.builder().changeRequestedByJudge("Changes").build())
+            .build());
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
         assertThat(caseManagementOrder.getDirections()).containsAll(createCmoDirections());
-        assertThat(caseManagementOrder).extracting("id", "hearingDate")
-            .containsExactly(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"), TODAYS_DATE.plusDays(5).toString());
+        assertThat(caseManagementOrder.getId()).isEqualTo(fromString("b15eb00f-e151-47f2-8e5f-374cc6fc2657"));
+        assertThat(caseManagementOrder.getHearingDate()).isEqualTo(TODAYS_DATE.plusDays(5).toString());
         assertThat(caseManagementOrder.getStatus()).isEqualTo(SELF_REVIEW);
+        assertThat(caseManagementOrder.getOrderDoc().getFilename()).isEqualTo("draft-case-management-order.pdf");
+        assertThat(caseManagementOrder.getAction().getChangeRequestedByJudge()).isEqualTo("Changes");
     }
 
     //TODO: caseDetails before is in this test as a start for conditional call to submitted code.
@@ -188,14 +198,16 @@ class DraftCMOControllerTest {
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .data(ImmutableMap.of(
-                    "caseManagementOrder", CaseManagementOrder.builder().status(SELF_REVIEW).build()))
+                    CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(),
+                    CaseManagementOrder.builder().status(SELF_REVIEW).build()))
                 .build())
             .caseDetailsBefore(CaseDetails.builder()
                 .id(ID)
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .data(ImmutableMap.of(
-                    "caseManagementOrder", CaseManagementOrder.builder().status(PARTIES_REVIEW).build()))
+                    CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(),
+                    CaseManagementOrder.builder().status(PARTIES_REVIEW).build()))
                 .build())
             .build();
 
@@ -206,7 +218,7 @@ class DraftCMOControllerTest {
 
     private List<String> getHearingDates(AboutToStartOrSubmitCallbackResponse callbackResponse) {
         Map<String, Object> cmoHearingResponse = mapper.convertValue(
-            callbackResponse.getData().get("cmoHearingDateList"), Map.class);
+            callbackResponse.getData().get(HEARING_DATE_LIST.getKey()), Map.class);
 
         List<Map<String, Object>> listItemMap = mapper.convertValue(cmoHearingResponse.get("list_items"), List.class);
 
