@@ -23,7 +23,7 @@
     "PageLabel": " ",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "PageShowCondition": "cmoToAction!=\"\" OR cmoToAction.status!=\"JUDE_REVIEW\""
+    "PageShowCondition": "cmoToAction!=\"*\" OR cmoToAction.status!=\"SEND_TO_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -48,7 +48,7 @@
     "PageLabel": " ",
     "PageDisplayOrder": 2,
     "PageColumnNumber": 1,
-    "PageShowCondition": "cmoToAction.status=\"JUDGE_REVIEW\""
+    "PageShowCondition": "cmoToAction.status=\"SEND_TO_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -85,7 +85,7 @@
     "PageLabel": " ",
     "PageDisplayOrder": 3,
     "PageColumnNumber": 1,
-    "PageShowCondition": "cmoToAction.status=\"JUDGE_REVIEW\""
+    "PageShowCondition": "cmoToAction.status=\"SEND_TO_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -106,11 +106,11 @@
     "CaseFieldID": "respondentsDirectionLabelCMO",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": 2,
+    "PageID": "respondentsDirections",
     "PageLabel": " ",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1,
-    "PageShowCondition": "cmoToAction.status=\"JUDGE_REVIEW\""
+    "PageShowCondition": "cmoToAction.status=\"SEND_TO_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -119,7 +119,7 @@
     "CaseFieldID": "respondents_label",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
-    "PageID": 2,
+    "PageID": "respondentsDirections",
     "PageLabel": " ",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1
@@ -131,7 +131,7 @@
     "CaseFieldID": "respondentDirectionsCustom",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
-    "PageID": 2,
+    "PageID": "respondentsDirections",
     "PageLabel": " ",
     "PageDisplayOrder": 4,
     "PageColumnNumber": 1
@@ -147,7 +147,7 @@
     "PageLabel": " ",
     "PageDisplayOrder": 5,
     "PageColumnNumber": 1,
-    "PageShowCondition": "cmoToAction.status=\"JUDGE_REVIEW\""
+    "PageShowCondition": "cmoToAction.status=\"SEND_TO_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -168,11 +168,11 @@
     "CaseFieldID": "otherPartiesDirectionLabelCMO",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": 3,
+    "PageID": "otherPartiesDirections",
     "PageLabel": " ",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1,
-    "PageShowCondition": "cmoToAction.status=\"JUDGE_REVIEW\""
+    "PageShowCondition": "cmoToAction.status=\"SEND_TO_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -181,7 +181,7 @@
     "CaseFieldID": "others_label",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
-    "PageID": 3,
+    "PageID": "otherPartiesDirections",
     "PageLabel": " ",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1
@@ -193,7 +193,7 @@
     "CaseFieldID": "otherPartiesDirectionsCustom",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
-    "PageID": 3,
+    "PageID": "otherPartiesDirections",
     "PageLabel": " ",
     "PageDisplayOrder": 6,
     "PageColumnNumber": 1
@@ -209,7 +209,7 @@
     "PageLabel": " ",
     "PageDisplayOrder": 7,
     "PageColumnNumber": 1,
-    "PageShowCondition": "cmoToAction.status=\"JUDGE_REVIEW\""
+    "PageShowCondition": "cmoToAction.status=\"SEND_TO_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -230,11 +230,11 @@
     "CaseFieldID": "orderBasisLabel",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
-    "PageID": 5,
+    "PageID": "recitals",
     "PageLabel": " ",
     "PageDisplayOrder": 8,
     "PageColumnNumber": 1,
-    "PageShowCondition": "cmoToAction.status=\"JUDGE_REVIEW\""
+    "PageShowCondition": "cmoToAction.status=\"SEND_TO_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -243,7 +243,7 @@
     "CaseFieldID": "addRecitalLabel",
     "PageFieldDisplayOrder": 2,
     "DisplayContext": "READONLY",
-    "PageID": 5,
+    "PageID": "recitals",
     "PageLabel": " ",
     "PageDisplayOrder": 8,
     "PageColumnNumber": 1
@@ -255,7 +255,7 @@
     "CaseFieldID": "recitals",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "OPTIONAL",
-    "PageID": 5,
+    "PageID": "recitals",
     "PageLabel": " ",
     "PageDisplayOrder": 8,
     "PageColumnNumber": 1
@@ -272,7 +272,7 @@
     "PageDisplayOrder": 9,
     "PageColumnNumber": 1,
     "CallBackURLMidEvent": "${CCD_DEF_CASE_SERVICE_BASE_URL}/callback/action-cmo/mid-event",
-    "PageShowCondition": "cmoToAction.status=\"JUDGE_REVIEW\""
+    "PageShowCondition": "cmoToAction.status=\"SEND_TO_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -282,8 +282,9 @@
     "DisplayContext": "COMPLEX",
     "PageID": "OrderActionDocumentReview",
     "PageLabel": " ",
-    "PageDisplayOrder": 9,
-    "PageColumnNumber": 1
+    "PageDisplayOrder": 10,
+    "PageColumnNumber": 1,
+    "PageShowCondition": "cmoToAction.status=\"SEND_TO_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -294,9 +295,9 @@
     "DisplayContext": "READONLY",
     "PageID": "nextHearing",
     "PageLabel": " ",
-    "PageDisplayOrder": 10,
+    "PageDisplayOrder": 11,
     "PageColumnNumber": 1,
-    "PageShowCondition": "cmoToAction.status=\"JUDGE_REVIEW\" AND orderAction.type=\"SEND_TO_ALL_PARTIES\""
+    "PageShowCondition": "cmoToAction.status=\"SEND_TO_JUDGE\" AND orderAction.type=\"SEND_TO_ALL_PARTIES\""
   },
   {
     "LiveFrom": "01/01/2017",
@@ -307,7 +308,7 @@
     "DisplayContext": "READONLY",
     "PageID": "nextHearing",
     "PageLabel": " ",
-    "PageDisplayOrder": 10,
+    "PageDisplayOrder": 11,
     "PageColumnNumber": 1
   },
   {
@@ -319,7 +320,7 @@
     "DisplayContext": "MANDATORY",
     "PageID": "nextHearing",
     "PageLabel": " ",
-    "PageDisplayOrder": 10,
+    "PageDisplayOrder": 11,
     "PageColumnNumber": 1
   }
 ]

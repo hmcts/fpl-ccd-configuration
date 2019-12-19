@@ -71,7 +71,7 @@ public class ActionCaseManagementOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (!caseData.getCaseManagementOrder().isInJudgeReview()) {
+        if (caseData.getCaseManagementOrder() == null || !caseData.getCaseManagementOrder().isInJudgeReview()) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(caseDetails.getData())
                 .build();
@@ -118,7 +118,7 @@ public class ActionCaseManagementOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (!caseData.getCaseManagementOrder().isInJudgeReview()) {
+        if (caseData.getCaseManagementOrder() == null || !caseData.getCaseManagementOrder().isInJudgeReview()) {
             // CMO created via placeholder state
             caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
 
@@ -163,7 +163,7 @@ public class ActionCaseManagementOrderController {
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        if (caseData.getCaseManagementOrder().isInJudgeReview()) {
+        if (caseData.getCaseManagementOrder() != null && caseData.getCaseManagementOrder().isInJudgeReview()) {
             coreCaseDataService.triggerEvent(
                 callbackRequest.getCaseDetails().getJurisdiction(),
                 callbackRequest.getCaseDetails().getCaseTypeId(),
