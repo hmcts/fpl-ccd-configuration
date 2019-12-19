@@ -21,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper.getLegalA
 public class CommonCaseDataExtractionService {
     private final DateFormatterService dateFormatterService;
     private final HearingVenueLookUpService hearingVenueLookUpService;
+    public static final String HEARING_EMPTY_PLACEHOLDER = "This will appear on the issued CMO";
 
     @Autowired
     public CommonCaseDataExtractionService(DateFormatterService dateFormatterService,
@@ -63,10 +64,10 @@ public class CommonCaseDataExtractionService {
     public Map<String, Object> getHearingBookingData(final HearingBooking hearingBooking) {
         if (hearingBooking == null) {
             return ImmutableMap.of(
-                "hearingDate", EMPTY_PLACEHOLDER,
-                "hearingVenue", EMPTY_PLACEHOLDER,
-                "preHearingAttendance", EMPTY_PLACEHOLDER,
-                "hearingTime", EMPTY_PLACEHOLDER
+                "hearingDate", HEARING_EMPTY_PLACEHOLDER,
+                "hearingVenue", HEARING_EMPTY_PLACEHOLDER,
+                "preHearingAttendance", HEARING_EMPTY_PLACEHOLDER,
+                "hearingTime", HEARING_EMPTY_PLACEHOLDER
             );
         }
 
