@@ -144,16 +144,13 @@ public class ActionCaseManagementOrderController {
 
         order = caseManagementOrderService.addAction(order, orderAction);
 
-        order = caseManagementOrderService.addNextHearingToCMO(caseData.getNextHearingDateList(), order);
-
-        caseData = caseData.toBuilder().caseManagementOrder(order).build();
+        if (!order.isDraft()) {
+            order = caseManagementOrderService.addNextHearingToCMO(caseData.getNextHearingDateList(), order);
+        }
 
         Document document = getDocument(authorization, userId, caseData, order.isDraft());
 
         order = caseManagementOrderService.addDocument(order, document);
-
-        caseDetails.getData().put("nextHearingDateLabel",
-            caseManagementOrderService.createNextHearingDateLabel(order, caseData.getHearingDetails()));
 
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
 

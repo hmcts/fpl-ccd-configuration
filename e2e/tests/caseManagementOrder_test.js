@@ -140,11 +140,11 @@ xScenario('Local Authority sends draft to Judge who approves CMO', async (I, cas
   // Approve CMO
   await caseViewPage.goToNewActions(config.applicationActions.actionCaseManagementOrder);
   await cmoHelper.skipToSchedule(I);
-  await I.retryUntilExists(() => I.click('Continue'), actionCaseManagementOrderEventPage.fields.nextHearingDateList);
-  actionCaseManagementOrderEventPage.selectNextHearingDate('1 Jan 2050');
   await I.retryUntilExists(() => I.click('Continue'), actionCaseManagementOrderEventPage.staticFields.statusRadioGroup.groupName);
   actionCaseManagementOrderEventPage.markToBeSentToAllParties();
   actionCaseManagementOrderEventPage.markNextHearingToBeFinalHearing();
+  await I.retryUntilExists(() => I.click('Continue'), actionCaseManagementOrderEventPage.fields.nextHearingDateList);
+  actionCaseManagementOrderEventPage.selectNextHearingDate('1 Jan 2050');
   await I.completeEvent('Save and continue');
   cmoHelper.assertCanSeeActionCMO(I, caseViewPage, actionCaseManagementOrderEventPage.labels.files.sealedCaseManagementOrder);
 });

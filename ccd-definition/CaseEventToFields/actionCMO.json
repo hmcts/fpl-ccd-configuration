@@ -278,22 +278,33 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "nextHearingDateHintText",
+    "CaseFieldID": "orderAction",
+    "DisplayContext": "COMPLEX",
+    "PageID": "OrderActionDocumentReview",
+    "PageLabel": " ",
+    "PageDisplayOrder": 9,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "nextHearingDateHeading",
     "PageFieldDisplayOrder": 1,
     "DisplayContext": "READONLY",
     "PageID": "nextHearing",
     "PageLabel": " ",
     "PageDisplayOrder": 10,
     "PageColumnNumber": 1,
-    "PageShowCondition": "cmoToAction.status=\"JUDGE_REVIEW\""
+    "PageShowCondition": "cmoToAction.status=\"JUDGE_REVIEW\" AND orderAction.type=\"SEND_TO_ALL_PARTIES\""
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "nextHearingDateList",
+    "CaseFieldID": "nextHearingDateHintText",
     "PageFieldDisplayOrder": 2,
-    "DisplayContext": "MANDATORY",
+    "DisplayContext": "READONLY",
     "PageID": "nextHearing",
     "PageLabel": " ",
     "PageDisplayOrder": 10,
@@ -303,12 +314,12 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "actionCMO",
-    "CaseFieldID": "orderAction",
-    "DisplayContext": "COMPLEX",
-    "PageID": "OrderActionDocumentReview",
+    "CaseFieldID": "nextHearingDateList",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "nextHearing",
     "PageLabel": " ",
-    "PageDisplayOrder": 11,
-    "PageColumnNumber": 1,
-    "PageShowCondition": "cmoToAction.status=\"JUDGE_REVIEW\""
+    "PageDisplayOrder": 10,
+    "PageColumnNumber": 1
   }
 ]
