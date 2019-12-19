@@ -31,13 +31,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.enums.CaseRole.SOLICITOR;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(RepresentativesController.class)
 @OverrideAutoConfiguration(enabled = true)
-@SuppressWarnings("unchecked")
 class RepresentativeAboutToSubmitEventControllerTest extends AbstractControllerTest {
 
     private final String serviceAuthToken = RandomStringUtils.randomAlphanumeric(10);
@@ -51,7 +51,7 @@ class RepresentativeAboutToSubmitEventControllerTest extends AbstractControllerT
     @MockBean
     private CaseUserApi caseUserApi;
 
-    public RepresentativeAboutToSubmitEventControllerTest() {
+    RepresentativeAboutToSubmitEventControllerTest() {
         super("manage-representatives");
     }
 
@@ -70,7 +70,7 @@ class RepresentativeAboutToSubmitEventControllerTest extends AbstractControllerT
             .role(RepresentativeRole.REPRESENTING_RESPONDENT_1)
             .build();
 
-        CaseDetails caseDetails = buildCaseData(respondent, new Element(representativeId, representative));
+        CaseDetails caseDetails = buildCaseData(respondent, element(representativeId, representative));
 
         given(authTokenGenerator.generate()).willReturn(serviceAuthToken);
         given(organisationApi.findUserByEmail(userAuthToken, serviceAuthToken, representative.getEmail()))

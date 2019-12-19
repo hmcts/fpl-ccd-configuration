@@ -64,7 +64,7 @@ public class OrganisationService {
             return Optional.of(organisationApi.findUserByEmail(authorisation, authTokenGenerator.generate(), email)
                 .getUserIdentifier());
         } catch (FeignException.NotFound notFoundException) {
-            log.warn("User with email {} not found", email);
+            log.debug("User with email {} not found", email);
             return Optional.empty();
         }
     }

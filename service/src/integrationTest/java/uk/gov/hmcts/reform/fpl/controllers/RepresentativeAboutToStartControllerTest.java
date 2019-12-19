@@ -25,10 +25,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ActiveProfiles("integration-test")
 @WebMvcTest(RepresentativesController.class)
 @OverrideAutoConfiguration(enabled = true)
-@SuppressWarnings("unchecked")
 class RepresentativeAboutToStartControllerTest extends AbstractControllerTest {
 
-    public RepresentativeAboutToStartControllerTest() {
+    RepresentativeAboutToStartControllerTest() {
         super("manage-representatives");
     }
 

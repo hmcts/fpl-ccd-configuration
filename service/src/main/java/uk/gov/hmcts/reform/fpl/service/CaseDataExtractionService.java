@@ -235,5 +235,4 @@ public class CaseDataExtractionService {
                 .formatLocalDateTimeBaseUsingFormat(direction.getDateToBeCompletedBy(),
                     dateFormattingConfig.getPattern()) : "unknown"));
     }
-
 }

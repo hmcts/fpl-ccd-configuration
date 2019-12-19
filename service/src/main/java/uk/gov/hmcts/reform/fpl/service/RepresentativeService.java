@@ -33,7 +33,6 @@ public class RepresentativeService {
 
     private final OrganisationService organisationService;
     private final CaseService caseService;
-    private final CaseDataExtractionService caseDataExtractionService;
 
     public List<Element<Representative>> getDefaultRepresentatives(CaseData caseData) {
         if (ObjectUtils.isEmpty(caseData.getRepresentatives())) {

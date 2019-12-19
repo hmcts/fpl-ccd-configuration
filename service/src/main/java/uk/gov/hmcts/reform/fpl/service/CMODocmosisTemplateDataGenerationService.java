@@ -136,10 +136,6 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
             return caseData.getCaseManagementOrder();
         }
 
-        if (caseData.getCmoToAction() != null) {
-            return caseData.getCmoToAction();
-        }
-
         return null;
     }
 
@@ -154,7 +150,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
         ElementUtils.unwrapElements(caseData.getRespondents1()).stream()
             .filter(respondent -> isNotEmpty(respondent.getRepresentedBy()))
-            .forEach(respondent -> representativesInfo.add(ImmutableMap.of(
+            .forEach(respondent -> representativesInfo.add(Map.of(
                 "name", defaultIfNull(respondent.getParty().getFullName(), EMPTY),
                 "representedBy", getRepresentativesInfo(respondent, representatives))
             ));
@@ -162,7 +158,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
         caseData.getAllOthers().stream()
             .filter(other -> isNotEmpty(other.getRepresentedBy()))
-            .forEach(other -> representativesInfo.add(ImmutableMap.of(
+            .forEach(other -> representativesInfo.add(Map.of(
                 "name", defaultIfNull(other.getName(), EMPTY),
                 "representedBy", getRepresentativesInfo(other, representatives))));
 
