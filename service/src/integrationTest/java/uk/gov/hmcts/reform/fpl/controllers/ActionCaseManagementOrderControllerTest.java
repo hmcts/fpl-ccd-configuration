@@ -138,7 +138,11 @@ class ActionCaseManagementOrderControllerTest {
 
     @Test
     void aboutToStartShouldNotProgressOrderWhenOrderActionIsNotSet() throws Exception {
-        assertShouldNotProgressCMO("about-to-start");
+        CallbackRequest request = createRequestWithEmptyCMO();
+        AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-start");
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(caseData.getCaseManagementOrder()).isEqualTo(CaseManagementOrder.builder().build());
     }
 
     @Test
@@ -192,8 +196,12 @@ class ActionCaseManagementOrderControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldNotProgressOrderWhenOrderActionIsNotSet() throws Exception {
-        assertShouldNotProgressCMO("about-to-submit");
+    void aboutToSubmitShouldRemoveOrderWhenOrderActionIsNotJudgeReview() throws Exception {
+        CallbackRequest request = createRequestWithEmptyCMO();
+        AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-submit");
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(caseData.getCaseManagementOrder()).isEqualTo(null);
     }
 
     @Test
@@ -244,17 +252,12 @@ class ActionCaseManagementOrderControllerTest {
             .build();
     }
 
-    private void assertShouldNotProgressCMO(String endPoint) throws Exception {
+    private CallbackRequest createRequestWithEmptyCMO() {
         Map<String, Object> data = new HashMap<>();
         final CaseManagementOrder order = CaseManagementOrder.builder().build();
 
         data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
-        CallbackRequest request = buildCallbackRequest(data);
-
-        AboutToStartOrSubmitCallbackResponse response = makeRequest(request, endPoint);
-        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
-
-        assertThat(caseData.getCaseManagementOrder()).isEqualTo(order);
+        return buildCallbackRequest(data);
     }
 
     private void makeRequest(CallbackRequest request) throws Exception {

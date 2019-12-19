@@ -119,6 +119,9 @@ public class ActionCaseManagementOrderController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (!caseData.getCaseManagementOrder().isInJudgeReview()) {
+            // CMO created via placeholder state
+            caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
+
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(caseDetails.getData())
                 .build();
