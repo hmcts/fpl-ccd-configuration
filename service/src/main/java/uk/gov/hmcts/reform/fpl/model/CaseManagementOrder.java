@@ -37,6 +37,6 @@ public class CaseManagementOrder {
 
     @JsonIgnore
     public boolean isInJudgeReview() {
-        return status != null && status.equals(JUDGE_REVIEW);
+         return status == JUDGE_REVIEW;
     }
 }

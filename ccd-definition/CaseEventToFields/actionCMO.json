@@ -23,7 +23,7 @@
     "PageLabel": " ",
     "PageDisplayOrder": 1,
     "PageColumnNumber": 1,
-    "PageShowCondition": "cmoToAction!=\"*\" OR cmoToAction.status!=\"SEND_TO_JUDGE\""
+    "PageShowCondition": "cmoToAction=\"\" OR cmoToAction.status!=\"SEND_TO_JUDGE\""
   },
   {
     "LiveFrom": "01/01/2017",
