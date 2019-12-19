@@ -31,12 +31,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SELF_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.JUDGE_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_SHARED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
@@ -61,12 +62,12 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData caseData = caseDataWithCaseManagementOrder(SEND_TO_JUDGE).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails);
+        service.handleCaseManagementOrderProgression(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER.getId());
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder().toBuilder()
-            .status(JUDGE_REVIEW).build());
+            .status(CMOStatus.SEND_TO_JUDGE).build());
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey())).isNull();
     }
 
@@ -75,7 +76,7 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData caseData = caseDataWithCaseManagementOrder(PARTIES_REVIEW).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails);
+        service.handleCaseManagementOrderProgression(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER.getId());
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -92,7 +93,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails);
+        service.handleCaseManagementOrderProgression(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER.getId());
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -108,7 +109,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails);
+        service.handleCaseManagementOrderProgression(caseDetails, ACTION_CASE_MANAGEMENT_ORDER.getId());
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -129,7 +130,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails);
+        service.handleCaseManagementOrderProgression(caseDetails, ACTION_CASE_MANAGEMENT_ORDER.getId());
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -144,7 +145,7 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData caseData = caseDataWithCaseManagementOrderAction(JUDGE_REQUESTED_CHANGE).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails);
+        service.handleCaseManagementOrderProgression(caseDetails, ACTION_CASE_MANAGEMENT_ORDER.getId());
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -159,7 +160,7 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData caseData = caseDataWithCaseManagementOrderAction(SELF_REVIEW).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails);
+        service.handleCaseManagementOrderProgression(caseDetails, ACTION_CASE_MANAGEMENT_ORDER.getId());
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -179,7 +180,7 @@ class CaseManagementOrderProgressionServiceTest {
         return CaseData.builder()
             .caseManagementOrder(CaseManagementOrder.builder()
                 .id(UUID)
-                .status(JUDGE_REVIEW)
+                .status(CMOStatus.SEND_TO_JUDGE)
                 .action(OrderAction.builder()
                     .type(type)
                     .build())

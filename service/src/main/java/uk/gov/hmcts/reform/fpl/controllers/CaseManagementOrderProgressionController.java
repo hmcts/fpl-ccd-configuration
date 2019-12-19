@@ -25,8 +25,9 @@ public class CaseManagementOrderProgressionController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        String eventId = callbackRequest.getEventId();
 
-        progressionService.handleCaseManagementOrderProgression(caseDetails);
+        progressionService.handleCaseManagementOrderProgression(caseDetails, eventId);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
