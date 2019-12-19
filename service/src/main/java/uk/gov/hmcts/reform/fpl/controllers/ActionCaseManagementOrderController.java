@@ -35,6 +35,9 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 @Api
@@ -70,14 +73,15 @@ public class ActionCaseManagementOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (isNotEmpty(caseData.getCmoToAction().getStatus())) {
+        if (isNotEmpty(caseData.getCaseManagementOrder().getStatus())) {
             caseDetails.getData()
-                .putAll(caseManagementOrderService.extractMapFieldsFromCaseManagementOrder(caseData.getCmoToAction()));
+                .putAll(caseManagementOrderService
+                    .extractMapFieldsFromCaseManagementOrder(caseData.getCaseManagementOrder()));
 
-            draftCMOService.prepareCustomDirections(caseDetails, caseData.getCmoToAction());
+            draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
         }
 
-        caseDetails.getData().put("nextHearingDateList", getHearingDynamicList(caseData.getHearingDetails()));
+        caseDetails.getData().put(NEXT_HEARING_DATE_LIST.getKey(), getHearingDynamicList(caseData.getHearingDetails()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -95,7 +99,8 @@ public class ActionCaseManagementOrderController {
 
         Document document = getDocument(authorization, userId, caseData, true);
 
-        caseDetails.getData().put("orderAction", OrderAction.builder().document(buildFromDocument(document)).build());
+        caseDetails.getData()
+            .put(ORDER_ACTION.getKey(), OrderAction.builder().document(buildFromDocument(document)).build());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -112,7 +117,7 @@ public class ActionCaseManagementOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (isEmpty(caseData.getCmoToAction().getStatus())) {
+        if (isEmpty(caseData.getCaseManagementOrder().getStatus())) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(caseDetails.getData())
                 .build();
@@ -124,7 +129,7 @@ public class ActionCaseManagementOrderController {
                 .build();
         }
 
-        CaseManagementOrder order = caseData.getCmoToAction();
+        CaseManagementOrder order = caseData.getCaseManagementOrder();
 
         order = draftCMOService.prepareCMO(caseData, order).toBuilder()
             .id(order.getId())
@@ -137,7 +142,7 @@ public class ActionCaseManagementOrderController {
 
         order = caseManagementOrderService.addNextHearingToCMO(caseData.getNextHearingDateList(), order);
 
-        caseData = caseData.toBuilder().cmoToAction(order).build();
+        caseData = caseData.toBuilder().caseManagementOrder(order).build();
 
         Document document = getDocument(authorization, userId, caseData, order.isDraft());
 
@@ -146,7 +151,7 @@ public class ActionCaseManagementOrderController {
         caseDetails.getData().put("nextHearingDateLabel",
             caseManagementOrderService.createNextHearingDateLabel(order, caseData.getHearingDetails()));
 
-        caseDetails.getData().put("cmoToAction", order);
+        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -157,7 +162,7 @@ public class ActionCaseManagementOrderController {
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        if (isNotEmpty(caseData.getCmoToAction().getStatus())) {
+        if (isNotEmpty(caseData.getCaseManagementOrder().getStatus())) {
             coreCaseDataService.triggerEvent(
                 callbackRequest.getCaseDetails().getJurisdiction(),
                 callbackRequest.getCaseDetails().getCaseTypeId(),

@@ -31,6 +31,9 @@ import java.util.stream.Stream;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.values;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createCmoDirections;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createElementCollection;
@@ -99,7 +102,7 @@ class DraftCMOServiceTest {
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
 
-        DynamicList hearingList = (DynamicList) data.get("cmoHearingDateList");
+        DynamicList hearingList = (DynamicList) data.get(HEARING_DATE_LIST.getKey());
 
         assertThat(hearingList.getListItems()).isEmpty();
     }
@@ -112,7 +115,7 @@ class DraftCMOServiceTest {
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
 
-        DynamicList hearingList = (DynamicList) data.get("cmoHearingDateList");
+        DynamicList hearingList = (DynamicList) data.get(HEARING_DATE_LIST.getKey());
 
         assertThat(hearingList.getListItems())
             .containsAll(Arrays.asList(
@@ -138,7 +141,7 @@ class DraftCMOServiceTest {
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
 
-        DynamicList hearingList = mapper.convertValue(data.get("cmoHearingDateList"), DynamicList.class);
+        DynamicList hearingList = mapper.convertValue(data.get(HEARING_DATE_LIST.getKey()), DynamicList.class);
 
         assertThat(hearingList.getValue())
             .isEqualTo(DynamicListElement.builder()
@@ -155,7 +158,7 @@ class DraftCMOServiceTest {
             caseData.put(direction.getValue() + "Custom", createElementCollection(createUnassignedDirection()))
         );
 
-        caseData.put("cmoHearingDateList", getDynamicList());
+        caseData.put(HEARING_DATE_LIST.getKey(), getDynamicList());
 
         CaseManagementOrder caseManagementOrder = draftCMOService.prepareCMO(
             mapper.convertValue(caseData, CaseData.class), null);
@@ -177,7 +180,7 @@ class DraftCMOServiceTest {
         Map<String, Object> data = draftCMOService.extractIndividualCaseManagementOrderObjects(
             caseManagementOrder, hearingDetails);
 
-        assertThat(data).containsKeys("cmoHearingDateList", "schedule", "recitals");
+        assertThat(data).containsKeys(HEARING_DATE_LIST.getKey(), SCHEDULE.getKey(), RECITALS.getKey());
     }
 
     @Test
@@ -190,9 +193,9 @@ class DraftCMOServiceTest {
             .listItems(List.of())
             .build();
 
-        assertThat(data.get("cmoHearingDateList")).isEqualTo(emptyDynamicList);
-        assertThat(data.get("schedule")).isNull();
-        assertThat(data.get("recitals")).isNull();
+        assertThat(data.get(HEARING_DATE_LIST.getKey())).isEqualTo(emptyDynamicList);
+        assertThat(data.get(SCHEDULE.getKey())).isNull();
+        assertThat(data.get(RECITALS.getKey())).isNull();
     }
 
     @Test
@@ -254,9 +257,9 @@ class DraftCMOServiceTest {
     @Nested
     class PrepareCaseDetailsTest {
         private final String[] keys = {
-            "cmoHearingDateList",
-            "recitals",
-            "schedule"};
+            HEARING_DATE_LIST.getKey(),
+            RECITALS.getKey(),
+            SCHEDULE.getKey()};
 
         private HashMap<String, Object> data; // Tries to use an ImmutableMap unless specified
 
