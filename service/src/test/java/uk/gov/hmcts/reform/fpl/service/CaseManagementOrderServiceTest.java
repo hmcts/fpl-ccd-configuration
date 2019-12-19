@@ -104,7 +104,7 @@ class CaseManagementOrderServiceTest {
     }
 
     private CaseData.CaseDataBuilder caseDataWithCmo(UUID id) {
-        return CaseData.builder().cmoToAction(CaseManagementOrder.builder().id(id).build());
+        return CaseData.builder().caseManagementOrder(CaseManagementOrder.builder().id(id).build());
     }
 
     private List<Element<HearingBooking>> hearingBookingWithStartDatePlus(UUID id, int days) {
