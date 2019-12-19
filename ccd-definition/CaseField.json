@@ -668,7 +668,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "caseManagementOrder",
+    "ID": "caseManagementOrder_LocalAuthority",
     "Label": "Case management order",
     "FieldType": "CaseManagementOrder",
     "SecurityClassification": "Public"
@@ -757,7 +757,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "sharedDraftCMODocument",
+    "ID": "sharedCaseManagementOrderDocument",
     "Label": "Draft case management order",
     "FieldType": "Document",
     "SecurityClassification": "Public"
@@ -781,7 +781,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "cmoToAction",
+    "ID": "caseManagementOrder_Judiciary",
     "Label": "Case management order",
     "FieldType": "CaseManagementOrder",
     "SecurityClassification": "Public"

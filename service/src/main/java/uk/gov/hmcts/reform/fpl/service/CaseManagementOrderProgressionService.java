@@ -13,7 +13,6 @@ import java.util.List;
 import static java.util.UUID.randomUUID;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.JUDGE_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_SHARED;
@@ -21,12 +20,6 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_
 
 @Service
 public class CaseManagementOrderProgressionService {
-    //TODO: better CCD ids for the below:
-    // sharedDraftCMODocument -> sharedCaseManagementOrderDocument
-    // caseManagementOrder -> draftCaseManagementOrder_LOCAL_AUTHORITY
-    // cmoToAction -> draftCaseManagementOrder_JUDICIARY
-    // requires changes in CCD definition. Decided not in scope of 24.
-
     private final ObjectMapper mapper;
 
     @Autowired

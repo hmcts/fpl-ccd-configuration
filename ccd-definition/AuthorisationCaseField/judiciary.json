@@ -51,7 +51,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "sharedDraftCMODocument",
+    "CaseFieldID": "sharedCaseManagementOrderDocument",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "R"
   },
@@ -163,7 +163,7 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "CaseFieldID": "cmoToAction",
+    "CaseFieldID": "caseManagementOrder_Judiciary",
     "UserRole": "caseworker-publiclaw-judiciary",
     "CRUD": "RU"
   },

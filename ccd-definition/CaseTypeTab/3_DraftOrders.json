@@ -17,7 +17,7 @@
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "sharedDraftCMODocument",
+    "CaseFieldID": "sharedCaseManagementOrderDocument",
     "TabFieldDisplayOrder": 2
   },
   {
@@ -27,7 +27,7 @@
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "cmoToAction",
+    "CaseFieldID": "caseManagementOrder_Judiciary",
     "TabFieldDisplayOrder": 2
   },
   {
@@ -37,8 +37,8 @@
     "TabID": "DraftOrdersTab",
     "TabLabel": "Draft orders",
     "TabDisplayOrder": 3,
-    "CaseFieldID": "caseManagementOrder",
-    "TabShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\" OR caseManagementOrder!=\"\" OR sharedDraftCMODocument!=\"\" OR cmoToAction!=\"\"",
+    "CaseFieldID": "caseManagementOrder_LocalAuthority",
+    "TabShowCondition": "standardDirectionOrder.orderStatus!=\"SEALED\" OR caseManagementOrder_LocalAuthority!=\"\" OR sharedCaseManagementOrderDocument!=\"\" OR caseManagementOrder_Judiciary!=\"\"",
     "TabFieldDisplayOrder": 2
   }
 ]

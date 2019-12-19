@@ -4,9 +4,9 @@ import lombok.Getter;
 
 public enum CaseManagementOrderKeys {
     SERVED_CASE_MANAGEMENT_ORDERS("servedCaseManagementOrders"),
-    CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY("caseManagementOrder"),
-    CASE_MANAGEMENT_ORDER_JUDICIARY("cmoToAction"),
-    CASE_MANAGEMENT_ORDER_SHARED("sharedDraftCMODocument"),
+    CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY("caseManagementOrder_LocalAuthority"),
+    CASE_MANAGEMENT_ORDER_JUDICIARY("caseManagementOrder_Judiciary"),
+    CASE_MANAGEMENT_ORDER_SHARED("sharedCaseManagementOrderDocument"),
     ORDER_ACTION("orderAction"),
     SCHEDULE("schedule"),
     RECITALS("recitals"),

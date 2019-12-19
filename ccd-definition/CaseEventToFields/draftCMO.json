@@ -244,7 +244,7 @@
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseEventID": "draftCMO",
-    "CaseFieldID": "caseManagementOrder",
+    "CaseFieldID": "caseManagementOrder_LocalAuthority",
     "PageFieldDisplayOrder": 3,
     "DisplayContext": "COMPLEX",
     "PageID": "documentReview",

@@ -87,7 +87,7 @@ class CaseManagementOrderProgressionServiceTest {
     @Test
     void shouldRemoveSharedDraftDocumentWhenStatusIsSelfReview() throws IOException {
         CaseData caseData = caseDataWithCaseManagementOrder(CMOStatus.SELF_REVIEW)
-            .sharedDraftCMODocument(DocumentReference.builder().build())
+            .sharedCaseManagementOrderDocument(DocumentReference.builder().build())
             .build();
 
         CaseDetails caseDetails = getCaseDetails(caseData);

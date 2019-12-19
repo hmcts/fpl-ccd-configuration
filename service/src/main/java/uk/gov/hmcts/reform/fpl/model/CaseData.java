@@ -153,7 +153,7 @@ public class CaseData {
     @JsonIgnore
     private CaseManagementOrder caseManagementOrder;
 
-    @JsonGetter("caseManagementOrder")
+    @JsonGetter("caseManagementOrder_LocalAuthority")
     private CaseManagementOrder getCaseManagementOrder_LocalAuthority() {
         if (caseManagementOrder != null && caseManagementOrder.getStatus() != JUDGE_REVIEW) {
             return caseManagementOrder;
@@ -161,14 +161,14 @@ public class CaseData {
         return null;
     }
 
-    @JsonSetter("caseManagementOrder")
+    @JsonSetter("caseManagementOrder_LocalAuthority")
     private void setCaseManagementOrder_LocalAuthority(CaseManagementOrder order) {
         if (order != null) {
             caseManagementOrder = order;
         }
     }
 
-    @JsonGetter("cmoToAction")
+    @JsonGetter("caseManagementOrder_Judiciary")
     private CaseManagementOrder getCaseManagementOrder_Judiciary() {
         if (caseManagementOrder != null && caseManagementOrder.getStatus() == JUDGE_REVIEW) {
             return caseManagementOrder;
@@ -176,7 +176,7 @@ public class CaseData {
         return null;
     }
 
-    @JsonSetter("cmoToAction")
+    @JsonSetter("caseManagementOrder_Judiciary")
     private void setCaseManagementOrder_Judiciary(CaseManagementOrder order) {
         if (order != null) {
             caseManagementOrder = order;
@@ -187,7 +187,7 @@ public class CaseData {
     private final DynamicList cmoHearingDateList;
     private final Schedule schedule;
     private final List<Element<Recital>> recitals;
-    private final DocumentReference sharedDraftCMODocument;
+    private final DocumentReference sharedCaseManagementOrderDocument;
 
     private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
 
