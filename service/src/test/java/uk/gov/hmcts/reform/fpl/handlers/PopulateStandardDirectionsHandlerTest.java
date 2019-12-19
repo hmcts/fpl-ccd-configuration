@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -70,15 +71,16 @@ class PopulateStandardDirectionsHandlerTest {
     @Autowired
     private HearingBookingService hearingBookingService;
 
-    @MockBean
-    private UserDetailsService userDetailsService;
-
     @Autowired
     private ObjectMapper objectMapper;
 
-    private PopulateStandardDirectionsHandler populateStandardDirectionsHandler;
+    @MockBean
+    private UserDetailsService userDetailsService;
 
-    private DirectionHelperService directionHelperService = new DirectionHelperService(userDetailsService);
+    @InjectMocks
+    private DirectionHelperService directionHelperService;
+
+    private PopulateStandardDirectionsHandler populateStandardDirectionsHandler;
 
     @BeforeEach
     void before() {

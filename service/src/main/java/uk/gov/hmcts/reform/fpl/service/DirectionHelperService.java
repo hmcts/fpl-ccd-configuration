@@ -404,15 +404,11 @@ public class DirectionHelperService {
     }
 
     private String getUsername(Element<DirectionResponse> element, String authorisation) {
-        String userName;
-
         if (isEmpty(element.getValue().getResponder())) {
-            userName = userDetailsService.getUserName(authorisation);
+            return userDetailsService.getUserName(authorisation);
         } else {
-            userName = element.getValue().getResponder();
+            return element.getValue().getResponder();
         }
-
-        return userName;
     }
 
     /**

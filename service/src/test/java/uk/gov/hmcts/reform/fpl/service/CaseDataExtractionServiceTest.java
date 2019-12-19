@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -61,9 +62,11 @@ class CaseDataExtractionServiceTest {
     @MockBean
     private UserDetailsService userDetailsService;
 
+    @InjectMocks
+    private DirectionHelperService directionHelperService;
+
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
-    private DirectionHelperService directionHelperService = new DirectionHelperService(userDetailsService);
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
     private CommonCaseDataExtractionService commonCaseDataExtraction = new CommonCaseDataExtractionService(
         dateFormatterService, hearingVenueLookUpService);

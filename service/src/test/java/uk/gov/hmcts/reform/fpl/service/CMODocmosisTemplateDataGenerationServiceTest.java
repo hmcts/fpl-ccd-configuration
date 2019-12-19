@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -60,12 +61,12 @@ class CMODocmosisTemplateDataGenerationServiceTest {
     @MockBean
     private UserDetailsService userDetailsService;
 
+    @InjectMocks
     private DirectionHelperService directionHelperService;
 
     @Autowired
     CMODocmosisTemplateDataGenerationServiceTest(DateFormatterService dateFormatterService,
                                                  CommonCaseDataExtractionService commonCaseDataExtractionService,
-                                                 DirectionHelperService directionHelperService,
                                                  DraftCMOService draftCMOService,
                                                  HearingBookingService hearingBookingService,
                                                  ObjectMapper mapper,
@@ -73,7 +74,6 @@ class CMODocmosisTemplateDataGenerationServiceTest {
                                                  HearingVenueLookUpService hearingVenueLookUpService) {
         this.dateFormatterService = dateFormatterService;
         this.commonCaseDataExtractionService = commonCaseDataExtractionService;
-        this.directionHelperService = directionHelperService;
         this.draftCMOService = draftCMOService;
         this.hearingBookingService = hearingBookingService;
         this.mapper = mapper;
@@ -83,8 +83,6 @@ class CMODocmosisTemplateDataGenerationServiceTest {
 
     @BeforeEach
     void setUp() {
-        directionHelperService = new DirectionHelperService(userDetailsService);
-
         CaseDataExtractionService caseDataExtractionService = new CaseDataExtractionService(
             dateFormatterService, hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService,
             directionHelperService, hearingVenueLookUpService, commonCaseDataExtractionService);

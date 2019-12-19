@@ -55,7 +55,6 @@ class DraftCMOServiceTest {
     private CaseManagementOrder caseManagementOrder;
     private List<Element<HearingBooking>> hearingDetails;
 
-    //TODO: better way to do this? Required because of DirectionHelperService.
     @MockBean
     private UserDetailsService userDetailsService;
 
