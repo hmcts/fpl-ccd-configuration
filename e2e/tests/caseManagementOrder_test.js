@@ -105,19 +105,16 @@ Scenario('Other parties can see the draft CMO document when it is marked for par
   }
 });
 
-Scenario('Judge sees placeholder when CMO draft is not submitted to the Judge', async (I, caseViewPage, actionCaseManagementOrderEventPage) => {
+Scenario('Judge sees Action CMO placeholder when CMO is not in Judge Review', async (I, caseViewPage) => {
   // Login as Judge
   await cmoHelper.switchUserAndNavigateToCase(I, {
     email: config.judiciaryEmail,
     password: config.judiciaryPassword,
   }, caseId);
-  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.sendToJudge);
 
   await caseViewPage.goToNewActions(config.applicationActions.actionCaseManagementOrder);
-  await I.see(actionCaseManagementOrderEventPage.placeholder.heading);
-  await I.see(actionCaseManagementOrderEventPage.placeholder.label);
-  await I.click('Continue');
-  await I.completeEvent('Save and continue');
+  await I.see('You cannot edit this order');
+  await I.see('You can only review the draft order after it has been submitted');
 });
 
 //Skipped due to new error validation for approving a CMO with a hearing date in the future. We need to come up with

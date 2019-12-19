@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
-import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -57,10 +56,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
-import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.JUDGE_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
@@ -119,7 +116,7 @@ class ActionCaseManagementOrderControllerTest {
     @Test
     void aboutToStartShouldExtractIndividualCaseManagementOrderFieldsWithFutureHearingDates() throws Exception {
         Map<String, Object> data = new HashMap<>();
-        final CaseManagementOrder order = createCaseManagementOrder();
+        final CaseManagementOrder order = createCaseManagementOrder(JUDGE_REVIEW);
 
         data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
         data.put("hearingDetails", createHearingBookings(LocalDateTime.now()));
@@ -137,6 +134,11 @@ class ActionCaseManagementOrderControllerTest {
         assertThat(caseData.getOrderAction()).isNull();
         assertThat(caseData.getSchedule()).isEqualTo(order.getSchedule());
         assertThat(caseData.getRecitals()).isEqualTo(order.getRecitals());
+    }
+
+    @Test
+    void aboutToStartShouldNotProgressOrderWhenOrderActionIsNotSet() throws Exception {
+        assertShouldNotProgressCMO("about-to-start");
     }
 
     @Test
@@ -176,28 +178,6 @@ class ActionCaseManagementOrderControllerTest {
         assertThat(response.getData().get("nextHearingDateLabel")).isEqualTo(expectedLabel());
     }
 
-    private CaseManagementOrder expectedCaseManagementOrder() throws IOException {
-        return CaseManagementOrder.builder()
-            .orderDoc(buildFromDocument(document()))
-            .id(ID)
-            .directions(emptyList())
-            .action(OrderAction.builder()
-                .type(SEND_TO_ALL_PARTIES)
-                .nextHearingType(ISSUES_RESOLUTION_HEARING)
-                .build())
-            .nextHearing(NextHearing.builder()
-                .id(ID)
-                .date(NOW.toString())
-                .build())
-            .status(SEND_TO_JUDGE)
-            .build();
-    }
-
-    private String expectedLabel() {
-        return String.format("The next hearing date is on %s",
-            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.minusDays(1), "d MMMM 'at' h:mma"));
-    }
-
     @Test
     void aboutToSubmitShouldErrorIfHearingDateInFutureWhenSendToAllParties() throws Exception {
         Map<String, Object> data = ImmutableMap.of(
@@ -212,18 +192,8 @@ class ActionCaseManagementOrderControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldReturnCaseManagementOrderWithDraftDocumentWhenNotSendToAllParties() throws Exception {
-        Map<String, Object> data = ImmutableMap.of(
-            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder(),
-            ORDER_ACTION.getKey(), getOrderAction(JUDGE_REQUESTED_CHANGE));
-
-        AboutToStartOrSubmitCallbackResponse response =
-            makeRequest(buildCallbackRequest(data), "about-to-submit");
-
-        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
-
-        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, PDF, "draft-case-management-order.pdf");
-        assertThat(caseData.getCaseManagementOrder().getAction()).isEqualTo(getOrderAction(JUDGE_REQUESTED_CHANGE));
+    void aboutToSubmitShouldNotProgressOrderWhenOrderActionIsNotSet() throws Exception {
+        assertShouldNotProgressCMO("about-to-submit");
     }
 
     @Test
@@ -235,7 +205,7 @@ class ActionCaseManagementOrderControllerTest {
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .data(ImmutableMap.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(),
-                    CaseManagementOrder.builder().status(SELF_REVIEW).build()))
+                    CaseManagementOrder.builder().status(JUDGE_REVIEW).build()))
                 .build())
             .build();
 
@@ -244,12 +214,47 @@ class ActionCaseManagementOrderControllerTest {
         verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, 1L, event);
     }
 
+    private CaseManagementOrder expectedCaseManagementOrder() throws IOException {
+        return CaseManagementOrder.builder()
+            .orderDoc(buildFromDocument(document()))
+            .id(ID)
+            .directions(emptyList())
+            .action(OrderAction.builder()
+                .type(SEND_TO_ALL_PARTIES)
+                .nextHearingType(ISSUES_RESOLUTION_HEARING)
+                .build())
+            .nextHearing(NextHearing.builder()
+                .id(ID)
+                .date(NOW.toString())
+                .build())
+            .status(JUDGE_REVIEW)
+            .build();
+    }
+
+    private String expectedLabel() {
+        return String.format("The next hearing date is on %s",
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.minusDays(1), "d MMMM 'at' h:mma"));
+    }
+
     private CallbackRequest buildCallbackRequest(Map<String, Object> data) {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .data(data)
                 .build())
             .build();
+    }
+
+    private void assertShouldNotProgressCMO(String endPoint) throws Exception {
+        Map<String, Object> data = new HashMap<>();
+        final CaseManagementOrder order = CaseManagementOrder.builder().build();
+
+        data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
+        CallbackRequest request = buildCallbackRequest(data);
+
+        AboutToStartOrSubmitCallbackResponse response = makeRequest(request, endPoint);
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(caseData.getCaseManagementOrder()).isEqualTo(order);
     }
 
     private void makeRequest(CallbackRequest request) throws Exception {
@@ -287,7 +292,7 @@ class ActionCaseManagementOrderControllerTest {
     private CaseManagementOrder getCaseManagementOrder() {
         return CaseManagementOrder.builder()
             .id(ID)
-            .status(CMOStatus.SEND_TO_JUDGE)
+            .status(JUDGE_REVIEW)
             .schedule(createSchedule(true))
             .recitals(createRecitals())
             .directions(createCmoDirections())

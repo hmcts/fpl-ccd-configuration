@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.utils;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.RandomStringUtils;
+import uk.gov.hmcts.reform.fpl.enums.CMOStatus;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
@@ -43,7 +44,6 @@ import java.util.stream.Collectors;
 
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
@@ -487,9 +487,9 @@ public class CaseDataGeneratorHelper {
             .build();
     }
 
-    public static CaseManagementOrder createCaseManagementOrder() {
+    public static CaseManagementOrder createCaseManagementOrder(CMOStatus status) {
         return CaseManagementOrder.builder()
-            .status(SEND_TO_JUDGE)
+            .status(status)
             .schedule(createSchedule(true))
             .recitals(createRecitals())
             .directions(createCmoDirections())

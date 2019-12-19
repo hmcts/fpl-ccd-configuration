@@ -31,8 +31,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang3.ObjectUtils.isEmpty;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
@@ -73,13 +71,16 @@ public class ActionCaseManagementOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (isNotEmpty(caseData.getCaseManagementOrder().getStatus())) {
-            caseDetails.getData()
-                .putAll(caseManagementOrderService
-                    .extractMapFieldsFromCaseManagementOrder(caseData.getCaseManagementOrder()));
-
-            draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
+        if (!caseData.getCaseManagementOrder().isInJudgeReview()) {
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(caseDetails.getData())
+                .build();
         }
+
+        caseDetails.getData().putAll(caseManagementOrderService
+                .extractMapFieldsFromCaseManagementOrder(caseData.getCaseManagementOrder()));
+
+        draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
 
         caseDetails.getData().put(NEXT_HEARING_DATE_LIST.getKey(), getHearingDynamicList(caseData.getHearingDetails()));
 
@@ -117,7 +118,7 @@ public class ActionCaseManagementOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (isEmpty(caseData.getCaseManagementOrder().getStatus())) {
+        if (!caseData.getCaseManagementOrder().isInJudgeReview()) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .data(caseDetails.getData())
                 .build();
@@ -162,7 +163,7 @@ public class ActionCaseManagementOrderController {
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        if (isNotEmpty(caseData.getCaseManagementOrder().getStatus())) {
+        if (caseData.getCaseManagementOrder().isInJudgeReview()) {
             coreCaseDataService.triggerEvent(
                 callbackRequest.getCaseDetails().getJurisdiction(),
                 callbackRequest.getCaseDetails().getCaseTypeId(),
