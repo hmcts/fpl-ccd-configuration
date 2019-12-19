@@ -105,6 +105,21 @@ Scenario('Other parties can see the draft CMO document when it is marked for par
   }
 });
 
+Scenario('Judge sees placeholder when CMO draft is not submitted to the Judge', async (I, caseViewPage, actionCaseManagementOrderEventPage) => {
+  // Login as Judge
+  await cmoHelper.switchUserAndNavigateToCase(I, {
+    email: config.judiciaryEmail,
+    password: config.judiciaryPassword,
+  }, caseId);
+  cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.sendToJudge);
+
+  await caseViewPage.goToNewActions(config.applicationActions.actionCaseManagementOrder);
+  await I.see(actionCaseManagementOrderEventPage.placeholder.heading);
+  await I.see(actionCaseManagementOrderEventPage.placeholder.label);
+  await I.click('Continue');
+  await I.completeEvent('Save and continue');
+});
+
 //Skipped due to new error validation for approving a CMO with a hearing date in the future. We need to come up with
 // a better solution to account for this. Options:
 // - Have dynamic config to disable validation when e2es are run so it will allow us to skip the rules about submitting.

@@ -25,6 +25,10 @@ module.exports = {
         finalHearing: 'Final hearing',
       },
     },
+    placeholderLabels: {
+      heading: '#actionCMOPlaceholderHeading',
+      hintText: '#actionCMOPlaceholderHint'
+    }
   },
 
   labels: {

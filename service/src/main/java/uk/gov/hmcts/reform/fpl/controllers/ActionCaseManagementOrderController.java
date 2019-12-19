@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
@@ -68,10 +70,12 @@ public class ActionCaseManagementOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData()
-            .putAll(caseManagementOrderService.extractMapFieldsFromCaseManagementOrder(caseData.getCmoToAction()));
+        if (isNotEmpty(caseData.getCmoToAction().getStatus())) {
+            caseDetails.getData()
+                .putAll(caseManagementOrderService.extractMapFieldsFromCaseManagementOrder(caseData.getCmoToAction()));
 
-        draftCMOService.prepareCustomDirections(caseDetails, caseData.getCmoToAction());
+            draftCMOService.prepareCustomDirections(caseDetails, caseData.getCmoToAction());
+        }
 
         caseDetails.getData().put("nextHearingDateList", getHearingDynamicList(caseData.getHearingDetails()));
 
@@ -107,6 +111,12 @@ public class ActionCaseManagementOrderController {
 
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if (isEmpty(caseData.getCmoToAction().getStatus())) {
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(caseDetails.getData())
+                .build();
+        }
 
         if (sendToAllPartiesBeforeHearingDate(caseData)) {
             return AboutToStartOrSubmitCallbackResponse.builder()
@@ -145,12 +155,16 @@ public class ActionCaseManagementOrderController {
 
     @PostMapping("/submitted")
     public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
-        coreCaseDataService.triggerEvent(
-            callbackRequest.getCaseDetails().getJurisdiction(),
-            callbackRequest.getCaseDetails().getCaseTypeId(),
-            callbackRequest.getCaseDetails().getId(),
-            "internal-change:CMO_PROGRESSION"
-        );
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+
+        if (isNotEmpty(caseData.getCmoToAction().getStatus())) {
+            coreCaseDataService.triggerEvent(
+                callbackRequest.getCaseDetails().getJurisdiction(),
+                callbackRequest.getCaseDetails().getCaseTypeId(),
+                callbackRequest.getCaseDetails().getId(),
+                "internal-change:CMO_PROGRESSION"
+            );
+        }
     }
 
     private boolean sendToAllPartiesBeforeHearingDate(CaseData caseData) {
