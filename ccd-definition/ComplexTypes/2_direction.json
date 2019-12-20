@@ -5,6 +5,7 @@
     "ListElementCode": "directionType",
     "FieldType": "Text",
     "ElementLabel": "Direction title",
+    "HintText": "You must include a brief direction summary",
     "SecurityClassification": "Public"
   },
   {
@@ -49,7 +50,7 @@
     "ListElementCode": "directionText",
     "FieldType": "TextArea",
     "ElementLabel": "Description",
-    "HintText": "Check the description, you may need to add some details",
+    "HintText": "Add more details",
     "SecurityClassification": "Public"
   },
   {
