@@ -67,8 +67,8 @@ public class RespondentService {
                     respondentBuilder.party(element.getValue().getParty().toBuilder().build());
                 }
 
-                String detailsHidden = element.getValue().getParty().getContactDetailsHidden();
-                if (detailsHidden != null && detailsHidden.equals("Yes")) {
+                String contactDetails = element.getValue().getParty().getContactDetailsHidden();
+                if (contactDetails != null && contactDetails.equals("Yes")) {
                     respondentBuilder.party(element.getValue().getParty().toBuilder()
                         .address(null)
                         .telephoneNumber(null)

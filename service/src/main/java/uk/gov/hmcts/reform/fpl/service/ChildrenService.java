@@ -65,8 +65,8 @@ public class ChildrenService {
                     childBuilder.party(element.getValue().getParty().toBuilder().build());
                 }
 
-                String detailsHidden = element.getValue().getParty().getDetailsHidden();
-                if (detailsHidden != null && detailsHidden.equals("Yes")) {
+                String contactDetails = element.getValue().getParty().getDetailsHidden();
+                if (contactDetails != null && contactDetails.equals("Yes")) {
                     childBuilder.party(element.getValue().getParty().toBuilder()
                         .address(null)
                         .build());

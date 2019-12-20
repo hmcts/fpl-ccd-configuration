@@ -809,8 +809,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "confidentialOthers",
     "Label": "Others to be given notice",
-    "FieldType": "Collection",
-    "FieldTypeParameter": "Others",
+    "FieldType": "Person",
     "SecurityClassification": "Public"
   }
 ]

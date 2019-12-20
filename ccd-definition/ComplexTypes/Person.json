@@ -5,7 +5,6 @@
     "ListElementCode": "firstOther",
     "FieldType": "Others",
     "ElementLabel": "Person 1",
-    "FieldShowCondition": "firstOther=\"DO_NOT_SHOW \"",
     "SecurityClassification": "Public"
   },
   {
