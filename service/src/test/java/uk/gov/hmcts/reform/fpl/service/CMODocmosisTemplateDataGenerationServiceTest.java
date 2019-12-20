@@ -39,9 +39,10 @@ class CMODocmosisTemplateDataGenerationServiceTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
     private static final String COURT_NAME = "Test court";
+    private static final String COURT_CODE = "11";
     private static final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration =
         new HmctsCourtLookupConfiguration(
-            String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL_ADDRESS));
+            String.format("%s=>%s:%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME, COURT_EMAIL_ADDRESS, COURT_CODE));
     private static final String HEARING_VENUE = "Crown Building, Aberdare Hearing Centre, Aberdare, CF44 7DW";
     private final DateFormatterService dateFormatterService;
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
