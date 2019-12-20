@@ -22,5 +22,5 @@ public class RoboticsData {
     private final String allocation;
     private final String issueDate;
     private final Applicant applicant;
-    private final long owningCourt;
+    private final int owningCourt;
 }

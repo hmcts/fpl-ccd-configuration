@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.fpl.model.robotics;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
-import uk.gov.hmcts.reform.fpl.model.Address;
 
 @Data
 @Builder(toBuilder = true)

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
@@ -13,6 +14,7 @@ import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
+import uk.gov.hmcts.reform.fpl.model.robotics.Address;
 import uk.gov.hmcts.reform.fpl.model.robotics.Applicant;
 import uk.gov.hmcts.reform.fpl.model.robotics.Child;
 import uk.gov.hmcts.reform.fpl.model.robotics.Respondent;
@@ -26,6 +28,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.fasterxml.jackson.databind.PropertyNamingStrategy.LOWER_CAMEL_CASE;
 import static java.time.format.FormatStyle.MEDIUM;
 import static java.util.Set.of;
 import static java.util.stream.Collectors.joining;
@@ -34,6 +37,7 @@ import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
@@ -47,6 +51,7 @@ import static uk.gov.hmcts.reform.fpl.model.robotics.Gender.convertStringToGende
 public class RoboticsDataService {
     private final DateFormatterService dateFormatterService;
     private final ObjectMapper objectMapper;
+    private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
 
     public RoboticsData prepareRoboticsData(final CaseData caseData) {
         return RoboticsData.builder()
@@ -63,14 +68,14 @@ public class RoboticsDataService {
             .issueDate(isNotEmpty(caseData.getDateSubmitted())
                 ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted(), MEDIUM) : "")
             .applicant(populateApplicant(caseData.getAllApplicants()))
-            // TODO: 19/12/2019 update this to use the court mapping ids
-            .owningCourt(302)
+            .owningCourt(toInt(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getCourtCode()))
             .build();
     }
 
     public String convertRoboticsDataToJson(final RoboticsData roboticsData) {
         try {
-            return objectMapper.writerWithDefaultPrettyPrinter()
+            return objectMapper.setPropertyNamingStrategy(LOWER_CAMEL_CASE)
+                .writerWithDefaultPrettyPrinter()
                 .writeValueAsString(roboticsData);
         } catch (JsonProcessingException e) {
             log.error("Unable to convert robotics data to json", e);
@@ -86,7 +91,7 @@ public class RoboticsDataService {
                 .name(applicantParty.getFullName())
                 .contactName(getApplicantContactName(applicantParty.getMobileNumber()))
                 .jobTitle(applicantParty.getJobTitle())
-                .address(applicantParty.getAddress())
+                .address(convertAddress(applicantParty.getAddress()))
                 .mobileNumber(getApplicantPartyNumber(applicantParty.getMobileNumber()))
                 .telephoneNumber(getApplicantPartyNumber(applicantParty.getTelephoneNumber()))
                 .email(isNotEmpty(applicantParty.getEmail()) ? defaultString(applicantParty.getEmail().getEmail()) : "")
@@ -94,6 +99,17 @@ public class RoboticsDataService {
         }
 
         return applicantBuilder.build();
+    }
+
+    private Address convertAddress(final uk.gov.hmcts.reform.fpl.model.Address address) {
+        return Address.builder()
+            .addressLine1(address.getAddressLine1())
+            .addressLine2(address.getAddressLine2())
+            .addressLine3(address.getAddressLine3())
+            .postTown(address.getPostTown())
+            .county(address.getCounty())
+            .country(address.getCountry())
+            .build();
     }
 
     private String getApplicantPartyNumber(final Telephone telephone) {
@@ -140,7 +156,7 @@ public class RoboticsDataService {
             .firstName(respondentParty.getFirstName())
             .lastName(respondentParty.getLastName())
             .gender(respondentParty.getGender().toUpperCase())
-            .address(respondentParty.getAddress())
+            .address(convertAddress(respondentParty.getAddress()))
             .relationshipToChild(respondentParty.getRelationshipToChild())
             .dob(formatDob(respondentParty.getDateOfBirth()))
             // TODO: 19/12/2019 verify if this should always be true ???
