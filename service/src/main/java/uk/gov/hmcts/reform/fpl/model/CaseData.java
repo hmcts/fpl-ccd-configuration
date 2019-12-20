@@ -195,10 +195,9 @@ public class CaseData {
         return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
     }
 
-    private final DynamicList nextHearingDateList;
-
     private final Others others;
-
+    private final DynamicList nextHearingDateList;
+    
     private final List<Element<Child>> confidentialChildren;
     private final List<Element<Respondent>> confidentialRespondents;
 }
