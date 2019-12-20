@@ -172,7 +172,7 @@ public class NotificationHandler {
             eventData.getLocalAuthorityCode());
 
         sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, email,
-            localAuthorityNotificationParameters, eventData.getCaseReference());
+            localAuthorityNotificationParameters, eventData.getReference());
     }
 
     private void sendCMOCaseLinkNotificationToRepresentatives(final EventData eventData) {
@@ -188,7 +188,7 @@ public class NotificationHandler {
                         eventData.getCaseDetails(), representative.getFullName());
 
                 sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, representative.getEmail(),
-                    representativeNotificationParameters, eventData.getCaseReference());
+                    representativeNotificationParameters, eventData.getReference());
             });
     }
 

@@ -147,7 +147,7 @@ public class ActionCaseManagementOrderController {
             "internal-change:CMO_PROGRESSION"
         );
 
-        if (!caseData.getCmoToAction().isDraft()) {
+        if (!caseData.getCaseManagementOrder().isDraft()) {
             applicationEventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(callbackRequest, authorization,
                 userId));
         }

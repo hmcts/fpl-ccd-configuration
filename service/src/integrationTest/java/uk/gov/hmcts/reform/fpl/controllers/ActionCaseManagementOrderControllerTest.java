@@ -223,7 +223,7 @@ class ActionCaseManagementOrderControllerTest {
             "respondents1", createRespondents(),
             "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
             REPRESENTATIVES, createRepresentatives(DIGITAL_SERVICE),
-            CMO_TO_ACTION_KEY, CaseManagementOrder.builder()
+            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), CaseManagementOrder.builder()
                 .status(SEND_TO_JUDGE)
                 .action(OrderAction.builder()
                     .type(SEND_TO_ALL_PARTIES)
@@ -254,7 +254,7 @@ class ActionCaseManagementOrderControllerTest {
             "familyManCaseNumber", FAMILY_MAN_CASE_NUMBER,
             "respondents1", createRespondents(),
             "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
-            CMO_TO_ACTION_KEY, caseManagementOrder.toBuilder()
+            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), caseManagementOrder.toBuilder()
                 .action(getOrderAction(JUDGE_REQUESTED_CHANGE))
                 .build());
 
