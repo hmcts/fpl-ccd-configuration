@@ -36,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEA
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 @Api
@@ -153,6 +154,8 @@ public class ActionCaseManagementOrderController {
         order = caseManagementOrderService.addDocument(order, document);
 
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
+
+        caseDetails.getData().put("cmoEventId", ACTION_CASE_MANAGEMENT_ORDER.getId());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

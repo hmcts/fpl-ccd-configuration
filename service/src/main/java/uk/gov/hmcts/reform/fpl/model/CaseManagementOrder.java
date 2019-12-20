@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.JUDGE_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 
 @Data
 @Builder(toBuilder = true)
@@ -37,6 +37,6 @@ public class CaseManagementOrder {
 
     @JsonIgnore
     public boolean isInJudgeReview() {
-         return status == JUDGE_REVIEW;
+         return status == SEND_TO_JUDGE;
     }
 }
