@@ -241,9 +241,9 @@ public class CaseDataGeneratorHelper {
     public static Others createOthers() {
         return Others.builder()
             .firstOther(Other.builder()
-                .birthplace("Newry")
+                .birthPlace("Newry")
                 .childInformation("Child suffers from ADD")
-                .DOB("02/02/05")
+                .DOB(LocalDate.now())
                 .gender("Male")
                 .name("Kyle Stafford")
                 .telephone("02838882404")
@@ -259,8 +259,8 @@ public class CaseDataGeneratorHelper {
             .additionalOthers(ImmutableList.of(
                 Element.<Other>builder()
                     .value(Other.builder()
-                        .birthplace("Craigavon")
-                        .DOB("02/02/05")
+                        .birthPlace("Craigavon")
+                        .DOB(LocalDate.now())
                         .gender("Female")
                         .name("Sarah Simpson")
                         .telephone("02838882404")
