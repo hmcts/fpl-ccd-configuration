@@ -17,6 +17,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.DISTRICT_JUDGE;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.reform.fpl.service.CommonCaseDataExtractionService.HEARING_EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createJudgeAndLegalAdvisor;
 
@@ -34,7 +35,6 @@ class CommonCaseDataExtractionServiceTest {
         CommonCaseDataExtractionService commonCaseDataExtractionService) {
         this.commonCaseDataExtractionService = commonCaseDataExtractionService;
     }
-
 
     @Test
     void shouldReturnTheFormattedDateWhenStartAndEndDateAreNotTheSame() {
@@ -97,10 +97,10 @@ class CommonCaseDataExtractionServiceTest {
         final Map<String, Object> hearingBookingData = commonCaseDataExtractionService.getHearingBookingData(null);
 
         assertThat(hearingBookingData).isEqualTo(ImmutableMap.of(
-            "hearingDate", EMPTY_PLACEHOLDER,
-            "hearingVenue", EMPTY_PLACEHOLDER,
-            "preHearingAttendance", EMPTY_PLACEHOLDER,
-            "hearingTime", EMPTY_PLACEHOLDER
+            "hearingDate", HEARING_EMPTY_PLACEHOLDER,
+            "hearingVenue", HEARING_EMPTY_PLACEHOLDER,
+            "preHearingAttendance", HEARING_EMPTY_PLACEHOLDER,
+            "hearingTime", HEARING_EMPTY_PLACEHOLDER
         ));
     }
 

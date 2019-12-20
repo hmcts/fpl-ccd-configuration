@@ -29,6 +29,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.JUDGE_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseManagementOrderProgressionController.class)
@@ -45,21 +49,23 @@ class CaseManagementOrderProgressionControllerTest {
     @Test
     void aboutToSubmitReturnCaseManagementOrdersToLocalAuthorityWhenChangesAreRequested() throws Exception {
         CaseManagementOrder order = CaseManagementOrder.builder()
+            .status(JUDGE_REVIEW)
             .action(OrderAction.builder()
                 .type(JUDGE_REQUESTED_CHANGE)
                 .build())
             .build();
 
-        Map<String, Object> data = ImmutableMap.of("cmoToAction", order);
+        Map<String, Object> data = ImmutableMap.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(buildCallbackRequest(data));
 
-        assertThat(response.getData()).containsOnlyKeys("caseManagementOrder");
+        assertThat(response.getData()).containsOnlyKeys(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
     }
 
     @Test
     void aboutToSubmitShouldPopulateListServedCaseManagementOrdersWhenSendsToAllParties() throws Exception {
         CaseManagementOrder order = CaseManagementOrder.builder()
+            .status(JUDGE_REVIEW)
             .id(uuid)
             .action(OrderAction.builder()
                 .type(SEND_TO_ALL_PARTIES)
@@ -70,12 +76,12 @@ class CaseManagementOrderProgressionControllerTest {
 
         AboutToStartOrSubmitCallbackResponse response = makeRequest(buildCallbackRequest(data));
 
-        assertThat(response.getData()).containsOnlyKeys("servedCaseManagementOrders", "hearingDetails");
+        assertThat(response.getData()).containsOnlyKeys(SERVED_CASE_MANAGEMENT_ORDERS.getKey(), "hearingDetails");
     }
 
     private Map<String, Object> caseDataMap(CaseManagementOrder order, LocalDateTime localDateTime) {
         return ImmutableMap.of(
-            "cmoToAction", order,
+            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order,
             "hearingDetails", ImmutableList.of(Element.<HearingBooking>builder()
                 .id(uuid)
                 .value(HearingBooking.builder()

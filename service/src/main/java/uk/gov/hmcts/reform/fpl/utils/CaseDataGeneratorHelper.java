@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.Order;
+import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -45,8 +46,14 @@ import java.util.stream.Collectors;
 
 import static java.util.UUID.fromString;
 import static java.util.UUID.randomUUID;
-import static org.apache.commons.lang.StringUtils.left;
+import static org.apache.commons.lang3.StringUtils.left;
+import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.HEARING_DATE_LIST;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -450,30 +457,26 @@ public class CaseDataGeneratorHelper {
             .put("dateSubmitted", LocalDate.now())
             .put("respondents1", respondents)
             .put("others", others)
-            .put("cmoHearingDateList", DynamicList.builder()
+            .put(HEARING_DATE_LIST.getKey(), DynamicList.builder()
                 .value(DynamicListElement.builder()
                     .code(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
                     .label(DATE_FORMATTER_SERVICE.formatLocalDateToString(
                         localDateTime.plusDays(5).toLocalDate(), FormatStyle.MEDIUM))
                     .build())
                 .build())
-            .put("schedule", createSchedule(true))
-            .put("recitals", createRecitals())
+            .put(SCHEDULE.getKey(), createSchedule(true))
+            .put(RECITALS.getKey(), createRecitals())
             .put("allPartiesCustom", getDirectionByAssignee(cmoDirections, ALL_PARTIES))
             .put("localAuthorityDirectionsCustom", getDirectionByAssignee(cmoDirections, LOCAL_AUTHORITY))
             .put("courtDirectionsCustom", getDirectionByAssignee(cmoDirections, COURT))
             .put("cafcassDirectionsCustom", getDirectionByAssignee(cmoDirections, CAFCASS))
             .put("otherPartiesDirectionsCustom", getDirectionByAssignee(cmoDirections, OTHERS))
             .put("respondentDirectionsCustom", getDirectionByAssignee(cmoDirections, PARENTS_AND_RESPONDENTS))
-            .put("servedCaseManagementOrders", ImmutableList.of(Element.<CaseManagementOrder>builder()
+            .put(SERVED_CASE_MANAGEMENT_ORDERS.getKey(), ImmutableList.of(Element.<CaseManagementOrder>builder()
                 .value(CaseManagementOrder.builder().build())
                 .build()))
+            .put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), createApprovedCMO())
             .put("representatives", representatives)
-            .put("cmoToAction", CaseManagementOrder.builder()
-                .nextHearing(NextHearing.builder()
-                    .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
-                    .build())
-                .build())
             .build();
     }
 
@@ -574,6 +577,17 @@ public class CaseDataGeneratorHelper {
                 .label("15th Dec 2019")
                 .build())
             .listItems(List.of(DynamicListElement.builder().code(UUID.randomUUID()).label("test").build()))
+            .build();
+    }
+
+    public static CaseManagementOrder createApprovedCMO() {
+        return CaseManagementOrder.builder()
+            .action(OrderAction.builder()
+                .type(SEND_TO_ALL_PARTIES)
+                .build())
+            .nextHearing(NextHearing.builder()
+                .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+                .build())
             .build();
     }
 }

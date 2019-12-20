@@ -7,9 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 
@@ -39,7 +37,6 @@ public class RepresentativeService {
 
     private final OrganisationService organisationService;
     private final CaseService caseService;
-    private final CaseDataExtractionService caseDataExtractionService;
 
     public List<Element<Representative>> getDefaultRepresentatives(CaseData caseData) {
         if (ObjectUtils.isEmpty(caseData.getRepresentatives())) {
@@ -94,7 +91,7 @@ public class RepresentativeService {
             }
 
             if (nonNull(role) && RESPONDENT.equals(representative.getRole().getType())) {
-                if (findRespondent(caseData, role.getSequenceNo()).isEmpty()) {
+                if (caseData.findRespondent(role.getSequenceNo()).isEmpty()) {
                     validationErrors.add(format("Respondent %s represented by %s doesn't exist."
                             + " Choose a respondent who is associated with this case",
                         representative.getRole().getSequenceNo() + 1, representativeLabel));
@@ -103,7 +100,7 @@ public class RepresentativeService {
 
             if (nonNull(role) && OTHER.equals(role.getType())) {
                 int otherPersonSeq = representative.getRole().getSequenceNo();
-                if (findOther(caseData, otherPersonSeq).isEmpty()) {
+                if (caseData.findOther(otherPersonSeq).isEmpty()) {
                     String otherPersonLabel = otherPersonSeq == 0 ? "Person" : "Other person " + otherPersonSeq;
                     validationErrors.add(format("%s represented by %s doesn't exist."
                             + " Choose a person who is associated with this case",
@@ -165,27 +162,16 @@ public class RepresentativeService {
             .ifPresent(representable -> representable.addRepresentative(representative.getId()));
     }
 
-    private Optional<Representable> findRepresentable(CaseData caseData, Representative representative) {
+    private Optional<? extends Representable> findRepresentable(CaseData caseData, Representative representative) {
         switch (representative.getRole().getType()) {
             case RESPONDENT:
-                return findRespondent(caseData, representative.getRole().getSequenceNo());
+                return caseData.findRespondent(representative.getRole().getSequenceNo());
             case OTHER:
-                return findOther(caseData, representative.getRole().getSequenceNo());
+                return caseData.findOther(representative.getRole().getSequenceNo());
             default:
                 return Optional.empty();
         }
     }
 
-    private Optional<Representable> findRespondent(CaseData caseData, int sequenceNo) {
-        List<Respondent> respondents = unwrapElements(caseData.getRespondents1());
-
-        return respondents.size() <= sequenceNo ? Optional.empty() : Optional.of(respondents.get(sequenceNo));
-    }
-
-    private Optional<Representable> findOther(CaseData caseData, int sequenceNo) {
-        List<Other> others = caseDataExtractionService.getOthers(caseData);
-
-        return others.size() <= sequenceNo ? Optional.empty() : Optional.of(others.get(sequenceNo));
-    }
 
 }

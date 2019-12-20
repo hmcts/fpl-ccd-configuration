@@ -48,6 +48,7 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
@@ -100,7 +101,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
         HearingBooking nextHearing = null;
 
-        if (order.getNextHearing() != null && order.getNextHearing().getId() != null) {
+        if (order.getNextHearing() != null && order.getNextHearing().getId() != null && !order.isDraft()) {
             List<Element<HearingBooking>> hearingBookings = caseData.getHearingDetails();
             UUID nextHearingId = order.getNextHearing().getId();
             nextHearing = hearingBookingService.getHearingBookingByUUID(hearingBookings, nextHearingId);
@@ -120,7 +121,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         }
 
         List<Map<String, String>> recitals = buildRecitals(order.getRecitals());
-        cmoTemplateData.put("recitals", recitals);
+        cmoTemplateData.put(RECITALS.getKey(), recitals);
         cmoTemplateData.put("recitalsProvided", isNotEmpty(recitals));
 
         cmoTemplateData.putAll(getSchedule(order));
@@ -133,10 +134,6 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
     private CaseManagementOrder getCaseManagementOrder(CaseData caseData) {
         if (caseData.getCaseManagementOrder() != null) {
             return caseData.getCaseManagementOrder();
-        }
-
-        if (caseData.getCmoToAction() != null) {
-            return caseData.getCmoToAction();
         }
 
         return null;
@@ -153,14 +150,15 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
 
         ElementUtils.unwrapElements(caseData.getRespondents1()).stream()
             .filter(respondent -> isNotEmpty(respondent.getRepresentedBy()))
-            .forEach(respondent -> representativesInfo.add(ImmutableMap.of(
+            .forEach(respondent -> representativesInfo.add(Map.of(
                 "name", defaultIfNull(respondent.getParty().getFullName(), EMPTY),
                 "representedBy", getRepresentativesInfo(respondent, representatives))
             ));
 
-        caseDataExtractionService.getOthers(caseData).stream()
+
+        caseData.getAllOthers().stream()
             .filter(other -> isNotEmpty(other.getRepresentedBy()))
-            .forEach(other -> representativesInfo.add(ImmutableMap.of(
+            .forEach(other -> representativesInfo.add(Map.of(
                 "name", defaultIfNull(other.getName(), EMPTY),
                 "representedBy", getRepresentativesInfo(other, representatives))));
 

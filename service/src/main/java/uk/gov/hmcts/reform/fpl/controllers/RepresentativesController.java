@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,23 +26,13 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 @Api
 @RestController
 @RequestMapping("/callback/manage-representatives")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RepresentativesController {
 
     private final ObjectMapper mapper;
     private final RepresentativeService representativeService;
     private final RespondentService respondentService;
     private final OthersService othersService;
-
-    @Autowired
-    public RepresentativesController(ObjectMapper mapper,
-                                     RepresentativeService representativeService,
-                                     RespondentService respondentService,
-                                     OthersService othersService) {
-        this.mapper = mapper;
-        this.representativeService = representativeService;
-        this.respondentService = respondentService;
-        this.othersService = othersService;
-    }
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
