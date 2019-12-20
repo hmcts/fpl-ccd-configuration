@@ -100,15 +100,27 @@ public class RespondentService {
         return sb.toString();
     }
 
-    public List<Element<Respondent>> getConfidentialRespondents(CaseData caseData) {
+    public List<Element<Respondent>> buildConfidentialRespondentsList(CaseData caseData) {
         List<Element<Respondent>> confidentialRespondents = new ArrayList<>();
-        for (Element<Respondent> respondentElement : caseData.getRespondents1()
+
+        //most likely there's a nicer way of doing this
+        for (Element<Respondent> respondent : caseData.getRespondents1()
         ) {
-            if (respondentElement.getValue().getParty().getContactDetailsHidden().equals("Yes")) {
-                confidentialRespondents.add(respondentElement);
+            if (respondent.getValue() != null
+                && respondent.getValue().getParty() != null
+                && respondent.getValue().getParty().getContactDetailsHidden() != null
+                && respondent.getValue().getParty().getContactDetailsHidden().equals("Yes")) {
+                confidentialRespondents.add(respondent);
             }
         }
         return confidentialRespondents;
+    }
+
+    public boolean expandedCollectionNotEmpty(List<Element<Respondent>> respondents) {
+        return (isNotEmpty(respondents) && !respondents.get(0).getValue().getParty().equals(RespondentParty.builder()
+            .address(Address.builder().build())
+            .telephoneNumber(Telephone.builder().build())
+            .build()));
     }
 
     private boolean isSameRespondentById(Element<Respondent> respondent, Element<Respondent> confidentialRespondent) {

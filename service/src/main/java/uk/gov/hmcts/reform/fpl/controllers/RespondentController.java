@@ -58,20 +58,24 @@ public class RespondentController {
             .build();
     }
 
+    //TODO RespondentControllerAboutToSubmitTest (or combine the 3 controller test files into one for bonus points...)
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Respondent>> confidentialRespondents = respondentService.getConfidentialRespondents(caseData);
+        List<Element<Respondent>> confidentialRespondents = respondentService.buildConfidentialRespondentsList(caseData);
         if (confidentialRespondents.size() != 0) {
             caseDetails.getData().put("confidentialRespondents", confidentialRespondents);
         } else {
             caseDetails.getData().remove("confidentialRespondents");
         }
 
-        if (caseData.getRespondents1() != null) {
+        //Fixes expand collection 'bug' if user removes all respondents and submits (will not re-open collection)
+        if (respondentService.expandedCollectionNotEmpty(caseData.getRespondents1())) {
             caseDetails.getData().put("respondents1", respondentService.modifyHiddenValues(caseData));
+        } else {
+            caseDetails.getData().remove("respondents1");
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

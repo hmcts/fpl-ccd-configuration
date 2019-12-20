@@ -2,17 +2,18 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.PartyType;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Service
 public class ChildrenService {
@@ -80,15 +81,26 @@ public class ChildrenService {
             .collect(toList());
     }
 
-    public List<Element<Child>> getConfidentialChildren(CaseData caseData) {
+    public List<Element<Child>> buildConfidentialChildrenList(CaseData caseData) {
         List<Element<Child>> confidentialChildren = new ArrayList<>();
+
+        //most likely there's a nicer way of doing this
         for (Element<Child> child : caseData.getChildren1()
         ) {
-            if (child.getValue().getParty().getDetailsHidden().equals("Yes")) {
+            if (child.getValue() != null
+                && child.getValue().getParty() != null
+                && child.getValue().getParty().getDetailsHidden() != null
+                && child.getValue().getParty().getDetailsHidden().equals("Yes")) {
                 confidentialChildren.add(child);
             }
         }
         return confidentialChildren;
+    }
+
+    public boolean expandedCollectionNotEmpty(List<Element<Child>> children) {
+        return (isNotEmpty(children) && !children.get(0).getValue().getParty().equals(ChildParty.builder()
+            .socialWorkerTelephoneNumber(Telephone.builder().build())
+            .build()));
     }
 
     private boolean isSameChildById(Element<Child> child, Element<Child> confidentialChild) {

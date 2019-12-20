@@ -47,6 +47,7 @@ public class ChildController {
             .build();
     }
 
+    //Mid event is never triggered - needs discussion with PO regarding legality of case for child with DOB in future
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
@@ -57,20 +58,24 @@ public class ChildController {
             .build();
     }
 
+    //TODO ChildControllerAboutToSubmitTest (or combine the 3 controller test files into one for bonus points...)
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Child>> confidentialChildren = childrenService.getConfidentialChildren(caseData);
+        List<Element<Child>> confidentialChildren = childrenService.buildConfidentialChildrenList(caseData);
         if (confidentialChildren.size() != 0) {
             caseDetails.getData().put("confidentialChildren", confidentialChildren);
         } else {
             caseDetails.getData().remove("confidentialChildren");
         }
 
-        if (caseData.getChildren1() != null) {
+        //Fixes expand collection 'bug' if user removes all children and submits (will not re-open collection)
+        if (childrenService.expandedCollectionNotEmpty(caseData.getChildren1())) {
             caseDetails.getData().put("children1", childrenService.modifyHiddenValues(caseData));
+        } else {
+            caseDetails.getData().remove("children1");
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
