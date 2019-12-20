@@ -172,7 +172,7 @@ public class ActionCaseManagementOrderController {
 
     private void publishEventOnApprovedCMO(String authorization, String userId, CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-        CaseManagementOrder actionedCmo = caseData.getCmoToAction();
+        CaseManagementOrder actionedCmo = caseData.getCaseManagementOrder();
 
         if (!actionedCmo.isDraft()) {
             final String actionCmoDocumentUrl = actionedCmo.getOrderDoc().getBinaryUrl();

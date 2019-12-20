@@ -443,7 +443,7 @@ class ActionCaseManagementOrderControllerTest {
             "respondents1", createRespondents(),
             "caseLocalAuthority", LOCAL_AUTHORITY_CODE,
             REPRESENTATIVES, representatives,
-            CMO_TO_ACTION_KEY, CaseManagementOrder.builder()
+            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), CaseManagementOrder.builder()
                 .status(SEND_TO_JUDGE)
                 .orderDoc(DocumentReference.buildFromDocument(document))
                 .action(OrderAction.builder()

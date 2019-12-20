@@ -111,8 +111,7 @@ public class RepresentativeService {
     private void validateRepresentativeRespondentRole(CaseData caseData, List<String> validationErrors,
                                                       Representative representative, RepresentativeRole role,
                                                       String representativeLabel) {
-        Optional<Representable> responded = findRespondent(caseData, role.getSequenceNo());
-        if (responded.isEmpty()) {
+        if (caseData.findRespondent(role.getSequenceNo()).isEmpty()) {
             validationErrors.add(format("Respondent %s represented by %s doesn't exist."
                     + " Choose a respondent who is associated with this case",
                 representative.getRole().getSequenceNo() + 1, representativeLabel));
@@ -123,8 +122,7 @@ public class RepresentativeService {
                                                  Representative representative,
                                                  String representativeLabel) {
         int otherPersonSeq = representative.getRole().getSequenceNo();
-        Optional<Representable> other = findOther(caseData, otherPersonSeq);
-        if (other.isEmpty()) {
+        if (caseData.findOther(otherPersonSeq).isEmpty()) {
             String otherPersonLabel = otherPersonSeq == 0 ? "Person" : "Other person " + otherPersonSeq;
             validationErrors.add(format("%s represented by %s doesn't exist."
                     + " Choose a person who is associated with this case",
