@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
@@ -98,18 +97,25 @@ public class OthersService {
 
     public String buildOthersLabel(Others others) {
         StringBuilder sb = new StringBuilder();
-
+        //Handles old cases where firstOther exists (others event not re-submitted) and new cases with no firstOther
         if (otherExists(others)) {
-            if (others.getAdditionalOthers() != null) {
+            int othersListStartIndex = 1;
+            if (isNotEmpty(others.getFirstOther())) {
+                sb.append(String.format("Person 1 - %s", getName(others.getFirstOther()))).append("\n");
+                if (isNotEmpty(others.getAdditionalOthers())) {
+                    othersListStartIndex = 0;
+                }
+            } else if (isNotEmpty(others.getAdditionalOthers())) {
                 sb.append(String.format("Person 1 - %s", getName(others.getAdditionalOthers().get(0).getValue())))
                     .append("\n");
-
-                for (int i = 1; i < others.getAdditionalOthers().size(); i++) {
-                    Other other = others.getAdditionalOthers().get(i).getValue();
-
-                    sb.append(String.format("Other person %d - %s", i + 1, getName(other))).append("\n");
-                }
             }
+
+            for (int i = othersListStartIndex; i < others.getAdditionalOthers().size(); i++) {
+                Other other = others.getAdditionalOthers().get(i).getValue();
+
+                sb.append(String.format("Other person %d - %s", i + 1, getName(other))).append("\n");
+            }
+
         } else {
             sb.append("No others on the case");
         }
@@ -126,7 +132,7 @@ public class OthersService {
     }
 
     private boolean otherExists(Others others) {
-        return others != null && (others.getAdditionalOthers() != null);
+        return others != null && (others.getFirstOther() != null || others.getAdditionalOthers() != null);
     }
 
 }
