@@ -56,7 +56,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.JUDGE_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEARING_NOT_COMPLETED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
@@ -112,7 +112,7 @@ class ActionCaseManagementOrderControllerTest {
     @Test
     void aboutToStartShouldExtractIndividualCaseManagementOrderFieldsWithFutureHearingDates() throws Exception {
         Map<String, Object> data = new HashMap<>();
-        final CaseManagementOrder order = createCaseManagementOrder(JUDGE_REVIEW);
+        final CaseManagementOrder order = createCaseManagementOrder(SEND_TO_JUDGE);
 
         data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
         data.put("hearingDetails", createHearingBookings(LocalDateTime.now()));
@@ -208,7 +208,7 @@ class ActionCaseManagementOrderControllerTest {
                 .jurisdiction(JURISDICTION)
                 .caseTypeId(CASE_TYPE)
                 .data(ImmutableMap.of(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(),
-                    CaseManagementOrder.builder().status(JUDGE_REVIEW).build()))
+                    CaseManagementOrder.builder().status(SEND_TO_JUDGE).build()))
                 .build())
             .build();
 
@@ -230,7 +230,7 @@ class ActionCaseManagementOrderControllerTest {
                 .id(ID)
                 .date(NOW.toString())
                 .build())
-            .status(JUDGE_REVIEW)
+            .status(SEND_TO_JUDGE)
             .build();
     }
 
@@ -285,7 +285,7 @@ class ActionCaseManagementOrderControllerTest {
     private CaseManagementOrder getCaseManagementOrder() {
         return CaseManagementOrder.builder()
             .id(ID)
-            .status(JUDGE_REVIEW)
+            .status(SEND_TO_JUDGE)
             .schedule(createSchedule(true))
             .recitals(createRecitals())
             .directions(createCmoDirections())
