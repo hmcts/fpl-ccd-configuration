@@ -35,6 +35,7 @@ import javax.validation.constraints.NotNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.JUDGE_REVIEW;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -159,7 +160,7 @@ public class CaseData {
 
     @JsonGetter("caseManagementOrder")
     private CaseManagementOrder getCaseManagementOrder_LocalAuthority() {
-        if (caseManagementOrder != null && caseManagementOrder.getStatus() != JUDGE_REVIEW) {
+        if (caseManagementOrder != null && caseManagementOrder.getStatus() != SEND_TO_JUDGE) {
             return caseManagementOrder;
         }
         return null;
@@ -174,7 +175,7 @@ public class CaseData {
 
     @JsonGetter("cmoToAction")
     private CaseManagementOrder getCaseManagementOrder_Judiciary() {
-        if (caseManagementOrder != null && caseManagementOrder.getStatus() == JUDGE_REVIEW) {
+        if (caseManagementOrder != null && caseManagementOrder.getStatus() == SEND_TO_JUDGE) {
             return caseManagementOrder;
         }
         return null;

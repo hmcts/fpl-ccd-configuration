@@ -11,13 +11,12 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.List;
 
 import static java.util.UUID.randomUUID;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.JUDGE_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_SHARED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 
 @Service
 public class CaseManagementOrderProgressionService {
@@ -34,29 +33,20 @@ public class CaseManagementOrderProgressionService {
         this.mapper = mapper;
     }
 
-    public void handleCaseManagementOrderProgression(CaseDetails caseDetails) {
+    public void handleCaseManagementOrderProgression(CaseDetails caseDetails, String eventId) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (localAuthorityIsDrafting(caseData)) {
+        if (DRAFT_CASE_MANAGEMENT_ORDER.getId().equals(eventId)) {
             progressDraftCaseManagementOrder(caseDetails, caseData.getCaseManagementOrder());
         } else {
             progressActionCaseManagementOrder(caseDetails, caseData);
         }
     }
 
-    private boolean localAuthorityIsDrafting(CaseData caseData) {
-        return caseData.getCaseManagementOrder() != null
-            && caseData.getCaseManagementOrder().getStatus() != JUDGE_REVIEW;
-    }
-
     private void progressDraftCaseManagementOrder(CaseDetails caseDetails, CaseManagementOrder order) {
         switch (order.getStatus()) {
             case SEND_TO_JUDGE:
-                CaseManagementOrder updatedOrder = order.toBuilder()
-                    .status(JUDGE_REVIEW)
-                    .build();
-
-                caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), updatedOrder);
+                caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
                 caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey());
                 break;
             case PARTIES_REVIEW:
