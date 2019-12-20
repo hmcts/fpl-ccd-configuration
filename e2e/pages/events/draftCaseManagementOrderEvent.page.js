@@ -31,7 +31,7 @@ module.exports = {
 
   staticFields: {
     statusRadioGroup: {
-      groupName: '#caseManagementOrder_status',
+      groupName: '#caseManagementOrder_LocalAuthority_status',
       sendToJudge: 'Yes, send this to the judge',
       partiesReview: 'No, parties need to review it',
       selfReview: 'No, I need to make changes',
