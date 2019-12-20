@@ -36,7 +36,7 @@ public class CaseManagementOrderProgressionService {
     public void handleCaseManagementOrderProgression(CaseDetails caseDetails, String eventId) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (eventId.equals(DRAFT_CASE_MANAGEMENT_ORDER.getId())) {
+        if (DRAFT_CASE_MANAGEMENT_ORDER.getId().equals(eventId)) {
             progressDraftCaseManagementOrder(caseDetails, caseData.getCaseManagementOrder());
         } else {
             progressActionCaseManagementOrder(caseDetails, caseData);
