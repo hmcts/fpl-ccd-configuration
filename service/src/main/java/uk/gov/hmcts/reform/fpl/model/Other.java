@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 public class Other {
     @SuppressWarnings("membername")
@@ -16,6 +16,7 @@ public class Other {
     private final String telephone;
     private final String birthplace;
     private final String childInformation;
+    private final String detailsHidden;
     private final String litigationIssues;
     private final String genderIdentification;
 }
