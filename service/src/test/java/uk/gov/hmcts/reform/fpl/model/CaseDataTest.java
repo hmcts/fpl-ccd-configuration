@@ -14,8 +14,8 @@ import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.JUDGE_REVIEW;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SELF_REVIEW;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 
@@ -39,11 +39,11 @@ class CaseDataTest {
     @Test
     void shouldSerialiseCaseManagementOrderToCorrectStringValueWhenInSendToJudge() throws JsonProcessingException {
         String serialised = mapper.writeValueAsString(CaseData.builder()
-            .caseManagementOrder(CaseManagementOrder.builder().status(JUDGE_REVIEW).build())
+            .caseManagementOrder(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build())
             .build());
 
         JSONAssert.assertEquals(
-            String.format("{%s:{status: %s}}", CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), JUDGE_REVIEW.name()),
+            String.format("{%s:{status: %s}}", CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), SEND_TO_JUDGE.name()),
             serialised, false);
     }
 
@@ -62,12 +62,12 @@ class CaseDataTest {
     @Test
     void shouldDeserialiseCaseDataWhenCaseManagementOrderWithSendToJudgeState() throws JsonProcessingException {
         String content = String.format("{\"%s\":{\"status\": \"%s\"}}",
-            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), JUDGE_REVIEW.name());
+            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), SEND_TO_JUDGE.name());
 
         CaseData deserialised = mapper.readValue(content, CaseData.class);
 
         assertThat(deserialised).isEqualTo(CaseData.builder()
-            .caseManagementOrder(CaseManagementOrder.builder().status(JUDGE_REVIEW).build())
+            .caseManagementOrder(CaseManagementOrder.builder().status(SEND_TO_JUDGE).build())
             .build());
     }
 
