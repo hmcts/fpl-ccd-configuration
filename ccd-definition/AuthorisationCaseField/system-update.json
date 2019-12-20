@@ -46,20 +46,35 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "cmoToAction",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "C"
+    "CRUD": "CD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "caseManagementOrder",
     "UserRole": "caseworker-publiclaw-systemupdate",
-    "CRUD": "CRUD"
+    "CRUD": "CD"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "CaseFieldID": "sharedDraftCMODocument",
     "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "servedCaseManagementOrders",
+    "UserRole": "caseworker-publiclaw-systemupdate",
+    "CRUD": "CD"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseFieldID": "cmoEventId",
+    "UserRole": "caseworker-publiclaw-systemupdate",
     "CRUD": "CRUD"
+
   }
 ]

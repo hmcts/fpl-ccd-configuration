@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,9 +26,13 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 
 @Data
 @Builder(toBuilder = true)
@@ -144,11 +150,38 @@ public class CaseData {
         return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
-    // for judiciary
-    private final CaseManagementOrder cmoToAction;
+    @JsonIgnore
+    private CaseManagementOrder caseManagementOrder;
 
-    // for local authority
-    private final CaseManagementOrder caseManagementOrder;
+    @JsonGetter("caseManagementOrder")
+    private CaseManagementOrder getCaseManagementOrder_LocalAuthority() {
+        if (caseManagementOrder != null && caseManagementOrder.getStatus() != SEND_TO_JUDGE) {
+            return caseManagementOrder;
+        }
+        return null;
+    }
+
+    @JsonSetter("caseManagementOrder")
+    private void setCaseManagementOrder_LocalAuthority(CaseManagementOrder order) {
+        if (order != null) {
+            caseManagementOrder = order;
+        }
+    }
+
+    @JsonGetter("cmoToAction")
+    private CaseManagementOrder getCaseManagementOrder_Judiciary() {
+        if (caseManagementOrder != null && caseManagementOrder.getStatus() == SEND_TO_JUDGE) {
+            return caseManagementOrder;
+        }
+        return null;
+    }
+
+    @JsonSetter("cmoToAction")
+    private void setCaseManagementOrder_Judiciary(CaseManagementOrder order) {
+        if (order != null) {
+            caseManagementOrder = order;
+        }
+    }
 
     private final OrderAction orderAction;
     private final DynamicList cmoHearingDateList;
@@ -156,8 +189,16 @@ public class CaseData {
     private final List<Element<Recital>> recitals;
     private final DocumentReference sharedDraftCMODocument;
 
+    private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
+
+    public List<Element<CaseManagementOrder>> getServedCaseManagementOrders() {
+        return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
+    }
+
+    private final DynamicList nextHearingDateList;
+
     private final Others others;
+
     private final List<Element<Child>> confidentialChildren;
     private final List<Element<Respondent>> confidentialRespondents;
-    private final List<Element<Other>> confidentialOthers;
 }

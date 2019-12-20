@@ -32,6 +32,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.groupingBy;
@@ -42,6 +43,7 @@ import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
@@ -65,8 +67,6 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         ImmutableMap.Builder cmoTemplateData = ImmutableMap.<String, Object>builder();
         final DynamicList hearingDateList = caseData.getCmoHearingDateList();
         final String localAuthorityCode = caseData.getCaseLocalAuthority();
-
-        CaseManagementOrder order = draftCMOService.prepareCMO(caseData, getCaseManagementOrder(caseData));
 
         cmoTemplateData.put("familyManCaseNumber", defaultIfNull(caseData.getFamilyManCaseNumber(), EMPTY_PLACEHOLDER));
         cmoTemplateData.put("generationDate",
@@ -92,8 +92,17 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         cmoTemplateData.put("representatives",
             getRepresentatives(caseData.getRespondents1(), applicantName, caseData.getSolicitor()));
 
-        // Populate with the next hearing booking, currently not captured
-        cmoTemplateData.putAll(commonCaseDataExtractionService.getHearingBookingData(null));
+        CaseManagementOrder order = draftCMOService.prepareCMO(caseData, getCaseManagementOrder(caseData));
+
+        HearingBooking nextHearing = null;
+
+        if (order.getNextHearing() != null && order.getNextHearing().getId() != null && !order.isDraft()) {
+            List<Element<HearingBooking>> hearingBookings = caseData.getHearingDetails();
+            UUID nextHearingId = order.getNextHearing().getId();
+            nextHearing = hearingBookingService.getHearingBookingByUUID(hearingBookings, nextHearingId);
+        }
+
+        cmoTemplateData.putAll(commonCaseDataExtractionService.getHearingBookingData(nextHearing));
 
         HearingBooking hearingBooking = hearingBookingService.getHearingBooking(
             caseData.getHearingDetails(), hearingDateList);
@@ -107,13 +116,12 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         }
 
         List<Map<String, String>> recitals = buildRecitals(order.getRecitals());
-        cmoTemplateData.put("recitals", recitals);
+        cmoTemplateData.put(RECITALS.getKey(), recitals);
         cmoTemplateData.put("recitalsProvided", isNotEmpty(recitals));
 
         cmoTemplateData.putAll(getSchedule(order));
 
-        //defaulting as 1 as we currently do not have impl for multiple CMos
-        cmoTemplateData.put("caseManagementNumber", 1);
+        cmoTemplateData.put("caseManagementNumber", caseData.getServedCaseManagementOrders().size() + 1);
 
         return cmoTemplateData.build();
     }
@@ -123,8 +131,8 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
             return caseData.getCaseManagementOrder();
         }
 
-        if (caseData.getCmoToAction() != null) {
-            return caseData.getCmoToAction();
+        if (caseData.getCaseManagementOrder() != null) {
+            return caseData.getCaseManagementOrder();
         }
 
         return null;

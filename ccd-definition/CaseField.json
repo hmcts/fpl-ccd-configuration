@@ -789,6 +789,46 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nextHearingDateHeading",
+    "Label": "## Check date and venue details",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nextHearingDateHintText",
+    "Label": "Check the 'Hearings' tab to confirm date and venue details.",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nextHearingDateList",
+    "Label": "Which hearing is next?",
+    "FieldType": "DynamicList",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "nextHearing",
+    "Label": " ",
+    "FieldType": "NextHearing",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cmoEventId",
+    "Label": " ",
+    "FieldType": "Text",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "confidentialChildren",
     "Label": "Child",
     "FieldType": "Collection",
@@ -802,14 +842,6 @@
     "Label": "Respondents",
     "FieldType": "Collection",
     "FieldTypeParameter": "RespondentNew",
-    "SecurityClassification": "Public"
-  },
-  {
-    "LiveFrom": "01/01/2017",
-    "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "confidentialOthers",
-    "Label": "Others to be given notice",
-    "FieldType": "Person",
     "SecurityClassification": "Public"
   }
 ]

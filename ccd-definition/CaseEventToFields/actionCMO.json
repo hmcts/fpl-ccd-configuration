@@ -238,5 +238,42 @@
     "PageLabel": " ",
     "PageDisplayOrder": 9,
     "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "nextHearingDateHeading",
+    "PageFieldDisplayOrder": 1,
+    "DisplayContext": "READONLY",
+    "PageID": "nextHearing",
+    "PageLabel": " ",
+    "PageDisplayOrder": 10,
+    "PageColumnNumber": 1,
+    "PageShowCondition": "orderAction.type=\"SEND_TO_ALL_PARTIES\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "nextHearingDateHintText",
+    "PageFieldDisplayOrder": 2,
+    "DisplayContext": "READONLY",
+    "PageID": "nextHearing",
+    "PageLabel": " ",
+    "PageDisplayOrder": 10,
+    "PageColumnNumber": 1
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "CaseEventID": "actionCMO",
+    "CaseFieldID": "nextHearingDateList",
+    "PageFieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY",
+    "PageID": "nextHearing",
+    "PageLabel": " ",
+    "PageDisplayOrder": 10,
+    "PageColumnNumber": 1
   }
 ]

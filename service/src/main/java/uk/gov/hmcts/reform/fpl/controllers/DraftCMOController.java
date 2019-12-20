@@ -30,8 +30,9 @@ import java.util.Map;
 
 import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
+import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 
 @Api
 @RestController
@@ -110,7 +111,7 @@ public class DraftCMOController {
             .orderDoc(reference)
             .build();
 
-        data.put("caseManagementOrder", updatedCMO);
+        data.put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), updatedCMO);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(data)
@@ -120,18 +121,18 @@ public class DraftCMOController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        final Map<String, Object> data = caseDetails.getData();
-        CaseData caseData = mapper.convertValue(data, CaseData.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        CaseManagementOrder populatedCMO = draftCMOService.prepareCMO(
-            caseData, caseData.getCaseManagementOrder());
+        CaseManagementOrder populatedCMO = draftCMOService.prepareCMO(caseData, caseData.getCaseManagementOrder());
 
-        draftCMOService.removeTransientObjectsFromCaseData(data);
+        draftCMOService.removeTransientObjectsFromCaseData(caseDetails.getData());
 
-        data.put("caseManagementOrder", populatedCMO);
+        caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), populatedCMO);
+
+        caseDetails.getData().put("cmoEventId", DRAFT_CASE_MANAGEMENT_ORDER.getId());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
-            .data(data)
+            .data(caseDetails.getData())
             .build();
     }
 
@@ -159,13 +160,7 @@ public class DraftCMOController {
     private Document getDocument(String authorization, String userId, Map<String, Object> templateData) {
         DocmosisDocument document = docmosisService.generateDocmosisDocument(templateData, CMO);
 
-        String docTitle = document.getDocumentTitle();
-
-        if (isNotEmpty(templateData.get("draftbackground"))) {
-            docTitle = "draft-" + document.getDocumentTitle();
-        }
-
-        return uploadDocumentService.uploadPDF(userId, authorization, document.getBytes(), docTitle);
+        return uploadDocumentService.uploadPDF(
+            userId, authorization, document.getBytes(), "draft-" + document.getDocumentTitle());
     }
-
 }

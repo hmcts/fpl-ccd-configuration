@@ -31,7 +31,7 @@ public class DocumentsValidatorService {
 
     // Moved from SocialWorkOtherSubmissionController
     public List<String> validateSocialWorkOtherDocuments(List<Element<DocumentSocialWorkOther>> socialWorkOtherData) {
-        List<String> validationErrors = new ArrayList<String>();
+        List<String> validationErrors = new ArrayList<>();
 
         if (isNotEmpty(socialWorkOtherData)) {
             AtomicInteger i = new AtomicInteger(1);
