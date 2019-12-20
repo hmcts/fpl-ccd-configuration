@@ -29,7 +29,7 @@ public class RoboticsNotificationService {
     }
 
     private EmailData prepareEmailData(final CaseData caseData) {
-        RoboticsData roboticsData = roboticsDataService.buildRoboticsData(caseData);
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
         final String fileNamePrefix = "CaseSubmitted_";
         final String fileName = join(fileNamePrefix, roboticsData.getCaseNumber());

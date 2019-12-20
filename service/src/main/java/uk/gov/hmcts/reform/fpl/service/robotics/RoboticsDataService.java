@@ -48,7 +48,7 @@ public class RoboticsDataService {
     private final DateFormatterService dateFormatterService;
     private final ObjectMapper objectMapper;
 
-    public RoboticsData buildRoboticsData(final CaseData caseData) {
+    public RoboticsData prepareRoboticsData(final CaseData caseData) {
         return RoboticsData.builder()
             .caseNumber(caseData.getFamilyManCaseNumber())
             .applicationType(deriveApplicationType(caseData.getOrders()))
@@ -81,15 +81,14 @@ public class RoboticsDataService {
     private Applicant populateApplicant(final List<Element<uk.gov.hmcts.reform.fpl.model.Applicant>> allApplicants) {
         final Applicant.ApplicantBuilder applicantBuilder = Applicant.builder();
         if (isNotEmpty(allApplicants)) {
-            // TODO: 19/12/2019 double-check this
             uk.gov.hmcts.reform.fpl.model.ApplicantParty applicantParty = allApplicants.get(0).getValue().getParty();
             return applicantBuilder
-                .name(applicantParty.getOrganisationName())
-                .contactName(applicantParty.getFullName())
+                .name(applicantParty.getFullName())
+                .contactName(getApplicantContactName(applicantParty.getMobileNumber()))
                 .jobTitle(applicantParty.getJobTitle())
                 .address(applicantParty.getAddress())
-                .mobileNumber(getApplicantPartyTelephoneNumber(applicantParty.getMobileNumber()))
-                .telephoneNumber(getApplicantPartyTelephoneNumber(applicantParty.getTelephoneNumber()))
+                .mobileNumber(getApplicantPartyNumber(applicantParty.getMobileNumber()))
+                .telephoneNumber(getApplicantPartyNumber(applicantParty.getTelephoneNumber()))
                 .email(isNotEmpty(applicantParty.getEmail()) ? defaultString(applicantParty.getEmail().getEmail()) : "")
                 .build();
         }
@@ -97,8 +96,16 @@ public class RoboticsDataService {
         return applicantBuilder.build();
     }
 
-    private String getApplicantPartyTelephoneNumber(final Telephone telephone) {
+    private String getApplicantPartyNumber(final Telephone telephone) {
         return isNotEmpty(telephone) ? defaultString(telephone.getTelephoneNumber()) : "";
+    }
+
+    private String getApplicantContactName(final Telephone mobileNumber) {
+        if (isEmpty(mobileNumber)) {
+            return "";
+        }
+
+        return defaultString(mobileNumber.getContactDirection());
     }
 
     private Solicitor populateSolicitor(final uk.gov.hmcts.reform.fpl.model.Solicitor solicitor) {
