@@ -210,6 +210,83 @@ class RespondentServiceTest {
 
     }
 
+    @Test
+    void shouldExpandCollectionWhenRespondentsListEmpty() {
+        CaseData caseData = CaseData.builder().build();
+        assertThat(service.expandedCollectionNotEmpty(caseData.getRespondents1())).isTrue();
+    }
+
+    @Test
+    void shouldExpandCollectionWhenRespondentsListContainsEmptyRespondent() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(ImmutableList.of(Element.<Respondent>builder().
+                value(Respondent.builder()
+                    .build())
+                .build()))
+            .build();
+
+        assertThat(service.expandedCollectionNotEmpty(caseData.getRespondents1())).isTrue();
+    }
+
+    @Test
+    void shouldNotExpandCollectionWhenRespondentsListContainsRespondent() {
+        CaseData caseData = CaseData.builder()
+            .respondents1(ImmutableList.of(Element.<Respondent>builder()
+                .value(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("James")
+                        .build())
+                    .build())
+                .build()))
+            .build();
+        assertThat(service.expandedCollectionNotEmpty(caseData.getRespondents1())).isTrue();
+    }
+
+    @Test
+    void shouldAddRespondentToConfidentialListWhenHideDetailsFlagSet() {
+        List<Element<Respondent>> respondents = ImmutableList.of(
+            Element.<Respondent>builder()
+                .id(UUID.randomUUID())
+                .value(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("James")
+                        .contactDetailsHidden("Yes")
+                        .build())
+                    .build())
+                .build());
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(respondents)
+            .build();
+
+        List<Element<Respondent>> confidentialRespondents = service.buildConfidentialRespondentsList(caseData);
+
+        assertThat(confidentialRespondents).isNotEmpty();
+        assertThat(confidentialRespondents.get(0).getValue().getParty().getFirstName()).isEqualTo("James");
+        assertThat(confidentialRespondents.get(0).getValue().getParty().getContactDetailsHidden()).isEqualTo("Yes");
+    }
+
+    @Test
+    void shouldNotAddRespondentToConfidentialListWhenHideDetailsFlagNotSet() {
+        List<Element<Respondent>> respondents = ImmutableList.of(
+            Element.<Respondent>builder()
+                .id(UUID.randomUUID())
+                .value(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .firstName("James")
+                        .build())
+                    .build())
+                .build());
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(respondents)
+            .build();
+
+        List<Element<Respondent>> confidentialRespondents = service.buildConfidentialRespondentsList(caseData);
+
+        assertThat(confidentialRespondents).isEmpty();
+    }
+
     @Nested
     class BuildRespondentLabel {
 

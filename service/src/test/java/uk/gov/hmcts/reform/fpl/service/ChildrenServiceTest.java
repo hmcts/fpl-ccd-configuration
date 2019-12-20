@@ -202,26 +202,103 @@ class ChildrenServiceTest {
 
     @Test
     void shouldHideChildAddressDetailsWhenConfidentialitySelected() {
-            List<Element<Child>> children = ImmutableList.of(
-                Element.<Child>builder()
-                    .id(UUID.randomUUID())
-                    .value(Child.builder()
-                        .party(ChildParty.builder()
-                            .firstName("James")
-                            .detailsHidden("Yes")
-                            .address(Address.builder()
-                                .addressLine1("James' House")
-                                .build())
+        List<Element<Child>> children = ImmutableList.of(
+            Element.<Child>builder()
+                .id(UUID.randomUUID())
+                .value(Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName("James")
+                        .detailsHidden("Yes")
+                        .address(Address.builder()
+                            .addressLine1("James' House")
                             .build())
                         .build())
-                    .build());
+                    .build())
+                .build());
 
-            CaseData caseData = CaseData.builder()
-                .children1(children)
-                .build();
+        CaseData caseData = CaseData.builder()
+            .children1(children)
+            .build();
 
-            List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData);
+        List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData);
 
-            assertThat(updatedChildren.get(0).getValue().getParty().getAddress()).isNull();
-        }
+        assertThat(updatedChildren.get(0).getValue().getParty().getAddress()).isNull();
+    }
+
+    @Test
+    void shouldExpandCollectionWhenChildrenListEmpty() {
+        CaseData caseData = CaseData.builder().build();
+        assertThat(service.expandedCollectionNotEmpty(caseData.getChildren1())).isTrue();
+    }
+
+    @Test
+    void shouldExpandCollectionWhenChildrenListContainsEmptyChild() {
+        CaseData caseData = CaseData.builder()
+            .children1(ImmutableList.of(Element.<Child>builder().
+                value(Child.builder()
+                    .build())
+                .build()))
+            .build();
+
+        assertThat(service.expandedCollectionNotEmpty(caseData.getChildren1())).isTrue();
+    }
+
+    @Test
+    void shouldNotExpandCollectionWhenChildrenListContainsChild() {
+        CaseData caseData = CaseData.builder()
+            .children1(ImmutableList.of(Element.<Child>builder()
+                .value(Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName("James")
+                        .build())
+                    .build())
+                .build()))
+            .build();
+        assertThat(service.expandedCollectionNotEmpty(caseData.getChildren1())).isTrue();
+    }
+
+    @Test
+    void shouldAddChildrenToConfidentialListWhenHideDetailsFlagSet() {
+        List<Element<Child>> children = ImmutableList.of(
+            Element.<Child>builder()
+                .id(UUID.randomUUID())
+                .value(Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName("James")
+                        .detailsHidden("Yes")
+                        .build())
+                    .build())
+                .build());
+
+        CaseData caseData = CaseData.builder()
+            .children1(children)
+            .build();
+
+        List<Element<Child>> confidentialChildren = service.buildConfidentialChildrenList(caseData);
+
+        assertThat(confidentialChildren).isNotEmpty();
+        assertThat(confidentialChildren.get(0).getValue().getParty().getFirstName()).isEqualTo("James");
+        assertThat(confidentialChildren.get(0).getValue().getParty().getDetailsHidden()).isEqualTo("Yes");
+    }
+
+    @Test
+    void shouldNotAddChildrenToConfidentialListWhenHideDetailsFlagNotSet() {
+        List<Element<Child>> children = ImmutableList.of(
+            Element.<Child>builder()
+                .id(UUID.randomUUID())
+                .value(Child.builder()
+                    .party(ChildParty.builder()
+                        .firstName("James")
+                        .build())
+                    .build())
+                .build());
+
+        CaseData caseData = CaseData.builder()
+            .children1(children)
+            .build();
+
+        List<Element<Child>> confidentialChildren = service.buildConfidentialChildrenList(caseData);
+
+        assertThat(confidentialChildren).isEmpty();
+    }
 }
