@@ -316,7 +316,7 @@
     "CaseEventID": "actionCMO",
     "CaseFieldID": "cmoToAction",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "COMPLEX",
+    "DisplayContext": "OPTIONAL",
     "PageID": "NOT_SHOWN",
     "PageLabel": " ",
     "PageDisplayOrder": 12,
