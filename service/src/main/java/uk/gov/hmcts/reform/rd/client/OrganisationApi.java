@@ -21,8 +21,8 @@ public interface OrganisationApi {
         @RequestParam(value = "status") Status status
     );
 
-    @GetMapping("/refdata/external/v1/organisations/users")
-    User findUsersByEmail(
+    @GetMapping("/refdata/external/v1/organisations/users/accountId")
+    User findUserByEmail(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
         @RequestParam(value = "email") final String email

@@ -79,86 +79,76 @@ public class NotificationHandler {
 
     @EventListener
     public void sendNotificationToHmctsAdmin(SubmittedCaseEvent event) {
-        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+        EventData eventData = new EventData(event);
         Map<String, Object> parameters = hmctsEmailContentProvider
-            .buildHmctsSubmissionNotification(caseDetails, localAuthorityCode);
-        String reference = Long.toString(caseDetails.getId());
-        String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
+            .buildHmctsSubmissionNotification(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
+        String email = hmctsCourtLookupConfiguration.getCourt(eventData.getLocalAuthorityCode()).getEmail();
 
-        sendNotification(HMCTS_COURT_SUBMISSION_TEMPLATE, email, parameters, reference);
+        sendNotification(HMCTS_COURT_SUBMISSION_TEMPLATE, email, parameters, eventData.getReference());
     }
 
     @EventListener
-    public void sendNotificationForC2Upload(final C2UploadedEvent caseEvent) {
-        List<String> roles = idamApi.retrieveUserInfo(caseEvent.getAuthorization()).getRoles();
-
+    public void sendNotificationForC2Upload(final C2UploadedEvent event) {
+        List<String> roles = idamApi.retrieveUserInfo(event.getAuthorization()).getRoles();
         if (!roles.containsAll(UserRole.HMCTS_ADMIN.getRoles())) {
-            CaseDetails caseDetailsFromEvent = caseEvent.getCallbackRequest().getCaseDetails();
-            String localAuthorityCode = (String) caseDetailsFromEvent.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
-
+            EventData eventData = new EventData(event);
             Map<String, Object> parameters = c2UploadedEmailContentProvider.buildC2UploadNotification(
-                caseDetailsFromEvent);
-            String reference = Long.toString(caseDetailsFromEvent.getId());
+                eventData.getCaseDetails());
+            String email = hmctsCourtLookupConfiguration.getCourt(eventData.getLocalAuthorityCode()).getEmail();
 
-            String email = hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getEmail();
-            sendNotification(C2_UPLOAD_NOTIFICATION_TEMPLATE, email, parameters, reference);
+            sendNotification(C2_UPLOAD_NOTIFICATION_TEMPLATE, email, parameters, eventData.getReference());
         }
     }
 
     @EventListener
     public void sendNotificationForOrder(final GeneratedOrderEvent event) {
-        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+        EventData eventData = new EventData(event);
 
-        sendOrderNotificationForLocalAuthority(caseDetails, localAuthorityCode,
+        sendOrderNotificationForLocalAuthority(eventData.getCaseDetails(), eventData.getLocalAuthorityCode(),
             event.getMostRecentUploadedDocumentUrl());
     }
 
     @EventListener
     public void sendNotificationToCafcass(SubmittedCaseEvent event) {
-        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+        EventData eventData = new EventData(event);
         Map<String, Object> parameters = cafcassEmailContentProvider
-            .buildCafcassSubmissionNotification(caseDetails, localAuthorityCode);
-        String reference = String.valueOf(caseDetails.getId());
-        String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
+            .buildCafcassSubmissionNotification(eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
+        String email = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getEmail();
 
-        sendNotification(CAFCASS_SUBMISSION_TEMPLATE, email, parameters, reference);
+        sendNotification(CAFCASS_SUBMISSION_TEMPLATE, email, parameters, eventData.getReference());
     }
 
     @EventListener
     public void sendNotificationToGatekeeper(NotifyGatekeeperEvent event) {
-        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
-        String email = (String) caseDetails.getData().get("gateKeeperEmail");
-        Map<String, Object> parameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(caseDetails,
-            localAuthorityCode);
-        String reference = String.valueOf(caseDetails.getId());
+        EventData eventData = new EventData(event);
+        String email = (String) eventData.getCaseDetails().getData().get("gateKeeperEmail");
+        Map<String, Object> parameters = gatekeeperEmailContentProvider.buildGatekeeperNotification(
+            eventData.getCaseDetails(), eventData.getLocalAuthorityCode());
 
-        sendNotification(GATEKEEPER_SUBMISSION_TEMPLATE, email, parameters, reference);
+        sendNotification(GATEKEEPER_SUBMISSION_TEMPLATE, email, parameters, eventData.getReference());
     }
 
     @EventListener
     public void notifyCafcassOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
-        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+        EventData eventData = new EventData(event);
         Map<String, Object> parameters = cafcassEmailContentProviderSDOIssued
-            .buildCafcassStandardDirectionOrderIssuedNotification(caseDetails, localAuthorityCode);
-        String reference = String.valueOf(caseDetails.getId());
-        String email = cafcassLookupConfiguration.getCafcass(localAuthorityCode).getEmail();
-        sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, reference);
+            .buildCafcassStandardDirectionOrderIssuedNotification(eventData.getCaseDetails(),
+                eventData.getLocalAuthorityCode());
+        String email = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getEmail();
+
+        sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, eventData.getReference());
     }
 
     @EventListener
     public void notifyLocalAuthorityOfIssuedStandardDirectionsOrder(StandardDirectionsOrderIssuedEvent event) {
-        CaseDetails caseDetails = event.getCallbackRequest().getCaseDetails();
-        String localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+        EventData eventData = new EventData(event);
         Map<String, Object> parameters = localAuthorityEmailContentProvider
-            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(caseDetails, localAuthorityCode);
-        String reference = Long.toString(caseDetails.getId());
-        String email = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
-        sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, reference);
+            .buildLocalAuthorityStandardDirectionOrderIssuedNotification(eventData.getCaseDetails(),
+                eventData.getLocalAuthorityCode());
+        String email = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
+            eventData.getLocalAuthorityCode());
+
+        sendNotification(STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE, email, parameters, eventData.getReference());
     }
 
     @EventListener
@@ -185,7 +175,7 @@ public class NotificationHandler {
             eventData.getLocalAuthorityCode());
 
         sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, email, localAuthorityNotificationParameters,
-            eventData.getCaseReference());
+            eventData.getReference());
     }
 
     private void sendCMOCaseLinkNotificationToRepresentatives(final EventData eventData) {
@@ -201,7 +191,7 @@ public class NotificationHandler {
                         eventData.getCaseDetails(), representative.getFullName());
 
                 sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, representative.getEmail(),
-                    representativeNotificationParameters, eventData.getCaseReference());
+                    representativeNotificationParameters, eventData.getReference());
             });
     }
 
@@ -220,7 +210,7 @@ public class NotificationHandler {
         String cafcassEmail = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getEmail();
 
         sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters,
-            eventData.getCaseReference());
+            eventData.getReference());
     }
 
     private void sendCMODocumentLinkNotificationsToRepresentatives(final EventData eventData,
@@ -237,7 +227,7 @@ public class NotificationHandler {
                         eventData.getCaseDetails(), representative.getFullName(), documentContents);
 
                 sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, representative.getEmail(),
-                    representativeNotificationParameters, eventData.getCaseReference());
+                    representativeNotificationParameters, eventData.getReference());
             });
     }
 
@@ -264,15 +254,15 @@ public class NotificationHandler {
     }
 
     @Getter
-    static class EventData {
-        private final CaseDetails caseDetails;
-        private final String localAuthorityCode;
-        private final String caseReference;
+    private static class EventData {
+        private CaseDetails caseDetails;
+        private String localAuthorityCode;
+        private String reference;
 
-        public EventData(CallbackEvent event) {
+        private EventData(CallbackEvent event) {
             this.caseDetails = event.getCallbackRequest().getCaseDetails();
-            this.localAuthorityCode = (String) caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
-            this.caseReference = Long.toString(caseDetails.getId());
+            this.localAuthorityCode = (String) this.caseDetails.getData().get(CASE_LOCAL_AUTHORITY_PROPERTY_NAME);
+            this.reference = Long.toString(this.caseDetails.getId());
         }
     }
 }

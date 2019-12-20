@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static java.util.Objects.isNull;
 import static java.util.UUID.randomUUID;
@@ -405,6 +406,15 @@ public class DirectionHelperService {
     }
 
     /**
+     * Adds any {@link DirectionAssignee} not present to a map with an empty list of directions.
+     *
+     * @param map assignee, directions key value pairs.
+     */
+    public void addEmptyDirectionsForAssigneeNotInMap(Map<DirectionAssignee, List<Element<Direction>>> map) {
+        stream(DirectionAssignee.values()).forEach(assignee -> map.putIfAbsent(assignee, new ArrayList<>()));
+    }
+
+    /**
      * Removes directions where custom is set to Yes.
      *
      * @param directions any list of directions.
@@ -496,6 +506,20 @@ public class DirectionHelperService {
                 .collect(toList());
         } else {
             return emptyList();
+        }
+    }
+
+    /**
+     * Returns a list of directions to comply with.
+     *
+     * @param caseData case data with standard directions and case management order directions.
+     * @return most recent directions that need to be complied with.
+     */
+    public List<Element<Direction>> getDirectionsToComplyWith(CaseData caseData) {
+        if (caseData.getServedCaseManagementOrders().isEmpty()) {
+            return caseData.getStandardDirectionOrder().getDirections();
+        } else {
+            return caseData.getServedCaseManagementOrders().get(0).getValue().getDirections();
         }
     }
 

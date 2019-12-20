@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -10,55 +9,52 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 
-import java.util.Map;
-
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class AbstractControllerTest {
+abstract class AbstractControllerTest {
 
     private String eventName;
 
-    protected final String userAuthToken = "Bearer token";
+    final String userAuthToken = "Bearer token";
 
     @Autowired
-    protected MockMvc mockMvc;
+    MockMvc mockMvc;
 
     @Autowired
-    protected ObjectMapper mapper;
+    ObjectMapper mapper;
 
-    public AbstractControllerTest(String eventName) {
+    AbstractControllerTest(String eventName) {
         this.eventName = eventName;
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(Map<String, Object> caseData,
-                                                                         int expectedStatus) {
-        return postEvent(String.format("/callback/%s/about-to-start", eventName), caseData, expectedStatus);
+    AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(CaseDetails caseDetails,
+                                                               int expectedStatus) {
+        return postEvent(String.format("/callback/%s/about-to-start", eventName), caseDetails, expectedStatus);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(Map<String, Object> caseData) {
-        return postAboutToStartEvent(caseData, SC_OK);
+    AboutToStartOrSubmitCallbackResponse postAboutToStartEvent(CaseDetails caseDetails) {
+        return postAboutToStartEvent(caseDetails, SC_OK);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postMidEvent(Map<String, Object> caseData, int expectedStatus) {
-        return postEvent(String.format("/callback/%s/mid-event", eventName), caseData, expectedStatus);
+    AboutToStartOrSubmitCallbackResponse postMidEvent(CaseDetails caseDetails, int expectedStatus) {
+        return postEvent(String.format("/callback/%s/mid-event", eventName), caseDetails, expectedStatus);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postMidEvent(Map<String, Object> data) {
-        return postMidEvent(data, SC_OK);
+    AboutToStartOrSubmitCallbackResponse postMidEvent(CaseDetails caseDetails) {
+        return postMidEvent(caseDetails, SC_OK);
     }
 
-    protected AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(Long id, Map<String, Object> caseData,
-                                                                          int expectedStatus) {
-        return postEvent(String.format("/callback/%s/about-to-submit", eventName), id, caseData, expectedStatus);
+    AboutToStartOrSubmitCallbackResponse postAboutToSubmitEvent(CaseDetails caseDetails,
+                                                                int expectedStatus) {
+        return postEvent(String.format("/callback/%s/about-to-submit", eventName), caseDetails, expectedStatus);
     }
 
-    private AboutToStartOrSubmitCallbackResponse postEvent(String path, Long id, Map<String, Object> caseData,
-                                                           int expectedStatus) {
+    private AboutToStartOrSubmitCallbackResponse postEvent(String path, CaseDetails caseDetails, int expectedStatus) {
         try {
             CallbackRequest request = CallbackRequest.builder()
-                .caseDetails(CaseDetails.builder().id(id).data(caseData).build()).build();
+                .caseDetails(caseDetails).build();
 
             MvcResult response = mockMvc
                 .perform(post(path)
@@ -74,10 +70,4 @@ public class AbstractControllerTest {
             throw new RuntimeException(e);
         }
     }
-
-    private AboutToStartOrSubmitCallbackResponse postEvent(String path, Map<String, Object> data,
-                                                           int expectedHttpStats) {
-        return postEvent(path, RandomUtils.nextLong(), data, expectedHttpStats);
-    }
-
 }

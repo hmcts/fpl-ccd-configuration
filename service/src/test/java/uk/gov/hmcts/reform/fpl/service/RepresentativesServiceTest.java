@@ -191,7 +191,7 @@ class RepresentativesServiceTest {
     }
 
     @Test
-    public void shouldReturnRepresentativesIfPresent() {
+    void shouldReturnRepresentativesIfPresent() {
         Representative representative = Representative.builder()
             .fullName("John Smith")
             .positionInACase("Solicitor")
@@ -208,7 +208,7 @@ class RepresentativesServiceTest {
     }
 
     @Test
-    public void shouldReturnEmptyRepresentativeIfNoRepresentativePresents() {
+    void shouldReturnEmptyRepresentativeIfNoRepresentativePresents() {
         CaseData caseData = CaseData.builder().build();
 
         List<Element<Representative>> expectedRepresentatives = wrapElements(Representative.builder().build());
@@ -218,7 +218,7 @@ class RepresentativesServiceTest {
     }
 
     @Test
-    public void shouldAddUserToCase() {
+    void shouldAddUserToCase() {
         final Long caseId = RandomUtils.nextLong();
 
         String representative1UserId = RandomStringUtils.randomAlphabetic(10);
@@ -262,8 +262,6 @@ class RepresentativesServiceTest {
             .others(Others.builder().firstOther(other).build())
             .build();
 
-        when(caseDataExtractionService.getOthers(caseData))
-            .thenReturn(asList(other));
         when(organisationService.findUserByEmail(authentication, representative1.getEmail()))
             .thenReturn(ofNullable(representative1UserId));
         when(organisationService.findUserByEmail(authentication, representative2.getEmail()))
@@ -282,7 +280,7 @@ class RepresentativesServiceTest {
     }
 
     @Test
-    public void shouldLinkRepresentativeWithRepresentable() {
+    void shouldLinkRepresentativeWithRepresentable() {
         Long caseId = RandomUtils.nextLong();
 
         Other otherPerson1 = Other.builder().build();
@@ -311,8 +309,6 @@ class RepresentativesServiceTest {
                 .build())
             .respondents1(wrapElements(respondent1, respondent2))
             .build();
-
-        when(caseDataExtractionService.getOthers(caseData)).thenReturn(asList(otherPerson1, otherPerson2));
 
         representativesService.addRepresentatives(caseData, caseId, authentication);
 

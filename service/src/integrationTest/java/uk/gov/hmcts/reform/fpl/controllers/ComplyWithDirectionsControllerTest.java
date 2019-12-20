@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.Order;
@@ -68,27 +69,33 @@ class ComplyWithDirectionsControllerTest {
         assertThat(collectionsContainDirectionsForRoleAndAllParties(caseData));
     }
 
+    @Test
+    void aboutToStartCallbackShouldReturnAllPartiesDirectionsWhenNoSpecificRoleDirections() throws Exception {
+        Direction direction = Direction.builder().assignee(ALL_PARTIES).build();
+        Order sdo = Order.builder().directions(buildDirections(direction)).build();
+
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(ImmutableMap.of("standardDirectionOrder", sdo))
+                .build())
+            .build();
+
+        CaseData caseData = makeRequest(request, "about-to-start");
+
+        assertThat(caseData.getAllParties()).isNull();
+        assertThat(caseData.getLocalAuthorityDirections()).containsAll(sdo.getDirections());
+        assertThat(caseData.getCafcassDirections()).containsAll(sdo.getDirections());
+        assertThat(caseData.getRespondentDirections()).containsAll(sdo.getDirections());
+        assertThat(caseData.getOtherPartiesDirections()).containsAll(sdo.getDirections());
+        assertThat(caseData.getCourtDirectionsCustom()).containsAll(sdo.getDirections());
+    }
+
     @SuppressWarnings("unchecked")
     @Test
-    void aboutToSubmitCallbackShouldAddResponseToResponses() throws Exception {
+    void aboutToSubmitShouldAddResponseToStandardDirectionOrderWhenEmptyServedCaseManagementOrders() throws Exception {
         UUID uuid = randomUUID();
-
-        List<Element<Direction>> directions = ImmutableList.of(Element.<Direction>builder()
-            .id(uuid)
-            .value(Direction.builder()
-                .response(DirectionResponse.builder()
-                    .complied("Yes")
-                    .build())
-                .build())
-            .build());
-
-        Order sdo = Order.builder().directions(ImmutableList.of(Element.<Direction>builder()
-            .id(uuid)
-            .value(Direction.builder()
-                .directionType("example direction")
-                .build())
-            .build()))
-            .build();
+        List<Element<Direction>> directions = directions(uuid);
+        Order sdo = order(uuid);
 
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -101,6 +108,60 @@ class ComplyWithDirectionsControllerTest {
         CaseData caseData = makeRequest(request, "about-to-submit");
 
         assertThat(caseData.getStandardDirectionOrder().getDirections().get(0).getValue().getResponses()).isNotEmpty();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void aboutToSubmitShouldAddResponseToCaseManagementOrderWhenPopulatedServedCaseManagementOrders() throws Exception {
+        UUID uuid = randomUUID();
+        List<Element<Direction>> directions = directions(uuid);
+        Order sdo = order(uuid);
+
+        CallbackRequest request = CallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .data(createCaseDataMap(directions)
+                    .put("standardDirectionOrder", sdo)
+                    .put("servedCaseManagementOrders", caseManagementOrders(uuid))
+                    .build())
+                .build())
+            .build();
+
+        CaseData caseData = makeRequest(request, "about-to-submit");
+
+        assertThat(getResponses(caseData.getServedCaseManagementOrders().get(0).getValue())).isNotEmpty();
+    }
+
+    private List<Element<DirectionResponse>> getResponses(CaseManagementOrder order) {
+        return order.getDirections().get(0).getValue().getResponses();
+    }
+
+    private List<Element<CaseManagementOrder>> caseManagementOrders(UUID uuid) {
+        return ImmutableList.of(Element.<CaseManagementOrder>builder()
+            .value(CaseManagementOrder.builder()
+                .directions(directions(uuid))
+                .build())
+            .build());
+    }
+
+    private Order order(UUID uuid) {
+        return Order.builder().directions(ImmutableList.of(Element.<Direction>builder()
+                .id(uuid)
+                .value(Direction.builder()
+                    .directionType("example direction")
+                    .build())
+                .build()))
+                .build();
+    }
+
+    private List<Element<Direction>> directions(UUID uuid) {
+        return ImmutableList.of(Element.<Direction>builder()
+                .id(uuid)
+                .value(Direction.builder()
+                    .response(DirectionResponse.builder()
+                        .complied("Yes")
+                        .build())
+                    .build())
+                .build());
     }
 
     private List<Direction> directionsForAllRoles() {

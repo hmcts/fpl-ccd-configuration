@@ -5,9 +5,10 @@ set -eu
 dir=$(dirname ${0})
 root_dir=$(realpath ${dir}/../../..)
 
-mock_user_by_email_template=${root_dir}/docker/wiremock/templates/userByEmail.json
+mappings_template_dir=${root_dir}/docker/wiremock/templates
+user_template_file=${mappings_template_dir}/userTemplate.json
+mock_user_by_email_template=${mappings_template_dir}/userByEmail.json
 mock_user_by_email_dir=${root_dir}/docker/wiremock/mappings/user-by-email
-user_template_file=${root_dir}/docker/wiremock/templates/userTemplate.json
 mock_file=${root_dir}/docker/wiremock/__files/mockResponse.json
 mock_tmp_file=${root_dir}/docker/wiremock/__files/mockResponse.tmp.json
 users_file=${root_dir}/bin/configurer/users.json

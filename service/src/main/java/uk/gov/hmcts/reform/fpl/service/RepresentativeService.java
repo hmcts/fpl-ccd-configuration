@@ -1,14 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Representative;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 
@@ -33,16 +32,11 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RepresentativeService {
 
-    @Autowired
-    private OrganisationService organisationService;
-
-    @Autowired
-    private CaseService caseService;
-
-    @Autowired
-    private CaseDataExtractionService caseDataExtractionService;
+    private final OrganisationService organisationService;
+    private final CaseService caseService;
 
     public List<Element<Representative>> getDefaultRepresentatives(CaseData caseData) {
         if (ObjectUtils.isEmpty(caseData.getRepresentatives())) {
@@ -202,27 +196,16 @@ public class RepresentativeService {
             .ifPresent(representable -> representable.addRepresentative(representative.getId()));
     }
 
-    private Optional<Representable> findRepresentable(CaseData caseData, Representative representative) {
+    private Optional<? extends Representable> findRepresentable(CaseData caseData, Representative representative) {
         switch (representative.getRole().getType()) {
             case RESPONDENT:
-                return findRespondent(caseData, representative.getRole().getSequenceNo());
+                return caseData.findRespondent(representative.getRole().getSequenceNo());
             case OTHER:
-                return findOther(caseData, representative.getRole().getSequenceNo());
+                return caseData.findOther(representative.getRole().getSequenceNo());
             default:
                 return Optional.empty();
         }
     }
 
-    private Optional<Representable> findRespondent(CaseData caseData, int sequenceNo) {
-        List<Respondent> respondents = unwrapElements(caseData.getRespondents1());
-
-        return respondents.size() <= sequenceNo ? Optional.empty() : Optional.of(respondents.get(sequenceNo));
-    }
-
-    private Optional<Representable> findOther(CaseData caseData, int sequenceNo) {
-        List<Other> others = caseDataExtractionService.getOthers(caseData);
-
-        return others.size() <= sequenceNo ? Optional.empty() : Optional.of(others.get(sequenceNo));
-    }
 
 }

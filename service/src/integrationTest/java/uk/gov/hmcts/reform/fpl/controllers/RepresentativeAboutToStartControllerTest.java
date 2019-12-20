@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.RepresentativeRole;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Representative;
@@ -23,10 +25,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.wrapElements;
 @ActiveProfiles("integration-test")
 @WebMvcTest(RepresentativesController.class)
 @OverrideAutoConfiguration(enabled = true)
-@SuppressWarnings("unchecked")
 class RepresentativeAboutToStartControllerTest extends AbstractControllerTest {
 
-    public RepresentativeAboutToStartControllerTest() {
+    RepresentativeAboutToStartControllerTest() {
         super("manage-representatives");
     }
 
@@ -41,13 +42,15 @@ class RepresentativeAboutToStartControllerTest extends AbstractControllerTest {
 
         List<Element<Representative>> representatives = wrapElements(representative);
 
-        Map<String, Object> incomingCaseDate = Map.of(
-            "representatives", representatives,
-            "respondents1", createRespondents(),
-            "others", createOthers()
-        );
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(RandomUtils.nextLong())
+            .data(Map.of(
+                "representatives", representatives,
+                "respondents1", createRespondents(),
+                "others", createOthers()))
+            .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(incomingCaseDate);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
         CaseData outgoingCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
@@ -62,9 +65,9 @@ class RepresentativeAboutToStartControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldPrePopulateRepresentatives() {
-        Map<String, Object> incomingCaseData = emptyMap();
+        CaseDetails caseDetails = CaseDetails.builder().id(RandomUtils.nextLong()).data(emptyMap()).build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(incomingCaseData);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
         CaseData outgoingCaseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 

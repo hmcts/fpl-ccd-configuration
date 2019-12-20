@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
-public class CaseServiceTest {
+class CaseServiceTest {
 
     private static final String AUTH_TOKEN = "Bearer user token";
     private static final String SERVICE_TOKEN = "Bearer service token";
@@ -32,7 +32,7 @@ public class CaseServiceTest {
     private CaseService caseService;
 
     @Test
-    public void shouldAddUserToCase() {
+    void shouldAddUserToCase() {
         String caseId = RandomStringUtils.randomAlphabetic(10);
         String userId = RandomStringUtils.randomAlphabetic(10);
         Set<CaseRole> caseRoles = Set.of(CaseRole.SOLICITOR);

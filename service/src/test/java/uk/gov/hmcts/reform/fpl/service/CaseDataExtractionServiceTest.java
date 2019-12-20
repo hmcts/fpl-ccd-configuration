@@ -15,10 +15,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.Order;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -35,7 +32,6 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
-import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.HEARING_EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRespondents;
@@ -91,10 +87,10 @@ class CaseDataExtractionServiceTest {
             .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
         assertThat(templateData.get("complianceDeadline")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("children")).isEqualTo(ImmutableList.of());
-        assertThat(templateData.get("hearingDate")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("hearingVenue")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("hearingTime")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("hearingJudgeTitleAndName")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
         assertThat(templateData.get("allParties")).isNull();
@@ -159,10 +155,10 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("complianceDeadline")).isEqualTo(dateFormatterService
             .formatLocalDateToString(TODAYS_DATE.plusWeeks(26), FormatStyle.LONG));
         assertThat(templateData.get("children")).isEqualTo(getExpectedChildren());
-        assertThat(templateData.get("hearingDate")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("hearingVenue")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("hearingTime")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("hearingJudgeTitleAndName")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
         assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirections());
@@ -204,45 +200,6 @@ class CaseDataExtractionServiceTest {
         assertThat(templateData.get("respondents")).isEqualTo(getExpectedRespondents());
         assertThat(templateData.get("allParties")).isEqualTo(getExpectedDirections());
         assertThat(templateData.get("draftbackground")).isNull();
-    }
-
-    @Test
-    public void shouldGetEmptyListOfOthersWhenOthersIsNull() {
-        CaseData caseData = CaseData.builder().build();
-        assertThat(caseDataExtractionService.getOthers(caseData)).isEmpty();
-    }
-
-    @Test
-    public void shouldGetEmptyListOfOthersWhenOthersAreEmpty() {
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder().build())
-            .build();
-        assertThat(caseDataExtractionService.getOthers(caseData)).isEmpty();
-    }
-
-    @Test
-    public void shouldGetFirstOtherWhenNoAdditionalOthers() {
-        Other other1 = Other.builder().build();
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(other1)
-                .build())
-            .build();
-        assertThat(caseDataExtractionService.getOthers(caseData)).containsExactly(other1);
-    }
-
-    @Test
-    public void shouldGetAllOthers() {
-        Other other1 = Other.builder().build();
-        Other other2 = Other.builder().build();
-        CaseData caseData = CaseData.builder()
-            .others(Others.builder()
-                .firstOther(other1)
-                .additionalOthers(ElementUtils.wrapElements(other2))
-                .build())
-            .build();
-
-        assertThat(caseDataExtractionService.getOthers(caseData)).containsExactly(other1, other2);
     }
 
     private List<Map<String, String>> getExpectedChildren() {

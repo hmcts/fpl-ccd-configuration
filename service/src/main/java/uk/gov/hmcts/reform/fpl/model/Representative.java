@@ -13,17 +13,17 @@ public class Representative {
 
     private String idamId;
 
-    private String fullName;
+    private final String fullName;
 
-    private String positionInACase;
+    private final String positionInACase;
 
-    private String email;
+    private final String email;
 
-    private String telephoneNumber;
+    private final String telephoneNumber;
 
-    private Address address;
+    private final Address address;
 
-    private RepresentativeServingPreferences servingPreferences;
+    private final RepresentativeServingPreferences servingPreferences;
 
-    private RepresentativeRole role;
+    private final RepresentativeRole role;
 }

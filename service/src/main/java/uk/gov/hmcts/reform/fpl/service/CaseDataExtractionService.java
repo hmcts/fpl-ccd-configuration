@@ -18,8 +18,6 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.HearingVenue;
-import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
@@ -31,14 +29,11 @@ import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -47,7 +42,6 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
 import static uk.gov.hmcts.reform.fpl.enums.OrderStatus.SEALED;
 import static uk.gov.hmcts.reform.fpl.service.DocmosisTemplateDataGeneration.generateDraftWatermarkEncodedString;
-import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 // Supports SDO case data. Tech debt ticket needed to refactor caseDataExtractionService and NoticeOfProceedingsService
 @Service
@@ -55,7 +49,6 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 public class CaseDataExtractionService {
 
     public static final String EMPTY_PLACEHOLDER = "BLANK - please complete";
-    public static final String HEARING_EMPTY_PLACEHOLDER = "This will appear on the issued CMO";
     private final DateFormatterService dateFormatterService;
     private final HearingBookingService hearingBookingService;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -107,10 +100,10 @@ public class CaseDataExtractionService {
     private Map<String, Object> getHearingBookingData(CaseData caseData) {
         if (caseData.getHearingDetails() == null || caseData.getHearingDetails().isEmpty()) {
             return ImmutableMap.<String, Object>builder()
-                .put("hearingDate", HEARING_EMPTY_PLACEHOLDER)
-                .put("hearingVenue", HEARING_EMPTY_PLACEHOLDER)
-                .put("preHearingAttendance", HEARING_EMPTY_PLACEHOLDER)
-                .put("hearingTime", HEARING_EMPTY_PLACEHOLDER)
+                .put("hearingDate", EMPTY_PLACEHOLDER)
+                .put("hearingVenue", EMPTY_PLACEHOLDER)
+                .put("preHearingAttendance", EMPTY_PLACEHOLDER)
+                .put("hearingTime", EMPTY_PLACEHOLDER)
                 .put("hearingJudgeTitleAndName", EMPTY_PLACEHOLDER)
                 .put("hearingLegalAdvisorName", "")
                 .build();
@@ -240,15 +233,5 @@ public class CaseDataExtractionService {
             (direction.getDateToBeCompletedBy() != null ? dateFormatterService
                 .formatLocalDateTimeBaseUsingFormat(direction.getDateToBeCompletedBy(),
                     dateFormattingConfig.getPattern()) : "unknown"));
-    }
-
-    public List<Other> getOthers(CaseData caseData) {
-        final List<Other> othersList = new ArrayList<>();
-
-        ofNullable(caseData.getOthers()).map(Others::getFirstOther).ifPresent(othersList::add);
-        ofNullable(caseData.getOthers()).map(Others::getAdditionalOthers)
-            .ifPresent(additionalOthers -> othersList.addAll(unwrapElements(additionalOthers)));
-
-        return Collections.unmodifiableList(othersList);
     }
 }
