@@ -142,17 +142,6 @@ class ActionCaseManagementOrderControllerTest {
     }
 
     @Test
-    void aboutToStartShouldNotProgressOrderWhenOrderIsNull() throws Exception {
-        Map<String, Object> data = new HashMap<>();
-        data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), null);
-        CallbackRequest request = buildCallbackRequest(data);
-        AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-start");
-        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
-
-        assertThat(caseData.getCaseManagementOrder()).isEqualTo(null);
-    }
-
-    @Test
     void midEventShouldAddDocumentReferenceToOrderAction() throws Exception {
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
             buildCallbackRequest(ImmutableMap.of()), "mid-event");
@@ -204,17 +193,6 @@ class ActionCaseManagementOrderControllerTest {
     @Test
     void aboutToSubmitShouldRemoveOrderWhenOrderActionIsNotJudgeReview() throws Exception {
         CallbackRequest request = createRequestWithEmptyCMO();
-        AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-submit");
-        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
-
-        assertThat(caseData.getCaseManagementOrder()).isEqualTo(null);
-    }
-
-    @Test
-    void aboutToSubmitShouldNotProgressOrderWhenOrderIsNull() throws Exception {
-        Map<String, Object> data = new HashMap<>();
-        data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), null);
-        CallbackRequest request = buildCallbackRequest(data);
         AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-submit");
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
