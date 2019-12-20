@@ -24,6 +24,18 @@ fpl:
 
 spring:
   profiles: integration-test
+  mail:
+    properties:
+      host: 127.0.0.1
+      port: 1025
+      test-connection:
+      mail:
+        smtp:
+          ssl:
+            trust:
+          starttls:
+            enable:
+
 
 management:
   endpoints:
@@ -83,6 +95,11 @@ fpl:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
 
+robotics:
+  notification:
+    sender: sender@example.com
+    recipient: recipient@example.com
+
 ---
 
 spring:
@@ -94,6 +111,17 @@ spring:
         jwt:
           issuer-uri: http://fr-am:8080/openam/oauth2/hmcts
           jwk-set-uri: http://localhost:5000/o/jwks
+  mail:
+    properties:
+      host: 127.0.0.1
+      port: 1025
+      test-connection:
+      mail:
+        smtp:
+          ssl:
+            trust:
+          starttls:
+            enable:
 
 idam:
   api:
@@ -151,3 +179,8 @@ fpl:
   system_update:
     username: 'fpl-system-update@mailnesia.com'
     password: 'Password12'
+
+robotics:
+  notification:
+    sender: sender@example.com
+    recipient: recipient@example.com
