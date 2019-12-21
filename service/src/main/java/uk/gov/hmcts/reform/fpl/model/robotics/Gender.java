@@ -5,7 +5,9 @@ import lombok.Getter;
 @Getter
 public enum Gender {
     BOY("MALE"),
-    GIRL("FEMALE");
+    GIRL("FEMALE"),
+    MALE("MALE"),
+    FEMALE("FEMALE");
 
     private final String value;
 
@@ -15,10 +17,10 @@ public enum Gender {
 
     public static String convertStringToGender(final String stringValue) {
         for (Gender gender : values()) {
-            if (gender.getValue().equalsIgnoreCase(stringValue)) {
+            if (gender.getValue().equalsIgnoreCase(stringValue) || gender.name().equalsIgnoreCase(stringValue)) {
                 return gender.getValue();
             }
         }
-        return "";
+        return null;
     }
 }
