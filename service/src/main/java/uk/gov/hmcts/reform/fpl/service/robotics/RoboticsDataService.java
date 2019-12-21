@@ -28,14 +28,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static com.fasterxml.jackson.databind.PropertyNamingStrategy.LOWER_CAMEL_CASE;
-import static java.time.format.FormatStyle.MEDIUM;
 import static java.util.Set.of;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
@@ -64,9 +62,9 @@ public class RoboticsDataService {
             .harmAlleged(isNotEmpty(caseData.getRisks()))
             .internationalElement(isNotEmpty(caseData.getInternationalElement()))
             .allocation(isNotEmpty(caseData.getAllocationProposal())
-                ? defaultString(caseData.getAllocationProposal().getProposal()) :  "")
+                ? caseData.getAllocationProposal().getProposal() :  null)
             .issueDate(isNotEmpty(caseData.getDateSubmitted())
-                ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted(), MEDIUM) : "")
+                ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted(), "dd-MM-yyyy") : "")
             .applicant(populateApplicant(caseData.getAllApplicants()))
             .owningCourt(toInt(hmctsCourtLookupConfiguration.getCourt(caseData.getCaseLocalAuthority()).getCourtCode()))
             .build();
@@ -74,8 +72,7 @@ public class RoboticsDataService {
 
     public String convertRoboticsDataToJson(final RoboticsData roboticsData) {
         try {
-            return objectMapper.setPropertyNamingStrategy(LOWER_CAMEL_CASE)
-                .writerWithDefaultPrettyPrinter()
+            return objectMapper.writerWithDefaultPrettyPrinter()
                 .writeValueAsString(roboticsData);
         } catch (JsonProcessingException e) {
             log.error("Unable to convert robotics data to json", e);
@@ -88,13 +85,13 @@ public class RoboticsDataService {
         if (isNotEmpty(allApplicants)) {
             uk.gov.hmcts.reform.fpl.model.ApplicantParty applicantParty = allApplicants.get(0).getValue().getParty();
             return applicantBuilder
-                .name(applicantParty.getFullName())
-                .contactName(getApplicantContactName(applicantParty.getMobileNumber()))
+                .name(isBlank(applicantParty.getFullName()) ? null : applicantParty.getFullName())
+                .contactName(getApplicantContactName(applicantParty.getTelephoneNumber()))
                 .jobTitle(applicantParty.getJobTitle())
                 .address(convertAddress(applicantParty.getAddress()))
                 .mobileNumber(getApplicantPartyNumber(applicantParty.getMobileNumber()))
                 .telephoneNumber(getApplicantPartyNumber(applicantParty.getTelephoneNumber()))
-                .email(isNotEmpty(applicantParty.getEmail()) ? defaultString(applicantParty.getEmail().getEmail()) : "")
+                .email(isNotEmpty(applicantParty.getEmail()) ? applicantParty.getEmail().getEmail() : null)
                 .build();
         }
 
@@ -113,23 +110,23 @@ public class RoboticsDataService {
     }
 
     private String getApplicantPartyNumber(final Telephone telephone) {
-        return isNotEmpty(telephone) ? defaultString(telephone.getTelephoneNumber()) : "";
+        return isNotEmpty(telephone) ? telephone.getTelephoneNumber() : null;
     }
 
     private String getApplicantContactName(final Telephone mobileNumber) {
         if (isEmpty(mobileNumber)) {
-            return "";
+            return null;
         }
 
-        return defaultString(mobileNumber.getContactDirection());
+        return mobileNumber.getContactDirection();
     }
 
     private Solicitor populateSolicitor(final uk.gov.hmcts.reform.fpl.model.Solicitor solicitor) {
         if (isNotEmpty(solicitor) && isNotBlank(solicitor.getName())) {
             final String[] fullNameSplit = solicitor.getName().trim().split("\\s+");
             return Solicitor.builder()
-                .firstName(defaultString(fullNameSplit[0]))
-                .lastName(defaultString(fullNameSplit[1]))
+                .firstName(fullNameSplit[0])
+                .lastName(fullNameSplit[1])
                 .build();
         }
 
@@ -155,7 +152,7 @@ public class RoboticsDataService {
         return Respondent.builder()
             .firstName(respondentParty.getFirstName())
             .lastName(respondentParty.getLastName())
-            .gender(respondentParty.getGender().toUpperCase())
+            .gender(convertStringToGender(respondentParty.getGender()))
             .address(convertAddress(respondentParty.getAddress()))
             .relationshipToChild(respondentParty.getRelationshipToChild())
             .dob(formatDob(respondentParty.getDateOfBirth()))
@@ -182,7 +179,7 @@ public class RoboticsDataService {
         return Child.builder()
             .firstName(childParty.getFirstName())
             .lastName(childParty.getLastName())
-            .gender(isNotEmpty(childParty.getGender()) ? convertStringToGender(childParty.getGender()) : "")
+            .gender(convertStringToGender(childParty.getGender()))
             .dob(formatDob(childParty.getDateOfBirth()))
             // TODO: 19/12/2019 verify if this should always be true ???
             .isParty(true)
