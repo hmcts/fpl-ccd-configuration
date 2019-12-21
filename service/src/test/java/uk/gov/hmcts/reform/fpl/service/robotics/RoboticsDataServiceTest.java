@@ -11,7 +11,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
-import uk.gov.hmcts.reform.fpl.model.robotics.*;
+import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
+import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 
 import java.io.IOException;
@@ -31,7 +32,8 @@ import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestData.ex
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {RoboticsDataService.class, JacksonAutoConfiguration.class, LookupTestConfig.class})
+@ContextConfiguration(classes = {RoboticsDataService.class, JacksonAutoConfiguration.class, LookupTestConfig.class,
+    DateFormatterService.class})
 public class RoboticsDataServiceTest {
     private static LocalDate NOW = LocalDate.now();
 
@@ -58,8 +60,8 @@ public class RoboticsDataServiceTest {
         RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
         assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
-            "Care order,Education supervision order,Emergency protection order," +
-            "Other order under part 4 of the Children Act 1989");
+            "Care order,Education supervision order,Emergency protection order,"
+                + "Other order under part 4 of the Children Act 1989");
     }
 
     @Test

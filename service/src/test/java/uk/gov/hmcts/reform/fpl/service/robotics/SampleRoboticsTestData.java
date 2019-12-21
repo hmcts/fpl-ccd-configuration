@@ -1,7 +1,12 @@
 package uk.gov.hmcts.reform.fpl.service.robotics;
 
 import com.google.common.collect.ImmutableSet;
-import uk.gov.hmcts.reform.fpl.model.robotics.*;
+import uk.gov.hmcts.reform.fpl.model.robotics.Address;
+import uk.gov.hmcts.reform.fpl.model.robotics.Applicant;
+import uk.gov.hmcts.reform.fpl.model.robotics.Child;
+import uk.gov.hmcts.reform.fpl.model.robotics.Respondent;
+import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
+import uk.gov.hmcts.reform.fpl.model.robotics.Solicitor;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
 import java.time.LocalDate;
@@ -10,6 +15,9 @@ import java.util.Set;
 public class SampleRoboticsTestData {
     private static DateFormatterService dateFormatterService = new DateFormatterService();
     private static LocalDate NOW = LocalDate.now();
+
+    private SampleRoboticsTestData() {
+    }
 
     public static RoboticsData expectedRoboticsData(final String applicationType) {
         return RoboticsData.builder()
