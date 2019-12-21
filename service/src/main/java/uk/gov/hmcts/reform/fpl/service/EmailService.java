@@ -29,6 +29,7 @@ public class EmailService {
             mimeMessageHelper.setTo(emailData.getTo());
             mimeMessageHelper.setFrom(from);
             mimeMessageHelper.setSubject(emailData.getSubject());
+            mimeMessageHelper.setText(emailData.getMessage());
 
             if (emailData.hasAttachments()) {
                 // preferring for loop here so we don't have to catch exceptions twice

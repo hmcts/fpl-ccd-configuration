@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -48,6 +49,9 @@ public class RoboticsNotificationServiceTest {
     @Mock
     private RoboticsDataService roboticsDataService;
 
+    @Captor
+    private ArgumentCaptor<EmailData> emailDataArgumentCaptor;
+
     private RoboticsNotificationService roboticsNotificationService;
     private String expectedRoboticsDataJson;
 
@@ -74,8 +78,6 @@ public class RoboticsNotificationServiceTest {
     @Test
     void notifyRoboticsOfSubmittedCaseDataShouldSendNotificationToRobotics() throws IOException {
         roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseSubmittedEvent(prepareCaseData()));
-
-        ArgumentCaptor<EmailData> emailDataArgumentCaptor = ArgumentCaptor.forClass(EmailData.class);
 
         verify(emailService).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
 

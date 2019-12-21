@@ -38,6 +38,7 @@ public class RoboticsNotificationService {
         final String roboticsJsonData = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
         return EmailData.builder()
+            .message("")
             .subject(fileName)
             .to(roboticsEmailConfiguration.getRecipient())
             .attachments(of(json(roboticsJsonData.getBytes(), fileNameAndExtension)))
