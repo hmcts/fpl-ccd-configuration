@@ -124,13 +124,15 @@ public class RoboticsDataService {
     private Solicitor populateSolicitor(final uk.gov.hmcts.reform.fpl.model.Solicitor solicitor) {
         if (isNotEmpty(solicitor) && isNotBlank(solicitor.getName())) {
             final String[] fullNameSplit = solicitor.getName().trim().split("\\s+");
-            return Solicitor.builder()
-                .firstName(fullNameSplit[0])
-                .lastName(fullNameSplit[1])
-                .build();
+            if (fullNameSplit.length > 1) {
+                return Solicitor.builder()
+                    .firstName(fullNameSplit[0])
+                    .lastName(fullNameSplit[1])
+                    .build();
+            }
         }
 
-        return Solicitor.builder().build();
+        return null;
     }
 
     private Set<Respondent> populateRespondents(final List<Element<uk.gov.hmcts.reform.fpl.model.Respondent>>
@@ -221,9 +223,10 @@ public class RoboticsDataService {
                             applicationType.set(OTHER.getLabel());
                     }
                 });
+
+                return applicationType.get();
             }
         }
-
-        return applicationType.get();
+        return null;
     }
 }

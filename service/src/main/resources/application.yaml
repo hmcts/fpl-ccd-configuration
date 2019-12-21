@@ -98,7 +98,7 @@ fpl:
 robotics:
   notification:
     sender: sender@example.com
-    recipient: recipient@example.com
+    recipient: FamilyPublicLaw+robotics-test@gmail.com
 
 ---
 
@@ -183,4 +183,4 @@ fpl:
 robotics:
   notification:
     sender: sender@example.com
-    recipient: recipient@example.com
+    recipient: FamilyPublicLaw+robotics@gmail.com

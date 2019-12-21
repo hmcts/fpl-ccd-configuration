@@ -11,7 +11,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.util.Map;
 import java.util.Properties;
 
-import static org.apache.commons.lang.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.StringUtils.defaultString;
 
 @Getter
 @Setter
@@ -34,9 +34,8 @@ public class EmailConfiguration {
 
         Properties properties = new Properties();
         properties.setProperty("mail.transport.protocol", "smtp");
-        properties.setProperty(mailSmtpStarttlsEnableKey,
-            (String) defaultIfNull(mail.get(mailSmtpStarttlsEnableKey), ""));
-        properties.put(mailSmtpSslTrustKey, defaultIfNull(mail.get(mailSmtpSslTrustKey), ""));
+        properties.setProperty(mailSmtpStarttlsEnableKey, defaultString(mail.get(mailSmtpStarttlsEnableKey), ""));
+        properties.setProperty(mailSmtpSslTrustKey, defaultString(mail.get(mailSmtpSslTrustKey), ""));
 
         javaMailSender.setJavaMailProperties(properties);
         return javaMailSender;
