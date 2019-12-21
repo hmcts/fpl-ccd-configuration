@@ -13,7 +13,6 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 public class EmailData {
     private final String to;
     private final String subject;
-    private final String message;
     private final Set<EmailAttachment> attachments;
 
     @JsonIgnore
