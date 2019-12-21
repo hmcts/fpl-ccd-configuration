@@ -14,19 +14,24 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(RespondentController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RespondentMidEventControllerTest {
+class RespondentControllerTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
@@ -37,6 +42,19 @@ class RespondentMidEventControllerTest {
 
     @Autowired
     private ObjectMapper mapper;
+
+    @Test
+    void shouldPrepopulateRespondent() throws Exception {
+        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
+            .data(ImmutableMap.<String, Object>builder()
+                .put("data", "some data")
+                .build()).build())
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request, "about-to-start");
+
+        assertThat(callbackResponse.getData()).containsKey("respondents1");
+    }
 
     @Test
     void shouldReturnDateOfBirthErrorsForRespondentWhenFutureDateOfBirth() throws Exception {
@@ -58,7 +76,7 @@ class RespondentMidEventControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request, "mid-event");
 
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
@@ -91,7 +109,7 @@ class RespondentMidEventControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request, "mid-event");
 
         assertThat(callbackResponse.getErrors()).containsExactly(ERROR_MESSAGE);
     }
@@ -116,14 +134,30 @@ class RespondentMidEventControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request, "mid-event");
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
-    private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request) throws Exception {
-        MvcResult response = mockMvc
-            .perform(post("/callback/enter-respondents/mid-event")
+    @Test
+    void shouldAddOnlyConfidentialRespondentsToCaseDataWhenConfidentialRespondentsExist() throws Exception {
+        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "about-to-submit");
+        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+        assertThat(caseData.getConfidentialRespondents()).hasSize(1);
+        assertThat(caseData.getConfidentialRespondents()).isEqualTo(buildExpectedConfidentialRespondents());
+    }
+
+    private List<Element<Respondent>> buildExpectedConfidentialRespondents() {
+        List<Element<Respondent>> confidentialRespondents = new ArrayList<>();
+        confidentialRespondents.add(Element.<Respondent>builder().build());
+
+        return confidentialRespondents;
+    }
+    private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request, String endpoint)
+        throws Exception {
+        MvcResult mvc = mockMvc
+            .perform(post("/callback/enter-respondents/" + endpoint)
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -131,7 +165,7 @@ class RespondentMidEventControllerTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        return mapper.readValue(response.getResponse()
+        return mapper.readValue(mvc.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 }
