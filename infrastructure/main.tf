@@ -100,6 +100,16 @@ data "azurerm_key_vault_secret" "system_update_user_password" {
   vault_uri = "${module.key-vault.key_vault_uri}"
 }
 
+data "azurerm_key_vault_secret" "robotics-notifications-recipient" {
+  name          = "robotics-notifications-recipient"
+  key_vault_id  = module.key-vault.key_vault_uri
+}
+
+data "azurerm_key_vault_secret" "robotics-notifications-sender" {
+  name          = "robotics-notifications-sender"
+  key_vault_id  = module.key-vault.key_vault_uri
+}
+
 module "key-vault" {
   source                  = "git@github.com:hmcts/cnp-module-key-vault?ref=master"
   name                    = "fpl-${var.env}"
@@ -152,9 +162,16 @@ module "case-service" {
     NOTIFY_API_KEY                                      = "${data.azurerm_key_vault_secret.notify_api_key.value}"
     FPL_SYSTEM_UPDATE_USERNAME                          = "${data.azurerm_key_vault_secret.system_update_user_username.value}"
     FPL_SYSTEM_UPDATE_PASSWORD                          = "${data.azurerm_key_vault_secret.system_update_user_password.value}"
+    ROBOTICS_NOTIFICATIONS_SENDER                       = "${data.azurerm_key_vault_secret.robotics-notifications-sender}"
+    ROBOTICS_NOTIFICATIONS_RECIPIENT                    = "${data.azurerm_key_vault_secret.robotics-notifications-recipient}"
     SPRING_SECURITY_ENABLED                             = "${var.security_enabled}"
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI = "${var.idam_token_issuer_uri}"
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI = "${var.idam_token_jwk_set_uri}"
+    SPRING_MAIL_HOST                                    = "${var.mail_host}"
+    SPRING_MAIL_PORT                                    = "${var.mail_port}"
+    SPRING_MAIL_TEST_CONNECTION                         = "${var.mail_test_connection}"
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE    = "${var.mail_properties_smtp_starttls_enable}"
+    SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST          = "${var.mail_host}"
     GATEWAY_URL                                         = "${var.gateway_url}"
 
     LOGBACK_REQUIRE_ALERT_LEVEL = false
