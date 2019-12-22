@@ -72,7 +72,8 @@ public class ChildController {
         }
 
         //Fixes expand collection 'bug' if user removes all children and submits (will not re-open collection)
-        if (childrenService.expandedCollectionNotEmpty(caseData.getChildren1())) {
+        //Also stops empty children (i.e user submit blank child form) being added to tab
+        if (childrenService.userInputtedChildExists(caseData.getChildren1())) {
             caseDetails.getData().put("children1", childrenService.modifyHiddenValues(caseData));
         } else {
             caseDetails.getData().remove("children1");

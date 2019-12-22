@@ -116,7 +116,7 @@ public class RespondentService {
         return confidentialRespondents;
     }
 
-    public boolean expandedCollectionNotEmpty(List<Element<Respondent>> respondents) {
+    public boolean userInputtedRespondentExists(List<Element<Respondent>> respondents) {
         return (isNotEmpty(respondents) && !respondents.get(0).getValue().getParty().equals(RespondentParty.builder()
             .address(Address.builder().build())
             .telephoneNumber(Telephone.builder().build())

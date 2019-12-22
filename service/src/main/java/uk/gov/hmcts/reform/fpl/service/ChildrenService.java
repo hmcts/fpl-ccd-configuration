@@ -97,7 +97,7 @@ public class ChildrenService {
         return confidentialChildren;
     }
 
-    public boolean expandedCollectionNotEmpty(List<Element<Child>> children) {
+    public boolean userInputtedChildExists(List<Element<Child>> children) {
         return (isNotEmpty(children) && !children.get(0).getValue().getParty().equals(ChildParty.builder()
             .socialWorkerTelephoneNumber(Telephone.builder().build())
             .build()));

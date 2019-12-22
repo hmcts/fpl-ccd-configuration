@@ -64,7 +64,8 @@ public class RespondentController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Respondent>> confidentialRespondents = respondentService.buildConfidentialRespondentsList(caseData);
+        List<Element<Respondent>> confidentialRespondents = respondentService.buildConfidentialRespondentsList(
+            caseData);
         if (confidentialRespondents.size() != 0) {
             caseDetails.getData().put("confidentialRespondents", confidentialRespondents);
         } else {
@@ -72,7 +73,8 @@ public class RespondentController {
         }
 
         //Fixes expand collection 'bug' if user removes all respondents and submits (will not re-open collection)
-        if (respondentService.expandedCollectionNotEmpty(caseData.getRespondents1())) {
+        //Also stops empty respondents from being added to tab
+        if (respondentService.userInputtedRespondentExists(caseData.getRespondents1())) {
             caseDetails.getData().put("respondents1", respondentService.modifyHiddenValues(caseData));
         } else {
             caseDetails.getData().remove("respondents1");

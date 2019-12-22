@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.List;
 import java.util.UUID;
@@ -226,25 +227,27 @@ class ChildrenServiceTest {
     }
 
     @Test
-    void shouldExpandCollectionWhenChildrenListEmpty() {
+    void shouldVerifyUserInputtedChildDoesNotExistWhenChildrenListEmpty() {
         CaseData caseData = CaseData.builder().build();
-        assertThat(service.expandedCollectionNotEmpty(caseData.getChildren1())).isTrue();
+        assertThat(service.userInputtedChildExists(caseData.getChildren1())).isFalse();
     }
 
     @Test
-    void shouldExpandCollectionWhenChildrenListContainsEmptyChild() {
+    void shouldVerifyUserInputtedChildDoesNotExistWhenChildrenListContainsEmptyChild() {
         CaseData caseData = CaseData.builder()
-            .children1(ImmutableList.of(Element.<Child>builder().
-                value(Child.builder()
+            .children1(ImmutableList.of(Element.<Child>builder()
+                .value(Child.builder()
+                    .party(ChildParty.builder()
+                        .socialWorkerTelephoneNumber(Telephone.builder().build()).build())
                     .build())
                 .build()))
             .build();
 
-        assertThat(service.expandedCollectionNotEmpty(caseData.getChildren1())).isTrue();
+        assertThat(service.userInputtedChildExists(caseData.getChildren1())).isFalse();
     }
 
     @Test
-    void shouldNotExpandCollectionWhenChildrenListContainsChild() {
+    void shouldVerifyUserInputtedChildDoesExistWhenChildrenListContainsChild() {
         CaseData caseData = CaseData.builder()
             .children1(ImmutableList.of(Element.<Child>builder()
                 .value(Child.builder()
@@ -254,7 +257,7 @@ class ChildrenServiceTest {
                     .build())
                 .build()))
             .build();
-        assertThat(service.expandedCollectionNotEmpty(caseData.getChildren1())).isTrue();
+        assertThat(service.userInputtedChildExists(caseData.getChildren1())).isTrue();
     }
 
     @Test

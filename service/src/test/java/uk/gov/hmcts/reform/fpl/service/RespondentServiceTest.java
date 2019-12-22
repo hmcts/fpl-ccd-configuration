@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.List;
 import java.util.UUID;
@@ -211,25 +212,28 @@ class RespondentServiceTest {
     }
 
     @Test
-    void shouldExpandCollectionWhenRespondentsListEmpty() {
+    void shouldVerifyUserInputtedRespondentDoesNotExistWhenRespondentsListEmpty() {
         CaseData caseData = CaseData.builder().build();
-        assertThat(service.expandedCollectionNotEmpty(caseData.getRespondents1())).isTrue();
+        assertThat(service.userInputtedRespondentExists(caseData.getRespondents1())).isFalse();
     }
 
     @Test
-    void shouldExpandCollectionWhenRespondentsListContainsEmptyRespondent() {
+    void shouldVerifyUserInputtedRespondentDoesNotExistWhenRespondentsListContainsEmptyRespondent() {
         CaseData caseData = CaseData.builder()
-            .respondents1(ImmutableList.of(Element.<Respondent>builder().
-                value(Respondent.builder()
+            .respondents1(ImmutableList.of(Element.<Respondent>builder()
+                .value(Respondent.builder()
+                    .party(RespondentParty.builder()
+                        .address(Address.builder().build())
+                        .telephoneNumber(Telephone.builder().build()).build())
                     .build())
                 .build()))
             .build();
 
-        assertThat(service.expandedCollectionNotEmpty(caseData.getRespondents1())).isTrue();
+        assertThat(service.userInputtedRespondentExists(caseData.getRespondents1())).isFalse();
     }
 
     @Test
-    void shouldNotExpandCollectionWhenRespondentsListContainsRespondent() {
+    void shouldVerifyUserInputtedRespondentExistsWhenRespondentsListContainsRespondent() {
         CaseData caseData = CaseData.builder()
             .respondents1(ImmutableList.of(Element.<Respondent>builder()
                 .value(Respondent.builder()
@@ -239,7 +243,7 @@ class RespondentServiceTest {
                     .build())
                 .build()))
             .build();
-        assertThat(service.expandedCollectionNotEmpty(caseData.getRespondents1())).isTrue();
+        assertThat(service.userInputtedRespondentExists(caseData.getRespondents1())).isTrue();
     }
 
     @Test
