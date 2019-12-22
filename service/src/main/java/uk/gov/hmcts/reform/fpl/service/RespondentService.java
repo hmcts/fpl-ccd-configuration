@@ -20,6 +20,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 @Service
 public class RespondentService {
 
+    @SuppressWarnings("squid:S2583")
     public List<Element<Respondent>> expandRespondentCollection(CaseData caseData) {
         List<Element<Respondent>> populatedRespondents = new ArrayList<>();
 
