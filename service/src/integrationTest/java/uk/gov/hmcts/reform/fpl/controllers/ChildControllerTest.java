@@ -130,6 +130,7 @@ public class ChildControllerTest {
         assertThat(caseData.getConfidentialChildren()).isEqualTo(buildExpectedConfidentialChildren());
     }
 
+    //TODO double check: maybe cleaner to create a smaller request in above test instead of using callback-request.json?
     private List<Element<Child>> buildExpectedConfidentialChildren() {
         List<Element<Child>> confidentialChildren = new ArrayList<>();
         confidentialChildren.add(Element.<Child>builder()

@@ -103,7 +103,7 @@ public class RespondentService {
     public List<Element<Respondent>> buildConfidentialRespondentsList(CaseData caseData) {
         List<Element<Respondent>> confidentialRespondents = new ArrayList<>();
 
-        //most likely there's a nicer way of doing this
+        //TODO double check this: is there a nicer way?
         for (Element<Respondent> respondent : caseData.getRespondents1()
         ) {
             if (respondent.getValue() != null

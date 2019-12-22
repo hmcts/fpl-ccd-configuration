@@ -84,7 +84,7 @@ public class ChildrenService {
     public List<Element<Child>> buildConfidentialChildrenList(CaseData caseData) {
         List<Element<Child>> confidentialChildren = new ArrayList<>();
 
-        //most likely there's a nicer way of doing this
+        //TODO double check this: is there a nicer way?
         for (Element<Child> child : caseData.getChildren1()
         ) {
             if (child.getValue() != null
