@@ -58,7 +58,6 @@ public class ChildController {
             .build();
     }
 
-    //TODO ChildControllerAboutToSubmitTest (or combine the 3 controller test files into one for bonus points...)
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
