@@ -64,7 +64,7 @@ public class ChildController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<Child>> confidentialChildren = childrenService.buildConfidentialChildrenList(caseData);
-        if (confidentialChildren.size() != 0) {
+        if (!confidentialChildren.isEmpty()) {
             caseDetails.getData().put("confidentialChildren", confidentialChildren);
         } else {
             caseDetails.getData().remove("confidentialChildren");

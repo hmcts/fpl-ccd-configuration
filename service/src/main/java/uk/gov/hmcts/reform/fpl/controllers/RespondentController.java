@@ -65,7 +65,7 @@ public class RespondentController {
 
         List<Element<Respondent>> confidentialRespondents = respondentService.buildConfidentialRespondentsList(
             caseData);
-        if (confidentialRespondents.size() != 0) {
+        if (!confidentialRespondents.isEmpty()) {
             caseDetails.getData().put("confidentialRespondents", confidentialRespondents);
         } else {
             caseDetails.getData().remove("confidentialRespondents");

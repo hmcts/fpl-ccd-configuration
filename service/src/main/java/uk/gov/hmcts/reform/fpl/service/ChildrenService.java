@@ -18,6 +18,7 @@ import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 @Service
 public class ChildrenService {
 
+    //TODO refactor to reduce complexity (code smell), or achieve in less complex way
     @SuppressWarnings("squid:S2583")
     public List<Element<Child>> expandChildrenCollection(CaseData caseData) {
         List<Element<Child>> populatedChildren = new ArrayList<>();
