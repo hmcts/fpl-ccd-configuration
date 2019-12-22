@@ -58,7 +58,7 @@ public class EmailServiceTest {
     }
 
     @Test
-    void shouldThrowsEmailFailedSendExceptionOnMailExceptionWhenSendEmail() {
+    void shouldThrowEmailFailedSendExceptionOnMailExceptionWhenSendEmail() {
         EmailData emailData = TestEmailData.getDefault();
         willThrow(mock(MailException.class)).given(javaMailSender).send(any(MimeMessage.class));
 
@@ -77,11 +77,18 @@ public class EmailServiceTest {
         assertThrows(IllegalArgumentException.class, () -> emailService.sendEmail(EMAIL_FROM, emailData));
     }
 
+    @Test
+    void shouldThrowInvalidArgumentExceptionOnSendEmailWithNullMessageText() {
+        EmailData emailData = TestEmailData.getWithNullMessageText();
+        assertThrows(IllegalArgumentException.class, () -> emailService.sendEmail(EMAIL_FROM, emailData));
+    }
+
     static class TestEmailData {
         static EmailData getDefault() {
             return EmailData.builder()
                 .to(EMAIL_TO)
                 .subject(EMAIL_SUBJECT)
+                .message("")
                 .attachments(of(json(EMAIL_ATTACHMENT_CONTENT, join(".", EMAIL_SUBJECT, "json"))))
                 .build();
         }
@@ -90,6 +97,7 @@ public class EmailServiceTest {
             return EmailData.builder()
                 .to(null)
                 .subject(EMAIL_SUBJECT)
+                .message("")
                 .attachments(of(json(EMAIL_ATTACHMENT_CONTENT, join(".", EMAIL_SUBJECT, "json"))))
                 .build();
         }
@@ -98,6 +106,16 @@ public class EmailServiceTest {
             return EmailData.builder()
                 .subject(null)
                 .to(EMAIL_TO)
+                .message("")
+                .attachments(of(json(EMAIL_ATTACHMENT_CONTENT, join(".", EMAIL_SUBJECT, "json"))))
+                .build();
+        }
+
+        static EmailData getWithNullMessageText() {
+            return EmailData.builder()
+                .subject(null)
+                .to(EMAIL_TO)
+                .message(null)
                 .attachments(of(json(EMAIL_ATTACHMENT_CONTENT, join(".", EMAIL_SUBJECT, "json"))))
                 .build();
         }
