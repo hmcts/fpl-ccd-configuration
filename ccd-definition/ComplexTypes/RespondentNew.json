@@ -15,5 +15,15 @@
     "FieldType": "RespondentParty",
     "ElementLabel": "Party",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "RespondentNew",
+    "ListElementCode": "representedBy",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Text",
+    "ElementLabel": "Represented by",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "representedBy=\"DO_NOT_SHOW\""
   }
 ]
