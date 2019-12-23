@@ -1,4 +1,4 @@
-const {I} = inject();
+const { I } = inject();
 const postcodeLookup = require('../../fragments/addressPostcodeLookup');
 
 module.exports = {
@@ -36,7 +36,6 @@ module.exports = {
         additionalNeedsNo: `#children1_${index}_party_additionalNeeds-No`,
         contactHiddenNo: `#children1_${index}_party_detailsHidden-No`,
         contactHiddenYes: `#children1_${index}_party_detailsHidden-Yes`,
-
         litigationIssues: {
           yes: `#children1_${index}_party_litigationIssues-YES`,
           no: `#children1_${index}_party_litigationIssues-NO`,

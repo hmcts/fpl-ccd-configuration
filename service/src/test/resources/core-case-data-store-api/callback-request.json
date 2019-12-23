@@ -269,7 +269,7 @@
               "litigationIssues": "YES",
               "litigationIssuesDetails": "respondent one test litigation reason",
               "relationshipToChild": "Uncle",
-              "contactDetailsHidden": "No",
+              "contactDetailsHidden": "Yes",
               "contactDetailsHiddenReason": "Hide from all",
               "address": {},
               "telephoneNumber": {

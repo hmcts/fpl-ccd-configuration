@@ -129,6 +129,11 @@ public class CaseData {
     }
 
     @JsonIgnore
+    public List<Element<Respondent>> getAllRespondents() {
+        return respondents1 != null ? respondents1 : new ArrayList<>();
+    }
+
+    @JsonIgnore
     public List<Element<Child>> getAllChildren() {
         return children1 != null ? children1 : new ArrayList<>();
     }

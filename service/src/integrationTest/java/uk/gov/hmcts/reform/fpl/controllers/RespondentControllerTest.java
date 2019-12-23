@@ -17,11 +17,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
-import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,7 +29,6 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequ
 @WebMvcTest(RespondentController.class)
 @OverrideAutoConfiguration(enabled = true)
 class RespondentControllerTest {
-
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
     private static final String ERROR_MESSAGE = "Date of birth cannot be in the future";
@@ -44,7 +40,7 @@ class RespondentControllerTest {
     private ObjectMapper mapper;
 
     @Test
-    void shouldPrepopulateRespondent() throws Exception {
+    void aboutToStartShouldPrepopulateRespondent() throws Exception {
         CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
             .data(ImmutableMap.<String, Object>builder()
                 .put("data", "some data")
@@ -140,21 +136,14 @@ class RespondentControllerTest {
     }
 
     @Test
-    void shouldAddOnlyConfidentialRespondentsToCaseDataWhenConfidentialRespondentsExist() throws Exception {
+    void aboutToSubmitShouldAddConfidentialRespondentsToCaseDataWhenConfidentialRespondentsExist() throws Exception {
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "about-to-submit");
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+        CaseData initialData = mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class);
 
-        //assertThat(caseData.getConfidentialRespondents()).hasSize(1);
-        //assertThat(caseData.getConfidentialRespondents()).isEqualTo(buildExpectedConfidentialRespondents());
-    }
-
-    private List<Element<Respondent>> buildExpectedConfidentialRespondents() {
-        List<Element<Respondent>> confidentialRespondents = new ArrayList<>();
-
-        //TODO complete this method + above test based on callback-request.json, or build smaller request in test
-        confidentialRespondents.add(Element.<Respondent>builder().build());
-
-        return confidentialRespondents;
+        assertThat(caseData.getConfidentialRespondents()).containsOnly(initialData.getAllRespondents().get(0));
+        assertThat(caseData.getRespondents1().get(0).getValue().getParty().address).isNull();
+        assertThat(caseData.getRespondents1().get(1).getValue().getParty().address).isNotNull();
     }
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request, String endpoint)

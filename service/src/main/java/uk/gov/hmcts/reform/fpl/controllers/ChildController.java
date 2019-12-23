@@ -16,23 +16,29 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
+import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 @Api
 @RestController
 @RequestMapping("/callback/enter-children")
 public class ChildController {
-
     private final ObjectMapper mapper;
     private final ChildrenService childrenService;
+    private final ConfidentialDetailsService confidentialDetailsService;
 
     @Autowired
-    public ChildController(ObjectMapper mapper, ChildrenService childrenService) {
+    public ChildController(ObjectMapper mapper,
+                           ChildrenService childrenService,
+                           ConfidentialDetailsService confidentialDetailsService) {
         this.mapper = mapper;
         this.childrenService = childrenService;
+        this.confidentialDetailsService = confidentialDetailsService;
     }
 
     @PostMapping("/about-to-start")
@@ -40,14 +46,13 @@ public class ChildController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("children1", childrenService.expandChildrenCollection(caseData));
+        caseDetails.getData().put("children1", childrenService.expandCollection(caseData.getAllChildren()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
     }
 
-    //Mid event is never triggered - needs discussion with PO regarding legality of case for child with DOB in future
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
@@ -63,20 +68,16 @@ public class ChildController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Child>> confidentialChildren = childrenService.buildConfidentialChildrenList(caseData);
-        if (!confidentialChildren.isEmpty()) {
+        List<Element<Child>> confidentialChildren =
+            confidentialDetailsService.addPartyMarkedConfidentialToList(Child.class, caseData.getAllChildren());
+
+        if (isNotEmpty(confidentialChildren)) {
             caseDetails.getData().put("confidentialChildren", confidentialChildren);
         } else {
             caseDetails.getData().remove("confidentialChildren");
         }
 
-        //Fixes expand collection 'bug' if user removes all children and submits (will not re-open collection)
-        //Also stops empty children (i.e user submit blank child form) being added to tab
-        if (childrenService.userInputtedChildExists(caseData.getChildren1())) {
-            caseDetails.getData().put("children1", childrenService.modifyHiddenValues(caseData));
-        } else {
-            caseDetails.getData().remove("children1");
-        }
+        caseDetails.getData().put("children1", childrenService.modifyHiddenValues(caseData.getAllChildren()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

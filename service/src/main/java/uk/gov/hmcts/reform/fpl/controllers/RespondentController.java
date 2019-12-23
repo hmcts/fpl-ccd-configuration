@@ -15,25 +15,30 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
+import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+
 @Api
 @RestController
 @RequestMapping("/callback/enter-respondents")
 public class RespondentController {
-
     private final ObjectMapper mapper;
     private final RespondentService respondentService;
+    private final ConfidentialDetailsService confidentialDetailsService;
 
     @Autowired
     public RespondentController(ObjectMapper mapper,
-                                RespondentService respondentService) {
+                                RespondentService respondentService,
+                                ConfidentialDetailsService confidentialDetailsService) {
         this.mapper = mapper;
         this.respondentService = respondentService;
+        this.confidentialDetailsService = confidentialDetailsService;
     }
 
     @PostMapping("/about-to-start")
@@ -41,7 +46,7 @@ public class RespondentController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("respondents1", respondentService.expandRespondentCollection(caseData));
+        caseDetails.getData().put("respondents1", respondentService.expandCollection(caseData.getAllRespondents()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -63,28 +68,22 @@ public class RespondentController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Respondent>> confidentialRespondents = respondentService.buildConfidentialRespondentsList(
-            caseData);
-        if (!confidentialRespondents.isEmpty()) {
+        List<Element<Respondent>> confidentialRespondents =
+            confidentialDetailsService.addPartyMarkedConfidentialToList(Respondent.class, caseData.getAllRespondents());
+
+        if (isNotEmpty(confidentialRespondents)) {
             caseDetails.getData().put("confidentialRespondents", confidentialRespondents);
         } else {
             caseDetails.getData().remove("confidentialRespondents");
         }
 
-        //Fixes expand collection 'bug' if user removes all respondents and submits (will not re-open collection)
-        //Also stops empty respondents from being added to tab
-        if (respondentService.userInputtedRespondentExists(caseData.getRespondents1())) {
-            caseDetails.getData().put("respondents1", respondentService.modifyHiddenValues(caseData));
-        } else {
-            caseDetails.getData().remove("respondents1");
-        }
+        caseDetails.getData().put("respondents1", respondentService.modifyHiddenValues(caseData.getAllRespondents()));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
             .build();
     }
 
-    @SuppressWarnings("unchecked")
     private List<String> validate(CaseDetails caseDetails) {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);

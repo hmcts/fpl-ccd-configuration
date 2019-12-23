@@ -1,13 +1,9 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.enums.PartyType;
-import uk.gov.hmcts.reform.fpl.model.Address;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,16 +12,15 @@ import java.util.UUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.PartyType.INDIVIDUAL;
 
 @Service
 public class RespondentService {
 
-    //TODO refactor to reduce complexity (code smell), or achieve in less complex way
-    @SuppressWarnings("squid:S2583")
-    public List<Element<Respondent>> expandRespondentCollection(CaseData caseData) {
+    public List<Element<Respondent>> expandCollection(List<Element<Respondent>> respondents) {
         List<Element<Respondent>> populatedRespondents = new ArrayList<>();
 
-        if (caseData.getRespondents1() == null) { // squid:S2583: value can be null in CCD JSON
+        if (respondents.isEmpty()) {
             populatedRespondents.add(Element.<Respondent>builder()
                 .value(Respondent.builder()
                     .party(RespondentParty.builder()
@@ -35,43 +30,23 @@ public class RespondentService {
                 .build());
             return populatedRespondents;
         } else {
-            for (Element<Respondent> respondent : caseData.getRespondents1()) {
-                String contactDetails = respondent.getValue().getParty().getContactDetailsHidden();
-
-                if (contactDetails != null && contactDetails.equals("Yes")) {
-                    if (caseData.getConfidentialRespondents() != null) {
-                        for (Element<Respondent> confidentialRespondent : caseData.getConfidentialRespondents()) {
-                            if (isSameRespondentById(respondent, confidentialRespondent)) {
-                                populatedRespondents.add(confidentialRespondent);
-                                break;
-                            }
-                        }
-                    }
-                } else {
-                    populatedRespondents.add(respondent);
-                }
-            }
-            return populatedRespondents;
+            return respondents;
         }
     }
 
-    public List<Element<Respondent>> modifyHiddenValues(CaseData caseData) {
-        return caseData.getRespondents1().stream()
+    public List<Element<Respondent>> modifyHiddenValues(List<Element<Respondent>> respondents) {
+        return respondents.stream()
             .map(element -> {
-                Respondent.RespondentBuilder respondentBuilder = Respondent.builder();
+                Respondent.RespondentBuilder builder = Respondent.builder();
 
                 if (element.getValue().getParty().getPartyId() == null) {
-                    respondentBuilder.party(element.getValue().getParty().toBuilder()
-                        .partyId(UUID.randomUUID().toString())
-                        .partyType(PartyType.INDIVIDUAL)
-                        .build());
+                    addHiddenValues(element, builder);
                 } else {
-                    respondentBuilder.party(element.getValue().getParty().toBuilder().build());
+                    builder.party(element.getValue().getParty().toBuilder().build());
                 }
 
-                String contactDetails = element.getValue().getParty().getContactDetailsHidden();
-                if (contactDetails != null && contactDetails.equals("Yes")) {
-                    respondentBuilder.party(element.getValue().getParty().toBuilder()
+                if (hiddenContactDetails(element)) {
+                    builder.party(element.getValue().getParty().toBuilder()
                         .address(null)
                         .telephoneNumber(null)
                         .build());
@@ -79,10 +54,23 @@ public class RespondentService {
 
                 return Element.<Respondent>builder()
                     .id(element.getId())
-                    .value(respondentBuilder.build())
+                    .value(builder.build())
                     .build();
             })
             .collect(toList());
+    }
+
+    private void addHiddenValues(Element<Respondent> element, Respondent.RespondentBuilder builder) {
+        builder.party(element.getValue().getParty().toBuilder()
+            .partyId(UUID.randomUUID().toString())
+            .partyType(INDIVIDUAL)
+            .build());
+    }
+
+    private boolean hiddenContactDetails(Element<Respondent> element) {
+        String contactDetails = element.getValue().getParty().getContactDetailsHidden();
+
+        return contactDetails != null && contactDetails.equals("Yes");
     }
 
     public String buildRespondentLabel(List<Element<Respondent>> respondents) {
@@ -100,34 +88,6 @@ public class RespondentService {
         }
 
         return sb.toString();
-    }
-
-    public List<Element<Respondent>> buildConfidentialRespondentsList(CaseData caseData) {
-        List<Element<Respondent>> confidentialRespondents = new ArrayList<>();
-
-        //TODO double check this: is there a nicer way?
-        for (Element<Respondent> respondent : caseData.getRespondents1()
-        ) {
-            if (respondent.getValue() != null
-                && respondent.getValue().getParty() != null
-                && respondent.getValue().getParty().getContactDetailsHidden() != null
-                && respondent.getValue().getParty().getContactDetailsHidden().equals("Yes")) {
-                confidentialRespondents.add(respondent);
-            }
-        }
-        return confidentialRespondents;
-    }
-
-    public boolean userInputtedRespondentExists(List<Element<Respondent>> respondents) {
-        return (isNotEmpty(respondents) && !respondents.get(0).getValue().getParty().equals(RespondentParty.builder()
-            .address(Address.builder().build())
-            .telephoneNumber(Telephone.builder().build())
-            .build()));
-    }
-
-    private boolean isSameRespondentById(Element<Respondent> respondent, Element<Respondent> confidentialRespondent) {
-        return confidentialRespondent.getId().equals(respondent.getId());
-
     }
 
     private String getRespondentFullName(RespondentParty respondentParty) {
