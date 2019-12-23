@@ -12,11 +12,11 @@ import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import java.time.LocalDate;
 import java.util.Set;
 
-public class SampleRoboticsTestData {
+public class SampleRoboticsTestDataHelper {
     private static DateFormatterService dateFormatterService = new DateFormatterService();
     private static LocalDate NOW = LocalDate.now();
 
-    private SampleRoboticsTestData() {
+    private SampleRoboticsTestDataHelper() {
     }
 
     public static RoboticsData expectedRoboticsData(final String applicationType) {
