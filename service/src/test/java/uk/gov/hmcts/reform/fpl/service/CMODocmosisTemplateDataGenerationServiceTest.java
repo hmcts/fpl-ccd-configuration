@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee.OTHER_1;
 import static uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee.RESPONDENT_1;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
+import static uk.gov.hmcts.reform.fpl.service.CommonCaseDataExtractionService.HEARING_EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.buildCaseDataMapForDraftCMODocmosisGeneration;
 
 @ExtendWith(SpringExtension.class)
@@ -107,10 +108,10 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("applicantName")).isEqualTo("");
         assertThat(templateData.get("respondents")).isEqualTo(ImmutableList.of());
         assertThat(templateData.get("representatives")).isEqualTo(getEmptyRepresentativeList());
-        assertThat(templateData.get("hearingDate")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("hearingVenue")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("preHearingAttendance")).isEqualTo(EMPTY_PLACEHOLDER);
-        assertThat(templateData.get("hearingTime")).isEqualTo(EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingDate")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingVenue")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("preHearingAttendance")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
+        assertThat(templateData.get("hearingTime")).isEqualTo(HEARING_EMPTY_PLACEHOLDER);
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("legalAdvisorName")).isEqualTo(EMPTY_PLACEHOLDER);
         assertThat(templateData.get("allParties")).isNull();
@@ -169,37 +170,47 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("caseManagementNumber")).isEqualTo(2);
     }
 
-    private List<Map<String, String>> getExpectedRepresentatives() {
+    private List<Map<String, Object>> getExpectedRepresentatives() {
         return List.of(
-            Map.of(
-                "respondentName", "Bran Stark",
-                "representativeEmail", "bruce-wayne@notbatman.com",
-                "representativeName", "Bruce Wayne",
-                "representativePhoneNumber", "07700900304"
+            Map.of("name", "Bran Stark", "representedBy", List.of(
+                Map.of(
+                    "representativeEmail", "bruce-wayne@notbatman.com",
+                    "representativeName", "Bruce Wayne",
+                    "representativePhoneNumber", "07700900304"))
             ),
-            Map.of(
-                "respondentName", "Timothy Jones",
-                "representativeName", "BLANK - please complete",
-                "representativeEmail", "BLANK - please complete",
-                "representativePhoneNumber", "BLANK - please complete"
+            Map.of("name", "Timothy Jones", "representedBy", List.of(
+                Map.of(
+                    "representativeEmail", "1TJ@representatives.com",
+                    "representativeName", "George Rep 1 (TJ)",
+                    "representativePhoneNumber", "+44 79000001"),
+                Map.of(
+                    "representativeEmail", "2TJ@representatives.com",
+                    "representativeName", "George Rep 2 (TJ)",
+                    "representativePhoneNumber", "+44 79000002"))
             ),
-            Map.of(
-                "respondentName", "Sarah Simpson",
-                "representativeName", "BLANK - please complete",
-                "representativeEmail", "BLANK - please complete",
-                "representativePhoneNumber", "BLANK - please complete"
+            Map.of("name", "Sarah Simpson", "representedBy", List.of(
+                Map.of(
+                    "representativeEmail", "1SS@representatives.com",
+                    "representativeName", "George Rep 1 (SS)",
+                    "representativePhoneNumber", "+44 79000001"))
+            ),
+            Map.of("name", "Kyle Stafford", "representedBy", List.of(
+                Map.of(
+                    "representativeEmail", "1K@representatives.com",
+                    "representativeName", "Barbara Rep 1 (K)",
+                    "representativePhoneNumber", "+44 71000001"))
             )
         );
     }
 
-    private List<Map<String, String>> getEmptyRepresentativeList() {
+    private List<Map<String, Object>> getEmptyRepresentativeList() {
         return List.of(
             Map.of(
-                "respondentName", EMPTY_PLACEHOLDER,
-                "representativeName", EMPTY_PLACEHOLDER,
-                "representativeEmail", EMPTY_PLACEHOLDER,
-                "representativePhoneNumber", EMPTY_PLACEHOLDER
-            )
+                "name", EMPTY_PLACEHOLDER,
+                "representedBy", List.of(
+                    Map.of("representativeName", EMPTY_PLACEHOLDER,
+                        "representativeEmail", EMPTY_PLACEHOLDER,
+                        "representativePhoneNumber", EMPTY_PLACEHOLDER)))
         );
     }
 

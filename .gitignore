@@ -40,3 +40,4 @@ application-user-mappings.yaml
 
 # wiremock response
 docker/wiremock/__files/mockResponse.json
+docker/wiremock/mappings/user-by-email/*

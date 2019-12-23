@@ -32,6 +32,7 @@ import static java.util.Collections.emptyList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.CMO;
+import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 
 @Api
 @RestController
@@ -127,6 +128,8 @@ public class DraftCMOController {
         draftCMOService.removeTransientObjectsFromCaseData(caseDetails.getData());
 
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), populatedCMO);
+
+        caseDetails.getData().put("cmoEventId", DRAFT_CASE_MANAGEMENT_ORDER.getId());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
