@@ -276,7 +276,7 @@ Scenario('local authority enters others to be given notice', async (I, caseViewP
   await enterOthersEventPage.enterRelationshipToChild('Tim Smith');
   await enterOthersEventPage.enterContactDetailsHidden('Yes');
   await enterOthersEventPage.enterLitigationIssues('No');
-  await I.addAnotherElementToCollection();
+  await I.addAnotherElementToCollection('Other person');
   await enterOthersEventPage.enterOtherDetails(others[1]);
   await enterOthersEventPage.enterRelationshipToChild('Tim Smith');
   await enterOthersEventPage.enterContactDetailsHidden('Yes');
