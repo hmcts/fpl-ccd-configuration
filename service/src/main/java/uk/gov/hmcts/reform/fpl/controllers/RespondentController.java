@@ -88,14 +88,14 @@ public class RespondentController {
         ImmutableList.Builder<String> errors = ImmutableList.builder();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (caseData.getRespondents1().stream()
+        caseData.getAllRespondents().stream()
             .map(Element::getValue)
             .map(Respondent::getParty)
             .map(Party::getDateOfBirth)
             .filter(Objects::nonNull)
-            .anyMatch(dob -> dob.isAfter(LocalDate.now()))) {
-            errors.add("Date of birth cannot be in the future");
-        }
+            .filter(dob -> dob.isAfter(LocalDate.now()))
+            .findAny()
+            .ifPresent(date -> errors.add("Date of birth cannot be in the future"));
 
         return errors.build();
     }

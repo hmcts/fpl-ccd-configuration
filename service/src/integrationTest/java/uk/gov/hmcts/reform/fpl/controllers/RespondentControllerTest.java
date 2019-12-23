@@ -148,7 +148,7 @@ class RespondentControllerTest {
 
     private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request, String endpoint)
         throws Exception {
-        MvcResult mvc = mockMvc
+        MvcResult response = mockMvc
             .perform(post("/callback/enter-respondents/" + endpoint)
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
@@ -157,7 +157,7 @@ class RespondentControllerTest {
             .andExpect(status().isOk())
             .andReturn();
 
-        return mapper.readValue(mvc.getResponse()
+        return mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 }
