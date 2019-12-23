@@ -60,6 +60,8 @@ public class ComplyOnBehalfController {
         Map<DirectionAssignee, List<Element<Direction>>> sortedDirections =
             directionHelperService.sortDirectionsByAssignee(directionsToComplyWith);
 
+        directionHelperService.addEmptyDirectionsForAssigneeNotInMap(sortedDirections);
+
         directionHelperService.addDirectionsToCaseDetails(
             caseDetails, sortedDirections, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));
 
