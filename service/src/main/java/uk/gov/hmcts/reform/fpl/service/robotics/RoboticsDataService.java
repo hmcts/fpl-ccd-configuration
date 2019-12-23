@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static java.util.Set.of;
+import static com.google.common.collect.ImmutableSet.of;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
@@ -62,6 +62,7 @@ public class RoboticsDataService {
             .harmAlleged(isNotEmpty(caseData.getRisks()))
             .internationalElement(isNotEmpty(caseData.getInternationalElement()))
             .allocation(isNotEmpty(caseData.getAllocationProposal())
+                && isNotBlank(caseData.getAllocationProposal().getProposal())
                 ? caseData.getAllocationProposal().getProposal() :  null)
             .issueDate(isNotEmpty(caseData.getDateSubmitted())
                 ? dateFormatterService.formatLocalDateToString(caseData.getDateSubmitted(), "dd-MM-yyyy") : "")
@@ -77,14 +78,13 @@ public class RoboticsDataService {
         } catch (JsonProcessingException e) {
             log.error("Unable to convert robotics data to json", e);
         }
-        return "";
+        return null;
     }
 
     private Applicant populateApplicant(final List<Element<uk.gov.hmcts.reform.fpl.model.Applicant>> allApplicants) {
-        final Applicant.ApplicantBuilder applicantBuilder = Applicant.builder();
         if (isNotEmpty(allApplicants)) {
             uk.gov.hmcts.reform.fpl.model.ApplicantParty applicantParty = allApplicants.get(0).getValue().getParty();
-            return applicantBuilder
+            return Applicant.builder()
                 .name(isBlank(applicantParty.getFullName()) ? null : applicantParty.getFullName())
                 .contactName(getApplicantContactName(applicantParty.getTelephoneNumber()))
                 .jobTitle(applicantParty.getJobTitle())
@@ -95,7 +95,7 @@ public class RoboticsDataService {
                 .build();
         }
 
-        return applicantBuilder.build();
+        return null;
     }
 
     private Address convertAddress(final uk.gov.hmcts.reform.fpl.model.Address address) {
@@ -227,6 +227,6 @@ public class RoboticsDataService {
                 return applicationType.get();
             }
         }
-        return null;
+        return applicationType.get();
     }
 }

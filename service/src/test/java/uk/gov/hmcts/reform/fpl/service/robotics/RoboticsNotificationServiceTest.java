@@ -15,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseSubmittedEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.OtherOrderTypeEmailNotificationException;
+import uk.gov.hmcts.reform.fpl.exceptions.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
@@ -30,9 +31,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.expectedRoboticsData;
+import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.invalidRoboticsDataWithZeroOwningCourt;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
 
 @ExtendWith(SpringExtension.class)
@@ -95,13 +98,42 @@ public class RoboticsNotificationServiceTest {
     }
 
     @Test
-    void notifyRoboticsOfSubmittedCaseDataShouldFailSendNotificationAndThrowOtherOrderTypeEmailNotificationException()
+    void notifyRoboticsOfSubmittedCaseDataShouldThrowOtherOrderTypeEmailNotificationException()
         throws IOException {
         RoboticsData expectedRoboticsData = expectedRoboticsData(OTHER.getLabel());
         given(roboticsDataService.prepareRoboticsData(prepareCaseData()))
             .willReturn(expectedRoboticsData);
 
         assertThrows(OtherOrderTypeEmailNotificationException.class,
+            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseSubmittedEvent(
+                prepareCaseData())));
+
+        verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
+    }
+
+    @Test
+    void notifyRoboticsOfSubmittedCaseDataShouldThrowRoboticsDataExceptionWhenOwningCourtCodeZero()
+        throws IOException {
+        CaseData caseData = prepareCaseData();
+
+        given(roboticsDataService.prepareRoboticsData(caseData))
+            .willReturn(invalidRoboticsDataWithZeroOwningCourt());
+
+        assertThrows(RoboticsDataException.class,
+            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseSubmittedEvent(caseData)));
+
+        verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
+    }
+
+    @Test
+    void notifyRoboticsOfSubmittedCaseDataShouldThrowRoboticsDataExceptionWhenRoboticsJsonDataNull()
+        throws IOException {
+        CaseData caseData = prepareCaseData();
+
+        given(roboticsDataService.prepareRoboticsData(caseData))
+            .willReturn(expectedRoboticsData(EDUCATION_SUPERVISION_ORDER.getLabel()));
+
+        assertThrows(RoboticsDataException.class,
             () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseSubmittedEvent(
                 prepareCaseData())));
 

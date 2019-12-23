@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.model.Allocation;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
@@ -25,6 +26,7 @@ import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.INTERIM_CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.INTERIM_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.SUPERVISION_ORDER;
@@ -91,6 +93,41 @@ public class RoboticsDataServiceTest {
             .readValue(returnedRoboticsDataJson);
 
         assertThat(roboticsDataMap).doesNotContainKey("solicitor");
+    }
+
+    @Test
+    void shouldReturnRoboticsDataWithNullAllocation() throws IOException {
+        CaseData caseData = prepareCaseDataWithOrderType(INTERIM_CARE_ORDER).toBuilder()
+            .allocationProposal(null)
+            .build();
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+        assertThat(roboticsData.getAllocation()).isNull();
+    }
+
+    @Test
+    void shouldReturnRoboticsDataWithExpectedlAllocation() throws IOException {
+        final String expectedAllocation = "To be moved";
+
+        CaseData caseData = prepareCaseDataWithOrderType(INTERIM_CARE_ORDER).toBuilder()
+            .allocationProposal(Allocation.builder()
+                .proposal("To be moved")
+                .build())
+            .build();
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+        assertThat(roboticsData.getAllocation()).isEqualTo(expectedAllocation);
+    }
+
+    @Test
+    void shouldReturnRoboticsDataWithEducationSupervisionOrderLabelValueAsApplicationType() throws IOException {
+        CaseData caseData = prepareCaseDataWithOrderType(EDUCATION_SUPERVISION_ORDER);
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+        assertThat(roboticsData.getApplicationType()).isEqualTo(EDUCATION_SUPERVISION_ORDER.getLabel());
     }
 
     private CaseData prepareCaseData(LocalDate date) throws IOException {

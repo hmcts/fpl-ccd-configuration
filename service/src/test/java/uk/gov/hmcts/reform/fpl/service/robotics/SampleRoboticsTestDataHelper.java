@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import java.time.LocalDate;
 import java.util.Set;
 
+import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
+
 public class SampleRoboticsTestDataHelper {
     private static DateFormatterService dateFormatterService = new DateFormatterService();
     private static LocalDate NOW = LocalDate.now();
@@ -36,6 +38,12 @@ public class SampleRoboticsTestDataHelper {
             .issueDate(dateFormatterService.formatLocalDateToString(NOW, "dd-MM-yyyy"))
             .applicant(expectedApplicant())
             .owningCourt(11)
+            .build();
+    }
+
+    public static RoboticsData invalidRoboticsDataWithZeroOwningCourt() {
+        return expectedRoboticsData(CARE_ORDER.getLabel()).toBuilder()
+            .owningCourt(0)
             .build();
     }
 
