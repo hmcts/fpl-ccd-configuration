@@ -187,8 +187,7 @@ Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseVi
   I.seeAnswerInTab('1', 'Notice of proceedings 2', 'File name', 'Notice_of_proceedings_c6a.pdf');
 });
 
-//Ignored out as it wont work on preview env as PRD mock is needed
-xScenario('HMCTS admin share case with representatives', async (I, caseViewPage, enterRepresentativesEventPage) => {
+Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, enterRepresentativesEventPage) => {
   await I.navigateToCaseDetails(caseId);
   await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
   const representative = {...representatives[0], email: config.hillingdonLocalAuthorityEmailUserOne};
