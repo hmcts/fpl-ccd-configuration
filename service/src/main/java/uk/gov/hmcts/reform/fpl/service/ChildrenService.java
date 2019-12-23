@@ -47,6 +47,8 @@ public class ChildrenService {
                 if (hiddenContactDetails(element)) {
                     builder.party(element.getValue().getParty().toBuilder()
                         .address(null)
+                        .telephoneNumber(null)
+                        .email(null)
                         .build());
                 }
 

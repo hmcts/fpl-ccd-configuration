@@ -10,9 +10,14 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.List;
 import java.util.UUID;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,7 +31,7 @@ class ChildrenServiceTest {
 
         List<Element<Child>> alteredChildrenList = service.expandCollection(caseData.getAllChildren());
 
-        assertThat(alteredChildrenList.get(0).getValue().getParty().partyId).isNotNull();
+        assertThat(getParty(alteredChildrenList, 0).partyId).isNotNull();
     }
 
     @Test
@@ -45,7 +50,7 @@ class ChildrenServiceTest {
 
         List<Element<Child>> childrenList = service.expandCollection(caseData.getAllChildren());
 
-        assertThat(childrenList.get(0).getValue().getParty().partyId).isEqualTo("123");
+        assertThat(getParty(childrenList, 0).partyId).isEqualTo("123");
     }
 
     @Test
@@ -66,9 +71,9 @@ class ChildrenServiceTest {
 
         List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData.getAllChildren());
 
-        assertThat(updatedChildren.get(0).getValue().getParty().firstName).isEqualTo("James");
-        assertThat(updatedChildren.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(updatedChildren.get(0).getValue().getParty().partyId).isNotNull();
+        assertThat(getParty(updatedChildren, 0).firstName).isEqualTo("James");
+        assertThat(getParty(updatedChildren, 0).partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(getParty(updatedChildren, 0).partyId).isNotNull();
     }
 
     @Test
@@ -97,13 +102,19 @@ class ChildrenServiceTest {
             .build();
         List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData.getAllChildren());
 
-        assertThat(updatedChildren.get(0).getValue().getParty().firstName).isEqualTo("James");
-        assertThat(updatedChildren.get(0).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(updatedChildren.get(0).getValue().getParty().partyId).isNotNull();
+        assertThat(getParty(updatedChildren, 0).firstName).isEqualTo("James");
+        assertThat(getParty(updatedChildren, 0).partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(getParty(updatedChildren, 0).partyId).isNotNull();
 
-        assertThat(updatedChildren.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
-        assertThat(updatedChildren.get(1).getValue().getParty().partyType).isEqualTo(PartyType.INDIVIDUAL);
-        assertThat(updatedChildren.get(1).getValue().getParty().partyId).isNotNull();
+        assertThat(getParty(updatedChildren, 1).firstName).isEqualTo("Lucy");
+        assertThat(getParty(updatedChildren, 1).partyType).isEqualTo(PartyType.INDIVIDUAL);
+        assertThat(getParty(updatedChildren, 1).partyId).isNotNull();
+    }
+
+    @Valid
+    @NotNull(message = "You need to add details to children")
+    private ChildParty getParty(List<Element<Child>> updatedChildren, int i) {
+        return updatedChildren.get(i).getValue().getParty();
     }
 
     @Test
@@ -122,9 +133,10 @@ class ChildrenServiceTest {
         CaseData caseData = CaseData.builder()
             .children1(children)
             .build();
+
         List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData.getAllChildren());
 
-        assertThat(updatedChildren.get(0).getValue().getParty().partyId).isEqualTo("123");
+        assertThat(getParty(updatedChildren, 0).partyId).isEqualTo("123");
     }
 
     @Test
@@ -151,18 +163,18 @@ class ChildrenServiceTest {
         CaseData caseData = CaseData.builder()
             .children1(children)
             .build();
+
         List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData.getAllChildren());
 
-        assertThat(updatedChildren.get(0).getValue().getParty().firstName).isEqualTo("James");
-        assertThat(updatedChildren.get(0).getValue().getParty().partyId).isEqualTo("123");
-
-        assertThat(updatedChildren.get(1).getValue().getParty().firstName).isEqualTo("Lucy");
-        assertThat(updatedChildren.get(1).getValue().getParty().partyId).isNotNull();
+        assertThat(getParty(updatedChildren, 0).firstName).isEqualTo("James");
+        assertThat(getParty(updatedChildren, 0).partyId).isEqualTo("123");
+        assertThat(getParty(updatedChildren, 1).firstName).isEqualTo("Lucy");
+        assertThat(getParty(updatedChildren, 1).partyId).isNotNull();
     }
 
     @Test
     void shouldHideChildAddressDetailsWhenConfidentialitySelected() {
-        List<Element<Child>> children = childWithAddress("Address Line 1");
+        List<Element<Child>> children = childElementWithDetailsHiddenValue("Yes");
 
         CaseData caseData = CaseData.builder()
             .children1(children)
@@ -170,19 +182,38 @@ class ChildrenServiceTest {
 
         List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData.getAllChildren());
 
-        assertThat(updatedChildren.get(0).getValue().getParty().getAddress()).isNull();
+        assertThat(getParty(updatedChildren, 0).address).isNull();
+        assertThat(getParty(updatedChildren, 0).email).isNull();
+        assertThat(getParty(updatedChildren, 0).telephoneNumber).isNull();
     }
 
-    private List<Element<Child>> childWithAddress(String address) {
+    @Test
+    void shouldNotHideChildAddressDetailsWhenConfidentialitySelected() {
+        List<Element<Child>> children = childElementWithDetailsHiddenValue("No");
+
+        CaseData caseData = CaseData.builder()
+            .children1(children)
+            .build();
+
+        List<Element<Child>> updatedChildren = service.modifyHiddenValues(caseData.getAllChildren());
+
+        assertThat(getParty(updatedChildren, 0).address).isNotNull();
+        assertThat(getParty(updatedChildren, 0).email).isNotNull();
+        assertThat(getParty(updatedChildren, 0).telephoneNumber).isNotNull();
+    }
+
+    private List<Element<Child>> childElementWithDetailsHiddenValue(String hidden) {
         return ImmutableList.of(Element.<Child>builder()
                 .id(UUID.randomUUID())
                 .value(Child.builder()
                     .party(ChildParty.builder()
                         .firstName("James")
-                        .detailsHidden("Yes")
+                        .detailsHidden(hidden)
+                        .email(EmailAddress.builder().email("email@email.com").build())
                         .address(Address.builder()
-                            .addressLine1(address)
+                            .addressLine1("Address Line 1")
                             .build())
+                        .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
                         .build())
                     .build())
                 .build());

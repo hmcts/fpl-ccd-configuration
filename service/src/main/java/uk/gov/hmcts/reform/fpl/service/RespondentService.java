@@ -49,6 +49,7 @@ public class RespondentService {
                     builder.party(element.getValue().getParty().toBuilder()
                         .address(null)
                         .telephoneNumber(null)
+                        .email(null)
                         .build());
                 }
 

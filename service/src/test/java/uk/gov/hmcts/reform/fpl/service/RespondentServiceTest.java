@@ -10,8 +10,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,16 +23,15 @@ import static uk.gov.hmcts.reform.fpl.enums.PartyType.INDIVIDUAL;
 
 @ExtendWith(SpringExtension.class)
 class RespondentServiceTest {
+    private static final String[] FIELDS = {"firstName", "partyType"};
     private final RespondentService service = new RespondentService();
 
     @Test
     void shouldExpandRespondentCollectionWhenNoRespondents() {
-        CaseData caseData = CaseData.builder().build();
-
-        List<Element<Respondent>> expandedRespondentCollection = service.expandCollection(caseData.getAllRespondents());
+        List<Element<Respondent>> expandedRespondentCollection = service.expandCollection(new ArrayList<>());
 
         assertThat(expandedRespondentCollection).hasSize(1);
-        assertThat(getParty(expandedRespondentCollection, 0).getPartyId()).isNotNull();
+        assertThat(getParty(expandedRespondentCollection, 0).partyId).isNotNull();
     }
 
     @Test
@@ -43,8 +44,8 @@ class RespondentServiceTest {
 
         List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
 
-        assertThat(getParty(updatedRespondents, 0)).extracting("firstName", "partyType").containsExactly("James", INDIVIDUAL);
-        assertThat(getParty(updatedRespondents, 0).getPartyId()).isNotNull();
+        assertThat(getParty(updatedRespondents, 0)).extracting(FIELDS).containsExactly("James", INDIVIDUAL);
+        assertThat(getParty(updatedRespondents, 0).partyId).isNotNull();
     }
 
     @Test
@@ -59,11 +60,11 @@ class RespondentServiceTest {
 
         List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
 
-        assertThat(getParty(updatedRespondents, 0)).extracting("firstName", "partyType").containsExactly("James", INDIVIDUAL);
-        assertThat(getParty(updatedRespondents, 0).getPartyId()).isNotNull();
+        assertThat(getParty(updatedRespondents, 0)).extracting(FIELDS).containsExactly("James", INDIVIDUAL);
+        assertThat(getParty(updatedRespondents, 0).partyId).isNotNull();
 
-        assertThat(getParty(updatedRespondents, 1)).extracting("firstName", "partyType").containsExactly("Lucy", INDIVIDUAL);
-        assertThat(getParty(updatedRespondents, 1).getPartyId()).isNotNull();
+        assertThat(getParty(updatedRespondents, 1)).extracting(FIELDS).containsExactly("Lucy", INDIVIDUAL);
+        assertThat(getParty(updatedRespondents, 1).partyId).isNotNull();
     }
 
     @Test
@@ -77,7 +78,7 @@ class RespondentServiceTest {
 
         List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
 
-        assertThat(getParty(updatedRespondents, 0).getPartyId()).isEqualTo(id);
+        assertThat(getParty(updatedRespondents, 0).partyId).isEqualTo(id);
     }
 
     @Test
@@ -93,10 +94,10 @@ class RespondentServiceTest {
 
         List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
 
-        assertThat(getParty(updatedRespondents, 0).getFirstName()).isEqualTo("James");
-        assertThat(getParty(updatedRespondents, 0).getPartyId()).isEqualTo(id);
-        assertThat(getParty(updatedRespondents, 1).getFirstName()).isEqualTo("Lucy");
-        assertThat(getParty(updatedRespondents, 1).getPartyId()).isNotNull();
+        assertThat(getParty(updatedRespondents, 0).firstName).isEqualTo("James");
+        assertThat(getParty(updatedRespondents, 0).partyId).isEqualTo(id);
+        assertThat(getParty(updatedRespondents, 1).firstName).isEqualTo("Lucy");
+        assertThat(getParty(updatedRespondents, 1).partyId).isNotNull();
     }
 
     @Test
@@ -110,8 +111,9 @@ class RespondentServiceTest {
 
         List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
 
-        assertThat(getParty(updatedRespondents, 0).getAddress()).isNull();
-        assertThat(getParty(updatedRespondents, 0).getTelephoneNumber()).isNull();
+        assertThat(getParty(updatedRespondents, 0).address).isNull();
+        assertThat(getParty(updatedRespondents, 0).email).isNull();
+        assertThat(getParty(updatedRespondents, 0).telephoneNumber).isNull();
     }
 
     @Test
@@ -125,8 +127,9 @@ class RespondentServiceTest {
 
         List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
 
-        assertThat(getParty(updatedRespondents, 0).getAddress()).isNotNull();
-        assertThat(getParty(updatedRespondents, 0).getTelephoneNumber()).isNotNull();
+        assertThat(getParty(updatedRespondents, 0).address).isNotNull();
+        assertThat(getParty(updatedRespondents, 0).email).isNotNull();
+        assertThat(getParty(updatedRespondents, 0).telephoneNumber).isNotNull();
     }
 
     private Element<Respondent> respondentElementWithDetailsHiddenValue(String hidden) {
@@ -136,6 +139,7 @@ class RespondentServiceTest {
                 .party(RespondentParty.builder()
                     .firstName("James")
                     .contactDetailsHidden(hidden)
+                    .email(EmailAddress.builder().email("email@email.com").build())
                     .address(Address.builder()
                         .addressLine1("James' House")
                         .build())
