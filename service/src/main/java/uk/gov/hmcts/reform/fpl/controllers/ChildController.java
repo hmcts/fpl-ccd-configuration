@@ -46,7 +46,7 @@ public class ChildController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("children1", childrenService.expandCollection(caseData.getAllChildren()));
+        caseDetails.getData().put("children1", childrenService.prepareChildren(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

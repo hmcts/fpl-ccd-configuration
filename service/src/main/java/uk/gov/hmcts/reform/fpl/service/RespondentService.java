@@ -1,14 +1,15 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
@@ -17,21 +18,46 @@ import static uk.gov.hmcts.reform.fpl.enums.PartyType.INDIVIDUAL;
 @Service
 public class RespondentService {
 
-    public List<Element<Respondent>> expandCollection(List<Element<Respondent>> respondents) {
-        List<Element<Respondent>> populatedRespondents = new ArrayList<>();
+    public List<Element<Respondent>> prepareRespondents(CaseData caseData) {
+        List<Element<Respondent>> respondentsCollection = new ArrayList<>();
 
-        if (respondents.isEmpty()) {
-            populatedRespondents.add(Element.<Respondent>builder()
-                .value(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .partyId(UUID.randomUUID().toString())
-                        .build())
-                    .build())
-                .build());
-            return populatedRespondents;
+        if (caseData.getAllRespondents().isEmpty()) {
+            respondentsCollection.add(emptyElementWithPartyId());
+
+        } else if (caseData.getConfidentialRespondents().isEmpty()) {
+            return caseData.getAllRespondents();
+
         } else {
-            return respondents;
+            caseData.getAllRespondents().forEach(element -> {
+                if (detailsHidden(element)) {
+                    respondentsCollection.add(getElementToAdd(caseData.getConfidentialRespondents(), element));
+                } else {
+                    respondentsCollection.add(element);
+                }
+            });
         }
+        return respondentsCollection;
+    }
+
+    // expands collection in UI. A value (in this case partyId) needs to be set to expand the collection.
+    private Element<Respondent> emptyElementWithPartyId() {
+        return Element.<Respondent>builder()
+            .value(Respondent.builder()
+                .party(RespondentParty.builder().partyId(randomUUID().toString()).build())
+                .build())
+            .build();
+    }
+
+    private boolean detailsHidden(Element<Respondent> element) {
+        return element.getValue().getParty().getContactDetailsHidden().equals("Yes");
+    }
+
+    private Element<Respondent> getElementToAdd(List<Element<Respondent>> confidentialChildren,
+                                                Element<Respondent> element) {
+        return confidentialChildren.stream()
+            .filter(confidentialChild -> confidentialChild.getId().equals(element.getId()))
+            .findFirst()
+            .orElse(element);
     }
 
     public List<Element<Respondent>> modifyHiddenValues(List<Element<Respondent>> respondents) {
@@ -63,7 +89,7 @@ public class RespondentService {
 
     private void addHiddenValues(Element<Respondent> element, Respondent.RespondentBuilder builder) {
         builder.party(element.getValue().getParty().toBuilder()
-            .partyId(UUID.randomUUID().toString())
+            .partyId(randomUUID().toString())
             .partyType(INDIVIDUAL)
             .build());
     }

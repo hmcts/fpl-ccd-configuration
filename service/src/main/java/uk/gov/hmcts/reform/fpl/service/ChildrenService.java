@@ -1,36 +1,60 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.fpl.enums.PartyType.INDIVIDUAL;
 
 @Service
 public class ChildrenService {
 
-    public List<Element<Child>> expandCollection(List<Element<Child>> children) {
-        List<Element<Child>> populatedChildren = new ArrayList<>();
+    public List<Element<Child>> prepareChildren(CaseData caseData) {
+        List<Element<Child>> childCollection = new ArrayList<>();
 
-        if (children.isEmpty()) {
-            populatedChildren.add(Element.<Child>builder()
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .partyId(UUID.randomUUID().toString())
-                        .build())
-                    .build())
-                .build());
+        if (caseData.getAllChildren().isEmpty()) {
+            childCollection.add(emptyElementWithPartyId());
 
-            return populatedChildren;
+        } else if (caseData.getConfidentialChildren().isEmpty()) {
+            return caseData.getAllChildren();
+
         } else {
-            return children;
+            caseData.getAllChildren().forEach(element -> {
+                if (detailsHidden(element)) {
+                    childCollection.add(getElementToAdd(caseData.getConfidentialChildren(), element));
+                } else {
+                    childCollection.add(element);
+                }
+            });
         }
+        return childCollection;
+    }
+
+    // expands collection in UI. A value (in this case partyId) needs to be set to expand the collection.
+    private Element<Child> emptyElementWithPartyId() {
+        return Element.<Child>builder()
+            .value(Child.builder()
+                .party(ChildParty.builder().partyId(randomUUID().toString()).build())
+                .build())
+            .build();
+    }
+
+    private boolean detailsHidden(Element<Child> element) {
+        return element.getValue().getParty().getDetailsHidden().equals("Yes");
+    }
+
+    private Element<Child> getElementToAdd(List<Element<Child>> confidentialChildren, Element<Child> element) {
+        return confidentialChildren.stream()
+            .filter(confidentialChild -> confidentialChild.getId().equals(element.getId()))
+            .findFirst()
+            .orElse(element);
     }
 
     public List<Element<Child>> modifyHiddenValues(List<Element<Child>> children) {
@@ -62,7 +86,7 @@ public class ChildrenService {
 
     private void addHiddenValues(Element<Child> element, Child.ChildBuilder builder) {
         builder.party(element.getValue().getParty().toBuilder()
-            .partyId(UUID.randomUUID().toString())
+            .partyId(randomUUID().toString())
             .partyType(INDIVIDUAL)
             .build());
     }

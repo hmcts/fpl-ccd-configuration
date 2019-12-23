@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -231,5 +232,14 @@ public class CaseData {
     }
 
     private final List<Element<Child>> confidentialChildren;
+
+    public List<Element<Child>> getConfidentialChildren() {
+        return confidentialChildren != null ? confidentialChildren : new ArrayList<>();
+    }
+
     private final List<Element<Respondent>> confidentialRespondents;
+
+    public List<Element<Respondent>> getConfidentialRespondents() {
+        return confidentialRespondents != null ? confidentialRespondents : new ArrayList<>();
+    }
 }

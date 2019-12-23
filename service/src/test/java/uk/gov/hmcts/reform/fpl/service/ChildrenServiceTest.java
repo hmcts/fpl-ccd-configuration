@@ -16,48 +16,99 @@ import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 import java.util.List;
 import java.util.UUID;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
+import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
 class ChildrenServiceTest {
+    private static final UUID ID = randomUUID();
+
     private final ChildrenService service = new ChildrenService();
 
     @Test
-    void shouldReturnAnEmptyListOfChildrenWithAPartyIdIfChildrenIsNull() {
-        CaseData caseData = CaseData.builder().build();
+    void shouldAddEmptyElementWhenChildrenIsEmpty() {
+        List<Element<Child>> children = service.prepareChildren(CaseData.builder().build());
 
-        List<Element<Child>> alteredChildrenList = service.expandCollection(caseData.getAllChildren());
-
-        assertThat(getParty(alteredChildrenList, 0).partyId).isNotNull();
+        assertThat(getParty(children, 0).partyId).isNotNull();
     }
 
     @Test
     void shouldReturnChildrenIfChildrenIsPrePopulated() {
         CaseData caseData = CaseData.builder()
-            .children1(
-                ImmutableList.of(Element.<Child>builder()
-                    .value(
-                        Child.builder()
-                            .party(ChildParty.builder()
-                                .partyId("123")
-                                .build())
-                            .build())
-                    .build()))
+            .children1(ImmutableList.of(childWithRemovedConfidentialFields(ID)))
             .build();
 
-        List<Element<Child>> childrenList = service.expandCollection(caseData.getAllChildren());
+        List<Element<Child>> children = service.prepareChildren(caseData);
 
-        assertThat(getParty(childrenList, 0).partyId).isEqualTo("123");
+        assertThat(children).containsExactly(childWithRemovedConfidentialFields(ID));
+    }
+
+    @Test
+    void shouldPrepareChildWithConfidentialValuesWhenConfidentialChildrenIsNotEmpty() {
+        CaseData caseData = CaseData.builder()
+            .children1(ImmutableList.of(childWithRemovedConfidentialFields(ID)))
+            .confidentialChildren(ImmutableList.of(childWithConfidentialFields(ID)))
+            .build();
+
+        List<Element<Child>> children = service.prepareChildren(caseData);
+
+        assertThat(children).containsOnly(childWithConfidentialFields(ID));
+    }
+
+    @Test
+    void shouldReturnChildWithoutConfidentialDetailsWhenThereIsNoMatchingConfidentialChild() {
+        CaseData caseData = CaseData.builder()
+            .children1(ImmutableList.of(childWithRemovedConfidentialFields(ID)))
+            .confidentialChildren(ImmutableList.of(childWithConfidentialFields(randomUUID())))
+            .build();
+
+        List<Element<Child>> children = service.prepareChildren(caseData);
+
+        assertThat(children).containsOnly(childWithRemovedConfidentialFields(ID));
+    }
+
+    @Test
+    void shouldAddExpectedChildWhenHiddenDetailsMarkedAsNo() {
+        CaseData caseData = CaseData.builder()
+            .children1(ImmutableList.of(childWithDetailsHiddenNo(ID)))
+            .confidentialChildren(ImmutableList.of(childWithConfidentialFields(ID)))
+            .build();
+
+        List<Element<Child>> children = service.prepareChildren(caseData);
+
+        assertThat(children).containsOnly(childWithDetailsHiddenNo(ID));
+    }
+
+    @Test
+    void shouldMaintainOrderingOfChildrenWhenComplexScenario() {
+        UUID otherId = randomUUID();
+
+        List<Element<Child>> children = ImmutableList.of(
+            childWithRemovedConfidentialFields(ID),
+            childWithDetailsHiddenNo(randomUUID()),
+            childWithRemovedConfidentialFields(otherId));
+
+        List<Element<Child>> confidentialChildren = ImmutableList.of(
+            childWithConfidentialFields(ID),
+            childWithConfidentialFields(otherId));
+
+        CaseData caseData = CaseData.builder()
+            .children1(children)
+            .confidentialChildren(confidentialChildren)
+            .build();
+
+        List<Element<Child>> updatedChildren = service.prepareChildren(caseData);
+
+        assertThat(updatedChildren.get(0)).isEqualTo(confidentialChildren.get(0));
+        assertThat(updatedChildren.get(1)).isEqualTo(children.get(1));
+        assertThat(updatedChildren.get(2)).isEqualTo(confidentialChildren.get(1));
     }
 
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToSingleChild() {
         List<Element<Child>> children = ImmutableList.of(
             Element.<Child>builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .value(Child.builder()
                     .party(ChildParty.builder()
                         .firstName("James")
@@ -80,7 +131,7 @@ class ChildrenServiceTest {
     void shouldAddPartyIDAndPartyTypeValuesToMultipleChildren() {
         List<Element<Child>> children = ImmutableList.of(
             Element.<Child>builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .value(Child.builder()
                     .party(ChildParty.builder()
                         .firstName("James")
@@ -88,7 +139,7 @@ class ChildrenServiceTest {
                     .build())
                 .build(),
             Element.<Child>builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .value(Child.builder()
                     .party(ChildParty.builder()
                         .firstName("Lucy")
@@ -111,17 +162,11 @@ class ChildrenServiceTest {
         assertThat(getParty(updatedChildren, 1).partyId).isNotNull();
     }
 
-    @Valid
-    @NotNull(message = "You need to add details to children")
-    private ChildParty getParty(List<Element<Child>> updatedChildren, int i) {
-        return updatedChildren.get(i).getValue().getParty();
-    }
-
     @Test
     void shouldKeepExistingPartyID() {
         List<Element<Child>> children = ImmutableList.of(
             Element.<Child>builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .value(Child.builder()
                     .party(ChildParty.builder()
                         .firstName("James")
@@ -143,7 +188,7 @@ class ChildrenServiceTest {
     void shouldKeepExistingPartyIdAndContinueAddingNewPartyId() {
         List<Element<Child>> children = ImmutableList.of(
             Element.<Child>builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .value(Child.builder()
                     .party(ChildParty.builder()
                         .firstName("James")
@@ -152,7 +197,7 @@ class ChildrenServiceTest {
                     .build())
                 .build(),
             Element.<Child>builder()
-                .id(UUID.randomUUID())
+                .id(randomUUID())
                 .value(Child.builder()
                     .party(ChildParty.builder()
                         .firstName("Lucy")
@@ -202,20 +247,70 @@ class ChildrenServiceTest {
         assertThat(getParty(updatedChildren, 0).telephoneNumber).isNotNull();
     }
 
+    private Element<Child> childWithDetailsHiddenNo(UUID id) {
+        return Element.<Child>builder()
+            .id(id)
+            .value(Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("James")
+                    .detailsHidden("No")
+                    .email(EmailAddress.builder().email("email@email.com").build())
+                    .address(Address.builder()
+                        .addressLine1("Address Line 1")
+                        .build())
+                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                    .build())
+                .build())
+            .build();
+    }
+
+    private Element<Child> childWithRemovedConfidentialFields(UUID id) {
+        return Element.<Child>builder()
+            .id(id)
+            .value(Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("James")
+                    .detailsHidden("Yes")
+                    .build())
+                .build())
+            .build();
+    }
+
+    private Element<Child> childWithConfidentialFields(UUID id) {
+        return Element.<Child>builder()
+            .id(id)
+            .value(Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("James")
+                    .detailsHidden("Yes")
+                    .email(EmailAddress.builder().email("email@email.com").build())
+                    .address(Address.builder()
+                        .addressLine1("Address Line 1")
+                        .build())
+                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                    .build())
+                .build())
+            .build();
+    }
+
     private List<Element<Child>> childElementWithDetailsHiddenValue(String hidden) {
         return ImmutableList.of(Element.<Child>builder()
-                .id(UUID.randomUUID())
-                .value(Child.builder()
-                    .party(ChildParty.builder()
-                        .firstName("James")
-                        .detailsHidden(hidden)
-                        .email(EmailAddress.builder().email("email@email.com").build())
-                        .address(Address.builder()
-                            .addressLine1("Address Line 1")
-                            .build())
-                        .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+            .id(randomUUID())
+            .value(Child.builder()
+                .party(ChildParty.builder()
+                    .firstName("James")
+                    .detailsHidden(hidden)
+                    .email(EmailAddress.builder().email("email@email.com").build())
+                    .address(Address.builder()
+                        .addressLine1("Address Line 1")
                         .build())
+                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
                     .build())
-                .build());
+                .build())
+            .build());
+    }
+
+    private ChildParty getParty(List<Element<Child>> updatedChildren, int i) {
+        return updatedChildren.get(i).getValue().getParty();
     }
 }

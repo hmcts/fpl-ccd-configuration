@@ -46,7 +46,7 @@ public class RespondentController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("respondents1", respondentService.expandCollection(caseData.getAllRespondents()));
+        caseDetails.getData().put("respondents1", respondentService.prepareRespondents(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
