@@ -25,14 +25,18 @@ import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
+import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
 @Builder(toBuilder = true)
@@ -197,4 +201,27 @@ public class CaseData {
 
     private final Others others;
     private final DynamicList nextHearingDateList;
+
+    private final List<Element<Representative>> representatives;
+
+    @JsonIgnore
+    public List<Other> getAllOthers() {
+        final List<Other> othersList = new ArrayList<>();
+
+        ofNullable(this.getOthers()).map(Others::getFirstOther).ifPresent(othersList::add);
+        ofNullable(this.getOthers()).map(Others::getAdditionalOthers)
+            .ifPresent(additionalOthers -> othersList.addAll(unwrapElements(additionalOthers)));
+
+        return Collections.unmodifiableList(othersList);
+    }
+
+    public Optional<Other> findOther(int sequenceNo) {
+        List<Other> allOthers = this.getAllOthers();
+
+        return allOthers.size() <= sequenceNo ? empty() : Optional.of(allOthers.get(sequenceNo));
+    }
+
+    public Optional<Respondent> findRespondent(int seqNo) {
+        return getRespondents1().size() <= seqNo ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
+    }
 }
