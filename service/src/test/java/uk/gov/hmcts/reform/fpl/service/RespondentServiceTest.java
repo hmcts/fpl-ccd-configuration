@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,20 +30,12 @@ class RespondentServiceTest {
         List<Element<Respondent>> expandedRespondentCollection = service.expandCollection(caseData.getAllRespondents());
 
         assertThat(expandedRespondentCollection).hasSize(1);
-        assertThat(expandedRespondentCollection.get(0).getValue().getParty().getPartyId()).isNotNull();
+        assertThat(getParty(expandedRespondentCollection, 0).getPartyId()).isNotNull();
     }
 
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToSingleRespondent() {
-        List<Element<Respondent>> respondents = ImmutableList.of(
-            Element.<Respondent>builder()
-                .id(UUID.randomUUID())
-                .value(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .firstName("James")
-                        .build())
-                    .build())
-                .build());
+        List<Element<Respondent>> respondents = ImmutableList.of(respondentElementWithName("James"));
 
         CaseData caseData = CaseData.builder()
             .respondents1(respondents)
@@ -50,30 +43,15 @@ class RespondentServiceTest {
 
         List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
 
-        assertThat(updatedRespondents.get(0).getValue().getParty().getFirstName()).isEqualTo("James");
-        assertThat(updatedRespondents.get(0).getValue().getParty().getPartyType()).isEqualTo(INDIVIDUAL);
-        assertThat(updatedRespondents.get(0).getValue().getParty().getPartyId()).isNotNull();
+        assertThat(getParty(updatedRespondents, 0)).extracting("firstName", "partyType").containsExactly("James", INDIVIDUAL);
+        assertThat(getParty(updatedRespondents, 0).getPartyId()).isNotNull();
     }
 
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToMultipleRespondents() {
         List<Element<Respondent>> respondents = ImmutableList.of(
-            Element.<Respondent>builder()
-                .id(UUID.randomUUID())
-                .value(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .firstName("James")
-                        .build())
-                    .build())
-                .build(),
-            Element.<Respondent>builder()
-                .id(UUID.randomUUID())
-                .value(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .firstName("Lucy")
-                        .build())
-                    .build())
-                .build());
+            respondentElementWithName("James"),
+            respondentElementWithName("Lucy"));
 
         CaseData caseData = CaseData.builder()
             .respondents1(respondents)
@@ -81,25 +59,17 @@ class RespondentServiceTest {
 
         List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
 
-        assertThat(updatedRespondents.get(0).getValue().getParty().getFirstName()).isEqualTo("James");
-        assertThat(updatedRespondents.get(0).getValue().getParty().getPartyType()).isEqualTo(INDIVIDUAL);
-        assertThat(updatedRespondents.get(0).getValue().getParty().getPartyId()).isNotNull();
-        assertThat(updatedRespondents.get(1).getValue().getParty().getFirstName()).isEqualTo("Lucy");
-        assertThat(updatedRespondents.get(1).getValue().getParty().getPartyType()).isEqualTo(INDIVIDUAL);
-        assertThat(updatedRespondents.get(1).getValue().getParty().getPartyId()).isNotNull();
+        assertThat(getParty(updatedRespondents, 0)).extracting("firstName", "partyType").containsExactly("James", INDIVIDUAL);
+        assertThat(getParty(updatedRespondents, 0).getPartyId()).isNotNull();
+
+        assertThat(getParty(updatedRespondents, 1)).extracting("firstName", "partyType").containsExactly("Lucy", INDIVIDUAL);
+        assertThat(getParty(updatedRespondents, 1).getPartyId()).isNotNull();
     }
 
     @Test
     void shouldKeepExistingPartyIDWhenAlreadyExists() {
-        List<Element<Respondent>> respondents = ImmutableList.of(
-            Element.<Respondent>builder()
-                .id(UUID.randomUUID())
-                .value(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .partyId("123")
-                        .build())
-                    .build())
-                .build());
+        String id = "123";
+        List<Element<Respondent>> respondents = ImmutableList.of(respondentElementWithId(id));
 
         CaseData caseData = CaseData.builder()
             .respondents1(respondents)
@@ -107,29 +77,15 @@ class RespondentServiceTest {
 
         List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
 
-        assertThat(updatedRespondents.get(0).getValue().getParty().getPartyId()).isEqualTo("123");
+        assertThat(getParty(updatedRespondents, 0).getPartyId()).isEqualTo(id);
     }
 
     @Test
     void shouldKeepExistingPartyIdAndContinueAddingNewPartyId() {
+        String id = "123";
         List<Element<Respondent>> respondents = ImmutableList.of(
-            Element.<Respondent>builder()
-                .id(UUID.randomUUID())
-                .value(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .firstName("James")
-                        .partyId("123")
-                        .build())
-                    .build())
-                .build(),
-            Element.<Respondent>builder()
-                .id(UUID.randomUUID())
-                .value(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .firstName("Lucy")
-                        .build())
-                    .build())
-                .build());
+            respondentElementWithId(id),
+            respondentElementWithName("Lucy"));
 
         CaseData caseData = CaseData.builder()
             .respondents1(respondents)
@@ -137,27 +93,16 @@ class RespondentServiceTest {
 
         List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
 
-        assertThat(updatedRespondents.get(0).getValue().getParty().getFirstName()).isEqualTo("James");
-        assertThat(updatedRespondents.get(0).getValue().getParty().getPartyId()).isEqualTo("123");
-        assertThat(updatedRespondents.get(1).getValue().getParty().getFirstName()).isEqualTo("Lucy");
-        assertThat(updatedRespondents.get(1).getValue().getParty().getPartyId()).isNotNull();
+        assertThat(getParty(updatedRespondents, 0).getFirstName()).isEqualTo("James");
+        assertThat(getParty(updatedRespondents, 0).getPartyId()).isEqualTo(id);
+        assertThat(getParty(updatedRespondents, 1).getFirstName()).isEqualTo("Lucy");
+        assertThat(getParty(updatedRespondents, 1).getPartyId()).isNotNull();
     }
 
     @Test
     void shouldHideRespondentContactDetailsWhenConfidentialityFlagSet() {
         List<Element<Respondent>> respondents = ImmutableList.of(
-            Element.<Respondent>builder()
-                .id(UUID.randomUUID())
-                .value(Respondent.builder()
-                    .party(RespondentParty.builder()
-                        .firstName("James")
-                        .contactDetailsHidden("Yes")
-                        .address(Address.builder()
-                            .addressLine1("James' House")
-                            .build())
-                        .build())
-                    .build())
-                .build());
+            respondentElementWithDetailsHiddenValue("Yes"));
 
         CaseData caseData = CaseData.builder()
             .respondents1(respondents)
@@ -165,9 +110,66 @@ class RespondentServiceTest {
 
         List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
 
-        assertThat(updatedRespondents.get(0).getValue().getParty().getAddress()).isNull();
-        assertThat(updatedRespondents.get(0).getValue().getParty().getTelephoneNumber()).isNull();
+        assertThat(getParty(updatedRespondents, 0).getAddress()).isNull();
+        assertThat(getParty(updatedRespondents, 0).getTelephoneNumber()).isNull();
+    }
 
+    @Test
+    void shouldNotHideRespondentContactDetailsWhenConfidentialityFlagSet() {
+        List<Element<Respondent>> respondents = ImmutableList.of(
+            respondentElementWithDetailsHiddenValue("No"));
+
+        CaseData caseData = CaseData.builder()
+            .respondents1(respondents)
+            .build();
+
+        List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
+
+        assertThat(getParty(updatedRespondents, 0).getAddress()).isNotNull();
+        assertThat(getParty(updatedRespondents, 0).getTelephoneNumber()).isNotNull();
+    }
+
+    private Element<Respondent> respondentElementWithDetailsHiddenValue(String hidden) {
+        return Element.<Respondent>builder()
+            .id(UUID.randomUUID())
+            .value(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("James")
+                    .contactDetailsHidden(hidden)
+                    .address(Address.builder()
+                        .addressLine1("James' House")
+                        .build())
+                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
+                    .build())
+                .build())
+            .build();
+    }
+
+    private Element<Respondent> respondentElementWithName(String name) {
+        return Element.<Respondent>builder()
+            .id(UUID.randomUUID())
+            .value(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName(name)
+                    .build())
+                .build())
+            .build();
+    }
+
+    private RespondentParty getParty(List<Element<Respondent>> updatedRespondents, int i) {
+        return updatedRespondents.get(i).getValue().getParty();
+    }
+
+    private Element<Respondent> respondentElementWithId(String id) {
+        return Element.<Respondent>builder()
+            .id(UUID.randomUUID())
+            .value(Respondent.builder()
+                .party(RespondentParty.builder()
+                    .firstName("James")
+                    .partyId(id)
+                    .build())
+                .build())
+            .build();
     }
 
     @Nested
