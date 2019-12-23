@@ -68,6 +68,7 @@ module.exports = {
     amendInternationalElement: 'International element',
     amendOtherProceedings: 'Other proceedings',
     amendAttendingHearing: 'Attending the hearing',
+    amendRepresentatives: 'Manage representatives',
     addHearingBookingDetails: 'Add hearing details',
     createNoticeOfProceedings: 'Create notice of proceedings',
     addStatementOfService: 'Add statement of service (c9)',
