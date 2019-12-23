@@ -157,9 +157,15 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
     },
 
-    async addAnotherElementToCollection() {
+    async addAnotherElementToCollection(collectionName) {
       const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
-      this.click('Add new');
+      if(collectionName) {
+        this.click(locate('button')
+          .inside(locate('div').withChild(locate('h2').withText(collectionName)))
+          .withText('Add new'));
+      } else {
+        this.click('Add new');
+      }
       this.waitNumberOfVisibleElements('.collection-title', numberOfElements + 1);
       this.wait(0.5); // add extra time to allow slower browsers to render all fields (just extra precaution)
     },
