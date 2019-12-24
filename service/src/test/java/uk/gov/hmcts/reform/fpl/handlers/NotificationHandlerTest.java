@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.handlers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -7,7 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration.Cafcass;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -16,15 +23,20 @@ import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration.LocalAuthority;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.events.NotifyGatekeeperEvent;
 import uk.gov.hmcts.reform.fpl.events.StandardDirectionsOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.InboxLookupService;
+import uk.gov.hmcts.reform.fpl.service.RepresentativeService;
 import uk.gov.hmcts.reform.fpl.service.email.content.C2UploadedEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.CafcassEmailContentProviderSDOIssued;
+import uk.gov.hmcts.reform.fpl.service.email.content.CaseManagementOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GatekeeperEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.GeneratedOrderEmailContentProvider;
 import uk.gov.hmcts.reform.fpl.service.email.content.HmctsEmailContentProvider;
@@ -38,6 +50,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -51,16 +64,20 @@ import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.HMCTS_ADMIN;
 import static uk.gov.hmcts.reform.fpl.enums.UserRole.LOCAL_AUTHORITY;
+import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createRepresentatives;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @SuppressWarnings("LineLength")
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class NotificationHandlerTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String COURT_EMAIL_ADDRESS = "FamilyPublicLaw+test@gmail.com";
@@ -118,6 +135,15 @@ class NotificationHandlerTest {
 
     @Mock
     private InboxLookupService inboxLookupService;
+
+    @Mock
+    private CaseManagementOrderEmailContentProvider caseManagementOrderEmailContentProvider;
+
+    @Mock
+    private RepresentativeService representativeService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @InjectMocks
     private NotificationHandler notificationHandler;
@@ -205,6 +231,128 @@ class NotificationHandlerTest {
             verify(notificationClient, times(1)).sendEmail(
                 eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
                 eq(orderLocalAuthorityParameters), eq("12345"));
+        }
+    }
+
+    @Nested
+    class CaseManagementOrderNotificationTests {
+        private final byte[] documentContents = {1, 2, 3};
+        private final Map<String, Object> expectedCMOIssuedNotificationParameters =
+            getCMOIssuedCaseLinkNotificationParameters();
+        private final Map<String, Object> expectedCMOIssuedNotificationParametersForRepresentative =
+            getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative();
+
+        private NotificationHandler cmoNotificationHandler;
+
+        @BeforeEach
+        void setup() {
+            given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
+                .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
+
+            given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
+                .willReturn(LOCAL_AUTHORITY_NAME);
+
+            // did this to enable ObjectMapper injection
+            // TODO: 17/12/2019 nice to refactor to make cleaner
+            cmoNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration, cafcassLookupConfiguration,
+                hmctsEmailContentProvider, cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued,
+                gatekeeperEmailContentProvider, c2UploadedEmailContentProvider, orderEmailContentProvider,
+                localAuthorityEmailContentProvider, localAuthorityEmailLookupConfiguration, notificationClient,
+                idamApi, inboxLookupService, caseManagementOrderEmailContentProvider, representativeService,
+                localAuthorityNameLookupConfiguration, objectMapper);
+        }
+
+        @Test
+        void shouldNotifyLocalAuthorityOfCMOIssued() throws Exception {
+            CallbackRequest callbackRequest = callbackRequest();
+            CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+            given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
+                .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
+
+            given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
+                LOCAL_AUTHORITY_NAME))
+                .willReturn(expectedCMOIssuedNotificationParameters);
+
+            cmoNotificationHandler.sendNotificationsForIssuedCaseManagementOrder(
+                new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
+
+            verify(notificationClient).sendEmail(
+                eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
+                eq(expectedCMOIssuedNotificationParameters), eq("12345"));
+        }
+
+        @Test
+        void shouldNotifyRepresentativesOfCMOIssued() throws Exception {
+            CallbackRequest callbackRequest = buildCallbackRequest();
+            CaseDetails caseDetails = callbackRequest.getCaseDetails();
+
+            CaseData caseData = buildCaseDataWithRepresentatives();
+            given(representativeService.getRepresentativesByServedPreference(caseData.getRepresentatives(),
+                DIGITAL_SERVICE))
+                .willReturn(expectedRepresentatives());
+
+            given(caseManagementOrderEmailContentProvider.buildCMOIssuedCaseLinkNotificationParameters(caseDetails,
+                "Jon Snow"))
+                .willReturn(expectedCMOIssuedNotificationParametersForRepresentative);
+
+            cmoNotificationHandler.sendNotificationsForIssuedCaseManagementOrder(
+                new CaseManagementOrderIssuedEvent(callbackRequest, AUTH_TOKEN, USER_ID, documentContents));
+
+            verify(notificationClient).sendEmail(
+                eq(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE), eq("abc@example.com"),
+                eq(expectedCMOIssuedNotificationParametersForRepresentative), eq("12345"));
+        }
+
+        private ImmutableMap<String, Object> getCMOIssuedCaseLinkNotificationParameters() {
+            return ImmutableMap.<String, Object>builder()
+                .put("localAuthorityNameOrRepresentativeFullName", LOCAL_AUTHORITY_NAME)
+                .putAll(expectedCommonCMONotificationParameters())
+                .build();
+        }
+
+        private CaseDetails buildCaseDetailsWithRepresentatives() throws IOException {
+            CaseDetails caseDetails = callbackRequest().getCaseDetails();
+            Map<String, Object> caseData = caseDetails.getData();
+
+            caseData.put("representatives", createRepresentatives(DIGITAL_SERVICE));
+            return caseDetails.toBuilder()
+                .data(caseData)
+                .build();
+        }
+
+        private CaseData buildCaseDataWithRepresentatives() {
+            return CaseData.builder()
+                .representatives(createRepresentatives(DIGITAL_SERVICE))
+                .build();
+        }
+
+        private Map<String, Object> getExpectedCMOIssuedCaseLinkNotificationParametersForRepresentative() {
+            return ImmutableMap.<String, Object>builder()
+                .put("localAuthorityNameOrRepresentativeFullName", "Jon Snow")
+                .putAll(expectedCommonCMONotificationParameters())
+                .build();
+        }
+
+        private CallbackRequest buildCallbackRequest() throws IOException {
+            return CallbackRequest.builder()
+                .caseDetails(buildCaseDetailsWithRepresentatives())
+                .build();
+        }
+
+        private List<Representative> expectedRepresentatives() {
+            return ImmutableList.of(Representative.builder()
+                .email("abc@example.com")
+                .fullName("Jon Snow")
+                .servingPreferences(DIGITAL_SERVICE)
+                .build());
+        }
+
+        private Map<String, Object> expectedCommonCMONotificationParameters() {
+            String subjectLine = "Lastname, SACCCCCCCC5676576567";
+            return ImmutableMap.of("subjectLineWithHearingDate", subjectLine,
+                "reference", "12345",
+                "caseUrl", String.format("null/case/%s/%s/12345", JURISDICTION, CASE_TYPE));
         }
     }
 
