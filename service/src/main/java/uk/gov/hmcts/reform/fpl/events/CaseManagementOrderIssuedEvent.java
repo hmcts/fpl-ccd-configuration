@@ -7,7 +7,11 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 @Value
 @EqualsAndHashCode(callSuper = true)
 public class CaseManagementOrderIssuedEvent extends CallbackEvent {
-    public CaseManagementOrderIssuedEvent(CallbackRequest callbackRequest, String authorization, String userId) {
+    private final byte[] documentContents;
+
+    public CaseManagementOrderIssuedEvent(CallbackRequest callbackRequest, String authorization, String userId,
+                    byte[] documentContents) {
         super(callbackRequest, authorization, userId);
+        this.documentContents = documentContents;
     }
 }

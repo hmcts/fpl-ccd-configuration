@@ -43,11 +43,13 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.C2_UPLOAD_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CAFCASS_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.NotifyTemplates.CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.GATEKEEPER_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.HMCTS_COURT_SUBMISSION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.STANDARD_DIRECTION_ORDER_ISSUED_TEMPLATE;
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.EMAIL;
 
 @Slf4j
 @Component
@@ -150,10 +152,11 @@ public class NotificationHandler {
     }
 
     @EventListener
-    public void sendNotificationsForIssuedCaseManagementOrder(CaseManagementOrderIssuedEvent event) {
+    public void sendNotificationsForIssuedCaseManagementOrder(final CaseManagementOrderIssuedEvent event) {
         EventData eventData = new EventData(event);
 
         sendCMOCaseLinkNotifications(eventData);
+        sendCMODocumentLinkNotifications(eventData, event.getDocumentContents());
     }
 
     private void sendCMOCaseLinkNotifications(final EventData eventData) {
@@ -171,8 +174,8 @@ public class NotificationHandler {
         String email = inboxLookupService.getNotificationRecipientEmail(eventData.getCaseDetails(),
             eventData.getLocalAuthorityCode());
 
-        sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, email,
-            localAuthorityNotificationParameters, eventData.getReference());
+        sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, email, localAuthorityNotificationParameters,
+            eventData.getReference());
     }
 
     private void sendCMOCaseLinkNotificationToRepresentatives(final EventData eventData) {
@@ -188,6 +191,42 @@ public class NotificationHandler {
                         eventData.getCaseDetails(), representative.getFullName());
 
                 sendNotification(CMO_ORDER_ISSUED_CASE_LINK_NOTIFICATION_TEMPLATE, representative.getEmail(),
+                    representativeNotificationParameters, eventData.getReference());
+            });
+    }
+
+    private void sendCMODocumentLinkNotifications(final EventData eventData, final byte[] documentContents) {
+        sendCMODocumentLinkNotificationForCafcass(eventData, documentContents);
+        sendCMODocumentLinkNotificationsToRepresentatives(eventData, documentContents);
+    }
+
+    private void sendCMODocumentLinkNotificationForCafcass(final EventData eventData, final byte[] documentContents) {
+        final String cafcassName = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getName();
+
+        Map<String, Object> cafcassParameters =
+            caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(
+                eventData.getCaseDetails(), cafcassName, documentContents);
+
+        String cafcassEmail = cafcassLookupConfiguration.getCafcass(eventData.getLocalAuthorityCode()).getEmail();
+
+        sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, cafcassEmail, cafcassParameters,
+            eventData.getReference());
+    }
+
+    private void sendCMODocumentLinkNotificationsToRepresentatives(final EventData eventData,
+                                                                   final byte[] documentContents) {
+        CaseData caseData = objectMapper.convertValue(eventData.getCaseDetails().getData(), CaseData.class);
+        List<Representative> representatives = representativeService.getRepresentativesByServedPreference(
+            caseData.getRepresentatives(), EMAIL);
+
+        representatives.stream()
+            .filter(representative -> isNotBlank(representative.getEmail()))
+            .forEach(representative -> {
+                Map<String, Object> representativeNotificationParameters =
+                    caseManagementOrderEmailContentProvider.buildCMOIssuedDocumentLinkNotificationParameters(
+                        eventData.getCaseDetails(), representative.getFullName(), documentContents);
+
+                sendNotification(CMO_ORDER_ISSUED_DOCUMENT_LINK_NOTIFICATION_TEMPLATE, representative.getEmail(),
                     representativeNotificationParameters, eventData.getReference());
             });
     }

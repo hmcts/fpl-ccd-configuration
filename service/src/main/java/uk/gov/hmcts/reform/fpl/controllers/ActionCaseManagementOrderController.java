@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -56,6 +57,7 @@ public class ActionCaseManagementOrderController {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CMODocmosisTemplateDataGenerationService templateDataGenerationService;
     private final CoreCaseDataService coreCaseDataService;
+    private final DocumentDownloadService documentDownloadService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -141,8 +143,6 @@ public class ActionCaseManagementOrderController {
     public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
                                      @RequestHeader(value = "user-id") String userId,
                                      @RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-
         coreCaseDataService.triggerEvent(
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
@@ -150,10 +150,7 @@ public class ActionCaseManagementOrderController {
             "internal-change:CMO_PROGRESSION"
         );
 
-        if (!caseData.getCaseManagementOrder().isDraft()) {
-            applicationEventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(callbackRequest, authorization,
-                userId));
-        }
+        publishEventOnApprovedCMO(authorization, userId, callbackRequest);
     }
 
     private boolean sendToAllPartiesBeforeHearingDate(CaseData caseData) {
@@ -174,5 +171,19 @@ public class ActionCaseManagementOrderController {
 
     private DynamicList getHearingDynamicList(List<Element<HearingBooking>> hearingBookings) {
         return draftCMOService.getHearingDateDynamicList(hearingBookings, null);
+    }
+
+    private void publishEventOnApprovedCMO(String authorization, String userId, CallbackRequest callbackRequest) {
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        CaseManagementOrder actionedCmo = caseData.getCaseManagementOrder();
+
+        if (!actionedCmo.isDraft()) {
+            final String actionCmoDocumentUrl = actionedCmo.getOrderDoc().getBinaryUrl();
+            byte[] documentContents = documentDownloadService.downloadDocument(authorization, userId,
+                actionCmoDocumentUrl);
+
+            applicationEventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(callbackRequest, authorization,
+                userId, documentContents));
+        }
     }
 }
