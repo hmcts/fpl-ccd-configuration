@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.apache.commons.lang3.StringUtils.defaultString;
+import static org.apache.commons.lang3.StringUtils.join;
 
 @Getter
 @Setter
@@ -25,8 +26,8 @@ public class EmailConfiguration {
 
     @Bean
     public JavaMailSender javaMailSender() {
-        final String mailSmtpStarttlsEnableKey = "mail.smtp.starttls.enable";
-        final String mailSmtpSslTrustKey = "mail.smtp.ssl.trust";
+        final String mailSmtpStarttlsEnableKey = "smtp.starttls.enable";
+        final String mailSmtpSslTrustKey = "smtp.ssl.trust";
 
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost(host);
@@ -34,8 +35,10 @@ public class EmailConfiguration {
 
         Properties properties = new Properties();
         properties.setProperty("mail.transport.protocol", "smtp");
-        properties.setProperty(mailSmtpStarttlsEnableKey, defaultString(mail.get(mailSmtpStarttlsEnableKey), ""));
-        properties.setProperty(mailSmtpSslTrustKey, defaultString(mail.get(mailSmtpSslTrustKey), ""));
+        properties.setProperty(join("mail.", mailSmtpStarttlsEnableKey),
+            defaultString(mail.get(mailSmtpStarttlsEnableKey)));
+        properties.setProperty(join("mail.", mailSmtpSslTrustKey),
+            defaultString(mail.get(mailSmtpSslTrustKey)));
 
         javaMailSender.setJavaMailProperties(properties);
         return javaMailSender;
