@@ -17,5 +17,5 @@ spring:
         local-authority-fallback-inbox: fpl.local_authority_fallback_inbox
         system-update-user-password: fpl.system_update.password
         system-update-user-username: fpl.system_update.username
-        robotics-notifications-sender: robotics.notifications.sender
-        robotics-notifications-recipient: robotics.notifications.recipient
+        robotics-notification-sender: robotics.notification.sender
+        robotics-notification-recipient: robotics.notification.recipient

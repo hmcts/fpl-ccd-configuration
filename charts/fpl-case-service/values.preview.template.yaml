@@ -37,8 +37,8 @@ java:
         - local-authority-fallback-inbox
         - system-update-user-username
         - system-update-user-password
-        - robotics-notifications-sender
-        - robotics-notifications-recipient
+        - robotics-notification-sender
+        - robotics-notification-recipient
 
 ccd:
   ingressHost: ${SERVICE_FQDN}
