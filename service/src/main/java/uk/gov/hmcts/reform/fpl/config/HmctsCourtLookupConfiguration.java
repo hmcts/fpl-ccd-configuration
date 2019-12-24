@@ -18,7 +18,7 @@ public class HmctsCourtLookupConfiguration {
 
     public HmctsCourtLookupConfiguration(@Value("${fpl.local_authority_code_to_hmcts_court.mapping}") String config) {
         this.mapping = LookupConfigParser.parse(config, value -> {
-            String[] entrySplit = value.split(":", 2);
+            String[] entrySplit = value.split(":", 3);
             return new Court(
                 checkNotNull(emptyToNull(entrySplit[0]), "Court name cannot be empty"),
                 checkNotNull(emptyToNull(entrySplit[1]), "Court email cannot be empty")

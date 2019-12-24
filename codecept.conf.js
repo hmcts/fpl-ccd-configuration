@@ -47,6 +47,7 @@ exports.config = {
     enterHearingNeededEventPage: './e2e/pages/events/enterHearingNeededEvent.page.js',
     enterChildrenEventPage: './e2e/pages/events/enterChildrenEvent.page.js',
     enterRespondentsEventPage: './e2e/pages/events/enterRespondentsEvent.page.js',
+    enterRepresentativesEventPage: './e2e/pages/events/enterRepresentativesEvent.page.js',
     enterApplicantEventPage: './e2e/pages/events/enterApplicantEvent.page.js',
     enterOthersEventPage: './e2e/pages/events/enterOthersEvent.page.js',
     enterGroundsForApplicationEventPage: './e2e/pages/events/enterGroundsForApplicationEvent.page.js',
