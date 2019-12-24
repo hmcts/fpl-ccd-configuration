@@ -5,7 +5,10 @@ set -eu
 dir=$(dirname ${0})
 root_dir=$(realpath ${dir}/../../..)
 
-user_template_file=${root_dir}/docker/wiremock/__files/userTemplate.json
+mappings_template_dir=${root_dir}/docker/wiremock/templates
+user_template_file=${mappings_template_dir}/userTemplate.json
+mock_user_by_email_template=${mappings_template_dir}/userByEmail.json
+mock_user_by_email_dir=${root_dir}/docker/wiremock/mappings/user-by-email
 mock_file=${root_dir}/docker/wiremock/__files/mockResponse.json
 mock_tmp_file=${root_dir}/docker/wiremock/__files/mockResponse.tmp.json
 users_file=${root_dir}/bin/configurer/users.json
@@ -42,7 +45,28 @@ function create_mock_response() {
   rm $users_ids_tmp_file
 }
 
+function create_user_by_email_responses() {
+  rm -rf $mock_user_by_email_dir
+  mkdir $mock_user_by_email_dir
+  echo $(get_users_email_id_mappings '@') > $users_ids_tmp_file
+
+  for i in `seq 0 $(jq '. | length - 1' $users_file)`
+  do
+    email=$(jq -r --argjson i $i '.[$i].email' $users_file)
+    id=$(jq -r --arg email $email '.[$email]' $users_ids_tmp_file)
+
+    if [ "$id" != "null" ]; then
+       userByEmailMappings=$(sed -e "s|\[email]|$email|" -e "s|\[userId]|$id|" $mock_user_by_email_template)
+       echo $userByEmailMappings | jq '.' > "$mock_user_by_email_dir/${email}.json"
+    fi
+
+  done
+
+  rm $users_ids_tmp_file
+}
+
 create_mock_response swansea
+create_user_by_email_responses
 hillingdon_user_ids=$(echo $(get_users_ids hillingdon) | tr -d ' ')
 swindon_user_ids=$(echo $(get_users_ids swindon) | tr -d ' ')
 wiltshire_user_ids=$(echo $(get_users_ids wiltshire) | tr -d ' ')
