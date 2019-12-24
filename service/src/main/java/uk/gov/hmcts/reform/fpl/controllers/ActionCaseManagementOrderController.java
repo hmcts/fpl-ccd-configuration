@@ -36,6 +36,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderErrorMessages.HEA
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.NEXT_HEARING_DATE_LIST;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.ORDER_ACTION;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 
 @Api
@@ -71,10 +72,10 @@ public class ActionCaseManagementOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData()
-            .putAll(caseManagementOrderService.extractMapFieldsFromCaseManagementOrder(caseData.getCmoToAction()));
+        caseDetails.getData().putAll(
+            caseManagementOrderService.extractMapFieldsFromCaseManagementOrder(caseData.getCaseManagementOrder()));
 
-        draftCMOService.prepareCustomDirections(caseDetails, caseData.getCmoToAction());
+        draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
 
         caseDetails.getData().put(NEXT_HEARING_DATE_LIST.getKey(), getHearingDynamicList(caseData.getHearingDetails()));
 
@@ -118,7 +119,7 @@ public class ActionCaseManagementOrderController {
                 .build();
         }
 
-        CaseManagementOrder order = caseData.getCmoToAction();
+        CaseManagementOrder order = caseData.getCaseManagementOrder();
 
         order = draftCMOService.prepareCMO(caseData, order).toBuilder()
             .id(order.getId())
@@ -129,18 +130,17 @@ public class ActionCaseManagementOrderController {
 
         order = caseManagementOrderService.addAction(order, orderAction);
 
-        order = caseManagementOrderService.addNextHearingToCMO(caseData.getNextHearingDateList(), order);
-
-        caseData = caseData.toBuilder().cmoToAction(order).build();
+        if (!order.isDraft()) {
+            order = caseManagementOrderService.addNextHearingToCMO(caseData.getNextHearingDateList(), order);
+        }
 
         Document document = getDocument(authorization, userId, caseData, order.isDraft());
 
         order = caseManagementOrderService.addDocument(order, document);
 
-        caseDetails.getData().put("nextHearingDateLabel",
-            caseManagementOrderService.createNextHearingDateLabel(order, caseData.getHearingDetails()));
-
         caseDetails.getData().put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
+
+        caseDetails.getData().put("cmoEventId", ACTION_CASE_MANAGEMENT_ORDER.getId());
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

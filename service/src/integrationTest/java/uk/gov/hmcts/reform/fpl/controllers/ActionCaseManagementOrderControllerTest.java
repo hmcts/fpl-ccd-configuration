@@ -29,7 +29,6 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicListElement;
-import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
@@ -91,9 +90,6 @@ class ActionCaseManagementOrderControllerTest {
 
     @Autowired
     private ObjectMapper mapper;
-
-    @Autowired
-    private DateFormatterService dateFormatterService;
 
     @Autowired
     private DraftCMOService draftCMOService;
@@ -172,30 +168,7 @@ class ActionCaseManagementOrderControllerTest {
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, PDF, "case-management-order.pdf");
-        assertThat(caseData.getCmoToAction()).isEqualTo(expectedCaseManagementOrder());
-        assertThat(response.getData().get("nextHearingDateLabel")).isEqualTo(expectedLabel());
-    }
-
-    private CaseManagementOrder expectedCaseManagementOrder() throws IOException {
-        return CaseManagementOrder.builder()
-            .orderDoc(buildFromDocument(document()))
-            .id(ID)
-            .directions(emptyList())
-            .action(OrderAction.builder()
-                .type(SEND_TO_ALL_PARTIES)
-                .nextHearingType(ISSUES_RESOLUTION_HEARING)
-                .build())
-            .nextHearing(NextHearing.builder()
-                .id(ID)
-                .date(NOW.toString())
-                .build())
-            .status(SEND_TO_JUDGE)
-            .build();
-    }
-
-    private String expectedLabel() {
-        return String.format("The next hearing date is on %s",
-            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.minusDays(1), "d MMMM 'at' h:mma"));
+        assertThat(caseData.getCaseManagementOrder()).isEqualTo(expectedCaseManagementOrder());
     }
 
     @Test
@@ -223,7 +196,7 @@ class ActionCaseManagementOrderControllerTest {
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, PDF, "draft-case-management-order.pdf");
-        assertThat(caseData.getCmoToAction().getAction()).isEqualTo(getOrderAction(JUDGE_REQUESTED_CHANGE));
+        assertThat(caseData.getCaseManagementOrder().getAction()).isEqualTo(getOrderAction(JUDGE_REQUESTED_CHANGE));
     }
 
     @Test
@@ -242,6 +215,23 @@ class ActionCaseManagementOrderControllerTest {
         makeRequest(request);
 
         verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, 1L, event);
+    }
+
+    private CaseManagementOrder expectedCaseManagementOrder() throws IOException {
+        return CaseManagementOrder.builder()
+            .orderDoc(buildFromDocument(document()))
+            .id(ID)
+            .directions(emptyList())
+            .action(OrderAction.builder()
+                .type(SEND_TO_ALL_PARTIES)
+                .nextHearingType(ISSUES_RESOLUTION_HEARING)
+                .build())
+            .nextHearing(NextHearing.builder()
+                .id(ID)
+                .date(NOW.toString())
+                .build())
+            .status(SEND_TO_JUDGE)
+            .build();
     }
 
     private CallbackRequest buildCallbackRequest(Map<String, Object> data) {

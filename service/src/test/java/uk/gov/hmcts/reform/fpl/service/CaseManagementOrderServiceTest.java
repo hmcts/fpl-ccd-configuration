@@ -2,6 +2,10 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -9,7 +13,7 @@ import uk.gov.hmcts.reform.fpl.model.NextHearing;
 import uk.gov.hmcts.reform.fpl.model.OrderAction;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
-import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.service.time.TimeConfiguration;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -30,16 +34,16 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.RECITALS;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SCHEDULE;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookingDynmaicList;
-import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBookings;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {TimeConfiguration.class, CaseManagementOrderService.class,
+    HearingBookingService.class})
 class CaseManagementOrderServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
-    private final Time time = () -> NOW;
-    private static final LocalDateTime DATE = LocalDateTime.of(2018, 2, 12, 9, 30);
 
-    private CaseManagementOrderService service = new CaseManagementOrderService(time,
-        new DateFormatterService(), new HearingBookingService());
+    @Autowired
+    private CaseManagementOrderService service;
 
     @Test
     void shouldAddDocumentToOrderWhenDocumentExists() throws IOException {
@@ -103,37 +107,6 @@ class CaseManagementOrderServiceTest {
         assertFalse(service.isHearingDateInFuture(caseData));
     }
 
-    private CaseData.CaseDataBuilder caseDataWithCmo(UUID id) {
-        return CaseData.builder().cmoToAction(CaseManagementOrder.builder().id(id).build());
-    }
-
-    private List<Element<HearingBooking>> hearingBookingWithStartDatePlus(UUID id, int days) {
-        return ImmutableList.of(Element.<HearingBooking>builder()
-            .id(id)
-            .value(HearingBooking.builder()
-                .startDate(NOW.plusDays(days))
-                .build())
-            .build());
-    }
-
-    @Test
-    void shouldReturnEmptyStringWhenOrderActionIsNotPresentOnCMO() {
-        List<Element<HearingBooking>> hearingBookings = createHearingBookings(DATE);
-        CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder().build();
-        String label = service.createNextHearingDateLabel(caseManagementOrder, hearingBookings);
-
-        assertThat(label).isEqualTo("");
-    }
-
-    @Test
-    void shouldFormatNextHearingBookingLabelWhenCMOOrderActionContainsMatchingUUID() {
-        List<Element<HearingBooking>> hearingBookings = createHearingBookings(DATE);
-        CaseManagementOrder caseManagementOrder = createCMOWithNextHearing();
-        String label = service.createNextHearingDateLabel(caseManagementOrder, hearingBookings);
-
-        assertThat(label).isEqualTo("The next hearing date is on 12 February at 9:30am");
-    }
-
     @Test
     void shouldSetOrderActionNextHearingDateWhenProvidedNextHearingDateList() {
         CaseManagementOrder caseManagementOrder = CaseManagementOrder.builder()
@@ -162,11 +135,16 @@ class CaseManagementOrderServiceTest {
         assertThat(updatedCaseManagementOrder.getHearingDate()).isEqualTo("Test date");
     }
 
-    private CaseManagementOrder createCMOWithNextHearing() {
-        return CaseManagementOrder.builder()
-            .nextHearing(NextHearing.builder()
-                .id(fromString("ecac3668-8fa6-4ba0-8894-2114601a3e31"))
+    private CaseData.CaseDataBuilder caseDataWithCmo(UUID id) {
+        return CaseData.builder().caseManagementOrder(CaseManagementOrder.builder().id(id).build());
+    }
+
+    private List<Element<HearingBooking>> hearingBookingWithStartDatePlus(UUID id, int days) {
+        return ImmutableList.of(Element.<HearingBooking>builder()
+            .id(id)
+            .value(HearingBooking.builder()
+                .startDate(NOW.plusDays(days))
                 .build())
-            .build();
+            .build());
     }
 }

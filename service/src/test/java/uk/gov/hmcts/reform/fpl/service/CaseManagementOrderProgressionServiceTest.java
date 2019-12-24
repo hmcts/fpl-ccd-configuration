@@ -36,6 +36,8 @@ import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_SHARED;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDocument;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
@@ -60,11 +62,12 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData caseData = caseDataWithCaseManagementOrder(SEND_TO_JUDGE).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails);
+        service.handleCaseManagementOrderProgression(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER.getId());
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        assertThat(updatedCaseData.getCmoToAction()).isEqualTo(caseData.getCaseManagementOrder());
+        assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder().toBuilder()
+            .status(SEND_TO_JUDGE).build());
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey())).isNull();
     }
 
@@ -73,7 +76,7 @@ class CaseManagementOrderProgressionServiceTest {
         CaseData caseData = caseDataWithCaseManagementOrder(PARTIES_REVIEW).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails);
+        service.handleCaseManagementOrderProgression(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER.getId());
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -90,7 +93,7 @@ class CaseManagementOrderProgressionServiceTest {
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails);
+        service.handleCaseManagementOrderProgression(caseDetails, DRAFT_CASE_MANAGEMENT_ORDER.getId());
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
@@ -100,19 +103,19 @@ class CaseManagementOrderProgressionServiceTest {
 
     @Test
     void shouldPopulateServedCaseManagementOrdersWhenTryingToSendToAllPartiesAndHearingIsComplete() {
-        CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
+        CaseData caseData = caseDataWithCaseManagementOrderAction(SEND_TO_ALL_PARTIES)
             .hearingDetails(hearingBookingWithStartDateInPast())
             .build();
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails);
+        service.handleCaseManagementOrderProgression(caseDetails, ACTION_CASE_MANAGEMENT_ORDER.getId());
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(updatedCaseData.getServedCaseManagementOrders()).hasSize(1);
         assertThat(updatedCaseData.getServedCaseManagementOrders().get(0).getValue())
-            .isEqualTo(caseData.getCmoToAction());
+            .isEqualTo(caseData.getCaseManagementOrder());
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey())).isNull();
     }
 
@@ -120,48 +123,48 @@ class CaseManagementOrderProgressionServiceTest {
     void shouldPopulateFirstElementOfServedCaseManagementOrdersWhenTryingToSendToAllPartiesAndHearingIsComplete() {
         List<Element<CaseManagementOrder>> orders = orderListWithOneElement();
 
-        CaseData caseData = caseDataWithCmoToAction(SEND_TO_ALL_PARTIES)
+        CaseData caseData = caseDataWithCaseManagementOrderAction(SEND_TO_ALL_PARTIES)
             .servedCaseManagementOrders(orders)
             .hearingDetails(hearingBookingWithStartDateInPast())
             .build();
 
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails);
+        service.handleCaseManagementOrderProgression(caseDetails, ACTION_CASE_MANAGEMENT_ORDER.getId());
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(updatedCaseData.getServedCaseManagementOrders()).hasSize(2);
         assertThat(updatedCaseData.getServedCaseManagementOrders().get(0).getValue())
-            .isEqualTo(caseData.getCmoToAction());
+            .isEqualTo(caseData.getCaseManagementOrder());
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey())).isNull();
     }
 
     @Test
     void shouldPopulateDraftCaseManagementOrderWhenJudgeRequestsChange() {
-        CaseData caseData = caseDataWithCmoToAction(JUDGE_REQUESTED_CHANGE).build();
+        CaseData caseData = caseDataWithCaseManagementOrderAction(JUDGE_REQUESTED_CHANGE).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails);
+        service.handleCaseManagementOrderProgression(caseDetails, ACTION_CASE_MANAGEMENT_ORDER.getId());
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         assertThat(updatedCaseData.getCaseManagementOrder())
-            .isEqualTo(caseData.getCmoToAction().toBuilder().status(CMOStatus.SELF_REVIEW).build());
+            .isEqualTo(caseData.getCaseManagementOrder().toBuilder().status(CMOStatus.SELF_REVIEW).build());
 
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey())).isNull();
     }
 
     @Test
     void shouldDoNothingWhenJudgeLeavesInSelfReview() {
-        CaseData caseData = caseDataWithCmoToAction(SELF_REVIEW).build();
+        CaseData caseData = caseDataWithCaseManagementOrderAction(SELF_REVIEW).build();
         CaseDetails caseDetails = getCaseDetails(caseData);
 
-        service.handleCaseManagementOrderProgression(caseDetails);
+        service.handleCaseManagementOrderProgression(caseDetails, ACTION_CASE_MANAGEMENT_ORDER.getId());
 
         CaseData updatedCaseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        assertThat(updatedCaseData.getCmoToAction()).isEqualTo(caseData.getCmoToAction());
+        assertThat(updatedCaseData.getCaseManagementOrder()).isEqualTo(caseData.getCaseManagementOrder());
         assertThat(caseDetails.getData().get(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey())).isNull();
     }
 
@@ -173,9 +176,9 @@ class CaseManagementOrderProgressionServiceTest {
                 .build());
     }
 
-    private CaseData.CaseDataBuilder caseDataWithCmoToAction(ActionType type) {
+    private CaseData.CaseDataBuilder caseDataWithCaseManagementOrderAction(ActionType type) {
         return CaseData.builder()
-            .cmoToAction(CaseManagementOrder.builder()
+            .caseManagementOrder(CaseManagementOrder.builder()
                 .id(UUID)
                 .status(SEND_TO_JUDGE)
                 .action(OrderAction.builder()

@@ -16,6 +16,7 @@ import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEM
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_SHARED;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.DRAFT_CASE_MANAGEMENT_ORDER;
 
 @Service
 public class CaseManagementOrderProgressionService {
@@ -32,10 +33,10 @@ public class CaseManagementOrderProgressionService {
         this.mapper = mapper;
     }
 
-    public void handleCaseManagementOrderProgression(CaseDetails caseDetails) {
+    public void handleCaseManagementOrderProgression(CaseDetails caseDetails, String eventId) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        if (caseData.getCaseManagementOrder() != null) {
+        if (DRAFT_CASE_MANAGEMENT_ORDER.getId().equals(eventId)) {
             progressDraftCaseManagementOrder(caseDetails, caseData.getCaseManagementOrder());
         } else {
             progressActionCaseManagementOrder(caseDetails, caseData);
@@ -58,7 +59,7 @@ public class CaseManagementOrderProgressionService {
     }
 
     private void progressActionCaseManagementOrder(CaseDetails caseDetails, CaseData caseData) {
-        switch (caseData.getCmoToAction().getAction().getType()) {
+        switch (caseData.getCaseManagementOrder().getAction().getType()) {
             case SEND_TO_ALL_PARTIES:
                 List<Element<CaseManagementOrder>> orders = addOrderToList(caseData);
 
@@ -66,7 +67,9 @@ public class CaseManagementOrderProgressionService {
                 caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
                 break;
             case JUDGE_REQUESTED_CHANGE:
-                CaseManagementOrder updatedOrder = caseData.getCmoToAction().toBuilder().status(SELF_REVIEW).build();
+                CaseManagementOrder updatedOrder = caseData.getCaseManagementOrder().toBuilder()
+                    .status(SELF_REVIEW)
+                    .build();
 
                 caseDetails.getData().put(CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY.getKey(), updatedOrder);
                 caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
@@ -80,7 +83,7 @@ public class CaseManagementOrderProgressionService {
         List<Element<CaseManagementOrder>> orders = caseData.getServedCaseManagementOrders();
         orders.add(0, Element.<CaseManagementOrder>builder()
             .id(randomUUID())
-            .value(caseData.getCmoToAction())
+            .value(caseData.getCaseManagementOrder())
             .build());
 
         return orders;

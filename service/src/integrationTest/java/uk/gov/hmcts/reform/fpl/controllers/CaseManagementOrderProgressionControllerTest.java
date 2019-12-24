@@ -29,9 +29,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.JUDGE_REQUESTED_CHANGE;
 import static uk.gov.hmcts.reform.fpl.enums.ActionType.SEND_TO_ALL_PARTIES;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_JUDICIARY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.CASE_MANAGEMENT_ORDER_LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
+import static uk.gov.hmcts.reform.fpl.enums.Event.ACTION_CASE_MANAGEMENT_ORDER;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(CaseManagementOrderProgressionController.class)
@@ -48,6 +50,7 @@ class CaseManagementOrderProgressionControllerTest {
     @Test
     void aboutToSubmitReturnCaseManagementOrdersToLocalAuthorityWhenChangesAreRequested() throws Exception {
         CaseManagementOrder order = CaseManagementOrder.builder()
+            .status(SEND_TO_JUDGE)
             .action(OrderAction.builder()
                 .type(JUDGE_REQUESTED_CHANGE)
                 .build())
@@ -63,6 +66,7 @@ class CaseManagementOrderProgressionControllerTest {
     @Test
     void aboutToSubmitShouldPopulateListServedCaseManagementOrdersWhenSendsToAllParties() throws Exception {
         CaseManagementOrder order = CaseManagementOrder.builder()
+            .status(SEND_TO_JUDGE)
             .id(uuid)
             .action(OrderAction.builder()
                 .type(SEND_TO_ALL_PARTIES)
@@ -89,6 +93,7 @@ class CaseManagementOrderProgressionControllerTest {
 
     private CallbackRequest buildCallbackRequest(Map<String, Object> data) {
         return CallbackRequest.builder()
+            .eventId(ACTION_CASE_MANAGEMENT_ORDER.getId())
             .caseDetails(CaseDetails.builder()
                 .data(data)
                 .build())
