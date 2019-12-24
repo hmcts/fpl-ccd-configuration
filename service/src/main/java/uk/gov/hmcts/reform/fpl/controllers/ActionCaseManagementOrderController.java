@@ -3,6 +3,9 @@ package uk.gov.hmcts.reform.fpl.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import io.swagger.annotations.Api;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -13,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
+import uk.gov.hmcts.reform.fpl.events.CaseManagementOrderIssuedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
@@ -23,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.service.CMODocmosisTemplateDataGenerationService;
 import uk.gov.hmcts.reform.fpl.service.CaseManagementOrderService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
+import uk.gov.hmcts.reform.fpl.service.DocumentDownloadService;
 import uk.gov.hmcts.reform.fpl.service.DraftCMOService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
@@ -42,30 +47,17 @@ import static uk.gov.hmcts.reform.fpl.model.common.DocumentReference.buildFromDo
 @Api
 @RestController
 @RequestMapping("/callback/action-cmo")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ActionCaseManagementOrderController {
     private final DraftCMOService draftCMOService;
     private final CaseManagementOrderService caseManagementOrderService;
     private final DocmosisDocumentGeneratorService docmosisDocumentGeneratorService;
     private final UploadDocumentService uploadDocumentService;
     private final ObjectMapper mapper;
+    private final ApplicationEventPublisher applicationEventPublisher;
     private final CMODocmosisTemplateDataGenerationService templateDataGenerationService;
     private final CoreCaseDataService coreCaseDataService;
-
-    public ActionCaseManagementOrderController(DraftCMOService draftCMOService,
-                                               CaseManagementOrderService caseManagementOrderService,
-                                               DocmosisDocumentGeneratorService docmosisDocumentGeneratorService,
-                                               UploadDocumentService uploadDocumentService,
-                                               ObjectMapper mapper,
-                                               CMODocmosisTemplateDataGenerationService templateDataGenerationService,
-                                               CoreCaseDataService coreCaseDataService) {
-        this.draftCMOService = draftCMOService;
-        this.caseManagementOrderService = caseManagementOrderService;
-        this.docmosisDocumentGeneratorService = docmosisDocumentGeneratorService;
-        this.uploadDocumentService = uploadDocumentService;
-        this.mapper = mapper;
-        this.templateDataGenerationService = templateDataGenerationService;
-        this.coreCaseDataService = coreCaseDataService;
-    }
+    private final DocumentDownloadService documentDownloadService;
 
     @PostMapping("/about-to-start")
     public AboutToStartOrSubmitCallbackResponse handleAboutToStart(@RequestBody CallbackRequest callbackRequest) {
@@ -148,13 +140,17 @@ public class ActionCaseManagementOrderController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmitted(@RequestBody CallbackRequest callbackRequest) {
+    public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
+                                     @RequestHeader(value = "user-id") String userId,
+                                     @RequestBody CallbackRequest callbackRequest) {
         coreCaseDataService.triggerEvent(
             callbackRequest.getCaseDetails().getJurisdiction(),
             callbackRequest.getCaseDetails().getCaseTypeId(),
             callbackRequest.getCaseDetails().getId(),
             "internal-change:CMO_PROGRESSION"
         );
+
+        publishEventOnApprovedCMO(authorization, userId, callbackRequest);
     }
 
     private boolean sendToAllPartiesBeforeHearingDate(CaseData caseData) {
@@ -175,5 +171,19 @@ public class ActionCaseManagementOrderController {
 
     private DynamicList getHearingDynamicList(List<Element<HearingBooking>> hearingBookings) {
         return draftCMOService.getHearingDateDynamicList(hearingBookings, null);
+    }
+
+    private void publishEventOnApprovedCMO(String authorization, String userId, CallbackRequest callbackRequest) {
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        CaseManagementOrder actionedCmo = caseData.getCaseManagementOrder();
+
+        if (!actionedCmo.isDraft()) {
+            final String actionCmoDocumentUrl = actionedCmo.getOrderDoc().getBinaryUrl();
+            byte[] documentContents = documentDownloadService.downloadDocument(authorization, userId,
+                actionCmoDocumentUrl);
+
+            applicationEventPublisher.publishEvent(new CaseManagementOrderIssuedEvent(callbackRequest, authorization,
+                userId, documentContents));
+        }
     }
 }

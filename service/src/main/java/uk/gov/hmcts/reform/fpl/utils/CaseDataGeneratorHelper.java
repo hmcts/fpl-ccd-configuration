@@ -6,6 +6,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle;
 import uk.gov.hmcts.reform.fpl.enums.OrderStatus;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.Applicant;
 import uk.gov.hmcts.reform.fpl.model.ApplicantParty;
@@ -518,6 +519,15 @@ public class CaseDataGeneratorHelper {
             .recitals(createRecitals())
             .directions(createCmoDirections())
             .build();
+    }
+
+    public static List<Element<Representative>> createRepresentatives(
+        RepresentativeServingPreferences servingPreferences) {
+        return wrapElements(Representative.builder()
+            .email("abc@example.com")
+            .fullName("Jon Snow")
+            .servingPreferences(servingPreferences)
+            .build());
     }
 
     private static Solicitor createSolicitor() {
