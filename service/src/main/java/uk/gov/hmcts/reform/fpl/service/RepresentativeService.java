@@ -153,7 +153,6 @@ public class RepresentativeService {
                 .filter(representative ->  preference == representative.getServingPreferences())
                 .collect(toList());
         }
-
         return emptyList();
     }
 
