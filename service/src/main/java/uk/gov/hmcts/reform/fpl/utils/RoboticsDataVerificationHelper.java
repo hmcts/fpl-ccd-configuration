@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl.service.robotics;
+package uk.gov.hmcts.reform.fpl.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.fpl.exceptions.OtherOrderTypeEmailNotificationException;

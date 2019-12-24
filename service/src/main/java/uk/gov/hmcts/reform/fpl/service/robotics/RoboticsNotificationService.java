@@ -14,8 +14,8 @@ import uk.gov.hmcts.reform.fpl.service.EmailService;
 import static java.util.Set.of;
 import static org.apache.commons.lang3.StringUtils.join;
 import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.json;
-import static uk.gov.hmcts.reform.fpl.service.robotics.RoboticsDataVerificationHelper.runVerificationsOnRoboticsData;
-import static uk.gov.hmcts.reform.fpl.service.robotics.RoboticsDataVerificationHelper.verifyRoboticsJsonData;
+import static uk.gov.hmcts.reform.fpl.utils.RoboticsDataVerificationHelper.runVerificationsOnRoboticsData;
+import static uk.gov.hmcts.reform.fpl.utils.RoboticsDataVerificationHelper.verifyRoboticsJsonData;
 
 @Slf4j
 @Service
