@@ -211,7 +211,7 @@ dependencies {
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.1-RELEASE'
 
-  compile group: 'com.google.guava', name: 'guava', version: '28.1-jre'
+  compile group: 'com.google.guava', name: 'guava', version: '28.2-jre'
   compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
   compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
