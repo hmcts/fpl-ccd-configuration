@@ -1,28 +1,31 @@
 package uk.gov.hmcts.reform.fpl.config.email;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import java.util.Map;
 import java.util.Properties;
 
-import static org.apache.commons.lang3.StringUtils.defaultString;
-import static org.apache.commons.lang3.StringUtils.join;
+import static org.apache.commons.lang3.StringUtils.join;/**/
 
 @Getter
 @Setter
 @Configuration
-@ConfigurationProperties(prefix = "spring.mail.properties")
+@ConfigurationProperties(prefix = "spring.mail")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmailConfiguration {
     private String host;
     private int port;
     private String testConnection;
-    private Map<String, String> mail;
+
+    private final SmtpPropertiesConfiguration smtpPropertiesConfiguration;
 
     @Bean
     public JavaMailSender javaMailSender() {
@@ -36,11 +39,22 @@ public class EmailConfiguration {
         Properties properties = new Properties();
         properties.setProperty("mail.transport.protocol", "smtp");
         properties.setProperty(join("mail.", mailSmtpStarttlsEnableKey),
-            defaultString(mail.get(mailSmtpStarttlsEnableKey)));
+            smtpPropertiesConfiguration.getStarttlsEnable());
         properties.setProperty(join("mail.", mailSmtpSslTrustKey),
-            defaultString(mail.get(mailSmtpSslTrustKey)));
+            smtpPropertiesConfiguration.getSslTrust());
 
         javaMailSender.setJavaMailProperties(properties);
         return javaMailSender;
+    }
+
+    @Getter
+    @Setter
+    @Configuration
+    static class SmtpPropertiesConfiguration {
+        @Value("${spring.mail.properties.mail-smtp.starttls.enable}")
+        private String starttlsEnable;
+
+        @Value("${spring.mail.properties.mail-smtp.ssl.trust}")
+        private String sslTrust;
     }
 }
