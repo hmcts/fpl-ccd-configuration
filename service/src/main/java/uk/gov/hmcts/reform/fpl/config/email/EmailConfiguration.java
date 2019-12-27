@@ -48,7 +48,6 @@ public class EmailConfiguration {
     }
 
     @Getter
-    @Setter
     @Configuration
     static class SmtpPropertiesConfiguration {
         @Value("${spring.mail.properties.mail-smtp.starttls.enable}")
