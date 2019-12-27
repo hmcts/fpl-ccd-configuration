@@ -13,7 +13,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.util.Properties;
 
-import static org.apache.commons.lang3.StringUtils.join;/**/
+import static org.apache.commons.lang3.StringUtils.join;
 
 @Getter
 @Setter
