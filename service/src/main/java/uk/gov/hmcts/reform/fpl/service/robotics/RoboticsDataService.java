@@ -136,9 +136,9 @@ public class RoboticsDataService {
     }
 
     private Set<Respondent> populateRespondents(final List<Element<uk.gov.hmcts.reform.fpl.model.Respondent>>
-                                                    respondents1) {
-        if (isNotEmpty(respondents1)) {
-            return respondents1.stream()
+                                                    respondents) {
+        if (isNotEmpty(respondents)) {
+            return respondents.stream()
                 .filter(Objects::nonNull)
                 .map(Element::getValue)
                 .filter(respondent -> isNotEmpty(respondent.getParty()))

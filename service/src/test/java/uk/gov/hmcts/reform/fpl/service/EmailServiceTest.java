@@ -27,11 +27,9 @@ import static uk.gov.hmcts.reform.fpl.model.email.EmailAttachment.json;
 @ExtendWith(SpringExtension.class)
 public class EmailServiceTest {
     private static final String FAMILY_MAN_CASE_NUMBER = randomAlphabetic(12);
-
     private static final String EMAIL_TO = "recipient@example.com";
     private static final String EMAIL_FROM = "no-reply@exaple.com";
     private static final String EMAIL_SUBJECT = join("", "CaseSubmitted_", FAMILY_MAN_CASE_NUMBER);
-
     private static final byte[] EMAIL_ATTACHMENT_CONTENT = "1, 2, 3, 4, 5, 6".getBytes();
 
     @Mock
@@ -49,7 +47,7 @@ public class EmailServiceTest {
     }
 
     @Test
-    void shouldSendEmailSuccessfully() {
+    void shouldSendEmailSuccessfullyWhenEmailDataValid() {
         EmailData emailData = TestEmailData.getDefault();
         willDoNothing().given(javaMailSender).send(any(MimeMessage.class));
 
@@ -58,7 +56,7 @@ public class EmailServiceTest {
     }
 
     @Test
-    void shouldThrowEmailFailedSendExceptionOnMailExceptionWhenSendEmail() {
+    void shouldThrowEmailFailedSendExceptionWhenMailExceptionOnSendEmail() {
         EmailData emailData = TestEmailData.getDefault();
         willThrow(mock(MailException.class)).given(javaMailSender).send(any(MimeMessage.class));
 
@@ -66,19 +64,19 @@ public class EmailServiceTest {
     }
 
     @Test
-    void shouldThrowInvalidArgumentExceptionOnSendEmailWithNullSubject() {
+    void shouldThrowInvalidArgumentExceptionWhenSendEmailWithNullSubject() {
         EmailData emailData = TestEmailData.getWithNullSubject();
         assertThrows(IllegalArgumentException.class, () -> emailService.sendEmail(EMAIL_FROM, emailData));
     }
 
     @Test
-    void shouldThrowInvalidArgumentExceptionOnSendEmailWithNullTo() {
+    void shouldThrowInvalidArgumentExceptionWhenSendEmailWithNullRecipient() {
         EmailData emailData = TestEmailData.getWithNullTo();
         assertThrows(IllegalArgumentException.class, () -> emailService.sendEmail(EMAIL_FROM, emailData));
     }
 
     @Test
-    void shouldThrowInvalidArgumentExceptionOnSendEmailWithNullMessageText() {
+    void shouldThrowInvalidArgumentExceptionWhenSendEmailWithNullMessageText() {
         EmailData emailData = TestEmailData.getWithNullMessageText();
         assertThrows(IllegalArgumentException.class, () -> emailService.sendEmail(EMAIL_FROM, emailData));
     }
