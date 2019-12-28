@@ -23,7 +23,7 @@ import static org.apache.commons.lang3.StringUtils.isAlphanumeric;
 @RequestMapping("/callback/add-case-number")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AddCaseNumberController {
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper mapper;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @PostMapping("/about-to-submit")
