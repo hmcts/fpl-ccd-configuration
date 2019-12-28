@@ -46,41 +46,7 @@ public class RoboticsDataServiceTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void shouldReturnExpectedRoboticsData() throws IOException {
-        CaseData caseData = prepareCaseData(NOW);
-
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
-
-        assertThat(roboticsData).isEqualTo(expectedRoboticsData(EMERGENCY_PROTECTION_ORDER.getLabel()));
-    }
-
-    @Test
-    void shouldReturnExpectedRoboticsDataWithCommaSeparatedApplicationType() throws IOException {
-        CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, EDUCATION_SUPERVISION_ORDER,
-            EMERGENCY_PROTECTION_ORDER, OTHER);
-
-        RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData);
-
-        assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
-            "Care order,Education supervision order,Emergency protection order,"
-                + "Other order under part 4 of the Children Act 1989");
-    }
-
-    @Test
-    void shouldReturnExpectedRoboticsDataJsonString() throws IOException {
-        String expectedRoboticsDataJson = objectMapper.writeValueAsString(expectedRoboticsData(
-            SUPERVISION_ORDER.getLabel()));
-
-        CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
-
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
-        String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
-
-        assertEquals(expectedRoboticsDataJson, returnedRoboticsJson, true);
-    }
-
-    @Test
-    void shouldReturnRoboticsJsonDataWithoutSolicitorNode() throws IOException {
+    void shouldReturnRoboticsJsonDataWithoutSolicitorNodeWhenSolicitorNull() throws IOException {
         CaseData caseData = prepareCaseDataWithOrderType(SUPERVISION_ORDER).toBuilder()
             .solicitor(null)
             .build();
@@ -96,7 +62,7 @@ public class RoboticsDataServiceTest {
     }
 
     @Test
-    void shouldReturnRoboticsDataWithNullAllocation() throws IOException {
+    void shouldReturnRoboticsDataWithNullAllocationWhenAllocationProposalNull() throws IOException {
         CaseData caseData = prepareCaseDataWithOrderType(INTERIM_CARE_ORDER).toBuilder()
             .allocationProposal(null)
             .build();
@@ -107,7 +73,7 @@ public class RoboticsDataServiceTest {
     }
 
     @Test
-    void shouldReturnRoboticsDataWithExpectedlAllocation() throws IOException {
+    void shouldReturnRoboticsDataWithExpectedlAllocationWhenAllocationProposalHasValue() throws IOException {
         final String expectedAllocation = "To be moved";
 
         CaseData caseData = prepareCaseDataWithOrderType(INTERIM_CARE_ORDER).toBuilder()
@@ -122,12 +88,48 @@ public class RoboticsDataServiceTest {
     }
 
     @Test
-    void shouldReturnRoboticsDataWithEducationSupervisionOrderLabelValueAsApplicationType() throws IOException {
+    void shouldReturnExpectedJsonStringWhenOrderTypeInterimSupervisionOrderType() throws IOException {
+        String expectedRoboticsDataJson = objectMapper.writeValueAsString(expectedRoboticsData(
+            SUPERVISION_ORDER.getLabel()));
+
+        CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+        String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
+
+        assertEquals(expectedRoboticsDataJson, returnedRoboticsJson, true);
+    }
+
+    @Test
+    void shouldReturnEmergencySupervisionOrderLabelWhenOrderTypeEmergencySupervisionOrder() throws IOException {
+        CaseData caseData = prepareCaseData(NOW);
+
+        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+        assertThat(roboticsData).isEqualTo(expectedRoboticsData(EMERGENCY_PROTECTION_ORDER.getLabel()));
+    }
+
+    @Test
+    void shouldReturnEducationSupervisionOrderLabelAsApplicationTypeWhenOrderTypeEducationSupervisionOrder()
+        throws IOException {
         CaseData caseData = prepareCaseDataWithOrderType(EDUCATION_SUPERVISION_ORDER);
 
         RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
         assertThat(roboticsData.getApplicationType()).isEqualTo(EDUCATION_SUPERVISION_ORDER.getLabel());
+    }
+
+    @Test
+    void shouldReturnCommaSeparatedApplicationTypeWhenMoreThanOneOrderTypeSelected()
+        throws IOException {
+        CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, EDUCATION_SUPERVISION_ORDER,
+            EMERGENCY_PROTECTION_ORDER, OTHER);
+
+        RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+        assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
+            "Care order,Education supervision order,Emergency protection order,"
+                + "Other order under part 4 of the Children Act 1989");
     }
 
     private CaseData prepareCaseData(LocalDate date) throws IOException {

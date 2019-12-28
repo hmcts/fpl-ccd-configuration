@@ -26,7 +26,7 @@ public class EmailService {
 
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
 
-            mimeMessageHelper.setTo(emailData.getTo());
+            mimeMessageHelper.setTo(emailData.getRecipient());
             mimeMessageHelper.setFrom(from);
             mimeMessageHelper.setSubject(emailData.getSubject());
             mimeMessageHelper.setText(emailData.getMessage());
@@ -34,10 +34,8 @@ public class EmailService {
             if (emailData.hasAttachments()) {
                 // preferring for loop here so we don't have to catch exceptions twice
                 for (EmailAttachment attachment : emailData.getAttachments()) {
-                    if (attachment != null) {
-                        mimeMessageHelper.addAttachment(attachment.getFilename(),
-                            attachment.getData(), attachment.getContentType());
-                    }
+                    mimeMessageHelper.addAttachment(attachment.getFilename(),
+                        attachment.getData(), attachment.getContentType());
                 }
             }
 

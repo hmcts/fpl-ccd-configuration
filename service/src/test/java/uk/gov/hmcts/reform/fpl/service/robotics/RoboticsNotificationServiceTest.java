@@ -41,7 +41,7 @@ import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCas
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 public class RoboticsNotificationServiceTest {
-    private static final String EMAIL_TO = "recipient@example.com";
+    private static final String EMAIL_RECIPIENT = "recipient@example.com";
     private static final String EMAIL_FROM = "no-reply@exaple.com";
 
     @Autowired
@@ -64,7 +64,7 @@ public class RoboticsNotificationServiceTest {
     @BeforeEach
     void setup() {
         given(roboticsEmailConfiguration.getRecipient())
-            .willReturn(EMAIL_TO);
+            .willReturn(EMAIL_RECIPIENT);
 
         given(roboticsEmailConfiguration.getSender())
             .willReturn(EMAIL_FROM);
@@ -89,7 +89,7 @@ public class RoboticsNotificationServiceTest {
 
         EmailData capturedEmailData = emailDataArgumentCaptor.getValue();
         assertThat(capturedEmailData.getSubject()).isEqualTo("CaseSubmitted_12345");
-        assertThat(capturedEmailData.getTo()).isEqualTo(EMAIL_TO);
+        assertThat(capturedEmailData.getRecipient()).isEqualTo(EMAIL_RECIPIENT);
         assertThat(capturedEmailData.getAttachments()).hasSize(1);
         assertThat(capturedEmailData.getAttachments())
             .extracting("data", "filename")

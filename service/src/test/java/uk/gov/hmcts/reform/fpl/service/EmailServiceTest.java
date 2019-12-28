@@ -86,7 +86,7 @@ public class EmailServiceTest {
     static class TestEmailData {
         static EmailData getDefault() {
             return EmailData.builder()
-                .to(EMAIL_TO)
+                .recipient(EMAIL_TO)
                 .subject(EMAIL_SUBJECT)
                 .message("")
                 .attachments(of(json(EMAIL_ATTACHMENT_CONTENT, join(".", EMAIL_SUBJECT, "json"))))
@@ -95,7 +95,7 @@ public class EmailServiceTest {
 
         static EmailData getWithNullTo() {
             return EmailData.builder()
-                .to(null)
+                .recipient(null)
                 .subject(EMAIL_SUBJECT)
                 .message("")
                 .attachments(of(json(EMAIL_ATTACHMENT_CONTENT, join(".", EMAIL_SUBJECT, "json"))))
@@ -105,7 +105,7 @@ public class EmailServiceTest {
         static EmailData getWithNullSubject() {
             return EmailData.builder()
                 .subject(null)
-                .to(EMAIL_TO)
+                .recipient(EMAIL_TO)
                 .message("")
                 .attachments(of(json(EMAIL_ATTACHMENT_CONTENT, join(".", EMAIL_SUBJECT, "json"))))
                 .build();
@@ -114,7 +114,7 @@ public class EmailServiceTest {
         static EmailData getWithNullMessageText() {
             return EmailData.builder()
                 .subject(null)
-                .to(EMAIL_TO)
+                .recipient(EMAIL_TO)
                 .message(null)
                 .attachments(of(json(EMAIL_ATTACHMENT_CONTENT, join(".", EMAIL_SUBJECT, "json"))))
                 .build();

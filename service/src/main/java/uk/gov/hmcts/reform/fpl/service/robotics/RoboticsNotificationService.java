@@ -46,7 +46,7 @@ public class RoboticsNotificationService {
         return EmailData.builder()
             .message("")
             .subject(fileName)
-            .to(roboticsEmailConfiguration.getRecipient())
+            .recipient(roboticsEmailConfiguration.getRecipient())
             .attachments(of(json(roboticsJsonData.getBytes(), fileNameAndExtension)))
             .build();
     }
