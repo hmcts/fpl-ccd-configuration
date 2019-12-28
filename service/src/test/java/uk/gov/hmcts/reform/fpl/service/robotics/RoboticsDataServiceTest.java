@@ -76,7 +76,7 @@ public class RoboticsDataServiceTest {
         RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
         String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
-        assertEquals(expectedRoboticsDataJson, returnedRoboticsDataJson, true);
+        assertEquals(expectedRoboticsDataJson, returnedRoboticsJson, true);
     }
 
     @Test

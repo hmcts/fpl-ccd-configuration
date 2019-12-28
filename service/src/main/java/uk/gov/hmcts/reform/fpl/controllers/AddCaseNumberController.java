@@ -29,7 +29,7 @@ public class AddCaseNumberController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         if (!isAlphanumeric(caseData.getFamilyManCaseNumber())) {
             caseDetails.getData().keySet().removeIf(key -> key.equalsIgnoreCase("familyManCaseNumber"));
@@ -48,7 +48,7 @@ public class AddCaseNumberController {
 
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
-        CaseData caseData = objectMapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
         applicationEventPublisher.publishEvent(new CaseSubmittedEvent(caseData));
     }
 }
