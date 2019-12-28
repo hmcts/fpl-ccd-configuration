@@ -39,7 +39,6 @@ public class AddCaseNumberControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest);
 
         assertThat(callbackResponse.getErrors()).containsExactly("Enter a valid FamilyMan case number");
-        assertThat(callbackResponse.getData()).doesNotContainKey(FAMILY_MAN_CASE_NUMBER_KEY);
     }
 
     @Test
@@ -49,7 +48,7 @@ public class AddCaseNumberControllerTest {
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest);
 
-        assertThat(callbackResponse.getErrors()).isNull();
+        assertThat(callbackResponse.getErrors()).isEmpty();
         assertThat(callbackResponse.getData()).containsKey(FAMILY_MAN_CASE_NUMBER_KEY);
         assertThat(callbackResponse.getData().get(FAMILY_MAN_CASE_NUMBER_KEY)).isEqualTo(expectedFamilymanCaseNumber);
     }

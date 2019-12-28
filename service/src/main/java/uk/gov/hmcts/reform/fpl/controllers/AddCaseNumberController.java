@@ -15,6 +15,9 @@ import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.CaseSubmittedEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
+import java.util.List;
+
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.apache.commons.lang3.StringUtils.isAlphanumeric;
 
@@ -29,20 +32,10 @@ public class AddCaseNumberController {
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
-
-        if (!isAlphanumeric(caseData.getFamilyManCaseNumber())) {
-            caseDetails.getData().keySet().removeIf(key -> key.equalsIgnoreCase("familyManCaseNumber"));
-
-            String invalidFamilymanCaseNumberErrorMessage = "Enter a valid FamilyMan case number";
-            return AboutToStartOrSubmitCallbackResponse.builder()
-                .data(caseDetails.getData())
-                .errors(singletonList(invalidFamilymanCaseNumberErrorMessage))
-                .build();
-        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
+            .errors(validationErrors(caseDetails))
             .build();
     }
 
@@ -50,5 +43,15 @@ public class AddCaseNumberController {
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
         applicationEventPublisher.publishEvent(new CaseSubmittedEvent(caseData));
+    }
+
+    private List<String> validationErrors(final CaseDetails caseDetails) {
+        CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
+        if (!isAlphanumeric(caseData.getFamilyManCaseNumber())) {
+            return singletonList("Enter a valid FamilyMan case number");
+        }
+
+        return emptyList();
     }
 }
