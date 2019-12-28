@@ -27,7 +27,7 @@ public class AddCaseNumberController {
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @PostMapping("/about-to-submit")
-    public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackRequest) {
+    public AboutToStartOrSubmitCallbackResponse handleAboutToSubmit(@RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = objectMapper.convertValue(caseDetails.getData(), CaseData.class);
 
