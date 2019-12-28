@@ -6,7 +6,7 @@ import lombok.Data;
 
 /**
  * Same as {@link uk.gov.hmcts.reform.fpl.model.Address}, added this given former has
- * custom JsonCreator constructor.
+ * JsonCreator on constructor and @JsonProperty with UpperCamelCase for fields.
  */
 @Data
 @Builder(toBuilder = true)
