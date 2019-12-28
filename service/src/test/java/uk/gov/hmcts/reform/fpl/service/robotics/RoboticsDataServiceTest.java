@@ -74,7 +74,7 @@ public class RoboticsDataServiceTest {
         CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
 
         RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
-        String returnedRoboticsDataJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
+        String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
 
         assertEquals(expectedRoboticsDataJson, returnedRoboticsDataJson, true);
     }
