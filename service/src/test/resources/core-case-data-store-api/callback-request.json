@@ -67,7 +67,7 @@
           "childInformation": "Cousin",
           "litigationIssues": "NO",
           "genderIdentification": "Unknown",
-          "representedBy" : []
+          "representedBy": []
         },
         "additionalOthers": [
           {
@@ -495,7 +495,11 @@
         "title": "Example Order",
         "details": "Example order details here - Lorem ipsum dolor sit amet, consectetur adipiscing elit"
       },
-      "familyManCaseNumber": "12345L"
+      "familyManCaseNumber": "12345L",
+      "orderFurtherDirections": {
+        "directionsNeeded": "Yes",
+        "directions": "Example directions"
+      }
     }
   },
   "case_details_before": {

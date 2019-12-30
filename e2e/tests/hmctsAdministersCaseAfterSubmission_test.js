@@ -144,6 +144,8 @@ Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewP
   await createOrderEventPage.enterC21OrderDetails();
   await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
   await createOrderEventPage.enterJudgeAndLegalAdvisor(orders[0].judgeAndLegalAdvisor.judgeLastName, orders[0].judgeAndLegalAdvisor.legalAdvisorName);
+  await I.retryUntilExists(() => I.click('Continue'), '#orderFurtherDirections_directionsNeeded');
+  await createOrderEventPage.enterDirections('example directions');
   await I.completeEvent('Save and continue');
   let orderTime = new Date();
 
@@ -161,6 +163,8 @@ Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewP
   await createOrderEventPage.selectType(orders[1].type);
   await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
   await createOrderEventPage.enterJudgeAndLegalAdvisor(orders[1].judgeAndLegalAdvisor.judgeLastName, orders[1].judgeAndLegalAdvisor.legalAdvisorName);
+  await I.retryUntilExists(() => I.click('Continue'), '#orderFurtherDirections_directionsNeeded');
+  await createOrderEventPage.enterDirections('example directions');
   await I.completeEvent('Save and continue');
   orderTime = new Date();
   I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
