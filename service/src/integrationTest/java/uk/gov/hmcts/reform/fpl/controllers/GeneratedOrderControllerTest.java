@@ -189,11 +189,11 @@ class GeneratedOrderControllerTest {
     }
 
     private void aboutToSubmitAssertions(CaseData caseData, GeneratedOrder expectedOrder) {
-
         List<Element<GeneratedOrder>> orders = caseData.getOrderCollection();
         assertThat(caseData.getOrderTypeAndDocument()).isEqualTo(null);
         assertThat(caseData.getOrder()).isEqualTo(null);
         assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(null);
+        assertThat(caseData.getOrderFurtherDirections()).isEqualTo(null);
         assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
     }
 
