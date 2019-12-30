@@ -146,7 +146,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("hearingDate")).isEqualTo("");
         assertThat(templateData.get("hearingVenue")).isEqualTo(HEARING_VENUE);
         assertThat(templateData.get("preHearingAttendance")).isEqualTo(
-            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.minusHours(1), "dd MMMM YYYY, h:mma"));
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.minusHours(1), "dd MMMM yyyy, h:mma"));
         assertThat(templateData.get("hearingTime")).isEqualTo(getHearingTime());
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("Her Honour Judge Law");
         assertThat(templateData.get("legalAdvisorName")).isEqualTo("Peter Parker");
