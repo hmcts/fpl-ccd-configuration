@@ -35,8 +35,7 @@ module.exports = {
     I.fillField(this.fields.socialWorkChronologyReason, 'mock reason');
   },
 
-  uploadSocialWorkStatement(file) {
-    I.attachFile(this.documents.socialWorkStatementAndGenogram, file);
+  selectSocialWorkStatementIncludedInSWET() {
     within(this.fields.socialWorkStatementAndGenogramStatus, () => {
       I.click(locate('label').withText('Included in social work evidence template (SWET)'));
     });

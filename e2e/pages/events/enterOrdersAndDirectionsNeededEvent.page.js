@@ -17,7 +17,7 @@ module.exports = {
       entry: locate('input').withAttr({id: 'orders_emergencyProtectionOrders-ENTRY_PREMISES'}),
       search: locate('input').withAttr({id: 'orders_emergencyProtectionOrders-SEARCH_FOR_CHILD'}),
       other: locate('input').withAttr({id: 'orders_emergencyProtectionOrders-OTHER'}),
-      orderDetails: '#orders_emergencyProtectionOrderDetails',
+      details: '#orders_emergencyProtectionOrderDetails',
     },
     protectionDirections: {
       contact: locate('input').withAttr({id: 'orders_emergencyProtectionOrderDirections-CONTACT_WITH_NAMED_PERSON'}),
@@ -81,7 +81,7 @@ module.exports = {
   },
 
   enterProtectionOrdersDetails(details) {
-    I.fillField(this.fields.protectionOrders.orderDetails, details);
+    I.fillField(this.fields.protectionOrders.details, details);
   },
 
   checkContact() {

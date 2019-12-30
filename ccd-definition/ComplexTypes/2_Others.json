@@ -110,5 +110,15 @@
     "ElementLabel": "Give details, including assessment outcomes and referrals to health services",
     "FieldShowCondition": "litigationIssues=\"YES\"",
     "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Others",
+    "ListElementCode": "representedBy",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Text",
+    "ElementLabel": "Represented by",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "representedBy=\"DO_NOT_SHOW\""
   }
 ]

@@ -28,6 +28,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Locale;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -46,6 +47,8 @@ class UploadC2DocumentsControllerTest {
 
     private static final ZonedDateTime ZONE_DATE_TIME = ZonedDateTime.now(ZoneId.of("Europe/London"));
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("h:mma, d MMMM yyyy", Locale.UK);
+
+    private static final String ERROR_MESSAGE = "You need to upload a file.";
 
     @MockBean
     private UserDetailsService userDetailsService;
@@ -67,9 +70,11 @@ class UploadC2DocumentsControllerTest {
 
     @Test
     void shouldCreateC2DocumentBundle() throws Exception {
-        CallbackRequest request = createCallbackRequestWithTempC2Bundle();
+        Map<String,Object> data = createTemporaryC2Document();
 
-        MvcResult response = performResponseCallBack(request);
+        CallbackRequest request = createCallbackRequestWithTempC2Bundle(data);
+
+        MvcResult response = performResponseCallBack(request, "about-to-submit");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -97,7 +102,7 @@ class UploadC2DocumentsControllerTest {
             .caseDetails(callbackRequest().getCaseDetails())
             .build();
 
-        MvcResult response = performResponseCallBack(request);
+        MvcResult response = performResponseCallBack(request, "about-to-submit");
 
         AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
             .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
@@ -122,6 +127,35 @@ class UploadC2DocumentsControllerTest {
             .isEqualTo(dateFormatterService.formatLocalDateToString(ZONE_DATE_TIME.toLocalDate(), FormatStyle.MEDIUM));
     }
 
+    @Test
+    void midEventShouldNotReturnAnErrorWhenDocumentIsUploaded() throws Exception {
+        Map<String,Object> data = createTemporaryC2Document();
+
+        CallbackRequest request = createCallbackRequestWithTempC2Bundle(data);
+
+        MvcResult response = performResponseCallBack(request, "mid-event");
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(callbackResponse.getErrors()).doesNotContain(ERROR_MESSAGE);
+    }
+
+    @Test
+    void midEventShouldReturnAnErrorWhenDocumentIsNotUploaded() throws Exception {
+        Map<String, Object> data = ImmutableMap.of(
+            "temporaryC2Document", ImmutableMap.of());
+
+        CallbackRequest request = createCallbackRequestWithTempC2Bundle(data);
+
+        MvcResult response = performResponseCallBack(request, "mid-event");
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
+            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
+
+        assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
+    }
+
     private void assertC2BundleDocument(C2DocumentBundle documentBundle, String description) throws IOException {
         Document document = document();
 
@@ -131,24 +165,28 @@ class UploadC2DocumentsControllerTest {
         assertThat(documentBundle.getDescription()).isEqualTo(description);
     }
 
-    private CallbackRequest createCallbackRequestWithTempC2Bundle() {
+    private CallbackRequest createCallbackRequestWithTempC2Bundle(Map<String, Object> data) {
         return CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of(
-                    "temporaryC2Document", ImmutableMap.of(
-                        "document", ImmutableMap.of(
-                            "document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
-                            "document_binary_url",
-                            "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
-                            "document_filename", "file.pdf"),
-                        "description", "Test description")))
+                .data(data)
                 .build())
             .build();
     }
 
-    private MvcResult performResponseCallBack(CallbackRequest request) throws Exception {
+    private Map<String,Object> createTemporaryC2Document() {
+        return ImmutableMap.of(
+            "temporaryC2Document", ImmutableMap.of(
+                "document", ImmutableMap.of(
+                    "document_url", "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4",
+                    "document_binary_url",
+                    "http://localhost/documents/85d97996-22a5-40d7-882e-3a382c8ae1b4/binary",
+                    "document_filename", "file.pdf"),
+                "description", "Test description"));
+    }
+
+    private MvcResult performResponseCallBack(CallbackRequest request, String endpoint) throws Exception {
         return mockMvc
-            .perform(post("/callback/upload-c2/about-to-submit")
+            .perform(post("/callback/upload-c2/" + endpoint)
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)

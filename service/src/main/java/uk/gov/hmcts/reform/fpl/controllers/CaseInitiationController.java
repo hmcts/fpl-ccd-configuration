@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -11,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.InitiatedCaseEvent;
 import uk.gov.hmcts.reform.fpl.service.LocalAuthorityService;
+import uk.gov.hmcts.reform.fpl.service.LocalAuthorityUserService;
 
 import java.util.Map;
 
@@ -22,14 +21,14 @@ import java.util.Map;
 public class CaseInitiationController {
 
     private final LocalAuthorityService localAuthorityNameService;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final LocalAuthorityUserService localAuthorityUserService;
 
 
     @Autowired
     public CaseInitiationController(LocalAuthorityService localAuthorityNameService,
-                                    ApplicationEventPublisher applicationEventPublisher) {
+                                    LocalAuthorityUserService localAuthorityUserService) {
         this.localAuthorityNameService = localAuthorityNameService;
-        this.applicationEventPublisher = applicationEventPublisher;
+        this.localAuthorityUserService = localAuthorityUserService;
     }
 
     @PostMapping("/about-to-submit")
@@ -48,11 +47,14 @@ public class CaseInitiationController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(
-        @RequestHeader(value = "authorization") String authorization,
+    public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorisation,
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) {
+        CaseDetails caseDetails = callbackRequest.getCaseDetails();
+        String caseId = Long.toString(caseDetails.getId());
+        String caseLocalAuthority = (String) caseDetails.getData()
+            .get("caseLocalAuthority");
 
-        applicationEventPublisher.publishEvent(new InitiatedCaseEvent(callbackRequest, authorization, userId));
+        localAuthorityUserService.grantUserAccessWithCaseRole(authorisation, userId, caseId, caseLocalAuthority);
     }
 }

@@ -17,6 +17,7 @@ const enterAllocationProposalEventPage = require('./pages/events/enterAllocation
 const enterRespondentsEventPage = require('./pages/events/enterRespondentsEvent.page');
 
 const applicant = require('./fixtures/applicant');
+const solicitor = require('./fixtures/solicitor');
 const respondent = require('./fixtures/respondents');
 
 let baseUrl = process.env.URL || 'http://localhost:3451';
@@ -134,6 +135,7 @@ module.exports = function () {
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterApplicant);
       enterApplicantEventPage.enterApplicantDetails(applicant);
+      enterApplicantEventPage.enterSolicitorDetails(solicitor);
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.enterChildren);
       await enterChildrenEventPage.enterChildDetails('Timothy', 'Jones', '01', '08', '2015');
@@ -145,18 +147,25 @@ module.exports = function () {
       enterGroundsEventPage.enterThresholdCriteriaDetails();
       await this.completeEvent('Save and continue');
       await caseViewPage.goToNewActions(config.applicationActions.uploadDocuments);
-      uploadDocumentsEventPage.selectSocialWorkChronologyToFollow(config.testFile);
-      uploadDocumentsEventPage.uploadSocialWorkStatement(config.testFile);
+      uploadDocumentsEventPage.selectSocialWorkChronologyToFollow();
+      uploadDocumentsEventPage.selectSocialWorkStatementIncludedInSWET();
       uploadDocumentsEventPage.uploadSocialWorkAssessment(config.testFile);
       uploadDocumentsEventPage.uploadCarePlan(config.testFile);
+      uploadDocumentsEventPage.uploadSWET(config.testFile);
       uploadDocumentsEventPage.uploadThresholdDocument(config.testFile);
       uploadDocumentsEventPage.uploadChecklistDocument(config.testFile);
       await this.completeEvent('Save and continue');
     },
 
-    async addAnotherElementToCollection() {
+    async addAnotherElementToCollection(collectionName) {
       const numberOfElements = await this.grabNumberOfVisibleElements('.collection-title');
-      this.click('Add new');
+      if(collectionName) {
+        this.click(locate('button')
+          .inside(locate('div').withChild(locate('h2').withText(collectionName)))
+          .withText('Add new'));
+      } else {
+        this.click('Add new');
+      }
       this.waitNumberOfVisibleElements('.collection-title', numberOfElements + 1);
       this.wait(0.5); // add extra time to allow slower browsers to render all fields (just extra precaution)
     },

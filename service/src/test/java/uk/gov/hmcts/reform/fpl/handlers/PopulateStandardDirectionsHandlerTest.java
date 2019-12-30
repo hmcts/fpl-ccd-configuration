@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.fpl.handlers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +29,9 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
+import static java.util.Collections.EMPTY_LIST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
@@ -204,12 +205,13 @@ class PopulateStandardDirectionsHandlerTest {
         assertThat(objectMapper.convertValue(
             callbackRequest.getCaseDetails().getData().get("localAuthorityDirections"), List.class).get(0))
             .extracting("value")
-            .isEqualTo(ImmutableMap.of(
+            .isEqualTo(Map.of(
                 "assignee", "LOCAL_AUTHORITY",
                 "directionText", "• Test body's 1 \n\n• Two",
                 "directionType", "Direction",
                 "directionRemovable", "No",
-                "readOnly", "No"));
+                "readOnly", "No",
+                "responses", EMPTY_LIST));
 
         verify(coreCaseDataApi, times(1)).submitEventForCaseWorker(
             TOKEN, AUTH_TOKEN, USER_ID, JURISDICTION, CASE_TYPE, CASE_ID, true, CaseDataContent.builder()

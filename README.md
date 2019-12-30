@@ -11,7 +11,7 @@ Family public law's implementation of the CCD template
 
 - [Docker](https://www.docker.com)
 - [realpath-osx](https://github.com/harto/realpath-osx) (Mac OS only)
-
+- [jq](https://stedolan.github.io/jq/)
 
 Run command:
 ```
@@ -38,15 +38,13 @@ e.g. [direnv](https://direnv.net).
 
 The values can be found on [Confluence](https://tools.hmcts.net/confluence/x/eQP3P).
 
-Run the final script each time new LA users are added in order to fix access segregation locally
-
 ```bash
 $ ./bin/configurer/add-services.sh
 $ ./bin/configurer/add-roles.sh
 $ ./bin/configurer/add-users.sh
-$ ./bin/configurer/utils/generate-local-user-mappings.sh
-
 ```
+
+Users are defined in `bin/configurer/users.json`. Run the final script each time new LA users are added in order to fix access segregation locally.
 
 Load CCD definition:
 
@@ -120,6 +118,16 @@ Note: Case number will be printed to the console while tests run e.g. `Applicati
 
 ## Service:
 See [fpl-service](service/README.md) for more information.
+
+## Stubbing 
+Some external dependencies need to be stubbed (i.e. professional reference data). 
+
+Docker-compose configures Wiremock to be exposed under port 8765.
+
+docker/wiremock folder configures the stubs themselves. 
+Refer to the [documentation](http://wiremock.org)
+for an additional guide. 
+   
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.

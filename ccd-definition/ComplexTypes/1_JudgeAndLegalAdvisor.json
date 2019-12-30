@@ -11,10 +11,19 @@
   {
     "LiveFrom": "01/01/2017",
     "ID": "JudgeAndLegalAdvisor",
+    "ListElementCode": "otherTitle",
+    "FieldType": "Text",
+    "ElementLabel": "Title",
+    "FieldShowCondition": "judgeTitle=\"OTHER\"",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "JudgeAndLegalAdvisor",
     "ListElementCode": "judgeLastName",
     "FieldType": "Text",
     "ElementLabel": "Last name",
-    "FieldShowCondition": "judgeTitle=\"HER_HONOUR_JUDGE\" OR judgeTitle=\"HIS_HONOUR_JUDGE\" OR judgeTitle=\"DEPUTY_DISTRICT_JUDGE\"",
+    "FieldShowCondition": "judgeTitle!=\"MAGISTRATES\" AND judgeTitle!=\"\"",
     "SecurityClassification": "Public"
   },
   {

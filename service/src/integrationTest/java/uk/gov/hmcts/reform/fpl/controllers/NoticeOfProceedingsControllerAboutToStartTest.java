@@ -18,15 +18,13 @@ import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 
-import java.time.LocalDate;
-import java.time.format.FormatStyle;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 
 @ActiveProfiles("integration-test")
@@ -36,7 +34,7 @@ class NoticeOfProceedingsControllerAboutToStartTest {
 
     private static final String AUTH_TOKEN = "Bearer token";
     private static final String USER_ID = "1";
-    private static final LocalDate TODAYS_DATE = LocalDate.now();
+    private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
 
     @Autowired
     private MockMvc mockMvc;
@@ -82,7 +80,7 @@ class NoticeOfProceedingsControllerAboutToStartTest {
         String proceedingLabel = callbackResponse.getData().get("proceedingLabel").toString();
 
         String expectedContent = String.format("The case management hearing will be on the %s.", dateFormatterService
-            .formatLocalDateToString(TODAYS_DATE, FormatStyle.LONG));
+            .formatLocalDateTimeBaseUsingFormat(TODAYS_DATE, "d MMMM yyyy"));
 
         assertThat(proceedingLabel).isEqualTo(expectedContent);
     }
@@ -102,15 +100,15 @@ class NoticeOfProceedingsControllerAboutToStartTest {
         return ImmutableList.of(
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(LocalDate.now().plusDays(5)))
+                .value(createHearingBooking(TODAYS_DATE.plusDays(5), TODAYS_DATE.plusHours(6)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(LocalDate.now().plusDays(2)))
+                .value(createHearingBooking(TODAYS_DATE.plusDays(2), TODAYS_DATE.plusMinutes(45)))
                 .build(),
             Element.<HearingBooking>builder()
                 .id(UUID.randomUUID())
-                .value(createHearingBooking(TODAYS_DATE))
+                .value(createHearingBooking(TODAYS_DATE, TODAYS_DATE.plusHours(2)))
                 .build()
         );
     }

@@ -41,11 +41,8 @@ module.exports = {
     I.selectOption(this.fields(elementIndex).gender, other.gender);
     I.fillField(this.fields(elementIndex).birthPlace, other.birthPlace);
     within(this.fields(elementIndex).address, () => {
-      if (elementIndex === 'firstOther') {
-        postcodeLookup.lookupPostcode(other.address);
-      } else {
-        postcodeLookup.enterAddressManually(other.address);
-      }
+      //XXX postcode lookup
+      postcodeLookup.enterAddressManually(other.address);
     });
     I.fillField(this.fields(elementIndex).telephoneNumber, other.telephoneNumber);
   },

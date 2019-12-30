@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.config.RestrictionsConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
 import uk.gov.hmcts.reform.fpl.events.SubmittedCaseEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -23,14 +24,13 @@ import uk.gov.hmcts.reform.fpl.service.CaseValidatorService;
 import uk.gov.hmcts.reform.fpl.service.DocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.UserDetailsService;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-
 import javax.validation.constraints.NotNull;
 import javax.validation.groups.Default;
 
@@ -48,6 +48,7 @@ public class CaseSubmissionController {
     private final ApplicationEventPublisher applicationEventPublisher;
     private final CaseValidatorService caseValidatorService;
     private final ObjectMapper mapper;
+    private final RestrictionsConfiguration restrictionsConfiguration;
 
     @Autowired
     public CaseSubmissionController(
@@ -56,13 +57,15 @@ public class CaseSubmissionController {
         UploadDocumentService uploadDocumentService,
         CaseValidatorService caseValidatorService,
         ObjectMapper mapper,
-        ApplicationEventPublisher applicationEventPublisher) {
+        ApplicationEventPublisher applicationEventPublisher,
+        RestrictionsConfiguration restrictionsConfiguration) {
         this.userDetailsService = userDetailsService;
         this.documentGeneratorService = documentGeneratorService;
         this.uploadDocumentService = uploadDocumentService;
         this.applicationEventPublisher = applicationEventPublisher;
         this.caseValidatorService = caseValidatorService;
         this.mapper = mapper;
+        this.restrictionsConfiguration = restrictionsConfiguration;
     }
 
     @PostMapping("/about-to-start")
@@ -85,7 +88,8 @@ public class CaseSubmissionController {
     private List<String> validate(CaseData caseData) {
         ImmutableList.Builder<String> builder = ImmutableList.builder();
 
-        if ("FPLA".equals(caseData.getCaseLocalAuthority())) {
+        if (restrictionsConfiguration.getLocalAuthorityCodesForbiddenCaseSubmission()
+            .contains(caseData.getCaseLocalAuthority())) {
             builder.add("Test local authority cannot submit cases");
         }
 

@@ -18,11 +18,12 @@ import uk.gov.hmcts.reform.fpl.model.Hearing;
 import uk.gov.hmcts.reform.fpl.model.Orders;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
+import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
 import uk.gov.hmcts.reform.fpl.model.common.Telephone;
-import uk.gov.hmcts.reform.fpl.validators.interfaces.EPOGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 
 import java.util.List;
 import java.util.UUID;
@@ -57,6 +58,7 @@ class CaseValidatorServiceTest {
             "• You need to add details to children",
             "In the applicant section:",
             "• You need to add details to applicant",
+            "• You need to add details to solicitor",
             "In the hearing needed section:",
             "• You need to add details to hearing needed",
             "In the documents section:",
@@ -82,6 +84,8 @@ class CaseValidatorServiceTest {
             "• Enter a valid address for the contact",
             "• Enter at least one telephone number for the contact",
             "• Enter an email address for the contact",
+            "• Enter the solicitor's full name",
+            "• Enter the solicitor's email",
             "In the children section:",
             "• Tell us the names of all children in the case",
             "In the documents section:",
@@ -108,6 +112,7 @@ class CaseValidatorServiceTest {
     void shouldNotReturnErrorsWhenMandatoryFieldsHaveBeenCompletedNotIncludingEPO() {
         CaseData caseData = partiallyCompleteCaseData()
             .applicants(applicants(true))
+            .solicitor(solicitor())
             .grounds(grounds())
             .build();
 
@@ -120,6 +125,7 @@ class CaseValidatorServiceTest {
         CaseData caseData = partiallyCompleteCaseData()
             .applicants(applicants(true))
             .grounds(grounds())
+            .solicitor(solicitor())
             .groundsForEPO(GroundsForEPO.builder()
                 .reason(ImmutableList.of("reason"))
                 .build())
@@ -174,6 +180,7 @@ class CaseValidatorServiceTest {
         CaseData caseData = partiallyCompleteCaseData()
             .grounds(grounds())
             .applicants(applicants(true))
+            .solicitor(solicitor())
             .respondents1(respondents())
             .build();
 
@@ -197,6 +204,7 @@ class CaseValidatorServiceTest {
                     .party(ApplicantParty.builder().build())
                     .build())
                 .build()))
+            .solicitor(Solicitor.builder().build())
             .build();
     }
 
@@ -287,6 +295,10 @@ class CaseValidatorServiceTest {
                 .build())
             .build()
         );
+    }
+
+    private Solicitor solicitor() {
+        return Solicitor.builder().name("fred").email("fred@fred.me").build();
     }
 
     private Orders orders() {
