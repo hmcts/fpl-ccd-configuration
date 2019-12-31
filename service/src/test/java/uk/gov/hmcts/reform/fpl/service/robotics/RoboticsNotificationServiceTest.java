@@ -13,7 +13,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
-import uk.gov.hmcts.reform.fpl.events.CaseSubmittedEvent;
+import uk.gov.hmcts.reform.fpl.events.AddCaseNumberEvent;
 import uk.gov.hmcts.reform.fpl.exceptions.OtherOrderTypeEmailNotificationException;
 import uk.gov.hmcts.reform.fpl.exceptions.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -83,7 +83,7 @@ public class RoboticsNotificationServiceTest {
         given(roboticsDataService.convertRoboticsDataToJson(expectedRoboticsData))
             .willReturn(expectedRoboticsDataJson);
 
-        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseSubmittedEvent(prepareCaseData()));
+        roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new AddCaseNumberEvent(prepareCaseData()));
 
         verify(emailService).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
 
@@ -105,7 +105,7 @@ public class RoboticsNotificationServiceTest {
             .willReturn(expectedRoboticsData);
 
         assertThrows(OtherOrderTypeEmailNotificationException.class,
-            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseSubmittedEvent(
+            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new AddCaseNumberEvent(
                 prepareCaseData())));
 
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
@@ -120,7 +120,7 @@ public class RoboticsNotificationServiceTest {
             .willReturn(invalidRoboticsDataWithZeroOwningCourt());
 
         assertThrows(RoboticsDataException.class,
-            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseSubmittedEvent(caseData)));
+            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new AddCaseNumberEvent(caseData)));
 
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
     }
@@ -134,7 +134,7 @@ public class RoboticsNotificationServiceTest {
             .willReturn(expectedRoboticsData(EDUCATION_SUPERVISION_ORDER.getLabel()));
 
         assertThrows(RoboticsDataException.class,
-            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseSubmittedEvent(
+            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new AddCaseNumberEvent(
                 prepareCaseData())));
 
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());

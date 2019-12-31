@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
-import uk.gov.hmcts.reform.fpl.events.CaseSubmittedEvent;
+import uk.gov.hmcts.reform.fpl.events.AddCaseNumberEvent;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
@@ -26,7 +26,7 @@ public class RoboticsNotificationService {
     private final RoboticsEmailConfiguration roboticsEmailConfiguration;
 
     @EventListener
-    public void notifyRoboticsOfSubmittedCaseData(final CaseSubmittedEvent event) {
+    public void notifyRoboticsOfSubmittedCaseData(final AddCaseNumberEvent event) {
         RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(event.getCaseData());
 
         EmailData emailData = prepareEmailData(roboticsData);

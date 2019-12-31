@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.fpl.service.robotics;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +23,11 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Map;
 
+import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
+import static org.skyscreamer.jsonassert.JSONAssert.assertNotEquals;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
@@ -88,19 +93,6 @@ public class RoboticsDataServiceTest {
     }
 
     @Test
-    void shouldReturnExpectedJsonStringWhenOrderTypeInterimSupervisionOrderType() throws IOException {
-        String expectedRoboticsDataJson = objectMapper.writeValueAsString(expectedRoboticsData(
-            SUPERVISION_ORDER.getLabel()));
-
-        CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
-
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
-        String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
-
-        assertEquals(expectedRoboticsDataJson, returnedRoboticsJson, true);
-    }
-
-    @Test
     void shouldReturnEmergencySupervisionOrderLabelWhenOrderTypeEmergencySupervisionOrder() throws IOException {
         CaseData caseData = prepareCaseData(NOW);
 
@@ -130,6 +122,53 @@ public class RoboticsDataServiceTest {
         assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
             "Care order,Education supervision order,Emergency protection order,"
                 + "Other order under part 4 of the Children Act 1989");
+    }
+
+    @Nested
+    class RoboticsJsonTests {
+        String expectedRoboticsDataJson;
+
+        @BeforeEach
+        void setup() throws IOException {
+            expectedRoboticsDataJson = objectMapper.writeValueAsString(expectedRoboticsData(
+                SUPERVISION_ORDER.getLabel()));
+        }
+
+        @Test
+        void shouldNotReturnEmptyRoboticsJsonWhenNoError() throws IOException {
+            CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
+
+            assertNotEquals(new JSONObject().toString(), returnedRoboticsJson, true);
+        }
+
+        @Test
+        void shouldReturnExpectedJsonStringWhenOrderTypeInterimSupervisionOrderType() throws IOException {
+            CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
+
+            assertEquals(expectedRoboticsDataJson, returnedRoboticsJson, true);
+        }
+
+        @Test
+        void shouldReturnRoboticsJsonWithCommaSeparatedApplicationTypeWhenMultipleOrderTypeSelected()
+            throws IOException {
+            String expectedJsonWithCommaSeparatedApplicationType = objectMapper.writeValueAsString(
+                expectedRoboticsData(join(",", SUPERVISION_ORDER.getLabel(), CARE_ORDER.getLabel(),
+                    EMERGENCY_PROTECTION_ORDER.getLabel())));
+
+            CaseData caseData = prepareCaseDataWithOrderType(SUPERVISION_ORDER, CARE_ORDER,
+                EMERGENCY_PROTECTION_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            String returnedRoboticsJson = roboticsDataService.convertRoboticsDataToJson(roboticsData);
+
+            assertEquals(returnedRoboticsJson, expectedJsonWithCommaSeparatedApplicationType, true);
+        }
     }
 
     private CaseData prepareCaseData(LocalDate date) throws IOException {
