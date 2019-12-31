@@ -2,7 +2,7 @@
 
 set -eu
 
-if [[ "${ENVIRONMENT:-local}" != "local" && "${ENVIRONMENT:-local}" != "preview" ]]; then
+if [ "${ENVIRONMENT:-local}" != "local" ]; then
   exit 0;
 fi
 
