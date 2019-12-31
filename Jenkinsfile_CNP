@@ -28,7 +28,9 @@ def otherSecrets = [
   ],
   'fpl-${env}': [
     secret('ccd-importer-username', 'CCD_CONFIGURER_IMPORTER_USERNAME'),
-    secret('ccd-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD')
+    secret('ccd-importer-password', 'CCD_CONFIGURER_IMPORTER_PASSWORD'),
+    secret('idam-owner-username', 'IDAM_ADMIN_USER'),
+    secret('idam-owner-password', 'IDAM_ADMIN_PASSWORD')
   ]
 ]
 
