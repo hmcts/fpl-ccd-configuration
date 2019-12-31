@@ -290,8 +290,8 @@ class CMODocmosisTemplateDataGenerationServiceTest {
 
     private String getHearingTime() {
         return String.format("%s - %s",
-            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW, "dd MMMM, h:mma"),
-            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.plusDays(1), "dd MMMM, h:mma"));
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW, "d MMMM, h:mma"),
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.plusDays(1), "d MMMM, h:mma"));
     }
 
 }
