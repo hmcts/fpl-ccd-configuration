@@ -7,7 +7,7 @@ spring:
         notify-api-key: notify.api_key
         docmosis-api-key: docmosis.tornado.key
         fpl-case-service-s2s-secret: idam.s2s-auth.totp_secret
-        fpl-case-service-idam-client-secret: idam.client.secret
+        fpl-case-service-idam-client-secret-preview: idam.client.secret
         local-authority-email-to-code-mapping: fpl.local_authority_email_to_code.mapping
         local-authority-code-to-name-mapping: fpl.local_authority_code_to_name.mapping
         local-authority-user-mapping: fpl.local_authority_user.mapping

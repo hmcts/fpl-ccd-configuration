@@ -23,7 +23,7 @@ java:
         - notify-api-key
         - docmosis-api-key
         - fpl-case-service-s2s-secret
-        - fpl-case-service-idam-client-secret
+        - fpl-case-service-idam-client-secret-preview
         - local-authority-email-to-code-mapping
         - local-authority-code-to-name-mapping
         - local-authority-user-mapping
