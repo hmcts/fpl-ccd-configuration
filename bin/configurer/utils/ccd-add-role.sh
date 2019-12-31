@@ -7,8 +7,11 @@ dir=$(dirname ${0})
 role=${1}
 
 userToken=$(${dir}/idam-lease-user-token.sh ${CCD_CONFIGURER_IMPORTER_USERNAME:-ccd.docker.default@hmcts.net} ${CCD_CONFIGURER_IMPORTER_PASSWORD:-Password12})
+
+echo "User token: ${userToken}"
 serviceToken=$(${dir}/idam-lease-service-token.sh ccd_gw $(docker run --rm toolbelt/oathtool --totp -b ${CCD_API_GATEWAY_S2S_SECRET:-AAAAAAAAAAAAAAAC}))
 
+echo "Service token: ${serviceToken}"
 echo "Creating CCD role: ${role}"
 
 curl --insecure --fail --show-error --silent --output /dev/null -X PUT \
