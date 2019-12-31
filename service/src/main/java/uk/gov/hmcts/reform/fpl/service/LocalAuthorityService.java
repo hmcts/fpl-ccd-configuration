@@ -32,7 +32,7 @@ public class LocalAuthorityService {
      * @return caseLocalAuthority for user.
      */
     public String getLocalAuthorityCode() {
-        UserInfo userInfo = idamApi.retrieveUserInfo(requestData.getAuthorization());
+        UserInfo userInfo = idamApi.retrieveUserInfo(requestData.authorisation());
         String email = userInfo.getSub();
         String domain = extractEmailDomain(email);
 

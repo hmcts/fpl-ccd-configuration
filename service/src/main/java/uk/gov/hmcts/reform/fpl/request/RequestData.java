@@ -1,10 +1,21 @@
 package uk.gov.hmcts.reform.fpl.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-@AllArgsConstructor
-@Data
+import javax.servlet.http.HttpServletRequest;
+
+@Service
 public class RequestData {
-    private final String authorization;
+
+    private final HttpServletRequest httpServletRequest;
+
+    @Autowired
+    public RequestData(HttpServletRequest httpServletRequest) {
+        this.httpServletRequest = httpServletRequest;
+    }
+
+    public String authorisation() {
+        return httpServletRequest.getHeader("authorization");
+    }
 }

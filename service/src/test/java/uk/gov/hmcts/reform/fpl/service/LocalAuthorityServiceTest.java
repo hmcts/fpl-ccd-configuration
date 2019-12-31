@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class LocalAuthorityServiceTest {
@@ -29,11 +30,16 @@ class LocalAuthorityServiceTest {
     @Mock
     private LocalAuthorityCodeLookupConfiguration codeConfig;
 
-    @Spy
-    private RequestData requestData = new RequestData(AUTH_TOKEN);
+    @Mock
+    private RequestData requestData;
 
     @InjectMocks
     private LocalAuthorityService localAuthorityService;
+
+    @BeforeEach
+    void setup() {
+        when(requestData.authorisation()).thenReturn(AUTH_TOKEN);
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {"mock@example.gov.uk", "mock.mock@example.gov.uk", "mock@ExAmPlE.gov.uk"})
