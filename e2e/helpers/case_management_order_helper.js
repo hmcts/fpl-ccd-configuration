@@ -147,8 +147,33 @@ const skipToSchedule = async (I) => {
   }
 };
 
+const sendDraftForJudgeReview = async (I, draftCaseManagementOrderEventPage) => {
+  await skipToReview(I);
+  draftCaseManagementOrderEventPage.markToBeSentToJudge();
+  await I.completeEvent('Submit');
+};
+
+const sendDraftForSelfReview = async (I, draftCaseManagementOrderEventPage) => {
+  await skipToReview(I);
+  draftCaseManagementOrderEventPage.markToReviewedBySelf();
+  await I.completeEvent('Submit');
+};
+
+const sendDraftForPartyReview = async (I, draftCaseManagementOrderEventPage) => {
+  await skipToReview(I);
+  draftCaseManagementOrderEventPage.markToBeReviewedByParties();
+  await I.completeEvent('Submit');
+};
+
+const actionDraft = async (I, actionCaseManagementOrderEventPage) => {
+  await skipToSchedule(I);
+  await I.retryUntilExists(() => I.click('Continue'), '#orderAction_type');
+  actionCaseManagementOrderEventPage.markToBeSentToLocalAuthority();
+  await I.completeEvent('Save and continue');
+};
+
 module.exports = {
   allOtherPartyDetails, skipToSchedule, skipToReview, assertCanSeeActionCMO, assertCanSeeDraftCMO,
   assertCanSeeDraftCMODocument, assertUserCannotSeeDraftOrdersTab, assertUserCanSeeDraftCMODocument,
-  switchUserAndNavigateToCase,
+  switchUserAndNavigateToCase, sendDraftForJudgeReview, sendDraftForSelfReview, sendDraftForPartyReview, actionDraft,
 };
