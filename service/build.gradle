@@ -228,6 +228,8 @@ dependencies {
 
   compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 
+  compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail'
+
   testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot) {
     exclude group: 'junit', module: 'junit'
     exclude group: 'org.mockito', module: 'mockito-core'
