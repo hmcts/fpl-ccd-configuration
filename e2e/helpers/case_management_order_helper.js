@@ -175,5 +175,6 @@ const actionDraft = async (I, actionCaseManagementOrderEventPage) => {
 module.exports = {
   allOtherPartyDetails, skipToSchedule, skipToReview, assertCanSeeActionCMO, assertCanSeeDraftCMO,
   assertCanSeeDraftCMODocument, assertUserCannotSeeDraftOrdersTab, assertUserCanSeeDraftCMODocument,
-  switchUserAndNavigateToCase, sendDraftForJudgeReview, sendDraftForSelfReview, sendDraftForPartyReview, actionDraft,
+  switchUserAndNavigateToCase, sendDraftForJudgeReview, sendDraftForSelfReview, sendDraftForPartyReview,
+  actionDraft,
 };
