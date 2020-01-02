@@ -14,13 +14,15 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
-import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Solicitor;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.model.common.Recital;
 import uk.gov.hmcts.reform.fpl.model.common.Schedule;
 import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
+import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -32,13 +34,16 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
 import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -53,6 +58,11 @@ import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PL
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDataGeneration {
+    public static final String REPRESENTED_BY = "representedBy";
+    public static final String NAME = "name";
+    public static final String REPRESENTATIVE_NAME = "representativeName";
+    public static final String REPRESENTATIVE_EMAIL = "representativeEmail";
+    public static final String REPRESENTATIVE_PHONE_NUMBER = "representativePhoneNumber";
     private final CommonCaseDataExtractionService commonCaseDataExtractionService;
     private final CaseDataExtractionService caseDataExtractionService;
     private final DateFormatterService dateFormatterService;
@@ -90,7 +100,7 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         cmoTemplateData.put("respondents", respondentsNameAndRelationship);
 
         cmoTemplateData.put("representatives",
-            getRepresentatives(caseData.getRespondents1(), applicantName, caseData.getSolicitor()));
+            getRepresentatives(caseData, applicantName, caseData.getSolicitor()));
 
         CaseManagementOrder order = draftCMOService.prepareCMO(caseData, getCaseManagementOrder(caseData));
 
@@ -131,36 +141,57 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
             return caseData.getCaseManagementOrder();
         }
 
-        if (caseData.getCaseManagementOrder() != null) {
-            return caseData.getCaseManagementOrder();
-        }
-
         return null;
     }
 
-    private List<Map<String, Object>> getRepresentatives(List<Element<Respondent>> respondents1,
+    private List<Map<String, Object>> getRepresentatives(CaseData caseData,
                                                          String applicantName,
                                                          Solicitor solicitor) {
-        List<Map<String, Object>> representatives = new ArrayList<>();
 
-        representatives.add(getApplicantDetails(applicantName, solicitor));
+        List<Map<String, Object>> representativesInfo = new ArrayList<>();
+        List<Element<Representative>> representatives = caseData.getRepresentatives();
 
-        if (!isEmpty(respondents1)) {
-            respondents1.stream()
-                .map(Element::getValue)
-                .forEach(respondent -> representatives.add(getRepresentative(respondent)));
-        }
+        representativesInfo.add(getApplicantDetails(applicantName, solicitor));
 
-        return representatives;
+        ElementUtils.unwrapElements(caseData.getRespondents1()).stream()
+            .filter(respondent -> isNotEmpty(respondent.getRepresentedBy()))
+            .forEach(respondent -> representativesInfo.add(Map.of(
+                NAME, defaultIfNull(respondent.getParty().getFullName(), EMPTY),
+                REPRESENTED_BY, getRepresentativesInfo(respondent, representatives))
+            ));
+
+
+        caseData.getAllOthers().stream()
+            .filter(other -> isNotEmpty(other.getRepresentedBy()))
+            .forEach(other -> representativesInfo.add(Map.of(
+                NAME, defaultIfNull(other.getName(), EMPTY),
+                REPRESENTED_BY, getRepresentativesInfo(other, representatives))));
+
+        return representativesInfo;
     }
 
-    private Map<String, Object> getRepresentative(Respondent respondent) {
-        // Currently don't capture respondents representatives apart from solicitor so just return empty placeholders
+    private List<Map<String, Object>> getRepresentativesInfo(Representable representable,
+                                                             List<Element<Representative>> representatives) {
+        return representable.getRepresentedBy().stream()
+            .map(representativeId -> findRepresentative(representatives, representativeId.getValue()))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .map(this::buildRepresentativeInfo)
+            .collect(Collectors.toList());
+    }
+
+    private Optional<Representative> findRepresentative(List<Element<Representative>> representatives, UUID id) {
+        return representatives.stream()
+            .filter(representative -> representative.getId().equals(id))
+            .findFirst()
+            .map(Element::getValue);
+    }
+
+    private Map<String, Object> buildRepresentativeInfo(Representative representative) {
         return ImmutableMap.of(
-            "respondentName", respondent.getParty().getFullName(),
-            "representativeName", EMPTY_PLACEHOLDER,
-            "representativeEmail", EMPTY_PLACEHOLDER,
-            "representativePhoneNumber", EMPTY_PLACEHOLDER
+            REPRESENTATIVE_NAME, representative.getFullName(),
+            REPRESENTATIVE_EMAIL, defaultIfNull(representative.getEmail(), EMPTY),
+            REPRESENTATIVE_PHONE_NUMBER, defaultIfNull(representative.getTelephoneNumber(), EMPTY)
         );
     }
 
@@ -171,7 +202,8 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
         if (isScheduleIncluded(schedule)) {
             scheduleMap.putAll(getEmptyScheduleMap());
         } else {
-            scheduleMap.putAll(mapper.convertValue(schedule, new TypeReference<>() {}));
+            scheduleMap.putAll(mapper.convertValue(schedule, new TypeReference<>() {
+            }));
             scheduleMap.put("scheduleProvided", true);
         }
 
@@ -201,19 +233,22 @@ public class CMODocmosisTemplateDataGenerationService extends DocmosisTemplateDa
     private Map<String, Object> getApplicantDetails(String applicantName, Solicitor solicitor) {
         Map<String, Object> applicantDetails = new HashMap<>();
 
-        applicantDetails.put("respondentName", defaultIfBlank(applicantName, EMPTY_PLACEHOLDER));
+        applicantDetails.put("name", defaultIfBlank(applicantName, EMPTY_PLACEHOLDER));
 
         if (solicitor == null) {
-            applicantDetails.putAll(ImmutableMap.of(
-                "representativeName", EMPTY_PLACEHOLDER,
-                "representativeEmail", EMPTY_PLACEHOLDER,
-                "representativePhoneNumber", EMPTY_PLACEHOLDER
-            ));
+            applicantDetails.put(REPRESENTED_BY, List.of(Map.of(
+                REPRESENTATIVE_NAME, EMPTY_PLACEHOLDER,
+                REPRESENTATIVE_EMAIL, EMPTY_PLACEHOLDER,
+                REPRESENTATIVE_PHONE_NUMBER, EMPTY_PLACEHOLDER
+            )));
         } else {
             String phoneNumber = defaultIfBlank(solicitor.getTelephone(), solicitor.getMobile());
-            applicantDetails.put("representativeName", defaultIfBlank(solicitor.getName(), EMPTY_PLACEHOLDER));
-            applicantDetails.put("representativeEmail", defaultIfBlank(solicitor.getEmail(), EMPTY_PLACEHOLDER));
-            applicantDetails.put("representativePhoneNumber", defaultIfBlank(phoneNumber, EMPTY_PLACEHOLDER));
+            applicantDetails.put(REPRESENTED_BY, List.of(
+                Map.of(
+                    REPRESENTATIVE_NAME, defaultIfBlank(solicitor.getName(), EMPTY_PLACEHOLDER),
+                    REPRESENTATIVE_EMAIL, defaultIfBlank(solicitor.getEmail(), EMPTY_PLACEHOLDER),
+                    REPRESENTATIVE_PHONE_NUMBER, defaultIfBlank(phoneNumber, EMPTY_PLACEHOLDER)
+                )));
         }
 
         return applicantDetails;
