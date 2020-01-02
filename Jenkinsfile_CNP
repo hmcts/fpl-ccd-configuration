@@ -1,6 +1,6 @@
 #!groovy
 
-@Library("Infrastructure@disableprdepcheck-adam")
+@Library("Infrastructure@disableprdepcheck")
 import uk.gov.hmcts.contino.ProjectBranch
 
 def type = "java"
