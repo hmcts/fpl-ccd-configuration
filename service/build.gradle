@@ -133,9 +133,6 @@ dependencyUpdates.resolutionStrategy = {
 
 // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
 dependencyCheck {
-  //temporarily disabling/skipping dependency checks pending latest release.
-  // See -> https://github.com/jeremylong/DependencyCheck/issues/2403#issuecomment-570096286
-  skip = true
   // Specifies if the build should be failed if a CVSS score above a specified level is identified.
   // range of 0-10 fails the build, anything greater and it doesn't fail the build
   failBuildOnCVSS = System.getProperty('dependencyCheck.failBuild') == 'true' ? 0 : 11
@@ -149,15 +146,6 @@ dependencyCheck {
     !it.name.startsWith('checkstyle') && !it.name.startsWith('jacoco') && !it.name.startsWith('integrationTest') &&
       !it.name.startsWith('smokeTest') && !it.name.startsWith('functionalTest')
   }.collect { it.name }
-}
-
-// given we skipped dependency checks, create dependency-check-report.html
-// See -> https://github.com/hmcts/cnp-jenkins-library/blob/8d14b783084a3f8f738b5eeedf6e7c6a9b9caa1b/src/uk/gov/hmcts/contino/GradleBuilder.groovy#L95
-def folder = new File( 'build/reports/dependency-check-report.html' )
-
-if( !folder.exists() ) {
-  folder.getParentFile().mkdirs()
-  folder.createNewFile()
 }
 
 sonarqube {
