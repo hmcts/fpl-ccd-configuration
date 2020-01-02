@@ -9,7 +9,6 @@
     "PageID": "1",
     "PageLabel": " ",
     "PageDisplayOrder": 1,
-    "PageColumnNumber": 1,
-    "Comment": "courtDirectionsCustom is used here to prevent Gatekeeper inadvertently getting C and D permissions in draftSDO journey on courtDirections. We do not want them to able to create/delete directions"
+    "PageColumnNumber": 1
   }
 ]

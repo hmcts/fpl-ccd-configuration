@@ -1,3 +1,4 @@
+
 plugins {
   id 'application'
   id 'checkstyle'
@@ -16,6 +17,11 @@ apply plugin: 'org.owasp.dependencycheck'
 
 group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
+
+ccd {
+  configDir = file('../ccd-definition-gen')
+  caseType = 'CARE_SUPERVISION_EPO'
+}
 
 sourceSets {
   functionalTest {
@@ -171,7 +177,6 @@ repositories {
   maven {
     url  "http://repo.spring.io/milestone"
   }
-  mavenLocal()
 }
 
 // it is important to specify logback classic and core packages explicitly as libraries like spring boot

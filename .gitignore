@@ -37,3 +37,4 @@ charts/*/charts/*.tgz
 
 # user mappings file
 application-user-mappings.yaml
+ccd-definition-gen/
