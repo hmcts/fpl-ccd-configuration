@@ -151,6 +151,15 @@ dependencyCheck {
   }.collect { it.name }
 }
 
+// given we skipped dependency checks, create dependency-check-report.html
+// See -> https://github.com/hmcts/cnp-jenkins-library/blob/8d14b783084a3f8f738b5eeedf6e7c6a9b9caa1b/src/uk/gov/hmcts/contino/GradleBuilder.groovy#L95
+def folder = new File( 'build/reports/dependency-check-report.html' )
+
+if( !folder.exists() ) {
+  folder.getParentFile().mkdirs()
+  folder.createNewFile()
+}
+
 sonarqube {
   properties {
     property "sonar.projectName", "FPL :: Service"
