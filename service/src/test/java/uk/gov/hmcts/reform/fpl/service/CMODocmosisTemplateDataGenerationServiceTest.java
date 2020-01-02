@@ -150,7 +150,7 @@ class CMODocmosisTemplateDataGenerationServiceTest {
         assertThat(templateData.get("hearingDate")).isEqualTo("");
         assertThat(templateData.get("hearingVenue")).isEqualTo(HEARING_VENUE);
         assertThat(templateData.get("preHearingAttendance")).isEqualTo(
-            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.minusHours(1), "dd MMMM YYYY, h:mma"));
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.minusHours(1), "dd MMMM yyyy, h:mma"));
         assertThat(templateData.get("hearingTime")).isEqualTo(getHearingTime());
         assertThat(templateData.get("judgeTitleAndName")).isEqualTo("Her Honour Judge Law");
         assertThat(templateData.get("legalAdvisorName")).isEqualTo("Peter Parker");
@@ -294,8 +294,8 @@ class CMODocmosisTemplateDataGenerationServiceTest {
 
     private String getHearingTime() {
         return String.format("%s - %s",
-            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW, "dd MMMM, h:mma"),
-            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.plusDays(1), "dd MMMM, h:mma"));
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW, "d MMMM, h:mma"),
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(NOW.plusDays(1), "d MMMM, h:mma"));
     }
 
 }
