@@ -62,6 +62,17 @@ class JsonOrdersLookUpServiceTest {
                         .directionRemovable(false)
                         .showDateOnly(false)
                         .build())
+                    .build(),
+                DirectionConfiguration.builder()
+                    .title("Test SDO type 3")
+                    .text("Test body 3")
+                    .assignee(LOCAL_AUTHORITY)
+                    .display(Display.builder()
+                        .due(Display.Due.BY)
+                        .templateDateFormat("h:mma, d MMMM yyyy")
+                        .directionRemovable(true)
+                        .showDateOnly(false)
+                        .build())
                     .build()))
             .build();
 
