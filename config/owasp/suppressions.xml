@@ -67,5 +67,17 @@
     <gav regex="true">^io\.netty:*:.*$</gav>
     <cve>CVE-2019-16869</cve>
   </suppress>
+  <suppress until="2020-01-31">
+    <notes><![CDATA[No fix available. file name: tomcat-embed-websocket-9.0.29.jar]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
+    <cve>CVE-2019-17563</cve>
+    <cve>CVE-2019-12418</cve>
+  </suppress>
+  <suppress until="2020-01-31">
+    <notes><![CDATA[No fix available. file name: tomcat-embed-core-9.0.29.jar]]></notes>
+    <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
+    <cve>CVE-2019-17563</cve>
+    <cve>CVE-2019-12418</cve>
+  </suppress>
 
 </suppressions>
