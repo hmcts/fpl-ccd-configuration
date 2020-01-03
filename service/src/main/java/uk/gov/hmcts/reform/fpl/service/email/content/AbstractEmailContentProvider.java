@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.service.email.content;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -18,7 +17,6 @@ import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang.StringUtils.capitalize;
-import static org.apache.commons.lang.StringUtils.uncapitalize;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 
@@ -39,7 +37,8 @@ public abstract class AbstractEmailContentProvider {
 
     @SuppressWarnings("unchecked")
     ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(CaseDetails caseDetails, CaseData caseData) {
-        List<String> ordersAndDirections = buildOrdersAndDirections((Map<String, Object>) caseDetails.getData().get("orders"));
+        List<String> ordersAndDirections = buildOrdersAndDirections(
+            (Map<String, Object>) caseDetails.getData().get("orders"));
 
         Optional<String> timeFrame = Optional.ofNullable((Map<String, Object>) caseDetails.getData().get("hearing"))
             .map(hearing -> (String) hearing.get("timeFrame"));
