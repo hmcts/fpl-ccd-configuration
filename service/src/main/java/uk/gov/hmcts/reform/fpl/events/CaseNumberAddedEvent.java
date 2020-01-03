@@ -4,10 +4,10 @@ import lombok.Value;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 @Value
-public class AddCaseNumberEvent {
+public class CaseNumberAddedEvent {
     private final CaseData caseData;
 
-    public AddCaseNumberEvent(CaseData caseData) {
+    public CaseNumberAddedEvent(CaseData caseData) {
         this.caseData = caseData;
     }
 }

@@ -3,11 +3,11 @@ package uk.gov.hmcts.reform.fpl.service.robotics;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.OrderType;
+import uk.gov.hmcts.reform.fpl.exceptions.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.Orders;
@@ -43,7 +43,6 @@ import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.robotics.Gender.convertStringToGender;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RoboticsDataService {
@@ -76,9 +75,8 @@ public class RoboticsDataService {
             return objectMapper.writerWithDefaultPrettyPrinter()
                 .writeValueAsString(roboticsData);
         } catch (JsonProcessingException e) {
-            log.error("Unable to convert robotics data to json", e);
+            throw new RoboticsDataException(e.getMessage(), e);
         }
-        return null;
     }
 
     private Applicant populateApplicant(final List<Element<uk.gov.hmcts.reform.fpl.model.Applicant>> allApplicants) {

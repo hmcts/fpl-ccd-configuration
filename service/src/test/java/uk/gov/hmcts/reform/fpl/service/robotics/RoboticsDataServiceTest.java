@@ -101,27 +101,68 @@ public class RoboticsDataServiceTest {
         assertThat(roboticsData).isEqualTo(expectedRoboticsData(EMERGENCY_PROTECTION_ORDER.getLabel()));
     }
 
-    @Test
-    void shouldReturnEducationSupervisionOrderLabelAsApplicationTypeWhenOrderTypeEducationSupervisionOrder()
-        throws IOException {
-        CaseData caseData = prepareCaseDataWithOrderType(EDUCATION_SUPERVISION_ORDER);
+    @Nested
+    class RoboticsApplicationTypeTests {
+        @Test
+        void shouldReturnCareOrderLabelAsApplicationTypeWhenInterimCareOrderSelected() throws IOException {
+            CaseData caseData = prepareCaseDataWithOrderType(INTERIM_CARE_ORDER);
 
-        RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
-        assertThat(roboticsData.getApplicationType()).isEqualTo(EDUCATION_SUPERVISION_ORDER.getLabel());
-    }
+            assertThat(roboticsData.getApplicationType()).isEqualTo(CARE_ORDER.getLabel());
+        }
 
-    @Test
-    void shouldReturnCommaSeparatedApplicationTypeWhenMoreThanOneOrderTypeSelected()
-        throws IOException {
-        CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, EDUCATION_SUPERVISION_ORDER,
-            EMERGENCY_PROTECTION_ORDER, OTHER);
+        @Test
+        void shouldReturnCareOrderLabelAsApplicationTypeWhenCareOrderSelected() throws IOException {
+            CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER);
 
-        RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData);
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
 
-        assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
-            "Care order,Education supervision order,Emergency protection order,"
-                + "Other order under part 4 of the Children Act 1989");
+            assertThat(roboticsData.getApplicationType()).isEqualTo(CARE_ORDER.getLabel());
+        }
+
+        @Test
+        void shouldReturnSupervisionOrderLabelAsApplicationTypeWhenInterimSupervisionOrderSelected()
+            throws IOException {
+            CaseData caseData = prepareCaseDataWithOrderType(INTERIM_SUPERVISION_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getApplicationType()).isEqualTo(SUPERVISION_ORDER.getLabel());
+        }
+
+        @Test
+        void shouldReturnSupervisionOrderLabelAsApplicationTypeWhenSupervisionOrderSelected()
+            throws IOException {
+            CaseData caseData = prepareCaseDataWithOrderType(SUPERVISION_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getApplicationType()).isEqualTo(SUPERVISION_ORDER.getLabel());
+        }
+
+        @Test
+        void shouldReturnEducationSupervisionOrderLabelAsApplicationTypeWhenOrderTypeEducationSupervisionOrder()
+            throws IOException {
+            CaseData caseData = prepareCaseDataWithOrderType(EDUCATION_SUPERVISION_ORDER);
+
+            RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(roboticsData.getApplicationType()).isEqualTo(EDUCATION_SUPERVISION_ORDER.getLabel());
+        }
+
+        @Test
+        void shouldReturnCommaSeparatedApplicationTypeWhenMoreThanOneOrderTypeSelected()
+            throws IOException {
+            CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, EDUCATION_SUPERVISION_ORDER,
+                EMERGENCY_PROTECTION_ORDER, OTHER);
+
+            RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
+                "Care order,Education supervision order,Emergency protection order,"
+                    + "Other order under part 4 of the Children Act 1989");
+        }
     }
 
     @Nested
