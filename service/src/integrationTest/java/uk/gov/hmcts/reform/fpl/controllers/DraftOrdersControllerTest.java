@@ -249,7 +249,6 @@ class DraftOrdersControllerTest {
                     .assignee(LOCAL_AUTHORITY)
                     .directionRemovable("Yes")
                     .readOnly("Yes")
-                    .directionRemovable("No")
                     .build())
                 .build());
 
