@@ -96,7 +96,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   await enterChildrenEventPage.enterParentsDetails();
   await enterChildrenEventPage.enterSocialWorkerDetails();
   await enterChildrenEventPage.defineChildAdditionalNeeds();
-  await enterChildrenEventPage.defineContactDetailsVisibility('No');
+  await enterChildrenEventPage.enterContactDetailsHidden('No');
   await enterChildrenEventPage.enterLitigationIssues('Yes', 'mock reason');
   await I.addAnotherElementToCollection();
   await enterChildrenEventPage.enterChildDetails('Susan', 'Wilson', '01', '07', '2016', 'Girl');
