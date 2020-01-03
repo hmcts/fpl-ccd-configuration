@@ -196,6 +196,21 @@ class ActionCaseManagementOrderControllerTest {
     }
 
     @Test
+    void aboutToSubmitShouldReturnCaseManagementOrderWithDraftDocumentWhenNotSendToAllParties() throws Exception {
+        Map<String, Object> data = ImmutableMap.of(
+            CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder(),
+            ORDER_ACTION.getKey(), getOrderAction(JUDGE_REQUESTED_CHANGE));
+
+        AboutToStartOrSubmitCallbackResponse response =
+            makeRequest(buildCallbackRequest(data), "about-to-submit");
+
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, PDF, "draft-case-management-order.pdf");
+        assertThat(caseData.getCaseManagementOrder().getAction()).isEqualTo(getOrderAction(JUDGE_REQUESTED_CHANGE));
+    }
+
+    @Test
     void aboutToSubmitShouldReturnCaseManagementOrderWithFinalDocumentWhenSendToAllParties() throws Exception {
         Map<String, Object> data = ImmutableMap.of(
             "hearingDetails", hearingBookingWithStartDatePlus(-1),
