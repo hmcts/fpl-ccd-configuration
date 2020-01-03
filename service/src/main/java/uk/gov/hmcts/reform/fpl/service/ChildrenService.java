@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,7 @@ public class ChildrenService {
 
         } else {
             caseData.getAllChildren().forEach(element -> {
-                if (detailsHidden(element)) {
+                if (element.getValue().containsConfidentialDetails()) {
                     childCollection.add(getElementToAdd(caseData.getConfidentialChildren(), element));
                 } else {
                     childCollection.add(element);
@@ -39,15 +40,10 @@ public class ChildrenService {
 
     // expands collection in UI. A value (in this case partyId) needs to be set to expand the collection.
     private Element<Child> emptyElementWithPartyId() {
-        return Element.<Child>builder()
-            .value(Child.builder()
+        return ElementUtils.element(
+            Child.builder()
                 .party(ChildParty.builder().partyId(randomUUID().toString()).build())
-                .build())
-            .build();
-    }
-
-    private boolean detailsHidden(Element<Child> element) {
-        return element.getValue().getParty().getDetailsHidden().equals("Yes");
+                .build());
     }
 
     private Element<Child> getElementToAdd(List<Element<Child>> confidentialChildren, Element<Child> element) {

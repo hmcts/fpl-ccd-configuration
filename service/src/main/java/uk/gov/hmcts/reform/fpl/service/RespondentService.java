@@ -29,7 +29,7 @@ public class RespondentService {
 
         } else {
             caseData.getAllRespondents().forEach(element -> {
-                if (detailsHidden(element)) {
+                if (element.getValue().containsConfidentialDetails()) {
                     respondentsCollection.add(getElementToAdd(caseData.getConfidentialRespondents(), element));
                 } else {
                     respondentsCollection.add(element);
@@ -46,10 +46,6 @@ public class RespondentService {
                 .party(RespondentParty.builder().partyId(randomUUID().toString()).build())
                 .build())
             .build();
-    }
-
-    private boolean detailsHidden(Element<Respondent> element) {
-        return element.getValue().getParty().getContactDetailsHidden().equals("Yes");
     }
 
     private Element<Respondent> getElementToAdd(List<Element<Respondent>> confidentialChildren,
