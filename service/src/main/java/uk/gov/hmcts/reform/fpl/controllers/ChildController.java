@@ -22,6 +22,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
+
 @Api
 @RestController
 @RequestMapping("/callback/enter-children")
@@ -67,9 +69,9 @@ public class ChildController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<Child>> confidentialChildren =
-            confidentialDetailsService.addPartyMarkedConfidentialToList(Child.class, caseData.getAllChildren());
+            confidentialDetailsService.addPartyMarkedConfidentialToList(caseData.getAllChildren());
 
-        confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialChildren, Child.class);
+        confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialChildren, CHILD);
 
         caseDetails.getData().put("children1", childrenService.modifyHiddenValues(caseData.getAllChildren()));
 

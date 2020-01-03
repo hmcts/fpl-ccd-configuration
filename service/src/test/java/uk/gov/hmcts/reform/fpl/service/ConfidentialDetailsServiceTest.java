@@ -1,25 +1,25 @@
 package uk.gov.hmcts.reform.fpl.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.model.*;
+import uk.gov.hmcts.reform.fpl.model.Address;
+import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
+import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.HashMap;
 import java.util.List;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.getCaseDataKeyFromClass;
+import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
@@ -27,22 +27,14 @@ class ConfidentialDetailsServiceTest {
     private static final String CONFIDENTIAL = "Yes";
     private static final String NOT_CONFIDENTIAL = "NO";
 
-    @Autowired
-    private ObjectMapper mapper;
-
-    private ConfidentialDetailsService service;
-
-    @BeforeEach
-    void before() {
-        service = new ConfidentialDetailsService(mapper);
-    }
+    private ConfidentialDetailsService service = new ConfidentialDetailsService();
 
     @Test
     void shouldAddToListWhenConfidentialDetailsForChild() {
         List<Element<Child>> children = ImmutableList.of(childElement(CONFIDENTIAL));
 
         List<Element<Child>> confidentialChildren =
-            service.addPartyMarkedConfidentialToList(Child.class, children);
+            service.addPartyMarkedConfidentialToList(children);
 
         assertThat(confidentialChildren).isEqualTo(children);
     }
@@ -52,7 +44,7 @@ class ConfidentialDetailsServiceTest {
         List<Element<Child>> children = ImmutableList.of();
 
         List<Element<Child>> confidentialChildren =
-            service.addPartyMarkedConfidentialToList(Child.class, children);
+            service.addPartyMarkedConfidentialToList(children);
 
         assertThat(confidentialChildren).isEqualTo(children);
     }
@@ -64,7 +56,7 @@ class ConfidentialDetailsServiceTest {
             childElement(NOT_CONFIDENTIAL));
 
         List<Element<Child>> confidentialChildren =
-            service.addPartyMarkedConfidentialToList(Child.class, children);
+            service.addPartyMarkedConfidentialToList(children);
 
         assertThat(confidentialChildren).hasSize(1).containsExactly(children.get(0));
     }
@@ -74,7 +66,7 @@ class ConfidentialDetailsServiceTest {
         List<Element<Respondent>> respondents = ImmutableList.of(respondentElement(CONFIDENTIAL));
 
         List<Element<Respondent>> confidentialRespondents =
-            service.addPartyMarkedConfidentialToList(Respondent.class, respondents);
+            service.addPartyMarkedConfidentialToList(respondents);
 
         assertThat(confidentialRespondents).isEqualTo(respondents);
     }
@@ -84,7 +76,7 @@ class ConfidentialDetailsServiceTest {
         List<Element<Respondent>> respondents = ImmutableList.of();
 
         List<Element<Respondent>> confidentialRespondents =
-            service.addPartyMarkedConfidentialToList(Respondent.class, respondents);
+            service.addPartyMarkedConfidentialToList(respondents);
 
         assertThat(confidentialRespondents).isEqualTo(respondents);
     }
@@ -96,7 +88,7 @@ class ConfidentialDetailsServiceTest {
             respondentElement(NOT_CONFIDENTIAL));
 
         List<Element<Respondent>> confidentialRespondents =
-            service.addPartyMarkedConfidentialToList(Respondent.class, respondents);
+            service.addPartyMarkedConfidentialToList(respondents);
 
         assertThat(confidentialRespondents).hasSize(1).containsExactly(respondents.get(0));
     }
@@ -107,18 +99,9 @@ class ConfidentialDetailsServiceTest {
         List<Element<Respondent>> confidentialDetails = ImmutableList.of(
             respondentElement(CONFIDENTIAL));
 
-        service.addConfidentialDetailsToCaseDetails(caseDetails, confidentialDetails, Respondent.class);
+        service.addConfidentialDetailsToCaseDetails(caseDetails, confidentialDetails, RESPONDENT);
 
-        assertThat(caseDetails.getData()).containsKeys(getCaseDataKeyFromClass(Respondent.class));
-    }
-
-    @Test
-    void shouldThrowExceptionWhenClassIsNotConfidential() {
-        CaseDetails caseDetails = CaseDetails.builder().data(new HashMap<>()).build();
-        List<Element<Applicant>> confidentialDetails = emptyList();
-
-        service.addConfidentialDetailsToCaseDetails(caseDetails, confidentialDetails, Applicant.class);
-
+        assertThat(caseDetails.getData()).containsKeys(RESPONDENT.getCaseDataKey());
     }
 
     private Element<Child> childElement(String hidden) {

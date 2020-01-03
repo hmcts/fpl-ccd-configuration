@@ -63,7 +63,7 @@ public class ChildrenService {
                     builder.party(element.getValue().getParty().toBuilder().build());
                 }
 
-                if (hiddenContactDetails(element)) {
+                if (element.getValue().containsConfidentialDetails()) {
                     builder.party(element.getValue().getParty().toBuilder()
                         .address(null)
                         .telephoneNumber(null)
@@ -84,11 +84,5 @@ public class ChildrenService {
             .partyId(randomUUID().toString())
             .partyType(INDIVIDUAL)
             .build());
-    }
-
-    private boolean hiddenContactDetails(Element<Child> element) {
-        String contactDetails = element.getValue().getParty().getDetailsHidden();
-
-        return contactDetails != null && contactDetails.equals("Yes");
     }
 }

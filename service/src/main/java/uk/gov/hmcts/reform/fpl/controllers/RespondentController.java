@@ -22,6 +22,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.RESPONDENT;
+
 @Api
 @RestController
 @RequestMapping("/callback/enter-respondents")
@@ -67,10 +69,10 @@ public class RespondentController {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         List<Element<Respondent>> confidentialRespondents =
-            confidentialDetailsService.addPartyMarkedConfidentialToList(Respondent.class, caseData.getAllRespondents());
+            confidentialDetailsService.addPartyMarkedConfidentialToList(caseData.getAllRespondents());
 
         confidentialDetailsService.addConfidentialDetailsToCaseDetails(
-            caseDetails, confidentialRespondents, Respondent.class);
+            caseDetails, confidentialRespondents, RESPONDENT);
 
         caseDetails.getData().put("respondents1", respondentService.modifyHiddenValues(caseData.getAllRespondents()));
 

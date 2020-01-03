@@ -66,7 +66,7 @@ public class RespondentService {
                     builder.party(element.getValue().getParty().toBuilder().build());
                 }
 
-                if (hiddenContactDetails(element)) {
+                if (element.getValue().containsConfidentialDetails()) {
                     builder.party(element.getValue().getParty().toBuilder()
                         .address(null)
                         .telephoneNumber(null)
@@ -87,12 +87,6 @@ public class RespondentService {
             .partyId(randomUUID().toString())
             .partyType(INDIVIDUAL)
             .build());
-    }
-
-    private boolean hiddenContactDetails(Element<Respondent> element) {
-        String contactDetails = element.getValue().getParty().getContactDetailsHidden();
-
-        return contactDetails != null && contactDetails.equals("Yes");
     }
 
     public String buildRespondentLabel(List<Element<Respondent>> respondents) {
