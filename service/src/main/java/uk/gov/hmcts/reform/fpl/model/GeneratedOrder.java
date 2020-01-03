@@ -15,5 +15,4 @@ public class GeneratedOrder {
     private final DocumentReference document;
     private final String date;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
-    private final FurtherDirections furtherDirections;
 }
