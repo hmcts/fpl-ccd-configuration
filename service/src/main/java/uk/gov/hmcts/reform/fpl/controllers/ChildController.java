@@ -22,8 +22,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-
 @Api
 @RestController
 @RequestMapping("/callback/enter-children")
@@ -71,11 +69,7 @@ public class ChildController {
         List<Element<Child>> confidentialChildren =
             confidentialDetailsService.addPartyMarkedConfidentialToList(Child.class, caseData.getAllChildren());
 
-        if (isNotEmpty(confidentialChildren)) {
-            caseDetails.getData().put("confidentialChildren", confidentialChildren);
-        } else {
-            caseDetails.getData().remove("confidentialChildren");
-        }
+        confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialChildren, Child.class);
 
         caseDetails.getData().put("children1", childrenService.modifyHiddenValues(caseData.getAllChildren()));
 

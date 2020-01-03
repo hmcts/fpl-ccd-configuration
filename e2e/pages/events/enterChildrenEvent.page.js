@@ -116,7 +116,7 @@ module.exports = {
     I.click(this.fields(elementIndex).child.additionalNeedsNo);
   },
 
-  async defineContactDetailsVisibility(hideContactDetails) {
+  async enterContactDetailsHidden(hideContactDetails) {
     const elementIndex = await this.getActiveElementIndex();
 
     switch (hideContactDetails) {

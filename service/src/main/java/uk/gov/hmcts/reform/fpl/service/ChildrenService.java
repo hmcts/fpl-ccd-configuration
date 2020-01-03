@@ -40,10 +40,9 @@ public class ChildrenService {
 
     // expands collection in UI. A value (in this case partyId) needs to be set to expand the collection.
     private Element<Child> emptyElementWithPartyId() {
-        return ElementUtils.element(
-            Child.builder()
-                .party(ChildParty.builder().partyId(randomUUID().toString()).build())
-                .build());
+        return ElementUtils.element(Child.builder()
+            .party(ChildParty.builder().partyId(randomUUID().toString()).build())
+            .build());
     }
 
     private Element<Child> getElementToAdd(List<Element<Child>> confidentialChildren, Element<Child> element) {

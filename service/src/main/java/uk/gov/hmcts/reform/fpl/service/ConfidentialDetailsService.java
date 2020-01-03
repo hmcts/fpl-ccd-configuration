@@ -2,12 +2,16 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.getCaseDataKeyFromClass;
 
 @Service
 public class ConfidentialDetailsService {
@@ -46,5 +50,17 @@ public class ConfidentialDetailsService {
     private <T> boolean childDetailsAreHidden(Element<T> element) {
         Child child = mapper.convertValue(element.getValue(), Child.class);
         return child.getParty().getDetailsHidden() != null && child.containsConfidentialDetails();
+    }
+
+    public <T> void addConfidentialDetailsToCaseDetails(CaseDetails caseDetails,
+                                                        List<Element<T>> confidentialDetails,
+                                                        Class<T> personType) {
+        String key = getCaseDataKeyFromClass(personType);
+
+        if (isNotEmpty(confidentialDetails)) {
+            caseDetails.getData().put(key, confidentialDetails);
+        } else {
+            caseDetails.getData().remove(key);
+        }
     }
 }

@@ -22,8 +22,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-
 @Api
 @RestController
 @RequestMapping("/callback/enter-respondents")
@@ -71,11 +69,8 @@ public class RespondentController {
         List<Element<Respondent>> confidentialRespondents =
             confidentialDetailsService.addPartyMarkedConfidentialToList(Respondent.class, caseData.getAllRespondents());
 
-        if (isNotEmpty(confidentialRespondents)) {
-            caseDetails.getData().put("confidentialRespondents", confidentialRespondents);
-        } else {
-            caseDetails.getData().remove("confidentialRespondents");
-        }
+        confidentialDetailsService.addConfidentialDetailsToCaseDetails(
+            caseDetails, confidentialRespondents, Respondent.class);
 
         caseDetails.getData().put("respondents1", respondentService.modifyHiddenValues(caseData.getAllRespondents()));
 

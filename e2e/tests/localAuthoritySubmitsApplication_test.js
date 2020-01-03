@@ -108,7 +108,7 @@ Scenario('local authority enters children @create-case-with-mandatory-sections-o
   await enterChildrenEventPage.enterParentsDetails();
   await enterChildrenEventPage.enterSocialWorkerDetails();
   await enterChildrenEventPage.defineChildAdditionalNeeds();
-  await enterChildrenEventPage.defineContactDetailsVisibility('Yes');
+  await enterChildrenEventPage.enterContactDetailsHidden('Yes');
   await enterChildrenEventPage.enterLitigationIssues('No');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.applicationActions.enterChildren);
@@ -391,7 +391,7 @@ Scenario('local authority enters international element', async (I, caseViewPage,
   I.seeAnswerInTab(9, 'International element', 'Give reason', 'International involvement reason');
 });
 
-Scenario('local authority enters other proceedings',async (I, caseViewPage, enterOtherProceedingsEventPage) => {
+Scenario('local authority enters other proceedings', async (I, caseViewPage, enterOtherProceedingsEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterOtherProceedings);
   enterOtherProceedingsEventPage.selectNoForProceeding();
   enterOtherProceedingsEventPage.selectYesForProceeding();
@@ -430,7 +430,7 @@ Scenario('local authority enters allocation proposal', async (I, caseViewPage, e
   I.seeEventSubmissionConfirmation(config.applicationActions.enterAllocationProposal);
 });
 
-Scenario('local authority enters attending hearing',async (I, caseViewPage, enterAttendingHearingEventPage) => {
+Scenario('local authority enters attending hearing', async (I, caseViewPage, enterAttendingHearingEventPage) => {
   await caseViewPage.goToNewActions(config.applicationActions.enterAttendingHearing);
   enterAttendingHearingEventPage.enterInterpreter();
   enterAttendingHearingEventPage.enterWelshProceedings();

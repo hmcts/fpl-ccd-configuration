@@ -5,6 +5,7 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,11 +42,9 @@ public class RespondentService {
 
     // expands collection in UI. A value (in this case partyId) needs to be set to expand the collection.
     private Element<Respondent> emptyElementWithPartyId() {
-        return Element.<Respondent>builder()
-            .value(Respondent.builder()
-                .party(RespondentParty.builder().partyId(randomUUID().toString()).build())
-                .build())
-            .build();
+        return ElementUtils.element(Respondent.builder()
+            .party(RespondentParty.builder().partyId(randomUUID().toString()).build())
+            .build());
     }
 
     private Element<Respondent> getElementToAdd(List<Element<Respondent>> confidentialChildren,
