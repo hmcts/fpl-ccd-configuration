@@ -29,8 +29,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.google.common.collect.ImmutableSet.of;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
@@ -194,35 +193,35 @@ public class RoboticsDataService {
         AtomicReference<String> applicationType = new AtomicReference<>();
 
         if (isNotEmpty(orders) && isNotEmpty(orders.getOrderType())) {
-            List<OrderType> selectedOrderTypes = orders.getOrderType();
+            List<OrderType> selectedOrderTypes = orders.getOrderType()
+                .stream()
+                .filter(Objects::nonNull)
+                .collect(toList());
+
             if (selectedOrderTypes.size() > 1) {
                 return selectedOrderTypes.stream()
                     .map(OrderType::getLabel)
                     .collect(joining(","));
 
             } else {
-                selectedOrderTypes.forEach(orderType -> {
-                    switch (orderType) {
-                        case CARE_ORDER:
-                        case INTERIM_CARE_ORDER:
-                            applicationType.set(CARE_ORDER.getLabel());
-                            break;
-                        case SUPERVISION_ORDER:
-                        case INTERIM_SUPERVISION_ORDER:
-                            applicationType.set(SUPERVISION_ORDER.getLabel());
-                            break;
-                        case EMERGENCY_PROTECTION_ORDER:
-                            applicationType.set(EMERGENCY_PROTECTION_ORDER.getLabel());
-                            break;
-                        case EDUCATION_SUPERVISION_ORDER:
-                            applicationType.set(EDUCATION_SUPERVISION_ORDER.getLabel());
-                            break;
-                        case OTHER:
-                            applicationType.set(OTHER.getLabel());
-                    }
-                });
-
-                return applicationType.get();
+                switch (selectedOrderTypes.get(0)) {
+                    case CARE_ORDER:
+                    case INTERIM_CARE_ORDER:
+                        applicationType.set(CARE_ORDER.getLabel());
+                        break;
+                    case SUPERVISION_ORDER:
+                    case INTERIM_SUPERVISION_ORDER:
+                        applicationType.set(SUPERVISION_ORDER.getLabel());
+                        break;
+                    case EMERGENCY_PROTECTION_ORDER:
+                        applicationType.set(EMERGENCY_PROTECTION_ORDER.getLabel());
+                        break;
+                    case EDUCATION_SUPERVISION_ORDER:
+                        applicationType.set(EDUCATION_SUPERVISION_ORDER.getLabel());
+                        break;
+                    case OTHER:
+                        applicationType.set(OTHER.getLabel());
+                }
             }
         }
         return applicationType.get();
