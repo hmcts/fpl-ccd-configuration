@@ -29,7 +29,9 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.google.common.collect.ImmutableSet.of;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isBlank;
