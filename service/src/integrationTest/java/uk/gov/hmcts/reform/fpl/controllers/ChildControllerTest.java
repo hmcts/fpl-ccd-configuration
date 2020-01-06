@@ -1,16 +1,11 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -22,39 +17,34 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(ChildController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ChildControllerTest {
-    private static final String AUTH_TOKEN = "Bearer token";
-    private static final String USER_ID = "1";
+class ChildControllerTest extends AbstractControllerTest {
+
+    ChildControllerTest() {
+        super("enter-children");
+    }
+
     private static final String ERROR_MESSAGE = "Date of birth cannot be in the future";
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper mapper;
-
     @Test
-    void aboutToStartShouldPrepopulateChildrenDataWhenNoChildExists() throws Exception {
+    void aboutToStartShouldPrepopulateChildrenDataWhenNoChildExists() {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .data(ImmutableMap.of("data", "some data"))
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request, "about-to-start");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(request);
 
         assertThat(callbackResponse.getData()).containsKey("children1");
     }
 
     @Test
-    void shouldReturnDateOfBirthErrorWhenFutureDateOfBirth() throws Exception {
+    void shouldReturnDateOfBirthErrorWhenFutureDateOfBirth() {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -63,13 +53,13 @@ class ChildControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request, "mid-event");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
 
         assertThat(callbackResponse.getErrors()).containsOnlyOnce(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldReturnDateOfBirthErrorWhenThereIsMultipleChildren() throws Exception {
+    void shouldReturnDateOfBirthErrorWhenThereIsMultipleChildren() {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -81,13 +71,13 @@ class ChildControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request, "mid-event");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
 
         assertThat(callbackResponse.getErrors()).containsOnlyOnce(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldReturnNoDateOfBirthErrorWhenValidDateOfBirth() throws Exception {
+    void shouldReturnNoDateOfBirthErrorWhenValidDateOfBirth() {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -96,13 +86,13 @@ class ChildControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request, "mid-event");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @Test
-    void shouldReturnNoDateOfBirthErrorsWhenCaseDataIsEmpty() throws Exception {
+    void shouldReturnNoDateOfBirthErrorsWhenCaseDataIsEmpty() {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -110,7 +100,7 @@ class ChildControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request, "mid-event");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
@@ -118,7 +108,7 @@ class ChildControllerTest {
     @Test
     void aboutToSubmitShouldAddConfidentialChildrenToCaseDataWhenConfidentialChildrenExist() throws Exception {
         //first child in callbackRequest() has yes value for detailsHidden.
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "about-to-submit");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest());
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         CaseData initialData = mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class);
 
@@ -135,20 +125,5 @@ class ChildControllerTest {
                     .dateOfBirth(dateOfBirth)
                     .build())
                 .build());
-    }
-
-    private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request, String endpoint)
-        throws Exception {
-        MvcResult response = mockMvc
-            .perform(post("/callback/enter-children/" + endpoint)
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsBytes(request)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        return mapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 }

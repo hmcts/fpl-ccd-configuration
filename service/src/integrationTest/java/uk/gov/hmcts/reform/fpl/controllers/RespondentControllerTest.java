@@ -1,16 +1,11 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -19,41 +14,35 @@ import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.callbackRequest;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(RespondentController.class)
 @OverrideAutoConfiguration(enabled = true)
-class RespondentControllerTest {
-    private static final String AUTH_TOKEN = "Bearer token";
-    private static final String USER_ID = "1";
+class RespondentControllerTest extends AbstractControllerTest {
+
+    RespondentControllerTest() {
+        super("enter-respondents");
+    }
+
     private static final String ERROR_MESSAGE = "Date of birth cannot be in the future";
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper mapper;
-
     @Test
-    void aboutToStartShouldPrepopulateRespondent() throws Exception {
-        CallbackRequest request = CallbackRequest.builder().caseDetails(CaseDetails.builder()
-            .data(ImmutableMap.<String, Object>builder()
-                .put("data", "some data")
-                .build()).build())
+    void aboutToStartShouldPrepopulateRespondent() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of("data", "some data"))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request, "about-to-start");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
         assertThat(callbackResponse.getData()).containsKey("respondents1");
     }
 
     @Test
-    void shouldReturnDateOfBirthErrorsForRespondentWhenFutureDateOfBirth() throws Exception {
+    void shouldReturnDateOfBirthErrorsForRespondentWhenFutureDateOfBirth() {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -72,13 +61,13 @@ class RespondentControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request, "mid-event");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
 
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldReturnDateOfBirthErrorsForRespondentWhenThereIsMultipleRespondents() throws Exception {
+    void shouldReturnDateOfBirthErrorsForRespondentWhenThereIsMultipleRespondents() {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -105,13 +94,13 @@ class RespondentControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request, "mid-event");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
 
         assertThat(callbackResponse.getErrors()).containsExactly(ERROR_MESSAGE);
     }
 
     @Test
-    void shouldReturnNoDateOfBirthErrorsForRespondentWhenValidDateOfBirth() throws Exception {
+    void shouldReturnNoDateOfBirthErrorsForRespondentWhenValidDateOfBirth() {
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .id(12345L)
@@ -130,34 +119,19 @@ class RespondentControllerTest {
                 .build())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request, "mid-event");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @Test
     void aboutToSubmitShouldAddConfidentialRespondentsToCaseDataWhenConfidentialRespondentsExist() throws Exception {
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "about-to-submit");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest());
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         CaseData initialData = mapper.convertValue(callbackRequest().getCaseDetails().getData(), CaseData.class);
 
         assertThat(caseData.getConfidentialRespondents()).containsOnly(initialData.getAllRespondents().get(0));
         assertThat(caseData.getRespondents1().get(0).getValue().getParty().address).isNull();
         assertThat(caseData.getRespondents1().get(1).getValue().getParty().address).isNotNull();
-    }
-
-    private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request, String endpoint)
-        throws Exception {
-        MvcResult response = mockMvc
-            .perform(post("/callback/enter-respondents/" + endpoint)
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        return mapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 }
