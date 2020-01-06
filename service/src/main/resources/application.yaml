@@ -191,4 +191,5 @@ feature:
   toggle:
     robotics:
       case-number:
-        notification: false
+        notification:
+          enabled: true

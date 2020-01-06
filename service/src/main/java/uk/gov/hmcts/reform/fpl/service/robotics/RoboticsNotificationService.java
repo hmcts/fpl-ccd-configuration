@@ -21,7 +21,8 @@ import static uk.gov.hmcts.reform.fpl.utils.RoboticsDataVerificationHelper.verif
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@ConditionalOnProperty(prefix = "feature.toggle", name = "robotics.case-number.notification", havingValue = "true")
+@ConditionalOnProperty(prefix = "feature.toggle", name = "robotics.case-number.notification.enabled",
+    havingValue = "true")
 public class RoboticsNotificationService {
     private final EmailService emailService;
     private final RoboticsDataService roboticsDataService;

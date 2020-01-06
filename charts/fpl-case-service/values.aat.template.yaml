@@ -16,7 +16,7 @@ java:
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
     GATEWAY_URL: http://gateway-ccd.aat.platform.hmcts.net
-    FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION: true
+    FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION_ENABLED: true
   aadIdentityName: family-public-law
   keyVaults:
     fpl:

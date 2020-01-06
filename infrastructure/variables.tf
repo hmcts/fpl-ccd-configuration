@@ -114,6 +114,6 @@ variable "mail_properties_smtp_starttls_enable" {
   default = true
 }
 
-variable "feature_toggle_robotics_case_number_notification" {
+variable "feature_toggle_robotics_case_number_notification_enabled" {
   default = false
 }
