@@ -2,7 +2,11 @@ package uk.gov.hmcts.reform.fpl.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -15,8 +19,11 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
@@ -27,6 +34,7 @@ import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 import uk.gov.service.notify.NotificationClient;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
@@ -36,6 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -84,9 +93,6 @@ class GeneratedOrderControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Test
     void aboutToStartShouldReturnErrorsWhenFamilymanNumberIsNotProvided() throws Exception {
         CallbackRequest request = CallbackRequest.builder()
@@ -99,27 +105,6 @@ class GeneratedOrderControllerTest {
         AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request, "about-to-start");
 
         assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
-    }
-
-    @Test
-    void midEventShouldGenerateOrderDocument() throws Exception {
-        byte[] pdf = {1, 2, 3, 4, 5};
-        Document document = document();
-        DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
-
-        given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
-        given(uploadDocumentService.uploadPDF(USER_ID, AUTH_TOKEN, pdf, "blank_order_c21.pdf"))
-            .willReturn(document);
-
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "mid-event");
-
-        CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
-
-        assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(DocumentReference.builder()
-            .binaryUrl(document.links.binary.href)
-            .filename(document.originalDocumentName)
-            .url(document.links.self.href)
-            .build());
     }
 
     @Test
@@ -204,7 +189,7 @@ class GeneratedOrderControllerTest {
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(mapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andReturn();
 
@@ -219,7 +204,7 @@ class GeneratedOrderControllerTest {
                 .header("authorization", AUTH_TOKEN)
                 .header("user-id", USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(mapper.writeValueAsString(request)))
             .andExpect(status().isOk())
             .andReturn();
     }
@@ -257,5 +242,87 @@ class GeneratedOrderControllerTest {
             .putAll(commonNotificationParameters())
             .put("localAuthorityOrCafcass", LOCAL_AUTHORITY_NAME)
             .build();
+    }
+
+    @Nested
+    class MidEvent {
+        private Document document;
+        private final byte[] pdf = {1, 2, 3, 4, 5};
+
+        @BeforeEach
+        void setUp() throws IOException {
+            document = document();
+            DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
+
+            given(docmosisDocumentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
+            given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
+        }
+
+        @Test
+        void midEventShouldGenerateOrderDocumentWhenOrderTypeIsBlankOrder() throws Exception {
+            AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
+                generateCallbackRequest(BLANK_ORDER, false), "mid-event");
+
+            CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+            verify(uploadDocumentService, times(1)).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "blank_order_c21.pdf");
+
+            assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDocument());
+        }
+
+        @Test
+        void midEventShouldGenerateOrderDocumentWhenOrderTypeIsCareOrderWithFurtherDirections() throws Exception {
+            final AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
+                generateCallbackRequest(CARE_ORDER, true), "mid-event");
+
+            verify(docmosisDocumentGeneratorService, times(1)).generateDocmosisDocument(any(), any());
+            verify(uploadDocumentService, times(1)).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "care_order.pdf");
+
+            final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+            assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDocument());
+        }
+
+        @Test
+        void midEventShouldNotGenerateOrderDocumentWhenOrderTypeIsCareOrderWithNoFurtherDirections() throws Exception {
+            makeRequest(generateCallbackRequest(CARE_ORDER, false), "mid-event");
+
+            verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(), any());
+            verify(uploadDocumentService, never()).uploadPDF(any(), any(), any(), any());
+
+        }
+
+        @AfterEach
+        void tearDown() {
+            Mockito.reset(docmosisDocumentGeneratorService);
+            Mockito.reset(uploadDocumentService);
+        }
+
+        private CallbackRequest generateCallbackRequest(GeneratedOrderType orderType, boolean withFurtherDirections)
+            throws IOException {
+
+            CallbackRequest callbackRequest = callbackRequest();
+
+            callbackRequest.getCaseDetails().getData()
+                .put("orderTypeAndDocument", OrderTypeAndDocument.builder().type(orderType).build());
+
+            if (withFurtherDirections) {
+                callbackRequest.getCaseDetails().getData()
+                    .put("orderFurtherDirections", FurtherDirections.builder()
+                        .directionsNeeded("Yes")
+                        .directions("Some directions")
+                        .build());
+            }
+
+            return callbackRequest;
+        }
+
+        private DocumentReference expectedDocument() {
+            return DocumentReference.builder()
+                .binaryUrl(document.links.binary.href)
+                .filename(document.originalDocumentName)
+                .url(document.links.self.href)
+                .build();
+        }
     }
 }
