@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -20,6 +21,7 @@ import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.google.common.collect.Iterables.getLast;
 import static java.util.UUID.randomUUID;
@@ -129,10 +131,14 @@ public class GeneratedOrderService {
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
                 caseData.getJudgeAndLegalAdvisor()))
             .put("children", getChildrenDetails(caseData))
-            .put("furtherDirections", defaultIfNull(caseData.getOrderFurtherDirections().getDirections(), ""))
+            .put("furtherDirections", getFurtherDirections(caseData.getOrderFurtherDirections()))
             .build();
 
         return orderTemplateBuilder.build();
+    }
+
+    private String getFurtherDirections(FurtherDirections furtherDirections) {
+        return Optional.ofNullable(furtherDirections).map(FurtherDirections::getDirections).orElse("");
     }
 
     public String generateOrderDocumentFileName(String type) {
