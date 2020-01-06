@@ -83,12 +83,17 @@ public class GeneratedOrderController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
+        FurtherDirections orderFurtherDirections = caseData.getOrderFurtherDirections();
 
-        Document document = getDocument(authorization, userId, caseData);
+        // Only generate a document if a blank order or further directions has been added
+        if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
+            Document document = getDocument(authorization, userId, caseData);
 
-        //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
-        caseDetails.getData().put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
-            caseData.getOrderTypeAndDocument(), document));
+            //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
+            caseDetails.getData().put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
+                orderTypeAndDocument, document));
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
