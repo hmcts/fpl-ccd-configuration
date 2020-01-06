@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.fpl.events.CaseNumberAddedEvent;
+import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 
 import java.util.List;
@@ -42,7 +42,7 @@ public class AddCaseNumberController {
     @PostMapping("/submitted")
     public void handleSubmittedEvent(@RequestBody CallbackRequest callbackRequest) {
         CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
-        applicationEventPublisher.publishEvent(new CaseNumberAddedEvent(caseData));
+        applicationEventPublisher.publishEvent(new CaseNumberAdded(caseData));
     }
 
     private List<String> validationErrors(final CaseDetails caseDetails) {
