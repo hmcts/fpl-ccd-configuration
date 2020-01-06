@@ -82,5 +82,11 @@
     "ID": "AuthorityFixedList",
     "ListElementCode": "FPLA",
     "ListElement": "FPLA team"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "AuthorityFixedList",
+    "ListElementCode": "NC",
+    "ListElement": "Newcastle County Council"
   }
 ]

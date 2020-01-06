@@ -96,5 +96,26 @@
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "arthur.white@mailinator.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
+    "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "john.black@mailinator.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
+    "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "george.green@mailinator.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
+    "WorkBasketDefaultState": "Submitted"
   }
 ]
