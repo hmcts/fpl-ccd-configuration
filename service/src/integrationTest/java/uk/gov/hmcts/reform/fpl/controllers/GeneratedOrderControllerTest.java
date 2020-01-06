@@ -211,7 +211,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         private final byte[] pdf = {1, 2, 3, 4, 5};
 
         @BeforeEach
-        void setUp() throws IOException {
+        void setUp() {
             document = document();
             DocmosisDocument docmosisDocument = new DocmosisDocument("order.pdf", pdf);
 
