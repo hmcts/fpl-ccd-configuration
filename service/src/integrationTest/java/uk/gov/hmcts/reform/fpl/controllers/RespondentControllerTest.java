@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
@@ -43,83 +42,77 @@ class RespondentControllerTest extends AbstractControllerTest {
 
     @Test
     void shouldReturnDateOfBirthErrorsForRespondentWhenFutureDateOfBirth() {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of(
-                    "respondents1", ImmutableList.of(
-                        ImmutableMap.of(
-                            "id", "",
-                            "value", Respondent.builder()
-                                .party(RespondentParty.builder()
-                                    .dateOfBirth(LocalDate.now().plusDays(1))
-                                    .build())
-                                .build()
-                        )
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(12345L)
+            .data(ImmutableMap.of(
+                "respondents1", ImmutableList.of(
+                    ImmutableMap.of(
+                        "id", "",
+                        "value", Respondent.builder()
+                            .party(RespondentParty.builder()
+                                .dateOfBirth(LocalDate.now().plusDays(1))
+                                .build())
+                            .build()
                     )
-                ))
-                .build())
+                )
+            ))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
         assertThat(callbackResponse.getErrors()).contains(ERROR_MESSAGE);
     }
 
     @Test
     void shouldReturnDateOfBirthErrorsForRespondentWhenThereIsMultipleRespondents() {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of(
-                    "respondents1", ImmutableList.of(
-                        ImmutableMap.of(
-                            "id", "",
-                            "value", Respondent.builder()
-                                .party(RespondentParty.builder()
-                                    .dateOfBirth(LocalDate.now().plusDays(1))
-                                    .build())
-                                .build()
-                        ),
-                        ImmutableMap.of(
-                            "id", "",
-                            "value", Respondent.builder()
-                                .party(RespondentParty.builder()
-                                    .dateOfBirth(LocalDate.now().plusDays(1))
-                                    .build())
-                                .build()
-                        )
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(12345L)
+            .data(ImmutableMap.of(
+                "respondents1", ImmutableList.of(
+                    ImmutableMap.of(
+                        "id", "",
+                        "value", Respondent.builder()
+                            .party(RespondentParty.builder()
+                                .dateOfBirth(LocalDate.now().plusDays(1))
+                                .build())
+                            .build()
+                    ),
+                    ImmutableMap.of(
+                        "id", "",
+                        "value", Respondent.builder()
+                            .party(RespondentParty.builder()
+                                .dateOfBirth(LocalDate.now().plusDays(1))
+                                .build())
+                            .build()
                     )
-                ))
-                .build())
+                )
+            ))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
         assertThat(callbackResponse.getErrors()).containsExactly(ERROR_MESSAGE);
     }
 
     @Test
     void shouldReturnNoDateOfBirthErrorsForRespondentWhenValidDateOfBirth() {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of(
-                    "respondents1", ImmutableList.of(
-                        ImmutableMap.of(
-                            "id", "",
-                            "value", Respondent.builder()
-                                .party(RespondentParty.builder()
-                                    .dateOfBirth(LocalDate.now().minusDays(1))
-                                    .build())
-                                .build()
-                        )
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(12345L)
+            .data(ImmutableMap.of(
+                "respondents1", ImmutableList.of(
+                    ImmutableMap.of(
+                        "id", "",
+                        "value", Respondent.builder()
+                            .party(RespondentParty.builder()
+                                .dateOfBirth(LocalDate.now().minusDays(1))
+                                .build())
+                            .build()
                     )
-                ))
-                .build())
+                )
+            ))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }

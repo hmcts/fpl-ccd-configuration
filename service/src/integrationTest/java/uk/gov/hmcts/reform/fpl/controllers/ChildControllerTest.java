@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -32,75 +31,65 @@ class ChildControllerTest extends AbstractControllerTest {
 
     @Test
     void aboutToStartShouldPrepopulateChildrenDataWhenNoChildExists() {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of("data", "some data"))
-                .build())
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(ImmutableMap.of("data", "some data"))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(request);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
         assertThat(callbackResponse.getData()).containsKey("children1");
     }
 
     @Test
     void shouldReturnDateOfBirthErrorWhenFutureDateOfBirth() {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of("children1", ImmutableList.of(
-                    createChildrenElement(LocalDate.now().plusDays(1)))))
-                .build())
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(12345L)
+            .data(ImmutableMap.of("children1", ImmutableList.of(
+                createChildrenElement(LocalDate.now().plusDays(1)))))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
         assertThat(callbackResponse.getErrors()).containsOnlyOnce(ERROR_MESSAGE);
     }
 
     @Test
     void shouldReturnDateOfBirthErrorWhenThereIsMultipleChildren() {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of(
-                    "children1", ImmutableList.of(
-                        createChildrenElement(LocalDate.now().plusDays(1)),
-                        createChildrenElement(LocalDate.now().plusDays(1))
-                    )))
-                .build())
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(12345L)
+            .data(ImmutableMap.of(
+                "children1", ImmutableList.of(
+                    createChildrenElement(LocalDate.now().plusDays(1)),
+                    createChildrenElement(LocalDate.now().plusDays(1))
+                )))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
         assertThat(callbackResponse.getErrors()).containsOnlyOnce(ERROR_MESSAGE);
     }
 
     @Test
     void shouldReturnNoDateOfBirthErrorWhenValidDateOfBirth() {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of("children1", ImmutableList.of(
-                    createChildrenElement(LocalDate.now().minusDays(1)))))
-                .build())
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(12345L)
+            .data(ImmutableMap.of("children1", ImmutableList.of(
+                createChildrenElement(LocalDate.now().minusDays(1)))))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
 
     @Test
     void shouldReturnNoDateOfBirthErrorsWhenCaseDataIsEmpty() {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of())
-                .build())
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(12345L)
+            .data(ImmutableMap.of())
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(request);
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
 
         assertThat(callbackResponse.getErrors()).isEmpty();
     }
