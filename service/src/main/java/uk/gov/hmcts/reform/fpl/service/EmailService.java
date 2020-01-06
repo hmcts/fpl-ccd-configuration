@@ -41,7 +41,11 @@ public class EmailService {
 
             mailSender.send(message);
 
+            // TODO: 06/01/2020 remove as it is temporary 
+            log.error("Email sent successfully ");
+
         } catch (MessagingException | MailException e) {
+            log.error("An error encountered sending email ", e);
             throw new EmailFailedSendException(e);
         }
     }
