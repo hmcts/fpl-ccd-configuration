@@ -1,6 +1,5 @@
 server:
   port: 4000
-
 management:
   endpoints:
     web:
@@ -19,6 +18,13 @@ idam:
 
 fpl:
   local_authority_codes_forbidden_case_submission:
+
+logging:
+  level:
+    org:
+      springframework:
+        mail:
+          javamail: error
 
 ---
 
