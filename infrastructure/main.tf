@@ -172,6 +172,7 @@ module "case-service" {
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE    = "${var.mail_properties_smtp_starttls_enable}"
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST          = "${var.mail_host}"
     GATEWAY_URL                                         = "${var.gateway_url}"
+    FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION    = "${var.feature_toggle_robotics_case_number_notification}"
 
     LOGBACK_REQUIRE_ALERT_LEVEL = false
     LOGBACK_REQUIRE_ERROR_CODE  = false

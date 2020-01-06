@@ -15,6 +15,7 @@ java:
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
     GATEWAY_URL: https://gateway-${SERVICE_FQDN}
+    FEATURE_TOGGLE_ROBOTICS_CASE_NUMBER_NOTIFICATION: true
   keyVaults:
     fpl:
       resourceGroup: fpl-case-service

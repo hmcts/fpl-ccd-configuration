@@ -98,6 +98,12 @@ robotics:
     sender: sender@example.com
     recipient: FamilyPublicLaw+robotics-test@gmail.com
 
+feature:
+  toggle:
+    robotics:
+      case-number:
+        notification: true
+
 ---
 
 spring:
@@ -180,3 +186,9 @@ robotics:
   notification:
     sender: sender@example.com
     recipient: FamilyPublicLaw+robotics@gmail.com
+
+feature:
+  toggle:
+    robotics:
+      case-number:
+        notification: false
