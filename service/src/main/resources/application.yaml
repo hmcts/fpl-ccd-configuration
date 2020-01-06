@@ -24,7 +24,7 @@ logging:
     org:
       springframework:
         mail:
-          javamail: error
+          javamail: debug
 
 ---
 
