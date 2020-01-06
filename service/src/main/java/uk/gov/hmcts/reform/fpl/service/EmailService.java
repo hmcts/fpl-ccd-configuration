@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -14,7 +13,6 @@ import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmailService {
@@ -41,11 +39,7 @@ public class EmailService {
 
             mailSender.send(message);
 
-            // TODO: 06/01/2020 remove as it is temporary
-            log.error("Email sent successfully ");
-
         } catch (MessagingException | MailException e) {
-            log.error("An error encountered sending email ", e);
             throw new EmailFailedSendException(e);
         }
     }
