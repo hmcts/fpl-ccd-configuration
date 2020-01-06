@@ -157,7 +157,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void aboutToStartShouldNotProgressOrderWhenOrderActionIsNotSet() throws Exception {
+    void aboutToStartShouldNotProgressOrderWhenOrderActionIsNotSet() {
         CallbackRequest request = createRequestWithEmptyCMO();
         AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(request);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
@@ -226,7 +226,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldRemoveOrderWhenOrderActionIsNotJudgeReview() throws Exception {
+    void aboutToSubmitShouldRemoveOrderWhenOrderActionIsNotJudgeReview() {
         CallbackRequest request = createRequestWithEmptyCMO();
         AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(request);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
