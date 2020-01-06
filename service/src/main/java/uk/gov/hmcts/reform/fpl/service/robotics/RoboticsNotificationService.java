@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service.robotics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
@@ -20,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.utils.RoboticsDataVerificationHelper.verif
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@ConditionalOnProperty(prefix = "feature.toggle", name = "robotics.case-number.notification", havingValue = "true")
 public class RoboticsNotificationService {
     private final EmailService emailService;
     private final RoboticsDataService roboticsDataService;

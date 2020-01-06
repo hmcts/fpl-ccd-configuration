@@ -15,7 +15,7 @@ public class RoboticsDataVerificationHelper {
     }
 
     public static void runVerificationsOnRoboticsData(final RoboticsData roboticsData) {
-        verifyApplicationType(roboticsData.getApplicationType());
+        logOtherOrderTypeApplicationType(roboticsData.getApplicationType());
         verifyOwningCourtCode(roboticsData.getOwningCourt());
     }
 
@@ -32,21 +32,19 @@ public class RoboticsDataVerificationHelper {
         }
     }
 
-    private static void verifyApplicationType(final String applicationType) {
+    private static void logOtherOrderTypeApplicationType(final String applicationType) {
         if (OTHER.getLabel().equalsIgnoreCase(applicationType)) {
-            String errorMessage = "Failed to send case submitted notification to Robotics as only "
+            String errorMessage = "sending case submitted notification to Robotics with only "
                 + "Other order type selected";
 
             OtherOrderTypeEmailNotificationException otherOrderTypeEmailNotificationException =
                 new OtherOrderTypeEmailNotificationException(errorMessage);
 
             logEmailNotificationError(otherOrderTypeEmailNotificationException);
-
-            throw otherOrderTypeEmailNotificationException;
         }
     }
 
-    private static void logEmailNotificationError(final OtherOrderTypeEmailNotificationException exception) {
+    private static void logEmailNotificationError(final RuntimeException exception) {
         String errorMessage = String.format("Email notification failed due to %1$s", exception.getMessage());
         log.error(errorMessage, exception);
     }

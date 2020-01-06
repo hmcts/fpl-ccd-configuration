@@ -26,7 +26,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static com.google.common.collect.ImmutableSet.of;
 import static java.util.stream.Collectors.joining;
@@ -192,40 +191,40 @@ public class RoboticsDataService {
     }
 
     private String deriveApplicationType(final Orders orders) {
-        AtomicReference<String> applicationType = new AtomicReference<>();
-
-        if (isNotEmpty(orders) && isNotEmpty(orders.getOrderType())) {
-            List<OrderType> selectedOrderTypes = orders.getOrderType()
-                .stream()
-                .filter(Objects::nonNull)
-                .collect(toList());
-
-            if (selectedOrderTypes.size() > 1) {
-                return selectedOrderTypes.stream()
-                    .map(OrderType::getLabel)
-                    .collect(joining(","));
-
-            } else {
-                switch (selectedOrderTypes.get(0)) {
-                    case CARE_ORDER:
-                    case INTERIM_CARE_ORDER:
-                        applicationType.set(CARE_ORDER.getLabel());
-                        break;
-                    case SUPERVISION_ORDER:
-                    case INTERIM_SUPERVISION_ORDER:
-                        applicationType.set(SUPERVISION_ORDER.getLabel());
-                        break;
-                    case EMERGENCY_PROTECTION_ORDER:
-                        applicationType.set(EMERGENCY_PROTECTION_ORDER.getLabel());
-                        break;
-                    case EDUCATION_SUPERVISION_ORDER:
-                        applicationType.set(EDUCATION_SUPERVISION_ORDER.getLabel());
-                        break;
-                    case OTHER:
-                        applicationType.set(OTHER.getLabel());
-                }
-            }
+        if (isEmpty(orders) && isEmpty(orders.getOrderType())) {
+            throw new RoboticsDataException("No order type(s) to derive Application Type from.");
         }
-        return applicationType.get();
+
+        List<OrderType> selectedOrderTypes = orders.getOrderType()
+            .stream()
+            .filter(Objects::nonNull)
+            .collect(toList());
+
+        if (selectedOrderTypes.size() > 1) {
+            return selectedOrderTypes.stream()
+                .map(this::getOrderTypeLabelValue)
+                .collect(joining(","));
+        } else {
+            return getOrderTypeLabelValue(selectedOrderTypes.get(0));
+        }
+    }
+
+    private String getOrderTypeLabelValue(final OrderType orderType) {
+        switch (orderType) {
+            case CARE_ORDER:
+            case INTERIM_CARE_ORDER:
+                return CARE_ORDER.getLabel();
+            case SUPERVISION_ORDER:
+            case INTERIM_SUPERVISION_ORDER:
+                return SUPERVISION_ORDER.getLabel();
+            case EMERGENCY_PROTECTION_ORDER:
+                return EMERGENCY_PROTECTION_ORDER.getLabel();
+            case EDUCATION_SUPERVISION_ORDER:
+                return EDUCATION_SUPERVISION_ORDER.getLabel();
+            case OTHER:
+                return OTHER.getLabel();
+        }
+
+        throw new RoboticsDataException("Unable to derive an appropriate Application Type from " + orderType);
     }
 }

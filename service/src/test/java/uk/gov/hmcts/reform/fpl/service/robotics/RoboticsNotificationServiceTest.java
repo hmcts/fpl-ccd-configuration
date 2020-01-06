@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.fpl.service.robotics;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,29 +17,33 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
-import uk.gov.hmcts.reform.fpl.exceptions.OtherOrderTypeEmailNotificationException;
 import uk.gov.hmcts.reform.fpl.exceptions.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
+import uk.gov.hmcts.reform.fpl.utils.RoboticsDataVerificationHelper;
 
 import java.io.IOException;
 import java.time.LocalDate;
 
+import static ch.qos.logback.classic.Level.ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.slf4j.LoggerFactory.getLogger;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.expectedRoboticsData;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.invalidRoboticsDataWithZeroOwningCourt;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
+import static uk.gov.hmcts.reform.fpl.utils.RoboticsDataVerificationHelper.runVerificationsOnRoboticsData;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {JacksonAutoConfiguration.class})
@@ -56,6 +63,9 @@ public class RoboticsNotificationServiceTest {
     @Mock
     private RoboticsDataService roboticsDataService;
 
+    @Mock
+    private Appender<ILoggingEvent> logAppender;
+
     @Captor
     private ArgumentCaptor<EmailData> emailDataArgumentCaptor;
 
@@ -63,6 +73,9 @@ public class RoboticsNotificationServiceTest {
 
     @BeforeEach
     void setup() {
+        Logger logger = (Logger) getLogger(RoboticsDataVerificationHelper.class.getName());
+        logger.addAppender(logAppender);
+
         given(roboticsEmailConfiguration.getRecipient())
             .willReturn(EMAIL_RECIPIENT);
 
@@ -98,15 +111,20 @@ public class RoboticsNotificationServiceTest {
     }
 
     @Test
-    void notifyRoboticsOfSubmittedCaseDataShouldThrowOtherOrderTypeEmailNotificationException()
+    void notifyRoboticsOfSubmittedCaseDataShouldLogOtherOrderTypeEmailNotificationException()
         throws IOException {
         RoboticsData expectedRoboticsData = expectedRoboticsData(OTHER.getLabel());
         given(roboticsDataService.prepareRoboticsData(prepareCaseData()))
             .willReturn(expectedRoboticsData);
 
-        assertThrows(OtherOrderTypeEmailNotificationException.class,
-            () -> roboticsNotificationService.notifyRoboticsOfSubmittedCaseData(new CaseNumberAdded(
-                prepareCaseData())));
+        runVerificationsOnRoboticsData(expectedRoboticsData);
+
+        verify(logAppender).doAppend(argThat(argument -> {
+            assertThat(argument.getMessage()).isEqualTo("Email notification failed due to "
+                + "sending case submitted notification to Robotics with only Other order type selected");
+            assertThat(argument.getLevel()).isEqualTo(ERROR);
+            return true;
+        }));
 
         verify(emailService, never()).sendEmail(eq(EMAIL_FROM), emailDataArgumentCaptor.capture());
     }
