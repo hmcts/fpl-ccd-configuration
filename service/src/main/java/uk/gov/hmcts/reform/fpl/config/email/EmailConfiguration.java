@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.config.email;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -13,6 +14,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.util.Properties;
 
+@Slf4j
 @Getter
 @Setter
 @Configuration
@@ -34,6 +36,8 @@ public class EmailConfiguration {
         properties.setProperty("mail.transport.protocol", "smtp");
         properties.setProperty("mail.smtp.starttls.enable", smtpPropertiesConfiguration.getStarttlsEnable());
         properties.put("mail.smtp.ssl.trust", smtpPropertiesConfiguration.getSslTrust());
+
+        log.error("'mail.smtp.ssl.trust' value is " + smtpPropertiesConfiguration.getSslTrust());
         javaMailSender.setJavaMailProperties(properties);
         return javaMailSender;
     }
