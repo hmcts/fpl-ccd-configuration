@@ -23,7 +23,6 @@ import static org.apache.commons.lang3.StringUtils.join;
 public class EmailConfiguration {
     private String host;
     private int port;
-    private String testConnection;
 
     private final SmtpPropertiesConfiguration smtpPropertiesConfiguration;
 

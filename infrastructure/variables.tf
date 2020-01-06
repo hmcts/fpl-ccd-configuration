@@ -110,10 +110,6 @@ variable "mail_port" {
   default = "25"
 }
 
-variable "mail_test_connection" {
-  default = false
-}
-
 variable "mail_properties_smtp_starttls_enable" {
   default = true
 }

@@ -169,7 +169,6 @@ module "case-service" {
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI = "${var.idam_token_jwk_set_uri}"
     SPRING_MAIL_HOST                                    = "${var.mail_host}"
     SPRING_MAIL_PORT                                    = "${var.mail_port}"
-    SPRING_MAIL_TEST_CONNECTION                         = "${var.mail_test_connection}"
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE    = "${var.mail_properties_smtp_starttls_enable}"
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST          = "${var.mail_host}"
     GATEWAY_URL                                         = "${var.gateway_url}"
