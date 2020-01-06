@@ -17,15 +17,16 @@ import java.util.Optional;
 
 import static java.util.Objects.isNull;
 import static org.apache.commons.lang.StringUtils.capitalize;
+import static org.springframework.util.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
+import static uk.gov.hmcts.reform.fpl.utils.EmailNotificationHelper.getFirstRespondentLastName;
 
-@SuppressWarnings( {"LineLength", "VariableDeclarationUsageDistance"})
 public abstract class AbstractEmailContentProvider {
 
     final String uiBaseUrl;
-    final DateFormatterService dateFormatterService;
-    final HearingBookingService hearingBookingService;
+    private final DateFormatterService dateFormatterService;
+    private final HearingBookingService hearingBookingService;
 
     protected AbstractEmailContentProvider(String uiBaseUrl,
                                            DateFormatterService dateFormatterService,
@@ -36,7 +37,7 @@ public abstract class AbstractEmailContentProvider {
     }
 
     @SuppressWarnings("unchecked")
-    ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(CaseDetails caseDetails, CaseData caseData) {
+    ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(CaseDetails caseDetails) {
         List<String> ordersAndDirections = buildOrdersAndDirections(
             (Map<String, Object>) caseDetails.getData().get("orders"));
 
@@ -49,8 +50,6 @@ public abstract class AbstractEmailContentProvider {
             .put("fullStop", !ordersAndDirections.isEmpty() ? "No" : "Yes")
             .put("timeFramePresent", timeFrame.isPresent() ? "Yes" : "No")
             .put("timeFrameValue", timeFrame.orElse(""))
-            .put("urgentHearing", timeFrame.isPresent() && timeFrame.get().equals("Same day") ? "Yes" : "No")
-            .put("firstRespondentName", caseData.getRespondents1().get(0).getValue().getParty().getLastName())
             .put("reference", String.valueOf(caseDetails.getId()))
             .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
     }
@@ -67,6 +66,15 @@ public abstract class AbstractEmailContentProvider {
             .put("hearingDate", getHearingBooking(caseData))
             .put("reference", String.valueOf(caseDetails.getId()))
             .put("caseUrl", uiBaseUrl + "/case/" + JURISDICTION + "/" + CASE_TYPE + "/" + caseDetails.getId());
+    }
+
+    ImmutableMap<String, Object> getApplicationSubjectLineBuilder(CaseData caseData) {
+        String timeFrame = isEmpty(caseData.getHearing()) ? "" : caseData.getHearing().getTimeFrame();
+
+        return ImmutableMap.<String, Object>builder()
+            .put("urgentHearing", timeFrame.equals("Same day") ? "Yes" : "No")
+            .put("firstRespondentName", getFirstRespondentLastName(caseData))
+            .build();
     }
 
     private String getHearingBooking(CaseData data) {

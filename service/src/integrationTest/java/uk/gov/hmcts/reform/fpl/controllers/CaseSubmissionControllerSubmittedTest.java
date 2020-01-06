@@ -75,6 +75,8 @@ class CaseSubmissionControllerSubmittedTest {
             .put("ordersAndDirections", ordersAndDirections)
             .put("timeFramePresent", "Yes")
             .put("timeFrameValue", "Same day")
+            .put("urgentHearing", "Yes")
+            .put("firstRespondentName", "Smith")
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
@@ -87,6 +89,8 @@ class CaseSubmissionControllerSubmittedTest {
             .put("ordersAndDirections", ordersAndDirections)
             .put("timeFramePresent", "Yes")
             .put("timeFrameValue", "Same day")
+            .put("urgentHearing", "Yes")
+            .put("firstRespondentName", "Smith")
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
@@ -126,6 +130,8 @@ class CaseSubmissionControllerSubmittedTest {
             .put("ordersAndDirections", "")
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
+            .put("urgentHearing", "No")
+            .put("firstRespondentName", "")
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
@@ -138,6 +144,8 @@ class CaseSubmissionControllerSubmittedTest {
             .put("ordersAndDirections", "")
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
+            .put("urgentHearing", "No")
+            .put("firstRespondentName", "")
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
