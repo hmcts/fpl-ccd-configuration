@@ -13,8 +13,6 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.util.Properties;
 
-import static org.apache.commons.lang3.StringUtils.join;
-
 @Getter
 @Setter
 @Configuration
@@ -28,20 +26,14 @@ public class EmailConfiguration {
 
     @Bean
     public JavaMailSender javaMailSender() {
-        final String mailSmtpStarttlsEnableKey = "smtp.starttls.enable";
-        final String mailSmtpSslTrustKey = "smtp.ssl.trust";
-
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost(host);
         javaMailSender.setPort(port);
 
         Properties properties = new Properties();
         properties.setProperty("mail.transport.protocol", "smtp");
-        properties.setProperty(join("mail.", mailSmtpStarttlsEnableKey),
-            smtpPropertiesConfiguration.getStarttlsEnable());
-        properties.setProperty(join("mail.", mailSmtpSslTrustKey),
-            smtpPropertiesConfiguration.getSslTrust());
-
+        properties.setProperty("mail.smtp.starttls.enable", smtpPropertiesConfiguration.getStarttlsEnable());
+        properties.put("mail.smtp.ssl.trust", smtpPropertiesConfiguration.getSslTrust());
         javaMailSender.setJavaMailProperties(properties);
         return javaMailSender;
     }

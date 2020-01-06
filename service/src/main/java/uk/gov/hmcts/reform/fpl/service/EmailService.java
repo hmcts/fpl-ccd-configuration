@@ -41,7 +41,7 @@ public class EmailService {
 
             mailSender.send(message);
 
-            // TODO: 06/01/2020 remove as it is temporary 
+            // TODO: 06/01/2020 remove as it is temporary
             log.error("Email sent successfully ");
 
         } catch (MessagingException | MailException e) {
