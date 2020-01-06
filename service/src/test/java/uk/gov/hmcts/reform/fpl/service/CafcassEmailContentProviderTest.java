@@ -53,7 +53,7 @@ class CafcassEmailContentProviderTest {
     @BeforeEach
     void setup() {
         this.cafcassEmailContentProvider = new CafcassEmailContentProvider(
-            localAuthorityNameLookupConfiguration, cafcassLookupConfiguration, "", dateFormatterService,
+            localAuthorityNameLookupConfiguration, cafcassLookupConfiguration, "null", dateFormatterService,
             hearingBookingService, mapper);
     }
 
@@ -68,11 +68,12 @@ class CafcassEmailContentProviderTest {
             .put("fullStop", "No")
             .put("ordersAndDirections", ordersAndDirections)
             .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "Same day")
+            .put("timeFrameValue", "same day")
             .put("urgentHearing", "Yes")
+            .put("nonUrgentHearing", "No")
             .put("firstRespondentName", "Smith")
             .put("reference", "12345")
-            .put("caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
@@ -96,9 +97,10 @@ class CafcassEmailContentProviderTest {
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
             .put("urgentHearing", "No")
+            .put("nonUrgentHearing", "No")
             .put("firstRespondentName", "")
             .put("reference", "123")
-            .put("caseUrl", "/case/" + JURISDICTION + "/" + CASE_TYPE + "/123")
+            .put("caseUrl", "null/case/" + JURISDICTION + "/" + CASE_TYPE + "/123")
             .build();
 
         given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))

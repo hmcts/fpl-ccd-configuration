@@ -36,10 +36,9 @@ public class HmctsEmailContentProvider extends AbstractEmailContentProvider {
     public Map<String, Object> buildHmctsSubmissionNotification(CaseDetails caseDetails, String localAuthorityCode) {
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        return super.getCasePersonalisationBuilder(caseDetails)
+        return super.getCasePersonalisationBuilder(caseDetails, caseData)
             .put("court", hmctsCourtLookupConfiguration.getCourt(localAuthorityCode).getName())
             .put("localAuthority", localAuthorityNameLookupConfiguration.getLocalAuthorityName(localAuthorityCode))
-            .putAll(super.getApplicationSubjectLineBuilder(caseData))
             .build();
     }
 }
