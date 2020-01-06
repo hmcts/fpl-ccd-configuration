@@ -1,16 +1,11 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -30,8 +25,6 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -42,16 +35,11 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPON
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ComplyWithDirectionsControllerTest {
+class ComplyWithDirectionsControllerTest extends AbstractControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper mapper;
-
-    private static final String AUTH_TOKEN = "Bearer token";
-    private static final String USER_ID = "1";
+    ComplyWithDirectionsControllerTest() {
+        super("comply-with-directions");
+    }
 
     @Test
     void aboutToStartCallbackShouldAddAllPartiesDirectionsIntoSeparateRoleCollections() throws Exception {
@@ -64,13 +52,13 @@ class ComplyWithDirectionsControllerTest {
                 .build())
             .build();
 
-        CaseData caseData = makeRequest(request, "about-to-start");
+        CaseData caseData = getCaseData(postAboutToStartEvent(request));
 
         assertThat(collectionsContainDirectionsForRoleAndAllParties(caseData));
     }
 
     @Test
-    void aboutToStartCallbackShouldReturnAllPartiesDirectionsWhenNoSpecificRoleDirections() throws Exception {
+    void aboutToStartCallbackShouldReturnAllPartiesDirectionsWhenNoSpecificRoleDirections() {
         Direction direction = Direction.builder().assignee(ALL_PARTIES).build();
         Order sdo = Order.builder().directions(buildDirections(direction)).build();
 
@@ -80,7 +68,7 @@ class ComplyWithDirectionsControllerTest {
                 .build())
             .build();
 
-        CaseData caseData = makeRequest(request, "about-to-start");
+        CaseData caseData = getCaseData(postAboutToStartEvent(request));
 
         assertThat(caseData.getAllParties()).isNull();
         assertThat(caseData.getLocalAuthorityDirections()).containsAll(sdo.getDirections());
@@ -105,7 +93,7 @@ class ComplyWithDirectionsControllerTest {
                 .build())
             .build();
 
-        CaseData caseData = makeRequest(request, "about-to-submit");
+        CaseData caseData = getCaseData(postAboutToSubmitEvent(request));
 
         assertThat(caseData.getStandardDirectionOrder().getDirections().get(0).getValue().getResponses()).isNotEmpty();
     }
@@ -126,7 +114,7 @@ class ComplyWithDirectionsControllerTest {
                 .build())
             .build();
 
-        CaseData caseData = makeRequest(request, "about-to-submit");
+        CaseData caseData = getCaseData(postAboutToSubmitEvent(request));
 
         assertThat(getResponses(caseData.getServedCaseManagementOrders().get(0).getValue())).isNotEmpty();
     }
@@ -145,23 +133,23 @@ class ComplyWithDirectionsControllerTest {
 
     private Order order(UUID uuid) {
         return Order.builder().directions(ImmutableList.of(Element.<Direction>builder()
-                .id(uuid)
-                .value(Direction.builder()
-                    .directionType("example direction")
-                    .build())
-                .build()))
-                .build();
+            .id(uuid)
+            .value(Direction.builder()
+                .directionType("example direction")
+                .build())
+            .build()))
+            .build();
     }
 
     private List<Element<Direction>> directions(UUID uuid) {
         return ImmutableList.of(Element.<Direction>builder()
-                .id(uuid)
-                .value(Direction.builder()
-                    .response(DirectionResponse.builder()
-                        .complied("Yes")
-                        .build())
+            .id(uuid)
+            .value(Direction.builder()
+                .response(DirectionResponse.builder()
+                    .complied("Yes")
                     .build())
-                .build());
+                .build())
+            .build());
     }
 
     private List<Direction> directionsForAllRoles() {
@@ -185,19 +173,8 @@ class ComplyWithDirectionsControllerTest {
             .build());
     }
 
-    private CaseData makeRequest(CallbackRequest request, String endpoint) throws Exception {
-        MvcResult response = mockMvc
-            .perform(post("/callback/comply-with-directions/" + endpoint)
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = mapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-
+    private CaseData getCaseData(AboutToStartOrSubmitCallbackResponse callbackResponse) {
         return mapper.convertValue(callbackResponse.getData(), CaseData.class);
     }
 

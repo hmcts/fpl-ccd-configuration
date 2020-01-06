@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -47,8 +43,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
@@ -65,9 +59,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @ActiveProfiles("integration-test")
 @WebMvcTest(GeneratedOrderController.class)
 @OverrideAutoConfiguration(enabled = true)
-class GeneratedOrderControllerTest {
-    private static final String AUTH_TOKEN = "Bearer token";
-    private static final String USER_ID = "1";
+class GeneratedOrderControllerTest extends AbstractControllerTest {
     private static final String LOCAL_AUTHORITY_CODE = "example";
     private static final String LOCAL_AUTHORITY_EMAIL_ADDRESS = "local-authority@local-authority.com";
     private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
@@ -87,29 +79,25 @@ class GeneratedOrderControllerTest {
     @Autowired
     private DateFormatterService dateFormatterService;
 
-    @Autowired
-    private ObjectMapper mapper;
-
-    @Autowired
-    private MockMvc mockMvc;
+    GeneratedOrderControllerTest() {
+        super("create-order");
+    }
 
     @Test
-    void aboutToStartShouldReturnErrorsWhenFamilymanNumberIsNotProvided() throws Exception {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .data(ImmutableMap.of("data", "some data"))
-                .build())
+    void aboutToStartShouldReturnErrorsWhenFamilymanNumberIsNotProvided() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .id(12345L)
+            .data(Map.of("data", "some data"))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(request, "about-to-start");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
         assertThat(callbackResponse.getErrors()).containsExactly("Enter Familyman case number");
     }
 
     @Test
     void aboutToSubmitShouldAddC21OrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() throws Exception {
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(callbackRequest(), "about-to-submit");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(callbackRequest());
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
@@ -119,7 +107,7 @@ class GeneratedOrderControllerTest {
 
     @Test
     void aboutToSubmitShouldAddCareOrderToCaseDataAndRemoveTemporaryCaseDataOrderFields() throws Exception {
-        AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(careOrderRequest(), "about-to-submit");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(careOrderRequest());
 
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
@@ -130,7 +118,7 @@ class GeneratedOrderControllerTest {
     @Test
     void shouldTriggerOrderEventWhenSubmitted() throws Exception {
         String expectedCaseReference = "19898989";
-        makeSubmittedRequest(buildCallbackRequest());
+        postSubmittedEvent(buildCallbackRequest());
 
         verify(notificationClient, times(1)).sendEmail(
             eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
@@ -180,33 +168,6 @@ class GeneratedOrderControllerTest {
         assertThat(caseData.getJudgeAndLegalAdvisor()).isEqualTo(null);
         assertThat(caseData.getOrderFurtherDirections()).isEqualTo(null);
         assertThat(orders.get(0).getValue()).isEqualTo(expectedOrder);
-    }
-
-    private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request, String endpoint)
-        throws Exception {
-        MvcResult mvc = mockMvc
-            .perform(post("/callback/create-order/" + endpoint)
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        return mapper.readValue(mvc.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-    }
-
-    private void makeSubmittedRequest(CallbackRequest request)
-        throws Exception {
-        mockMvc
-            .perform(post("/callback/create-order/submitted")
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
     }
 
     private CallbackRequest buildCallbackRequest() {
@@ -260,23 +221,23 @@ class GeneratedOrderControllerTest {
 
         @Test
         void midEventShouldGenerateOrderDocumentWhenOrderTypeIsBlankOrder() throws Exception {
-            AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
-                generateCallbackRequest(BLANK_ORDER, false), "mid-event");
+            AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                generateCallbackRequest(BLANK_ORDER, false));
 
             CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
-            verify(uploadDocumentService, times(1)).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "blank_order_c21.pdf");
+            verify(uploadDocumentService, times(1)).uploadPDF(userId, userAuthToken, pdf, "blank_order_c21.pdf");
 
             assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDocument());
         }
 
         @Test
         void midEventShouldGenerateOrderDocumentWhenOrderTypeIsCareOrderWithFurtherDirections() throws Exception {
-            final AboutToStartOrSubmitCallbackResponse callbackResponse = makeRequest(
-                generateCallbackRequest(CARE_ORDER, true), "mid-event");
+            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                generateCallbackRequest(CARE_ORDER, true));
 
             verify(docmosisDocumentGeneratorService, times(1)).generateDocmosisDocument(any(), any());
-            verify(uploadDocumentService, times(1)).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "care_order.pdf");
+            verify(uploadDocumentService, times(1)).uploadPDF(userId, userAuthToken, pdf, "care_order.pdf");
 
             final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
 
@@ -285,7 +246,7 @@ class GeneratedOrderControllerTest {
 
         @Test
         void midEventShouldNotGenerateOrderDocumentWhenOrderTypeIsCareOrderWithNoFurtherDirections() throws Exception {
-            makeRequest(generateCallbackRequest(CARE_ORDER, false), "mid-event");
+            postMidEvent(generateCallbackRequest(CARE_ORDER, false));
 
             verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(), any());
             verify(uploadDocumentService, never()).uploadPDF(any(), any(), any(), any());
