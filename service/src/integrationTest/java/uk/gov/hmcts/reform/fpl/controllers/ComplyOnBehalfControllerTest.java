@@ -1,18 +1,10 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
@@ -27,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -34,8 +27,6 @@ import static java.util.Collections.emptyList;
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -45,34 +36,28 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPON
 @ActiveProfiles("integration-test")
 @WebMvcTest(DraftOrdersController.class)
 @OverrideAutoConfiguration(enabled = true)
-class ComplyOnBehalfControllerTest {
+class ComplyOnBehalfControllerTest extends AbstractControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper mapper;
-
-    private static final String AUTH_TOKEN = "Bearer token";
-    private static final String USER_ID = "1";
     private static final UUID DIRECTION_ID = randomUUID();
     private static final UUID RESPONSE_ID = randomUUID();
 
+    ComplyOnBehalfControllerTest() {
+        super("comply-on-behalf");
+    }
+
     @Test
-    void aboutToStartCallbackShouldAddPartiesDirectionsIntoSeparateRoleCollectionsAndPopulateLabels() throws Exception {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of(
-                    "standardDirectionOrder", Order.builder()
-                        .directions(directionsForRespondentsCafcassOthersAndAllParties())
-                        .build(),
-                    "others", firstOther(),
-                    "respondents1", respondents()
-                ))
-                .build())
+    void aboutToStartCallbackShouldAddPartiesDirectionsIntoSeparateRoleCollectionsAndPopulateLabels() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of(
+                "standardDirectionOrder", Order.builder()
+                    .directions(directionsForRespondentsCafcassOthersAndAllParties())
+                    .build(),
+                "others", firstOther(),
+                "respondents1", respondents()
+            ))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-start");
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(actualResponses(caseData.getRespondentDirectionsCustom(), PARENTS_AND_RESPONDENTS))
@@ -92,20 +77,18 @@ class ComplyOnBehalfControllerTest {
 
     //Test to check persistence of responses issue.
     @Test
-    void aboutToStartCallbackShouldAddAllPartiesDirectionWithPartyResponseToCorrectMap() throws Exception {
+    void aboutToStartCallbackShouldAddAllPartiesDirectionWithPartyResponseToCorrectMap() {
         List<Element<Direction>> directions = getDirectionForRespondentsAllPartiesAndOthers();
 
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of(
-                    "standardDirectionOrder", Order.builder().directions(directions).build(),
-                    "others", firstOther(),
-                    "respondents1", respondents()
-                ))
-                .build())
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of(
+                "standardDirectionOrder", Order.builder().directions(directions).build(),
+                "others", firstOther(),
+                "respondents1", respondents()
+            ))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-start");
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
         assertThat(actualResponses(caseData.getRespondentDirectionsCustom(), ALL_PARTIES))
@@ -141,18 +124,16 @@ class ComplyOnBehalfControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldAddResponsesOnBehalfOfParty() throws Exception {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .data(ImmutableMap.of(
-                    "standardDirectionOrder", orderWithAllPartiesDirection(),
-                    "respondentDirectionsCustom", updatedDirection("RESPONDENT_1"),
-                    "otherPartiesDirectionsCustom", updatedDirection("OTHER_1"),
-                    "cafcassDirectionsCustom", updatedDirectionCafcass()))
-                .build())
+    void aboutToSubmitShouldAddResponsesOnBehalfOfParty() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(Map.of(
+                "standardDirectionOrder", orderWithAllPartiesDirection(),
+                "respondentDirectionsCustom", updatedDirection("RESPONDENT_1"),
+                "otherPartiesDirectionsCustom", updatedDirection("OTHER_1"),
+                "cafcassDirectionsCustom", updatedDirectionCafcass()))
             .build();
 
-        AboutToStartOrSubmitCallbackResponse response = makeRequest(request, "about-to-submit");
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
 
         List<Element<DirectionResponse>> responses = mapper.convertValue(response.getData(), CaseData.class)
             .getStandardDirectionOrder().getDirections().get(0).getValue().getResponses();
@@ -185,8 +166,8 @@ class ComplyOnBehalfControllerTest {
             .build();
     }
 
-    private ImmutableList<Element<Respondent>> respondents() {
-        return ImmutableList.of(Element.<Respondent>builder()
+    private List<Element<Respondent>> respondents() {
+        return List.of(Element.<Respondent>builder()
             .value(Respondent.builder()
                 .party(RespondentParty.builder()
                     .firstName("John")
@@ -224,7 +205,7 @@ class ComplyOnBehalfControllerTest {
             return emptyList();
         }
 
-        return ImmutableList.of(Element.<DirectionResponse>builder()
+        return List.of(Element.<DirectionResponse>builder()
             .id(RESPONSE_ID)
             .value(DirectionResponse.builder()
                 .complied("Yes")
@@ -235,26 +216,11 @@ class ComplyOnBehalfControllerTest {
             .build());
     }
 
-    private AboutToStartOrSubmitCallbackResponse makeRequest(CallbackRequest request, String endpoint)
-        throws Exception {
-        MvcResult response = mockMvc
-            .perform(post("/callback/comply-on-behalf/" + endpoint)
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        return mapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
-    }
-
     private List<Element<Direction>> updatedDirection(String onBehalfOf) {
-        return ImmutableList.of(Element.<Direction>builder()
+        return List.of(Element.<Direction>builder()
             .id(DIRECTION_ID)
             .value(Direction.builder()
-                .responses(ImmutableList.of(Element.<DirectionResponse>builder()
+                .responses(List.of(Element.<DirectionResponse>builder()
                     .id(randomUUID())
                     .value(DirectionResponse.builder()
                         .complied("Yes")
@@ -266,7 +232,7 @@ class ComplyOnBehalfControllerTest {
     }
 
     private List<Element<Direction>> updatedDirectionCafcass() {
-        return ImmutableList.of(Element.<Direction>builder()
+        return List.of(Element.<Direction>builder()
             .id(DIRECTION_ID)
             .value(Direction.builder()
                 .response(DirectionResponse.builder()
@@ -279,7 +245,7 @@ class ComplyOnBehalfControllerTest {
 
     private Order orderWithAllPartiesDirection() {
         return Order.builder()
-            .directions(ImmutableList.of(Element.<Direction>builder()
+            .directions(List.of(Element.<Direction>builder()
                 .id(DIRECTION_ID)
                 .value(Direction.builder()
                     .directionType("example direction")
@@ -290,7 +256,7 @@ class ComplyOnBehalfControllerTest {
     }
 
     private List<Element<DirectionResponse>> expectedResponses(String onBehalfOf) {
-        return ImmutableList.of(Element.<DirectionResponse>builder()
+        return List.of(Element.<DirectionResponse>builder()
             .id(RESPONSE_ID)
             .value(DirectionResponse.builder()
                 .complied("Yes")
