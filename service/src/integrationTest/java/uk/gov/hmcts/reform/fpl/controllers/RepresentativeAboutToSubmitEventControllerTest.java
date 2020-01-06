@@ -55,6 +55,15 @@ class RepresentativeAboutToSubmitEventControllerTest extends AbstractControllerT
         super("manage-representatives");
     }
 
+    private static CaseDetails buildCaseData(Respondent respondent, Element<Representative> representative) {
+        return CaseDetails.builder()
+            .id(RandomUtils.nextLong())
+            .data(Map.of(
+                "representatives", List.of(representative),
+                "respondents1", wrapElements(respondent)))
+            .build();
+    }
+
     @Test
     void shouldAddUsersToCaseAndAssociateRepresentativesWithPerson() {
         final UUID representativeId = UUID.randomUUID();
@@ -88,14 +97,5 @@ class RepresentativeAboutToSubmitEventControllerTest extends AbstractControllerT
 
         assertThat(unwrapElements(updatedResponded.getRepresentedBy())).containsExactly(representativeId);
         assertThat(callbackResponse.getErrors()).isNullOrEmpty();
-    }
-
-    private static CaseDetails buildCaseData(Respondent respondent, Element<Representative> representative) {
-        return CaseDetails.builder()
-            .id(RandomUtils.nextLong())
-            .data(Map.of(
-                "representatives", List.of(representative),
-                "respondents1", wrapElements(respondent)))
-            .build();
     }
 }
