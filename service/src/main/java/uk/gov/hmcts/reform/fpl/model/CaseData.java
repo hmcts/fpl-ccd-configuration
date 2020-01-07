@@ -66,12 +66,8 @@ public class CaseData {
     private final List<@NotNull(message = "You need to add details to respondents") Element<Respondent>> respondents1;
 
     @Valid
-    private final Respondent getFirstRespondent() {
-        if (isEmpty(respondents1)) {
-            return Respondent.builder().build();
-        }
-
-        return respondents1.get(0).getValue();
+    private Optional<Respondent> getFirstRespondent() {
+        return findRespondent(0);
     }
 
     private final Proceeding proceeding;
@@ -232,6 +228,7 @@ public class CaseData {
     }
 
     public Optional<Respondent> findRespondent(int seqNo) {
-        return getRespondents1().size() <= seqNo ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
+        return isEmpty(getRespondents1()) || getRespondents1().size() <= seqNo
+            ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
     }
 }
