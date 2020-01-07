@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.fpl.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -163,5 +164,35 @@ class CaseDataTest {
             .build();
 
         assertThat(caseData.findRespondent(1)).isEqualTo(Optional.empty());
+    }
+
+    @Nested
+    class GetFurtherDirectionsText {
+
+        private FurtherDirections furtherDirections;
+        private CaseData caseData;
+
+        @Test
+        void shouldReturnDirectionTextWhenFurtherDirectionIsPopulated() {
+            furtherDirections = FurtherDirections.builder().directions("some text").build();
+            caseData = CaseData.builder().orderFurtherDirections(furtherDirections).build();
+
+            assertThat(caseData.getFurtherDirectionsText()).isEqualTo("some text");
+        }
+
+        @Test
+        void shouldReturnEmptyStringWhenFurtherDirectionIsNotPopulated() {
+            furtherDirections = FurtherDirections.builder().build();
+            caseData = CaseData.builder().orderFurtherDirections(furtherDirections).build();
+
+            assertThat(caseData.getFurtherDirectionsText()).isEmpty();
+        }
+
+        @Test
+        void shouldReturnEmptyStringWhenFurtherDirectionIsNull() {
+            caseData = CaseData.builder().build();
+
+            assertThat(caseData.getFurtherDirectionsText()).isEmpty();
+        }
     }
 }

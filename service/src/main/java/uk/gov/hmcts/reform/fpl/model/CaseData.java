@@ -225,4 +225,8 @@ public class CaseData {
     public Optional<Respondent> findRespondent(int seqNo) {
         return getRespondents1().size() <= seqNo ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
     }
+
+    public String getFurtherDirectionsText() {
+        return Optional.ofNullable(orderFurtherDirections).map(FurtherDirections::getDirections).orElse("");
+    }
 }

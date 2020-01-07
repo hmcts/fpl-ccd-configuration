@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -21,7 +20,6 @@ import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import static com.google.common.collect.Iterables.getLast;
 import static java.util.UUID.randomUUID;
@@ -110,7 +108,7 @@ public class GeneratedOrderService {
                     .put("orderType", BLANK_ORDER)
                     .put("orderTitle", defaultIfNull(caseData.getOrder().getTitle(), "Order"))
                     .put("childrenAct", "Children Act 1989")
-                    .put("orderDetails", caseData.getOrder().getDetails());
+                    .put("orderDetails", defaultIfNull(caseData.getOrder().getDetails(), ""));
                 break;
             case CARE_ORDER:
                 orderTemplateBuilder
@@ -131,15 +129,12 @@ public class GeneratedOrderService {
             .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
                 caseData.getJudgeAndLegalAdvisor()))
             .put("children", getChildrenDetails(caseData))
-            .put("furtherDirections", getFurtherDirections(caseData.getOrderFurtherDirections()))
+            .put("furtherDirections", caseData.getFurtherDirectionsText())
             .build();
 
         return orderTemplateBuilder.build();
     }
 
-    private String getFurtherDirections(FurtherDirections furtherDirections) {
-        return Optional.ofNullable(furtherDirections).map(FurtherDirections::getDirections).orElse("");
-    }
 
     public String generateOrderDocumentFileName(String type) {
         return type.toLowerCase().replaceAll("[()]", "").replaceAll("[ ]", "_") + ".pdf";
