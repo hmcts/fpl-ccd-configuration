@@ -38,7 +38,18 @@
     "EventElementLabel": "For",
     "FieldDisplayOrder": 4,
     "DisplayContext": "READONLY",
+    "FieldShowCondition": "otherPartiesDirectionsCustom.otherPartiesAssignee=\"*\"",
     "Comment": "cannot configure show hide condition to hide field for all parties directions as these are not assigned to one person"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "ComplyWithDirections",
+    "CaseEventID": "COMPLY_OTHERS",
+    "CaseFieldID": "otherPartiesDirectionsCustom",
+    "ListElementCode": "allParties_label",
+    "FieldDisplayOrder": 4,
+    "DisplayContext": "READONLY",
+    "FieldShowCondition": "otherPartiesDirectionsCustom.otherPartiesAssignee = \"\""
   },
   {
     "LiveFrom": "01/01/2017",
