@@ -36,6 +36,7 @@ public class EmailConfiguration {
         properties.setProperty("mail.transport.protocol", "smtp");
         properties.setProperty("mail.smtp.starttls.enable", smtpPropertiesConfiguration.getStarttlsEnable());
         properties.put("mail.smtp.ssl.trust", smtpPropertiesConfiguration.getSslTrust());
+        properties.put("mail.debug", "true");
 
         log.error("'mail.smtp.ssl.trust' value is " + smtpPropertiesConfiguration.getSslTrust());
         javaMailSender.setJavaMailProperties(properties);
