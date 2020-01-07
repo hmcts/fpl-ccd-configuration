@@ -55,7 +55,7 @@
     "ID": "ComplyWithDirections",
     "CaseEventID": "COMPLY_OTHERS",
     "CaseFieldID": "respondentDirectionsCustom",
-    "ListElementCode": "responses.respondingOnBehalfOfOthers",
+    "ListElementCode": "responses.respondingOnBehalfOfRespondent",
     "FieldDisplayOrder": 6,
     "DisplayContext": "MANDATORY"
   },
