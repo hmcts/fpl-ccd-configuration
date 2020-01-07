@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.config.CafcassLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityEmailLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.UserRole;
 import uk.gov.hmcts.reform.fpl.events.C2UploadedEvent;
@@ -68,7 +67,6 @@ public class NotificationHandler {
     private final C2UploadedEmailContentProvider c2UploadedEmailContentProvider;
     private final GeneratedOrderEmailContentProvider orderEmailContentProvider;
     private final LocalAuthorityEmailContentProvider localAuthorityEmailContentProvider;
-    private final LocalAuthorityEmailLookupConfiguration localAuthorityEmailLookupConfiguration;
     private final NotificationClient notificationClient;
     private final IdamApi idamApi;
     private final InboxLookupService inboxLookupService;
@@ -245,11 +243,10 @@ public class NotificationHandler {
         Map<String, Object> localAuthorityParameters =
             orderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
                 caseDetails, localAuthorityCode, mostRecentUploadedDocumentUrl);
-        String localAuthorityEmail = localAuthorityEmailLookupConfiguration
-            .getLocalAuthority(localAuthorityCode)
-            .map(LocalAuthorityEmailLookupConfiguration.LocalAuthority::getEmail)
-            .orElseThrow(() -> new NullPointerException("Local authority '" + localAuthorityCode + "' not found"));
-        sendNotification(ORDER_NOTIFICATION_TEMPLATE, localAuthorityEmail, localAuthorityParameters,
+
+        String recipientEmail = inboxLookupService.getNotificationRecipientEmail(caseDetails, localAuthorityCode);
+
+        sendNotification(ORDER_NOTIFICATION_TEMPLATE, recipientEmail, localAuthorityParameters,
             Long.toString(caseDetails.getId()));
     }
 
