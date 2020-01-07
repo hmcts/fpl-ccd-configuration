@@ -35,6 +35,7 @@ import javax.validation.constraints.NotNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -63,6 +64,15 @@ public class CaseData {
         Element<Applicant>> applicants;
     @NotNull(message = "You need to add details to respondents")
     private final List<@NotNull(message = "You need to add details to respondents") Element<Respondent>> respondents1;
+
+    @Valid
+    private final Respondent getFirstRespondent() {
+        if (isEmpty(respondents1)) {
+            return Respondent.builder().build();
+        }
+
+        return respondents1.get(0).getValue();
+    }
 
     private final Proceeding proceeding;
 
