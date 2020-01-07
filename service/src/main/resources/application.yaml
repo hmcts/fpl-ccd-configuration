@@ -20,7 +20,12 @@ fpl:
   local_authority_codes_forbidden_case_submission:
 
 logging:
-  level: debug
+  level:
+    org.springframework: debug
+    org:
+      springframework:
+        mail:
+          javamail: debug
 
 ---
 
