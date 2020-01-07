@@ -167,6 +167,8 @@ class NotificationHandlerTest {
 
         @BeforeEach
         void before() throws IOException {
+            CaseDetails caseDetails = callbackRequest().getCaseDetails();
+
             given(localAuthorityNameLookupConfiguration.getLocalAuthorityName(LOCAL_AUTHORITY_CODE))
                 .willReturn("Example Local Authority");
 
@@ -179,13 +181,13 @@ class NotificationHandlerTest {
             given(hmctsCourtLookupConfiguration.getCourt(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Court(COURT_NAME, COURT_EMAIL_ADDRESS));
 
-            given(localAuthorityEmailLookupConfiguration.getLocalAuthority(LOCAL_AUTHORITY_CODE))
-                .willReturn(Optional.of(new LocalAuthority(LOCAL_AUTHORITY_EMAIL_ADDRESS)));
+            given(inboxLookupService.getNotificationRecipientEmail(caseDetails, LOCAL_AUTHORITY_CODE))
+                .willReturn(LOCAL_AUTHORITY_EMAIL_ADDRESS);
 
             given(cafcassLookupConfiguration.getCafcass(LOCAL_AUTHORITY_CODE))
                 .willReturn(new Cafcass(CAFCASS_NAME, CAFCASS_EMAIL_ADDRESS));
 
-            given(c2UploadedEmailContentProvider.buildC2UploadNotification(callbackRequest().getCaseDetails()))
+            given(c2UploadedEmailContentProvider.buildC2UploadNotification(caseDetails))
                 .willReturn(c2Parameters);
 
             given(orderEmailContentProvider.buildOrderNotificationParametersForLocalAuthority(
@@ -224,8 +226,7 @@ class NotificationHandlerTest {
         @Test
         void shouldNotifyPartiesOnOrderSubmission() throws IOException, NotificationClientException {
             notificationHandler.sendNotificationForOrder(
-                new GeneratedOrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID,
-                    mostRecentUploadedDocumentUrl));
+                new GeneratedOrderEvent(callbackRequest(), AUTH_TOKEN, USER_ID, mostRecentUploadedDocumentUrl));
 
             verify(notificationClient, times(1)).sendEmail(
                 eq(ORDER_NOTIFICATION_TEMPLATE), eq(LOCAL_AUTHORITY_EMAIL_ADDRESS),
@@ -256,9 +257,9 @@ class NotificationHandlerTest {
             cmoNotificationHandler = new NotificationHandler(hmctsCourtLookupConfiguration, cafcassLookupConfiguration,
                 hmctsEmailContentProvider, cafcassEmailContentProvider, cafcassEmailContentProviderSDOIssued,
                 gatekeeperEmailContentProvider, c2UploadedEmailContentProvider, orderEmailContentProvider,
-                localAuthorityEmailContentProvider, localAuthorityEmailLookupConfiguration, notificationClient,
-                idamApi, inboxLookupService, caseManagementOrderEmailContentProvider, representativeService,
-                localAuthorityNameLookupConfiguration, objectMapper);
+                localAuthorityEmailContentProvider, notificationClient, idamApi, inboxLookupService,
+                caseManagementOrderEmailContentProvider, representativeService, localAuthorityNameLookupConfiguration,
+                objectMapper);
         }
 
         @Test
