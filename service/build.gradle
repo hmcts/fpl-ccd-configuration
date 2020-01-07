@@ -151,7 +151,8 @@ dependencyCheck {
 sonarqube {
   properties {
     property "sonar.projectName", "FPL :: Service"
-    property "sonar.jacoco.reportPath", file("${project.buildDir}/jacoco/test.exec")
+    
+    property "sonar.coverage.jacoco.xmlReportPaths", file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
     property "sonar.jacoco.itReportPath", file("${project.buildDir}/jacoco/integration.exec")
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
