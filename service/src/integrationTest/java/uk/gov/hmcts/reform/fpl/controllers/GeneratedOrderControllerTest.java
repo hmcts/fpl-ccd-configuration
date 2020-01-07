@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
@@ -220,7 +219,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         @Test
-        void midEventShouldGenerateOrderDocumentWhenOrderTypeIsBlankOrder() {
+        void shouldGenerateOrderDocumentWhenOrderTypeIsBlankOrder() {
             AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(generateBlankOrderCaseDetails());
 
             CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
@@ -231,9 +230,9 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         @Test
-        void midEventShouldGenerateOrderDocumentWhenOrderTypeIsCareOrderWithFurtherDirections() {
+        void shouldGenerateOrderDocumentWhenOrderTypeIsCareOrderWithFurtherDirections() {
             final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
-                generateCareOrderCaseDetails(true));
+                generateCareOrderCaseDetailsWithFurtherDirections());
 
             verify(docmosisDocumentGeneratorService, times(1)).generateDocmosisDocument(any(), any());
             verify(uploadDocumentService, times(1)).uploadPDF(userId, userAuthToken, pdf, "care_order.pdf");
@@ -244,15 +243,15 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         @Test
-        void midEventShouldNotGenerateOrderDocumentWhenOrderTypeIsCareOrderWithNoFurtherDirections() {
-            postMidEvent(generateCareOrderCaseDetails(false));
+        void shouldNotGenerateOrderDocumentWhenOrderTypeIsCareOrderWithNoFurtherDirections() {
+            postMidEvent(generateCareOrderCaseDetailsWithoutFurtherDirections());
 
             verify(docmosisDocumentGeneratorService, never()).generateDocmosisDocument(any(), any());
             verify(uploadDocumentService, never()).uploadPDF(any(), any(), any(), any());
         }
 
         @AfterEach
-        void tearDown() {
+        void resetInvocations() {
             reset(docmosisDocumentGeneratorService);
             reset(uploadDocumentService);
         }
@@ -260,7 +259,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         private CaseDetails generateBlankOrderCaseDetails() {
             final CaseData.CaseDataBuilder dataBuilder = CaseData.builder();
 
-            dataBuilder.order(GeneratedOrder.builder().build());
+            dataBuilder.order(GeneratedOrder.builder().details("").build());
             dataBuilder.orderTypeAndDocument(OrderTypeAndDocument.builder().type(BLANK_ORDER).build());
             generateDefaultValues(dataBuilder);
 
@@ -269,25 +268,36 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
                 .build();
         }
 
-        private CaseDetails generateCareOrderCaseDetails(boolean withFurtherDirections) {
-            final CaseData.CaseDataBuilder dataBuilder = CaseData.builder();
+        private CaseDetails generateCareOrderCaseDetailsWithFurtherDirections() {
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonCareOrderDetails();
 
-            dataBuilder.orderTypeAndDocument(OrderTypeAndDocument.builder()
-                .type(GeneratedOrderType.CARE_ORDER)
+            dataBuilder.orderFurtherDirections(FurtherDirections.builder()
+                .directionsNeeded("Yes")
+                .directions("Some directions")
                 .build());
-
-            if (withFurtherDirections) {
-                dataBuilder.orderFurtherDirections(FurtherDirections.builder()
-                    .directionsNeeded("Yes")
-                    .directions("Some directions")
-                    .build());
-            }
-
-            generateDefaultValues(dataBuilder);
 
             return CaseDetails.builder()
                 .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
                 .build();
+        }
+
+        private CaseDetails generateCareOrderCaseDetailsWithoutFurtherDirections() {
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonCareOrderDetails();
+
+            return CaseDetails.builder()
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+                .build();
+        }
+
+        private CaseData.CaseDataBuilder generateCommonCareOrderDetails() {
+            final CaseData.CaseDataBuilder builder = CaseData.builder()
+                .orderTypeAndDocument(OrderTypeAndDocument.builder()
+                    .type(CARE_ORDER)
+                    .build());
+
+            generateDefaultValues(builder);
+
+            return builder;
         }
 
         private void generateDefaultValues(CaseData.CaseDataBuilder builder) {

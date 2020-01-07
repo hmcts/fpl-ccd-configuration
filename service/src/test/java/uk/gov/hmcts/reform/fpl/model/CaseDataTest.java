@@ -168,7 +168,6 @@ class CaseDataTest {
 
     @Nested
     class GetFurtherDirectionsText {
-
         private FurtherDirections furtherDirections;
         private CaseData caseData;
 
