@@ -118,6 +118,8 @@ jacocoTestReport {
   }
 }
 
+project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
+
 dependencyUpdates.resolutionStrategy = {
   componentSelection { rules ->
     rules.all { ComponentSelection selection ->
