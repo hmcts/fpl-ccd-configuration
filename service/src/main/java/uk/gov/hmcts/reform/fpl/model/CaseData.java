@@ -35,6 +35,7 @@ import javax.validation.constraints.NotNull;
 import static java.util.Optional.empty;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -63,6 +64,11 @@ public class CaseData {
         Element<Applicant>> applicants;
     @NotNull(message = "You need to add details to respondents")
     private final List<@NotNull(message = "You need to add details to respondents") Element<Respondent>> respondents1;
+
+    @Valid
+    private Optional<Respondent> getFirstRespondent() {
+        return findRespondent(0);
+    }
 
     private final Proceeding proceeding;
 
@@ -223,7 +229,8 @@ public class CaseData {
     }
 
     public Optional<Respondent> findRespondent(int seqNo) {
-        return getRespondents1().size() <= seqNo ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
+        return isEmpty(getRespondents1()) || getRespondents1().size() <= seqNo
+            ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
     }
 
     public String getFurtherDirectionsText() {
