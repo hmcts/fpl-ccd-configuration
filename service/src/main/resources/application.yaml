@@ -21,7 +21,6 @@ fpl:
 
 logging:
   level:
-    org.springframework: debug
     org:
       springframework:
         mail:
