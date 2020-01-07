@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -25,7 +26,7 @@ public class EmailConfiguration {
 
     private final SmtpPropertiesConfiguration smtpPropertiesConfiguration;
 
-
+    @Bean
     public JavaMailSender javaMailSender() {
         JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
         javaMailSender.setHost(host);

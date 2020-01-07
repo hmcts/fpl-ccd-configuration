@@ -123,6 +123,15 @@ spring:
         jwt:
           issuer-uri: http://fr-am:8080/openam/oauth2/hmcts
           jwk-set-uri: http://localhost:5000/o/jwks
+  mail:
+    host: 127.0.0.1
+    port: 1025
+    properties:
+      mail-smtp:
+        starttls:
+          enable:
+        ssl:
+          trust:
 
 idam:
   api:
