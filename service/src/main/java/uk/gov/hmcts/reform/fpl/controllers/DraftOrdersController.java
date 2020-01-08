@@ -104,7 +104,6 @@ public class DraftOrdersController {
         @RequestHeader(value = "user-id") String userId,
         @RequestBody CallbackRequest callbackRequest) throws IOException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
-
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
         CaseData updated = caseData.toBuilder()
