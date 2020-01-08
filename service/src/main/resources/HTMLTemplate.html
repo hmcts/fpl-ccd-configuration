@@ -804,7 +804,7 @@
         <div class="data-list__row">
           <dt class="data-list__title">Current address</dt>
           <dd class="data-list__definition">
-            {% if respondent.value.party.contactDetailsHidden is not empty and respondent.value.party.contactDetailsHidden == "Yes" %}
+            {% if respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.contactDetailsHidden is not empty and respondent.value.party.contactDetailsHidden == "Yes" %}
               Confidential
             {% else %}
               {% if respondent.value.party.address is not empty %}
@@ -838,14 +838,14 @@
         <div class="data-list__row">
           <dt class="data-list__title">Telephone number</dt>
           <dd class="data-list__definition">
-            {% if respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.telephoneNumber is not empty and respondent.value.party.telephoneNumber.telephoneNumber is not empty %}
-              {% if respondent.value.party.contactDetailsHidden is not empty and respondent.value.party.contactDetailsHidden == "Yes" %}
-                Confidential
-              {% else %}
-                {{ respondent.value.party.telephoneNumber.telephoneNumber }}
-              {% endif %}
+            {% if respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.contactDetailsHidden is not empty and respondent.value.party.contactDetailsHidden == "Yes" %}
+              Confidential
             {% else %}
-              -
+              {% if respondent.value.party.telephoneNumber is not empty and respondent.value.party.telephoneNumber.telephoneNumber is not empty %}
+                {{ respondent.value.party.telephoneNumber.telephoneNumber }}
+              {% else %}
+                -
+              {% endif %}
             {% endif %}
           </dd>
         </div>
