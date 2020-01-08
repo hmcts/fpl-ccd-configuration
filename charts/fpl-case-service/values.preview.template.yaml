@@ -7,14 +7,13 @@ java:
   ingressHost: ${SERVICE_FQDN}
   livenessDelay: 50
   environment:
-    IDAM_API_URL: http://api-idam-fpl.service.core-compute-preview.internal
     CORE_CASE_DATA_API_URL: http://${SERVICE_NAME}-data-store-api
     IDAM_CLIENT_ID: fpl_case_service
-    IDAM_CLIENT_REDIRECT_URI: https://localhost:9000/oauth2/callback
+    IDAM_CLIENT_REDIRECT_URI: https://fpl-case-service-*.service.core-compute-aat.internal/oauth2/callback
     RD_PROFESSIONAL_API_URL: http://fpl-prd-mock-service
     SPRING_SECURITY_ENABLED: true
-    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI: http://fr-am:8080/openam/oauth2/hmcts
-    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: http://api-idam-fpl.service.core-compute-preview.internal/o/jwks
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI: https://forgerock-am.service.core-compute-idam-aat.internal:8443/openam/oauth2/hmcts
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWKSETURI: https://idam-api.aat.platform.hmcts.net/o/jwks
     GATEWAY_URL: https://gateway-${SERVICE_FQDN}
   keyVaults:
     fpl:
@@ -23,7 +22,7 @@ java:
         - notify-api-key
         - docmosis-api-key
         - fpl-case-service-s2s-secret
-        - fpl-case-service-idam-client-secret-preview
+        - fpl-case-service-idam-client-secret
         - local-authority-email-to-code-mapping
         - local-authority-code-to-name-mapping
         - local-authority-user-mapping
@@ -39,14 +38,8 @@ ccd:
   ingressIP: ${INGRESS_IP}
   consulIP: ${CONSUL_LB_IP}
   cpuRequests: 250m
-  idamApiUrl: http://api-idam-fpl.service.core-compute-preview.internal
-  idamWebUrl: http://web-idam-fpl.service.core-compute-preview.internal
   idam-pr:
     releaseNameOverride: ${SERVICE_NAME}-ccd-idam-pr
-    api:
-      url: http://api-idam-fpl.service.core-compute-preview.internal
-    web_public:
-      url: http://web-idam-fpl.service.core-compute-preview.internal
     redirect_uris:
       CCD:
         - https://case-management-web-${SERVICE_FQDN}/oauth2redirect
@@ -64,7 +57,7 @@ ccd:
   apiGateway:
     s2sKey: ${CCD_API_GATEWAY_S2S_SECRET}
     idamClientSecret:
-      value: ccd_gateway_secret
+      value: ${CCD_API_GATEWAY_IDAM_CLIENT_SECRET}
     environment:
       PROXY_DOCUMENT_MANAGEMENT: http://dm-store-aat.service.core-compute-aat.internal
       ADDRESS_LOOKUP_TOKEN: ${ADDRESS_LOOKUP_TOKEN}
