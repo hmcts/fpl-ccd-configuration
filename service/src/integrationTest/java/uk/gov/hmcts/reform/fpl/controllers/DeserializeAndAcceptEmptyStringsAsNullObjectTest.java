@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.utils.ResourceReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,12 +23,7 @@ class DeserializeAndAcceptEmptyStringsAsNullObjectTest {
 
     @Test
     void shouldDeserializeAndAcceptEmptyStringsAsNullObject() throws IOException {
-        try {
-            mapper.readValue(new
-                File("src/integrationTest/resources/fixtures/caseDataWithEmptyStringsInsteadOfNull.json"),
-                CaseData.class);
-        } catch (IOException ex) {
-            throw new IOException(ex);
-        }
+        mapper.readValue(ResourceReader.readString("fixtures/caseDataWithEmptyStringsInsteadOfNull.json"), CaseData.class);
+
     }
 }
