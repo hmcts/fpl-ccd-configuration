@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import static com.google.common.collect.ImmutableSet.of;
+import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -201,12 +202,19 @@ public class RoboticsDataService {
             .collect(toList());
 
         if (selectedOrderTypes.size() > 1) {
-            return selectedOrderTypes.stream()
+            return derivedApplicationTypeWithNoDuplicate(selectedOrderTypes.stream()
                 .map(this::getOrderTypeLabelValue)
-                .collect(joining(","));
+                .collect(joining(",")));
+
         } else {
             return getOrderTypeLabelValue(selectedOrderTypes.get(0));
         }
+    }
+
+    private String derivedApplicationTypeWithNoDuplicate(final String commaSeparatedOrderTypeValue) {
+        return stream(commaSeparatedOrderTypeValue.split(","))
+            .distinct()
+            .collect(joining(","));
     }
 
     private String getOrderTypeLabelValue(final OrderType orderType) {

@@ -163,6 +163,19 @@ public class RoboticsDataServiceTest {
                 "Care order,Education supervision order,Emergency protection order,"
                     + "Other order under part 4 of the Children Act 1989");
         }
+
+        @Test
+        void shouldReturnNonDuplicatedCommaSeparatedApplicationTypeWhenMoreThanOneOrderTypeSelected()
+            throws IOException {
+            CaseData caseData = prepareCaseDataWithOrderType(CARE_ORDER, INTERIM_CARE_ORDER,
+                INTERIM_SUPERVISION_ORDER, EDUCATION_SUPERVISION_ORDER, EMERGENCY_PROTECTION_ORDER, OTHER);
+
+            RoboticsData preparedRoboticsData = roboticsDataService.prepareRoboticsData(caseData);
+
+            assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
+                "Care order,Supervision order,Education supervision order,Emergency protection order,"
+                    + "Other order under part 4 of the Children Act 1989");
+        }
     }
 
     @Nested
