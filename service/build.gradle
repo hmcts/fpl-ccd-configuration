@@ -118,6 +118,8 @@ jacocoTestReport {
   }
 }
 
+project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
+
 dependencyUpdates.resolutionStrategy = {
   componentSelection { rules ->
     rules.all { ComponentSelection selection ->
@@ -151,8 +153,7 @@ dependencyCheck {
 sonarqube {
   properties {
     property "sonar.projectName", "FPL :: Service"
-    property "sonar.jacoco.reportPath", file("${project.buildDir}/jacoco/test.exec")
-    property "sonar.jacoco.itReportPath", file("${project.buildDir}/jacoco/integration.exec")
+    property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     property "sonar.coverage.exclusions", "**/model/**, **/config/*Configuration.java"
