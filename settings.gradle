@@ -1,7 +1,7 @@
 pluginManagement {
   repositories {
     maven {
-      url '../../build/repo'
+      url '../../repository'
     }
     gradlePluginPortal()
   }
