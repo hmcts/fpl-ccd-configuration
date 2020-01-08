@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +24,8 @@ class DeserializeAndAcceptEmptyStringsAsNullObjectTest {
     void shouldDeserializeAndAcceptEmptyStringsAsNullObject() throws IOException {
         try {
             mapper.readValue(new
-                File("src/integrationTest/resources/fixtures/caseDataWithEmptyStringsInsteadOfNull.json"), CaseData.class);
+                File("src/integrationTest/resources/fixtures/caseDataWithEmptyStringsInsteadOfNull.json"),
+                CaseData.class);
         } catch (IOException ex) {
             throw new IOException(ex);
         }
