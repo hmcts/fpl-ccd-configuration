@@ -45,8 +45,11 @@ class HmctsEmailContentProviderTest {
     @Autowired
     private ObjectMapper mapper;
 
-    private final DateFormatterService dateFormatterService = new DateFormatterService();
-    private final HearingBookingService hearingBookingService = new HearingBookingService();
+    @Autowired
+    private DateFormatterService dateFormatterService;
+
+    @Autowired
+    private HearingBookingService hearingBookingService;
 
     private HmctsEmailContentProvider hmctsEmailContentProvider;
 
