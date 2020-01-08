@@ -9,6 +9,7 @@
     "PageID": "1",
     "PageLabel": " ",
     "PageDisplayOrder": 1,
-    "PageColumnNumber": 1
+    "PageColumnNumber": 1,
+    "CaseEventFieldLabel": "Direction"
   }
 ]
