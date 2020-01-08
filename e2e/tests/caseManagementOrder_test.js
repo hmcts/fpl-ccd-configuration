@@ -80,9 +80,8 @@ Scenario('local authority creates CMO', async (I, caseViewPage, draftCaseManagem
 Scenario('Other parties cannot see the draft CMO document when it is marked for self review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   // Ensure the selection is self review
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  await cmoHelper.skipToReview(I);
-  draftCaseManagementOrderEventPage.markToReviewedBySelf();
-  await I.completeEvent('Submit');
+  await cmoHelper.sendDraftForSelfReview(I, draftCaseManagementOrderEventPage);
+
   cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.selfReview);
 
   for (let userDetails of cmoHelper.allOtherPartyDetails) {
@@ -95,14 +94,39 @@ Scenario('Other parties cannot see the draft CMO document when it is marked for 
 Scenario('Other parties can see the draft CMO document when it is marked for party review', async (I, caseViewPage, draftCaseManagementOrderEventPage) => {
   // Ensure the selection is party review
   await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
-  await cmoHelper.skipToReview(I);
-  draftCaseManagementOrderEventPage.markToBeReviewedByParties();
-  await I.completeEvent('Submit');
+
+  await cmoHelper.sendDraftForPartyReview(I, draftCaseManagementOrderEventPage);
+
   cmoHelper.assertCanSeeDraftCMO(I, caseViewPage, draftCaseManagementOrderEventPage.staticFields.statusRadioGroup.partiesReview);
 
   for (let otherPartyDetails of cmoHelper.allOtherPartyDetails) {
     await cmoHelper.assertUserCanSeeDraftCMODocument(I, otherPartyDetails, caseViewPage, caseId);
   }
+});
+
+Scenario('Local Authority sends draft to Judge who requests corrections', async (I, caseViewPage, draftCaseManagementOrderEventPage, actionCaseManagementOrderEventPage) => {
+  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
+  await cmoHelper.sendDraftForJudgeReview(I, draftCaseManagementOrderEventPage);
+
+  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
+  I.see('You can no longer edit this order');
+  await I.completeEvent('Submit');
+
+  await cmoHelper.switchUserAndNavigateToCase(I, {
+    email: config.judiciaryEmail,
+    password: config.judiciaryPassword,
+  }, caseId);
+
+  await caseViewPage.goToNewActions(config.applicationActions.actionCaseManagementOrder);
+  await cmoHelper.actionDraft(I, actionCaseManagementOrderEventPage);
+
+  await cmoHelper.switchUserAndNavigateToCase(I, {
+    email: config.swanseaLocalAuthorityEmailUserOne,
+    password: config.localAuthorityPassword,
+  }, caseId);
+
+  await caseViewPage.goToNewActions(config.applicationActions.draftCaseManagementOrder);
+  await cmoHelper.sendDraftForJudgeReview(I, draftCaseManagementOrderEventPage);
 });
 
 //Skipped due to new error validation for approving a CMO with a hearing date in the future. We need to come up with
