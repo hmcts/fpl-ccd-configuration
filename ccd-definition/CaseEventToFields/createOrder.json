@@ -46,7 +46,7 @@
     "CaseEventID": "createOrder",
     "CaseFieldID": "orderFurtherDirections",
     "PageFieldDisplayOrder": 1,
-    "DisplayContext": "OPTIONAL",
+    "DisplayContext": "MANDATORY",
     "PageID": "FurtherDirections",
     "PageLabel": " ",
     "PageDisplayOrder": 4,
