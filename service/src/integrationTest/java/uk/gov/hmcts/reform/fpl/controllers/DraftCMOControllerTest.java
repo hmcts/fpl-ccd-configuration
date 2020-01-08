@@ -1,16 +1,12 @@
 package uk.gov.hmcts.reform.fpl.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -41,13 +37,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Collections.emptyMap;
 import static java.util.UUID.fromString;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.PARTIES_REVIEW;
@@ -66,9 +61,7 @@ import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.docume
 @WebMvcTest(DraftCMOController.class)
 @OverrideAutoConfiguration(enabled = true)
 @SuppressWarnings("unchecked")
-class DraftCMOControllerTest {
-    private static final String AUTH_TOKEN = "Bearer token";
-    private static final String USER_ID = "1";
+class DraftCMOControllerTest extends AbstractControllerTest {
     private static final long ID = 1L;
     private static final LocalDateTime TODAYS_DATE = LocalDateTime.now();
     private final List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
@@ -78,12 +71,6 @@ class DraftCMOControllerTest {
     @Autowired
     private DraftCMOService draftCMOService;
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper mapper;
-
     @MockBean
     private CoreCaseDataService coreCaseDataService;
 
@@ -92,6 +79,10 @@ class DraftCMOControllerTest {
 
     @MockBean
     private UploadDocumentService uploadDocumentService;
+
+    DraftCMOControllerTest() {
+        super("draft-cmo");
+    }
 
     @Test
     void aboutToStartCallbackShouldPrepareCaseForCMO() throws Exception {
@@ -104,7 +95,9 @@ class DraftCMOControllerTest {
             TODAYS_DATE.plusDays(5).format(dateTimeFormatter),
             TODAYS_DATE.plusDays(2).format(dateTimeFormatter));
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-start");
+        CaseDetails caseDetails = buildCaseDetails(data);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToStartEvent(caseDetails);
 
         assertThat(getHearingDates(callbackResponse)).isEqualTo(expected);
         assertThat(getHearingDates(callbackResponse)).doesNotContain(TODAYS_DATE.format(dateTimeFormatter));
@@ -124,7 +117,7 @@ class DraftCMOControllerTest {
     }
 
     @Test
-    void midEventShouldGenerateDraftCaseManagementOrderDocument() throws Exception {
+    void midEventShouldGenerateDraftCaseManagementOrderDocument() {
         byte[] pdf = {1, 2, 3, 4, 5};
         final Document document = document();
         final DocmosisDocument docmosisDocument = new DocmosisDocument("case-management-order.pdf", pdf);
@@ -132,9 +125,11 @@ class DraftCMOControllerTest {
         given(documentGeneratorService.generateDocmosisDocument(any(), any())).willReturn(docmosisDocument);
         given(uploadDocumentService.uploadPDF(any(), any(), any(), any())).willReturn(document);
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(ImmutableMap.of(), "mid-event");
+        CaseDetails caseDetails = buildCaseDetails(emptyMap());
 
-        verify(uploadDocumentService).uploadPDF(USER_ID, AUTH_TOKEN, pdf, "draft-case-management-order.pdf");
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(caseDetails);
+
+        verify(uploadDocumentService).uploadPDF(userId, userAuthToken, pdf, "draft-case-management-order.pdf");
 
         final Map<String, Object> responseCaseData = callbackResponse.getData();
 
@@ -152,7 +147,7 @@ class DraftCMOControllerTest {
     }
 
     @Test
-    void aboutToSubmitShouldPopulateCaseManagementOrder() throws Exception {
+    void aboutToSubmitShouldPopulateCaseManagementOrder() {
         List<Element<HearingBooking>> hearingDetails = createHearingBookings(TODAYS_DATE);
 
         DynamicList dynamicHearingDates = draftCMOService.buildDynamicListFromHearingDetails(hearingDetails);
@@ -176,7 +171,9 @@ class DraftCMOControllerTest {
             .action(OrderAction.builder().changeRequestedByJudge("Changes").build())
             .build());
 
-        AboutToStartOrSubmitCallbackResponse callbackResponse = getResponse(data, "about-to-submit");
+        CaseDetails caseDetails = buildCaseDetails(data);
+
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postAboutToSubmitEvent(caseDetails);
         CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
         CaseManagementOrder caseManagementOrder = caseData.getCaseManagementOrder();
 
@@ -190,7 +187,7 @@ class DraftCMOControllerTest {
 
     //TODO: caseDetails before is in this test as a start for conditional call to submitted code.
     @Test
-    void submittedShouldTriggerCMOProgressionEvent() throws Exception {
+    void submittedShouldTriggerCMOProgressionEvent() {
         String event = "internal-change:CMO_PROGRESSION";
         CallbackRequest request = CallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -211,7 +208,7 @@ class DraftCMOControllerTest {
                 .build())
             .build();
 
-        makeRequest(request, "submitted");
+        postSubmittedEvent(request);
 
         verify(coreCaseDataService).triggerEvent(JURISDICTION, CASE_TYPE, ID, event);
     }
@@ -227,31 +224,13 @@ class DraftCMOControllerTest {
             .map(DynamicListElement::getLabel).collect(Collectors.toList());
     }
 
-    private AboutToStartOrSubmitCallbackResponse getResponse(
-        final Map<String, Object> data, final String endpoint) throws Exception {
-        CallbackRequest request = CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(ID)
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .data(data)
-                .build())
+    private CaseDetails buildCaseDetails(final Map<String, Object> data) {
+        return CaseDetails.builder()
+            .id(ID)
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .data(data)
             .build();
-
-        MvcResult response = makeRequest(request, endpoint);
-
-        return mapper.readValue(response.getResponse()
-            .getContentAsByteArray(), AboutToStartOrSubmitCallbackResponse.class);
     }
 
-    private MvcResult makeRequest(CallbackRequest request, String endpoint) throws Exception {
-        return mockMvc
-            .perform(post("/callback/draft-cmo/" + endpoint)
-                .header("authorization", AUTH_TOKEN)
-                .header("user-id", USER_ID)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(mapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andReturn();
-    }
 }
