@@ -535,10 +535,10 @@
           <dd class="data-list__definition">
             {% if child.value is not empty and child.value.party is not empty and child.value.party.livingSituation is not empty %}
               <span class="u-block">{{ child.value.party.livingSituation }}</span>
-                {% if child.value.party.address is not empty %}
-                  {% if child.value.party.detailsHidden is not empty and child.value.party.detailsHidden == "Yes" %}
-                    Confidential
-                  {% else %}
+                {% if child.value.party.detailsHidden is not empty and child.value.party.detailsHidden == "Yes" %}
+                  Confidential
+                {% else %}
+                  {% if child.value.party.address is not empty %}
                     {% if child.value.party.address.AddressLine1 is not empty %}
                       <span class="u-comma-before">{{ child.value.party.address.AddressLine1 }}</span>
                     {% endif %}
@@ -804,10 +804,10 @@
         <div class="data-list__row">
           <dt class="data-list__title">Current address</dt>
           <dd class="data-list__definition">
-            {% if respondent.value is not empty and respondent.value.party is not empty and respondent.value.party.address is not empty %}
-              {% if respondent.value.party.contactDetailsHidden is not empty and respondent.value.party.contactDetailsHidden == "Yes" %}
-                Confidential
-              {% else %}
+            {% if respondent.value.party.contactDetailsHidden is not empty and respondent.value.party.contactDetailsHidden == "Yes" %}
+              Confidential
+            {% else %}
+              {% if respondent.value.party.address is not empty %}
                 {% if respondent.value.party.address.AddressLine1 is not empty %}
                   <span class="u-comma-before">{{ respondent.value.party.address.AddressLine1 }}</span>
                 {% endif %}
@@ -829,9 +829,9 @@
                 {% if respondent.value.party.address.Country is not empty %}
                   <span class="u-comma-before">{{ respondent.value.party.address.Country }}</span>
                 {% endif %}
+              {% else %}
+                -
               {% endif %}
-            {% else %}
-              -
             {% endif %}
           </dd>
         </div>
