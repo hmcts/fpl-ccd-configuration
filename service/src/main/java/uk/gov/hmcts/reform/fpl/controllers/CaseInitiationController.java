@@ -23,7 +23,6 @@ public class CaseInitiationController {
     private final LocalAuthorityService localAuthorityNameService;
     private final LocalAuthorityUserService localAuthorityUserService;
 
-
     @Autowired
     public CaseInitiationController(LocalAuthorityService localAuthorityNameService,
                                     LocalAuthorityUserService localAuthorityUserService) {
@@ -33,9 +32,8 @@ public class CaseInitiationController {
 
     @PostMapping("/about-to-submit")
     public AboutToStartOrSubmitCallbackResponse handleAboutToSubmitEvent(
-        @RequestHeader(value = "authorization") String authorization,
         @RequestBody CallbackRequest callbackrequest) {
-        String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode(authorization);
+        String caseLocalAuthority = localAuthorityNameService.getLocalAuthorityCode();
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
 
         Map<String, Object> data = caseDetails.getData();

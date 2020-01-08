@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -9,12 +10,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.LocalAuthorityCodeLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
+import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.idam.client.IdamApi;
 import uk.gov.hmcts.reform.idam.client.models.UserInfo;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 class LocalAuthorityServiceTest {
@@ -29,10 +31,15 @@ class LocalAuthorityServiceTest {
     private LocalAuthorityCodeLookupConfiguration codeConfig;
 
     @Mock
-    private LocalAuthorityNameLookupConfiguration nameConfig;
+    private RequestData requestData;
 
     @InjectMocks
     private LocalAuthorityService localAuthorityService;
+
+    @BeforeEach
+    void setup() {
+        when(requestData.authorisation()).thenReturn(AUTH_TOKEN);
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {"mock@example.gov.uk", "mock.mock@example.gov.uk", "mock@ExAmPlE.gov.uk"})
@@ -44,7 +51,7 @@ class LocalAuthorityServiceTest {
         given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willReturn(
             UserInfo.builder().sub(email).build());
 
-        String domain = localAuthorityService.getLocalAuthorityCode(AUTH_TOKEN);
+        String domain = localAuthorityService.getLocalAuthorityCode();
 
         Assertions.assertThat(domain).isEqualTo(expectedLaCode);
     }
@@ -54,7 +61,7 @@ class LocalAuthorityServiceTest {
         given(idamApi.retrieveUserInfo(AUTH_TOKEN)).willThrow(
             new RuntimeException("user does not exist"));
 
-        assertThatThrownBy(() -> localAuthorityService.getLocalAuthorityCode(AUTH_TOKEN))
+        assertThatThrownBy(() -> localAuthorityService.getLocalAuthorityCode())
             .isInstanceOf(RuntimeException.class)
             .hasMessage("user does not exist");
     }
