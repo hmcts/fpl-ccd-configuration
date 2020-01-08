@@ -317,7 +317,8 @@ class DraftOrdersControllerTest {
     @Test
     void deserialize() throws IOException {
 
-        mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+        //mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+        //spring.jackson.deserialization.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT=true
         CaseData caseData = mapper.readValue(new
             File("/Users/toireasam/Documents/FPLA/fpl-ccd-configuration/broken.json"), CaseData.class);
     }
