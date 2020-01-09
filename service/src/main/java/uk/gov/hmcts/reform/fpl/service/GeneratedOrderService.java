@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
 import uk.gov.hmcts.reform.fpl.utils.JudgeAndLegalAdvisorHelper;
 
+import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +27,6 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 
 @Slf4j
 @Service
@@ -105,31 +104,36 @@ public class GeneratedOrderService {
         switch (caseData.getOrderTypeAndDocument().getType()) {
             case BLANK_ORDER:
                 orderTemplateBuilder
-                    .put("orderType", BLANK_ORDER)
                     .put("orderTitle", defaultIfNull(caseData.getOrder().getTitle(), "Order"))
                     .put("childrenAct", "Children Act 1989")
                     .put("orderDetails", caseData.getOrder().getDetails());
                 break;
             case CARE_ORDER:
                 orderTemplateBuilder
-                    .put("orderType", CARE_ORDER)
                     .put("orderTitle", "Care order")
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),
                         caseData.getCaseLocalAuthority()));
+                break;
+            case SUPERVISION_ORDER:
+                orderTemplateBuilder
+                    .put("orderTitle", "Supervision order")
+                    .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
+                    .put("orderDetails", supervisionOrderDetails(getChildrenDetails(caseData).size(),
+                        caseData.getCaseLocalAuthority(), caseData.getOrderMonths()));
                 break;
             default:
                 throw new IllegalStateException("Unexpected value: " + caseData.getOrderTypeAndDocument().getType());
         }
 
         orderTemplateBuilder
+            .put("orderType", caseData.getOrderTypeAndDocument().getType())
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))
             .put("todaysDate", dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(), "d MMMM yyyy"))
             .put("judgeTitleAndName", JudgeAndLegalAdvisorHelper.formatJudgeTitleAndName(
                 caseData.getJudgeAndLegalAdvisor()))
-            .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(
-                caseData.getJudgeAndLegalAdvisor()))
+            .put("legalAdvisorName", JudgeAndLegalAdvisorHelper.getLegalAdvisorName(caseData.getJudgeAndLegalAdvisor()))
             .put("children", getChildrenDetails(caseData))
             .put("furtherDirections", caseData.getFurtherDirectionsText())
             .build();
@@ -156,6 +160,17 @@ public class GeneratedOrderService {
 
     private String getLocalAuthorityName(String caseLocalAuthority) {
         return localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
+    }
+
+    private String supervisionOrderDetails(int numOfChildren, String caseLocalAuthority, int numOfMonths) {
+        final LocalDateTime now = time.now();
+        final String suffix = dateFormatterService.getDayOfMonthSuffix(now.getDayOfMonth());
+        return String.format(
+            "It is ordered that %s supervises the %s for %d months from the date of this order until %s",
+            getLocalAuthorityName(caseLocalAuthority),
+            (numOfChildren == 1) ? "child" : "children",
+            numOfMonths,
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(now, "hh:mma 'on the' dd'" + suffix + "' MMMM y"));
     }
 
     private String careOrderDetails(int numOfChildren, String caseLocalAuthority) {
