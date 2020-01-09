@@ -838,6 +838,22 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "actionCMOPlaceholderHeading",
+    "Label": "## You cannot edit this order",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "actionCMOPlaceholderHint",
+    "Label": "You can only review the draft order after it has been submitted",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "cmoEventId",
     "Label": " ",
     "FieldType": "Text",
@@ -850,6 +866,22 @@
     "Label": "Representatives",
     "FieldType": "Collection",
     "FieldTypeParameter": "Representative",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cmoDraftInReviewHeading",
+    "Label": "## You can no longer edit this order",
+    "FieldType": "Label",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "cmoDraftInReviewHint",
+    "Label": "The judge is reviewing this order. You can only edit it if the judge asks for changes.",
+    "FieldType": "Label",
     "SecurityClassification": "Public"
   }
 ]

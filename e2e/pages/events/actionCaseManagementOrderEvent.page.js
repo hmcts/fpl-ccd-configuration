@@ -44,10 +44,11 @@ module.exports = {
     });
   },
 
-  markToBeSentToLocalAuthority() {
-    within(this.staticFields.statusRadioGroup.groupName, () => {
-      I.click(locate('label').withText(this.staticFields.statusRadioGroup.options.judgeRequestedChanges));
+  async markToBeSentToLocalAuthority() {
+    within(this.staticFields.statusRadioGroup.groupName, async () => {
+      await I.click(locate('label').withText(this.staticFields.statusRadioGroup.options.judgeRequestedChanges));
     });
+    await this.enterRequestedChange('Mock reason');
   },
 
   markToBeReviewedBySelf() {
