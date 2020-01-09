@@ -21,7 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ActiveProfiles("integration-test")
 @WebMvcTest(DeserializeAndAcceptEmptyStringsAsNullObjectTest.class)
 @OverrideAutoConfiguration(enabled = true)
-@SuppressWarnings("unchecked")
 class DeserializeAndAcceptEmptyStringsAsNullObjectTest {
 
     @Autowired
