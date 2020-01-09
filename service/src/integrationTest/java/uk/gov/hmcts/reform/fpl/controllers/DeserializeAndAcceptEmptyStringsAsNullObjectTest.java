@@ -63,6 +63,7 @@ class DeserializeAndAcceptEmptyStringsAsNullObjectTest {
                         .respondingOnBehalfOf("")
                         .build())
                     .responses(null)
-                    .build()).build();
+                    .build())
+            .build();
     }
 }
