@@ -9,7 +9,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
-import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.enums.ActionType;
@@ -135,17 +134,17 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     @Test
     void aboutToStartShouldExtractIndividualCaseManagementOrderFieldsWithFutureHearingDates() {
         Map<String, Object> data = new HashMap<>();
-        final CaseManagementOrder order = createCaseManagementOrder();
+        final CaseManagementOrder order = createCaseManagementOrder(SEND_TO_JUDGE);
 
         data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
         data.put("hearingDetails", createHearingBookings(LocalDateTime.now()));
 
-        CallbackRequest request = buildCallbackRequest(data);
+        CaseDetails caseDetails = buildCaseDetails(data);
         List<String> expected = List.of(
             NOW.plusDays(5).format(dateTimeFormatter),
             NOW.plusDays(2).format(dateTimeFormatter));
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(request);
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -157,8 +156,17 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void aboutToStartShouldNotProgressOrderWhenOrderActionIsNotSet() {
+        CaseDetails caseDetails = createCaseDetailstWithEmptyCMO();
+        AboutToStartOrSubmitCallbackResponse response = postAboutToStartEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(caseData.getCaseManagementOrder()).isEqualTo(CaseManagementOrder.builder().build());
+    }
+
+    @Test
     void midEventShouldAddDocumentReferenceToOrderAction() {
-        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(buildCallbackRequest(emptyMap()));
+        AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(buildCaseDetails(emptyMap()));
 
         verify(uploadDocumentService).uploadPDF(userId, userAuthToken, PDF, "draft-case-management-order.pdf");
 
@@ -182,7 +190,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             ORDER_ACTION.getKey(), getOrderAction(SEND_TO_ALL_PARTIES),
             NEXT_HEARING_DATE_LIST.getKey(), hearingDateList());
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCallbackRequest(data));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCaseDetails(data));
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -197,7 +205,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder(),
             ORDER_ACTION.getKey(), getOrderAction(SEND_TO_ALL_PARTIES));
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCallbackRequest(data));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCaseDetails(data));
 
         assertThat(response.getErrors()).containsOnly(HEARING_NOT_COMPLETED.getValue());
     }
@@ -208,7 +216,7 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), getCaseManagementOrder(),
             ORDER_ACTION.getKey(), getOrderAction(JUDGE_REQUESTED_CHANGE));
 
-        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCallbackRequest(data));
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(buildCaseDetails(data));
 
         CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
 
@@ -217,15 +225,24 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    void aboutToSubmitShouldRemoveOrderWhenOrderActionIsNotJudgeReview() {
+        CaseDetails caseDetails = createCaseDetailstWithEmptyCMO();
+        AboutToStartOrSubmitCallbackResponse response = postAboutToSubmitEvent(caseDetails);
+        CaseData caseData = mapper.convertValue(response.getData(), CaseData.class);
+
+        assertThat(caseData.getCaseManagementOrder()).isEqualTo(null);
+    }
+
+    @Test
     void submittedShouldTriggerCMOProgressionEventAndSendCaseLinkNotificationsWhenIssuedOrderApproved()
         throws Exception {
         List<Element<Representative>> representativesServedByDigitalService =
             buildRepresentativesServedByDigitalService();
 
-        CallbackRequest callbackRequest =
+        CaseDetails caseDetails =
             populateRepresentativesByServedPreferenceData(representativesServedByDigitalService);
 
-        postSubmittedEvent(callbackRequest);
+        postSubmittedEvent(caseDetails);
 
         verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO();
 
@@ -249,9 +266,9 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
         throws Exception {
         List<Element<Representative>> representativesServedByEmail = buildRepresentativesServedByEmail();
 
-        CallbackRequest callbackRequest = populateRepresentativesByServedPreferenceData(representativesServedByEmail);
+        CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(representativesServedByEmail);
 
-        postSubmittedEvent(callbackRequest);
+        postSubmittedEvent(caseDetails);
 
         verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO();
 
@@ -278,9 +295,9 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             .servingPreferences(POST)
             .build());
 
-        CallbackRequest callbackRequest = populateRepresentativesByServedPreferenceData(representativeServedByPost);
+        CaseDetails caseDetails = populateRepresentativesByServedPreferenceData(representativeServedByPost);
 
-        postSubmittedEvent(callbackRequest);
+        postSubmittedEvent(caseDetails);
 
         verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO();
 
@@ -303,11 +320,19 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
                 .action(getOrderAction(JUDGE_REQUESTED_CHANGE))
                 .build());
 
-        CallbackRequest callbackRequest = buildCallbackRequest(data);
+        CaseDetails caseDetails = buildCaseDetails(data);
 
-        postSubmittedEvent(callbackRequest);
+        postSubmittedEvent(caseDetails);
 
         verifyZeroInteractions(notificationClient);
+    }
+
+    private CaseDetails createCaseDetailstWithEmptyCMO() {
+        Map<String, Object> data = new HashMap<>();
+        final CaseManagementOrder order = CaseManagementOrder.builder().build();
+
+        data.put(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey(), order);
+        return buildCaseDetails(data);
     }
 
     private CaseManagementOrder expectedCaseManagementOrder() {
@@ -327,14 +352,12 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             .build();
     }
 
-    private CallbackRequest buildCallbackRequest(Map<String, Object> data) {
-        return CallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .id(12345L)
-                .jurisdiction(JURISDICTION)
-                .caseTypeId(CASE_TYPE)
-                .data(data)
-                .build())
+    private CaseDetails buildCaseDetails(Map<String, Object> data) {
+        return CaseDetails.builder()
+            .id(12345L)
+            .jurisdiction(JURISDICTION)
+            .caseTypeId(CASE_TYPE)
+            .data(data)
             .build();
     }
 
@@ -425,11 +448,11 @@ class ActionCaseManagementOrderControllerTest extends AbstractControllerTest {
             .build());
     }
 
-    private CallbackRequest populateRepresentativesByServedPreferenceData(
+    private CaseDetails populateRepresentativesByServedPreferenceData(
         List<Element<Representative>> representativesServedByDigitalService) {
         Map<String, Object> data = buildSubmittedRequestData(representativesServedByDigitalService);
 
-        return buildCallbackRequest(data);
+        return buildCaseDetails(data);
     }
 
     private void verifyCMOTriggerEventAndNotificationSentToLocalAuthorityOnApprovedCMO()
