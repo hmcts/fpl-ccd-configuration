@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
-import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
@@ -18,7 +17,6 @@ import java.io.IOException;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ActiveProfiles("integration-test")
 @WebMvcTest(DeserializeAndAcceptEmptyStringsAsNullObjectTest.class)
