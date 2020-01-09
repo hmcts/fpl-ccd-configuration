@@ -1,7 +1,7 @@
 pluginManagement {
   repositories {
     maven {
-      url '../../repository'
+      url 'https://raw.githubusercontent.com/banderous/ccd/master'
     }
     gradlePluginPortal()
   }
@@ -10,8 +10,3 @@ pluginManagement {
 rootProject.name = 'FPL'
 
 include 'service'
-includeBuild ('../../ccd-sdk-types') {
-  dependencySubstitution {
-    substitute module('ccd-sdk-types:types') with project(':')
-  }
-}

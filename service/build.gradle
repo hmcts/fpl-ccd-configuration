@@ -1,4 +1,3 @@
-
 plugins {
   id 'application'
   id 'checkstyle'
@@ -10,7 +9,6 @@ plugins {
   id 'project-report'
   id 'ccd.sdk' version '0.1.5'
 }
-
 
 apply plugin: 'info.solidsoft.pitest'
 apply plugin: 'org.owasp.dependencycheck'
@@ -178,6 +176,7 @@ repositories {
   maven {
     url  "http://repo.spring.io/milestone"
   }
+  mavenLocal()
 }
 
 // it is important to specify logback classic and core packages explicitly as libraries like spring boot
@@ -223,7 +222,6 @@ dependencies {
   compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
   compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
-  compile 'ccd-sdk-types:types'
 
   testCompile (group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: versions.springBoot) {
     exclude group: 'junit', module: 'junit'
@@ -276,4 +274,3 @@ pitest {
   mutationThreshold = 80
   timeoutConstInMillis = 30000
 }
-

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.fpl.model;
 
-import ccd.sdk.types.FieldType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,5 +18,4 @@ public class Solicitor {
     private final String mobile;
     private final String reference;
     private final String telephone;
-    private FieldType t;
 }
