@@ -11,11 +11,13 @@ import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import java.util.List;
 import java.util.UUID;
 
+//TODO: rename variable assignee. This is the Role of the person complying.
 @Data
 @Builder(toBuilder = true)
 public class DirectionResponse {
     private final UUID directionId;
     private final DirectionAssignee assignee;
+    private final String responder;
     private final String complied;
     private final String documentDetails;
     private final DocumentReference file;
