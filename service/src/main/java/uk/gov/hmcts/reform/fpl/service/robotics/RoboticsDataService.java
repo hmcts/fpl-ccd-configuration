@@ -34,7 +34,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
@@ -101,12 +100,12 @@ public class RoboticsDataService {
     private Optional<Address> convertAddress(final uk.gov.hmcts.reform.fpl.model.Address address) {
         if (isNotEmpty(address)) {
             return Optional.of(Address.builder()
-                .addressLine1(defaultString(address.getAddressLine1(), null))
-                .addressLine2(defaultString(address.getAddressLine2(), null))
-                .addressLine3(defaultString(address.getAddressLine3(), null))
-                .postTown(defaultString(address.getPostTown(), null))
-                .county(defaultString(address.getCounty(), null))
-                .country(defaultString(address.getCountry(), null))
+                .addressLine1(address.getAddressLine1())
+                .addressLine2(address.getAddressLine2())
+                .addressLine3(address.getAddressLine3())
+                .postTown(address.getPostTown())
+                .county(address.getCounty())
+                .country(address.getCountry())
                 .build());
         }
 
