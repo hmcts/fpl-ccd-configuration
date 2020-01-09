@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -9,12 +11,10 @@ import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.Other;
-import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.Representative;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
-import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -183,6 +183,8 @@ public class DirectionHelperService {
 
                     if (eventId == COMPLY_ON_BEHALF_COURT) {
                         filterResponsesNotCompliedOnBehalfOfByTheCourt("OTHER", directions);
+
+                        directions = getDirectionsForUnrepresentedParties(caseDetails, directions);
                     } else {
                         filterResponsesNotCompliedBySolicitor(directions, OTHERS);
                     }
@@ -202,83 +204,85 @@ public class DirectionHelperService {
         });
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Returns a list of directions where assignees are not represented online through the digital service.
+     *
+     * @param caseDetails the details of the case.
+     * @param directions  the directions to be filtered.
+     * @return a filtered list of directions that need to be complied with by the court on behalf of parties.
+     */
     public List<Element<Direction>> getDirectionsForUnrepresentedParties(CaseDetails caseDetails,
                                                                          List<Element<Direction>> directions) {
+        // TODO: remove during refactoring of directionHelperService
+        ObjectMapper mapper = new ObjectMapper()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .findAndRegisterModules();
+
+        CaseData data = mapper.convertValue(caseDetails.getData(), CaseData.class);
+
         final boolean direction = true;
 
         return directions.stream()
             .filter(element -> {
                     List<Element<UUID>> ids = new ArrayList<>();
+                    List<Element<Representative>> representatives =
+                        defaultIfNull(data.getRepresentatives(), emptyList());
 
-                    List<Element<Representative>> representatives = defaultIfNull(
-                        (List<Element<Representative>>) caseDetails.getData().get("representatives"), emptyList());
+                    if (representatives.isEmpty()) {
+                        return direction;
+                    }
 
-                    // if assigned to specific person and representatives exist -> find representative ids
-                    // if not -> return direction.
-                    if (directionIsValidForFiltering(element, representatives)) {
+                    // if assigned to specific person -> find representative ids
+                    // else -> add direction to filtered list.
+                    if (directionIsValidForFiltering(element)) {
                         if (element.getValue().getParentsAndRespondentsAssignee() != null) {
                             int assigneeValue = element.getValue().getParentsAndRespondentsAssignee().ordinal();
 
-                            List<Element<Respondent>> respondents =
-                                (List<Element<Respondent>>) caseDetails.getData().get("respondents1");
+                            List<Element<Respondent>> respondents = data.getRespondents1();
 
-                            // if respondent exist -> set ids.
-                            // else return direction
+                            // if respondent exists -> set ids.
+                            // else -> add direction to filtered list.
                             if (assigneeValue < respondents.size()) {
                                 ids = respondents.get(assigneeValue).getValue().getRepresentedBy();
                             } else {
                                 return direction;
                             }
-                        }
-
-                        if (element.getValue().getOtherPartiesAssignee() != null) {
+                        } else if (element.getValue().getOtherPartiesAssignee() != null) {
                             int assigneeValue = element.getValue().getOtherPartiesAssignee().ordinal();
 
-                            Others others = (Others) caseDetails.getData().get("others");
+                            List<Other> listOthers = data.getAllOthers();
 
-                            List<Element<Other>> listOthers =
-                                defaultIfNull(others.getAdditionalOthers(), new ArrayList<>());
-
-                            listOthers.add(0, ElementUtils.element(others.getFirstOther()));
-
+                            // if other exists -> set ids.
+                            // else -> add direction to filtered list.
                             if (assigneeValue < listOthers.size()) {
-                                ids = listOthers.get(assigneeValue).getValue().getRepresentedBy();
+                                ids = listOthers.get(assigneeValue).getRepresentedBy();
                             } else {
                                 return direction;
                             }
                         }
-
                     } else {
-                        // include direction in filter
                         return direction;
                     }
 
                     List<Element<UUID>> finalIds = ids;
 
                     if (ids.isEmpty()) {
-                        //
                         return direction;
                     }
 
-                    List<Element<Representative>> filteredRepresentatives = representatives.stream()
+                    // if representative left in list, where serving pref = DIGITAL_SERVICE -> keep direction.
+                    // could be improved with a call to idam? return directions that belong to representative??
+                    return representatives.stream()
                         .filter(x -> unwrapElements(finalIds).contains(UUID.fromString(x.getValue().getIdamId())))
-                        .filter(x -> x.getValue().getServingPreferences() != DIGITAL_SERVICE)
-                        .collect(toList());
-
-                    // if representative left in list, keep direction.
-                    // could be improved with a call to idam? return directions that belong to representative
-                    return !filteredRepresentatives.isEmpty();
+                        .anyMatch(x -> x.getValue().getServingPreferences() != DIGITAL_SERVICE);
                 }
             )
             .collect(toList());
     }
 
-    private boolean directionIsValidForFiltering(Element<Direction> element,
-                                                 List<Element<Representative>> representatives) {
+    private boolean directionIsValidForFiltering(Element<Direction> element) {
         return element.getValue().getParentsAndRespondentsAssignee() != null
-            || element.getValue().getOtherPartiesAssignee() != null
-            || representatives.isEmpty();
+            || element.getValue().getOtherPartiesAssignee() != null;
     }
 
     private List<Element<Direction>> getClone(List<Element<Direction>> elements) {

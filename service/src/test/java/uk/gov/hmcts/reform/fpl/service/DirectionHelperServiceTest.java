@@ -11,11 +11,15 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.OtherPartiesDirectionAssignee;
 import uk.gov.hmcts.reform.fpl.enums.ParentsAndRespondentsDirectionAssignee;
+import uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.CaseManagementOrder;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -62,6 +66,7 @@ import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIG
 import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.POST;
 
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {JacksonAutoConfiguration.class})
 class DirectionHelperServiceTest {
 
     @MockBean
@@ -1480,21 +1485,19 @@ class DirectionHelperServiceTest {
     class GetDirectionsForUnrepresentedParties {
         private List<Element<Representative>> representatives = new ArrayList<>();
         private List<Element<Respondent>> respondents = List.of(ElementUtils.element(Respondent.builder().build()));
-        private Others others;
+        private Others others = Others.builder().build();
         private List<Element<Direction>> directions = new ArrayList<>();
         private List<Element<Direction>> filteredDirections = new ArrayList<>();
+        private CaseDetails caseDetails;
 
-        private final UUID uuid = randomUUID();
-
+        private final UUID representativeId = randomUUID();
 
         @Test
         void shouldRetainDirectionWhenNotAssignedToSpecificPerson() {
             representatives = List.of(ElementUtils.element(Representative.builder().build()));
-            respondents.forEach(x -> x.getValue().addRepresentative(uuid));
+            respondents.forEach(x -> x.getValue().addRepresentative(representativeId));
 
-            others = Others.builder().build();
-
-            CaseDetails caseDetails = buildCaseData(representatives, respondents, others);
+            caseDetails = buildCaseData(representatives, respondents, others);
 
             directions = buildDirections(PARENTS_AND_RESPONDENTS);
 
@@ -1505,16 +1508,11 @@ class DirectionHelperServiceTest {
 
         @Test
         void shouldRetainDirectionWhenAssignedToRespondentWithRepresentativeAndServingOffline() {
-            representatives = List.of(ElementUtils.element(Representative.builder()
-                .idamId(uuid.toString())
-                .servingPreferences(POST)
-                .build()));
+            representatives = representativeWithServingPreference(POST);
 
-            respondents.forEach(x -> x.getValue().addRepresentative(uuid));
+            respondents.forEach(x -> x.getValue().addRepresentative(representativeId));
 
-            others = Others.builder().build();
-
-            CaseDetails caseDetails = buildCaseData(representatives, respondents, others);
+            caseDetails = buildCaseData(representatives, respondents, others);
 
             directions = List.of(ElementUtils.element(Direction.builder()
                 .parentsAndRespondentsAssignee(RESPONDENT_1)
@@ -1527,14 +1525,7 @@ class DirectionHelperServiceTest {
 
         @Test
         void shouldRetainDirectionWhenRespondentHasNoAssignedRepresentative() {
-            representatives = List.of(ElementUtils.element(Representative.builder()
-                .idamId(uuid.toString())
-                .servingPreferences(POST)
-                .build()));
-
-            others = Others.builder().build();
-
-            CaseDetails caseDetails = buildCaseData(representatives, respondents, others);
+            caseDetails = buildCaseData(representatives, respondents, others);
 
             directions = List.of(ElementUtils.element(Direction.builder()
                 .parentsAndRespondentsAssignee(RESPONDENT_1)
@@ -1547,16 +1538,11 @@ class DirectionHelperServiceTest {
 
         @Test
         void shouldRemoveDirectionWhenAssignedToRespondentWithRepresentativeAndServingOnline() {
-            representatives = List.of(ElementUtils.element(Representative.builder()
-                .idamId(uuid.toString())
-                .servingPreferences(DIGITAL_SERVICE)
-                .build()));
+            representatives = representativeWithServingPreference(DIGITAL_SERVICE);
 
-            respondents.forEach(x -> x.getValue().addRepresentative(uuid));
+            respondents.forEach(x -> x.getValue().addRepresentative(representativeId));
 
-            others = Others.builder().build();
-
-            CaseDetails caseDetails = buildCaseData(representatives, respondents, others);
+            caseDetails = buildCaseData(representatives, respondents, others);
 
             directions = List.of(ElementUtils.element(Direction.builder()
                 .parentsAndRespondentsAssignee(RESPONDENT_1)
@@ -1570,20 +1556,13 @@ class DirectionHelperServiceTest {
         // this is a case that can currently happen due to no validation when assigning directions.
         // checks boundary and extreme.
         @ParameterizedTest
-        @EnumSource(
-            value = ParentsAndRespondentsDirectionAssignee.class,
-            names = {"RESPONDENT_2", "RESPONDENT_10"})
+        @EnumSource(value = ParentsAndRespondentsDirectionAssignee.class, names = {"RESPONDENT_2", "RESPONDENT_10"})
         void shouldRetainDirectionWhenAssignedToRespondentThatDoesNotExist(ParentsAndRespondentsDirectionAssignee r) {
-            representatives = List.of(ElementUtils.element(Representative.builder()
-                .idamId(uuid.toString())
-                .servingPreferences(DIGITAL_SERVICE)
-                .build()));
+            representatives = representativeWithServingPreference(DIGITAL_SERVICE);
 
-            respondents.forEach(x -> x.getValue().addRepresentative(uuid));
+            respondents.forEach(x -> x.getValue().addRepresentative(representativeId));
 
-            others = Others.builder().build();
-
-            CaseDetails caseDetails = buildCaseData(representatives, respondents, others);
+            caseDetails = buildCaseData(representatives, respondents, others);
 
             directions = List.of(ElementUtils.element(Direction.builder()
                 .parentsAndRespondentsAssignee(r)
@@ -1597,15 +1576,12 @@ class DirectionHelperServiceTest {
 
         @Test
         void shouldRetainDirectionWhenAssignedToFirstOtherWithRepresentativeAndServingOfflineWhenOnlyOneOther() {
-            representatives = List.of(ElementUtils.element(Representative.builder()
-                .idamId(uuid.toString())
-                .servingPreferences(POST)
-                .build()));
+            representatives = representativeWithServingPreference(POST);
 
             others = Others.builder().firstOther(Other.builder().build()).build();
-            others.getFirstOther().addRepresentative(uuid);
+            others.getFirstOther().addRepresentative(representativeId);
 
-            CaseDetails caseDetails = buildCaseData(representatives, respondents, others);
+            caseDetails = buildCaseData(representatives, respondents, others);
 
             directions = List.of(ElementUtils.element(Direction.builder()
                 .otherPartiesAssignee(OTHER_1)
@@ -1618,18 +1594,15 @@ class DirectionHelperServiceTest {
 
         @Test
         void shouldRetainDirectionWhenAssignedToOtherWithRepresentativeAndServingOfflineWhenOnlyAdditionalOther() {
-            representatives = List.of(ElementUtils.element(Representative.builder()
-                .idamId(uuid.toString())
-                .servingPreferences(POST)
-                .build()));
+            representatives = representativeWithServingPreference(POST);
 
             List<Element<Other>> additionalOthers = new ArrayList<>();
             additionalOthers.add(ElementUtils.element(Other.builder().build()));
 
             others = Others.builder().additionalOthers(additionalOthers).build();
-            others.getAdditionalOthers().forEach(x -> x.getValue().addRepresentative(uuid));
+            others.getAdditionalOthers().forEach(x -> x.getValue().addRepresentative(representativeId));
 
-            CaseDetails caseDetails = buildCaseData(representatives, respondents, others);
+            caseDetails = buildCaseData(representatives, respondents, others);
 
             directions = List.of(ElementUtils.element(Direction.builder()
                 .otherPartiesAssignee(OTHER_2)
@@ -1638,6 +1611,65 @@ class DirectionHelperServiceTest {
             filteredDirections = service.getDirectionsForUnrepresentedParties(caseDetails, directions);
 
             assertThat(filteredDirections).isEqualTo(directions);
+        }
+
+        @Test
+        void shouldRetainDirectionWhenOtherHasNoAssignedRepresentative() {
+            others = Others.builder().firstOther(Other.builder().build()).build();
+
+            caseDetails = buildCaseData(representatives, respondents, others);
+
+            directions = List.of(ElementUtils.element(Direction.builder()
+                .parentsAndRespondentsAssignee(RESPONDENT_1)
+                .build()));
+
+            filteredDirections = service.getDirectionsForUnrepresentedParties(caseDetails, directions);
+
+            assertThat(filteredDirections).isEqualTo(directions);
+        }
+
+        @Test
+        void shouldRemoveDirectionWhenAssignedToOtherWithRepresentativeAndServingOnline() {
+            representatives = representativeWithServingPreference(DIGITAL_SERVICE);
+
+            others = Others.builder().firstOther(Other.builder().build()).build();
+            others.getFirstOther().addRepresentative(representativeId);
+
+            caseDetails = buildCaseData(representatives, respondents, others);
+
+            directions = List.of(ElementUtils.element(Direction.builder()
+                .otherPartiesAssignee(OTHER_1)
+                .build()));
+
+            filteredDirections = service.getDirectionsForUnrepresentedParties(caseDetails, directions);
+
+            assertThat(filteredDirections).isEmpty();
+        }
+
+        @ParameterizedTest
+        @EnumSource(value = OtherPartiesDirectionAssignee.class, names = {"OTHER_2", "OTHER_10"})
+        void shouldRetainDirectionWhenAssignedToOtherThatDoesNotExist(OtherPartiesDirectionAssignee r) {
+            representatives = representativeWithServingPreference(DIGITAL_SERVICE);
+
+            others = Others.builder().firstOther(Other.builder().build()).build();
+            others.getFirstOther().addRepresentative(representativeId);
+
+            caseDetails = buildCaseData(representatives, respondents, others);
+
+            directions = List.of(ElementUtils.element(Direction.builder()
+                .otherPartiesAssignee(r)
+                .build()));
+
+            filteredDirections = service.getDirectionsForUnrepresentedParties(caseDetails, directions);
+
+            assertThat(filteredDirections).isEqualTo(directions);
+        }
+
+        private List<Element<Representative>> representativeWithServingPreference(RepresentativeServingPreferences x) {
+            return List.of(ElementUtils.element(Representative.builder()
+                .idamId(representativeId.toString())
+                .servingPreferences(x)
+                .build()));
         }
 
         private CaseDetails buildCaseData(List<Element<Representative>> representatives,
