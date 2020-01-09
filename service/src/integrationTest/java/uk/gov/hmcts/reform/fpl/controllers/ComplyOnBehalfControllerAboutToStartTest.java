@@ -30,7 +30,7 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.CaseManagementOrderKeys.SERVED_CASE_MANAGEMENT_ORDERS;
-import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
@@ -52,7 +52,7 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
     @Test
     void shouldAddPartiesDirectionsIntoSeparateRoleCollectionsAndPopulateLabels() {
         CallbackRequest request = CallbackRequest.builder()
-            .eventId(COMPLY_ON_BEHALF_SDO.toString())
+            .eventId(COMPLY_ON_BEHALF_COURT.toString())
             .caseDetails(CaseDetails.builder()
                 .data(Map.of(
                     "standardDirectionOrder", Order.builder()
@@ -88,7 +88,7 @@ class ComplyOnBehalfControllerAboutToStartTest extends AbstractControllerTest {
         List<Element<Direction>> directions = getDirectionForRespondentsAllPartiesAndOthers();
 
         CallbackRequest request = CallbackRequest.builder()
-            .eventId(COMPLY_ON_BEHALF_SDO.toString())
+            .eventId(COMPLY_ON_BEHALF_COURT.toString())
             .caseDetails(CaseDetails.builder()
                 .data(Map.of(
                     "standardDirectionOrder", Order.builder().directions(directions).build(),

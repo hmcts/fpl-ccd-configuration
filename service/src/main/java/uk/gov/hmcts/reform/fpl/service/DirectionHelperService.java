@@ -8,8 +8,13 @@ import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.Representative;
+import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.configuration.DirectionConfiguration;
+import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,13 +34,15 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
-import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.LOCAL_AUTHORITY;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPONDENTS;
+import static uk.gov.hmcts.reform.fpl.enums.RepresentativeServingPreferences.DIGITAL_SERVICE;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 /**
  * A service that helps with the sorting and editing of directions.
@@ -160,8 +167,10 @@ public class DirectionHelperService {
                 case PARENTS_AND_RESPONDENTS:
                     directions.addAll(clone);
 
-                    if (eventId == COMPLY_ON_BEHALF_SDO) {
+                    if (eventId == COMPLY_ON_BEHALF_COURT) {
                         filterResponsesNotCompliedOnBehalfOfByTheCourt("RESPONDENT", directions);
+
+                        directions = getDirectionsForUnrepresentedParties(caseDetails, directions);
                     } else {
                         filterResponsesNotCompliedBySolicitor(directions, PARENTS_AND_RESPONDENTS);
                     }
@@ -172,7 +181,7 @@ public class DirectionHelperService {
                 case OTHERS:
                     directions.addAll(clone);
 
-                    if (eventId == COMPLY_ON_BEHALF_SDO) {
+                    if (eventId == COMPLY_ON_BEHALF_COURT) {
                         filterResponsesNotCompliedOnBehalfOfByTheCourt("OTHER", directions);
                     } else {
                         filterResponsesNotCompliedBySolicitor(directions, OTHERS);
@@ -191,6 +200,85 @@ public class DirectionHelperService {
                     break;
             }
         });
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Element<Direction>> getDirectionsForUnrepresentedParties(CaseDetails caseDetails,
+                                                                         List<Element<Direction>> directions) {
+        final boolean direction = true;
+
+        return directions.stream()
+            .filter(element -> {
+                    List<Element<UUID>> ids = new ArrayList<>();
+
+                    List<Element<Representative>> representatives = defaultIfNull(
+                        (List<Element<Representative>>) caseDetails.getData().get("representatives"), emptyList());
+
+                    // if assigned to specific person and representatives exist -> find representative ids
+                    // if not -> return direction.
+                    if (directionIsValidForFiltering(element, representatives)) {
+                        if (element.getValue().getParentsAndRespondentsAssignee() != null) {
+                            int assigneeValue = element.getValue().getParentsAndRespondentsAssignee().ordinal();
+
+                            List<Element<Respondent>> respondents =
+                                (List<Element<Respondent>>) caseDetails.getData().get("respondents1");
+
+                            // if respondent exist -> set ids.
+                            // else return direction
+                            if (assigneeValue < respondents.size()) {
+                                ids = respondents.get(assigneeValue).getValue().getRepresentedBy();
+                            } else {
+                                return direction;
+                            }
+                        }
+
+                        if (element.getValue().getOtherPartiesAssignee() != null) {
+                            int assigneeValue = element.getValue().getOtherPartiesAssignee().ordinal();
+
+                            Others others = (Others) caseDetails.getData().get("others");
+
+                            List<Element<Other>> listOthers =
+                                defaultIfNull(others.getAdditionalOthers(), new ArrayList<>());
+
+                            listOthers.add(0, ElementUtils.element(others.getFirstOther()));
+
+                            if (assigneeValue < listOthers.size()) {
+                                ids = listOthers.get(assigneeValue).getValue().getRepresentedBy();
+                            } else {
+                                return direction;
+                            }
+                        }
+
+                    } else {
+                        // include direction in filter
+                        return direction;
+                    }
+
+                    List<Element<UUID>> finalIds = ids;
+
+                    if (ids.isEmpty()) {
+                        //
+                        return direction;
+                    }
+
+                    List<Element<Representative>> filteredRepresentatives = representatives.stream()
+                        .filter(x -> unwrapElements(finalIds).contains(UUID.fromString(x.getValue().getIdamId())))
+                        .filter(x -> x.getValue().getServingPreferences() != DIGITAL_SERVICE)
+                        .collect(toList());
+
+                    // if representative left in list, keep direction.
+                    // could be improved with a call to idam? return directions that belong to representative
+                    return !filteredRepresentatives.isEmpty();
+                }
+            )
+            .collect(toList());
+    }
+
+    private boolean directionIsValidForFiltering(Element<Direction> element,
+                                                 List<Element<Representative>> representatives) {
+        return element.getValue().getParentsAndRespondentsAssignee() != null
+            || element.getValue().getOtherPartiesAssignee() != null
+            || representatives.isEmpty();
     }
 
     private List<Element<Direction>> getClone(List<Element<Direction>> elements) {
@@ -371,7 +459,7 @@ public class DirectionHelperService {
                                                             UUID id,
                                                             Element<DirectionResponse> response,
                                                             DirectionAssignee assignee) {
-        if (event == COMPLY_ON_BEHALF_SDO) {
+        if (event == COMPLY_ON_BEHALF_COURT) {
             return addCourtAssigneeAndDirectionId(id, response);
         } else {
             return addResponderAssigneeAndDirectionId(response, authorisation, assignee, id);
