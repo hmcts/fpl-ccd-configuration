@@ -102,7 +102,7 @@ Scenario('Gatekeeper drafts standard directions', async (I, caseViewPage, draftS
   I.seeEventSubmissionConfirmation(config.administrationActions.draftStandardDirections);
   caseViewPage.selectTab(caseViewPage.tabs.draftOrders);
   I.see('draft-standard-directions-order.pdf');
-  I.seeAnswerInTab(1, 'Directions 1', 'Direction title', 'Request permission for expert evidence');
+  I.seeAnswerInTab(1, 'Directions 1', 'Title', 'Request permission for expert evidence');
   I.seeAnswerInTab(4, 'Directions 1', 'Description', 'Your request must be in line with Family Procedure Rules part 25 and Practice Direction 25C. Give other parties a list of names of suitable experts.');
   I.seeAnswerInTab(5, 'Directions 1', 'For', 'All parties');
   I.seeAnswerInTab(6, 'Directions 1', 'Due date and time', '1 Jan 2050, 12:00:00 PM');

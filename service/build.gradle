@@ -126,6 +126,8 @@ jacocoTestReport {
   }
 }
 
+project.tasks['sonarqube'].dependsOn test, integration, jacocoTestReport
+
 dependencyUpdates.resolutionStrategy = {
   componentSelection { rules ->
     rules.all { ComponentSelection selection ->
@@ -159,8 +161,7 @@ dependencyCheck {
 sonarqube {
   properties {
     property "sonar.projectName", "FPL :: Service"
-    property "sonar.jacoco.reportPath", file("${project.buildDir}/jacoco/test.exec")
-    property "sonar.jacoco.itReportPath", file("${project.buildDir}/jacoco/integration.exec")
+    property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml"
     property "sonar.pitest.mode", "reuseReport"
     property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     property "sonar.coverage.exclusions", "**/model/**, **/config/*Configuration.java"
@@ -196,11 +197,11 @@ dependencies {
   compile group: 'org.springframework.security', name: 'spring-security-config'
   compile group: 'org.springframework.security', name: 'spring-security-oauth2-resource-server'
   compile group: 'org.springframework.security', name: 'spring-security-oauth2-jose'
-  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.2.1' // override to fix vulnerability issue (CVE-2019-17195)
+  compile group: 'com.nimbusds', name: 'nimbus-jose-jwt', version: '8.4' // override to fix vulnerability issue (CVE-2019-17195)
 
   compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: versions.springBoot
 
-  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.0.RELEASE'
+  compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-netflix-hystrix', version: '2.2.1.RELEASE'
 
   compile group: 'io.springfox', name: 'springfox-swagger2', version: versions.springfoxSwagger
   compile group: 'io.springfox', name: 'springfox-swagger-ui', version: versions.springfoxSwagger
@@ -218,7 +219,7 @@ dependencies {
 
   compile group: 'uk.gov.service.notify', name: 'notifications-java-client', version: '3.15.1-RELEASE'
 
-  compile group: 'com.google.guava', name: 'guava', version: '28.1-jre'
+  compile group: 'com.google.guava', name: 'guava', version: '28.2-jre'
   compile group: 'commons-io', name: 'commons-io', version: '2.6'
 
   compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
@@ -231,7 +232,7 @@ dependencies {
   }
   testCompile group: 'org.junit.jupiter', name :'junit-jupiter', version: '5.5.2'
   testCompile group: 'org.mockito', name :'mockito-core', version: '3.0.0'
-  testCompile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.17'
+  testCompile group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.18'
 
   integrationTestCompile configurations.testRuntime {
     exclude group: 'org.springframework.cloud', module: 'spring-cloud-starter-netflix-hystrix'

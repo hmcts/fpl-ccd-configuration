@@ -1,31 +1,43 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import uk.gov.hmcts.reform.fpl.model.common.C2DocumentBundle;
 import uk.gov.hmcts.reform.fpl.model.common.Document;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentBundle;
+import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentSocialWorkOther;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
-import uk.gov.hmcts.reform.fpl.validation.groups.C21CaseOrderGroup;
+import uk.gov.hmcts.reform.fpl.model.common.Recital;
+import uk.gov.hmcts.reform.fpl.model.common.Schedule;
+import uk.gov.hmcts.reform.fpl.model.common.dynamic.DynamicList;
 import uk.gov.hmcts.reform.fpl.validation.groups.EPOGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
-import uk.gov.hmcts.reform.fpl.validation.groups.NotifyGatekeeperGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.UploadDocumentsGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 import uk.gov.hmcts.reform.fpl.validation.interfaces.HasDocumentsIncludedInSwet;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.CMOStatus.SEND_TO_JUDGE;
+import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
 @Builder(toBuilder = true)
@@ -54,12 +66,8 @@ public class CaseData {
     private final List<@NotNull(message = "You need to add details to respondents") Element<Respondent>> respondents1;
 
     @Valid
-    private final Respondent getFirstRespondent() {
-        if (isEmpty(respondents1)) {
-            return Respondent.builder().build();
-        }
-
-        return respondents1.get(0).getValue();
+    private Optional<Respondent> getFirstRespondent() {
+        return findRespondent(0);
     }
 
     private final Proceeding proceeding;
@@ -121,14 +129,16 @@ public class CaseData {
     @Valid
     private final List<@NotNull(message = "You need to add details to children") Element<Child>> children1;
     @NotBlank(message = "Enter Familyman case number", groups = {NoticeOfProceedingsGroup.class,
-        C21CaseOrderGroup.class, NotifyGatekeeperGroup.class})
+        ValidateFamilyManCaseNumberGroup.class})
     private final String familyManCaseNumber;
     private final NoticeOfProceedings noticeOfProceedings;
 
+    @JsonIgnore
     public List<Element<Applicant>> getAllApplicants() {
         return applicants != null ? applicants : new ArrayList<>();
     }
 
+    @JsonIgnore
     public List<Element<Child>> getAllChildren() {
         return children1 != null ? children1 : new ArrayList<>();
     }
@@ -142,13 +152,83 @@ public class CaseData {
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final C2DocumentBundle temporaryC2Document;
     private final List<Element<C2DocumentBundle>> c2DocumentBundle;
-    private final C21Order c21Order;
-    private final List<Element<C21Order>> c21Orders;
+    private final OrderTypeAndDocument orderTypeAndDocument;
+    private final GeneratedOrder order;
+    private final List<Element<GeneratedOrder>> orderCollection;
 
-    public List<Element<C21Order>> getC21Orders() {
-        return defaultIfNull(c21Orders, new ArrayList<>());
+    public List<Element<GeneratedOrder>> getOrderCollection() {
+        return orderCollection != null ? orderCollection : new ArrayList<>();
     }
 
-    private final CaseManagementOrder caseManagementOrder;
+    @JsonIgnore
+    private CaseManagementOrder caseManagementOrder;
+
+    @JsonGetter("caseManagementOrder")
+    private CaseManagementOrder getCaseManagementOrder_LocalAuthority() {
+        if (caseManagementOrder != null && caseManagementOrder.getStatus() != SEND_TO_JUDGE) {
+            return caseManagementOrder;
+        }
+        return null;
+    }
+
+    @JsonSetter("caseManagementOrder")
+    private void setCaseManagementOrder_LocalAuthority(CaseManagementOrder order) {
+        if (order != null) {
+            caseManagementOrder = order;
+        }
+    }
+
+    @JsonGetter("cmoToAction")
+    private CaseManagementOrder getCaseManagementOrder_Judiciary() {
+        if (caseManagementOrder != null && caseManagementOrder.getStatus() == SEND_TO_JUDGE) {
+            return caseManagementOrder;
+        }
+        return null;
+    }
+
+    @JsonSetter("cmoToAction")
+    private void setCaseManagementOrder_Judiciary(CaseManagementOrder order) {
+        if (order != null) {
+            caseManagementOrder = order;
+        }
+    }
+
+    private final OrderAction orderAction;
+    private final DynamicList cmoHearingDateList;
+    private final Schedule schedule;
+    private final List<Element<Recital>> recitals;
+    private final DocumentReference sharedDraftCMODocument;
+
+    private final List<Element<CaseManagementOrder>> servedCaseManagementOrders;
+
+    public List<Element<CaseManagementOrder>> getServedCaseManagementOrders() {
+        return defaultIfNull(servedCaseManagementOrders, new ArrayList<>());
+    }
+
     private final Others others;
+    private final DynamicList nextHearingDateList;
+
+    private final List<Element<Representative>> representatives;
+
+    @JsonIgnore
+    public List<Other> getAllOthers() {
+        final List<Other> othersList = new ArrayList<>();
+
+        ofNullable(this.getOthers()).map(Others::getFirstOther).ifPresent(othersList::add);
+        ofNullable(this.getOthers()).map(Others::getAdditionalOthers)
+            .ifPresent(additionalOthers -> othersList.addAll(unwrapElements(additionalOthers)));
+
+        return Collections.unmodifiableList(othersList);
+    }
+
+    public Optional<Other> findOther(int sequenceNo) {
+        List<Other> allOthers = this.getAllOthers();
+
+        return allOthers.size() <= sequenceNo ? empty() : Optional.of(allOthers.get(sequenceNo));
+    }
+
+    public Optional<Respondent> findRespondent(int seqNo) {
+        return isEmpty(getRespondents1()) || getRespondents1().size() <= seqNo
+            ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
+    }
 }

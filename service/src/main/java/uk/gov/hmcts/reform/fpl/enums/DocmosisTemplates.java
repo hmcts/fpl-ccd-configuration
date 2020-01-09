@@ -4,7 +4,9 @@ public enum DocmosisTemplates {
     C6("FL-PLW-HNO-ENG-00092.docx", "Notice_of_proceedings_c6.pdf"),
     C6A("FL-PLW-HNO-ENG-00093.docx", "Notice_of_proceedings_c6a.pdf"),
     SDO("FL-PLW-STD-ENG-00099.doc", "standard_directions_order.pdf"),
-    C21("FL-PLW-GOR-ENG-00218.docx", "C21_order.pdf");
+    //fallback title 'order.pdf' - file name is generated in GeneratedOrderService based on type of order
+    ORDER("FL-PLW-GOR-ENG-00218.docx", "order.pdf"),
+    CMO("FL-PLW-GOR-ENG-00225.doc", "case_management_order.pdf");
 
     private final String template;
     private final String documentTitle;

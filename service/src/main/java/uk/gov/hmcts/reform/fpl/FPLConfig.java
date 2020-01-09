@@ -40,7 +40,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
     }
 
     private void buildC21Event(State state) {
-        event("createC21Order")
+        event("createOrder")
                 .forState(state)
                 .explicitGrants()
                 .grant("CRU", HMCTS_ADMIN, JUDICIARY)
@@ -50,11 +50,14 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .midEventWebhook()
                 .fields()
                     .page("OrderInformation")
-                    .complex(CaseData::getC21Order)
-                        .optional(C21Order::getOrderTitle)
-                        .mandatory(C21Order::getOrderDetails)
-                        .readonly(C21Order::getDocument, "document=\"DO_NOT_SHOW\"")
-                        .readonly(C21Order::getOrderDate, "document=\"DO_NOT_SHOW\"")
+                    .complex(CaseData::getOrderTypeAndDocument)
+                        .optional(OrderTypeAndDocument::getType)
+                        .mandatory(OrderTypeAndDocument::getDocument)
+                        .done()
+                    .complex(CaseData::getOrder)
+                        .readonly(GeneratedOrder::getTitle)
+                        .readonly(GeneratedOrder::getDetails)
+                        .readonly(GeneratedOrder::getDate)
                         .done()
                     .page("JudgeInformation")
                     .complex(CaseData::getJudgeAndLegalAdvisor)

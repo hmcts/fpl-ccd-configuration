@@ -8,8 +8,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.HearingBooking;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.validation.groups.C21CaseOrderGroup;
 import uk.gov.hmcts.reform.fpl.validation.groups.NoticeOfProceedingsGroup;
+import uk.gov.hmcts.reform.fpl.validation.groups.ValidateFamilyManCaseNumberGroup;
 
 import java.util.List;
 import java.util.UUID;
@@ -30,7 +30,8 @@ class ValidateGroupServiceTest {
 
     @Test
     void shouldReturnAnErrorWhenFamilyManCaseNumberIsNotPopulated() {
-        List<String> errors = validateGroupService.validateGroup(CaseData.builder().build(), C21CaseOrderGroup.class);
+        List<String> errors = validateGroupService.validateGroup(CaseData.builder().build(),
+            ValidateFamilyManCaseNumberGroup.class);
 
         assertThat(errors).containsExactly("Enter Familyman case number");
     }
