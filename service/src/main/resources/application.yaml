@@ -12,6 +12,9 @@ management:
 spring:
   application:
     name: fpl-service
+  jackson:
+    deserialization:
+      ACCEPT_EMPTY_STRING_AS_NULL_OBJECT: true
 
 idam:
   s2s-auth:

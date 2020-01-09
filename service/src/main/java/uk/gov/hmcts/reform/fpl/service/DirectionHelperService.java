@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Direction;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -29,6 +29,7 @@ import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -41,6 +42,11 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPON
  */
 @Service
 public class DirectionHelperService {
+    private final UserDetailsService userDetailsService;
+
+    public DirectionHelperService(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     /**
      * Combines role directions into a single List of directions.
@@ -145,7 +151,8 @@ public class DirectionHelperService {
      * @param directionsMap a map where the DirectionAssignee key corresponds to a list of directions elements.
      */
     public void addDirectionsToCaseDetails(CaseDetails caseDetails,
-                                           Map<DirectionAssignee, List<Element<Direction>>> directionsMap) {
+                                           Map<DirectionAssignee, List<Element<Direction>>> directionsMap,
+                                           ComplyOnBehalfEvent eventId) {
         directionsMap.forEach((assignee, directions) -> {
             final List<Element<Direction>> clone = getClone(directionsMap.get(ALL_PARTIES));
 
@@ -153,7 +160,11 @@ public class DirectionHelperService {
                 case PARENTS_AND_RESPONDENTS:
                     directions.addAll(clone);
 
-                    filterResponsesNotCompliedOnBehalfOfByTheCourt("RESPONDENT", directions);
+                    if (eventId == COMPLY_ON_BEHALF_SDO) {
+                        filterResponsesNotCompliedOnBehalfOfByTheCourt("RESPONDENT", directions);
+                    } else {
+                        filterResponsesNotCompliedBySolicitor(directions, PARENTS_AND_RESPONDENTS);
+                    }
 
                     caseDetails.getData().put(assignee.toCustomDirectionField(), directions);
 
@@ -161,7 +172,11 @@ public class DirectionHelperService {
                 case OTHERS:
                     directions.addAll(clone);
 
-                    filterResponsesNotCompliedOnBehalfOfByTheCourt("OTHER", directions);
+                    if (eventId == COMPLY_ON_BEHALF_SDO) {
+                        filterResponsesNotCompliedOnBehalfOfByTheCourt("OTHER", directions);
+                    } else {
+                        filterResponsesNotCompliedBySolicitor(directions, OTHERS);
+                    }
 
                     caseDetails.getData().put(assignee.toCustomDirectionField(), directions);
 
@@ -196,6 +211,13 @@ public class DirectionHelperService {
     public void filterResponsesNotCompliedOnBehalfOfByTheCourt(String onBehalfOf, List<Element<Direction>> directions) {
         directions.forEach(directionElement -> directionElement.getValue().getResponses()
             .removeIf(element -> notCompliedWithByCourt(onBehalfOf, element)));
+    }
+
+    private void filterResponsesNotCompliedBySolicitor(List<Element<Direction>> directions,
+                                                       DirectionAssignee assignee) {
+        directions.forEach(directionElement -> directionElement.getValue().getResponses()
+            .removeIf(element -> assignee != element.getValue().getAssignee()
+                || isEmpty(element.getValue().getResponder())));
     }
 
     private boolean notCompliedWithByCourt(String onBehalfOf, Element<DirectionResponse> element) {
@@ -291,8 +313,11 @@ public class DirectionHelperService {
      *
      * @param caseData caseData containing custom role collections and standard directions order.
      */
-    public void addComplyOnBehalfResponsesToDirectionsInStandardDirectionsOrder(CaseData caseData) {
+    public void addComplyOnBehalfResponsesToDirectionsInOrder(CaseData caseData,
+                                                              ComplyOnBehalfEvent eventId,
+                                                              String authorisation) {
         Map<DirectionAssignee, List<Element<Direction>>> customDirectionsMap = collectCustomDirectionsToMap(caseData);
+        List<Element<Direction>> directionsToComplyWith = getDirectionsToComplyWith(caseData);
 
         customDirectionsMap.forEach((assignee, directions) -> {
             switch (assignee) {
@@ -301,43 +326,89 @@ public class DirectionHelperService {
                         .map(response -> response.toBuilder().respondingOnBehalfOf("CAFCASS").build())
                         .collect(toList());
 
-                    addResponsesToDirections(responses, caseData.getStandardDirectionOrder().getDirections());
+                    addResponsesToDirections(responses, directionsToComplyWith);
 
                     break;
-                case PARENTS_AND_RESPONDENTS:
-                case OTHERS:
-                    List<Element<DirectionResponse>> elements = addValuesToListResponseDirections(directions);
 
-                    addResponseElementsToDirections(elements, caseData.getStandardDirectionOrder().getDirections());
+                case PARENTS_AND_RESPONDENTS:
+                    List<Element<DirectionResponse>> respondentResponses = addValuesToListResponses(
+                        directions, eventId, authorisation, PARENTS_AND_RESPONDENTS);
+
+                    addResponseElementsToDirections(respondentResponses, directionsToComplyWith);
+
+                    break;
+                case OTHERS:
+                    List<Element<DirectionResponse>> otherResponses = addValuesToListResponses(
+                        directions, eventId, authorisation, OTHERS);
+
+                    addResponseElementsToDirections(otherResponses, directionsToComplyWith);
 
                     break;
             }
         });
     }
 
-    private List<Element<DirectionResponse>> addValuesToListResponseDirections(List<Element<Direction>> directions) {
-        AtomicReference<UUID> id = new AtomicReference<>();
+    //TODO: refactor of addCourtAssigneeAndDirectionId would remove dependency on eventId.
+    private List<Element<DirectionResponse>> addValuesToListResponses(List<Element<Direction>> directions,
+                                                                      ComplyOnBehalfEvent eventId,
+                                                                      String authorisation,
+                                                                      DirectionAssignee assignee) {
+        final UUID[] id = new UUID[1];
 
         return directions.stream()
             .map(directionElement -> {
-                id.set(directionElement.getId());
+                id[0] = directionElement.getId();
 
                 return directionElement.getValue().getResponses();
             })
             .flatMap(List::stream)
-            .map(element -> addCourtAssigneeAndDirectionId(id, element))
+            .map(element -> getDirectionResponse(eventId, authorisation, id[0], element, assignee))
             .collect(toList());
     }
 
-    private Element<DirectionResponse> addCourtAssigneeAndDirectionId(AtomicReference<UUID> id,
-                                                                      Element<DirectionResponse> element) {
+    private Element<DirectionResponse> getDirectionResponse(ComplyOnBehalfEvent event,
+                                                            String authorisation,
+                                                            UUID id,
+                                                            Element<DirectionResponse> response,
+                                                            DirectionAssignee assignee) {
+        if (event == COMPLY_ON_BEHALF_SDO) {
+            return addCourtAssigneeAndDirectionId(id, response);
+        } else {
+            return addResponderAssigneeAndDirectionId(response, authorisation, assignee, id);
+        }
+    }
+
+    //TODO: if name of user complying for court is added then this can be merged with logic from method below.
+    private Element<DirectionResponse> addCourtAssigneeAndDirectionId(UUID id, Element<DirectionResponse> element) {
         return Element.<DirectionResponse>builder()
             .id(element.getId())
             .value(element.getValue().toBuilder()
                 .assignee(COURT)
-                .directionId(id.get())
+                .directionId(id)
                 .build())
             .build();
+    }
+
+    private Element<DirectionResponse> addResponderAssigneeAndDirectionId(Element<DirectionResponse> response,
+                                                                          String authorisation,
+                                                                          DirectionAssignee assignee,
+                                                                          UUID id) {
+        return Element.<DirectionResponse>builder()
+            .id(response.getId())
+            .value(response.getValue().toBuilder()
+                .assignee(assignee)
+                .responder(getUsername(response, authorisation))
+                .directionId(id)
+                .build())
+            .build();
+    }
+
+    private String getUsername(Element<DirectionResponse> element, String authorisation) {
+        if (isEmpty(element.getValue().getResponder())) {
+            return userDetailsService.getUserName(authorisation);
+        } else {
+            return element.getValue().getResponder();
+        }
     }
 
     /**
