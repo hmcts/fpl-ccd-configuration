@@ -4,8 +4,10 @@ import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -31,6 +33,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService.EMPTY_PLACEHOLDER;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createHearingBooking;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createPopulatedChildren;
@@ -54,9 +58,14 @@ class CaseDataExtractionServiceTest {
     @Autowired
     private HearingVenueLookUpService hearingVenueLookUpService;
 
+    @MockBean
+    private UserDetailsService userDetailsService;
+
+    @InjectMocks
+    private DirectionHelperService directionHelperService;
+
     private DateFormatterService dateFormatterService = new DateFormatterService();
     private HearingBookingService hearingBookingService = new HearingBookingService();
-    private DirectionHelperService directionHelperService = new DirectionHelperService();
     private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(CONFIG);
     private CommonCaseDataExtractionService commonCaseDataExtraction = new CommonCaseDataExtractionService(
         dateFormatterService, hearingVenueLookUpService);
@@ -69,6 +78,8 @@ class CaseDataExtractionServiceTest {
     @BeforeEach
     void setup() {
         // required for DI
+        given(userDetailsService.getUserName(any())).willReturn("Emma Taylor");
+
         this.caseDataExtractionService = new CaseDataExtractionService(dateFormatterService,
             hearingBookingService, hmctsCourtLookupConfiguration, ordersLookupService, directionHelperService,
             hearingVenueLookUpService, commonCaseDataExtraction);
