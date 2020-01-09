@@ -4,7 +4,7 @@
     "ID": "Direction",
     "ListElementCode": "directionType",
     "FieldType": "Text",
-    "ElementLabel": "Direction title",
+    "ElementLabel": "Title",
     "HintText": "You must include a brief direction summary",
     "SecurityClassification": "Public"
   },
