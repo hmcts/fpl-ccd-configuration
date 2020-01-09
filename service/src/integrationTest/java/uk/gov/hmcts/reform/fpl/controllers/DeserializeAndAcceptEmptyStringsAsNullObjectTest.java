@@ -33,13 +33,13 @@ class DeserializeAndAcceptEmptyStringsAsNullObjectTest {
     void shouldDeserializeAndAcceptEmptyStringsAsNullObject() throws IOException {
         CaseData data = mapper.readValue(ResourceReader.readString("fixtures/caseDataWithEmptyStringsInsteadOfNull.json"), CaseData.class);
 
-        ParentsAndRespondentsDirectionAssignee parentsAndRespondentsDirectionAssignee = data.getCourtDirections().get(0).getValue().getParentsAndRespondentsAssignee();
+        Element<Direction> expectedCourtDirections = buildExpectedCourtDirections();
 
-        assertNull(parentsAndRespondentsDirectionAssignee);
+        assertEquals(data.getCourtDirections().get(0), expectedCourtDirections);
+    }
 
-        System.out.println(data.getCourtDirections().get(0).getValue());
-
-        Element<Direction> directions = Element.<Direction>builder()
+    private Element<Direction> buildExpectedCourtDirections() {
+        return Element.<Direction>builder()
             .id(UUID.fromString("1814cb97-d87b-4968-bf47-11ad0f4a5607"))
             .value(
                 Direction.builder()
@@ -67,10 +67,5 @@ class DeserializeAndAcceptEmptyStringsAsNullObjectTest {
                         .build())
                     .responses(null)
                     .build()).build();
-
-        assertEquals(data.getCourtDirections().get(0),directions);
-
-
     }
-
 }
