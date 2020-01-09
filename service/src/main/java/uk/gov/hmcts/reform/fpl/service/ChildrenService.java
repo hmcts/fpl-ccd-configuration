@@ -1,10 +1,7 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.Child;
-import uk.gov.hmcts.reform.fpl.model.ChildParty;
-import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.*;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -39,19 +36,14 @@ public class ChildrenService {
         return childCollection;
     }
 
-    public void prepareOthers(CaseData caseData) {
+    public Others prepareOthers(CaseData caseData) {
 
-        caseData.getAllOthers().forEach(element -> {
-            System.out.println("Others element contains confidential details" + element.containsConfidentialDetails());
-        });
+        Other firstOther = Other.builder().build();
+        final List <Element<Other>> additionalOthers = new ArrayList<>();
 
-    }
+        Others others = new Others(firstOther,additionalOthers);
 
-    // expands collection in UI. A value (in this case partyId) needs to be set to expand the collection.
-    private Element<Child> emptyElementWithPartyId() {
-        return ElementUtils.element(Child.builder()
-            .party(ChildParty.builder().partyId(randomUUID().toString()).build())
-            .build());
+        return others;
     }
 
     private Element<Child> getElementToAdd(List<Element<Child>> confidentialChildren, Element<Child> element) {
@@ -59,6 +51,13 @@ public class ChildrenService {
             .filter(confidentialChild -> confidentialChild.getId().equals(element.getId()))
             .findFirst()
             .orElse(element);
+    }
+
+    // expands collection in UI. A value (in this case partyId) needs to be set to expand the collection.
+    private Element<Child> emptyElementWithPartyId() {
+        return ElementUtils.element(Child.builder()
+            .party(ChildParty.builder().partyId(randomUUID().toString()).build())
+            .build());
     }
 
     public List<Element<Child>> modifyHiddenValues(List<Element<Child>> children) {

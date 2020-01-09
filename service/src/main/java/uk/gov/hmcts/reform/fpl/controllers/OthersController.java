@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
+import uk.gov.hmcts.reform.fpl.model.Other;
+import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
@@ -47,8 +49,7 @@ public class OthersController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        //caseDetails.getData().put("others", childrenService.prepareOthers(caseData););
-        childrenService.prepareOthers(caseData);
+        caseDetails.getData().put("others", childrenService.prepareOthers(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
