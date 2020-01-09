@@ -215,6 +215,24 @@ Scenario('HMCTS admin share case with representatives', async (I, caseViewPage, 
   await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
 });
 
+Scenario('HMCTS admin revoke case access from representative', async (I, caseViewPage) => {
+  await I.navigateToCaseDetails(caseId);
+  await caseViewPage.goToNewActions(config.administrationActions.amendRepresentatives);
+
+  await I.removeElementFromCollection('Representatives');
+
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.amendRepresentatives);
+
+  I.signOut();
+  await I.signIn(config.hillingdonLocalAuthorityEmailUserOne, config.localAuthorityPassword);
+  await I.navigateToCaseDetails(caseId);
+  I.seeInCurrentUrl('error');
+
+  I.signOut();
+  await I.signIn(config.hmctsAdminEmail, config.hmctsAdminPassword);
+});
+
 Scenario('HMCTS admin sends email to gatekeeper with a link to the case', async (I, caseViewPage, sendCaseToGatekeeperEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.sendToGatekeeper);
   sendCaseToGatekeeperEventPage.enterEmail();
