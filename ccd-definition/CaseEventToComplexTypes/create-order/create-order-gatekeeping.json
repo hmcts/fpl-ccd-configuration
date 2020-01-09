@@ -110,5 +110,35 @@
     "EventElementLabel": " ",
     "FieldDisplayOrder": 2,
     "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EPOPhraseInclusion",
+    "CaseEventID": "createOrderGatekeeping",
+    "CaseFieldID": "epoPhraseInclusion",
+    "ListElementCode": "phraseInclusionHeading",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EPOPhraseInclusion",
+    "CaseEventID": "createOrderGatekeeping",
+    "CaseFieldID": "epoPhraseInclusion",
+    "ListElementCode": "phraseLabel",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "READONLY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EPOPhraseInclusion",
+    "CaseEventID": "createOrderGatekeeping",
+    "CaseFieldID": "epoPhraseInclusion",
+    "ListElementCode": "includePhrase",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 3,
+    "DisplayContext": "MANDATORY"
   }
 ]
