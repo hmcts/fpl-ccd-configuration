@@ -887,6 +887,23 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "requestedEOTType",
+    "FieldType": "FixedRadioList",
+    "FieldTypeParameter": "RequestedEPOType",
+    "Label": "What type of EPO are you requesting?",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "preventRemovalAddress",
+    "FieldType": "AddressUK",
+    "Label": "Provide the address the child should not be removed from",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "epoEndDate",
     "Label": "When does the order end",
     "FieldType": "Date",
