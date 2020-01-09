@@ -119,7 +119,9 @@ public class GeneratedOrderService {
                         caseData.getCaseLocalAuthority()));
                 break;
             default:
+                throw new IllegalStateException("Unexpected value: " + caseData.getOrderTypeAndDocument().getType());
         }
+
         orderTemplateBuilder
             .put("familyManCaseNumber", caseData.getFamilyManCaseNumber())
             .put("courtName", getCourtName(caseData.getCaseLocalAuthority()))

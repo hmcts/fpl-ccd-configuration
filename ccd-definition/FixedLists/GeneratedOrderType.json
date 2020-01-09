@@ -12,5 +12,12 @@
     "ListElementCode": "CARE_ORDER",
     "ListElement": "Care order",
     "DisplayOrder": 2
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "GeneratedOrderType",
+    "ListElementCode": "SUPERVISION_ORDER",
+    "ListElement": "Supervision order",
+    "DisplayOrder": 2
   }
 ]
