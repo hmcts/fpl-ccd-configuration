@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
@@ -29,11 +30,18 @@ public class Other implements Representable {
     private final String childInformation;
     private final String litigationIssues;
     private final String genderIdentification;
+    private final String detailsHidden;
     private final List<Element<UUID>> representedBy = new ArrayList<>();
 
     public void addRepresentative(UUID representativeId) {
         if (!unwrapElements(representedBy).contains(representativeId)) {
             this.representedBy.add(element(representativeId));
         }
+    }
+
+    public boolean containsConfidentialDetails() {
+        String hiddenValue = defaultIfNull(getDetailsHidden(), "");
+
+        return hiddenValue.equals("Yes");
     }
 }

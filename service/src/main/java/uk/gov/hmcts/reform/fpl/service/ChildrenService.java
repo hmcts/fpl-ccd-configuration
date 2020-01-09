@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.utils.ElementUtils;
 
@@ -36,6 +37,14 @@ public class ChildrenService {
             });
         }
         return childCollection;
+    }
+
+    public void prepareOthers(CaseData caseData) {
+
+        caseData.getAllOthers().forEach(element -> {
+            System.out.println("Others element contains confidential details" + element.containsConfidentialDetails());
+        });
+
     }
 
     // expands collection in UI. A value (in this case partyId) needs to be set to expand the collection.

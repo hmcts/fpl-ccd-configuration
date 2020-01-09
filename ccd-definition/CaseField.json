@@ -881,6 +881,15 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
+    "ID": "confidentialOthers",
+    "Label": "Others",
+    "FieldType": "Collection",
+    "FieldTypeParameter": "Person",
+    "SecurityClassification": "Public"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "cmoDraftInReviewHeading",
     "Label": "## You can no longer edit this order",
     "FieldType": "Label",
