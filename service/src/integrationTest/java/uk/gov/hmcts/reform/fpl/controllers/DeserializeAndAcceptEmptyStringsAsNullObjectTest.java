@@ -28,7 +28,8 @@ class DeserializeAndAcceptEmptyStringsAsNullObjectTest {
 
     @Test
     void shouldDeserializeAndAcceptEmptyStringsAsNullObject() throws IOException {
-        CaseData data = mapper.readValue(ResourceReader.readString("fixtures/caseDataWithEmptyStringsInsteadOfNull.json"), CaseData.class);
+        CaseData data = mapper.readValue(ResourceReader
+            .readString("fixtures/caseDataWithEmptyStringsInsteadOfNull.json"), CaseData.class);
 
         Element<Direction> expectedCourtDirections = buildExpectedCourtDirections();
 
