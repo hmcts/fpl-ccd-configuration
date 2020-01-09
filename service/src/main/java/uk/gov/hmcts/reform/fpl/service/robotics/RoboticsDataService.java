@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.fpl.service.DateFormatterService;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.google.common.collect.ImmutableSet.of;
@@ -33,6 +34,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.defaultString;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.commons.lang3.math.NumberUtils.toInt;
@@ -86,7 +88,7 @@ public class RoboticsDataService {
                 .name(isBlank(applicantParty.getFullName()) ? null : applicantParty.getFullName())
                 .contactName(getApplicantContactName(applicantParty.getTelephoneNumber()))
                 .jobTitle(applicantParty.getJobTitle())
-                .address(convertAddress(applicantParty.getAddress()))
+                .address(convertAddress(applicantParty.getAddress()).orElse(null))
                 .mobileNumber(getApplicantPartyNumber(applicantParty.getMobileNumber()))
                 .telephoneNumber(getApplicantPartyNumber(applicantParty.getTelephoneNumber()))
                 .email(isNotEmpty(applicantParty.getEmail()) ? applicantParty.getEmail().getEmail() : null)
@@ -96,15 +98,19 @@ public class RoboticsDataService {
         return null;
     }
 
-    private Address convertAddress(final uk.gov.hmcts.reform.fpl.model.Address address) {
-        return Address.builder()
-            .addressLine1(address.getAddressLine1())
-            .addressLine2(address.getAddressLine2())
-            .addressLine3(address.getAddressLine3())
-            .postTown(address.getPostTown())
-            .county(address.getCounty())
-            .country(address.getCountry())
-            .build();
+    private Optional<Address> convertAddress(final uk.gov.hmcts.reform.fpl.model.Address address) {
+        if (isNotEmpty(address)) {
+            return Optional.of(Address.builder()
+                .addressLine1(defaultString(address.getAddressLine1(), null))
+                .addressLine2(defaultString(address.getAddressLine2(), null))
+                .addressLine3(defaultString(address.getAddressLine3(), null))
+                .postTown(defaultString(address.getPostTown(), null))
+                .county(defaultString(address.getCounty(), null))
+                .country(defaultString(address.getCountry(), null))
+                .build());
+        }
+
+        return Optional.empty();
     }
 
     private String getApplicantPartyNumber(final Telephone telephone) {
@@ -153,7 +159,7 @@ public class RoboticsDataService {
             .firstName(respondentParty.getFirstName())
             .lastName(respondentParty.getLastName())
             .gender(convertStringToGender(respondentParty.getGender()))
-            .address(convertAddress(respondentParty.getAddress()))
+            .address(convertAddress(respondentParty.getAddress()).orElse(null))
             .relationshipToChild(respondentParty.getRelationshipToChild())
             .dob(formatDob(respondentParty.getDateOfBirth()))
             // TODO: 19/12/2019 verify if this should always be true ???
