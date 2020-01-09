@@ -117,5 +117,19 @@
     "WorkBasketDefaultJurisdiction": "PUBLICLAW",
     "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
     "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "john.smth@mailinator.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
+    "WorkBasketDefaultState": "Submitted"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "UserIDAMId": "crazy.bear@mailinator.com",
+    "WorkBasketDefaultJurisdiction": "PUBLICLAW",
+    "WorkBasketDefaultCaseType": "CARE_SUPERVISION_EPO",
+    "WorkBasketDefaultState": "Submitted"
   }
 ]
