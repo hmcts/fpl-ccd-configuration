@@ -90,5 +90,25 @@
     "EventElementLabel": "Legal advisor's full name",
     "FieldDisplayOrder": 4,
     "DisplayContext": "OPTIONAL"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EPOChildrenDescription",
+    "CaseEventID": "createOrder-PREPARE_FOR_HEARING",
+    "CaseFieldID": "epoChildrenDescription",
+    "ListElementCode": "descriptionNeeded",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 1,
+    "DisplayContext": "MANDATORY"
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "EPOChildrenDescription",
+    "CaseEventID": "createOrder-PREPARE_FOR_HEARING",
+    "CaseFieldID": "epoChildrenDescription",
+    "ListElementCode": "description",
+    "EventElementLabel": " ",
+    "FieldDisplayOrder": 2,
+    "DisplayContext": "OPTIONAL"
   }
 ]
