@@ -58,8 +58,8 @@ task integration(type: Test, description: 'Runs the integration tests.', group: 
 check.dependsOn integration
 
 task nvm(type: Exec, description: 'Ensures that NVM version is LTS.') {
-  commandLine '. ~/.nvm/nvm.sh'
-  commandLine 'nvm', 'ls'
+  commandLine 'source', '/opt/nvm/nvm.sh'
+  commandLine 'nvm', 'install', 'v12.14.1'
 }
 
 task installDependencies(type: Exec, description: 'Installs Yarn dependencies.') {
