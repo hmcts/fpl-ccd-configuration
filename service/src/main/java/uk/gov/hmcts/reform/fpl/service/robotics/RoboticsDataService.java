@@ -147,6 +147,7 @@ public class RoboticsDataService {
                 .map(Element::getValue)
                 .filter(respondent -> isNotEmpty(respondent.getParty()))
                 .map(uk.gov.hmcts.reform.fpl.model.Respondent::getParty)
+                .filter(Objects::nonNull)
                 .map(this::buildRespondent)
                 .collect(toSet());
         }
@@ -174,6 +175,7 @@ public class RoboticsDataService {
                 .map(Element::getValue)
                 .filter(child -> isNotEmpty(child.getParty()))
                 .map(uk.gov.hmcts.reform.fpl.model.Child::getParty)
+                .filter(Objects::nonNull)
                 .map(this::buildChild)
                 .collect(toSet());
         }
