@@ -64,8 +64,14 @@ public class ActionCaseManagementOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().putAll(
-            caseManagementOrderService.extractMapFieldsFromCaseManagementOrder(caseData.getCaseManagementOrder()));
+        if (caseData.getCaseManagementOrder() == null || !caseData.getCaseManagementOrder().isInJudgeReview()) {
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(caseDetails.getData())
+                .build();
+        }
+
+        caseDetails.getData().putAll(caseManagementOrderService
+                .extractMapFieldsFromCaseManagementOrder(caseData.getCaseManagementOrder()));
 
         draftCMOService.prepareCustomDirections(caseDetails, caseData.getCaseManagementOrder());
 
@@ -105,6 +111,15 @@ public class ActionCaseManagementOrderController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
+        if (caseData.getCaseManagementOrder() == null || !caseData.getCaseManagementOrder().isInJudgeReview()) {
+            // CMO created via placeholder state
+            caseDetails.getData().remove(CASE_MANAGEMENT_ORDER_JUDICIARY.getKey());
+
+            return AboutToStartOrSubmitCallbackResponse.builder()
+                .data(caseDetails.getData())
+                .build();
+        }
+
         if (sendToAllPartiesBeforeHearingDate(caseData)) {
             return AboutToStartOrSubmitCallbackResponse.builder()
                 .errors(ImmutableList.of(HEARING_NOT_COMPLETED.getValue()))
@@ -140,17 +155,21 @@ public class ActionCaseManagementOrderController {
     }
 
     @PostMapping("/submitted")
-    public void handleSubmittedEvent(@RequestHeader(value = "authorization") String authorization,
-                                     @RequestHeader(value = "user-id") String userId,
-                                     @RequestBody CallbackRequest callbackRequest) {
-        coreCaseDataService.triggerEvent(
-            callbackRequest.getCaseDetails().getJurisdiction(),
-            callbackRequest.getCaseDetails().getCaseTypeId(),
-            callbackRequest.getCaseDetails().getId(),
-            "internal-change:CMO_PROGRESSION"
-        );
+    public void handleSubmitted(@RequestHeader(value = "authorization") String authorization,
+                                @RequestHeader(value = "user-id") String userId,
+                                @RequestBody CallbackRequest callbackRequest) {
+        CaseData caseData = mapper.convertValue(callbackRequest.getCaseDetails().getData(), CaseData.class);
 
-        publishEventOnApprovedCMO(authorization, userId, callbackRequest);
+        if (caseData.getCaseManagementOrder() != null && caseData.getCaseManagementOrder().isInJudgeReview()) {
+            coreCaseDataService.triggerEvent(
+                callbackRequest.getCaseDetails().getJurisdiction(),
+                callbackRequest.getCaseDetails().getCaseTypeId(),
+                callbackRequest.getCaseDetails().getId(),
+                "internal-change:CMO_PROGRESSION"
+            );
+
+            publishEventOnApprovedCMO(authorization, userId, callbackRequest);
+        }
     }
 
     private boolean sendToAllPartiesBeforeHearingDate(CaseData caseData) {
