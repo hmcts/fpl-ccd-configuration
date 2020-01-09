@@ -42,18 +42,16 @@ public class ChildrenService {
         Other firstOther = Other.builder().build();
         final List <Element<Other>> additionalOthers = new ArrayList<>();
 
-//        caseData.getAllOthers().forEach(element -> {
-//            if (element.containsConfidentialDetails()) {
-//                System.out.println("confidential details contained");
-//                additionalOthers.add(element);
-//
-//            }
-//        });
+        caseData.getAllOthers().forEach(element -> {
+            if (element.containsConfidentialDetails()) {
 
-        caseData.getAllOthers().forEach(other -> additionalOthers.add(Element.<Other>builder()
-            .id(UUID.randomUUID())
-            .value(other)
-            .build()));
+                System.out.println("Confidential details contained");
+                caseData.getAllOthers().forEach(other -> additionalOthers.add(Element.<Other>builder()
+                    .id(UUID.randomUUID())
+                    .value(other)
+                    .build()));
+            }
+        });
 
         Others others = new Others(firstOther,additionalOthers);
 
