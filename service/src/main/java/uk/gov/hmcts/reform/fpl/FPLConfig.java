@@ -21,7 +21,6 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
     @Override
     public void configure() {
         caseType("CARE_SUPERVISION_EPO");
-
         buildOpenEvents();
         buildSubmittedEvents();
         buildPrepareForHearingEvents();

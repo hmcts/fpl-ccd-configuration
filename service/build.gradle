@@ -17,7 +17,7 @@ group = 'uk.gov.hmcts.reform'
 version = '1.0.0'
 
 ccd {
-  configDir = file('../ccd-definition')
+  configDir = rootProject.file('ccd-definition')
 }
 
 sourceSets {
