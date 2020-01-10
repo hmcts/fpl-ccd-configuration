@@ -93,7 +93,8 @@ public class OthersController {
 
             others.add(Element.<Others>builder().value(other).build());
 
-            caseDetails.getData().put("confidentialOthers",others);
+            //puts this into confidentialOthers
+            confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, others, OTHER);
 
         }
 
