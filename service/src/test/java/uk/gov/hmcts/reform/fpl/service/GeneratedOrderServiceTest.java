@@ -54,6 +54,14 @@ class GeneratedOrderServiceTest {
     @Autowired
     private GeneratedOrderService service;
 
+    private static Stream<Arguments> fileNameSource() {
+        return Stream.of(
+            Arguments.of(OrderTypeAndDocument.builder().type(BLANK_ORDER).build(), "blank_order_c21.pdf"),
+            Arguments.of(OrderTypeAndDocument.builder().type(CARE_ORDER).build(), "care_order.pdf"),
+            Arguments.of(OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).build(), "supervision_order.pdf")
+        );
+    }
+
     @Test
     void shouldAddDocumentToOrderTypeAndDocumentObjectWhenDocumentExists() {
         Document document = document();
@@ -167,7 +175,8 @@ class GeneratedOrderServiceTest {
             OrderTypeAndDocument.builder()
                 .type(SUPERVISION_ORDER)
                 .build(),
-            GeneratedOrder.builder().build(), JudgeAndLegalAdvisor.builder().build(),
+            GeneratedOrder.builder().build(),
+            JudgeAndLegalAdvisor.builder().build(),
             5).getValue();
 
         assertThat(order.getMonths()).isEqualTo(5);
@@ -322,13 +331,5 @@ class GeneratedOrderServiceTest {
             .build();
 
         return caseDataBuilder.build();
-    }
-
-    private static Stream<Arguments> fileNameSource() {
-        return Stream.of(
-            Arguments.of(OrderTypeAndDocument.builder().type(BLANK_ORDER).build(), "blank_order_c21.pdf"),
-            Arguments.of(OrderTypeAndDocument.builder().type(CARE_ORDER).build(), "care_order.pdf"),
-            Arguments.of(OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).build(), "supervision_order.pdf")
-        );
     }
 }
