@@ -2,14 +2,14 @@ package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
-import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
-import uk.gov.hmcts.reform.fpl.config.LocalAuthorityNameLookupConfiguration;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
@@ -20,9 +20,10 @@ import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.JudgeAndLegalAdvisor;
+import uk.gov.hmcts.reform.fpl.service.config.LookupTestConfig;
 import uk.gov.hmcts.reform.fpl.service.time.Time;
+import uk.gov.hmcts.reform.fpl.utils.FixedTimeConfiguration;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
@@ -31,39 +32,27 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
 import static uk.gov.hmcts.reform.fpl.utils.CaseDataGeneratorHelper.createOrders;
 import static uk.gov.hmcts.reform.fpl.utils.DocumentManagementStoreLoader.document;
 
 @ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {
+    FixedTimeConfiguration.class, LookupTestConfig.class, DateFormatterService.class, GeneratedOrderService.class
+})
 class GeneratedOrderServiceTest {
-    private static final String LOCAL_AUTHORITY_CODE = "example";
-    private static final String LOCAL_AUTHORITY_NAME = "Example Local Authority";
-    private static final String COURT_NAME = "Example Court";
-    private static final String COURT_EMAIL = "example@court.com";
-    private static final String COURT_CONFIG = String.format("%s=>%s:%s", LOCAL_AUTHORITY_CODE, COURT_NAME,
-        COURT_EMAIL);
-    private static final String LA_NAME_CONFIG = String.format("%s=>%s", LOCAL_AUTHORITY_CODE, LOCAL_AUTHORITY_NAME);
-    private static final LocalDateTime NOW = LocalDateTime.now();
+    @Autowired
+    private Time time;
 
-    private final Time time = () -> NOW;
+    @Autowired
+    private DateFormatterService dateFormatterService;
 
-    private DateFormatterService dateFormatterService = new DateFormatterService();
-    private HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration = new HmctsCourtLookupConfiguration(
-        COURT_CONFIG);
-    private LocalAuthorityNameLookupConfiguration localAuthorityNameLookupConfiguration =
-        new LocalAuthorityNameLookupConfiguration(LA_NAME_CONFIG);
-
+    @Autowired
     private GeneratedOrderService service;
 
-    @BeforeEach
-    void setup() {
-        this.service = new GeneratedOrderService(dateFormatterService, hmctsCourtLookupConfiguration,
-            localAuthorityNameLookupConfiguration, time);
-    }
-
     @Test
-    void shouldAddDocumentToOrderTypeAndDocumentObjectWhenDocumentExists() throws IOException {
+    void shouldAddDocumentToOrderTypeAndDocumentObjectWhenDocumentExists() {
         Document document = document();
 
         OrderTypeAndDocument returnedTypeAndDoc = service.buildOrderTypeAndDocument(OrderTypeAndDocument.builder()
@@ -189,34 +178,16 @@ class GeneratedOrderServiceTest {
             formatTypeToFileName(CARE_ORDER.getLabel()));
     }
 
-    @Nested
-    class TemplateDataTests {
-        LocalDate localDate = LocalDate.now();
-        String date = dateFormatterService.formatLocalDateToString(localDate, FormatStyle.LONG);
+    @ParameterizedTest
+    @EnumSource(value = GeneratedOrderType.class, names = {"BLANK_ORDER", "CARE_ORDER", "SUPERVISION_ORDER"})
+    void shouldCreateExpectedMapWhenGivenPopulatedCaseData(GeneratedOrderType orderType) {
+        LocalDateTime now = time.now();
+        CaseData caseData = createPopulatedCaseData(orderType, now.toLocalDate());
 
-        TemplateDataTests() {
-            //NO - OP
-        }
+        Map<String, Object> expectedMap = createExpectedOrderData(orderType, now);
+        Map<String, Object> templateData = service.getOrderTemplateData(caseData);
 
-        @Test
-        void shouldCreateExpectedMapForC21OrderWhenGivenPopulatedCaseData() {
-            CaseData caseData = createPopulatedCaseData(BLANK_ORDER, localDate);
-
-            Map<String, Object> expectedMap = createExpectedOrderData(date, BLANK_ORDER);
-            Map<String, Object> templateData = service.getOrderTemplateData(caseData);
-
-            assertThat(templateData).isEqualTo(expectedMap);
-        }
-
-        @Test
-        void shouldCreateExpectedMapForCareOrderWhenGivenPopulatedCaseData() {
-            CaseData caseData = createPopulatedCaseData(CARE_ORDER, localDate);
-
-            Map<String, Object> expectedMap = createExpectedOrderData(date, CARE_ORDER);
-            Map<String, Object> templateData = service.getOrderTemplateData(caseData);
-
-            assertThat(templateData).isEqualTo(expectedMap);
-        }
+        assertThat(templateData).isEqualTo(expectedMap);
     }
 
     @Test
@@ -238,41 +209,51 @@ class GeneratedOrderServiceTest {
         assertThat(order.getJudgeAndLegalAdvisor()).isEqualTo(JudgeAndLegalAdvisor.builder().build());
     }
 
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> createExpectedOrderData(String date, GeneratedOrderType type) {
-        ImmutableMap.Builder expectedMap = ImmutableMap.<String, Object>builder();
+    private Map<String, Object> createExpectedOrderData(GeneratedOrderType type, LocalDateTime date) {
+        ImmutableMap.Builder<String, Object> expectedMap = ImmutableMap.builder();
+        String formattedDate = dateFormatterService.formatLocalDateToString(date.toLocalDate(), FormatStyle.LONG);
 
         switch (type) {
             case BLANK_ORDER:
                 expectedMap
-                    .put("orderType", BLANK_ORDER)
                     .put("orderTitle", "Example Title")
                     .put("childrenAct", "Children Act 1989")
                     .put("orderDetails", "Example details");
                 break;
             case CARE_ORDER:
                 expectedMap
-                    .put("orderType", CARE_ORDER)
                     .put("orderTitle", "Care order")
                     .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails",
                         "It is ordered that the child is placed in the care of Example Local Authority.");
                 break;
+            case SUPERVISION_ORDER:
+                final String suffix = dateFormatterService.getDayOfMonthSuffix(date.getDayOfMonth());
+                final String formattedDateTime = dateFormatterService.formatLocalDateTimeBaseUsingFormat(date,
+                    "hh:mma 'on the' dd'" + suffix + "' MMMM y");
+                expectedMap
+                    .put("orderTitle", "Supervision order")
+                    .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
+                    .put("orderDetails",
+                        String.format(
+                            "It is ordered that Example Local Authority supervises the child for 5 months from the " +
+                                "date of this order until %s.", formattedDateTime));
             default:
         }
 
         expectedMap
-            .put("furtherDirections", "Example Directions")
+            .put("orderType", type)
+            .put("furtherDirections", (type != BLANK_ORDER) ? "Example Directions" : "")
             .put("familyManCaseNumber", "123")
-            .put("courtName", "Example Court")
-            .put("todaysDate", date)
+            .put("courtName", "Family Court")
+            .put("todaysDate", formattedDate)
             .put("judgeTitleAndName", "Her Honour Judge Judy")
             .put("legalAdvisorName", "Peter Parker")
             .put("children", ImmutableList.of(
                 ImmutableMap.of(
                     "name", "Timmy Jones",
                     "gender", "Boy",
-                    "dateOfBirth", date)));
+                    "dateOfBirth", formattedDate)));
 
         return expectedMap.build();
     }
@@ -290,10 +271,6 @@ class GeneratedOrderServiceTest {
                     .order(GeneratedOrder.builder()
                         .title("Example Title")
                         .details("Example details")
-                        .build())
-                    .orderFurtherDirections(FurtherDirections.builder()
-                        .directionsNeeded("Yes")
-                        .directions("Example Directions")
                         .build());
                 break;
             case CARE_ORDER:
@@ -306,6 +283,18 @@ class GeneratedOrderServiceTest {
                         .directionsNeeded("Yes")
                         .directions("Example Directions")
                         .build());
+                break;
+            case SUPERVISION_ORDER:
+                caseDataBuilder
+                    .orderTypeAndDocument(OrderTypeAndDocument.builder()
+                        .type(SUPERVISION_ORDER)
+                        .document(DocumentReference.builder().build())
+                        .build())
+                    .orderFurtherDirections(FurtherDirections.builder()
+                        .directionsNeeded("Yes")
+                        .directions("Example Directions")
+                        .build())
+                    .orderMonths(5);
                 break;
             default:
         }

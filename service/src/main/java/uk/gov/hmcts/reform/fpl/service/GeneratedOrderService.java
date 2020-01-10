@@ -166,7 +166,7 @@ public class GeneratedOrderService {
         final LocalDateTime now = time.now();
         final String suffix = dateFormatterService.getDayOfMonthSuffix(now.getDayOfMonth());
         return String.format(
-            "It is ordered that %s supervises the %s for %d months from the date of this order until %s",
+            "It is ordered that %s supervises the %s for %d months from the date of this order until %s.",
             getLocalAuthorityName(caseLocalAuthority),
             (numOfChildren == 1) ? "child" : "children",
             numOfMonths,
