@@ -80,15 +80,20 @@ public class GeneratedOrderService {
             case BLANK_ORDER:
                 orderBuilder.title(defaultIfBlank(generatedOrder.getTitle(), "Order"));
                 orderBuilder.details(generatedOrder.getDetails());
-                orderBuilder.months(null);
+                orderBuilder.expiryDate(null);
                 break;
             case CARE_ORDER:
                 orderBuilder.title(null);
-                orderBuilder.months(null);
+                orderBuilder.expiryDate(null);
                 break;
             case SUPERVISION_ORDER:
                 orderBuilder.title(null);
-                orderBuilder.months(orderMonths);
+                String date = null;
+                if (orderMonths != null) {
+                    date = dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now().plusMonths(orderMonths),
+                        "hh:mma, d MMMM y");
+                }
+                orderBuilder.expiryDate(date);
                 break;
             default:
         }

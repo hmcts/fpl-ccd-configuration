@@ -169,16 +169,17 @@ Scenario('HMCTS admin creates multiple orders for the case @flag', async (I, cas
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);
   await orderFunctions.createOrder(I, createOrderEventPage, orders[2]);
   orderTime = new Date();
+  const expiryDate = new Date(orderTime.setMonth(orderTime.getMonth() + parseInt(orders[2].months)));
   I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeAnswerInTab(1, 'Order 3', 'Type of order', orders[2].type);
   I.seeAnswerInTab(2, 'Order 3', 'Order document', orders[2].document);
   I.seeAnswerInTab(3, 'Order 3', 'Date and time of upload', dateFormat(orderTime, 'd mmmm yyyy'));
+  I.seeAnswerInTab(4, 'Order 3', 'Order expires on', dateFormat(expiryDate, 'hh:MM, dd mmmm yyyy'));
   I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', orders[2].judgeAndLegalAdvisor.judgeTitle);
   I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', orders[2].judgeAndLegalAdvisor.judgeLastName);
   I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name',  orders[2].judgeAndLegalAdvisor.legalAdvisorName);
-
 });
 
 Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {

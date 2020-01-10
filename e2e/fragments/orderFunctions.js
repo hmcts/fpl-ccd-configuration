@@ -21,7 +21,7 @@ const createSupervisionOrder = async (I, createOrderEventPage, order) => {
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.months);
   await createOrderEventPage.enterNumberOfMonths(order.months);
   await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
-  await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName);
+  await createOrderEventPage.enterJudgeAndLegalAdvisor(order.judgeAndLegalAdvisor.judgeLastName, order.judgeAndLegalAdvisor.legalAdvisorName, order.judgeAndLegalAdvisor.judgeTitle);
   await I.retryUntilExists(() => I.click('Continue'), createOrderEventPage.fields.directionsNeeded.id);
   await createOrderEventPage.enterDirections('example directions');
   await I.completeEvent('Save and continue');

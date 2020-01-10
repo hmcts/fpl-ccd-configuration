@@ -179,7 +179,10 @@ class GeneratedOrderServiceTest {
             JudgeAndLegalAdvisor.builder().build(),
             5).getValue();
 
-        assertThat(order.getMonths()).isEqualTo(5);
+        String expected = dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now().plusMonths(5),
+            "hh:mma, d MMMM y");
+
+        assertThat(order.getExpiryDate()).isEqualTo(expected);
     }
 
     @ParameterizedTest
@@ -242,14 +245,15 @@ class GeneratedOrderServiceTest {
                 final String suffix = dateFormatterService.getDayOfMonthSuffix(date.getDayOfMonth());
                 final String formattedDateTime =
                     dateFormatterService.formatLocalDateTimeBaseUsingFormat(date.plusMonths(5),
-                    "hh:mma 'on the' dd'" + suffix + "' MMMM y");
+                        "hh:mma 'on the' dd'" + suffix + "' MMMM y");
                 expectedMap
                     .put("orderTitle", "Supervision order")
                     .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
                     .put("orderDetails",
                         String.format(
-                            "It is ordered that Example Local Authority supervises the child for 5 months from the " +
-                                "date of this order until %s.", formattedDateTime));
+                            "It is ordered that Example Local Authority supervises the child for 5 months from the "
+                                + "date of this order until %s.", formattedDateTime));
+                break;
             default:
         }
 

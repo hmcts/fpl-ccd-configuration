@@ -16,5 +16,5 @@ public class GeneratedOrder {
     private final String date;
     private final JudgeAndLegalAdvisor judgeAndLegalAdvisor;
     private final FurtherDirections furtherDirections;
-    private final Integer months;
+    private final String expiryDate;
 }
