@@ -8,6 +8,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.fpl.config.robotics.RoboticsEmailConfiguration;
 import uk.gov.hmcts.reform.fpl.events.CaseNumberAdded;
+import uk.gov.hmcts.reform.fpl.events.robotics.ResendFailedRoboticNotificationEvent;
+import uk.gov.hmcts.reform.fpl.events.robotics.RoboticsNotificationEvent;
 import uk.gov.hmcts.reform.fpl.model.email.EmailData;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 import uk.gov.hmcts.reform.fpl.service.EmailService;
@@ -30,6 +32,15 @@ public class RoboticsNotificationService {
 
     @EventListener
     public void notifyRoboticsOfSubmittedCaseData(final CaseNumberAdded event) {
+        sendSubmittedCaseData(event);
+    }
+
+    @EventListener
+    public void resendRoboticsOfSubmittedCaseData(final ResendFailedRoboticNotificationEvent event) {
+        sendSubmittedCaseData(event);
+    }
+
+    private void sendSubmittedCaseData(final RoboticsNotificationEvent event) {
         RoboticsData roboticsData = roboticsDataService.prepareRoboticsData(event.getCaseData());
 
         EmailData emailData = prepareEmailData(roboticsData);

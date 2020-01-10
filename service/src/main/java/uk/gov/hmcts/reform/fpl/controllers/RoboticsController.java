@@ -5,14 +5,14 @@ import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.robotics.ResendFailedRoboticNotificationEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
-import uk.gov.hmcts.reform.fpl.model.ccd.CoreCaseApiParameter;
+import uk.gov.hmcts.reform.fpl.model.ccd.CoreCaseApiSearchParameter;
 import uk.gov.hmcts.reform.fpl.request.RequestData;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
@@ -31,8 +31,9 @@ public class RoboticsController {
     private final RequestData requestData;
 
     @PostMapping("/sendRPAEmailByID/{caseId}")
+    @Secured("caseworker-publiclaw-systemupdate")
     public void resendCaseDataNotification(@PathVariable ("caseId") String caseId) {
-        CoreCaseApiParameter caseApiParameter = CoreCaseApiParameter.builder()
+        CoreCaseApiSearchParameter caseApiParameter = CoreCaseApiSearchParameter.builder()
             .caseId(getLong(caseId))
             .caseType(CASE_TYPE_ID)
             .jurisdiction(JURISDICTION_ID)

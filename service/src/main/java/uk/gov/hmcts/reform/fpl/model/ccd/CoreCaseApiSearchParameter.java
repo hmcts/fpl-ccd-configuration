@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Data
 @Builder(toBuilder = true)
 @RequiredArgsConstructor
-public class CoreCaseApiParameter {
+public class CoreCaseApiSearchParameter {
     private final String event;
     private final String jurisdiction;
     private final String caseType;
