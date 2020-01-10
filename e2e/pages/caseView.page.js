@@ -10,6 +10,7 @@ module.exports = {
     casePeople: 'People in the case',
     legalBasis: 'Legal basis',
     documents: 'Documents',
+    confidential: 'Confidential',
   },
   actionsDropdown: '.ccd-dropdown',
   goButton: 'Go',
