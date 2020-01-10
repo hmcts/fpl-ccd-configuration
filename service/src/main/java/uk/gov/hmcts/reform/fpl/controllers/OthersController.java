@@ -21,8 +21,10 @@ import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
 import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
@@ -67,6 +69,19 @@ public class OthersController {
         confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthers, OTHER);
 
         caseDetails.getData().put("others", childrenService.modifyHiddenValues(caseData.getAllChildren()));*/
+
+        Other firstOther = Other.builder().build();
+        final List <Element<Other>> additionalOthers = new ArrayList<>();
+        additionalOthers.add(Element.<Other>builder()
+            .id(UUID.randomUUID())
+            .value(firstOther)
+            .build());
+        Others[] others = new Others[0];
+
+
+
+
+        caseDetails.getData().put("confidentialOthers",others);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
