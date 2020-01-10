@@ -1,296 +1,210 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import uk.gov.hmcts.reform.fpl.model.Address;
-import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse;
+import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.model.Respondent;
 import uk.gov.hmcts.reform.fpl.model.RespondentParty;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
-import uk.gov.hmcts.reform.fpl.model.common.EmailAddress;
-import uk.gov.hmcts.reform.fpl.model.common.Telephone;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 import static java.util.Collections.emptyList;
-import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.hmcts.reform.fpl.enums.PartyType.INDIVIDUAL;
 
 @ExtendWith(SpringExtension.class)
 class RespondentServiceTest {
-    private static final UUID ID = randomUUID();
-    private static final String[] FIELDS = {"firstName", "partyType"};
 
     private final RespondentService service = new RespondentService();
 
+    @SuppressWarnings("unchecked")
     @Test
-    void shouldAddEmptyElementWhenRespondentIsEmpty() {
-        List<Element<Respondent>> respondents = service.prepareRespondents(CaseData.builder().build());
+    void shouldExpandRespondentCollectionWhenNoRespondents() {
+        Map<String, Object> respondentObject = new HashMap<>();
 
-        assertThat(getParty(respondents, 0).partyId).isNotNull();
-    }
-
-    @Test
-    void shouldReturnRespondentsIfRespondentsIsPrePopulated() {
-        CaseData caseData = CaseData.builder()
-            .respondents1(ImmutableList.of(respondentWithRemovedConfidentialFields(ID)))
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(respondentObject)
             .build();
 
-        List<Element<Respondent>> respondents = service.prepareRespondents(caseData);
+        AboutToStartOrSubmitCallbackResponse response = service.expandRespondentCollection(caseDetails);
+        List<Map<String, Object>> respondents = (List<Map<String, Object>>) response.getData().get("respondents1");
+        Map<String, Object> value = (Map<String, Object>) respondents.get(0).get("value");
+        Map<String, Object> party = (Map<String, Object>) value.get("party");
 
-        assertThat(respondents).containsExactly(respondentWithRemovedConfidentialFields(ID));
+        assertThat(response.getData()).containsOnlyKeys("respondents1");
+
+        assertThat(respondents).hasSize(1);
+        assertThat(party.get("partyId")).isNotNull();
     }
 
-    @Test
-    void shouldPrepareRespondentWithConfidentialValuesWhenConfidentialRespondentIsNotEmpty() {
-        CaseData caseData = CaseData.builder()
-            .respondents1(ImmutableList.of(respondentWithRemovedConfidentialFields(ID)))
-            .confidentialRespondents(ImmutableList.of(respondentWithConfidentialFields(ID)))
-            .build();
-
-        List<Element<Respondent>> respondents = service.prepareRespondents(caseData);
-
-        assertThat(respondents).containsOnly(respondentWithConfidentialFields(ID));
-    }
-
-    @Test
-    void shouldReturnRespondentWithoutConfidentialDetailsWhenThereIsNoMatchingConfidentialRespondent() {
-        CaseData caseData = CaseData.builder()
-            .respondents1(ImmutableList.of(respondentWithRemovedConfidentialFields(ID)))
-            .confidentialRespondents(ImmutableList.of(respondentWithConfidentialFields(randomUUID())))
-            .build();
-
-        List<Element<Respondent>> respondents = service.prepareRespondents(caseData);
-
-        assertThat(respondents).containsOnly(respondentWithRemovedConfidentialFields(ID));
-    }
-
-    @Test
-    void shouldAddExpectedRespondentWhenHiddenDetailsMarkedAsNo() {
-        CaseData caseData = CaseData.builder()
-            .respondents1(ImmutableList.of(respondentWithDetailsHiddenNo(ID)))
-            .confidentialRespondents(ImmutableList.of(respondentWithConfidentialFields(ID)))
-            .build();
-
-        List<Element<Respondent>> respondents = service.prepareRespondents(caseData);
-
-        assertThat(respondents).containsOnly(respondentWithDetailsHiddenNo(ID));
-    }
-
-    @Test
-    void shouldMaintainOrderingOfRespondentWhenComplexScenario() {
-        UUID otherId = randomUUID();
-
-        List<Element<Respondent>> respondents = ImmutableList.of(
-            respondentWithRemovedConfidentialFields(ID),
-            respondentWithDetailsHiddenNo(randomUUID()),
-            respondentWithRemovedConfidentialFields(otherId));
-
-        List<Element<Respondent>> confidentialRespondent = ImmutableList.of(
-            respondentWithConfidentialFields(ID),
-            respondentWithConfidentialFields(otherId));
-
-        CaseData caseData = CaseData.builder()
-            .respondents1(respondents)
-            .confidentialRespondents(confidentialRespondent)
-            .build();
-
-        List<Element<Respondent>> updatedRespondent = service.prepareRespondents(caseData);
-
-        assertThat(updatedRespondent.get(0)).isEqualTo(confidentialRespondent.get(0));
-        assertThat(updatedRespondent.get(1)).isEqualTo(respondents.get(1));
-        assertThat(updatedRespondent.get(2)).isEqualTo(confidentialRespondent.get(1));
-    }
-
+    @SuppressWarnings("unchecked")
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToSingleRespondent() {
-        List<Element<Respondent>> respondents = ImmutableList.of(respondentElementWithName("James"));
+        Map<String, Object> respondentObject = new HashMap<>();
 
-        CaseData caseData = CaseData.builder()
-            .respondents1(respondents)
+        respondentObject.put("respondents1", ImmutableList.of(
+            ImmutableMap.of(
+                "id", "12345",
+                "value", ImmutableMap.of(
+                    "party", RespondentParty.builder()
+                        .firstName("James")
+                        .build()
+                ))));
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(respondentObject)
             .build();
 
-        List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
+        AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
 
-        assertThat(getParty(updatedRespondents, 0)).extracting(FIELDS).containsExactly("James", INDIVIDUAL);
-        assertThat(getParty(updatedRespondents, 0).partyId).isNotNull();
+        Map<String, Object> data = response.getData();
+        List<Map<String, Object>> respondents = (List<Map<String, Object>>) data.get("respondents1");
+        Map<String, Object> value = (Map<String, Object>) respondents.get(0).get("value");
+        Map<String, Object> party = (Map<String, Object>) value.get("party");
+
+        assertThat(party)
+            .containsEntry("firstName", "James")
+            .containsEntry("partyType", "INDIVIDUAL");
+
+        assertThat(party.get("partyId")).isNotNull();
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void shouldAddPartyIDAndPartyTypeValuesToMultipleRespondents() {
-        List<Element<Respondent>> respondents = ImmutableList.of(
-            respondentElementWithName("James"),
-            respondentElementWithName("Lucy"));
+        Map<String, Object> respondentObject = new HashMap<>();
 
-        CaseData caseData = CaseData.builder()
-            .respondents1(respondents)
+        respondentObject.put("respondents1", ImmutableList.of(
+            ImmutableMap.of(
+                "id", "12345",
+                "value", ImmutableMap.of(
+                    "party", RespondentParty.builder()
+                        .firstName("James")
+                        .build()
+                )),
+            ImmutableMap.of(
+                "id", "98765",
+                "value", ImmutableMap.of(
+                    "party", RespondentParty.builder()
+                        .firstName("Lucy")
+                        .build()
+                ))));
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(respondentObject)
             .build();
 
-        List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
+        AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
 
-        assertThat(getParty(updatedRespondents, 0)).extracting(FIELDS).containsExactly("James", INDIVIDUAL);
-        assertThat(getParty(updatedRespondents, 0).partyId).isNotNull();
+        Map<String, Object> data = response.getData();
+        List<Map<String, Object>> respondents = (List<Map<String, Object>>) data.get("respondents1");
+        Map<String, Object> firstValue = (Map<String, Object>) respondents.get(0).get("value");
+        Map<String, Object> secondValue = (Map<String, Object>) respondents.get(1).get("value");
+        Map<String, Object> firstParty = (Map<String, Object>) firstValue.get("party");
+        Map<String, Object> secondParty = (Map<String, Object>) secondValue.get("party");
 
-        assertThat(getParty(updatedRespondents, 1)).extracting(FIELDS).containsExactly("Lucy", INDIVIDUAL);
-        assertThat(getParty(updatedRespondents, 1).partyId).isNotNull();
+        assertThat(firstParty)
+            .containsEntry("firstName", "James")
+            .containsEntry("partyType", "INDIVIDUAL");
+
+        assertThat(firstParty.get("partyId")).isNotNull();
+
+        assertThat(secondParty)
+            .containsEntry("firstName", "Lucy")
+            .containsEntry("partyType", "INDIVIDUAL");
+
+        assertThat(secondParty.get("partyId")).isNotNull();
     }
 
+    @Test
+    void shouldNotAddPartyIDAndPartyTypeValuesToDataStructureIfRespondents1IsNotPresent() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("respondent", "data");
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(data)
+            .build();
+
+        AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
+
+        assertThat(response.getData()).isEqualTo(caseDetails.getData());
+    }
+
+    @SuppressWarnings("unchecked")
     @Test
     void shouldKeepExistingPartyIDWhenAlreadyExists() {
-        String id = "123";
-        List<Element<Respondent>> respondents = ImmutableList.of(respondentElementWithId(id));
+        Map<String, Object> respondentObject = new HashMap<>();
 
-        CaseData caseData = CaseData.builder()
-            .respondents1(respondents)
+        respondentObject.put("respondents1", ImmutableList.of(
+            ImmutableMap.of(
+                "id", "12345",
+                "value", ImmutableMap.of(
+                    "party", RespondentParty.builder()
+                        .partyId("123")
+                        .build()
+                ))));
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(respondentObject)
             .build();
 
-        List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
+        AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
 
-        assertThat(getParty(updatedRespondents, 0).partyId).isEqualTo(id);
+        Map<String, Object> data = response.getData();
+        List<Map<String, Object>> respondents = (List<Map<String, Object>>) data.get("respondents1");
+        Map<String, Object> value = (Map<String, Object>) respondents.get(0).get("value");
+        Map<String, Object> party = (Map<String, Object>) value.get("party");
+
+        assertThat(party.get("partyId")).isEqualTo("123");
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void shouldKeepExistingPartyIdAndContinueAddingNewPartyId() {
-        String id = "123";
-        List<Element<Respondent>> respondents = ImmutableList.of(
-            respondentElementWithId(id),
-            respondentElementWithName("Lucy"));
+        Map<String, Object> respondentObject = new HashMap<>();
 
-        CaseData caseData = CaseData.builder()
-            .respondents1(respondents)
+        respondentObject.put("respondents1", ImmutableList.of(
+            ImmutableMap.of(
+                "id", "12345",
+                "value", ImmutableMap.of(
+                    "party", RespondentParty.builder()
+                        .firstName("James")
+                        .partyId("123")
+                        .build()
+                )),
+            ImmutableMap.of(
+                "id", "98765",
+                "value", ImmutableMap.of(
+                    "party", RespondentParty.builder()
+                        .firstName("Lucy")
+                        .build()
+                ))));
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .data(respondentObject)
             .build();
 
-        List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
+        AboutToStartOrSubmitCallbackResponse response = service.addHiddenValues(caseDetails);
 
-        assertThat(getParty(updatedRespondents, 0).firstName).isEqualTo("James");
-        assertThat(getParty(updatedRespondents, 0).partyId).isEqualTo(id);
-        assertThat(getParty(updatedRespondents, 1).firstName).isEqualTo("Lucy");
-        assertThat(getParty(updatedRespondents, 1).partyId).isNotNull();
-    }
+        Map<String, Object> data = response.getData();
+        List<Map<String, Object>> respondents = (List<Map<String, Object>>) data.get("respondents1");
+        Map<String, Object> firstValue = (Map<String, Object>) respondents.get(0).get("value");
+        Map<String, Object> secondValue = (Map<String, Object>) respondents.get(1).get("value");
+        Map<String, Object> firstParty = (Map<String, Object>) firstValue.get("party");
+        Map<String, Object> secondParty = (Map<String, Object>) secondValue.get("party");
 
-    @Test
-    void shouldHideRespondentContactDetailsWhenConfidentialityFlagSet() {
-        List<Element<Respondent>> respondents = respondentElementWithDetailsHiddenValue("Yes");
+        assertThat(firstParty).containsEntry("firstName", "James");
+        assertThat(firstParty.get("partyId")).isEqualTo("123");
 
-        CaseData caseData = CaseData.builder()
-            .respondents1(respondents)
-            .build();
-
-        List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
-
-        assertThat(getParty(updatedRespondents, 0).address).isNull();
-        assertThat(getParty(updatedRespondents, 0).email).isNull();
-        assertThat(getParty(updatedRespondents, 0).telephoneNumber).isNull();
-    }
-
-    @Test
-    void shouldNotHideRespondentContactDetailsWhenConfidentialityFlagSet() {
-        List<Element<Respondent>> respondents = respondentElementWithDetailsHiddenValue("No");
-
-        CaseData caseData = CaseData.builder()
-            .respondents1(respondents)
-            .build();
-
-        List<Element<Respondent>> updatedRespondents = service.modifyHiddenValues(caseData.getAllRespondents());
-
-        assertThat(getParty(updatedRespondents, 0).address).isNotNull();
-        assertThat(getParty(updatedRespondents, 0).email).isNotNull();
-        assertThat(getParty(updatedRespondents, 0).telephoneNumber).isNotNull();
-    }
-
-    private List<Element<Respondent>> respondentElementWithDetailsHiddenValue(String hidden) {
-        return ImmutableList.of(Element.<Respondent>builder()
-            .id(randomUUID())
-            .value(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName("James")
-                    .contactDetailsHidden(hidden)
-                    .email(EmailAddress.builder().email("email@email.com").build())
-                    .address(Address.builder()
-                        .addressLine1("Address Line 1")
-                        .build())
-                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .build())
-                .build())
-            .build());
-    }
-
-    private Element<Respondent> respondentElementWithName(String name) {
-        return Element.<Respondent>builder()
-            .id(UUID.randomUUID())
-            .value(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName(name)
-                    .build())
-                .build())
-            .build();
-    }
-
-    private Element<Respondent> respondentWithDetailsHiddenNo(UUID id) {
-        return Element.<Respondent>builder()
-            .id(id)
-            .value(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName("James")
-                    .contactDetailsHidden("No")
-                    .email(EmailAddress.builder().email("email@email.com").build())
-                    .address(Address.builder()
-                        .addressLine1("Address Line 1")
-                        .build())
-                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .build())
-                .build())
-            .build();
-    }
-
-    private Element<Respondent> respondentWithRemovedConfidentialFields(UUID id) {
-        return Element.<Respondent>builder()
-            .id(id)
-            .value(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName("James")
-                    .contactDetailsHidden("Yes")
-                    .build())
-                .build())
-            .build();
-    }
-
-    private Element<Respondent> respondentWithConfidentialFields(UUID id) {
-        return Element.<Respondent>builder()
-            .id(id)
-            .value(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName("James")
-                    .contactDetailsHidden("Yes")
-                    .email(EmailAddress.builder().email("email@email.com").build())
-                    .address(Address.builder()
-                        .addressLine1("Address Line 1")
-                        .build())
-                    .telephoneNumber(Telephone.builder().telephoneNumber("01227 831393").build())
-                    .build())
-                .build())
-            .build();
-    }
-
-    private RespondentParty getParty(List<Element<Respondent>> updatedRespondents, int i) {
-        return updatedRespondents.get(i).getValue().getParty();
-    }
-
-    private Element<Respondent> respondentElementWithId(String id) {
-        return Element.<Respondent>builder()
-            .id(UUID.randomUUID())
-            .value(Respondent.builder()
-                .party(RespondentParty.builder()
-                    .firstName("James")
-                    .partyId(id)
-                    .build())
-                .build())
-            .build();
+        assertThat(secondParty).containsEntry("firstName", "Lucy");
+        assertThat(secondParty.get("partyId")).isNotNull();
     }
 
     @Nested

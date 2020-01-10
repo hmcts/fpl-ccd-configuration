@@ -16,29 +16,23 @@ import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
-import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.CHILD;
-
 @Api
 @RestController
 @RequestMapping("/callback/enter-children")
 public class ChildController {
+
     private final ObjectMapper mapper;
     private final ChildrenService childrenService;
-    private final ConfidentialDetailsService confidentialDetailsService;
 
     @Autowired
-    public ChildController(ObjectMapper mapper,
-                           ChildrenService childrenService,
-                           ConfidentialDetailsService confidentialDetailsService) {
+    public ChildController(ObjectMapper mapper, ChildrenService childrenService) {
         this.mapper = mapper;
         this.childrenService = childrenService;
-        this.confidentialDetailsService = confidentialDetailsService;
     }
 
     @PostMapping("/about-to-start")
@@ -46,7 +40,7 @@ public class ChildController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        caseDetails.getData().put("children1", childrenService.prepareChildren(caseData));
+        caseDetails.getData().put("children1", childrenService.expandChildrenCollection(caseData));
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
@@ -68,12 +62,9 @@ public class ChildController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Child>> confidentialChildren =
-            confidentialDetailsService.addPartyMarkedConfidentialToList(caseData.getAllChildren());
-
-        confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialChildren, CHILD);
-
-        caseDetails.getData().put("children1", childrenService.modifyHiddenValues(caseData.getAllChildren()));
+        if (caseData.getChildren1() != null) {
+            caseDetails.getData().put("children1", childrenService.addHiddenValues(caseData));
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -140,11 +139,6 @@ public class CaseData {
     }
 
     @JsonIgnore
-    public List<Element<Respondent>> getAllRespondents() {
-        return respondents1 != null ? respondents1 : new ArrayList<>();
-    }
-
-    @JsonIgnore
     public List<Element<Child>> getAllChildren() {
         return children1 != null ? children1 : new ArrayList<>();
     }
@@ -236,17 +230,5 @@ public class CaseData {
     public Optional<Respondent> findRespondent(int seqNo) {
         return isEmpty(getRespondents1()) || getRespondents1().size() <= seqNo
             ? empty() : Optional.of(getRespondents1().get(seqNo).getValue());
-    }
-
-    private final List<Element<Child>> confidentialChildren;
-
-    public List<Element<Child>> getConfidentialChildren() {
-        return confidentialChildren != null ? confidentialChildren : new ArrayList<>();
-    }
-
-    private final List<Element<Respondent>> confidentialRespondents;
-
-    public List<Element<Respondent>> getConfidentialRespondents() {
-        return confidentialRespondents != null ? confidentialRespondents : new ArrayList<>();
     }
 }

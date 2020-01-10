@@ -153,7 +153,7 @@
               "detailsHiddenReason": "History of domestic violence with relatives",
               "fathersResponsibility": "Yes",
               "additionalNeedsDetails": "Autism",
-              "genderIdentification": "Boy",
+              "childGenderIdentification": "Boy",
               "placementOrderApplication": "Yes"
             }
           }
@@ -271,7 +271,7 @@
               "litigationIssues": "YES",
               "litigationIssuesDetails": "respondent one test litigation reason",
               "relationshipToChild": "Uncle",
-              "contactDetailsHidden": "Yes",
+              "contactDetailsHidden": "No",
               "contactDetailsHiddenReason": "Hide from all",
               "address": {},
               "telephoneNumber": {

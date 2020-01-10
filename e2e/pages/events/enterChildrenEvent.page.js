@@ -35,7 +35,6 @@ module.exports = {
         socialWorkerTel: `#children1_${index}_party_socialWorkerTelephoneNumber_telephoneNumber`,
         additionalNeedsNo: `#children1_${index}_party_additionalNeeds-No`,
         contactHiddenNo: `#children1_${index}_party_detailsHidden-No`,
-        contactHiddenYes: `#children1_${index}_party_detailsHidden-Yes`,
         litigationIssues: {
           yes: `#children1_${index}_party_litigationIssues-YES`,
           no: `#children1_${index}_party_litigationIssues-NO`,
@@ -116,17 +115,10 @@ module.exports = {
     I.click(this.fields(elementIndex).child.additionalNeedsNo);
   },
 
-  async enterContactDetailsHidden(hideContactDetails) {
+  async defineContactDetailsVisibility() {
     const elementIndex = await this.getActiveElementIndex();
 
-    switch (hideContactDetails) {
-      case 'Yes':
-        I.click(this.fields(elementIndex).child.contactHiddenYes);
-        break;
-      case 'No':
-        I.click(this.fields(elementIndex).child.contactHiddenNo);
-        break;
-    }
+    I.click(this.fields(elementIndex).child.contactHiddenNo);
   },
 
   async enterLitigationIssues(litigationIssue = 'No', litigationIssueDetail = 'mock reason') {
