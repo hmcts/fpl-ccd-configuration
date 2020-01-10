@@ -101,9 +101,6 @@ public class OthersController {
         final List <Element<Others>> others = new ArrayList<>();
 
 
-
-
-
         caseDetails.getData().put("confidentialOthers",others);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
