@@ -82,6 +82,8 @@ public class OthersController {
 
         Other firstOther = allOthers.get(0).getValue();
 
+        allOthers.remove(0);
+
         Others other = new Others(firstOther,allOthers);
 
         final List <Element<Others>> others = new ArrayList<>();
