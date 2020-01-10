@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.model.common.Party;
 import uk.gov.hmcts.reform.fpl.service.ChildrenService;
 import uk.gov.hmcts.reform.fpl.service.ConfidentialDetailsService;
+import uk.gov.hmcts.reform.fpl.service.OthersService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -35,15 +36,18 @@ import static uk.gov.hmcts.reform.fpl.enums.ConfidentialPartyType.OTHER;
 public class OthersController {
     private final ObjectMapper mapper;
     private final ChildrenService childrenService;
+    private final OthersService othersService;
     private final ConfidentialDetailsService confidentialDetailsService;
 
     @Autowired
     public OthersController(ObjectMapper mapper,
                             ChildrenService childrenService,
-                            ConfidentialDetailsService confidentialDetailsService) {
+                            ConfidentialDetailsService confidentialDetailsService,
+                            OthersService othersService) {
         this.mapper = mapper;
         this.childrenService = childrenService;
         this.confidentialDetailsService = confidentialDetailsService;
+        this.othersService = othersService;
     }
 
     @PostMapping("/about-to-start")
@@ -63,31 +67,16 @@ public class OthersController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        //GET ALL OTHERS
-        final List <Element<Other>> allOthers = new ArrayList<>();
-
-        caseData.getAllOthers().forEach(element -> {
-            System.out.println("element is" + element);
-            if (element.containsConfidentialDetails()) {
-
-                System.out.println("Confidential details contained" + element);
-                allOthers.add(Element.<Other>builder()
-                    .id(UUID.randomUUID())
-                    .value(element)
-                    .build());
-            }
-        });
-
-        //caseDetails.getData().put("others", childrenService.modifyHiddenValues(caseData.getAllChildren()));
+        List<Element<Other>> confidentialOthers = othersService.getAllConfidentialOthers(caseData);
 
         Other firstOther;
-        if(!allOthers.isEmpty())
+        if(!confidentialOthers.isEmpty())
         {
-            firstOther = allOthers.get(0).getValue();
+            firstOther = confidentialOthers.get(0).getValue();
 
-            allOthers.remove(0);
+            confidentialOthers.remove(0);
 
-            Others other = new Others(firstOther,allOthers);
+            Others other = new Others(firstOther,confidentialOthers);
 
             final List <Element<Others>> others = new ArrayList<>();
 
@@ -95,7 +84,6 @@ public class OthersController {
 
             //puts this into confidentialOthers
             confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, others, OTHER);
-
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

@@ -1,8 +1,15 @@
 package uk.gov.hmcts.reform.fpl.service;
 
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.Other;
 import uk.gov.hmcts.reform.fpl.model.Others;
+import uk.gov.hmcts.reform.fpl.model.common.Element;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
@@ -37,6 +44,22 @@ public class OthersService {
 
     private boolean otherExists(Others others) {
         return others != null && (others.getFirstOther() != null || others.getAdditionalOthers() != null);
+    }
+
+    public List<Element<Other>> getAllConfidentialOthers(CaseData caseData) {
+        //Gets all others from case data and returns list of confidential others first other and additional other
+        final List <Element<Other>> confidentialOthers = new ArrayList<>();
+
+        caseData.getAllOthers().forEach(element -> {
+            if (element.containsConfidentialDetails()) {
+                confidentialOthers.add(Element.<Other>builder()
+                    .id(UUID.randomUUID())
+                    .value(element)
+                    .build());
+            }
+        });
+
+        return confidentialOthers;
     }
 
 }
