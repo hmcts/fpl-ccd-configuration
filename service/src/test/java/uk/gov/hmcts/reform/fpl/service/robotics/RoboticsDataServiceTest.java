@@ -161,7 +161,7 @@ public class RoboticsDataServiceTest {
 
             assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
                 "Care order,Education supervision order,Emergency protection order,"
-                    + "Other order under part 4 of the Children Act 1989");
+                    + "Discharge of care");
         }
 
         @Test
@@ -174,7 +174,7 @@ public class RoboticsDataServiceTest {
 
             assertThat(preparedRoboticsData.getApplicationType()).isEqualTo(
                 "Care order,Supervision order,Education supervision order,Emergency protection order,"
-                    + "Other order under part 4 of the Children Act 1989");
+                    + "Discharge of care");
         }
     }
 

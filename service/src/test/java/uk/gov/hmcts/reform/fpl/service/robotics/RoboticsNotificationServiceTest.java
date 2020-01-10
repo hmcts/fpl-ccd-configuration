@@ -39,7 +39,6 @@ import static org.mockito.Mockito.verify;
 import static org.slf4j.LoggerFactory.getLogger;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.expectedRoboticsData;
 import static uk.gov.hmcts.reform.fpl.service.robotics.SampleRoboticsTestDataHelper.invalidRoboticsDataWithZeroOwningCourt;
 import static uk.gov.hmcts.reform.fpl.utils.CoreCaseDataStoreLoader.populatedCaseDetails;
@@ -113,7 +112,9 @@ public class RoboticsNotificationServiceTest {
     @Test
     void notifyRoboticsOfSubmittedCaseDataShouldLogOtherOrderTypeEmailNotificationException()
         throws IOException {
-        RoboticsData expectedRoboticsData = expectedRoboticsData(OTHER.getLabel());
+        final String otherTypeLabelValue = "Discharge of care";
+
+        RoboticsData expectedRoboticsData = expectedRoboticsData(otherTypeLabelValue);
         given(roboticsDataService.prepareRoboticsData(prepareCaseData()))
             .willReturn(expectedRoboticsData);
 

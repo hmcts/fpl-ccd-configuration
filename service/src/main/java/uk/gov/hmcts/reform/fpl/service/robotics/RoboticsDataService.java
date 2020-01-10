@@ -40,13 +40,14 @@ import static org.apache.commons.lang3.math.NumberUtils.toInt;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EDUCATION_SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.EMERGENCY_PROTECTION_ORDER;
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
 import static uk.gov.hmcts.reform.fpl.enums.OrderType.SUPERVISION_ORDER;
 import static uk.gov.hmcts.reform.fpl.model.robotics.Gender.convertStringToGender;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class RoboticsDataService {
+    private static final String OTHER_TYPE_LABEL_VALUE = "Discharge of care";
+
     private final DateFormatterService dateFormatterService;
     private final ObjectMapper objectMapper;
     private final HmctsCourtLookupConfiguration hmctsCourtLookupConfiguration;
@@ -231,7 +232,7 @@ public class RoboticsDataService {
             case EDUCATION_SUPERVISION_ORDER:
                 return EDUCATION_SUPERVISION_ORDER.getLabel();
             case OTHER:
-                return OTHER.getLabel();
+                return OTHER_TYPE_LABEL_VALUE;
         }
 
         throw new RoboticsDataException("Unable to derive an appropriate Application Type from " + orderType);
