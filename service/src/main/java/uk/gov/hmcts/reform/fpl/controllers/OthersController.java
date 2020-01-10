@@ -67,13 +67,14 @@ public class OthersController {
         final List <Element<Other>> getExistingOthers = new ArrayList<>();
 
         caseData.getAllOthers().forEach(element -> {
+            System.out.println("element is" + element);
             if (element.containsConfidentialDetails()) {
 
-                System.out.println("Confidential details contained");
-                caseData.getAllOthers().forEach(other -> getExistingOthers.add(Element.<Other>builder()
+                System.out.println("Confidential details contained" + element);
+                getExistingOthers.add(Element.<Other>builder()
                     .id(UUID.randomUUID())
-                    .value(other)
-                    .build()));
+                    .value(element)
+                    .build());
             }
         });
 
