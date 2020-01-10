@@ -879,24 +879,24 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "epoChildrenDescription",
+    "ID": "epoChildren",
     "Label": " ",
-    "FieldType": "EPOChildrenDescription",
+    "FieldType": "EPOChildren",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "requestedEOTType",
+    "ID": "epoType",
     "FieldType": "FixedRadioList",
-    "FieldTypeParameter": "RequestedEPOType",
+    "FieldTypeParameter": "EPOTypes",
     "Label": "What type of EPO are you requesting?",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "preventRemovalAddress",
+    "ID": "epoRemovalAddress",
     "FieldType": "AddressUK",
     "Label": "Provide the address the child should not be removed from",
     "SecurityClassification": "Public"
@@ -904,9 +904,9 @@
   {
     "LiveFrom": "01/01/2017",
     "CaseTypeID": "CARE_SUPERVISION_EPO",
-    "ID": "epoPhraseInclusion",
+    "ID": "epoPhrase",
     "Label": " ",
-    "FieldType": "EPOPhraseInclusion",
+    "FieldType": "EPOPhrase",
     "SecurityClassification": "Public"
   },
   {
@@ -914,7 +914,7 @@
     "CaseTypeID": "CARE_SUPERVISION_EPO",
     "ID": "epoEndDate",
     "Label": "When does the order end",
-    "FieldType": "Date",
+    "FieldType": "DateTime",
     "SecurityClassification": "Public"
   }
 ]

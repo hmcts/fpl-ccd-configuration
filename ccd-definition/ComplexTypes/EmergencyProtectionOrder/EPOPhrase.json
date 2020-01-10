@@ -1,15 +1,15 @@
 [
   {
     "LiveFrom": "01/01/2017",
-    "ID": "EPOPhraseInclusion",
-    "ListElementCode": "phraseInclusionHeading",
+    "ID": "EPOPhrase",
+    "ListElementCode": "phraseHeading",
     "FieldType": "Label",
     "ElementLabel": "## Do you want to include this phrase?",
     "SecurityClassification": "Public"
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "EPOPhraseInclusion",
+    "ID": "EPOPhrase",
     "ListElementCode": "phraseLabel",
     "FieldType": "Label",
     "ElementLabel": "Any person who can produce the child[ren] to the applicant must do so",
@@ -17,7 +17,7 @@
   },
   {
     "LiveFrom": "01/01/2017",
-    "ID": "EPOPhraseInclusion",
+    "ID": "EPOPhrase",
     "ListElementCode": "includePhrase",
     "FieldType": "YesOrNo",
     "ElementLabel": "Include phrase?",
