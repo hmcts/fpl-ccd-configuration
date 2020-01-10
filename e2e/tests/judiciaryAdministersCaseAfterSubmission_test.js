@@ -74,7 +74,7 @@ Scenario('Judiciary enters hearing details and submits', async (I, caseViewPage,
   I.seeAnswerInTab(4, 'Judge and legal advisor', 'Legal advisor\'s full name', hearingDetails[1].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
-Scenario('Judiciary creates multiple orders for the case @flag', async (I, caseViewPage, createOrderEventPage) => {
+Scenario('Judiciary creates multiple orders for the case ', async (I, caseViewPage, createOrderEventPage) => {
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);
   await orderFunctions.createOrder(I, createOrderEventPage, orders[0]);
   let orderTime = new Date();
@@ -84,7 +84,7 @@ Scenario('Judiciary creates multiple orders for the case @flag', async (I, caseV
   I.seeAnswerInTab(1, 'Order 1', 'Type of order', orders[0].type);
   I.seeAnswerInTab(2, 'Order 1', 'Order title', orders[0].title);
   I.seeAnswerInTab(4, 'Order 1', 'Order document', orders[0].document);
-  I.seeAnswerInTab(5, 'Order 1', 'Date and time of upload', dateFormat(orderTime, 'd mmmm yyyy'));
+  I.seeAnswerInTab(5, 'Order 1', 'Date and time of upload', dateFormat(orderTime, 'h:MMtt, d mmmm yyyy'));
   I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', orders[0].judgeAndLegalAdvisor.judgeTitle);
   I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', orders[0].judgeAndLegalAdvisor.judgeLastName);
   I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name',  orders[0].judgeAndLegalAdvisor.legalAdvisorName);
@@ -97,7 +97,7 @@ Scenario('Judiciary creates multiple orders for the case @flag', async (I, caseV
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeAnswerInTab(1, 'Order 2', 'Type of order', orders[1].type);
   I.seeAnswerInTab(2, 'Order 2', 'Order document', orders[1].document);
-  I.seeAnswerInTab(3, 'Order 2', 'Date and time of upload', dateFormat(orderTime, 'd mmmm yyyy'));
+  I.seeAnswerInTab(3, 'Order 2', 'Date and time of upload', dateFormat(orderTime, 'h:MMtt, d mmmm yyyy'));
   I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', orders[1].judgeAndLegalAdvisor.judgeTitle);
   I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', orders[1].judgeAndLegalAdvisor.judgeLastName);
   I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name',  orders[1].judgeAndLegalAdvisor.legalAdvisorName);
@@ -105,14 +105,14 @@ Scenario('Judiciary creates multiple orders for the case @flag', async (I, caseV
   await caseViewPage.goToNewActions(config.administrationActions.createOrder);
   await orderFunctions.createOrder(I, createOrderEventPage, orders[2]);
   orderTime = new Date();
-  const expiryDate = new Date(orderTime.setMonth(orderTime.getMonth() + parseInt(orders[2].months)));
+  const expiryDate = new Date(orderTime).setMonth(orderTime.getMonth() + parseInt(orders[2].months));
   I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
 
   caseViewPage.selectTab(caseViewPage.tabs.orders);
   I.seeAnswerInTab(1, 'Order 3', 'Type of order', orders[2].type);
   I.seeAnswerInTab(2, 'Order 3', 'Order document', orders[2].document);
-  I.seeAnswerInTab(3, 'Order 3', 'Date and time of upload', dateFormat(orderTime, 'd mmmm yyyy'));
-  I.seeAnswerInTab(4, 'Order 3', 'Order expires on', dateFormat(expiryDate, 'hh:MM, dd mmmm yyyy'));
+  I.seeAnswerInTab(3, 'Order 3', 'Date and time of upload', dateFormat(orderTime, 'h:MMtt, d mmmm yyyy'));
+  I.seeAnswerInTab(4, 'Order 3', 'Order expires on', dateFormat(expiryDate, 'h:MMtt, d mmmm yyyy'));
   I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', orders[2].judgeAndLegalAdvisor.judgeTitle);
   I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', orders[2].judgeAndLegalAdvisor.judgeLastName);
   I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name',  orders[2].judgeAndLegalAdvisor.legalAdvisorName);

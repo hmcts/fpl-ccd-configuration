@@ -91,7 +91,7 @@ public class GeneratedOrderService {
                 String date = null;
                 if (orderMonths != null) {
                     date = dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now().plusMonths(orderMonths),
-                        "hh:mma, d MMMM y");
+                        "h:mma, d MMMM y");
                 }
                 orderBuilder.expiryDate(date);
                 break;
@@ -183,7 +183,7 @@ public class GeneratedOrderService {
             getLocalAuthorityName(caseLocalAuthority),
             (numOfChildren == 1) ? "child" : "children",
             numOfMonths,
-            dateFormatterService.formatLocalDateTimeBaseUsingFormat(date, "hh:mma 'on the' dd'" + suffix + "' MMMM y"));
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(date, "h:mma 'on the' d'" + suffix + "' MMMM y"));
     }
 
     private String careOrderDetails(int numOfChildren, String caseLocalAuthority) {

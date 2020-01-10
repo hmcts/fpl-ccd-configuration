@@ -180,7 +180,7 @@ class GeneratedOrderServiceTest {
             5).getValue();
 
         String expected = dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now().plusMonths(5),
-            "hh:mma, d MMMM y");
+            "h:mma, d MMMM y");
 
         assertThat(order.getExpiryDate()).isEqualTo(expected);
     }
@@ -245,7 +245,7 @@ class GeneratedOrderServiceTest {
                 final String suffix = dateFormatterService.getDayOfMonthSuffix(date.getDayOfMonth());
                 final String formattedDateTime =
                     dateFormatterService.formatLocalDateTimeBaseUsingFormat(date.plusMonths(5),
-                        "hh:mma 'on the' dd'" + suffix + "' MMMM y");
+                        "h:mma 'on the' d'" + suffix + "' MMMM y");
                 expectedMap
                     .put("orderTitle", "Supervision order")
                     .put("childrenAct", "Section 31 and Paragraphs 1 and 2 Schedule 3 Children Act 1989")
