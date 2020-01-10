@@ -6,10 +6,10 @@ import uk.gov.hmcts.reform.fpl.exceptions.RoboticsDataException;
 import uk.gov.hmcts.reform.fpl.model.robotics.RoboticsData;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static uk.gov.hmcts.reform.fpl.enums.OrderType.OTHER;
 
 @Slf4j
 public class RoboticsDataVerificationHelper {
+    private static final String OTHER_TYPE_LABEL_VALUE = "Discharge of care";
 
     private RoboticsDataVerificationHelper() {
     }
@@ -33,7 +33,7 @@ public class RoboticsDataVerificationHelper {
     }
 
     private static void logOtherOrderTypeApplicationType(final String applicationType) {
-        if (OTHER.getLabel().equalsIgnoreCase(applicationType)) {
+        if (OTHER_TYPE_LABEL_VALUE.equalsIgnoreCase(applicationType)) {
             String errorMessage = "sending case submitted notification to Robotics with only "
                 + "Other order type selected";
 
