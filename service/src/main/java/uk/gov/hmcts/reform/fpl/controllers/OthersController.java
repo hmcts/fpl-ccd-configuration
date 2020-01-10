@@ -67,23 +67,14 @@ public class OthersController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        List<Element<Other>> confidentialOthers = othersService.getAllConfidentialOthers(caseData);
+        List<Element<Other>> confidentialOther = othersService.getAllConfidentialOther(caseData);
 
-        Other firstOther;
-        if(!confidentialOthers.isEmpty())
+        final List <Element<Others>> confidentialOthersForCaseData = othersService.prepareConfidentialOthersForCaseData(confidentialOther);
+
+        if(!confidentialOthersForCaseData.isEmpty())
         {
-            firstOther = confidentialOthers.get(0).getValue();
-
-            confidentialOthers.remove(0);
-
-            Others other = new Others(firstOther,confidentialOthers);
-
-            final List <Element<Others>> others = new ArrayList<>();
-
-            others.add(Element.<Others>builder().value(other).build());
-
             //puts this into confidentialOthers
-            confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, others, OTHER);
+            confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthersForCaseData, OTHER);
         }
 
         return AboutToStartOrSubmitCallbackResponse.builder()

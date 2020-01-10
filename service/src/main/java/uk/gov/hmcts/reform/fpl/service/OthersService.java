@@ -46,7 +46,7 @@ public class OthersService {
         return others != null && (others.getFirstOther() != null || others.getAdditionalOthers() != null);
     }
 
-    public List<Element<Other>> getAllConfidentialOthers(CaseData caseData) {
+    public List<Element<Other>> getAllConfidentialOther(CaseData caseData) {
         //Gets all others from case data and returns list of confidential others first other and additional other
         final List <Element<Other>> confidentialOthers = new ArrayList<>();
 
@@ -60,6 +60,23 @@ public class OthersService {
         });
 
         return confidentialOthers;
+    }
+
+    public List<Element<Others>> prepareConfidentialOthersForCaseData(List<Element<Other>> confidentialOther) {
+        final List <Element<Others>> confidentialOthersForCaseData = new ArrayList<>();
+        Other firstOther;
+
+        if(!confidentialOther.isEmpty()) {
+            //add the first element to first other and the rest to additional others
+            firstOther = confidentialOther.get(0).getValue();
+            confidentialOther.remove(0);
+
+            Others other = new Others(firstOther,confidentialOther);
+
+            confidentialOthersForCaseData.add(Element.<Others>builder().value(other).build());
+        }
+
+        return  confidentialOthersForCaseData;
     }
 
 }
