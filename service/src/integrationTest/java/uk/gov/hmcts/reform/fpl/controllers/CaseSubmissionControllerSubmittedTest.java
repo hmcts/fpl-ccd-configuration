@@ -54,7 +54,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             .put("fullStop", "No")
             .put("ordersAndDirections", ordersAndDirections)
             .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "Same day")
+            .put("timeFrameValue", "same day")
+            .put("urgentHearing", "Yes")
+            .put("nonUrgentHearing", "No")
+            .put("firstRespondentName", "Smith")
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
@@ -66,7 +69,10 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             .put("fullStop", "No")
             .put("ordersAndDirections", ordersAndDirections)
             .put("timeFramePresent", "Yes")
-            .put("timeFrameValue", "Same day")
+            .put("timeFrameValue", "same day")
+            .put("urgentHearing", "Yes")
+            .put("nonUrgentHearing", "No")
+            .put("firstRespondentName", "Smith")
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
@@ -100,6 +106,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             .put("ordersAndDirections", "")
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
+            .put("urgentHearing", "No")
+            .put("nonUrgentHearing", "No")
+            .put("firstRespondentName", "")
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
@@ -112,6 +121,9 @@ class CaseSubmissionControllerSubmittedTest extends AbstractControllerTest {
             .put("ordersAndDirections", "")
             .put("timeFramePresent", "No")
             .put("timeFrameValue", "")
+            .put("urgentHearing", "No")
+            .put("nonUrgentHearing", "No")
+            .put("firstRespondentName", "")
             .put("reference", "12345")
             .put("caseUrl", "http://fake-url/case/" + JURISDICTION + "/" + CASE_TYPE + "/12345")
             .build();
