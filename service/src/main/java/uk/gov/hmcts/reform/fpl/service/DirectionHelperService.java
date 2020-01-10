@@ -220,8 +220,6 @@ public class DirectionHelperService {
 
         CaseData data = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        final boolean direction = true;
-
         return directions.stream()
             .filter(element -> {
                     List<Element<UUID>> ids = new ArrayList<>();
@@ -229,7 +227,7 @@ public class DirectionHelperService {
                         defaultIfNull(data.getRepresentatives(), emptyList());
 
                     if (representatives.isEmpty()) {
-                        return direction;
+                        return true;
                     }
 
                     // if assigned to specific person -> find representative ids
@@ -245,7 +243,7 @@ public class DirectionHelperService {
                             if (assigneeValue < respondents.size()) {
                                 ids = respondents.get(assigneeValue).getValue().getRepresentedBy();
                             } else {
-                                return direction;
+                                return true;
                             }
                         } else if (element.getValue().getOtherPartiesAssignee() != null) {
                             int assigneeValue = element.getValue().getOtherPartiesAssignee().ordinal();
@@ -257,27 +255,32 @@ public class DirectionHelperService {
                             if (assigneeValue < listOthers.size()) {
                                 ids = listOthers.get(assigneeValue).getRepresentedBy();
                             } else {
-                                return direction;
+                                return true;
                             }
                         }
                     } else {
-                        return direction;
+                        return true;
                     }
 
                     List<Element<UUID>> finalIds = ids;
 
                     if (ids.isEmpty()) {
-                        return direction;
+                        return true;
                     }
 
-                    // if representative left in list, where serving pref = DIGITAL_SERVICE -> keep direction.
-                    // could be improved with a call to idam? return directions that belong to representative??
-                    return representatives.stream()
-                        .filter(x -> unwrapElements(finalIds).contains(UUID.fromString(x.getValue().getIdamId())))
-                        .anyMatch(x -> x.getValue().getServingPreferences() != DIGITAL_SERVICE);
+                    return isDirectionForUnrepresentedParty(representatives, finalIds);
                 }
             )
             .collect(toList());
+    }
+
+    // if representative left in list, where serving pref = DIGITAL_SERVICE -> keep direction.
+    // could be improved with a call to idam? return directions that belong to representative??
+    private boolean isDirectionForUnrepresentedParty(List<Element<Representative>> representatives,
+                                                     List<Element<UUID>> finalIds) {
+        return representatives.stream()
+            .filter(x -> unwrapElements(finalIds).contains(UUID.fromString(x.getValue().getIdamId())))
+            .anyMatch(x -> x.getValue().getServingPreferences() != DIGITAL_SERVICE);
     }
 
     private boolean directionIsValidForFiltering(Element<Direction> element) {
