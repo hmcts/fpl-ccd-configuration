@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.fpl.service.CaseDataExtractionService;
 import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
 import uk.gov.hmcts.reform.fpl.service.OrdersLookupService;
+import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
 import uk.gov.hmcts.reform.fpl.service.UploadDocumentService;
 import uk.gov.hmcts.reform.fpl.service.ccd.CoreCaseDataService;
 
@@ -52,6 +53,7 @@ public class DraftOrdersController {
     private final OrdersLookupService ordersLookupService;
     private final CoreCaseDataService coreCaseDataService;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
 
     @Autowired
     public DraftOrdersController(ObjectMapper mapper,
@@ -61,7 +63,8 @@ public class DraftOrdersController {
                                  DirectionHelperService directionHelperService,
                                  OrdersLookupService ordersLookupService,
                                  CoreCaseDataService coreCaseDataService,
-                                 ApplicationEventPublisher applicationEventPublisher) {
+                                 ApplicationEventPublisher applicationEventPublisher,
+                                 PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService) {
         this.mapper = mapper;
         this.docmosisService = docmosisService;
         this.uploadDocumentService = uploadDocumentService;
@@ -70,6 +73,7 @@ public class DraftOrdersController {
         this.ordersLookupService = ordersLookupService;
         this.coreCaseDataService = coreCaseDataService;
         this.applicationEventPublisher = applicationEventPublisher;
+        this.prepareDirectionsForDataStoreService = prepareDirectionsForDataStoreService;
     }
 
     @PostMapping("/about-to-start")
@@ -113,7 +117,7 @@ public class DraftOrdersController {
                 .build())
             .build();
 
-        directionHelperService.persistHiddenDirectionValues(
+        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
         Document document = getDocument(
@@ -153,7 +157,7 @@ public class DraftOrdersController {
                 .build())
             .build();
 
-        directionHelperService.persistHiddenDirectionValues(
+        prepareDirectionsForDataStoreService.persistHiddenDirectionValues(
             getConfigDirectionsWithHiddenValues(), updated.getStandardDirectionOrder().getDirections());
 
         Document document = getDocument(

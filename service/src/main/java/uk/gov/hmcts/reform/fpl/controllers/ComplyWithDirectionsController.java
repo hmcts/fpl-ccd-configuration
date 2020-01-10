@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.fpl.model.Direction;
 import uk.gov.hmcts.reform.fpl.model.DirectionResponse;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
+import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
+import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForUsersService;
 
 import java.util.List;
 import java.util.Map;
@@ -28,11 +30,18 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 public class ComplyWithDirectionsController {
     private final ObjectMapper mapper;
     private final DirectionHelperService directionHelperService;
+    private final PrepareDirectionsForUsersService prepareDirectionsForUsersService;
+    private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
 
     @Autowired
-    public ComplyWithDirectionsController(ObjectMapper mapper, DirectionHelperService directionHelperService) {
+    public ComplyWithDirectionsController(ObjectMapper mapper,
+                                          DirectionHelperService directionHelperService,
+                                          PrepareDirectionsForUsersService prepareDirectionsForUsersService,
+                                          PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService) {
         this.mapper = mapper;
         this.directionHelperService = directionHelperService;
+        this.prepareDirectionsForUsersService = prepareDirectionsForUsersService;
+        this.prepareDirectionsForDataStoreService = prepareDirectionsForDataStoreService;
     }
 
     @PostMapping("/about-to-start")
@@ -51,7 +60,8 @@ public class ComplyWithDirectionsController {
         sortedDirections.forEach((assignee, directions) -> {
             if (!assignee.equals(ALL_PARTIES)) {
                 directions.addAll(sortedDirections.get(ALL_PARTIES));
-                directionHelperService.addAssigneeDirectionKeyValuePairsToCaseData(assignee, directions, caseDetails);
+                prepareDirectionsForUsersService.addAssigneeDirectionKeyValuePairsToCaseData(
+                    assignee, directions, caseDetails);
             }
         });
 
@@ -68,10 +78,10 @@ public class ComplyWithDirectionsController {
         Map<DirectionAssignee, List<Element<Direction>>> directionsMap =
             directionHelperService.collectDirectionsToMap(caseData);
 
-        List<DirectionResponse> responses = directionHelperService.getResponses(directionsMap);
+        List<DirectionResponse> responses = prepareDirectionsForDataStoreService.getResponses(directionsMap);
         List<Element<Direction>> directionsToComplyWith = directionHelperService.getDirectionsToComplyWith(caseData);
 
-        directionHelperService.addResponsesToDirections(responses, directionsToComplyWith);
+        prepareDirectionsForDataStoreService.addResponsesToDirections(responses, directionsToComplyWith);
 
         //TODO: new service for sdo vs cmo in placing directions
         if (caseData.getServedCaseManagementOrders().isEmpty()) {

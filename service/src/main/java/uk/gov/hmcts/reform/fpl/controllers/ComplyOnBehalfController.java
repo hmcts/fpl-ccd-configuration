@@ -19,6 +19,8 @@ import uk.gov.hmcts.reform.fpl.model.Others;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DirectionHelperService;
 import uk.gov.hmcts.reform.fpl.service.OthersService;
+import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForDataStoreService;
+import uk.gov.hmcts.reform.fpl.service.PrepareDirectionsForUsersService;
 import uk.gov.hmcts.reform.fpl.service.RespondentService;
 
 import java.util.List;
@@ -33,16 +35,22 @@ import static net.logstash.logback.encoder.org.apache.commons.lang3.ObjectUtils.
 public class ComplyOnBehalfController {
     private final ObjectMapper mapper;
     private final DirectionHelperService directionHelperService;
+    private final PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService;
+    private final PrepareDirectionsForUsersService prepareDirectionsForUsersService;
     private final RespondentService respondentService;
     private final OthersService othersService;
 
     @Autowired
     public ComplyOnBehalfController(ObjectMapper mapper,
                                     DirectionHelperService directionHelperService,
+                                    PrepareDirectionsForDataStoreService prepareDirectionsForDataStoreService,
+                                    PrepareDirectionsForUsersService prepareDirectionsForUsersService,
                                     RespondentService respondentService,
                                     OthersService othersService) {
         this.mapper = mapper;
         this.directionHelperService = directionHelperService;
+        this.prepareDirectionsForDataStoreService = prepareDirectionsForDataStoreService;
+        this.prepareDirectionsForUsersService = prepareDirectionsForUsersService;
         this.respondentService = respondentService;
         this.othersService = othersService;
     }
@@ -62,7 +70,7 @@ public class ComplyOnBehalfController {
 
         directionHelperService.addEmptyDirectionsForAssigneeNotInMap(sortedDirections);
 
-        directionHelperService.addDirectionsToCaseDetails(
+        prepareDirectionsForUsersService.addDirectionsToCaseDetails(
             caseDetails, sortedDirections, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()));
 
         caseDetails.getData().put("respondents_label", getRespondentsLabel(caseData));
@@ -80,7 +88,7 @@ public class ComplyOnBehalfController {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        directionHelperService.addComplyOnBehalfResponsesToDirectionsInOrder(
+        prepareDirectionsForDataStoreService.addComplyOnBehalfResponsesToDirectionsInOrder(
             caseData, ComplyOnBehalfEvent.valueOf(callbackrequest.getEventId()), authorisation);
 
         //TODO: new service for sdo vs cmo in placing directions
