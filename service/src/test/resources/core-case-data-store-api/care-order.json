@@ -3,6 +3,7 @@
     "case_data": {
       "orderTypeAndDocument": {
         "type": "CARE_ORDER",
+        "subtype": "FINAL",
         "document": {
           "document_url": "some url",
           "document_binary_url": "some binary url",

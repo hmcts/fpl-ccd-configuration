@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.ccd.client.model.AboutToStartOrSubmitCallbackResponse
 import uk.gov.hmcts.reform.ccd.client.model.CallbackRequest;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.document.domain.Document;
+import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
@@ -45,6 +46,8 @@ import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.CASE_TYPE;
 import static uk.gov.hmcts.reform.fpl.CaseDefinitionConstants.JURISDICTION;
 import static uk.gov.hmcts.reform.fpl.NotifyTemplates.ORDER_NOTIFICATION_TEMPLATE;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.FINAL;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.JudgeOrMagistrateTitle.HER_HONOUR_JUDGE;
@@ -250,6 +253,19 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
             verify(uploadDocumentService, never()).uploadPDF(any(), any(), any(), any());
         }
 
+        @Test
+        void shouldGenerateOrderDocumentWhenOrderTypeIsCareOrderWithInterimSubtype() {
+            final AboutToStartOrSubmitCallbackResponse callbackResponse = postMidEvent(
+                generateCareOrderCaseDetailsWithInterimSubtype());
+
+            verify(docmosisDocumentGeneratorService, times(1)).generateDocmosisDocument(any(), any());
+            verify(uploadDocumentService, times(1)).uploadPDF(userId, userAuthToken, pdf, "interim_care_order.pdf");
+
+            final CaseData caseData = mapper.convertValue(callbackResponse.getData(), CaseData.class);
+
+            assertThat(caseData.getOrderTypeAndDocument().getDocument()).isEqualTo(expectedDocument());
+        }
+
         @AfterEach
         void resetInvocations() {
             reset(docmosisDocumentGeneratorService);
@@ -269,7 +285,7 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         private CaseDetails generateCareOrderCaseDetailsWithFurtherDirections() {
-            final CaseData.CaseDataBuilder dataBuilder = generateCommonCareOrderDetails();
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonCareOrderDetails(FINAL);
 
             dataBuilder.orderFurtherDirections(FurtherDirections.builder()
                 .directionsNeeded("Yes")
@@ -282,17 +298,31 @@ class GeneratedOrderControllerTest extends AbstractControllerTest {
         }
 
         private CaseDetails generateCareOrderCaseDetailsWithoutFurtherDirections() {
-            final CaseData.CaseDataBuilder dataBuilder = generateCommonCareOrderDetails();
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonCareOrderDetails(FINAL);
 
             return CaseDetails.builder()
                 .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
                 .build();
         }
 
-        private CaseData.CaseDataBuilder generateCommonCareOrderDetails() {
+        private CaseDetails generateCareOrderCaseDetailsWithInterimSubtype() {
+            final CaseData.CaseDataBuilder dataBuilder = generateCommonCareOrderDetails(INTERIM);
+
+            dataBuilder.orderFurtherDirections(FurtherDirections.builder()
+                .directionsNeeded("Yes")
+                .directions("Some directions")
+                .build());
+
+            return CaseDetails.builder()
+                .data(mapper.convertValue(dataBuilder.build(), new TypeReference<>() {}))
+                .build();
+        }
+
+        private CaseData.CaseDataBuilder generateCommonCareOrderDetails(GeneratedOrderSubtype subtype) {
             final CaseData.CaseDataBuilder builder = CaseData.builder()
                 .orderTypeAndDocument(OrderTypeAndDocument.builder()
                     .type(CARE_ORDER)
+                    .subtype(subtype)
                     .build());
 
             generateDefaultValues(builder);

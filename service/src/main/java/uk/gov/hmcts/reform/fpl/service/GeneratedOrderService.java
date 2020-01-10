@@ -91,6 +91,7 @@ public class GeneratedOrderService {
             .id(randomUUID())
             .value(orderBuilder
                 .type(typeAndDocument.getType())
+                .subtypeAndType(getFullTypeAsString(typeAndDocument))
                 .document(typeAndDocument.getDocument())
                 .judgeAndLegalAdvisor(judgeAndLegalAdvisor)
                 .date(dateFormatterService.formatLocalDateTimeBaseUsingFormat(time.now(),
@@ -187,6 +188,14 @@ public class GeneratedOrderService {
                 "dateOfBirth", child.getDateOfBirth() != null ? dateFormatterService
                     .formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG) : ""))
             .collect(toList());
+    }
+
+    private String getFullTypeAsString(OrderTypeAndDocument typeAndDocument) {
+        if (typeAndDocument.getType() != BLANK_ORDER && typeAndDocument.getSubtype() == INTERIM) {
+            return typeAndDocument.getSubtype().getLabel() + " " + typeAndDocument.getType().getLabel().toLowerCase();
+        } else {
+            return typeAndDocument.getType().getLabel();
+        }
     }
 
     private boolean hasInterimSubtype(OrderTypeAndDocument typeAndDoc) {
