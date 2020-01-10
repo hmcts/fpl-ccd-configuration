@@ -5,9 +5,9 @@ import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.events.robotics.ResendFailedRoboticNotificationEvent;
@@ -31,7 +31,8 @@ public class RoboticsController {
     private final RequestData requestData;
 
     @PostMapping("/sendRPAEmailByID/{caseId}")
-    public void resendCaseDataNotification(@PathVariable ("caseId") String caseId) {
+    @Secured("caseworker-publiclaw-solicitor")
+    public void resendCaseDataNotification(@PathVariable("caseId") String caseId) {
         CoreCaseApiParameter caseApiParameter = CoreCaseApiParameter.builder()
             .caseId(getLong(caseId))
             .caseType(CASE_TYPE_ID)
