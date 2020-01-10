@@ -11,5 +11,5 @@ public class CoreCaseApiSearchParameter {
     private final String event;
     private final String jurisdiction;
     private final String caseType;
-    private final Long caseId;
+    private final String caseId;
 }

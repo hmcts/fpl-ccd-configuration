@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.auth.checker.core.service.Service;
 import uk.gov.hmcts.reform.auth.checker.core.user.User;
 import uk.gov.hmcts.reform.auth.checker.spring.useronly.AuthCheckerUserOnlyFilter;
 
+import static org.springframework.http.HttpMethod.POST;
+
 @Configuration
 public class SecurityConfiguration {
     @Configuration
@@ -22,18 +24,16 @@ public class SecurityConfiguration {
 
 
         public SecurityConfigurationWithUserTokenValidator(RequestAuthorizer<User> userRequestAuthorizer,
-                                                           RequestAuthorizer<Service> serviceRequestAuthorizer,
                                                            AuthenticationManager authenticationManager) {
-            authCheckerServiceAndUserFilter = new AuthCheckerUserOnlyFilter<User>(userRequestAuthorizer);
+            authCheckerServiceAndUserFilter = new AuthCheckerUserOnlyFilter<>(userRequestAuthorizer);
             authCheckerServiceAndUserFilter.setAuthenticationManager(authenticationManager);
         }
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
-
             http.requestMatchers()
-                .antMatchers(HttpMethod.POST, "/sendRPAEmailByID/*")
-                .antMatchers(HttpMethod.POST, "/sendRPAEmailByID/**")
+                .antMatchers(POST, "/sendRPAEmailByID/*")
+                .antMatchers(POST, "/sendRPAEmailByID/**")
                 .and()
                 .addFilter(authCheckerServiceAndUserFilter)
                 .csrf().disable()
@@ -48,17 +48,16 @@ public class SecurityConfiguration {
         private AuthCheckerUserOnlyFilter<User> authCheckerServiceAndUserFilter;
 
         public DefaultSecurityConfiguration(RequestAuthorizer<User> userRequestAuthorizer,
-                                            RequestAuthorizer<Service> serviceRequestAuthorizer,
                                             AuthenticationManager authenticationManager) {
-            authCheckerServiceAndUserFilter = new AuthCheckerUserOnlyFilter<User>(userRequestAuthorizer);
+            authCheckerServiceAndUserFilter = new AuthCheckerUserOnlyFilter<>(userRequestAuthorizer);
             authCheckerServiceAndUserFilter.setAuthenticationManager(authenticationManager);
         }
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.requestMatchers()
-                .antMatchers(HttpMethod.POST, "/sendRPAEmailByID/*")
-                .antMatchers(HttpMethod.POST, "/sendRPAEmailByID/**")
+                .antMatchers(POST, "/sendRPAEmailByID/*")
+                .antMatchers(POST, "/sendRPAEmailByID/**")
                 .and()
                 .addFilter(authCheckerServiceAndUserFilter)
                 .csrf().disable()

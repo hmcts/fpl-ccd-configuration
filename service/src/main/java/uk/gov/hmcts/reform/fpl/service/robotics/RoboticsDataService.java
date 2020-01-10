@@ -199,7 +199,7 @@ public class RoboticsDataService {
     }
 
     private String deriveApplicationType(final Orders orders) {
-        if (isEmpty(orders) && isEmpty(orders.getOrderType())) {
+        if (isEmpty(orders) || isEmpty(orders.getOrderType())) {
             throw new RoboticsDataException("No order type(s) to derive Application Type from.");
         }
 

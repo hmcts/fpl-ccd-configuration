@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
@@ -14,10 +13,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.servlet.http.HttpServletRequest;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -27,9 +22,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.servlet.http.HttpServletRequest;
+
+@Slf4j
 @Configuration
 @ConfigurationProperties(prefix = "security")
-@Slf4j
 public class AuthCheckerConfiguration {
 
     List<String> authorisedServices;
@@ -49,7 +49,6 @@ public class AuthCheckerConfiguration {
 
     @Bean
     public Function<HttpServletRequest, Collection<String>> authorizedServicesExtractor() {
-        //log.info(String.format("Configured authorised services: %s", String.join(", ", authorisedServices)));
         return any -> ImmutableSet.copyOf(authorisedServices);
     }
 
@@ -93,7 +92,6 @@ public class AuthCheckerConfiguration {
         HttpsURLConnection.setDefaultHostnameVerifier(allowAllHostnameVerifier);
         HttpsURLConnection.setDefaultSSLSocketFactory(sslContextWithoutValidation.getSocketFactory());
 
-        CloseableHttpClient client = httpClientBuilder.build();
-        return client;
+        return httpClientBuilder.build();
     }
 }
