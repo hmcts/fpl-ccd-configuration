@@ -26,6 +26,7 @@ import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 import static org.apache.commons.lang3.StringUtils.defaultIfBlank;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderSubtype.INTERIM;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.CARE_ORDER;
 
@@ -111,12 +112,20 @@ public class GeneratedOrderService {
                     .put("orderDetails", caseData.getOrder().getDetails());
                 break;
             case CARE_ORDER:
+                if (caseData.getOrderTypeAndDocument().getSubtype() == INTERIM) {
+                    orderTemplateBuilder
+                        .put("orderTitle", "Interim care order")
+                        .put("childrenAct", "Section 38 Children Act 1989");
+
+                } else {
+                    orderTemplateBuilder
+                        .put("orderTitle", "Care order")
+                        .put("childrenAct", "Section 31 Children Act 1989");
+                }
                 orderTemplateBuilder
                     .put("orderType", CARE_ORDER)
-                    .put("orderTitle", "Care order")
-                    .put("childrenAct", "Section 31 Children Act 1989")
                     .put("orderDetails", careOrderDetails(getChildrenDetails(caseData).size(),
-                        caseData.getCaseLocalAuthority()));
+                        caseData.getCaseLocalAuthority(), caseData.getOrderTypeAndDocument()));
                 break;
             default:
         }
@@ -135,8 +144,14 @@ public class GeneratedOrderService {
         return orderTemplateBuilder.build();
     }
 
-    public String generateOrderDocumentFileName(String type) {
-        return type.toLowerCase().replaceAll("[()]", "").replaceAll("[ ]", "_") + ".pdf";
+    public String generateOrderDocumentFileName(OrderTypeAndDocument typeAndDoc) {
+        String type = typeAndDoc.getType().getLabel().toLowerCase().replaceAll("[()]", "").replaceAll("[ ]",
+            "_");
+        String subtype = "";
+        if (hasInterimSubtype(typeAndDoc)) {
+            subtype = typeAndDoc.getSubtype().getLabel().toLowerCase() + "_";
+        }
+        return subtype + type + ".pdf";
     }
 
     public String getMostRecentUploadedOrderDocumentUrl(final List<Element<GeneratedOrder>> orders) {
@@ -156,10 +171,10 @@ public class GeneratedOrderService {
         return localAuthorityNameLookupConfiguration.getLocalAuthorityName(caseLocalAuthority);
     }
 
-    private String careOrderDetails(int numOfChildren, String caseLocalAuthority) {
-        String childOrChildren = (numOfChildren == 1 ? "child is " : "children are ");
-        return "It is ordered that the " + childOrChildren + "placed in the care of " + getLocalAuthorityName(
-            caseLocalAuthority) + ".";
+    private String careOrderDetails(int numOfChildren, String caseLocalAuthority, OrderTypeAndDocument typeAndDoc) {
+        return String.format("It is ordered that the %s placed in the care of %s%s",
+            (numOfChildren == 1) ? "child is" : "children are", getLocalAuthorityName(caseLocalAuthority),
+            hasInterimSubtype(typeAndDoc) ? " until the end of the proceedings." : ".");
     }
 
     private List<Map<String, String>> getChildrenDetails(CaseData caseData) {
@@ -172,5 +187,9 @@ public class GeneratedOrderService {
                 "dateOfBirth", child.getDateOfBirth() != null ? dateFormatterService
                     .formatLocalDateToString(child.getDateOfBirth(), FormatStyle.LONG) : ""))
             .collect(toList());
+    }
+
+    private boolean hasInterimSubtype(OrderTypeAndDocument typeAndDoc) {
+        return typeAndDoc.getType() != BLANK_ORDER && typeAndDoc.getSubtype() != null && typeAndDoc.getSubtype() == INTERIM;
     }
 }

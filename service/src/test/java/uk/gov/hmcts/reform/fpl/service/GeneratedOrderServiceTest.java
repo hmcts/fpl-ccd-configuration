@@ -6,6 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.document.domain.Document;
 import uk.gov.hmcts.reform.fpl.config.HmctsCourtLookupConfiguration;
@@ -27,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
@@ -169,24 +173,11 @@ class GeneratedOrderServiceTest {
             .build());
     }
 
-    @Test
-    void shouldGenerateCorrectFileNameWhenGivenC21OrderType() {
-        OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
-            .type(BLANK_ORDER)
-            .document(DocumentReference.builder().build()).build();
-
-        assertThat(service.generateOrderDocumentFileName(typeAndDocument.getType().getLabel())).isEqualTo(
-            formatTypeToFileName(BLANK_ORDER.getLabel()));
-    }
-
-    @Test
-    void shouldGenerateCorrectFileNameWhenGivenCareOrderType() {
-        OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
-            .type(CARE_ORDER)
-            .document(DocumentReference.builder().build()).build();
-
-        assertThat(service.generateOrderDocumentFileName(typeAndDocument.getType().getLabel())).isEqualTo(
-            formatTypeToFileName(CARE_ORDER.getLabel()));
+    @ParameterizedTest
+    @MethodSource(value = "fileNameSource")
+    void shouldGenerateCorrectFileNameGivenOrderType(OrderTypeAndDocument typeAndDoc, String expected) {
+        final String fileName = service.generateOrderDocumentFileName(typeAndDoc);
+        assertThat(fileName).isEqualTo(expected);
     }
 
     @Nested
@@ -333,7 +324,10 @@ class GeneratedOrderServiceTest {
         return caseDataBuilder.build();
     }
 
-    private String formatTypeToFileName(String type) {
-        return type.toLowerCase().replaceAll("[()]", "").replaceAll("[ ]", "_") + ".pdf";
+    private static Stream<Arguments> fileNameSource() {
+        return Stream.of(
+            Arguments.of(OrderTypeAndDocument.builder().type(BLANK_ORDER).build(), "blank_order_c21.pdf"),
+            Arguments.of(OrderTypeAndDocument.builder().type(CARE_ORDER).build(), "care_order.pdf")
+        );
     }
 }
