@@ -96,10 +96,12 @@ public class OthersController {
             .build());
 
         Others other = new Others(firstOther,additionalOthers);
-        //Others[] others;
+
+        Element.<Others>builder().value(other);
 
         final List <Element<Others>> others = new ArrayList<>();
 
+        others.add(Element.<Others>builder().value(other).build());
 
         caseDetails.getData().put("confidentialOthers",others);
 
