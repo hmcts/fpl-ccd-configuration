@@ -65,11 +65,13 @@ public class GeneratedOrderService {
      * @param order                this value will contain fixed details and document values as well as customisable
      *                             values.
      * @param judgeAndLegalAdvisor the judge and legal advisor for the order.
+     * @param orderMonths          the number of months the supervision order is valid
      * @return Element containing randomUUID and a fully populated order.
      */
     public Element<GeneratedOrder> buildCompleteOrder(OrderTypeAndDocument typeAndDocument,
                                                       GeneratedOrder order,
-                                                      JudgeAndLegalAdvisor judgeAndLegalAdvisor) {
+                                                      JudgeAndLegalAdvisor judgeAndLegalAdvisor,
+                                                      Integer orderMonths) {
         GeneratedOrder generatedOrder = defaultIfNull(order, GeneratedOrder.builder().build());
         GeneratedOrder.GeneratedOrderBuilder orderBuilder = GeneratedOrder.builder();
 
@@ -78,9 +80,15 @@ public class GeneratedOrderService {
             case BLANK_ORDER:
                 orderBuilder.title(defaultIfBlank(generatedOrder.getTitle(), "Order"));
                 orderBuilder.details(generatedOrder.getDetails());
+                orderBuilder.months(null);
                 break;
             case CARE_ORDER:
                 orderBuilder.title(null);
+                orderBuilder.months(null);
+                break;
+            case SUPERVISION_ORDER:
+                orderBuilder.title(null);
+                orderBuilder.months(orderMonths);
                 break;
             default:
         }

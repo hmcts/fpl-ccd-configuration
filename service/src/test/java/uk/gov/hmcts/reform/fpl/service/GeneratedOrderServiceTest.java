@@ -5,7 +5,9 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -28,6 +30,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.FormatStyle;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
@@ -77,7 +80,7 @@ class GeneratedOrderServiceTest {
                 .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
-            order, JudgeAndLegalAdvisor.builder().build());
+            order, JudgeAndLegalAdvisor.builder().build(), null);
 
         assertCommonC21Fields(returnedElement.getValue());
         assertThat(returnedElement.getValue().getTitle()).isEqualTo("Order");
@@ -95,7 +98,7 @@ class GeneratedOrderServiceTest {
                 .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
-            order, JudgeAndLegalAdvisor.builder().build());
+            order, JudgeAndLegalAdvisor.builder().build(), null);
 
         assertCommonC21Fields(returnedElement.getValue());
         assertThat(returnedElement.getValue().getTitle()).isEqualTo("Order");
@@ -113,7 +116,7 @@ class GeneratedOrderServiceTest {
                 .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
-            order, JudgeAndLegalAdvisor.builder().build());
+            order, JudgeAndLegalAdvisor.builder().build(), null);
 
         assertCommonC21Fields(returnedElement.getValue());
         assertThat(returnedElement.getValue().getTitle()).isEqualTo("Order");
@@ -131,7 +134,7 @@ class GeneratedOrderServiceTest {
                 .type(BLANK_ORDER)
                 .document(DocumentReference.builder().build())
                 .build(),
-            order, JudgeAndLegalAdvisor.builder().build());
+            order, JudgeAndLegalAdvisor.builder().build(), null);
 
         assertCommonC21Fields(returnedElement.getValue());
         assertThat(returnedElement.getValue().getTitle()).isEqualTo("Example Title");
@@ -147,7 +150,7 @@ class GeneratedOrderServiceTest {
                 .judgeTitle(HER_HONOUR_JUDGE)
                 .judgeLastName("Judy")
                 .legalAdvisorName("Peter Parker")
-                .build());
+                .build(), null);
 
         assertThat(returnedElement.getValue().getDocument()).isEqualTo(DocumentReference.builder().build());
         assertThat(returnedElement.getValue().getDate()).isNotNull();
@@ -159,23 +162,22 @@ class GeneratedOrderServiceTest {
     }
 
     @Test
-    void shouldGenerateCorrectFileNameWhenGivenC21OrderType() {
-        OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
-            .type(BLANK_ORDER)
-            .document(DocumentReference.builder().build()).build();
+    void shouldReturnExpectedOrderWhenGivenNumberOfMonthsOnSupervisionOrder() {
+        GeneratedOrder order = service.buildCompleteOrder(
+            OrderTypeAndDocument.builder()
+                .type(SUPERVISION_ORDER)
+                .build(),
+            GeneratedOrder.builder().build(), JudgeAndLegalAdvisor.builder().build(),
+            5).getValue();
 
-        assertThat(service.generateOrderDocumentFileName(typeAndDocument.getType().getLabel())).isEqualTo(
-            formatTypeToFileName(BLANK_ORDER.getLabel()));
+        assertThat(order.getMonths()).isEqualTo(5);
     }
 
-    @Test
-    void shouldGenerateCorrectFileNameWhenGivenCareOrderType() {
-        OrderTypeAndDocument typeAndDocument = OrderTypeAndDocument.builder()
-            .type(CARE_ORDER)
-            .document(DocumentReference.builder().build()).build();
-
-        assertThat(service.generateOrderDocumentFileName(typeAndDocument.getType().getLabel())).isEqualTo(
-            formatTypeToFileName(CARE_ORDER.getLabel()));
+    @ParameterizedTest
+    @MethodSource(value = "fileNameSource")
+    void shouldGenerateCorrectFileNameGivenOrderType(OrderTypeAndDocument typeAndDoc, String expected) {
+        final String fileName = service.generateOrderDocumentFileName(typeAndDoc.getType().getLabel());
+        assertThat(fileName).isEqualTo(expected);
     }
 
     @ParameterizedTest
@@ -322,7 +324,11 @@ class GeneratedOrderServiceTest {
         return caseDataBuilder.build();
     }
 
-    private String formatTypeToFileName(String type) {
-        return type.toLowerCase().replaceAll("[()]", "").replaceAll("[ ]", "_") + ".pdf";
+    private static Stream<Arguments> fileNameSource() {
+        return Stream.of(
+            Arguments.of(OrderTypeAndDocument.builder().type(BLANK_ORDER).build(), "blank_order_c21.pdf"),
+            Arguments.of(OrderTypeAndDocument.builder().type(CARE_ORDER).build(), "care_order.pdf"),
+            Arguments.of(OrderTypeAndDocument.builder().type(SUPERVISION_ORDER).build(), "supervision_order.pdf")
+        );
     }
 }
