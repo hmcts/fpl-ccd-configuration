@@ -63,20 +63,43 @@ public class OthersController {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
 
-        /*List<Element<Child>> confidentialOthers =
-            confidentialDetailsService.addPartyMarkedConfidentialToList(caseData.getAllChildren());
+//        //GET ALL OTHERS
+//        final List <Element<Other>> getExistingOthers = new ArrayList<>();
+//
+//        caseData.getAllOthers().forEach(element -> {
+//            if (element.containsConfidentialDetails()) {
+//
+//                System.out.println("Confidential details contained");
+//                caseData.getAllOthers().forEach(other -> getExistingOthers.add(Element.<Other>builder()
+//                    .id(UUID.randomUUID())
+//                    .value(other)
+//                    .build()));
+//            }
+//        });
+//
+//
+//
+//
+//
+//        List<Element<Other>> confidentialOthers =
+//            confidentialDetailsService.addPartyMarkedConfidentialToList(getExistingOthers);
+//
+//        confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthers, OTHER);
+//
+//        caseDetails.getData().put("others", childrenService.modifyHiddenValues(caseData.getAllChildren()));
 
-        confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthers, OTHER);
-
-        caseDetails.getData().put("others", childrenService.modifyHiddenValues(caseData.getAllChildren()));*/
-
-        Other firstOther = Other.builder().build();
+        Other firstOther = Other.builder().name("Test").build();
         final List <Element<Other>> additionalOthers = new ArrayList<>();
         additionalOthers.add(Element.<Other>builder()
             .id(UUID.randomUUID())
             .value(firstOther)
             .build());
-        Others[] others = new Others[0];
+
+        Others other = new Others(firstOther,additionalOthers);
+        //Others[] others;
+
+        final List <Element<Others>> others = new ArrayList<>();
+
 
 
 

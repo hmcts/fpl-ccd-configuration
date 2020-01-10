@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
+import uk.gov.hmcts.reform.fpl.model.interfaces.ConfidentialParty;
 import uk.gov.hmcts.reform.fpl.model.interfaces.Representable;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Builder
 @AllArgsConstructor
 @EqualsAndHashCode
-public class Other implements Representable {
+public class Other implements Representable, ConfidentialParty {
     @SuppressWarnings("membername")
     private final String DOB;
     private final String name;
