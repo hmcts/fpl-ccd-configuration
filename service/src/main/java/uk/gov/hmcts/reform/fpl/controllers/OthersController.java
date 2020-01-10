@@ -98,7 +98,8 @@ public class OthersController {
         Others other = new Others(firstOther,additionalOthers);
         //Others[] others;
 
-        final List <Other> others = new ArrayList<>();
+        final List <Others> others = new ArrayList<>();
+
 
 
 
