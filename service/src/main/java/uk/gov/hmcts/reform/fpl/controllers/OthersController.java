@@ -80,17 +80,22 @@ public class OthersController {
 
         //caseDetails.getData().put("others", childrenService.modifyHiddenValues(caseData.getAllChildren()));
 
-        Other firstOther = allOthers.get(0).getValue();
+        Other firstOther;
+        if(!allOthers.isEmpty())
+        {
+            firstOther = allOthers.get(0).getValue();
 
-        allOthers.remove(0);
+            allOthers.remove(0);
 
-        Others other = new Others(firstOther,allOthers);
+            Others other = new Others(firstOther,allOthers);
 
-        final List <Element<Others>> others = new ArrayList<>();
+            final List <Element<Others>> others = new ArrayList<>();
 
-        others.add(Element.<Others>builder().value(other).build());
+            others.add(Element.<Others>builder().value(other).build());
 
-        caseDetails.getData().put("confidentialOthers",others);
+            caseDetails.getData().put("confidentialOthers",others);
+
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
