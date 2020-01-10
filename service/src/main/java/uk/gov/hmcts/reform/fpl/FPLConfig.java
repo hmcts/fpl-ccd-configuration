@@ -22,56 +22,68 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
     public void configure() {
         caseType("CARE_SUPERVISION_EPO");
 
-        explicitState("hearingBookingDetails", JUDICIARY, "CRU");
-
-        buildOpen();
+        buildOpenEvents();
         buildSubmittedEvents();
-        buildPrepareForHearing();
+        buildPrepareForHearingEvents();
         buildGatekeepingEvents();
-        buildTransitions();
-
-        event("internal-changeState:Gatekeeping->PREPARE_FOR_HEARING")
-                .forStateTransition(Gatekeeping, PREPARE_FOR_HEARING)
-                .name("-")
-                .explicitGrants()
-                .grant("C", SYSTEM_UPDATE);
-        caseField("dateAndTimeSubmitted", null, "DateTime", null, "Date submitted");
-        caseField("submittedForm", "Attached PDF", "Document");
+        buildStateTransitions();
     }
 
-    private void buildC21Event(State state) {
-        event("createOrder")
-                .forState(state)
-                .explicitGrants()
-                .grant("CRU", HMCTS_ADMIN, JUDICIARY)
-                .name("Create an order")
-                .showSummary()
-                .allWebhooks("create-order")
-                .midEventWebhook()
-                .fields()
-                    .page("OrderInformation")
-                    .complex(CaseData::getOrderTypeAndDocument)
-                        .optional(OrderTypeAndDocument::getType)
-                        .mandatory(OrderTypeAndDocument::getDocument)
-                        .done()
-                    .complex(CaseData::getOrder)
-                        .readonly(GeneratedOrder::getTitle)
-                        .readonly(GeneratedOrder::getDetails)
-                        .readonly(GeneratedOrder::getDate)
-                        .done()
-                    .page("JudgeInformation")
-                    .complex(CaseData::getJudgeAndLegalAdvisor)
-                        .optional(JudgeAndLegalAdvisor::getJudgeTitle)
-                        .mandatory(JudgeAndLegalAdvisor::getJudgeLastName)
-                        .optional(JudgeAndLegalAdvisor::getJudgeFullName)
-                        .optional(JudgeAndLegalAdvisor::getLegalAdvisorName);
+    private void buildSharedEvents(State forState) {
+        event("amendChildren")
+            .forState(forState)
+            .name("Children")
+            .description("Amending the children for the case")
+            .aboutToStartWebhook("enter-children")
+            .aboutToSubmitWebhook()
+            .showEventNotes()
+            .fields()
+            .optional(CaseData::getChildren1);
+        event("amendRespondents")
+            .forState(forState)
+            .name("Respondents")
+            .description("Amending the respondents for the case")
+            .aboutToStartWebhook("enter-respondents")
+            .aboutToSubmitWebhook()
+            .showEventNotes()
+            .fields()
+            .optional(CaseData::getRespondents1);
+        event("amendOthers")
+            .forState(forState)
+            .name("Others to be given notice")
+            .description("Amending others for the case")
+            .showEventNotes()
+            .fields()
+            .optional(CaseData::getOthers);
+        event("amendInternationalElement")
+            .forState(forState)
+            .name("International element")
+            .description("Amending the international element")
+            .showEventNotes()
+            .fields()
+            .optional(CaseData::getInternationalElement);
+        event("amendOtherProceedings")
+            .forState(forState)
+            .name("Other proceedings")
+            .description("Amending other proceedings and allocation proposals")
+            .midEventURL("/enter-other-proceedings/mid-event")
+            .showEventNotes()
+            .fields()
+            .optional(CaseData::getProceeding);
+        event("amendAttendingHearing")
+            .forState(forState)
+            .name("Attending the hearing")
+            .description("Amend extra support needed for anyone to take part in hearing")
+            .showEventNotes()
+            .fields()
+            .optional(CaseData::getHearingPreferences);
     }
 
-    private void buildTransitions() {
+    private void buildStateTransitions() {
         event("submitApplication")
-                .forStateTransition(Open, Submitted)
-                .name("Submit application")
-                .displayOrder(17) // TODO - necessary?
+            .forStateTransition(Open, Submitted)
+            .name("Submit application")
+            .displayOrder(17) // TODO - necessary?
                 .explicitGrants()
                 .grant("R", HMCTS_ADMIN, UserRole.CAFCASS, UserRole.JUDICIARY, UserRole.GATEKEEPER)
                 .grant("CRU", LOCAL_AUTHORITY)
@@ -250,12 +262,12 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
 
     }
 
-    private void buildPrepareForHearing() {
+    private void buildPrepareForHearingEvents() {
         prefix(PREPARE_FOR_HEARING, "-");
         blacklist(PREPARE_FOR_HEARING, GATEKEEPER);
         grant(PREPARE_FOR_HEARING, "CRU", HMCTS_ADMIN);
-        addHearingBookingDetails( PREPARE_FOR_HEARING);
-        buildSharedEvents( PREPARE_FOR_HEARING);
+        addHearingBookingDetails(PREPARE_FOR_HEARING);
+        buildSharedEvents(PREPARE_FOR_HEARING);
 
         event("uploadOtherCourtAdminDocuments-PREPARE_FOR_HEARING")
                 .forState(PREPARE_FOR_HEARING)
@@ -369,72 +381,21 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                 .showSummary()
                 .fields()
                 .complex(CaseData::getHearingDetails, HearingBooking.class)
-                .mandatory(HearingBooking::getType)
-                .mandatory(HearingBooking::getTypeDetails, "hearingDetails.type=\"OTHER\"")
-                .mandatory(HearingBooking::getVenue)
-                .mandatory(HearingBooking::getStartDate)
-                .mandatory(HearingBooking::getEndDate)
-                .mandatory(HearingBooking::getHearingNeedsBooked)
-                .mandatory(HearingBooking::getHearingNeedsDetails, "hearingDetails.hearingNeedsBooked!=\"NONE\"")
-                .complex(HearingBooking::getJudgeAndLegalAdvisor)
-                .mandatory(JudgeAndLegalAdvisor::getJudgeTitle)
-                .mandatory(JudgeAndLegalAdvisor::getOtherTitle, "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"OTHER\"")
-                .mandatory(JudgeAndLegalAdvisor::getJudgeLastName, "hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"MAGISTRATES\" AND hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"\"")
-                .optional(JudgeAndLegalAdvisor::getJudgeFullName, "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"MAGISTRATES\"")
-                .optional(JudgeAndLegalAdvisor::getLegalAdvisorName);
+                    .mandatory(HearingBooking::getType)
+                    .mandatory(HearingBooking::getTypeDetails, "hearingDetails.type=\"OTHER\"")
+                    .mandatory(HearingBooking::getVenue)
+                    .mandatory(HearingBooking::getStartDate)
+                    .mandatory(HearingBooking::getEndDate)
+                    .mandatory(HearingBooking::getHearingNeedsBooked)
+                    .mandatory(HearingBooking::getHearingNeedsDetails, "hearingDetails.hearingNeedsBooked!=\"NONE\"")
+                    .complex(HearingBooking::getJudgeAndLegalAdvisor)
+                        .mandatory(JudgeAndLegalAdvisor::getJudgeTitle)
+                        .mandatory(JudgeAndLegalAdvisor::getOtherTitle, "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"OTHER\"")
+                        .mandatory(JudgeAndLegalAdvisor::getJudgeLastName, "hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"MAGISTRATES\" AND hearingDetails.judgeAndLegalAdvisor.judgeTitle!=\"\"")
+                        .optional(JudgeAndLegalAdvisor::getJudgeFullName, "hearingDetails.judgeAndLegalAdvisor.judgeTitle=\"MAGISTRATES\"")
+                        .optional(JudgeAndLegalAdvisor::getLegalAdvisorName);
     }
 
-    private void buildSharedEvents(State state) {
-        event("amendChildren")
-                .forState(state)
-                .name("Children")
-                .description("Amending the children for the case")
-                .aboutToStartWebhook("enter-children")
-                .aboutToSubmitWebhook()
-                .showEventNotes()
-                .fields()
-                    .optional(CaseData::getChildren1);
-        event("amendRespondents")
-                .forState(state)
-                .name("Respondents")
-                .description("Amending the respondents for the case")
-                .aboutToStartWebhook("enter-respondents")
-                .aboutToSubmitWebhook()
-                .showEventNotes()
-                .fields()
-                    .optional(CaseData::getRespondents1);
-        event("amendOthers")
-                .forState(state)
-                .name("Others to be given notice")
-                .description("Amending others for the case")
-                .showEventNotes()
-                .fields()
-                    .optional(CaseData::getOthers);
-        event("amendInternationalElement")
-                .forState(state)
-                .name("International element")
-                .description("Amending the international element")
-                .showEventNotes()
-                .fields()
-                    .optional(CaseData::getInternationalElement);
-        event("amendOtherProceedings")
-                .forState(state)
-                .name("Other proceedings")
-                .description("Amending other proceedings and allocation proposals")
-                .midEventURL("/enter-other-proceedings/mid-event")
-                .showEventNotes()
-                .fields()
-                    .optional(CaseData::getProceeding);
-        event("amendAttendingHearing")
-                .forState(state)
-                .name("Attending the hearing")
-                .description("Amend extra support needed for anyone to take part in hearing")
-                .showEventNotes()
-                .fields()
-                    .optional(CaseData::getHearingPreferences);
-
-
-    }
 
     private void buildNoticeOfProceedings(State state) {
         event("createNoticeOfProceedings")
@@ -472,7 +433,7 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
             .mandatory(C2DocumentBundle::getDescription);
     }
 
-    private void buildOpen() {
+    private void buildOpenEvents() {
         grant(Open, "CRU", LOCAL_AUTHORITY);
         event("openCase")
                 .initialState(Open)
@@ -619,4 +580,31 @@ public class FPLConfig extends BaseCCDConfig<CaseData, State, UserRole> {
                     .field("caseIDReference", DisplayContext.Optional, null, "Text", null, "Case ID");
     }
 
+    private void buildC21Event(State state) {
+        event("createOrder")
+            .forState(state)
+            .explicitGrants()
+            .grant("CRU", HMCTS_ADMIN, JUDICIARY)
+            .name("Create an order")
+            .showSummary()
+            .allWebhooks("create-order")
+            .midEventWebhook()
+            .fields()
+            .page("OrderInformation")
+                .complex(CaseData::getOrderTypeAndDocument)
+                    .optional(OrderTypeAndDocument::getType)
+                    .mandatory(OrderTypeAndDocument::getDocument)
+                    .done()
+                .complex(CaseData::getOrder)
+                    .readonly(GeneratedOrder::getTitle)
+                    .readonly(GeneratedOrder::getDetails)
+                    .readonly(GeneratedOrder::getDate)
+                    .done()
+            .page("JudgeInformation")
+                .complex(CaseData::getJudgeAndLegalAdvisor)
+                    .optional(JudgeAndLegalAdvisor::getJudgeTitle)
+                    .mandatory(JudgeAndLegalAdvisor::getJudgeLastName)
+                    .optional(JudgeAndLegalAdvisor::getJudgeFullName)
+                    .optional(JudgeAndLegalAdvisor::getLegalAdvisorName);
+    }
 }
