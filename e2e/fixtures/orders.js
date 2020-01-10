@@ -20,4 +20,15 @@ module.exports = [
       legalAdvisorName: 'Fred Frederickson',
     },
   },
+  {
+    type: 'Supervision order',
+    document: 'supervision_order.pdf',
+    months: 5,
+    judgeAndLegalAdvisor: {
+      judgeTitle: 'Her Honour Judge',
+      judgeLastName: 'Judy',
+      legalAdvisorName: 'Fred Frederickson',
+    },
+    directionText: 'Example direction',
+  },
 ];

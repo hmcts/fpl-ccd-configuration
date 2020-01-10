@@ -171,14 +171,14 @@ public class GeneratedOrderService {
     }
 
     private String supervisionOrderDetails(int numOfChildren, String caseLocalAuthority, int numOfMonths) {
-        final LocalDateTime now = time.now();
-        final String suffix = dateFormatterService.getDayOfMonthSuffix(now.getDayOfMonth());
+        final LocalDateTime date = time.now().plusMonths(numOfMonths);
+        final String suffix = dateFormatterService.getDayOfMonthSuffix(date.getDayOfMonth());
         return String.format(
             "It is ordered that %s supervises the %s for %d months from the date of this order until %s.",
             getLocalAuthorityName(caseLocalAuthority),
             (numOfChildren == 1) ? "child" : "children",
             numOfMonths,
-            dateFormatterService.formatLocalDateTimeBaseUsingFormat(now, "hh:mma 'on the' dd'" + suffix + "' MMMM y"));
+            dateFormatterService.formatLocalDateTimeBaseUsingFormat(date, "hh:mma 'on the' dd'" + suffix + "' MMMM y"));
     }
 
     private String careOrderDetails(int numOfChildren, String caseLocalAuthority) {

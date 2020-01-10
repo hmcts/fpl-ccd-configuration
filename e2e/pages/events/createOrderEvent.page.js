@@ -8,10 +8,14 @@ module.exports = {
     details: '#order_details',
     orderTypeList: '#orderTypeAndDocument_type',
     directionsNeeded: {
-      yes: '#orderFurtherDirections_directionsNeeded-Yes',
-      no: '#orderFurtherDirections_directionsNeeded-No',
+      id: '#orderFurtherDirections_directionsNeeded',
+      options: {
+        yes: '#orderFurtherDirections_directionsNeeded-Yes',
+        no: '#orderFurtherDirections_directionsNeeded-No',
+      },
     },
     directions: '#orderFurtherDirections_directions',
+    months: '#orderMonths',
   },
 
   selectType(type) {
@@ -32,7 +36,11 @@ module.exports = {
   },
 
   enterDirections(directions) {
-    I.click(this.fields.directionsNeeded.yes);
+    I.click(this.fields.directionsNeeded.options.yes);
     I.fillField(this.fields.directions, directions);
+  },
+
+  enterNumberOfMonths(numOfMonths) {
+    I.fillField(this.fields.months, numOfMonths);
   },
 };

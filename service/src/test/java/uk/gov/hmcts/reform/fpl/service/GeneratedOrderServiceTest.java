@@ -240,7 +240,8 @@ class GeneratedOrderServiceTest {
                 break;
             case SUPERVISION_ORDER:
                 final String suffix = dateFormatterService.getDayOfMonthSuffix(date.getDayOfMonth());
-                final String formattedDateTime = dateFormatterService.formatLocalDateTimeBaseUsingFormat(date,
+                final String formattedDateTime =
+                    dateFormatterService.formatLocalDateTimeBaseUsingFormat(date.plusMonths(5),
                     "hh:mma 'on the' dd'" + suffix + "' MMMM y");
                 expectedMap
                     .put("orderTitle", "Supervision order")
