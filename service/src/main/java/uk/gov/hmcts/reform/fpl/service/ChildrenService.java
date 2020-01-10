@@ -37,27 +37,6 @@ public class ChildrenService {
         return childCollection;
     }
 
-    public Others prepareOthers(CaseData caseData) {
-
-        Other firstOther = Other.builder().build();
-        final List <Element<Other>> additionalOthers = new ArrayList<>();
-
-        caseData.getAllOthers().forEach(element -> {
-            if (element.containsConfidentialDetails()) {
-
-                System.out.println("Confidential details contained");
-                caseData.getAllOthers().forEach(other -> additionalOthers.add(Element.<Other>builder()
-                    .id(UUID.randomUUID())
-                    .value(other)
-                    .build()));
-            }
-        });
-
-        Others others = new Others(firstOther,additionalOthers);
-
-        return others;
-    }
-
     private Element<Child> getElementToAdd(List<Element<Child>> confidentialChildren, Element<Child> element) {
         return confidentialChildren.stream()
             .filter(confidentialChild -> confidentialChild.getId().equals(element.getId()))
