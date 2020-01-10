@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import ccd.sdk.types.ComplexType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,7 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 @Builder
 @AllArgsConstructor
 @EqualsAndHashCode
+@ComplexType(name = "RespondentNew")
 public class Respondent implements Representable {
     @Valid
     @NotNull(message = "You need to add details to respondents")

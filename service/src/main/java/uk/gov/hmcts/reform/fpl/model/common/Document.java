@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model.common;
 
+import ccd.sdk.types.ComplexType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @HasAttachedDocument(groups = UploadDocumentsGroup.class)
 @AllArgsConstructor
+@ComplexType(name = "UploadDocument")
 public class Document {
     private final String statusReason;
     @NotBlank(message = "Tell us the status of all documents including those that you haven't uploaded")

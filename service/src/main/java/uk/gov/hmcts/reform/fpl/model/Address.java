@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import ccd.sdk.types.ComplexType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotBlank;
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ComplexType(name = "AddressUK", generate = false)
 public class Address {
     @NotBlank(message = "Enter a valid address for the contact")
     private final String addressLine1;

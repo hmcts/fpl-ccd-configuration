@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.fpl.model;
 
+import ccd.sdk.types.ComplexType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +10,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
+@ComplexType(name = "RiskAndHarm")
 public class Risks {
     private final String neglect;
     private final String sexualAbuse;
