@@ -1,4 +1,5 @@
 package uk.gov.hmcts.reform.fpl.validation.groups.EpoOrderGroup;
 
-public class EPOEndDateGroup {
+// Used to validate Emergency Protection Order end date within the create an order event
+public @interface EPOEndDateGroup {
 }
