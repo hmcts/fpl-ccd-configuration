@@ -63,9 +63,6 @@ public class CoreCaseDataService {
 
     public CaseDetails performCaseSearch(final CoreCaseApiSearchParameter searchParameter) {
         String userAuthToken = idamClient.authenticateUser(userConfig.getUserName(), userConfig.getPassword());
-        String systemUpdateUserId = idamClient.getUserDetails(userAuthToken).getId();
-
-        return coreCaseDataApi.readForCaseWorker(userAuthToken, authTokenGenerator.generate(), systemUpdateUserId,
-            searchParameter.getJurisdiction(), searchParameter.getCaseType(), searchParameter.getCaseId());
+        return coreCaseDataApi.getCase(userAuthToken, authTokenGenerator.generate(), searchParameter.getCaseId());
     }
 }

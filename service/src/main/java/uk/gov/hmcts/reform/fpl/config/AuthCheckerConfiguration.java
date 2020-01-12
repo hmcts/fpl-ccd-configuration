@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.fpl;
+package uk.gov.hmcts.reform.fpl.config;
 
 import com.google.common.collect.ImmutableSet;
 import lombok.extern.slf4j.Slf4j;
@@ -32,28 +32,15 @@ import javax.servlet.http.HttpServletRequest;
 @ConfigurationProperties(prefix = "security")
 public class AuthCheckerConfiguration {
 
-    List<String> authorisedServices;
     List<String> authorisedRoles = new ArrayList<>();
-
-    public List<String> getAuthorisedServices() {
-        return authorisedServices;
-    }
-
-    public void setAuthorisedServices(List<String> authorisedServices) {
-        this.authorisedServices = authorisedServices;
-    }
 
     public List<String> getAuthorisedRoles() {
         return authorisedRoles;
     }
 
     @Bean
-    public Function<HttpServletRequest, Collection<String>> authorizedServicesExtractor() {
-        return any -> ImmutableSet.copyOf(authorisedServices);
-    }
-
-    @Bean
     public Function<HttpServletRequest, Collection<String>> authorizedRolesExtractor() {
+        log.info(String.format("Configured authorised roles: %s", String.join(", ", authorisedRoles)));
         return any -> ImmutableSet.copyOf(authorisedRoles);
     }
 
@@ -63,7 +50,7 @@ public class AuthCheckerConfiguration {
         return any -> Optional.empty();
     }
 
-    @Bean(name = {"serviceTokenParserHttpClient", "userTokenParserHttpClient"})
+    @Bean(name = {"userTokenParserHttpClient"})
     @ConditionalOnProperty(
             value = "ssl.verification.enable",
             havingValue = "false",
