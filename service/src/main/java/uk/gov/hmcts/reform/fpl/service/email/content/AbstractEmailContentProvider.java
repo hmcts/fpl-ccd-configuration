@@ -41,6 +41,7 @@ public abstract class AbstractEmailContentProvider {
 
     ImmutableMap.Builder<String, Object> getCasePersonalisationBuilder(Long caseId, CaseData caseData) {
         List<String> ordersAndDirections = buildOrdersAndDirections(caseData.getOrders());
+
         Optional<String> timeFrame = Optional.ofNullable(caseData.getHearing()).map(
             Hearing::getTimeFrame).filter(StringUtils::isNotBlank);
 
@@ -85,12 +86,12 @@ public abstract class AbstractEmailContentProvider {
 
     }
 
-    private List<String> buildOrdersAndDirections(Orders orders) {
+    private List<String> buildOrdersAndDirections(Orders optionalOrders) {
         ImmutableList.Builder<String> ordersAndDirectionsBuilder = ImmutableList.builder();
 
-        Optional.ofNullable(orders).ifPresent(ords -> {
-            appendOrders(ords, ordersAndDirectionsBuilder);
-            appendDirections(ords, ordersAndDirectionsBuilder);
+        Optional.ofNullable(optionalOrders).ifPresent(orders -> {
+            appendOrders(orders, ordersAndDirectionsBuilder);
+            appendDirections(orders, ordersAndDirectionsBuilder);
         });
 
         return ordersAndDirectionsBuilder.build();
