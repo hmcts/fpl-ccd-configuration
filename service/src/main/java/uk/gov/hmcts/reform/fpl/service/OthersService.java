@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.fpl.model.common.Element;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static java.util.UUID.randomUUID;
 import static java.util.stream.Collectors.toList;
@@ -51,9 +52,13 @@ public class OthersService {
 
     public List<Element<Other>> getAllConfidentialOther(CaseData caseData) {
         //Gets all others from case data and returns list of confidential others first other and additional other
-        final List <Element<Other>> confidentialOthers = new ArrayList<>();
+        final List<Element<Other>> confidentialOthers = new ArrayList<>();
 
         caseData.getAllOthers().forEach(element -> {
+
+            Other other = element;
+
+
             if (element.containsConfidentialDetails()) {
                 confidentialOthers.add(Element.<Other>builder()
                     .id(UUID.randomUUID())
@@ -66,42 +71,43 @@ public class OthersService {
     }
 
     public List<Element<Others>> prepareConfidentialOthersForCaseData(List<Element<Other>> confidentialOther) {
-        final List <Element<Others>> confidentialOthersForCaseData = new ArrayList<>();
+        final List<Element<Others>> confidentialOthersForCaseData = new ArrayList<>();
         Other firstOther;
 
-        if(!confidentialOther.isEmpty()) {
+        if (!confidentialOther.isEmpty()) {
             //add the first element to first other and the rest to additional others
             firstOther = confidentialOther.get(0).getValue();
             confidentialOther.remove(0);
 
-            Others other = new Others(firstOther,confidentialOther);
+            Others other = new Others(firstOther, confidentialOther);
 
             confidentialOthersForCaseData.add(Element.<Others>builder().value(other).build());
         }
 
-        return  confidentialOthersForCaseData;
+        return confidentialOthersForCaseData;
     }
 
-    public List<Element<Others>> modifyHiddenValues(List<Element<Others>> others) {
-        return others.stream()
-            .map(element -> {
-                Others.OthersBuilder builder = Others.builder();
-                Other.OtherBuilder builder1 = Other.builder();
+    public Others modifyHiddenValues(Others others) {
+        Others other = others;
+        final List<Element<Other>> othersForPeopleTab = new ArrayList<>();
 
-                if (element.getValue().getFirstOther().containsConfidentialDetails()) {
-//                    //builder.firstOther(Other.builder().build());
-//                    Other firstOther = element.getValue().getFirstOther();
-//                    builder.firstOther(firstOther);
-//                    builder.firstOther(builder1.address(null).build());
+        others.getAdditionalOthers().stream().forEach(additionalOther -> {
+            if (additionalOther.getValue().containsConfidentialDetails()) {
+                othersForPeopleTab.add(Element.<Other>builder()
+                    .id(UUID.randomUUID())
+                    .value(additionalOther.getValue().toBuilder().address(null).build())
+                    .build());
+            } else{
+                othersForPeopleTab.add(Element.<Other>builder()
+                    .id(UUID.randomUUID())
+                    .value(additionalOther.getValue())
+                    .build());
 
-                }
+            }
 
-                return Element.<Others>builder()
-                    .id(element.getId())
-                    .value(element.getValue())
-                    .build();
-            })
-            .collect(toList());
+        });
+
+        return other.toBuilder().additionalOthers(othersForPeopleTab).build();
     }
 }
 

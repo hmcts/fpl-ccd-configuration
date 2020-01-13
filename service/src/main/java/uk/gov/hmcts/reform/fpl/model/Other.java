@@ -17,9 +17,9 @@ import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.element;
 import static uk.gov.hmcts.reform.fpl.utils.ElementUtils.unwrapElements;
 
 @Data
-@Builder
 @AllArgsConstructor
 @EqualsAndHashCode
+@Builder(toBuilder = true)
 public class Other implements Representable, ConfidentialParty {
     @SuppressWarnings("membername")
     private final String DOB;

@@ -77,9 +77,9 @@ public class OthersController {
             confidentialDetailsService.addConfidentialDetailsToCaseDetails(caseDetails, confidentialOthersForCaseData, OTHER);
         }
 
-        Others other = confidentialOthersForCaseData.get(0).getValue();
+        Others others = othersService.modifyHiddenValues(caseData.getOthers());
 
-        caseDetails.getData().put("others", Others.builder().firstOther(other.getFirstOther()).build());
+        caseDetails.getData().put("others", others);
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())
