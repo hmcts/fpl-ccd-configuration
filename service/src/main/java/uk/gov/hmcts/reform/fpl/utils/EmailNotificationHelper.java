@@ -48,13 +48,7 @@ public class EmailNotificationHelper {
             .collect(joining(","));
     }
 
-    private static String buildHearingDateText(final List<Element<HearingBooking>> hearingBookings) {
-        return " hearing " + dateFormatterService.formatLocalDateToString(
-            hearingBookingService.getMostUrgentHearingBooking(
-                hearingBookings).getStartDate().toLocalDate(), FormatStyle.MEDIUM);
-    }
-
-    private static String getFirstRespondentLastName(final CaseData caseData) {
+    public static String getFirstRespondentLastName(final CaseData caseData) {
         return isEmpty(caseData.getRespondents1()) ? "" : caseData.getRespondents1()
             .stream()
             .filter(Objects::nonNull)
@@ -64,5 +58,11 @@ public class EmailNotificationHelper {
             .map(Respondent::getParty)
             .map(RespondentParty::getLastName)
             .orElse("");
+    }
+
+    private static String buildHearingDateText(final List<Element<HearingBooking>> hearingBookings) {
+        return " hearing " + dateFormatterService.formatLocalDateToString(
+            hearingBookingService.getMostUrgentHearingBooking(
+                hearingBookings).getStartDate().toLocalDate(), FormatStyle.MEDIUM);
     }
 }

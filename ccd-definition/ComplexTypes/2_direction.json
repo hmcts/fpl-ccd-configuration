@@ -4,7 +4,7 @@
     "ID": "Direction",
     "ListElementCode": "directionType",
     "FieldType": "Text",
-    "ElementLabel": "Direction title",
+    "ElementLabel": "Title",
     "HintText": "You must include a brief direction summary",
     "SecurityClassification": "Public"
   },
@@ -94,6 +94,16 @@
     "HintText": "For example, 31 3 2016 2 30 00",
     "SecurityClassification": "Public",
     "FieldShowCondition": "directionNeeded!=\"No\""
+  },
+  {
+    "LiveFrom": "01/01/2017",
+    "ID": "Direction",
+    "ListElementCode": "allParties_label",
+    "ElementLabel": "### For ###\nAll parties",
+    "FieldType": "Label",
+    "SecurityClassification": "Public",
+    "FieldShowCondition": "directionNeeded=\"DO_NOT_SHOW\"",
+    "comment": "Used in event to complex type to display All parties if direction is for all parties"
   },
   {
     "LiveFrom": "01/01/2017",
