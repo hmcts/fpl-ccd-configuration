@@ -171,6 +171,31 @@ Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewP
   I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', orders[1].judgeAndLegalAdvisor.judgeTitle);
   I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', orders[1].judgeAndLegalAdvisor.judgeLastName);
   I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name',  orders[1].judgeAndLegalAdvisor.legalAdvisorName);
+
+  orderTime = new Date();
+  const tomorrow = new Date(Date.now() + (3600 * 1000 * 24));
+  await caseViewPage.goToNewActions(config.administrationActions.createOrder);
+  await createOrderEventPage.selectType(orders[2].type);
+  await I.retryUntilExists(() => I.click('Continue'), '#epoChildren_descriptionNeeded');
+  await createOrderEventPage.enterChildrenDescription(orders[2].childrenDescription);
+  await I.retryUntilExists(() => I.click('Continue'), '#epoType');
+  createOrderEventPage.selectEpoType(orders[2].epoType);
+  createOrderEventPage.enterRemovalAddress(orders[2].removalAddress);
+  await I.retryUntilExists(() => I.click('Continue'), '#epoPhrase_includePhrase');
+  createOrderEventPage.includePhrase(orders[2].includePhrase);
+  await I.retryUntilExists(() => I.click('Continue'), '#epoEndDate');
+  createOrderEventPage.enterEpoEndDate(tomorrow);
+  await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
+  await createOrderEventPage.enterJudgeAndLegalAdvisor(orders[2].judgeAndLegalAdvisor.judgeLastName, orders[2].judgeAndLegalAdvisor.legalAdvisorName);
+  await I.completeEvent('Save and continue');
+  I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
+  caseViewPage.selectTab(caseViewPage.tabs.orders);
+  I.seeAnswerInTab(1, 'Order 3', 'Type of order', orders[2].type);
+  I.seeAnswerInTab(2, 'Order 3', 'Order document', orders[2].document);
+  I.seeAnswerInTab(3, 'Order 3', 'Date and time of upload', dateFormat(orderTime, 'd mmmm yyyy'));
+  I.seeAnswerInTab(1, 'Judge and legal advisor', 'Judge or magistrate\'s title', orders[2].judgeAndLegalAdvisor.judgeTitle);
+  I.seeAnswerInTab(2, 'Judge and legal advisor', 'Last name', orders[2].judgeAndLegalAdvisor.judgeLastName);
+  I.seeAnswerInTab(3, 'Judge and legal advisor', 'Legal advisor\'s full name',  orders[2].judgeAndLegalAdvisor.legalAdvisorName);
 });
 
 Scenario('HMCTS admin creates notice of proceedings documents', async (I, caseViewPage, createNoticeOfProceedingsEventPage) => {
