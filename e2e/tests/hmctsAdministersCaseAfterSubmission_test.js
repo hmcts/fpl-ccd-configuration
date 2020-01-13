@@ -190,6 +190,8 @@ Scenario('HMCTS admin creates multiple orders for the case', async (I, caseViewP
   createOrderEventPage.enterEpoEndDate(tomorrow);
   await I.retryUntilExists(() => I.click('Continue'), '#judgeAndLegalAdvisor_judgeTitle');
   await createOrderEventPage.enterJudgeAndLegalAdvisor(orders[2].judgeAndLegalAdvisor.judgeLastName, orders[2].judgeAndLegalAdvisor.legalAdvisorName);
+  await I.retryUntilExists(() => I.click('Continue'), '#orderFurtherDirections_directionsNeeded');
+  await createOrderEventPage.enterDirections('example directions');
   await I.completeEvent('Save and continue');
   I.seeEventSubmissionConfirmation(config.administrationActions.createOrder);
   caseViewPage.selectTab(caseViewPage.tabs.orders);

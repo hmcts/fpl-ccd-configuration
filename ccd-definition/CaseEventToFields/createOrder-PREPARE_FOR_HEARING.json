@@ -120,7 +120,7 @@
     "DisplayContext": "OPTIONAL",
     "PageID": "FurtherDirections",
     "PageLabel": " ",
-    "PageDisplayOrder": 4,
+    "PageDisplayOrder": 8,
     "PageColumnNumber": 1,
     "ShowSummaryChangeOption": "Y",
     "PageShowCondition": "orderTypeAndDocument.type!=\"BLANK_ORDER\"",
