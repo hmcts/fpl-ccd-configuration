@@ -30,7 +30,7 @@ module.exports = {
   },
 
   async enterJudgeAndLegalAdvisor(judgeLastName, legalAdvisorName, judgeTitle = judgeAndLegalAdvisor.fields.judgeTitleRadioGroup.herHonourJudge) {
-    judgeAndLegalAdvisor.selectJudgeTitle('', judgeTitle,);
+    judgeAndLegalAdvisor.selectJudgeTitle('', judgeTitle);
     judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
   },
