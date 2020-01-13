@@ -21,6 +21,9 @@ import uk.gov.hmcts.reform.fpl.validation.groups.HearingBookingDetailsGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 @Api
 @RestController
 @RequestMapping("/callback/add-hearing-bookings")
@@ -56,9 +59,16 @@ public class HearingBookingDetailsController {
     @PostMapping("/mid-event")
     public AboutToStartOrSubmitCallbackResponse handleMidEvent(@RequestBody CallbackRequest callbackrequest) {
         CaseDetails caseDetails = callbackrequest.getCaseDetails();
+        CaseDetails caseDetailsBefore = callbackrequest.getCaseDetailsBefore();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        CaseData caseDataBefore = mapper.convertValue(caseDetailsBefore.getData(), CaseData.class);
+
+        List<Element<HearingBooking>> hearingDetailsBefore =
+            defaultIfNull(caseDataBefore.getHearingDetails(), emptyList());
 
         List<Element<HearingBooking>> hearingDetails = caseData.getHearingDetails();
+
+        hearingBookingService.filterPreviousHearings(hearingDetailsBefore, hearingDetails);
 
         final List<String> errors = validateHearingBookings(hearingDetails);
 

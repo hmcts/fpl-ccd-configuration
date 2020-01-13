@@ -59,4 +59,8 @@ public class HearingBookingService {
             .findFirst()
             .orElse(null);
     }
+
+    public void filterPreviousHearings(List<Element<HearingBooking>> before, List<Element<HearingBooking>> after) {
+        after.removeIf(before::contains);
+    }
 }
