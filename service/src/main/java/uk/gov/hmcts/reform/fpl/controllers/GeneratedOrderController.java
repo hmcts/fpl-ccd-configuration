@@ -19,7 +19,9 @@ import uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates;
 import uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType;
 import uk.gov.hmcts.reform.fpl.events.GeneratedOrderEvent;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
+import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
+import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocmosisDocument;
 import uk.gov.hmcts.reform.fpl.model.common.Element;
 import uk.gov.hmcts.reform.fpl.service.DocmosisDocumentGeneratorService;
@@ -34,6 +36,7 @@ import java.util.List;
 
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.EPO;
 import static uk.gov.hmcts.reform.fpl.enums.DocmosisTemplates.ORDER;
+import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.BLANK_ORDER;
 import static uk.gov.hmcts.reform.fpl.enums.GeneratedOrderType.EMERGENCY_PROTECTION_ORDER;
 
 @Slf4j
@@ -84,12 +87,17 @@ public class GeneratedOrderController {
         @RequestBody CallbackRequest callbackRequest) {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
         CaseData caseData = mapper.convertValue(caseDetails.getData(), CaseData.class);
+        OrderTypeAndDocument orderTypeAndDocument = caseData.getOrderTypeAndDocument();
+        FurtherDirections orderFurtherDirections = caseData.getOrderFurtherDirections();
 
-        Document document = getDocument(authorization, userId, caseData);
+        // Only generate a document if a blank order or further directions has been added
+        if (orderTypeAndDocument.getType() == BLANK_ORDER || orderFurtherDirections != null) {
+            Document document = getDocument(authorization, userId, caseData);
 
-        //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
-        caseDetails.getData().put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
-            caseData.getOrderTypeAndDocument(), document));
+            //Update orderTypeAndDocument with the document so it can be displayed in check-your-answers
+            caseDetails.getData().put("orderTypeAndDocument", service.buildOrderTypeAndDocument(
+                orderTypeAndDocument, document));
+        }
 
         return AboutToStartOrSubmitCallbackResponse.builder()
             .data(caseDetails.getData())

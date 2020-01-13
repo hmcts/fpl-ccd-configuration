@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.fpl.model.Address;
 import uk.gov.hmcts.reform.fpl.model.CaseData;
 import uk.gov.hmcts.reform.fpl.model.Child;
 import uk.gov.hmcts.reform.fpl.model.ChildParty;
+import uk.gov.hmcts.reform.fpl.model.FurtherDirections;
 import uk.gov.hmcts.reform.fpl.model.GeneratedOrder;
 import uk.gov.hmcts.reform.fpl.model.OrderTypeAndDocument;
 import uk.gov.hmcts.reform.fpl.model.common.DocumentReference;
@@ -314,6 +315,7 @@ class GeneratedOrderServiceTest {
         }
 
         expectedMap
+            .put("furtherDirections", "Example Directions")
             .put("familyManCaseNumber", "123")
             .put("courtName", "Example Court")
             .put("todaysDate", date)
@@ -394,6 +396,10 @@ class GeneratedOrderServiceTest {
                         .build())
                     .build())
                 .build()))
+            .orderFurtherDirections(FurtherDirections.builder()
+                .directionsNeeded("Yes")
+                .directions("Example Directions")
+                .build())
             .build();
 
         return caseDataBuilder.build();

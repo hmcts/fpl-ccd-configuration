@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.fpl.service;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.assertj.core.util.Lists;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.fpl.enums.DirectionAssignee;
@@ -38,6 +40,9 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_ON_BEHALF_SDO;
+import static uk.gov.hmcts.reform.fpl.enums.ComplyOnBehalfEvent.COMPLY_OTHERS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.ALL_PARTIES;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.CAFCASS;
 import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.COURT;
@@ -48,7 +53,15 @@ import static uk.gov.hmcts.reform.fpl.enums.DirectionAssignee.PARENTS_AND_RESPON
 @ExtendWith(SpringExtension.class)
 class DirectionHelperServiceTest {
 
-    private final DirectionHelperService service = new DirectionHelperService();
+    @MockBean
+    private UserDetailsService userDetailsService;
+
+    private DirectionHelperService service;
+
+    @BeforeEach
+    void setUp() {
+        service = new DirectionHelperService(userDetailsService);
+    }
 
     @Test
     void combineAllDirections_shouldAddRoleDirectionsIntoOneList() {
@@ -1099,7 +1112,7 @@ class DirectionHelperServiceTest {
             Map<DirectionAssignee, List<Element<Direction>>> directionsMap = new HashMap<>();
             directionsMap.put(ALL_PARTIES, buildDirections(ALL_PARTIES));
 
-            service.addDirectionsToCaseDetails(caseDetails, directionsMap);
+            service.addDirectionsToCaseDetails(caseDetails, directionsMap, COMPLY_ON_BEHALF_SDO);
 
             assertThat(caseDetails).isEqualTo(CaseDetails.builder().build());
             assertThat(directionsMap).isEqualTo(ImmutableMap.of(ALL_PARTIES, buildDirections(ALL_PARTIES)));
@@ -1112,7 +1125,7 @@ class DirectionHelperServiceTest {
             directionsMap.put(COURT, buildDirections(COURT));
             directionsMap.put(ALL_PARTIES, buildDirections(ALL_PARTIES));
 
-            service.addDirectionsToCaseDetails(caseDetails, directionsMap);
+            service.addDirectionsToCaseDetails(caseDetails, directionsMap, COMPLY_ON_BEHALF_SDO);
 
             assertThat(caseDetails).isEqualTo(CaseDetails.builder().build());
             assertThat(directionsMap).isEqualTo(ImmutableMap.of(
@@ -1128,7 +1141,7 @@ class DirectionHelperServiceTest {
             directionsMap.put(assignee, buildDirections(assignee));
             directionsMap.put(ALL_PARTIES, buildDirections(ALL_PARTIES));
 
-            service.addDirectionsToCaseDetails(caseDetails, directionsMap);
+            service.addDirectionsToCaseDetails(caseDetails, directionsMap, COMPLY_ON_BEHALF_SDO);
 
             List<Element<Direction>> expectedDirections = buildDirections(assignee);
             expectedDirections.addAll(buildDirections(ALL_PARTIES));
@@ -1147,7 +1160,7 @@ class DirectionHelperServiceTest {
             directionsMap.put(assignee, buildDirections(assignee));
             directionsMap.put(ALL_PARTIES, buildDirections(ALL_PARTIES));
 
-            service.addDirectionsToCaseDetails(caseDetails, directionsMap);
+            service.addDirectionsToCaseDetails(caseDetails, directionsMap, COMPLY_ON_BEHALF_SDO);
 
             List<Element<Direction>> expectedDirections = buildDirections(assignee);
             expectedDirections.addAll(buildDirections(ALL_PARTIES));
@@ -1165,7 +1178,7 @@ class DirectionHelperServiceTest {
             directionsMap.put(PARENTS_AND_RESPONDENTS, buildDirections(PARENTS_AND_RESPONDENTS));
             directionsMap.put(ALL_PARTIES, allPartyDirections());
 
-            service.addDirectionsToCaseDetails(caseDetails, directionsMap);
+            service.addDirectionsToCaseDetails(caseDetails, directionsMap, COMPLY_ON_BEHALF_SDO);
 
             List<Element<Direction>> expectedDirections = new ArrayList<>();
             expectedDirections.addAll(buildDirections(PARENTS_AND_RESPONDENTS));
@@ -1202,12 +1215,21 @@ class DirectionHelperServiceTest {
 
     @Nested
     class AddComplyOnBehalfResponsesToDirectionsInStandardDirectionOrder {
+        private UUID directionId;
+        private UUID responseId;
+
+        @BeforeEach
+        void initValues() {
+            given(userDetailsService.getUserName("auth")).willReturn("Emma Taylor");
+
+            directionId = randomUUID();
+            responseId = randomUUID();
+        }
 
         @Test
         void shouldAddCafcassResponseWhenValidResponseMadeByCourt() {
-            UUID directionId = randomUUID();
-            Order sdo = orderWithCafcassDirection(directionId);
-            List<Element<Direction>> directionWithResponse = directionWithCafcassResponse(directionId);
+            Order sdo = orderWithCafcassDirection();
+            List<Element<Direction>> directionWithResponse = directionWithCafcassResponse();
 
             CaseData caseData = CaseData.builder()
                 .standardDirectionOrder(sdo)
@@ -1221,22 +1243,20 @@ class DirectionHelperServiceTest {
                 .complied("Yes")
                 .build();
 
-            service.addComplyOnBehalfResponsesToDirectionsInStandardDirectionsOrder(caseData);
+            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_ON_BEHALF_SDO, "auth");
 
-            assertThat(getResponses(caseData).get(0).getValue()).isEqualTo(expectedResponse);
+            assertThat(getResponsesSdo(caseData).get(0).getValue()).isEqualTo(expectedResponse);
         }
 
         @Test
         void shouldAddResponseForOtherPartiesWhenValidResponseMadeByCourt() {
-            UUID directionId = randomUUID();
-            UUID responseId = randomUUID();
             Direction.DirectionBuilder direction = Direction.builder().assignee(OTHERS);
 
             DirectionResponse.DirectionResponseBuilder response = DirectionResponse.builder()
                 .complied("Yes")
                 .respondingOnBehalfOf("OTHERS_1");
 
-            CaseData caseData = prepareCaseData(directionId, direction, createResponses(responseId, response));
+            CaseData caseData = prepareCaseData(direction, createResponses(response));
 
             List<Element<DirectionResponse>> expectedResponses = ImmutableList.of(Element.<DirectionResponse>builder()
                 .id(responseId)
@@ -1246,12 +1266,48 @@ class DirectionHelperServiceTest {
                     .build())
                 .build());
 
-            service.addComplyOnBehalfResponsesToDirectionsInStandardDirectionsOrder(caseData);
+            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_ON_BEHALF_SDO, "auth");
 
-            assertThat(getResponses(caseData)).containsAll(expectedResponses);
+            assertThat(getResponsesSdo(caseData)).containsAll(expectedResponses);
         }
 
-        private List<Element<Direction>> directionWithCafcassResponse(UUID directionId) {
+        @Test
+        void shouldAddResponseForOtherPartiesWhenValidResponseMadeBySolicitor() {
+            Direction.DirectionBuilder direction = Direction.builder().assignee(OTHERS);
+
+            DirectionResponse.DirectionResponseBuilder response = DirectionResponse.builder()
+                .complied("Yes")
+                .respondingOnBehalfOf("OTHER_1");
+
+            List<Element<DirectionResponse>> responses = createResponses(response);
+            CaseData caseData = prepareCaseDataWithServedCmoAndResponseByOthers(direction, responses);
+
+            List<Element<DirectionResponse>> expectedResponses = expectedResponse(OTHERS);
+
+            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_OTHERS, "auth");
+
+            assertThat(getResponsesCmo(caseData)).containsAll(expectedResponses);
+        }
+
+        @Test
+        void shouldAddResponseForRespondentWhenValidResponseMadeBySolicitor() {
+            Direction.DirectionBuilder direction = Direction.builder().assignee(PARENTS_AND_RESPONDENTS);
+
+            DirectionResponse.DirectionResponseBuilder response = DirectionResponse.builder()
+                .complied("Yes")
+                .respondingOnBehalfOf("OTHER_1");
+
+            List<Element<DirectionResponse>> responses = createResponses(response);
+            CaseData caseData = prepareCaseDataWithServedCmoAndRespondentResponse(direction, responses);
+
+            List<Element<DirectionResponse>> expectedResponses = expectedResponse(PARENTS_AND_RESPONDENTS);
+
+            service.addComplyOnBehalfResponsesToDirectionsInOrder(caseData, COMPLY_OTHERS, "auth");
+
+            assertThat(getResponsesCmo(caseData)).containsAll(expectedResponses);
+        }
+
+        private List<Element<Direction>> directionWithCafcassResponse() {
             return ImmutableList.of(Element.<Direction>builder()
                 .id(directionId)
                 .value(Direction.builder()
@@ -1264,7 +1320,20 @@ class DirectionHelperServiceTest {
                 .build());
         }
 
-        private Order orderWithCafcassDirection(UUID directionId) {
+        private List<Element<DirectionResponse>> expectedResponse(DirectionAssignee others) {
+            return ImmutableList.of(Element.<DirectionResponse>builder()
+                .id(responseId)
+                .value(DirectionResponse.builder()
+                    .directionId(directionId)
+                    .assignee(others)
+                    .responder("Emma Taylor")
+                    .complied("Yes")
+                    .respondingOnBehalfOf("OTHER_1")
+                    .build())
+                .build());
+        }
+
+        private Order orderWithCafcassDirection() {
             return Order.builder()
                 .directions(ImmutableList.of(Element.<Direction>builder()
                     .id(directionId)
@@ -1277,8 +1346,7 @@ class DirectionHelperServiceTest {
         }
 
 
-        private CaseData prepareCaseData(UUID directionId,
-                                         Direction.DirectionBuilder direction,
+        private CaseData prepareCaseData(Direction.DirectionBuilder direction,
                                          List<Element<DirectionResponse>> responses) {
             return CaseData.builder()
                 .standardDirectionOrder(Order.builder()
@@ -1294,8 +1362,46 @@ class DirectionHelperServiceTest {
                 .build();
         }
 
-        private List<Element<DirectionResponse>> createResponses(UUID responseId,
-                                                                 DirectionResponse.DirectionResponseBuilder response) {
+        private CaseData prepareCaseDataWithServedCmoAndResponseByOthers(Direction.DirectionBuilder direction,
+                                                                         List<Element<DirectionResponse>> responses) {
+            List<Element<CaseManagementOrder>> cmo = getCmo(direction);
+
+            return CaseData.builder()
+                .servedCaseManagementOrders(cmo)
+                .otherPartiesDirectionsCustom(ImmutableList.of(Element.<Direction>builder()
+                    .id(directionId)
+                    .value(direction.responses(responses).build())
+                    .build()))
+                .build();
+        }
+
+        private CaseData prepareCaseDataWithServedCmoAndRespondentResponse(Direction.DirectionBuilder direction,
+                                                                           List<Element<DirectionResponse>> responses) {
+            List<Element<CaseManagementOrder>> cmo = getCmo(direction);
+
+            return CaseData.builder()
+                .servedCaseManagementOrders(cmo)
+                .respondentDirectionsCustom(ImmutableList.of(Element.<Direction>builder()
+                    .id(directionId)
+                    .value(direction.responses(responses).build())
+                    .build()))
+                .build();
+        }
+
+        private List<Element<CaseManagementOrder>> getCmo(Direction.DirectionBuilder direction) {
+            List<Element<CaseManagementOrder>> cmo = new ArrayList<>();
+            cmo.add(Element.<CaseManagementOrder>builder()
+                .value(CaseManagementOrder.builder()
+                    .directions(ImmutableList.of(Element.<Direction>builder()
+                        .id(directionId)
+                        .value(direction.build())
+                        .build()))
+                    .build())
+                .build());
+            return cmo;
+        }
+
+        private List<Element<DirectionResponse>> createResponses(DirectionResponse.DirectionResponseBuilder response) {
             List<Element<DirectionResponse>> responses = new ArrayList<>();
             responses.add(Element.<DirectionResponse>builder()
                 .id(responseId)
@@ -1305,8 +1411,13 @@ class DirectionHelperServiceTest {
             return responses;
         }
 
-        private List<Element<DirectionResponse>> getResponses(CaseData caseData) {
+        private List<Element<DirectionResponse>> getResponsesSdo(CaseData caseData) {
             return caseData.getStandardDirectionOrder().getDirections().get(0).getValue().getResponses();
+        }
+
+        private List<Element<DirectionResponse>> getResponsesCmo(CaseData caseData) {
+            return caseData.getServedCaseManagementOrders().get(0).getValue()
+                .getDirections().get(0).getValue().getResponses();
         }
     }
 

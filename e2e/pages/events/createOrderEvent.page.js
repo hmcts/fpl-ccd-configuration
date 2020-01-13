@@ -8,6 +8,11 @@ module.exports = {
     title: '#order_title',
     details: '#order_details',
     orderTypeList: '#orderTypeAndDocument_type',
+    directionsNeeded: {
+      yes: '#orderFurtherDirections_directionsNeeded-Yes',
+      no: '#orderFurtherDirections_directionsNeeded-No',
+    },
+    directions: '#orderFurtherDirections_directions',
     epo: {
       childrenDescription: {
         radioGroup: '#epoChildren_descriptionNeeded',
@@ -42,6 +47,11 @@ module.exports = {
     judgeAndLegalAdvisor.selectJudgeTitle();
     judgeAndLegalAdvisor.enterJudgeLastName(judgeLastName);
     judgeAndLegalAdvisor.enterLegalAdvisorName(legalAdvisorName);
+  },
+
+  enterDirections(directions) {
+    I.click(this.fields.directionsNeeded.yes);
+    I.fillField(this.fields.directions, directions);
   },
 
   async enterChildrenDescription(description) {
